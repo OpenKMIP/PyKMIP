@@ -1,1 +1,11 @@
 # TODO: add any test requirements here
+coverage
+pytest
+flake8
+testtools
+fixtures
+testresources
+mock
+testscenarios
+testrepository
+sphinx

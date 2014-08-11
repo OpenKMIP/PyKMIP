@@ -1,3 +1,9 @@
 .project
 .pydevproject
 *.pyc
+
+.coverage
+.tox/
+ChangeLog
+PyKMIP.egg-info/
+dist/
