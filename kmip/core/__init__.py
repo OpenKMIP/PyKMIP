@@ -13,5 +13,4 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-__all__ = ['attributes', 'enums', 'errors', 'messages', 'objects',
-           'primitives', 'protocol', 'utils']
+__all__ = ['factories', 'messages', 'repo']

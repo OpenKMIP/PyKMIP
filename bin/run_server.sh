@@ -2,5 +2,5 @@
 
 set -eu
 
-python run_server.py
+python ../kmip/demos/server.py
 

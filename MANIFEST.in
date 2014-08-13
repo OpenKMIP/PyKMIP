@@ -1,0 +1,4 @@
+include AUTHORS.txt CHANGES.txt LICENSE.txt README.txt
+global-include logconfig.ini
+recursive-include bin run_server.sh
+recursive-include kmip *.py

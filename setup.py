@@ -22,9 +22,10 @@ setuptools.setup(
     keywords='KMIP',
     author='Peter Hamilton',
     author_email='peter.hamilton@jhuapl.edu',
-    url='http://www.jhuapl.edu',
+    url='https://github.com/OpenKMIP/PyKMIP',
     license='Apache License, Version 2.0',
     packages=setuptools.find_packages(exclude=["kmip.tests", "kmip.tests.*"]),
+    package_data={'kmip': ['logconfig.ini']},
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",

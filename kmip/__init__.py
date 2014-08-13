@@ -54,4 +54,4 @@ else:
     else:
         logging.basicConfig()
 
-__all__ = ['test', 'transport']
+__all__ = ['core', 'demos', 'services']

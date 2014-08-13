@@ -61,8 +61,7 @@ class TestKMIPClient(TestCase):
 
         # Set up the KMIP server process
         path = os.path.join(os.path.dirname(__file__), os.path.pardir,
-                            os.path.pardir, os.path.pardir, 'bin',
-                            'run_server.py')
+                            'utils', 'server.py')
         self.server = Popen(['python', '{0}'.format(path), '-p',
                              '{0}'.format(self.KMIP_PORT)], stderr=sys.stdout)
 
