@@ -14,6 +14,7 @@
 # under the License.
 
 from binascii import hexlify
+import io
 
 from kmip.core.errors import ErrorStrings
 
@@ -26,7 +27,7 @@ def bit_length(num):
 
 def count_bytes(num):
     bits = bit_length(num)
-    num_bytes = bits / 8
+    num_bytes = int(bits / 8)
     if bits == 0 or bits % 8:
         num_bytes += 1
     return num_bytes
@@ -34,7 +35,7 @@ def count_bytes(num):
 
 def print_bytearray(array):
     sbuffer = hexlify_bytearray(array)
-    print 'buffer: {0}'.format(sbuffer)
+    print('buffer: {0}'.format(sbuffer))
 
 
 def hexlify_bytearray(array):
@@ -62,35 +63,46 @@ def build_er_error(class_object, descriptor, expected, received,
     return msg.format(class_string, descriptor, expected, received)
 
 
-class BytearrayStream(object):
+class BytearrayStream(io.RawIOBase):
     def __init__(self, data=None):
         if data is None:
-            self.buffer = bytearray()
+            self.buffer = b''
         else:
-            self.buffer = bytearray(data)
+            self.buffer = bytes(data)
 
     def read(self, n=None):
-        if n is None:
-            return str(self.buffer[0:])
-
+        if n is None or n == -1:
+            return self.readall()
         length = len(self.buffer)
         if n > length:
             n = length
-
         data = self.buffer[0:n]
-        for _ in xrange(n):
-            self.buffer.pop(0)
-        return str(data)
+        self.buffer = self.buffer[n:]
+        return data
+
+    def readall(self):
+        data = self.buffer[0:]
+        self.buffer = self.buffer[len(self.buffer):]
+        return data
+
+    def readinto(self, b):
+        if len(b) <= len(self.buffer):
+            num_bytes_to_read = len(b)
+        else:
+            num_bytes_to_read = len(self.buffer)
+        b[:num_bytes_to_read] = self.buffer[:num_bytes_to_read]
+        self.buffer = self.buffer[num_bytes_to_read:]
+        return num_bytes_to_read
 
     def peek(self, n=None):
         length = len(self.buffer)
         if n is None or n > length:
             n = length
-        return str(self.buffer[0:n])
+        return self.buffer[0:n]
 
     def write(self, b):
         prev_bytes = len(self.buffer)
-        self.buffer.extend(b)
+        self.buffer += b
         return len(self.buffer) - prev_bytes
 
     def length(self):

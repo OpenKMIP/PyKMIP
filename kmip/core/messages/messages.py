@@ -340,7 +340,7 @@ class RequestMessage(Struct):
         self.request_header.read(istream)
 
         self.batch_items = []
-        for _ in xrange(self.request_header.batch_count.value):
+        for _ in range(self.request_header.batch_count.value):
             batch_item = RequestBatchItem()
             batch_item.read(istream)
             self.batch_items.append(batch_item)
@@ -374,7 +374,7 @@ class ResponseMessage(Struct):
         self.response_header.read(istream)
 
         self.batch_items = []
-        for _ in xrange(self.response_header.batch_count.value):
+        for _ in range(self.response_header.batch_count.value):
             batch_item = ResponseBatchItem()
             batch_item.read(istream)
             self.batch_items.append(batch_item)

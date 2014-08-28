@@ -37,28 +37,39 @@ from kmip.services.kmip_protocol import KMIPProtocol
 
 from kmip.core.utils import BytearrayStream
 
-from thrift.transport import TSocket
-from thrift.transport import TTransport
-
 import logging
 import logging.config
+import os
+import socket
+import ssl
+
+FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 class KMIPProxy(KMIP):
 
     # TODO (peter-hamilton) Move these defaults into config
-    def __init__(self, hostname='127.0.0.1', port=5696):
+    def __init__(self, hostname='127.0.0.1', port=5696,
+                 ca_certs_file=FILE_PATH + '/../tests/utils/certs/server.crt'):
         super(self.__class__, self).__init__()
         self.logger = logging.getLogger(__name__)
-        self.socket = TSocket.TSocket(hostname, port)
-        self.transport = TTransport.TBufferedTransport(self.socket)
-        self.protocol = KMIPProtocol(self.transport)
+
+        self.hostname = hostname
+        self.port = port
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if ca_certs_file is not None:
+            self.socket = ssl.wrap_socket(sock,
+                                          ca_certs=ca_certs_file,
+                                          cert_reqs=ssl.CERT_REQUIRED)
+        else:
+            self.socket = sock
+        self.protocol = KMIPProtocol(self.socket)
 
     def open(self):
-        self.transport.open()
+        self.socket.connect((self.hostname, self.port))
 
     def close(self):
-        self.transport.close()
+        self.socket.shutdown(socket.SHUT_RDWR)
 
     def create(self, object_type, template_attribute, credential=None):
         object_type = attr.ObjectType(object_type)

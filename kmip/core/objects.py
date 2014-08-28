@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import attributes
+from kmip.core import attributes
 from kmip.core.attributes import CryptographicParameters
 
 from kmip.core.factories.attribute_values import AttributeValueFactory
@@ -33,7 +33,7 @@ from kmip.core.primitives import ByteString
 from kmip.core.primitives import Integer
 from kmip.core.primitives import Enumeration
 
-from utils import BytearrayStream
+from kmip.core.utils import BytearrayStream
 
 
 # 2.1

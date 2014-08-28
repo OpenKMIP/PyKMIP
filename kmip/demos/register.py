@@ -64,8 +64,8 @@ if __name__ == '__main__':
     secret_features.update([('key_format_type', key_format_type)])
 
     # TODO (peter-hamilton) Replace with calls to crypto libraries
-    key_data = {'bytes': bytearray('\x00\x00\x00\x00\x00\x00\x00\x00'
-                                   '\x00\x00\x00\x00\x00\x00\x00\x00')}
+    key_data = {'bytes': bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00'
+                                   b'\x00\x00\x00\x00\x00\x00\x00\x00')}
 
     secret_features.update([('key_value', key_data)])
     secret_features.update([('cryptographic_algorithm', algorithm_value)])

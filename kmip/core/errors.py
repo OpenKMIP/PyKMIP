@@ -23,7 +23,7 @@ class BaseError(Exception):
     """Base class for exceptions defined in this module."""
 
     def __init__(self, args):
-        [setattr(self, k, v) for k, v in args.iteritems() if k is not 'self']
+        [setattr(self, k, v) for k, v in args.items() if k is not 'self']
 
 
 class KMIPServerError(BaseError):

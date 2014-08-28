@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import enums
+from kmip.core import enums
 
 from kmip.core.enums import Tags
 
@@ -24,7 +24,7 @@ from kmip.core.primitives import Integer
 from kmip.core.primitives import Enumeration
 from kmip.core.primitives import TextString
 
-from utils import BytearrayStream
+from kmip.core.utils import BytearrayStream
 
 
 # 3.1

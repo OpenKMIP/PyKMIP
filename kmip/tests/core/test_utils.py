@@ -73,19 +73,19 @@ class TestBytearrayStream(TestCase):
         super(TestBytearrayStream, self).tearDown()
 
     def test_init(self):
-        value = '\x00'
+        value = b'\x00'
         b = utils.BytearrayStream(value)
 
         buf_type = type(b.buffer)
-        msg = self.bad_type.format('buffer', bytearray, buf_type)
-        self.assertIsInstance(b.buffer, bytearray,
-                              msg.format(bytearray, type(b.buffer)))
+        msg = self.bad_type.format('buffer', type(b''), buf_type)
+        self.assertIsInstance(b.buffer, type(b''),
+                              msg.format(type(b''), type(b.buffer)))
 
         length = len(b.buffer)
         msg = self.bad_len.format('buffer', 1, length)
         self.assertEqual(1, length, msg)
 
-        content = str(b.buffer)
+        content = b.buffer
         msg = self.bad_val.format('buffer', value, content)
         self.assertEqual(value, content, msg)
 
@@ -93,9 +93,9 @@ class TestBytearrayStream(TestCase):
         b = utils.BytearrayStream()
 
         buf_type = type(b.buffer)
-        msg = self.bad_type.format('buffer', bytearray, buf_type)
-        self.assertIsInstance(b.buffer, bytearray,
-                              msg.format(bytearray, type(b.buffer)))
+        msg = self.bad_type.format('buffer', type(b''), buf_type)
+        self.assertIsInstance(b.buffer, type(b''),
+                              msg.format(type(b''), type(b.buffer)))
 
         length = len(b.buffer)
         msg = self.bad_len.format('buffer', 0, length)
@@ -111,7 +111,7 @@ class TestBytearrayStream(TestCase):
 
     def test_peek(self):
         # TODO (peter-hamilton) Finish implementation.
-        value = ('\x00\x01\x02\x03')
+        value = (b'\x00\x01\x02\x03')
         expected = value
         b = expected
         expected = b

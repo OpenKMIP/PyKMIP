@@ -17,7 +17,7 @@ import setuptools
 
 setuptools.setup(
     name='PyKMIP',
-    version='0.0.1',
+    version='0.1.0',
     description='KMIP v1.1 library',
     keywords='KMIP',
     author='Peter Hamilton',
@@ -39,5 +39,7 @@ setuptools.setup(
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
     ],
 )

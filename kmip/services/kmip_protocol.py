@@ -15,36 +15,47 @@
 
 from struct import unpack
 
-from thrift.protocol.TProtocol import TProtocolBase
-
 import binascii
 import logging
 
 from kmip.core.utils import BytearrayStream
 
 
-class KMIPProtocol(TProtocolBase):
+class KMIPProtocol(object):
     HEADER_SIZE = 8
 
-    def __init__(self, trans, buffer_size=1024):
-        TProtocolBase.__init__(self, trans)
+    def __init__(self, socket, buffer_size=1024):
+        self.socket = socket
         self.logger = logging.getLogger(__name__)
 
     def write(self, data):
         if len(data) > 0:
             sbuffer = bytes(data)
             self.logger.debug('buffer: {0}'.format(binascii.hexlify(sbuffer)))
-            self.trans.write(sbuffer)
-            self.trans.flush()
+            self.socket.sendall(sbuffer)
 
     def read(self):
-        header = self.trans.readAll(self.HEADER_SIZE)
+        header = self._recv_all(self.HEADER_SIZE)
         msg_size = unpack('!I', header[4:])[0]
-        payload = self.trans.readAll(msg_size)
+        payload = self._recv_all(msg_size)
         return BytearrayStream(header + payload)
+
+    def _recv_all(self, total_bytes_to_be_read):
+        bytes_read = 0
+        total_msg = b''
+        while bytes_read < total_bytes_to_be_read:
+            msg = self.socket.recv(total_bytes_to_be_read - bytes_read)
+            if not msg:
+                break
+            bytes_read += len(msg)
+            total_msg += msg
+        if bytes_read != total_bytes_to_be_read:
+            raise Exception("Expected {0} bytes, Received {1} bytes"
+                            .format(total_bytes_to_be_read, bytes_read))
+        return total_msg
 
 
 class KMIPProtocolFactory(object):
 
-    def getProtocol(self, trans):
-        return KMIPProtocol(trans)
+    def getProtocol(self, socket):
+        return KMIPProtocol(socket)

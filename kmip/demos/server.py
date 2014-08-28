@@ -14,28 +14,21 @@
 # under the License.
 
 import logging
+import os
 import optparse
 import sys
 
-from thrift.server import TServer
-from thrift.transport import TSocket
-from thrift.transport import TTransport
+from kmip.services.kmip_server import KMIPServer
 
-from kmip.core.server import KMIPImpl
-
-from kmip.services.kmip_protocol import KMIPProtocolFactory
-from kmip.services.kmip_server import Processor
+FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
-def run_server(host='127.0.0.1', port=5696):
+def run_server(host='127.0.0.1', port=5696,
+               cert_file=FILE_PATH + '/../tests/utils/certs/server.crt',
+               key_file=FILE_PATH + '/../tests/utils/certs/server.key'):
     logger = logging.getLogger(__name__)
 
-    handler = KMIPImpl()
-    processor = Processor(handler)
-    transport = TSocket.TServerSocket(host, port)
-    tfactory = TTransport.TBufferedTransportFactory()
-    pfactory = KMIPProtocolFactory()
-    server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
+    server = KMIPServer(host, port, cert_file, key_file)
 
     logger.info('Starting the KMIP server')
 
@@ -43,10 +36,10 @@ def run_server(host='127.0.0.1', port=5696):
         server.serve()
     except KeyboardInterrupt:
         logger.info('KeyboardInterrupt received while serving')
-    except Exception, e:
+    except Exception as e:
         logger.info('Exception received while serving: {0}'.format(e))
     finally:
-        transport.close()
+        server.close()
 
     logger.info('Shutting down KMIP server')
 
@@ -60,6 +53,12 @@ def build_cli_parser():
                       "server (e.g., localhost, 127.0.0.1)")
     parser.add_option("-p", "--port", action="store", default=5696,
                       dest="port", help="Port number for KMIP services")
+    parser.add_option("-c", "--cert_file", action="store",
+                      default=FILE_PATH + '/../tests/utils/certs/server.crt',
+                      dest="cert_file")
+    parser.add_option("-k", "--key_file", action="store",
+                      default=FILE_PATH + '/../tests/utils/certs/server.key',
+                      dest="key_file")
     return parser
 
 if __name__ == '__main__':
@@ -67,4 +66,4 @@ if __name__ == '__main__':
 
     opts, args = parser.parse_args(sys.argv[1:])
 
-    run_server(opts.hostname, opts.port)
+    run_server(opts.hostname, opts.port, opts.cert_file, opts.key_file)

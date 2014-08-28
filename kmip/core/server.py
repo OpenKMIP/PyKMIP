@@ -304,7 +304,7 @@ class KMIPImpl(KMIP):
 
     def _gen_symmetric_key(self, bit_length, crypto_alg):
         key_format_type = KeyBlock.KeyFormatType(KeyFormatTypeEnum.RAW)
-        key_material = RawKey(bytearray(os.urandom(bit_length/8)))
+        key_material = RawKey(bytearray(os.urandom(int(bit_length/8))))
         key_value = KeyValueStruct(key_format_type, key_material)
         crypto_length = CryptographicLength(bit_length)
         key_block = KeyBlock(key_format_type, None, key_value, crypto_alg,

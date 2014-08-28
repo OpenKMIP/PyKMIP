@@ -56,36 +56,36 @@ class TestBase(TestCase):
         base.is_oversized(self.stream)
 
     def test_is_oversized_error(self):
-        self.stream.write('\x00')
+        self.stream.write(b'\x00')
         base = Base()
 
         self.assertRaises(errors.StreamNotEmptyError, base.is_oversized,
                           self.stream)
 
     def test_read_tag(self):
-        encoding = ('\x42\x00\x00')
+        encoding = (b'\x42\x00\x00')
         base = Base()
-        self.stream = BytearrayStream(str(encoding))
+        self.stream = BytearrayStream(encoding)
 
         # Check no exception thrown
         base.read_tag(self.stream)
 
     def test_read_tag_invalid(self):
-        encoding = ('\x42\x00\x01')
+        encoding = (b'\x42\x00\x01')
         base = Base()
-        self.stream = BytearrayStream(str(encoding))
+        self.stream = BytearrayStream(encoding)
 
         self.assertRaises(errors.ReadValueError, base.read_tag, self.stream)
 
     def test_read_type(self):
-        self.stream.write('\x00')
+        self.stream.write(b'\x00')
         base = Base()
 
         # Check no exception thrown
         base.read_type(self.stream)
 
     def test_read_type_error(self):
-        self.stream.write('\x01')
+        self.stream.write(b'\x01')
         base = Base()
 
         self.assertRaises(errors.ReadValueError, base.read_type, self.stream)
@@ -97,14 +97,14 @@ class TestBase(TestCase):
                           self.stream)
 
     def test_read_type_overflow(self):
-        self.stream.write('\x00\x00')
+        self.stream.write(b'\x00\x00')
         base = Base()
 
         # Check no exception thrown
         base.read_type(self.stream)
 
     def test_read_length(self):
-        self.stream.write('\x00\x00\x00\x04')
+        self.stream.write(b'\x00\x00\x00\x04')
         base = Base()
         base.length = 4
 
@@ -112,7 +112,7 @@ class TestBase(TestCase):
         base.read_length(self.stream)
 
     def test_read_length_error(self):
-        self.stream.write('\x00\x00\x00\x00')
+        self.stream.write(b'\x00\x00\x00\x00')
         base = Base()
         base.length = 4
 
@@ -120,7 +120,7 @@ class TestBase(TestCase):
                           self.stream)
 
     def test_read_length_underflow(self):
-        self.stream.write('\x00')
+        self.stream.write(b'\x00')
         base = Base()
         base.length = 4
 
@@ -128,7 +128,7 @@ class TestBase(TestCase):
                           self.stream)
 
     def test_read_length_overflow(self):
-        self.stream.write('\x00\x00\x00\x04\x00')
+        self.stream.write(b'\x00\x00\x00\x04\x00')
         base = Base()
         base.length = 4
 
@@ -141,7 +141,7 @@ class TestBase(TestCase):
         self.assertRaises(NotImplementedError, base.read_value, self.stream)
 
     def test_read(self):
-        self.stream.write('\x42\x00\x00\x00\x00\x00\x00\x04')
+        self.stream.write(b'\x42\x00\x00\x00\x00\x00\x00\x04')
         base = Base()
         base.length = 4
 
@@ -149,7 +149,7 @@ class TestBase(TestCase):
         base.read(self.stream)
 
     def test_write_tag(self):
-        encoding = ('\x42\x00\x00')
+        encoding = (b'\x42\x00\x00')
         base = Base()
         base.write_tag(self.stream)
 
@@ -164,7 +164,7 @@ class TestBase(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding.format('tag'))
 
     def test_write_type(self):
-        encoding = '\x00'
+        encoding = b'\x00'
         base = Base()
         base.write_type(self.stream)
 
@@ -185,7 +185,7 @@ class TestBase(TestCase):
         self.assertRaises(TypeError, base.write_type, self.stream)
 
     def test_write_length(self):
-        encoding = '\x00\x00\x00\x04'
+        encoding = b'\x00\x00\x00\x04'
         base = Base()
         base.length = 4
         base.write_length(self.stream)
@@ -217,7 +217,7 @@ class TestBase(TestCase):
         self.assertRaises(NotImplementedError, base.write_value, self.stream)
 
     def test_write(self):
-        encoding = '\x42\x00\x00\x00\x00\x00\x00\x04'
+        encoding = b'\x42\x00\x00\x00\x00\x00\x00\x04'
         base = Base()
         base.length = 4
         base.write(self.stream)
@@ -234,17 +234,17 @@ class TestBase(TestCase):
                          self.bad_encoding.format('type/length'))
 
     def test_is_tag_next(self):
-        encoding = ('\x42\x00\x00')
+        encoding = (b'\x42\x00\x00')
         base = Base()
-        self.stream = BytearrayStream(str(encoding))
+        self.stream = BytearrayStream(encoding)
 
         self.assertTrue(Base.is_tag_next(base.tag, self.stream),
                         self.bad_match.format('tag', 'match', 'mismatch'))
 
     def test_is_tag_next_invalid(self):
-        encoding = ('\x42\x00\x01')
+        encoding = (b'\x42\x00\x01')
         base = Base()
-        self.stream = BytearrayStream(str(encoding))
+        self.stream = BytearrayStream(encoding)
 
         self.assertFalse(Base.is_tag_next(base.tag, self.stream),
                          self.bad_match.format('tag', 'mismatch', 'match'))
@@ -313,24 +313,24 @@ class TestInteger(TestCase):
                           self.max_byte_int + 1)
 
     def test_read_value(self):
-        encoding = ('\x00\x00\x00\x01\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x00\x00\x00\x01\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = Integer()
         i.read_value(self.stream)
 
         self.assertEqual(1, i.value, self.bad_read.format(1, i.value))
 
     def test_read_value_zero(self):
-        encoding = ('\x00\x00\x00\x00\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = Integer()
         i.read_value(self.stream)
 
         self.assertEqual(0, i.value, self.bad_read.format(0, i.value))
 
     def test_read_value_max_positive(self):
-        encoding = ('\x7f\xff\xff\xff\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x7f\xff\xff\xff\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = Integer()
         i.read_value(self.stream)
 
@@ -338,8 +338,8 @@ class TestInteger(TestCase):
                          self.bad_read.format(1, i.value))
 
     def test_read_value_min_negative(self):
-        encoding = ('\xff\xff\xff\xff\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\xff\xff\xff\xff\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = Integer()
         i.read_value(self.stream)
 
@@ -347,32 +347,32 @@ class TestInteger(TestCase):
                          self.bad_read.format(1, i.value))
 
     def test_read(self):
-        encoding = ('\x42\x00\x00\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00'
-                    '\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00'
+                    b'\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = Integer()
         i.read(self.stream)
 
         self.assertEqual(1, i.value, self.bad_read.format(1, i.value))
 
     def test_read_on_invalid_length(self):
-        encoding = ('\x42\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-                    '\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = Integer()
 
         self.assertRaises(errors.ReadValueError, i.read, self.stream)
 
     def test_read_on_invalid_padding(self):
-        encoding = ('\x42\x00\x00\x02\x00\x00\x00\x04\x00\x00\x00\x00\xff\xff'
-                    '\xff\xff')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x02\x00\x00\x00\x04\x00\x00\x00\x00\xff\xff'
+                    b'\xff\xff')
+        self.stream = BytearrayStream(encoding)
         i = Integer()
 
         self.assertRaises(errors.ReadValueError, i.read, self.stream)
 
     def test_write_value(self):
-        encoding = ('\x00\x00\x00\x01\x00\x00\x00\x00')
+        encoding = (b'\x00\x00\x00\x01\x00\x00\x00\x00')
         i = Integer(1)
         i.write_value(self.stream)
 
@@ -385,7 +385,7 @@ class TestInteger(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_zero(self):
-        encoding = ('\x00\x00\x00\x00\x00\x00\x00\x00')
+        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x00')
         i = Integer(0)
         i.write_value(self.stream)
 
@@ -398,7 +398,7 @@ class TestInteger(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_max_positive(self):
-        encoding = ('\x7f\xff\xff\xff\x00\x00\x00\x00')
+        encoding = (b'\x7f\xff\xff\xff\x00\x00\x00\x00')
         i = Integer(self.max_int)
         i.write_value(self.stream)
 
@@ -411,7 +411,7 @@ class TestInteger(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_min_negative(self):
-        encoding = ('\xff\xff\xff\xff\x00\x00\x00\x00')
+        encoding = (b'\xff\xff\xff\xff\x00\x00\x00\x00')
         i = Integer(-1)
         i.write_value(self.stream)
 
@@ -424,8 +424,8 @@ class TestInteger(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write(self):
-        encoding = ('\x42\x00\x00\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00'
-                    '\x00\x00')
+        encoding = (b'\x42\x00\x00\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00'
+                    b'\x00\x00')
         i = Integer(1)
         i.write(self.stream)
 
@@ -503,24 +503,24 @@ class TestLongInteger(TestCase):
                           self.max_byte_long + 1)
 
     def test_read_value(self):
-        encoding = ('\x00\x00\x00\x00\x00\x00\x00\x01')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x01')
+        self.stream = BytearrayStream(encoding)
         i = LongInteger()
         i.read_value(self.stream)
 
         self.assertEqual(1, i.value, self.bad_read.format(1, i.value))
 
     def test_read_value_zero(self):
-        encoding = ('\x00\x00\x00\x00\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = LongInteger()
         i.read_value(self.stream)
 
         self.assertEqual(0, i.value, self.bad_read.format(0, i.value))
 
     def test_read_value_max_positive(self):
-        encoding = ('\x7f\xff\xff\xff\xff\xff\xff\xff')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x7f\xff\xff\xff\xff\xff\xff\xff')
+        self.stream = BytearrayStream(encoding)
         i = LongInteger()
         i.read_value(self.stream)
 
@@ -528,8 +528,8 @@ class TestLongInteger(TestCase):
                          self.bad_read.format(1, i.value))
 
     def test_read_value_min_negative(self):
-        encoding = ('\xff\xff\xff\xff\xff\xff\xff\xff')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\xff\xff\xff\xff\xff\xff\xff\xff')
+        self.stream = BytearrayStream(encoding)
         i = LongInteger()
         i.read_value(self.stream)
 
@@ -537,24 +537,24 @@ class TestLongInteger(TestCase):
                          self.bad_read.format(1, i.value))
 
     def test_read(self):
-        encoding = ('\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    '\x00\x01')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x01')
+        self.stream = BytearrayStream(encoding)
         i = LongInteger()
         i.read(self.stream)
 
         self.assertEqual(1, i.value, self.bad_read.format(1, i.value))
 
     def test_read_on_invalid_length(self):
-        encoding = ('\x42\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-                    '\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = LongInteger()
 
         self.assertRaises(errors.ReadValueError, i.read, self.stream)
 
     def test_write_value(self):
-        encoding = ('\x00\x00\x00\x00\x00\x00\x00\x01')
+        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x01')
         i = LongInteger(1)
         i.write_value(self.stream)
 
@@ -567,7 +567,7 @@ class TestLongInteger(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_zero(self):
-        encoding = ('\x00\x00\x00\x00\x00\x00\x00\x00')
+        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x00')
         i = LongInteger(0)
         i.write_value(self.stream)
 
@@ -580,7 +580,7 @@ class TestLongInteger(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_max_positive(self):
-        encoding = ('\x7f\xff\xff\xff\xff\xff\xff\xff')
+        encoding = (b'\x7f\xff\xff\xff\xff\xff\xff\xff')
         i = LongInteger(self.max_long)
         i.write_value(self.stream)
 
@@ -593,7 +593,7 @@ class TestLongInteger(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_min_negative(self):
-        encoding = ('\xff\xff\xff\xff\xff\xff\xff\xff')
+        encoding = (b'\xff\xff\xff\xff\xff\xff\xff\xff')
         i = LongInteger(-1)
         i.write_value(self.stream)
 
@@ -606,8 +606,8 @@ class TestLongInteger(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write(self):
-        encoding = ('\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    '\x00\x01')
+        encoding = (b'\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x01')
         i = LongInteger(1)
         i.write(self.stream)
 
@@ -699,8 +699,8 @@ class TestBigInteger(TestCase):
 
     def test_write(self):
         self.skip('BigInteger implementation incomplete')
-        encoding = ('\x42\x00\x01\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    '\x00\x01')
+        encoding = (b'\x42\x00\x01\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x01')
         i = BigInteger(1)
         i.TAG = Tags.ACTIVATION_DATE
         i.write(self.stream)
@@ -715,8 +715,8 @@ class TestBigInteger(TestCase):
 
     def test_write_zero(self):
         self.skip('BigInteger implementation incomplete')
-        encoding = ('\x42\x00\x01\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    '\x00\x00')
+        encoding = (b'\x42\x00\x01\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x00')
         i = BigInteger(0)
         i.TAG = Tags.ACTIVATION_DATE
         i.write(self.stream)
@@ -731,8 +731,8 @@ class TestBigInteger(TestCase):
 
     def test_write_max_positive_value(self):
         self.skip('BigInteger implementation incomplete')
-        encoding = ('\x42\x00\x01\x04\x00\x00\x00\x08\x7f\xff\xff\xff\xff\xff'
-                    '\xff\xff')
+        encoding = (b'\x42\x00\x01\x04\x00\x00\x00\x08\x7f\xff\xff\xff\xff\xff'
+                    b'\xff\xff')
         i = BigInteger(self.max_long)
         i.TAG = Tags.ACTIVATION_DATE
         i.write(self.stream)
@@ -747,8 +747,8 @@ class TestBigInteger(TestCase):
 
     def test_write_min_negative_value(self):
         self.skip('BigInteger implementation incomplete')
-        encoding = ('\x42\x00\x01\x04\x00\x00\x00\x08\xff\xff\xff\xff\xff\xff'
-                    '\xff\xff')
+        encoding = (b'\x42\x00\x01\x04\x00\x00\x00\x08\xff\xff\xff\xff\xff\xff'
+                    b'\xff\xff')
         i = BigInteger(-1)
         i.TAG = Tags.ACTIVATION_DATE
         i.write(self.stream)
@@ -763,9 +763,9 @@ class TestBigInteger(TestCase):
 
     def test_read(self):
         self.skip('BigInteger implementation incomplete')
-        encoding = ('\x42\x00\x01\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    '\x00\x01')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x01\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x01')
+        self.stream = BytearrayStream(encoding)
         i = BigInteger()
         i.TAG = Tags.ACTIVATION_DATE
         i.read(self.stream)
@@ -774,9 +774,9 @@ class TestBigInteger(TestCase):
 
     def test_read_zero(self):
         self.skip('BigInteger implementation incomplete')
-        encoding = ('\x42\x00\x01\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    '\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x01\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = BigInteger()
         i.TAG = Tags.ACTIVATION_DATE
         i.read(self.stream)
@@ -785,9 +785,9 @@ class TestBigInteger(TestCase):
 
     def test_read_max_positive_value(self):
         self.skip('BigInteger implementation incomplete')
-        encoding = ('\x42\x00\x01\x04\x00\x00\x00\x08\x7f\xff\xff\xff\xff\xff'
-                    '\xff\xff')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x01\x04\x00\x00\x00\x08\x7f\xff\xff\xff\xff\xff'
+                    b'\xff\xff')
+        self.stream = BytearrayStream(encoding)
         i = BigInteger()
         i.TAG = Tags.ACTIVATION_DATE
         i.read(self.stream)
@@ -797,9 +797,9 @@ class TestBigInteger(TestCase):
 
     def test_read_min_negative_value(self):
         self.skip('BigInteger implementation incomplete')
-        encoding = ('\x42\x00\x01\x04\x00\x00\x00\x08\xff\xff\xff\xff\xff\xff'
-                    '\xff\xff')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x01\x04\x00\x00\x00\x08\xff\xff\xff\xff\xff\xff'
+                    b'\xff\xff')
+        self.stream = BytearrayStream(encoding)
         i = BigInteger()
         i.TAG = Tags.ACTIVATION_DATE
         i.read(self.stream)
@@ -809,9 +809,9 @@ class TestBigInteger(TestCase):
 
     def test_read_on_invalid_length(self):
         self.skip('BigInteger implementation incomplete')
-        encoding = ('\x42\x00\x01\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-                    '\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x01\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x00')
+        self.stream = BytearrayStream(encoding)
         i = BigInteger()
         i.TAG = Tags.ACTIVATION_DATE
 
@@ -881,9 +881,9 @@ class TestEnumeration(TestCase):
         self.assertRaises(TypeError, e.validate)
 
     def test_read(self):
-        encoding = ('\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00'
-                    '\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x00')
+        self.stream = BytearrayStream(encoding)
         e = Enumeration()
         e.read(self.stream)
 
@@ -899,8 +899,8 @@ class TestEnumeration(TestCase):
                                                e.value))
 
     def test_write(self):
-        encoding = ('\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00'
-                    '\x00\x00')
+        encoding = (b'\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00'
+                    b'\x00\x00')
         e = Enumeration(Types.DEFAULT)
         e.write(self.stream)
 
@@ -1013,9 +1013,9 @@ class TestTextString(TestCase):
         self.assertRaises(TypeError, ts.validate)
 
     def test_read_value(self):
-        encoding = ('\x48\x65\x6C\x6C\x6F\x20\x57\x6F\x72\x6C\x64\x00\x00\x00'
-                    '\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x48\x65\x6C\x6C\x6F\x20\x57\x6F\x72\x6C\x64\x00\x00\x00'
+                    b'\x00\x00')
+        self.stream = BytearrayStream(encoding)
         ts = TextString()
         ts.length = 0x0B
         ts.read_value(self.stream)
@@ -1025,8 +1025,8 @@ class TestTextString(TestCase):
                          self.bad_read.format('value', expected, ts.value))
 
     def test_read_value_no_padding(self):
-        encoding = ('\x48\x65\x6C\x6C\x6F\x20\x57\x6F')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x48\x65\x6C\x6C\x6F\x20\x57\x6F')
+        self.stream = BytearrayStream(encoding)
         ts = TextString()
         ts.length = 0x08
         ts.read_value(self.stream)
@@ -1036,8 +1036,8 @@ class TestTextString(TestCase):
                          self.bad_read.format('value', expected, ts.value))
 
     def test_read_value_max_padding(self):
-        encoding = ('\x48\x00\x00\x00\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x48\x00\x00\x00\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         ts = TextString()
         ts.length = 0x01
         ts.read_value(self.stream)
@@ -1047,9 +1047,9 @@ class TestTextString(TestCase):
                          self.bad_read.format('value', expected, ts.value))
 
     def test_read(self):
-        encoding = ('\x42\x00\x00\x07\x00\x00\x00\x0B\x48\x65\x6C\x6C\x6F\x20'
-                    '\x57\x6F\x72\x6C\x64\x00\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x07\x00\x00\x00\x0B\x48\x65\x6C\x6C\x6F\x20'
+                    b'\x57\x6F\x72\x6C\x64\x00\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         ts = TextString()
         ts.read(self.stream)
 
@@ -1058,16 +1058,16 @@ class TestTextString(TestCase):
                          self.bad_read.format('value', expected, ts.value))
 
     def test_read_on_invalid_padding(self):
-        encoding = ('\x42\x00\x00\x07\x00\x00\x00\x0B\x48\x65\x6C\x6C\x6F\x20'
-                    '\x57\x6F\x72\x6C\x64\xff\xff\xff\xff\xff')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x07\x00\x00\x00\x0B\x48\x65\x6C\x6C\x6F\x20'
+                    b'\x57\x6F\x72\x6C\x64\xff\xff\xff\xff\xff')
+        self.stream = BytearrayStream(encoding)
         ts = TextString()
 
         self.assertRaises(errors.ReadValueError, ts.read, self.stream)
 
     def test_write_value(self):
-        encoding = ('\x48\x65\x6C\x6C\x6F\x20\x57\x6F\x72\x6C\x64\x00\x00\x00'
-                    '\x00\x00')
+        encoding = (b'\x48\x65\x6C\x6C\x6F\x20\x57\x6F\x72\x6C\x64\x00\x00\x00'
+                    b'\x00\x00')
         self.stream = BytearrayStream()
         value = 'Hello World'
         ts = TextString(value)
@@ -1082,7 +1082,7 @@ class TestTextString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_no_padding(self):
-        encoding = ('\x48\x65\x6C\x6C\x6F\x20\x57\x6F')
+        encoding = (b'\x48\x65\x6C\x6C\x6F\x20\x57\x6F')
         self.stream = BytearrayStream()
         value = 'Hello Wo'
         ts = TextString(value)
@@ -1097,7 +1097,7 @@ class TestTextString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_max_padding(self):
-        encoding = ('\x48\x00\x00\x00\x00\x00\x00\x00')
+        encoding = (b'\x48\x00\x00\x00\x00\x00\x00\x00')
         self.stream = BytearrayStream()
         value = 'H'
         ts = TextString(value)
@@ -1112,8 +1112,8 @@ class TestTextString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write(self):
-        encoding = ('\x42\x00\x00\x07\x00\x00\x00\x0B\x48\x65\x6C\x6C\x6F\x20'
-                    '\x57\x6F\x72\x6C\x64\x00\x00\x00\x00\x00')
+        encoding = (b'\x42\x00\x00\x07\x00\x00\x00\x0B\x48\x65\x6C\x6C\x6F\x20'
+                    b'\x57\x6F\x72\x6C\x64\x00\x00\x00\x00\x00')
         self.stream = BytearrayStream()
         value = 'Hello World'
         ts = TextString(value)
@@ -1153,7 +1153,7 @@ class TestByteString(TestCase):
         super(self.__class__, self).tearDown()
 
     def test_init(self):
-        value = bytearray('\x01\x02\x03')
+        value = bytearray(b'\x01\x02\x03')
         bs = ByteString(value)
 
         self.assertIsInstance(bs.value, bytearray,
@@ -1173,7 +1173,7 @@ class TestByteString(TestCase):
 
     def test_validate_on_valid(self):
         bs = ByteString()
-        bs.value = bytearray('\x00')
+        bs.value = bytearray(b'\x00')
 
         # Check no exception thrown.
         bs.validate()
@@ -1191,72 +1191,72 @@ class TestByteString(TestCase):
         self.assertRaises(TypeError, bs.validate)
 
     def test_read_value(self):
-        encoding = ('\x01\x02\x03\x00\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x01\x02\x03\x00\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         bs = ByteString()
         bs.length = 0x03
         bs.read_value(self.stream)
 
-        expected = bytearray('\x01\x02\x03')
+        expected = b'\x01\x02\x03'
         self.assertEqual(expected, bs.value,
                          self.bad_read.format('value', expected, bs.value))
 
     def test_read_value_no_padding(self):
-        encoding = ('\x01\x02\x03\x04\x05\x06\x07\x08')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x01\x02\x03\x04\x05\x06\x07\x08')
+        self.stream = BytearrayStream(encoding)
         bs = ByteString()
         bs.length = 0x08
         bs.read_value(self.stream)
 
-        expected = bytearray('\x01\x02\x03\x04\x05\x06\x07\x08')
+        expected = b'\x01\x02\x03\x04\x05\x06\x07\x08'
         self.assertEqual(expected, bs.value,
                          self.bad_read.format('value', expected, bs.value))
 
     def test_read_value_max_padding(self):
-        encoding = ('\x01\x00\x00\x00\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x01\x00\x00\x00\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         bs = ByteString()
         bs.length = 0x01
         bs.read_value(self.stream)
 
-        expected = bytearray('\x01')
+        expected = bytearray(b'\x01')
         self.assertEqual(expected, bs.value,
                          self.bad_read.format('value', expected, bs.value))
 
     def test_read_value_zero(self):
-        encoding = ('\x00\x00\x00\x00\x00\x00\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x00')
+        self.stream = BytearrayStream(encoding)
         bs = ByteString()
         bs.length = 0x01
         bs.read_value(self.stream)
 
-        expected = bytearray('\x00')
+        expected = bytearray(b'\x00')
         self.assertEqual(expected, bs.value,
                          self.bad_read.format('value', expected, bs.value))
 
     def test_read(self):
-        encoding = ('\x42\x00\x00\x08\x00\x00\x00\x03\x01\x02\x03\x00\x00\x00'
-                    '\x00\x00')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x08\x00\x00\x00\x03\x01\x02\x03\x00\x00\x00'
+                    b'\x00\x00')
+        self.stream = BytearrayStream(encoding)
         bs = ByteString()
         bs.read(self.stream)
 
-        expected = bytearray('\x01\x02\x03')
+        expected = bytearray(b'\x01\x02\x03')
         self.assertEqual(expected, bs.value,
                          self.bad_read.format('value', expected, bs.value))
 
     def test_read_on_invalid_padding(self):
-        encoding = ('\x42\x00\x00\x08\x00\x00\x00\x03\x01\x02\x03\xff\xff\xff'
-                    '\xff\xff')
-        self.stream = BytearrayStream(str(encoding))
+        encoding = (b'\x42\x00\x00\x08\x00\x00\x00\x03\x01\x02\x03\xff\xff\xff'
+                    b'\xff\xff')
+        self.stream = BytearrayStream(encoding)
         bs = ByteString()
 
         self.assertRaises(errors.ReadValueError, bs.read, self.stream)
 
     def test_write_value(self):
-        encoding = ('\x01\x02\x03\x00\x00\x00\x00\x00')
+        encoding = (b'\x01\x02\x03\x00\x00\x00\x00\x00')
         self.stream = BytearrayStream()
-        value = bytearray('\x01\x02\x03')
+        value = bytearray(b'\x01\x02\x03')
         bs = ByteString(value)
         bs.write_value(self.stream)
 
@@ -1269,9 +1269,9 @@ class TestByteString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_no_padding(self):
-        encoding = ('\x01\x02\x03\x04\x05\x06\x07\x08')
+        encoding = (b'\x01\x02\x03\x04\x05\x06\x07\x08')
         self.stream = BytearrayStream()
-        value = bytearray('\x01\x02\x03\x04\x05\x06\x07\x08')
+        value = bytearray(b'\x01\x02\x03\x04\x05\x06\x07\x08')
         bs = ByteString(value)
         bs.write_value(self.stream)
 
@@ -1284,9 +1284,9 @@ class TestByteString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_max_padding(self):
-        encoding = ('\x01\x00\x00\x00\x00\x00\x00\x00')
+        encoding = (b'\x01\x00\x00\x00\x00\x00\x00\x00')
         self.stream = BytearrayStream()
-        value = bytearray('\x01')
+        value = bytearray(b'\x01')
         bs = ByteString(value)
         bs.write_value(self.stream)
 
@@ -1299,9 +1299,9 @@ class TestByteString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_zero(self):
-        encoding = ('\x00\x00\x00\x00\x00\x00\x00\x00')
+        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x00')
         self.stream = BytearrayStream()
-        value = bytearray('\x00')
+        value = bytearray(b'\x00')
         bs = ByteString(value)
         bs.write_value(self.stream)
 
@@ -1314,10 +1314,10 @@ class TestByteString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write(self):
-        encoding = ('\x42\x00\x00\x08\x00\x00\x00\x03\x01\x02\x03\x00\x00\x00'
-                    '\x00\x00')
+        encoding = (b'\x42\x00\x00\x08\x00\x00\x00\x03\x01\x02\x03\x00\x00\x00'
+                    b'\x00\x00')
         self.stream = BytearrayStream()
-        value = bytearray('\x01\x02\x03')
+        value = bytearray(b'\x01\x02\x03')
         bs = ByteString(value)
         bs.write(self.stream)
 

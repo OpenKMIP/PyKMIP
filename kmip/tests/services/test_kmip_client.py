@@ -74,7 +74,7 @@ class TestKMIPClient(TestCase):
         try:
             self.client = KMIPProxy(port=self.KMIP_PORT)
             self.client.open()
-        except Exception, e:
+        except Exception as e:
             self._shutdown_server()
             raise e
 
@@ -195,8 +195,8 @@ class TestKMIPClient(TestCase):
         key_format_type = KeyFormatType.RAW
         secret_features.update([('key_format_type', key_format_type)])
 
-        key_data = {'bytes': bytearray('\x00\x00\x00\x00\x00\x00\x00\x00'
-                                       '\x00\x00\x00\x00\x00\x00\x00\x00')}
+        key_data = {'bytes': bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00'
+                                       b'\x00\x00\x00\x00\x00\x00\x00\x00')}
 
         secret_features.update([('key_value', key_data)])
         secret_features.update([('cryptographic_algorithm', algorithm_value)])
@@ -333,7 +333,7 @@ class TestKMIPClient(TestCase):
         message = utils.build_er_error(TemplateAttribute.__class__, 'number',
                                        expected, observed, 'attributes')
 
-        for i in xrange(num_attributes):
+        for i in range(num_attributes):
             features = attribute_features[i]
             self._check_attribute(attributes[i], features[0], features[1],
                                   features[2], features[3])

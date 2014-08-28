@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import sys
+
 from struct import pack, unpack
 from enum import Enum
 
@@ -21,8 +23,8 @@ from kmip.core.enums import Tags
 
 from kmip.core.errors import ErrorStrings
 
-import errors
-import utils
+from kmip.core import errors
+from kmip.core import utils
 
 
 class Base(object):
@@ -45,7 +47,7 @@ class Base(object):
     def read_tag(self, istream):
         # Read in the bytes for the tag
         tts = istream.read(self.TAG_SIZE)
-        tag = unpack('!I', '\x00' + tts[0:self.TAG_SIZE])[0]
+        tag = unpack('!I', b'\x00' + tts[0:self.TAG_SIZE])[0]
 
         enum_tag = Tags(tag)
 
@@ -134,7 +136,7 @@ class Base(object):
         next_tag = stream.peek(Base.TAG_SIZE)
         if len(next_tag) != Base.TAG_SIZE:
             return False
-        next_tag = unpack('!I', '\x00' + next_tag)[0]
+        next_tag = unpack('!I', b'\x00' + next_tag)[0]
         if next_tag == tag.value:
             return True
         else:
@@ -182,8 +184,8 @@ class Integer(Base):
             raise errors.ReadValueError(Integer.__name__, 'length',
                                         self.LENGTH, self.length)
 
-        self.value = unpack('!i', str(istream.read(self.length)))[0]
-        pad = unpack('!i', str(istream.read(self.padding_length)))[0]
+        self.value = unpack('!i', istream.read(self.length))[0]
+        pad = unpack('!i', istream.read(self.padding_length))[0]
 
         if pad is not 0:
             raise errors.ReadValueError(Integer.__name__, 'pad', 0,
@@ -236,7 +238,7 @@ class LongInteger(Base):
             raise errors.ReadValueError(LongInteger.__name__, 'length',
                                         self.LENGTH, self.length)
 
-        self.value = unpack('!q', str(istream.read(self.length)))[0]
+        self.value = unpack('!q', istream.read(self.length))[0]
         self.validate()
 
     def read(self, istream):
@@ -256,9 +258,15 @@ class LongInteger(Base):
     def __validate(self):
         if self.value is not None:
             data_type = type(self.value)
-            if data_type not in (int, long):
+            if sys.version < '3':
+                valid_data_types = (int, long)
+                error_msg = '{0} or {1}'.format(int, long)
+            else:
+                valid_data_types = (int,)
+                error_msg = '{0}'.format(int)
+            if data_type not in valid_data_types:
                 raise errors.StateTypeError(LongInteger.__name__,
-                                            '{0} or {1}'.format(int, long),
+                                            error_msg,
                                             data_type)
             num_bytes = utils.count_bytes(self.value)
             if num_bytes > self.length:
@@ -303,7 +311,7 @@ class BigInteger(Base):
         self.value = unpack('!q', str(istream.read(self.BLOCK_SIZE)))[0]
 
         # Shift current value and add on next unsigned block
-        for _ in xrange(num_blocks - 1):
+        for _ in range(num_blocks - 1):
             self.value = self.value << self.SHIFT_SIZE
             stream_data = istream.read(self.BLOCK_SIZE)
             self.value += unpack('!Q', stream_data)[0]
@@ -330,7 +338,7 @@ class BigInteger(Base):
 
         # Compose padding bytes
         pad = ''
-        for _ in xrange(self.padding_length):
+        for _ in range(self.padding_length):
             pad += hex(pad_byte)[2:]
 
         str_rep = hex(self.value).rstrip("Ll")[2:]
@@ -346,7 +354,7 @@ class BigInteger(Base):
         ostream.write(pack('!q', block))
 
         # Write remaining blocks as unsigned data
-        for i in xrange(1, num_blocks):
+        for i in range(1, num_blocks):
             block = str_rep[(self.BLOCK_SIZE * i):(self.BLOCK_SIZE * (i + 1))]
             block = int(block, 16)
             ostream.write(pack('!Q', block))
@@ -425,7 +433,7 @@ class Boolean(Base):
             raise errors.ReadValueError(Boolean.__name__, 'value',
                                         value)
 
-        for _ in xrange(self.length):
+        for _ in range(self.length):
             istream.pop(0)
 
     def read(self, istream):
@@ -487,15 +495,18 @@ class TextString(Base):
     def read_value(self, istream):
         # Read string text
         self.value = ''
-        for _ in xrange(self.length):
-            self.value += unpack(self.BYTE_FORMAT, str(istream.read(1)))[0]
+        for _ in range(self.length):
+            c = unpack(self.BYTE_FORMAT, istream.read(1))[0]
+            if sys.version >= '3':
+                c = c.decode()
+            self.value += c
 
         # Read padding and check content
         self.padding_length = self.PADDING_SIZE - (self.length %
                                                    self.PADDING_SIZE)
         if self.padding_length < self.PADDING_SIZE:
-            for _ in xrange(self.padding_length):
-                pad = unpack('!B', str(istream.read(1)))[0]
+            for _ in range(self.padding_length):
+                pad = unpack('!B', istream.read(1))[0]
                 if pad is not 0:
                     raise errors.ReadValueError(TextString.__name__, 'pad', 0,
                                                 pad)
@@ -508,10 +519,14 @@ class TextString(Base):
     def write_value(self, ostream):
         # Write string to stream
         for char in self.value:
-            ostream.write(pack(self.BYTE_FORMAT, char))
+            if sys.version < '3':
+                c = char
+            else:
+                c = char.encode()
+            ostream.write(pack(self.BYTE_FORMAT, c))
 
         # Write padding to stream
-        for _ in xrange(self.padding_length):
+        for _ in range(self.padding_length):
             ostream.write(pack('!B', 0))
 
     def write(self, ostream):
@@ -556,8 +571,8 @@ class ByteString(Base):
     def read_value(self, istream):
         # Read bytes into bytearray
         self.value = bytearray()
-        for _ in xrange(self.length):
-            self.value.append(istream.read(1))
+        for _ in range(self.length):
+            self.value.append(istream.read(1)[0])
 
         # Read padding and check content
         self.padding_length = self.PADDING_SIZE - (self.length %
@@ -566,8 +581,8 @@ class ByteString(Base):
             self.padding_length = 0
 
         if self.padding_length < self.PADDING_SIZE:
-            for _ in xrange(self.padding_length):
-                pad = unpack('!B', str(istream.read(1)))[0]
+            for _ in range(self.padding_length):
+                pad = unpack('!B', istream.read(1))[0]
                 if pad is not 0:
                     raise errors.ReadValueError(TextString.__name__, 'pad', 0,
                                                 pad)
@@ -582,7 +597,7 @@ class ByteString(Base):
             ostream.write(pack(self.BYTE_FORMAT, byte))
 
         # Write padding to stream
-        for _ in xrange(self.padding_length):
+        for _ in range(self.padding_length):
             ostream.write(pack('!B', 0))
 
     def write(self, ostream):
