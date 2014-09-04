@@ -47,6 +47,7 @@ from kmip.services.results import DestroyResult
 from kmip.services.results import GetResult
 from kmip.services.results import OperationResult
 from kmip.services.results import RegisterResult
+from kmip.services.results import LocateResult
 
 
 class KMIP(object):
@@ -66,6 +67,11 @@ class KMIP(object):
         raise NotImplementedError
 
     def destroy(self, uuid, credential=None):
+        raise NotImplementedError
+
+    def locate(self, maximum_items=None, storate_status_mask=None,
+               object_group_member=None, attributes=None,
+               credential=None):
         raise NotImplementedError
 
 
@@ -247,6 +253,17 @@ class KMIPImpl(KMIP):
 
         ret_value = RS.SUCCESS
         return DestroyResult(ResultStatus(ret_value), uuid=uuid)
+
+    def locate(self, maximum_items=None, storage_status_mask=None,
+               object_group_member=None, attributes=None,
+               credential=None):
+        self.logger.debug('locate() called')
+        msg = 'locating object(s) from repo'
+        self.logger.debug(msg)
+        uuids = self.repo.locate(maximum_items, storage_status_mask,
+                                 object_group_member, attributes)
+        return LocateResult(ResultStatus(RS.SUCCESS),
+                            locate_uuids=uuids)
 
     def _validate_req_field(self, attrs, name, expected, msg, required=True):
         self.logger.debug('Validating attribute %s' % name)

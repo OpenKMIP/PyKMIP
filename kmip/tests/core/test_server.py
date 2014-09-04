@@ -20,6 +20,7 @@ from kmip.core.attributes import CryptographicLength
 from kmip.core.attributes import CryptographicUsageMask
 from kmip.core.attributes import UniqueIdentifier
 from kmip.core.attributes import ObjectType
+from kmip.core.attributes import Name
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask as CryptoUsageMaskEnum
@@ -28,6 +29,7 @@ from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import ObjectType as ObjectTypeEnum
 from kmip.core.enums import ResultReason
 from kmip.core.enums import ResultStatus
+from kmip.core.enums import NameType
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.keys import RawKey
 from kmip.core.messages.contents import KeyCompressionType
@@ -35,6 +37,7 @@ from kmip.core.messages.contents import KeyFormatType
 from kmip.core.objects import KeyBlock
 from kmip.core.objects import KeyValueStruct
 from kmip.core.objects import TemplateAttribute
+from kmip.core.objects import Attribute
 from kmip.core.secrets import SymmetricKey
 from kmip.core.server import KMIPImpl
 
@@ -474,6 +477,14 @@ class TestKMIPServer(TestCase):
                              crypto_length, usage)
         return SymmetricKey(key_block)
 
+    def _make_nameattr(self):
+        name = Attribute.AttributeName('Name')
+        name_value = Name.NameValue('TESTNAME')
+        name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
+        value = Name(name_value=name_value, name_type=name_type)
+        nameattr = Attribute(attribute_name=name, attribute_value=value)
+        return nameattr
+
     def _get_attrs(self):
         attr_factory = AttributeFactory()
         algorithm = self._get_alg_attr(self.algorithm_name)
@@ -483,7 +494,8 @@ class TestKMIPServer(TestCase):
                       CryptoUsageMaskEnum.DECRYPT]
         usage_mask = attr_factory.create_attribute(attribute_type,
                                                    mask_flags)
-        return [algorithm, usage_mask, length]
+        nameattr = self._make_nameattr()
+        return [algorithm, usage_mask, length, nameattr]
 
     def _get_alg_attr(self, alg=None):
         if alg is None:
@@ -506,3 +518,10 @@ class TestKMIPServer(TestCase):
                 return attribute.attribute_value.value ==\
                     attr_expected.attribute_value.value
         return False
+
+    def test_locate(self):
+        self._create()
+        attrs = [self._make_nameattr()]
+        res = self.kmip.locate(attributes=attrs)
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+                         'locate result status did not return success')

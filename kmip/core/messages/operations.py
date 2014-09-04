@@ -24,6 +24,7 @@ from kmip.core.objects import TemplateAttribute
 
 from kmip.core.primitives import Struct
 from kmip.core.primitives import Enumeration
+from kmip.core.primitives import Integer
 
 from kmip.core.utils import BytearrayStream
 
@@ -429,11 +430,125 @@ class DestroyResponsePayload(Struct):
         pass
 
 
+class LocateRequestPayload(Struct):
+
+    # 9.1.3.2.33
+    class ObjectGroupMember(Enumeration):
+        ENUM_TYPE = enums.ObjectGroupMember
+
+        def __init__(self, value=None):
+            super(self.__class__, self).__init__(value,
+                                                 Tags.OBJECT_GROUP_MEMBER)
+
+    class MaximumItems(Integer):
+        def __init__(self, value=None):
+            super(self.__class__, self).__init__(value,
+                                                 Tags.MAXIMUM_ITEMS)
+
+    # 9.1.3.3.2
+    class StorageStatusMask(Enumeration):
+        ENUM_TYPE = enums.StorageStatusMask
+
+        def __init__(self, value=None):
+            super(self.__class__, self).__init__(value,
+                                                 Tags.STORAGE_STATUS_MASK)
+
+    def __init__(self, maximum_items=None, storage_status_mask=None,
+                 object_group_member=None, attributes=None):
+        super(self.__class__, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+        self.maximum_items = maximum_items
+        self.storage_status_mask = storage_status_mask
+        self.object_group_member = object_group_member
+        self.attributes = attributes or []
+        self.validate()
+
+    def read(self, istream):
+        super(self.__class__, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+        if self.is_tag_next(Tags.MAXIMUM_ITEMS, tstream):
+            self.maximum_items = LocateRequestPayload.MaximumItems()
+            self.maximum_items.read()
+        if self.is_tag_next(Tags.STORAGE_STATUS_MASK, tstream):
+            self.storage_status_mask = LocateRequestPayload.StorageStatusMask()
+            self.storage_status_mask.read()
+        if self.is_tag_next(Tags.OBJECT_GROUP_MEMBER, tstream):
+            self.object_group_member = LocateRequestPayload.ObjectGroupMember()
+            self.object_group_member.read(tstream)
+        while self.is_tag_next(Tags.TEMPLATE_ATTRIBUTE, tstream):
+            attr = TemplateAttribute()
+            attr.read(tstream)
+            self.attributes.append(attr)
+
+        self.validate()
+
+    def write(self, ostream):
+        tstream = BytearrayStream()
+        if self.maximum_items is not None:
+            self.maximum_items.write(tstream)
+        if self.storage_status_mask is not None:
+            self.storage_status_mask.write(tstream)
+        if self.attributes is not None:
+            for a in self.attributes:
+                a.write(tstream)
+
+        # Write the length and value of the request payload
+        self.length = tstream.length()
+        super(self.__class__, self).write(ostream)
+        ostream.write(tstream.buffer)
+
+    def validate(self):
+        self._validate()
+
+    def _validate(self):
+        # TODO Finish implementation.
+        pass
+
+
+class LocateResponsePayload(Struct):
+
+    def __init__(self, unique_identifiers=[]):
+        super(self.__class__, self).__init__(enums.Tags.RESPONSE_PAYLOAD)
+        self.unique_identifiers = unique_identifiers or []
+        self.validate()
+
+    def read(self, istream):
+        super(self.__class__, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+
+        while self.is_tag_next(Tags.UNIQUE_IDENTIFIER, tstream):
+            ui = attributes.UniqueIdentifier()
+            ui.read(tstream)
+            self.unique_identifiers.append(ui)
+
+        self.is_oversized(tstream)
+        self.validate()
+
+    def write(self, ostream):
+        tstream = BytearrayStream()
+
+        for ui in self.unique_identifier:
+            ui.write(tstream)
+
+        # Write the length and value of the request payload
+        self.length = tstream.length()
+        super(self.__class__, self).write(ostream)
+        ostream.write(tstream.buffer)
+
+    def validate(self):
+        self.__validate()
+
+    def __validate(self):
+        # TODO (peter-hamilton) Finish implementation.
+        pass
+
+
 REQUEST_MAP = {enums.Operation.CREATE: CreateRequestPayload,
                enums.Operation.GET: GetRequestPayload,
                enums.Operation.DESTROY: DestroyRequestPayload,
-               enums.Operation.REGISTER: RegisterRequestPayload}
+               enums.Operation.REGISTER: RegisterRequestPayload,
+               enums.Operation.LOCATE: LocateRequestPayload}
 RESPONSE_MAP = {enums.Operation.CREATE: CreateResponsePayload,
                 enums.Operation.GET: GetResponsePayload,
+                enums.Operation.REGISTER: RegisterResponsePayload,
                 enums.Operation.DESTROY: DestroyResponsePayload,
-                enums.Operation.REGISTER: RegisterResponsePayload}
+                enums.Operation.LOCATE: LocateResponsePayload}

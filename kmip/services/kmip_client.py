@@ -17,6 +17,7 @@ from kmip.services.results import CreateResult
 from kmip.services.results import GetResult
 from kmip.services.results import DestroyResult
 from kmip.services.results import RegisterResult
+from kmip.services.results import LocateResult
 
 from kmip.core import attributes as attr
 
@@ -92,6 +93,13 @@ class KMIPProxy(KMIP):
                               template_attribute=template_attribute,
                               secret=secret,
                               credential=credential)
+
+    def locate(self, maximum_items=None, storage_status_mask=None,
+               object_group_member=None, attributes=None, credential=None):
+        return self._locate(maximum_items=maximum_items,
+                            storage_status_mask=storage_status_mask,
+                            object_group_member=object_group_member,
+                            attributes=attributes, credential=credential)
 
     def _create(self,
                 object_type=None,
@@ -261,6 +269,53 @@ class KMIPProxy(KMIP):
                                 batch_item.result_message,
                                 payload_unique_identifier,
                                 payload_template_attribute)
+        return result
+
+    def _locate(self, maximum_items=None, storage_status_mask=None,
+                object_group_member=None, attributes=[], credential=None):
+
+        operation = Operation(OperationEnum.LOCATE)
+
+        mxi = None
+        ssmask = None
+        objgrp = None
+
+        if maximum_items is not None:
+            mxi = operations.LocateRequestPayload.MaximumItems(maximum_items)
+        if storage_status_mask is not None:
+            m = storage_status_mask
+            ssmask = operations.LocateRequestPayload.StorageStatusMask(m)
+        if object_group_member is not None:
+            o = object_group_member
+            objgrp = operations.LocateRequestPayload.ObjectGroupMember(o)
+
+        payload = operations.LocateRequestPayload(maximum_items=mxi,
+                                                  storage_status_mask=ssmask,
+                                                  object_group_member=objgrp,
+                                                  attributes=attributes)
+
+        batch_item = messages.RequestBatchItem(operation=operation,
+                                               request_payload=payload)
+
+        message = self._build_request_message(credential, [batch_item])
+        self._send_message(message)
+        message = messages.ResponseMessage()
+        data = self._receive_message()
+
+        message.read(data)
+        batch_items = message.batch_items
+        batch_item = batch_items[0]
+        payload = batch_item.response_payload
+
+        if payload is None:
+            locate_uuids = None
+        else:
+            locate_uuids = payload.unique_identifiers
+
+        result = LocateResult(batch_item.result_status,
+                              batch_item.result_reason,
+                              batch_item.result_message,
+                              locate_uuids)
         return result
 
     def _build_request_message(self, credential, batch_items):
