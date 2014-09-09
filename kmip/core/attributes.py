@@ -25,6 +25,7 @@ from kmip.core.primitives import Enumeration
 from kmip.core.primitives import TextString
 
 from kmip.core.utils import BytearrayStream
+from enum import Enum
 
 
 # 3.1
@@ -54,6 +55,7 @@ class Name(Struct):
         super(self.__class__, self).__init__(tag=Tags.NAME)
         self.name_value = name_value
         self.name_type = name_type
+        self.validate()
 
     def read(self, istream):
         super(self.__class__, self).read(istream)
@@ -88,8 +90,16 @@ class Name(Struct):
 
     @classmethod
     def create(cls, name_value, name_type):
-        value = cls.NameValue(name_value)
-        n_type = cls.NameType(name_type)
+        if isinstance(name_value, Name.NameValue):
+            value = name_value
+        elif isinstance(name_value, str):
+            value = cls.NameValue(name_value)
+
+        if isinstance(name_type, Name.NameType):
+            n_type = name_type
+        elif isinstance(name_type, Enum):
+            n_type = cls.NameType(name_type)
+
         return Name(name_value=value,
                     name_type=n_type)
 

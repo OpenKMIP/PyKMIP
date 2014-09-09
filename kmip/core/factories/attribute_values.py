@@ -24,6 +24,7 @@ from kmip.core.attributes import CustomAttribute
 from kmip.core.attributes import Name
 from kmip.core.attributes import ObjectGroup
 from kmip.core.attributes import UniqueIdentifier
+from kmip.core.attributes import ObjectType
 
 from kmip.core import utils
 
@@ -125,15 +126,15 @@ class AttributeValueFactory(object):
 
     def _create_name(self, name):
         if name is not None:
-            name_value = name.get('name_value')
-            name_type = name.get('name_type')
+            name_value = name.name_value
+            name_type = name.name_type
 
             return Name.create(name_value, name_type)
         else:
             return Name()
 
     def _create_object_type(self, obj):
-        raise NotImplementedError()
+        return ObjectType()
 
     def _create_cryptographic_algorithm(self, alg):
         return CryptographicAlgorithm(alg)

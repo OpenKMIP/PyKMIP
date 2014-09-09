@@ -262,8 +262,7 @@ class KMIPImpl(KMIP):
         self.logger.debug(msg)
         uuids = self.repo.locate(maximum_items, storage_status_mask,
                                  object_group_member, attributes)
-        return LocateResult(ResultStatus(RS.SUCCESS),
-                            locate_uuids=uuids)
+        return LocateResult(ResultStatus(RS.SUCCESS), uuids=uuids)
 
     def _validate_req_field(self, attrs, name, expected, msg, required=True):
         self.logger.debug('Validating attribute %s' % name)

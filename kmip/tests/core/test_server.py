@@ -37,7 +37,6 @@ from kmip.core.messages.contents import KeyFormatType
 from kmip.core.objects import KeyBlock
 from kmip.core.objects import KeyValueStruct
 from kmip.core.objects import TemplateAttribute
-from kmip.core.objects import Attribute
 from kmip.core.secrets import SymmetricKey
 from kmip.core.server import KMIPImpl
 
@@ -477,14 +476,6 @@ class TestKMIPServer(TestCase):
                              crypto_length, usage)
         return SymmetricKey(key_block)
 
-    def _make_nameattr(self):
-        name = Attribute.AttributeName('Name')
-        name_value = Name.NameValue('TESTNAME')
-        name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
-        value = Name(name_value=name_value, name_type=name_type)
-        nameattr = Attribute(attribute_name=name, attribute_value=value)
-        return nameattr
-
     def _get_attrs(self):
         attr_factory = AttributeFactory()
         algorithm = self._get_alg_attr(self.algorithm_name)
@@ -494,7 +485,10 @@ class TestKMIPServer(TestCase):
                       CryptoUsageMaskEnum.DECRYPT]
         usage_mask = attr_factory.create_attribute(attribute_type,
                                                    mask_flags)
-        nameattr = self._make_nameattr()
+        name_value = Name.NameValue(value='TESTNAME')
+        name_type = Name.NameType(value=NameType.UNINTERPRETED_TEXT_STRING)
+        value = Name.create(name_value, name_type)
+        nameattr = attr_factory.create_attribute(AttributeType.NAME, value)
         return [algorithm, usage_mask, length, nameattr]
 
     def _get_alg_attr(self, alg=None):
@@ -521,7 +515,15 @@ class TestKMIPServer(TestCase):
 
     def test_locate(self):
         self._create()
-        attrs = [self._make_nameattr()]
+
+        name_value = Name.NameValue(value='TESTNAME')
+        name_type = Name.NameType(value=NameType.UNINTERPRETED_TEXT_STRING)
+        value = Name.create(name_value, name_type)
+
+        attr_factory = AttributeFactory()
+        nameattr = attr_factory.create_attribute(AttributeType.NAME, value)
+
+        attrs = [nameattr]
         res = self.kmip.locate(attributes=attrs)
         self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
                          'locate result status did not return success')

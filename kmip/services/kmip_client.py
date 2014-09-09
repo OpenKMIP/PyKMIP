@@ -308,14 +308,14 @@ class KMIPProxy(KMIP):
         payload = batch_item.response_payload
 
         if payload is None:
-            locate_uuids = None
+            uuids = None
         else:
-            locate_uuids = payload.unique_identifiers
+            uuids = payload.unique_identifiers
 
         result = LocateResult(batch_item.result_status,
                               batch_item.result_reason,
                               batch_item.result_message,
-                              locate_uuids)
+                              uuids)
         return result
 
     def _build_request_message(self, credential, batch_items):

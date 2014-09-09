@@ -269,7 +269,7 @@ class Processor(object):
         result_reason = result.result_reason
         result_message = result.result_message
 
-        uuids = result.locate_uuids
+        uuids = result.uuids
 
         resp_pl = LocateResponsePayload(unique_identifiers=uuids)
 

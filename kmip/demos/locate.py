@@ -16,6 +16,7 @@
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CredentialType
 from kmip.core.enums import ObjectType
+from kmip.core.enums import ResultStatus
 from kmip.core.enums import CryptographicAlgorithm
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import NameType
@@ -73,6 +74,10 @@ if __name__ == '__main__':
     result = client.locate(attributes=attrs, credential=credential)
     client.close()
 
-    logger.debug('get() result status: {}'.format(result.result_status.enum))
-    logger.debug('retrieved object type: {}'.format(result.object_type.enum))
-    logger.debug('Located UUID: {}'.format(result.locate_uuids))
+    logger.debug('locate() result status: {}'.
+                 format(result.result_status.enum))
+    if result.result_status.enum == ResultStatus.SUCCESS:
+        logger.debug('retrieved object type: {}'.
+                     format(result.object_type.enum))
+        logger.debug('Located UUIDs: {}'.format(','.join([u.value for u in
+                                                          result.uuids])))

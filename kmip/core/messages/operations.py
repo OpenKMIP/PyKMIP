@@ -21,6 +21,7 @@ from kmip.core.enums import Tags
 
 from kmip.core.objects import KeyWrappingSpecification
 from kmip.core.objects import TemplateAttribute
+from kmip.core.objects import Attribute
 
 from kmip.core.primitives import Struct
 from kmip.core.primitives import Enumeration
@@ -474,8 +475,8 @@ class LocateRequestPayload(Struct):
         if self.is_tag_next(Tags.OBJECT_GROUP_MEMBER, tstream):
             self.object_group_member = LocateRequestPayload.ObjectGroupMember()
             self.object_group_member.read(tstream)
-        while self.is_tag_next(Tags.TEMPLATE_ATTRIBUTE, tstream):
-            attr = TemplateAttribute()
+        while self.is_tag_next(Tags.ATTRIBUTE, tstream):
+            attr = Attribute()
             attr.read(tstream)
             self.attributes.append(attr)
 
@@ -526,7 +527,7 @@ class LocateResponsePayload(Struct):
     def write(self, ostream):
         tstream = BytearrayStream()
 
-        for ui in self.unique_identifier:
+        for ui in self.unique_identifiers:
             ui.write(tstream)
 
         # Write the length and value of the request payload

@@ -133,8 +133,8 @@ class LocateResult(OperationResult):
                  result_status,
                  result_reason=None,
                  result_message=None,
-                 locate_uuids=None):
+                 uuids=None):
         super(self.__class__, self).__init__(result_status,
                                              result_reason,
                                              result_message)
-        self.locate_uuids = locate_uuids
+        self.uuids = uuids
