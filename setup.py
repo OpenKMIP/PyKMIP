@@ -26,6 +26,10 @@ setuptools.setup(
     license='Apache License, Version 2.0',
     packages=setuptools.find_packages(exclude=["kmip.tests", "kmip.tests.*"]),
     package_data={'kmip': ['logconfig.ini']},
+    install_requires=[
+        "enum34",
+        "sqlalchemy",
+    ],
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
