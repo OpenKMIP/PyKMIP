@@ -48,7 +48,4 @@ class MemRepo(ManagedObjectRepo):
 
     def locate(self, maximum_items, storage_status_mask,
                object_group_member, attributes):
-        # TODO - search objects, find one with matching attrs
-        if "1" in self.repo:
-            return [self.repo["1"]]
-        return None
+        raise NotImplementedError

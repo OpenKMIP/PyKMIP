@@ -260,9 +260,16 @@ class KMIPImpl(KMIP):
         self.logger.debug('locate() called')
         msg = 'locating object(s) from repo'
         self.logger.debug(msg)
-        uuids = self.repo.locate(maximum_items, storage_status_mask,
-                                 object_group_member, attributes)
-        return LocateResult(ResultStatus(RS.SUCCESS), uuids=uuids)
+        try:
+            uuids = self.repo.locate(maximum_items, storage_status_mask,
+                                     object_group_member, attributes)
+            return LocateResult(ResultStatus(RS.SUCCESS), uuids=uuids)
+        except NotImplementedError:
+            msg = ResultMessage('Locate Operation Not Supported'))
+            reason = ResultReason(ResultReasonEnum.OPERATION_NOT_SUPPORTED)
+            return LocateResult(ResultStatus(RS.OPERATION_FAILED),
+                                result_reason=reason,
+                                result_message=msg)
 
     def _validate_req_field(self, attrs, name, expected, msg, required=True):
         self.logger.debug('Validating attribute %s' % name)
