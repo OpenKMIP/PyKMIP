@@ -265,7 +265,7 @@ class KMIPImpl(KMIP):
                                      object_group_member, attributes)
             return LocateResult(ResultStatus(RS.SUCCESS), uuids=uuids)
         except NotImplementedError:
-            msg = ResultMessage('Locate Operation Not Supported'))
+            msg = ResultMessage('Locate Operation Not Supported')
             reason = ResultReason(ResultReasonEnum.OPERATION_NOT_SUPPORTED)
             return LocateResult(ResultStatus(RS.OPERATION_FAILED),
                                 result_reason=reason,

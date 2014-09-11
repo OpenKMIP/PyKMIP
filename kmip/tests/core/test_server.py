@@ -525,5 +525,5 @@ class TestKMIPServer(TestCase):
 
         attrs = [nameattr]
         res = self.kmip.locate(attributes=attrs)
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.OPERATION_FAILED, res.result_status.enum,
                          'locate result status did not return success')

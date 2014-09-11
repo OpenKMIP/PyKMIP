@@ -86,20 +86,21 @@ class Name(Struct):
 
     def __validate(self):
         name = self.__class__.__name__
+        msg = ErrorStrings.BAD_EXP_RECV
         if self.name_value and \
                 not isinstance(self.name_value, Name.NameValue) and \
                 not isinstance(self.name_value, str):
             member = 'name_value'
             raise TypeError(msg.format('{}.{}'.format(name, member),
-                           'name_value', type(Name.NameValue),
-                           type(name_type)))
+                            'name_value', type(Name.NameValue),
+                            type(self.name_value)))
         if self.name_type and \
                 not isinstance(self.name_type, Name.NameType) and \
                 not isinstance(self.name_type, str):
             member = 'name_type'
             raise TypeError(msg.format('{}.{}'.format(name, member),
-                           'name_type', type(Name.NameType),
-                           type(self.name_type)))
+                            'name_type', type(Name.NameType),
+                            type(self.name_type)))
 
     @classmethod
     def create(cls, name_value, name_type):
