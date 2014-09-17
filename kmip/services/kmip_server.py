@@ -13,10 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
 import os
 import socket
 import ssl
 
+from kmip.core.config_helper import ConfigHelper
 from kmip.core.server import KMIPImpl
 
 from kmip.services.kmip_protocol import KMIPProtocolFactory
@@ -26,16 +28,22 @@ FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 class KMIPServer(object):
-    def __init__(self, host='127.0.0.1', port=5696,
-                 cert_file=None, key_file=None):
+
+    def __init__(self, host=None, port=None, keyfile=None, certfile=None,
+                 cert_reqs=None, ssl_version=None, ca_certs=None,
+                 do_handshake_on_connect=None, suppress_ragged_eofs=None):
+        self.logger = logging.getLogger(__name__)
+
+        self._set_variables(host, port, keyfile, certfile, cert_reqs,
+                            ssl_version, ca_certs, do_handshake_on_connect,
+                            suppress_ragged_eofs)
+
         handler = KMIPImpl()
         self._processor = Processor(handler)
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.bind((host, int(port)))
-        self.cert_file = cert_file
-        self.key_file = key_file
+        self.socket.bind((self.host, self.port))
 
     def close(self):
         self.socket.shutdown(socket.SHUT_RDWR)
@@ -45,11 +53,16 @@ class KMIPServer(object):
         self.socket.listen(0)
         while True:
             connection, address = self.socket.accept()
-            if self.cert_file and self.key_file:
-                connection = ssl.wrap_socket(connection,
-                                             server_side=True,
-                                             certfile=self.cert_file,
-                                             keyfile=self.key_file)
+            connection = ssl.wrap_socket(
+                connection,
+                keyfile=self.keyfile,
+                certfile=self.certfile,
+                server_side=True,
+                cert_reqs=self.cert_reqs,
+                ssl_version=self.ssl_version,
+                ca_certs=self.ca_certs,
+                do_handshake_on_connect=self.do_handshake_on_connect,
+                suppress_ragged_eofs=self.suppress_ragged_eofs)
 
             factory = KMIPProtocolFactory()
             protocol = factory.getProtocol(connection)
@@ -58,3 +71,40 @@ class KMIPServer(object):
                     self._processor.process(protocol, protocol)
             except Exception:
                 connection.close()
+
+    def _set_variables(self, host, port, keyfile, certfile, cert_reqs,
+                       ssl_version, ca_certs, do_handshake_on_connect,
+                       suppress_ragged_eofs):
+        conf = ConfigHelper()
+        self.host = conf.get_valid_value(host, 'server',
+                                         'host', conf.DEFAULT_HOST)
+        self.port = int(conf.get_valid_value(port, 'server',
+                                             'port', conf.DEFAULT_PORT))
+        self.keyfile = conf.get_valid_value(
+            keyfile, 'server', 'keyfile', conf.DEFAULT_CERTFILE)
+
+        self.certfile = conf.get_valid_value(
+            certfile, 'server', 'certfile', conf.DEFAULT_KEYFILE)
+
+        self.cert_reqs = getattr(ssl, conf.get_valid_value(
+            cert_reqs, 'server', 'cert_reqs', 'CERT_NONE'))
+
+        self.ssl_version = getattr(ssl, conf.get_valid_value(
+            ssl_version, 'server', 'ssl_version', conf.DEFAULT_SSL_VERSION))
+
+        self.ca_certs = conf.get_valid_value(
+            ca_certs, 'server', 'ca_certs', None)
+
+        if conf.get_valid_value(
+                do_handshake_on_connect, 'server',
+                'do_handshake_on_connect', 'True') == 'True':
+            self.do_handshake_on_connect = True
+        else:
+            self.do_handshake_on_connect = False
+
+        if conf.get_valid_value(
+                suppress_ragged_eofs, 'server',
+                'suppress_ragged_eofs', 'True') == 'True':
+            self.suppress_ragged_eofs = True
+        else:
+            self.suppress_ragged_eofs = False
