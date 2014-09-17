@@ -539,7 +539,7 @@ class LocateResponsePayload(Struct):
         self.__validate()
 
     def __validate(self):
-        # TODO (peter-hamilton) Finish implementation.
+        # TODO Finish implementation.
         pass
 
 
