@@ -559,3 +559,13 @@ class CryptographicUsageMask(Enum):
     TRANSLATE_DECRYPT   = 0x00020000
     TRANSLATE_WRAP      = 0x00040000
     TRANSLATE_UNWRAP    = 0x00080000
+
+# 9.1.3.2.33
+class ObjectGroupMember(Enum):
+    GROUP_MEMBER_FRESH    = 0x00000001
+    GROUP_MEMBER_DEFAULT  = 0x00000002
+
+# 9.1.3.3.2
+class StorageStatusMask(Enum):
+    ONLINE_STORAGE      = 0x00000001
+    ARCHIVAL_STORAGE    = 0x00000002

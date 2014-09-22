@@ -45,3 +45,7 @@ class MemRepo(ManagedObjectRepo):
             return False
         del self.repo[uuid]
         return True
+
+    def locate(self, maximum_items, storage_status_mask,
+               object_group_member, attributes):
+        raise NotImplementedError

@@ -20,6 +20,7 @@ from kmip.core.attributes import CryptographicLength
 from kmip.core.attributes import CryptographicUsageMask
 from kmip.core.attributes import UniqueIdentifier
 from kmip.core.attributes import ObjectType
+from kmip.core.attributes import Name
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask as CryptoUsageMaskEnum
@@ -28,6 +29,7 @@ from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import ObjectType as ObjectTypeEnum
 from kmip.core.enums import ResultReason
 from kmip.core.enums import ResultStatus
+from kmip.core.enums import NameType
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.keys import RawKey
 from kmip.core.messages.contents import KeyCompressionType
@@ -483,7 +485,11 @@ class TestKMIPServer(TestCase):
                       CryptoUsageMaskEnum.DECRYPT]
         usage_mask = attr_factory.create_attribute(attribute_type,
                                                    mask_flags)
-        return [algorithm, usage_mask, length]
+        name_value = Name.NameValue(value='TESTNAME')
+        name_type = Name.NameType(value=NameType.UNINTERPRETED_TEXT_STRING)
+        value = Name.create(name_value, name_type)
+        nameattr = attr_factory.create_attribute(AttributeType.NAME, value)
+        return [algorithm, usage_mask, length, nameattr]
 
     def _get_alg_attr(self, alg=None):
         if alg is None:
@@ -506,3 +512,18 @@ class TestKMIPServer(TestCase):
                 return attribute.attribute_value.value ==\
                     attr_expected.attribute_value.value
         return False
+
+    def test_locate(self):
+        self._create()
+
+        name_value = Name.NameValue(value='TESTNAME')
+        name_type = Name.NameType(value=NameType.UNINTERPRETED_TEXT_STRING)
+        value = Name.create(name_value, name_type)
+
+        attr_factory = AttributeFactory()
+        nameattr = attr_factory.create_attribute(AttributeType.NAME, value)
+
+        attrs = [nameattr]
+        res = self.kmip.locate(attributes=attrs)
+        self.assertEqual(ResultStatus.OPERATION_FAILED, res.result_status.enum,
+                         'locate result status did not return success')

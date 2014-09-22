@@ -25,6 +25,7 @@ from kmip.core.primitives import Enumeration
 from kmip.core.primitives import TextString
 
 from kmip.core.utils import BytearrayStream
+from enum import Enum
 
 
 # 3.1
@@ -54,6 +55,7 @@ class Name(Struct):
         super(self.__class__, self).__init__(tag=Tags.NAME)
         self.name_value = name_value
         self.name_type = name_type
+        self.validate()
 
     def read(self, istream):
         super(self.__class__, self).read(istream)
@@ -83,13 +85,49 @@ class Name(Struct):
         self.__validate()
 
     def __validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+        name = self.__class__.__name__
+        msg = ErrorStrings.BAD_EXP_RECV
+        if self.name_value and \
+                not isinstance(self.name_value, Name.NameValue) and \
+                not isinstance(self.name_value, str):
+            member = 'name_value'
+            raise TypeError(msg.format('{}.{}'.format(name, member),
+                                       'name_value', type(Name.NameValue),
+                                       type(self.name_value)))
+        if self.name_type and \
+                not isinstance(self.name_type, Name.NameType) and \
+                not isinstance(self.name_type, str):
+            member = 'name_type'
+            raise TypeError(msg.format('{}.{}'.format(name, member),
+                                       'name_type', type(Name.NameType),
+                                       type(self.name_type)))
 
     @classmethod
     def create(cls, name_value, name_type):
-        value = cls.NameValue(name_value)
-        n_type = cls.NameType(name_type)
+        if isinstance(name_value, Name.NameValue):
+            value = name_value
+        elif isinstance(name_value, str):
+            value = cls.NameValue(name_value)
+        else:
+            name = 'Name'
+            msg = ErrorStrings.BAD_EXP_RECV
+            member = 'name_value'
+            raise TypeError(msg.format('{}.{}'.format(name, member),
+                                       'name_value', type(Name.NameValue),
+                                       type(name_value)))
+
+        if isinstance(name_type, Name.NameType):
+            n_type = name_type
+        elif isinstance(name_type, Enum):
+            n_type = cls.NameType(name_type)
+        else:
+            name = 'Name'
+            msg = ErrorStrings.BAD_EXP_RECV
+            member = 'name_type'
+            raise TypeError(msg.format('{}.{}'.format(name, member),
+                                       'name_type', type(Name.NameType),
+                                       type(name_type)))
+
         return Name(name_value=value,
                     name_type=n_type)
 

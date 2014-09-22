@@ -125,3 +125,16 @@ class DestroyResult(OperationResult):
             self.uuid = uuid
         else:
             self.uuid = None
+
+
+class LocateResult(OperationResult):
+
+    def __init__(self,
+                 result_status,
+                 result_reason=None,
+                 result_message=None,
+                 uuids=None):
+        super(self.__class__, self).__init__(result_status,
+                                             result_reason,
+                                             result_message)
+        self.uuids = uuids

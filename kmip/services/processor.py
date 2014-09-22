@@ -31,6 +31,7 @@ from kmip.core.messages.operations import CreateResponsePayload
 from kmip.core.messages.operations import GetResponsePayload
 from kmip.core.messages.operations import DestroyResponsePayload
 from kmip.core.messages.operations import RegisterResponsePayload
+from kmip.core.messages.operations import LocateResponsePayload
 
 from kmip.core.enums import Operation
 from kmip.core.enums import ResultStatus as RS
@@ -168,6 +169,8 @@ class Processor(object):
             return self._process_destroy_request(payload)
         elif op is Operation.REGISTER:
             return self._process_register_request(payload)
+        elif op is Operation.LOCATE:
+            return self._process_locate_request(payload)
         else:
             raise NotImplementedError()
 
@@ -250,5 +253,24 @@ class Processor(object):
 
         resp_pl = RegisterResponsePayload(unique_identifier=uuid,
                                           template_attribute=template_attr)
+
+        return (result_status, result_reason, result_message, resp_pl)
+
+    def _process_locate_request(self, payload):
+        max_items = payload.maximum_items
+        storage_mask = payload.status_storage_mask
+        objgrp_member = payload.object_group_member
+        attributes = payload.attributes
+
+        result = self._handler.locate(max_items, storage_mask,
+                                      objgrp_member, attributes)
+
+        result_status = result.result_status
+        result_reason = result.result_reason
+        result_message = result.result_message
+
+        uuids = result.uuids
+
+        resp_pl = LocateResponsePayload(unique_identifiers=uuids)
 
         return (result_status, result_reason, result_message, resp_pl)

@@ -47,6 +47,7 @@ from kmip.core.messages.operations import DestroyRequestPayload
 from kmip.core.messages.operations import RegisterRequestPayload
 from kmip.core.messages.operations import DestroyResponsePayload
 from kmip.core.messages.operations import RegisterResponsePayload
+from kmip.core.messages.operations import LocateResponsePayload
 
 from kmip.core.primitives import TextString
 
@@ -136,7 +137,24 @@ class TestRequestMessage(TestCase):
             b'\x42\x00\x79\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
             b'\x66\x62\x34\x62\x35\x62\x39\x63\x2D\x36\x31\x38\x38\x2D\x34\x63'
             b'\x36\x33\x2D\x38\x31\x34\x32\x2D\x66\x65\x39\x63\x33\x32\x38\x31'
-            b'\x32\x39\x66\x63\x00\x00\x00\x00')
+            b'\x32\x39\x66\x63\x00\x00\x00\x00'
+        )
+        # kmip-testcases-v1.1 section 3.1.3
+        self.locate = (
+            b'\x42\x00\x78\x01\x00\x00\x00\xd0\x42\x00\x77\x01\x00\x00\x00\x38'
+            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0d\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x88'
+            b'\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00'
+            b'\x42\x00\x79\x01\x00\x00\x00\x70\x42\x00\x08\x01\x00\x00\x00\x28'
+            b'\x42\x00\x0a\x07\x00\x00\x00\x0b\x4f\x62\x6a\x65\x63\x74\x20\x54'
+            b'\x79\x70\x65\x00\x00\x00\x00\x00\x42\x00\x0b\x05\x00\x00\x00\x04'
+            b'\x00\x00\x00\x02\x00\x00\x00\x00\x42\x00\x08\x01\x00\x00\x00\x38'
+            b'\x42\x00\x0a\x07\x00\x00\x00\x04\x4e\x61\x6d\x65\x00\x00\x00\x00'
+            b'\x42\x00\x0b\x01\x00\x00\x00\x20\x42\x00\x55\x07\x00\x00\x00\x04'
+            b'\x4b\x65\x79\x31\x00\x00\x00\x00\x42\x00\x54\x05\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00')
 
     def tearDown(self):
         super(TestRequestMessage, self).tearDown()
@@ -802,6 +820,149 @@ class TestRequestMessage(TestCase):
         msg = "Bad request message write: encoding mismatch"
         self.assertEqual(self.register, result, msg)
 
+    def test_locate_request_read(self):
+        self.stream = BytearrayStream(self.locate)
+
+        request_message = messages.RequestMessage()
+        request_message.read(self.stream)
+
+        request_header = request_message.request_header
+        msg = "Bad request header type: expected {0}, received{0}"
+        self.assertIsInstance(request_header, messages.RequestHeader,
+                              msg.format(messages.RequestHeader,
+                                         type(request_header)))
+
+        protocol_version = request_header.protocol_version
+        msg = "Bad protocol version type: expected {0}, received {1}"
+        self.assertIsInstance(protocol_version, contents.ProtocolVersion,
+                              msg.format(contents.ProtocolVersion,
+                                         type(protocol_version)))
+
+        protocol_version_major = protocol_version.protocol_version_major
+        msg = "Bad protocol version major type: expected {0}, received {1}"
+        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        rcv_type = type(protocol_version_major)
+        self.assertIsInstance(protocol_version_major, exp_type,
+                              msg.format(exp_type, rcv_type))
+        msg = "Bad protocol version major value: expected {0}, received {1}"
+        self.assertEqual(1, protocol_version_major.value,
+                         msg.format(1, protocol_version_major.value))
+
+        protocol_version_minor = protocol_version.protocol_version_minor
+        msg = "Bad protocol version minor type: expected {0}, received {1}"
+        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        rcv_type = type(protocol_version_minor)
+        self.assertIsInstance(protocol_version_minor, exp_type,
+                              msg.format(exp_type, rcv_type))
+        msg = "Bad protocol version minor value: expected {0}, received {1}"
+        self.assertEqual(1, protocol_version_minor.value,
+                         msg.format(1, protocol_version_minor.value))
+
+        batch_count = request_header.batch_count
+        msg = "Bad batch count type: expected {0}, received {1}"
+        self.assertIsInstance(batch_count, contents.BatchCount,
+                              msg.format(contents.BatchCount,
+                                         type(batch_count)))
+        msg = "Bad batch count value: expected {0}, received {1}"
+        self.assertEqual(1, batch_count.value,
+                         msg.format(1, batch_count.value))
+
+        batch_items = request_message.batch_items
+        msg = "Bad batch items type: expected {0}, received {1}"
+        self.assertEquals(1, len(batch_items),
+                          self.msg.format('batch items', 'length',
+                                          1, len(batch_items)))
+
+        batch_item = batch_items[0]
+        msg = "Bad batch item type: expected {0}, received {1}"
+        self.assertIsInstance(batch_item, messages.RequestBatchItem,
+                              msg.format(messages.RequestBatchItem,
+                                         type(batch_item)))
+
+        operation = batch_item.operation
+        msg = "Bad operation type: expected {0}, received {1}"
+        self.assertIsInstance(operation, contents.Operation,
+                              msg.format(contents.Operation,
+                                         type(operation)))
+
+        msg = "Bad operation value: expected {0}, received {1}"
+        exp_value = enums.Operation.LOCATE
+        rcv_value = operation.enum
+        self.assertEqual(exp_value, rcv_value,
+                         msg.format(exp_value, rcv_value))
+
+        request_payload = batch_item.request_payload
+        msg = "Bad request payload type: expected {0}, received {1}"
+        exp_type = operations.LocateRequestPayload
+        rcv_type = type(request_payload)
+        self.assertIsInstance(request_payload, exp_type,
+                              msg.format(exp_type, rcv_type))
+
+        attributes = request_payload.attributes
+        msg = "Bad attributes type: expected {0}, received {1}"
+        exp_type = list
+        rcv_type = type(attributes)
+        self.assertIsInstance(attributes, exp_type,
+                              msg.format(exp_type, rcv_type))
+
+        self.assertEqual(2, len(attributes),
+                         self.msg.format('attribute', 'length',
+                                         2, len(attributes)))
+
+        attribute_a = attributes[0]
+        self.assertIsInstance(attribute_a, objects.Attribute,
+                              self.msg.format('attribute', 'type',
+                                              objects.Attribute,
+                                              type(attribute_a)))
+
+        attribute_name = attribute_a.attribute_name
+        self.assertIsInstance(attribute_name, objects.Attribute.AttributeName,
+                              self.msg.format('attribute name', 'type',
+                                              objects.Attribute.AttributeName,
+                                              type(attribute_name)))
+        self.assertEquals('Object Type', attribute_name.value,
+                          self.msg.format('attribute name', 'value',
+                                          'Object Type',
+                                          attribute_name.value))
+
+        attribute_value = attribute_a.attribute_value
+        exp_type = attr.Enumeration
+        rcv_type = type(attribute_value)
+        self.assertIsInstance(attribute_value, exp_type,
+                              self.msg.format('attribute value', 'type',
+                                              exp_type, rcv_type))
+        self.assertEquals(attribute_value.enum, enums.ObjectType.SYMMETRIC_KEY,
+                          self.msg.format('ObjectType', 'value',
+                                          enums.ObjectType.SYMMETRIC_KEY,
+                                          attribute_value.enum))
+
+        attribute_b = attributes[1]
+        self.assertIsInstance(attribute_b, objects.Attribute,
+                              self.msg.format('attribute', 'type',
+                                              objects.Attribute,
+                                              type(attribute_a)))
+
+        attribute_name = attribute_b.attribute_name
+        self.assertIsInstance(attribute_name, objects.Attribute.AttributeName,
+                              self.msg.format('attribute name', 'type',
+                                              objects.Attribute.AttributeName,
+                                              type(attribute_name)))
+        self.assertEquals('Name', attribute_name.value,
+                          self.msg.format('attribute name', 'value',
+                                          'Name',
+                                          attribute_name.value))
+        attribute_value = attribute_b.attribute_value
+
+        exp_type = Name
+        rcv_type = type(attribute_value)
+        self.assertIsInstance(attribute_value, exp_type,
+                              self.msg.format('attribute value', 'type',
+                                              exp_type, rcv_type))
+        self.assertEquals('Key1', attribute_value.name_value.value,
+                          self.msg.format('name value', 'value',
+                                          'Key1',
+                                          attribute_value.name_value.value))
+
 
 class TestResponseMessage(TestCase):
 
@@ -872,6 +1033,20 @@ class TestResponseMessage(TestCase):
             b'\x66\x62\x34\x62\x35\x62\x39\x63\x2D\x36\x31\x38\x38\x2D\x34\x63'
             b'\x36\x33\x2D\x38\x31\x34\x32\x2D\x66\x65\x39\x63\x33\x32\x38\x31'
             b'\x32\x39\x66\x63\x00\x00\x00\x00')
+        # kmip-testcases-v1.1 section 3.1.3
+        self.locate = (
+            b'\x42\x00\x7b\x01\x00\x00\x00\xb0\x42\x00\x7a\x01\x00\x00\x00\x48'
+            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x92\x09\x00\x00\x00\x08'
+            b'\x00\x00\x00\x00\x4f\x9a\x54\xe6\x42\x00\x0d\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x58'
+            b'\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00'
+            b'\x42\x00\x7f\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\x7c\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2d\x36\x62\x65\x61\x2d\x34\x66'
+            b'\x62\x32\x2d\x62\x34\x35\x30\x2d\x37\x65\x35\x38\x38\x30\x32\x63'
+            b'\x33\x30\x33\x38\x00\x00\x00\x00')
 
     def tearDown(self):
         super(TestResponseMessage, self).tearDown()
@@ -1537,3 +1712,38 @@ class TestResponseMessage(TestCase):
 
         msg = "Bad response message write: encoding mismatch"
         self.assertEqual(self.register, result, msg)
+
+    def test_locate_response_write(self):
+        prot_ver = contents.ProtocolVersion.create(1, 1)
+
+        # Fri Apr 27 10:12:22 CEST 2012
+        time_stamp = contents.TimeStamp(0x4f9a54e6)
+
+        batch_count = contents.BatchCount(1)
+        resp_hdr = messages.ResponseHeader(protocol_version=prot_ver,
+                                           time_stamp=time_stamp,
+                                           batch_count=batch_count)
+
+        operation = contents.Operation(enums.Operation.LOCATE)
+        result_status = contents.ResultStatus(enums.ResultStatus.SUCCESS)
+        uuid = attr.UniqueIdentifier('49a1ca88-6bea-4fb2-b450-7e58802c3038')
+
+        resp_pl = LocateResponsePayload(unique_identifiers=[uuid])
+
+        batch_item = messages.ResponseBatchItem(operation=operation,
+                                                result_status=result_status,
+                                                response_payload=resp_pl)
+
+        response_message = messages.ResponseMessage(response_header=resp_hdr,
+                                                    batch_items=[batch_item])
+
+        response_message.write(self.stream)
+
+        result = self.stream.read()
+        len_exp = len(self.locate)
+        len_rcv = len(result)
+        self.assertEqual(len_exp, len_rcv,
+                         self.msg.format('response message', 'write',
+                                         len_exp, len_rcv))
+        msg = "Bad response message write: encoding mismatch"
+        self.assertEqual(self.locate, result, msg)
