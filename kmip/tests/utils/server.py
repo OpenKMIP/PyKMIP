@@ -18,17 +18,22 @@ import optparse
 import os
 import sys
 
+from kmip.core.config_helper import ConfigHelper
+
 from kmip.services.kmip_server import KMIPServer
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
-def run_server(host='127.0.0.1', port=5696,
-               cert_file=FILE_PATH + '/certs/server.crt',
-               key_file=FILE_PATH + '/certs/server.key'):
+def run_server(host, port, certfile, keyfile, cert_reqs, ssl_version,
+               ca_certs, do_handshake_on_connect, suppress_ragged_eofs):
     logger = logging.getLogger(__name__)
 
-    server = KMIPServer(host, port, cert_file, key_file)
+    server = KMIPServer(host=host, port=port, keyfile=keyfile,
+                        certfile=certfile, cert_reqs=cert_reqs,
+                        ssl_version=ssl_version, ca_certs=ca_certs,
+                        do_handshake_on_connect=do_handshake_on_connect,
+                        suppress_ragged_eofs=suppress_ragged_eofs)
 
     logger.info('Starting the KMIP server')
 
@@ -47,18 +52,31 @@ def run_server(host='127.0.0.1', port=5696,
 def build_cli_parser():
     parser = optparse.OptionParser(usage="%prog [options]",
                                    description="Run KMIP Server")
-    parser.add_option("-n", "--hostname", action="store", default='127.0.0.1',
-                      dest="hostname",
+    parser.add_option("-n", "--host", action="store", default='127.0.0.1',
+                      dest="host",
                       help="Hostname/IP address of platform running the KMIP "
                       "server (e.g., localhost, 127.0.0.1)")
     parser.add_option("-p", "--port", action="store", default=5696,
                       dest="port", help="Port number for KMIP services")
-    parser.add_option("-c", "--cert_file", action="store",
-                      default=FILE_PATH + '/certs/server.crt',
-                      dest="cert_file")
-    parser.add_option("-k", "--key_file", action="store",
-                      default=FILE_PATH + '/certs/server.key',
-                      dest="key_file")
+    parser.add_option("-k", "--keyfile", action="store",
+                      default=os.path.normpath(os.path.join(
+                          FILE_PATH, '../../demos/certs/server.key')),
+                      dest="keyfile")
+    parser.add_option("-c", "--certfile", action="store",
+                      default=os.path.normpath(os.path.join(
+                          FILE_PATH, '../../demos/certs/server.crt')),
+                      dest="certfile")
+    parser.add_option("-r", "--cert_reqs", action="store",
+                      default="CERT_NONE", dest="cert_reqs")
+    parser.add_option("-s", "--ssl_version", action="store",
+                      default='PROTOCOL_SSLv23', dest="ssl_version")
+    parser.add_option("-a", "--ca_certs", action="store",
+                      default=ConfigHelper.NONE_VALUE, dest="ca_certs")
+    parser.add_option("-d", "--do_handshake_on_connect", action="store",
+                      default="True", dest="do_handshake_on_connect")
+    parser.add_option("-e", "--suppress_ragged_eofs", action="store",
+                      default="True", dest="suppress_ragged_eofs")
+
     return parser
 
 if __name__ == '__main__':
@@ -66,4 +84,12 @@ if __name__ == '__main__':
 
     opts, args = parser.parse_args(sys.argv[1:])
 
-    run_server(opts.hostname, opts.port, opts.cert_file, opts.key_file)
+    run_server(host=opts.host,
+               port=opts.port,
+               certfile=opts.certfile,
+               keyfile=opts.keyfile,
+               cert_reqs=opts.cert_reqs,
+               ssl_version=opts.ssl_version,
+               ca_certs=opts.ca_certs,
+               do_handshake_on_connect=opts.do_handshake_on_connect,
+               suppress_ragged_eofs=opts.suppress_ragged_eofs)

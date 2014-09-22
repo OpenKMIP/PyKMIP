@@ -36,6 +36,8 @@ from kmip.core.messages import operations
 
 from kmip.services.kmip_protocol import KMIPProtocol
 
+from kmip.core.config_helper import ConfigHelper
+
 from kmip.core.utils import BytearrayStream
 
 import logging
@@ -45,29 +47,36 @@ import socket
 import ssl
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))
 
 
 class KMIPProxy(KMIP):
 
-    # TODO (peter-hamilton) Move these defaults into config
-    def __init__(self, hostname='127.0.0.1', port=5696,
-                 ca_certs_file=FILE_PATH + '/../tests/utils/certs/server.crt'):
+    def __init__(self, host=None, port=None, keyfile=None, certfile=None,
+                 cert_reqs=None, ssl_version=None, ca_certs=None,
+                 do_handshake_on_connect=None,
+                 suppress_ragged_eofs=None):
         super(self.__class__, self).__init__()
         self.logger = logging.getLogger(__name__)
 
-        self.hostname = hostname
-        self.port = port
+        self._set_variables(host, port, keyfile, certfile,
+                            cert_reqs, ssl_version, ca_certs,
+                            do_handshake_on_connect, suppress_ragged_eofs)
+
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if ca_certs_file is not None:
-            self.socket = ssl.wrap_socket(sock,
-                                          ca_certs=ca_certs_file,
-                                          cert_reqs=ssl.CERT_REQUIRED)
-        else:
-            self.socket = sock
+        self.socket = ssl.wrap_socket(
+            sock,
+            keyfile=self.keyfile,
+            certfile=self.certfile,
+            cert_reqs=self.cert_reqs,
+            ssl_version=self.ssl_version,
+            ca_certs=self.ca_certs,
+            do_handshake_on_connect=self.do_handshake_on_connect,
+            suppress_ragged_eofs=self.suppress_ragged_eofs)
         self.protocol = KMIPProtocol(self.socket)
 
     def open(self):
-        self.socket.connect((self.hostname, self.port))
+        self.socket.connect((self.host, self.port))
 
     def close(self):
         self.socket.shutdown(socket.SHUT_RDWR)
@@ -340,3 +349,43 @@ class KMIPProxy(KMIP):
 
     def _receive_message(self):
         return self.protocol.read()
+
+    def _set_variables(self, host, port, keyfile, certfile,
+                       cert_reqs, ssl_version, ca_certs,
+                       do_handshake_on_connect, suppress_ragged_eofs):
+        conf = ConfigHelper()
+
+        self.host = conf.get_valid_value(
+            host, 'client', 'host', conf.DEFAULT_HOST)
+
+        self.port = int(conf.get_valid_value(
+            port, 'client', 'port', conf.DEFAULT_PORT))
+
+        self.keyfile = conf.get_valid_value(
+            keyfile, 'client', 'keyfile', None)
+
+        self.certfile = conf.get_valid_value(
+            certfile, 'client', 'certfile', None)
+
+        self.cert_reqs = getattr(ssl, conf.get_valid_value(
+            cert_reqs, 'client', 'cert_reqs', 'CERT_REQUIRED'))
+
+        self.ssl_version = getattr(ssl, conf.get_valid_value(
+            ssl_version, 'client', 'ssl_version', conf.DEFAULT_SSL_VERSION))
+
+        self.ca_certs = conf.get_valid_value(
+            ca_certs, 'client', 'ca_certs', conf.DEFAULT_CA_CERTS)
+
+        if conf.get_valid_value(
+                do_handshake_on_connect, 'client',
+                'do_handshake_on_connect', 'True') == 'True':
+            self.do_handshake_on_connect = True
+        else:
+            self.do_handshake_on_connect = False
+
+        if conf.get_valid_value(
+                suppress_ragged_eofs, 'client',
+                'suppress_ragged_eofs', 'True') == 'True':
+            self.suppress_ragged_eofs = True
+        else:
+            self.suppress_ragged_eofs = False

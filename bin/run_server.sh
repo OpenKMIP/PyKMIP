@@ -2,4 +2,4 @@
 
 set -eu
 
-python3.3 ../kmip/demos/server.py
+python ../kmip/demos/server.py
