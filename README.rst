@@ -2,18 +2,34 @@
 PyKMIP
 ------
 
-PyKMIP is a Python implementation of the Key Management Interoperability Protocol (KMIP) specification, supporting version 1.1 of the KMIP standard. The KMIP standard is governed by the `Organization for the Advancement of Structured Information Standards`_ (OASIS) and specifies a client/server-based protocol to perform key, certificate, and secret object management, including storage and maintenance operations.
+PyKMIP is a Python implementation of the Key Management Interoperability
+Protocol (KMIP) specification, supporting version 1.1 of the KMIP standard.
+The KMIP standard is governed by the `Organization for the Advancement of
+Structured Information Standards`_ (OASIS) and specifies a
+client/server-based protocol to perform key, certificate, and secret object
+management, including storage and maintenance operations.
 
-The PyKMIP library currently provides a KMIP client and server supporting the following operations for the KMIP SymmetricKey managed object:
+The PyKMIP library currently provides a KMIP client and server supporting
+the following operations for the KMIP SymmetricKey managed object:
 
 * Create
 * Register
 * Get
 * Destroy
 
-Note that KMIP specifies profiles that tailor the standard to specific use cases. The `KMIP Profile Support`_ section includes several profiles that need to be developed for PyKMIP to fully support symmetric key storage and generation capabilities.  A list of operations necessary for these profiles is included.
+Note that KMIP specifies profiles that tailor the standard to specific use
+cases. The `KMIP Profile Support`_ section includes several profiles that
+need to be developed for PyKMIP to fully support symmetric key storage and
+generation capabilities.  A list of operations necessary for these profiles
+is included.
 
-The PyKMIP software-based KMIP server is intended for use only in testing and demonstration environments. Note that the PyKMIP server is **NOT** intended to be a substitute for secured, hardware-based KMIP appliances. The PyKMIP client should be used for operational purposes only with a hardware-based KMIP server. The development of the PyKMIP client and server should take place in parallel to facilitate testing of each operation as it is developed.
+The PyKMIP software-based KMIP server is intended for use only in testing
+and demonstration environments. Note that the PyKMIP server is **NOT**
+intended to be a substitute for secured, hardware-based KMIP appliances.
+The PyKMIP client should be used for operational purposes only with a
+hardware-based KMIP server. The development of the PyKMIP client and server
+should take place in parallel to facilitate testing of each operation as it
+is developed.
 
 Platforms
 =========
@@ -23,7 +39,15 @@ PyKMIP has been tested and runs on Ubuntu 12.04 LTS.
 
 KMIP Profile Support
 ====================
-The KMIP standard includes various profiles that tailor the standard for specific use cases (e.g., symmetric key storage with TLS 1.2). These profiles specify conformance to certain operations and attributes. The operations listed below are needed to support symmetric key profiles, which are also provided below. We would appreciate help in the development of these operations, and have listed our recommended order of development prioritization in descending order. Since active development of these features is already underway, please check the `code base`_ to assess the status of operations prior to development.
+The KMIP standard includes various profiles that tailor the standard for
+specific use cases (e.g., symmetric key storage with TLS 1.2). These
+profiles specify conformance to certain operations and attributes. The
+operations listed below are needed to support symmetric key profiles, which
+are also provided below. We would appreciate help in the development of
+these operations, and have listed our recommended order of development
+prioritization in descending order. Since active development of these
+features is already underway, please check the `code base`_ to assess the
+status of operations prior to development.
 
 KMIP operations to add to PyKMIP:
 
@@ -40,7 +64,9 @@ KMIP operations to add to PyKMIP:
 * Activate
 * Query
 
-Note that the Create, Register, Get, and Destroy operations were completed with the initial version of PyKMIP to allow very basic KMIP symmetric key operations.
+Note that the Create, Register, Get, and Destroy operations were completed
+with the initial version of PyKMIP to allow very basic KMIP symmetric key
+operations.
 
 Server Profiles
 ---------------
@@ -110,7 +136,8 @@ Client profiles that support KMIP symmetric key operations:
 
 References
 ==========
-The source code for PyKMIP is hosted on GitHub and the library is available for installation from the Python Package Index (PyPI):
+The source code for PyKMIP is hosted on GitHub and the library is available
+for installation from the Python Package Index (PyPI):
 
 * `GitHub <https://github.com/OpenKMIP/PyKMIP>`_
 * `PyPI <https://pypi.python.org/pypi/PyKMIP>`_
