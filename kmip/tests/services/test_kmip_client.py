@@ -248,6 +248,66 @@ class TestKMIPClient(TestCase):
                                        expected, observed, 'value')
         self.assertEqual(expected, observed, message)
 
+    # TODO (peter-hamilton) Modify for credential type and/or add new test
+    def test_build_credential(self):
+        username = 'username'
+        password = 'password'
+        cred_type = CredentialType.USERNAME_AND_PASSWORD
+        self.client.username = username
+        self.client.password = password
+
+        credential = self.client._build_credential()
+
+        message = utils.build_er_error(credential.__class__, 'type',
+                                       cred_type,
+                                       credential.credential_type.enum,
+                                       'value')
+        self.assertEqual(CredentialType.USERNAME_AND_PASSWORD,
+                         credential.credential_type.enum,
+                         message)
+
+        message = utils.build_er_error(
+            credential.__class__, 'type', username,
+            credential.credential_value.username.value, 'value')
+        self.assertEqual(username, credential.credential_value.username.value,
+                         message)
+
+        message = utils.build_er_error(
+            credential.__class__, 'type', password,
+            credential.credential_value.password.value, 'value')
+        self.assertEqual(password, credential.credential_value.password.value,
+                         message)
+
+    def test_build_credential_no_username(self):
+        username = None
+        password = 'password'
+        self.client.username = username
+        self.client.password = password
+
+        exception = self.assertRaises(ValueError,
+                                      self.client._build_credential)
+        self.assertEqual('cannot build credential, username is None',
+                         str(exception))
+
+    def test_build_credential_no_password(self):
+        username = 'username'
+        password = None
+        self.client.username = username
+        self.client.password = password
+
+        exception = self.assertRaises(ValueError,
+                                      self.client._build_credential)
+        self.assertEqual('cannot build credential, password is None',
+                         str(exception))
+
+    def test_build_credential_no_creds(self):
+        self.client.username = None
+        self.client.password = None
+
+        credential = self.client._build_credential()
+
+        self.assertEqual(None, credential)
+
     def _shutdown_server(self):
         if self.server.poll() is not None:
             return
