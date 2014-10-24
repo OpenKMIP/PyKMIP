@@ -35,6 +35,8 @@ class ConfigHelper(object):
     DEFAULT_CA_CERTS = os.path.normpath(os.path.join(
         FILE_PATH, '../demos/certs/server.crt'))
     DEFAULT_SSL_VERSION = 'PROTOCOL_SSLv23'
+    DEFAULT_USERNAME = None
+    DEFAULT_PASSWORD = None
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
