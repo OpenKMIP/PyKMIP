@@ -22,6 +22,9 @@ from kmip.services.results import LocateResult
 from kmip.core import attributes as attr
 
 from kmip.core.enums import Operation as OperationEnum
+from kmip.core.enums import CredentialType
+
+from kmip.core.factories.credentials import CredentialFactory
 
 from kmip.core import objects
 from kmip.core.server import KMIP
@@ -55,13 +58,17 @@ class KMIPProxy(KMIP):
     def __init__(self, host=None, port=None, keyfile=None, certfile=None,
                  cert_reqs=None, ssl_version=None, ca_certs=None,
                  do_handshake_on_connect=None,
-                 suppress_ragged_eofs=None):
+                 suppress_ragged_eofs=None,
+                 username=None,
+                 password=None):
         super(self.__class__, self).__init__()
         self.logger = logging.getLogger(__name__)
+        self.credential_factory = CredentialFactory()
 
         self._set_variables(host, port, keyfile, certfile,
                             cert_reqs, ssl_version, ca_certs,
-                            do_handshake_on_connect, suppress_ragged_eofs)
+                            do_handshake_on_connect, suppress_ragged_eofs,
+                            username, password)
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket = ssl.wrap_socket(
@@ -327,8 +334,28 @@ class KMIPProxy(KMIP):
                               uuids)
         return result
 
+    # TODO (peter-hamilton) Augment to handle device credentials
+    def _build_credential(self):
+        if (self.username is None) and (self.password is None):
+            return None
+        if self.username is None:
+            raise ValueError('cannot build credential, username is None')
+        if self.password is None:
+            raise ValueError('cannot build credential, password is None')
+
+        credential_type = CredentialType.USERNAME_AND_PASSWORD
+        credential_value = {'Username': self.username,
+                            'Password': self.password}
+        credential = self.credential_factory.create_credential(
+            credential_type,
+            credential_value)
+        return credential
+
     def _build_request_message(self, credential, batch_items):
         protocol_version = ProtocolVersion.create(1, 1)
+
+        if credential is None:
+            credential = self._build_credential()
 
         authentication = None
         if credential is not None:
@@ -352,7 +379,8 @@ class KMIPProxy(KMIP):
 
     def _set_variables(self, host, port, keyfile, certfile,
                        cert_reqs, ssl_version, ca_certs,
-                       do_handshake_on_connect, suppress_ragged_eofs):
+                       do_handshake_on_connect, suppress_ragged_eofs,
+                       username, password):
         conf = ConfigHelper()
 
         self.host = conf.get_valid_value(
@@ -389,3 +417,9 @@ class KMIPProxy(KMIP):
             self.suppress_ragged_eofs = True
         else:
             self.suppress_ragged_eofs = False
+
+        self.username = conf.get_valid_value(
+            username, 'client', 'username', conf.DEFAULT_USERNAME)
+
+        self.password = conf.get_valid_value(
+            password, 'client', 'password', conf.DEFAULT_PASSWORD)
