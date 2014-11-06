@@ -19,7 +19,7 @@ from kmip.core.messages import contents
 from kmip.core.messages.contents import AsynchronousCorrelationValue
 from kmip.core.messages.contents import BatchErrorContinuationOption
 
-from kmip.core.messages import operations
+from kmip.core.messages import payloads
 
 from kmip.core.primitives import Struct
 
@@ -194,7 +194,7 @@ class RequestBatchItem(Struct):
             self.unique_batch_item_id.read(tstream)
 
         # Lookup the response payload class that belongs to the operation
-        cls = operations.REQUEST_MAP.get(self.operation.enum)
+        cls = payloads.REQUEST_MAP.get(self.operation.enum)
         self.request_payload = cls()
         self.request_payload.read(tstream)
 
@@ -281,7 +281,7 @@ class ResponseBatchItem(Struct):
             self.async_correlation_value.read(tstream)
 
         # Lookup the response payload class that belongs to the operation
-        cls = operations.RESPONSE_MAP.get(self.operation.enum)
+        cls = payloads.RESPONSE_MAP.get(self.operation.enum)
         expected = cls()
         if self.is_tag_next(expected.tag, tstream):
             self.response_payload = cls()

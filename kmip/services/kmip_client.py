@@ -35,7 +35,12 @@ from kmip.core.messages.contents import ProtocolVersion
 from kmip.core.messages.contents import Operation
 
 from kmip.core.messages import messages
-from kmip.core.messages import operations
+
+from kmip.core.messages.payloads import create
+from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import register
+from kmip.core.messages.payloads import locate
+from kmip.core.messages.payloads import destroy
 
 from kmip.services.kmip_protocol import KMIPProtocol
 
@@ -126,7 +131,7 @@ class KMIPProxy(KMIP):
         if object_type is None:
             raise ValueError('object_type cannot be None')
 
-        req_pl = operations.CreateRequestPayload(
+        req_pl = create.CreateRequestPayload(
             object_type=object_type,
             template_attribute=template_attribute)
         batch_item = messages.RequestBatchItem(operation=operation,
@@ -174,17 +179,17 @@ class KMIPProxy(KMIP):
         if unique_identifier is not None:
             uuid = attr.UniqueIdentifier(unique_identifier)
         if key_format_type is not None:
-            kft = operations.GetRequestPayload.KeyFormatType(key_format_type)
+            kft = get.GetRequestPayload.KeyFormatType(key_format_type)
         if key_compression_type is not None:
             kct = key_compression_type
-            kct = operations.GetRequestPayload.KeyCompressionType(kct)
+            kct = get.GetRequestPayload.KeyCompressionType(kct)
         if key_wrapping_specification is not None:
             kws = objects.KeyWrappingSpecification(key_wrapping_specification)
 
-        req_pl = operations.GetRequestPayload(unique_identifier=uuid,
-                                              key_format_type=kft,
-                                              key_compression_type=kct,
-                                              key_wrapping_specification=kws)
+        req_pl = get.GetRequestPayload(unique_identifier=uuid,
+                                       key_format_type=kft,
+                                       key_compression_type=kct,
+                                       key_wrapping_specification=kws)
 
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=req_pl)
@@ -223,7 +228,7 @@ class KMIPProxy(KMIP):
         if unique_identifier is not None:
             uuid = attr.UniqueIdentifier(unique_identifier)
 
-        payload = operations.DestroyRequestPayload(unique_identifier=uuid)
+        payload = destroy.DestroyRequestPayload(unique_identifier=uuid)
 
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=payload)
@@ -257,7 +262,7 @@ class KMIPProxy(KMIP):
         if object_type is None:
             raise ValueError('object_type cannot be None')
 
-        req_pl = operations.RegisterRequestPayload(
+        req_pl = register.RegisterRequestPayload(
             object_type=object_type,
             template_attribute=template_attribute,
             secret=secret)
@@ -297,18 +302,18 @@ class KMIPProxy(KMIP):
         objgrp = None
 
         if maximum_items is not None:
-            mxi = operations.LocateRequestPayload.MaximumItems(maximum_items)
+            mxi = locate.LocateRequestPayload.MaximumItems(maximum_items)
         if storage_status_mask is not None:
             m = storage_status_mask
-            ssmask = operations.LocateRequestPayload.StorageStatusMask(m)
+            ssmask = locate.LocateRequestPayload.StorageStatusMask(m)
         if object_group_member is not None:
             o = object_group_member
-            objgrp = operations.LocateRequestPayload.ObjectGroupMember(o)
+            objgrp = locate.LocateRequestPayload.ObjectGroupMember(o)
 
-        payload = operations.LocateRequestPayload(maximum_items=mxi,
-                                                  storage_status_mask=ssmask,
-                                                  object_group_member=objgrp,
-                                                  attributes=attributes)
+        payload = locate.LocateRequestPayload(maximum_items=mxi,
+                                              storage_status_mask=ssmask,
+                                              object_group_member=objgrp,
+                                              attributes=attributes)
 
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=payload)

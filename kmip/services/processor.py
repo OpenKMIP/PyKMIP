@@ -27,11 +27,11 @@ from kmip.core.messages.contents import TimeStamp
 
 from kmip.core.primitives import Base
 
-from kmip.core.messages.operations import CreateResponsePayload
-from kmip.core.messages.operations import GetResponsePayload
-from kmip.core.messages.operations import DestroyResponsePayload
-from kmip.core.messages.operations import RegisterResponsePayload
-from kmip.core.messages.operations import LocateResponsePayload
+from kmip.core.messages.payloads.create import CreateResponsePayload
+from kmip.core.messages.payloads.get import GetResponsePayload
+from kmip.core.messages.payloads.destroy import DestroyResponsePayload
+from kmip.core.messages.payloads.register import RegisterResponsePayload
+from kmip.core.messages.payloads.locate import LocateResponsePayload
 
 from kmip.core.enums import Operation
 from kmip.core.enums import ResultStatus as RS

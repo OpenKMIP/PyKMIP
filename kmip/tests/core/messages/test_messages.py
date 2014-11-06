@@ -41,13 +41,12 @@ from kmip.core.keys import RawKey
 
 from kmip.core.messages import contents
 from kmip.core.messages import messages
-from kmip.core.messages import operations
 
-from kmip.core.messages.operations import DestroyRequestPayload
-from kmip.core.messages.operations import RegisterRequestPayload
-from kmip.core.messages.operations import DestroyResponsePayload
-from kmip.core.messages.operations import RegisterResponsePayload
-from kmip.core.messages.operations import LocateResponsePayload
+from kmip.core.messages.payloads import create
+from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import register
+from kmip.core.messages.payloads import locate
+from kmip.core.messages.payloads import destroy
 
 from kmip.core.primitives import TextString
 
@@ -233,8 +232,8 @@ class TestRequestMessage(TestCase):
         request_payload = batch_item.request_payload
         msg = "Bad request payload type: expected {0}, received {1}"
         self.assertIsInstance(request_payload,
-                              operations.CreateRequestPayload,
-                              msg.format(operations.CreateRequestPayload,
+                              create.CreateRequestPayload,
+                              msg.format(create.CreateRequestPayload,
                                          type(request_payload)))
 
         object_type = request_payload.object_type
@@ -370,8 +369,8 @@ class TestRequestMessage(TestCase):
 
         temp_attr = objects.TemplateAttribute(attributes=[attr_a, attr_b,
                                                           attr_c])
-        req_pl = operations.CreateRequestPayload(object_type=object_type,
-                                                 template_attribute=temp_attr)
+        req_pl = create.CreateRequestPayload(object_type=object_type,
+                                             template_attribute=temp_attr)
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=req_pl)
         req_message = messages.RequestMessage(request_header=request_header,
@@ -462,8 +461,8 @@ class TestRequestMessage(TestCase):
         request_payload = batch_item.request_payload
         msg = "Bad request payload type: expected {0}, received {1}"
         self.assertIsInstance(request_payload,
-                              operations.GetRequestPayload,
-                              msg.format(operations.GetRequestPayload,
+                              get.GetRequestPayload,
+                              msg.format(get.GetRequestPayload,
                                          type(request_payload)))
 
         unique_identifier = request_payload.unique_identifier
@@ -487,7 +486,7 @@ class TestRequestMessage(TestCase):
         operation = contents.Operation(enums.Operation.GET)
 
         uuid = attr.UniqueIdentifier('49a1ca88-6bea-4fb2-b450-7e58802c3038')
-        request_payload = operations.GetRequestPayload(unique_identifier=uuid)
+        request_payload = get.GetRequestPayload(unique_identifier=uuid)
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=request_payload)
         request_message = messages.RequestMessage(request_header=req_header,
@@ -578,7 +577,7 @@ class TestRequestMessage(TestCase):
 
         request_payload = batch_item.request_payload
         msg = "Bad request payload type: expected {0}, received {1}"
-        exp_type = operations.DestroyRequestPayload
+        exp_type = destroy.DestroyRequestPayload
         rcv_type = type(request_payload)
         self.assertIsInstance(request_payload, exp_type,
                               msg.format(exp_type, rcv_type))
@@ -604,7 +603,7 @@ class TestRequestMessage(TestCase):
         operation = contents.Operation(enums.Operation.DESTROY)
 
         uuid = attr.UniqueIdentifier('fb4b5b9c-6188-4c63-8142-fe9c328129fc')
-        request_payload = DestroyRequestPayload(unique_identifier=uuid)
+        request_payload = destroy.DestroyRequestPayload(unique_identifier=uuid)
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=request_payload)
         request_message = messages.RequestMessage(request_header=req_header,
@@ -695,7 +694,7 @@ class TestRequestMessage(TestCase):
 
             request_payload = batch_item.request_payload
             msg = "Bad request payload type: expected {0}, received {1}"
-            exp_type = operations.RegisterRequestPayload
+            exp_type = register.RegisterRequestPayload
             rcv_type = type(request_payload)
             self.assertIsInstance(request_payload, exp_type,
                                   msg.format(exp_type, rcv_type))
@@ -801,9 +800,10 @@ class TestRequestMessage(TestCase):
 
         template = Template(attributes=attributes)
 
-        request_payload = RegisterRequestPayload(object_type=object_type,
-                                                 template_attribute=tmpl_attr,
-                                                 secret=template)
+        request_payload = register.RegisterRequestPayload(
+            object_type=object_type,
+            template_attribute=tmpl_attr,
+            secret=template)
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=request_payload)
         request_message = messages.RequestMessage(request_header=req_header,
@@ -893,7 +893,7 @@ class TestRequestMessage(TestCase):
 
         request_payload = batch_item.request_payload
         msg = "Bad request payload type: expected {0}, received {1}"
-        exp_type = operations.LocateRequestPayload
+        exp_type = locate.LocateRequestPayload
         rcv_type = type(request_payload)
         self.assertIsInstance(request_payload, exp_type,
                               msg.format(exp_type, rcv_type))
@@ -1140,7 +1140,7 @@ class TestResponseMessage(TestCase):
                                              result_status.enum))
 
             response_payload = batch_item.response_payload
-            exp_type = operations.CreateResponsePayload
+            exp_type = create.CreateResponsePayload
             rcv_type = type(response_payload)
             self.assertIsInstance(response_payload, exp_type,
                                   self.msg.format('response payload', 'type',
@@ -1182,8 +1182,8 @@ class TestResponseMessage(TestCase):
 
         uuid = 'fb4b5b9c-6188-4c63-8142-fe9c328129fc'
         uniq_id = attr.UniqueIdentifier(uuid)
-        resp_pl = operations.CreateResponsePayload(object_type=object_type,
-                                                   unique_identifier=uniq_id)
+        resp_pl = create.CreateResponsePayload(object_type=object_type,
+                                               unique_identifier=uniq_id)
         batch_item = messages.ResponseBatchItem(operation=operation,
                                                 result_status=result_status,
                                                 response_payload=resp_pl)
@@ -1289,7 +1289,7 @@ class TestResponseMessage(TestCase):
                                              result_status.enum))
 
             response_payload = batch_item.response_payload
-            exp_type = operations.GetResponsePayload
+            exp_type = get.GetResponsePayload
             rcv_type = type(response_payload)
             self.assertIsInstance(response_payload, exp_type,
                                   self.msg.format('response payload', 'type',
@@ -1405,9 +1405,9 @@ class TestResponseMessage(TestCase):
                  'cryptographic_length': cryptographic_length}
         secret = self.secret_factory.create_secret(ObjectType.SYMMETRIC_KEY,
                                                    value)
-        resp_pl = operations.GetResponsePayload(object_type=object_type,
-                                                unique_identifier=uniq_id,
-                                                secret=secret)
+        resp_pl = get.GetResponsePayload(object_type=object_type,
+                                         unique_identifier=uniq_id,
+                                         secret=secret)
         batch_item = messages.ResponseBatchItem(operation=operation,
                                                 result_status=result_status,
                                                 response_payload=resp_pl)
@@ -1521,7 +1521,7 @@ class TestResponseMessage(TestCase):
 
             response_payload = batch_item.response_payload
             msg = "Bad response payload type: expected {0}, received {1}"
-            exp_type = operations.DestroyResponsePayload
+            exp_type = destroy.DestroyResponsePayload
             rcv_type = type(response_payload)
             self.assertIsInstance(response_payload, exp_type,
                                   msg.format(exp_type, rcv_type))
@@ -1552,7 +1552,7 @@ class TestResponseMessage(TestCase):
         result_status = contents.ResultStatus(enums.ResultStatus.SUCCESS)
 
         uuid = attr.UniqueIdentifier('fb4b5b9c-6188-4c63-8142-fe9c328129fc')
-        resp_pl = DestroyResponsePayload(unique_identifier=uuid)
+        resp_pl = destroy.DestroyResponsePayload(unique_identifier=uuid)
         batch_item = messages.ResponseBatchItem(operation=operation,
                                                 result_status=result_status,
                                                 response_payload=resp_pl)
@@ -1664,7 +1664,7 @@ class TestResponseMessage(TestCase):
 
             response_payload = batch_item.response_payload
             msg = "Bad response payload type: expected {0}, received {1}"
-            exp_type = operations.RegisterResponsePayload
+            exp_type = register.RegisterResponsePayload
             rcv_type = type(response_payload)
             self.assertIsInstance(response_payload, exp_type,
                                   msg.format(exp_type, rcv_type))
@@ -1695,7 +1695,7 @@ class TestResponseMessage(TestCase):
         result_status = contents.ResultStatus(enums.ResultStatus.SUCCESS)
 
         uuid = attr.UniqueIdentifier('5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3')
-        resp_pl = RegisterResponsePayload(unique_identifier=uuid)
+        resp_pl = register.RegisterResponsePayload(unique_identifier=uuid)
         batch_item = messages.ResponseBatchItem(operation=operation,
                                                 result_status=result_status,
                                                 response_payload=resp_pl)
@@ -1728,7 +1728,7 @@ class TestResponseMessage(TestCase):
         result_status = contents.ResultStatus(enums.ResultStatus.SUCCESS)
         uuid = attr.UniqueIdentifier('49a1ca88-6bea-4fb2-b450-7e58802c3038')
 
-        resp_pl = LocateResponsePayload(unique_identifiers=[uuid])
+        resp_pl = locate.LocateResponsePayload(unique_identifiers=[uuid])
 
         batch_item = messages.ResponseBatchItem(operation=operation,
                                                 result_status=result_status,
