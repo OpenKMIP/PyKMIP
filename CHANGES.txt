@@ -1,1 +1,19 @@
-v0.0.1, August 12 2014 -- Initial release.
+0.2.0 - November 12, 2014
+* Add configuration file support
+* Add client support for the Locate operation
+* Update README with additional information and reStructuredText format
+
+0.1.1 - September 12, 2014
+* Fix bug with auto-installing third party dependencies
+
+0.1.0 - August 28, 2014
+* Add support for Python 3.3 and 3.4
+* Add support for KMIP client/server SSL connections
+* Remove all Thrift library dependencies
+
+0.0.1 - August 12, 2014
+* Initial release
+* Add support for Python 2.6 and 2.7
+* Add KMIP client and server
+* Add client/server support for Create, Get, Register, and Destroy operations
+* Add unit test suite
