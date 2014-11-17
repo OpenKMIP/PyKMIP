@@ -28,16 +28,16 @@ class TestNameValue(TestCase):
         super(TestNameValue, self).tearDown()
 
     def test_write_no_padding(self):
-        pass
+        self.skip('Not implemented')
 
     def test_write_with_padding(self):
-        pass
+        self.skip('Not implemented')
 
     def test_read_no_padding(self):
-        pass
+        self.skip('Not implemented')
 
     def test_read_with_padding(self):
-        pass
+        self.skip('Not implemented')
 
 
 class TestName(TestCase):
@@ -50,13 +50,13 @@ class TestName(TestCase):
         super(TestName, self).tearDown()
 
     def test_minimum_write(self):
-        pass
+        self.skip('Not implemented')
 
     def test_maximum_write(self):
-        pass
+        self.skip('Not implemented')
 
     def test_minimum_read(self):
-        pass
+        self.skip('Not implemented')
 
     def test_maximum_read(self):
-        pass
+        self.skip('Not implemented')
