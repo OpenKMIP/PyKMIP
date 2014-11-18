@@ -28,6 +28,7 @@ setuptools.setup(
     package_data={'kmip': ['logconfig.ini']},
     install_requires=[
         "enum34",
+        "six",
         "sqlalchemy",
     ],
     classifiers=[

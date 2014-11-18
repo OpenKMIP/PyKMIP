@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import six
 import sys
 
 from struct import pack, unpack
@@ -258,21 +259,14 @@ class LongInteger(Base):
     def __validate(self):
         if self.value is not None:
             data_type = type(self.value)
-            if sys.version < '3':
-                valid_data_types = (int, long)
-                error_msg = '{0} or {1}'.format(int, long)
-            else:
-                valid_data_types = (int,)
-                error_msg = '{0}'.format(int)
-            if data_type not in valid_data_types:
-                raise errors.StateTypeError(LongInteger.__name__,
-                                            error_msg,
-                                            data_type)
+            if data_type not in six.integer_types:
+                raise errors.StateTypeError(
+                    LongInteger.__name__, "{0}".format(six.integer_types),
+                    data_type)
             num_bytes = utils.count_bytes(self.value)
             if num_bytes > self.length:
-                raise errors.StateOverflowError(LongInteger.__name__,
-                                                'value', self.length,
-                                                num_bytes)
+                raise errors.StateOverflowError(
+                    LongInteger.__name__, 'value', self.length, num_bytes)
 
     def __repr__(self):
         return '<Long Integer, %d>' % (self.value)
@@ -369,15 +363,15 @@ class BigInteger(Base):
     def __validate(self):
         if self.value is not None:
             data_type = type(self.value)
-            if data_type not in (int, long):
-                raise errors.StateTypeError(BigInteger.__name__,
-                                            '{0} or {1}'.format(int, long),
-                                            data_type)
+            if data_type not in six.integer_types:
+                raise errors.StateTypeError(
+                    BigInteger.__name__, "{0}".format(six.integer_types),
+                    data_type)
             num_bytes = utils.count_bytes(self.length)
             if num_bytes > self.LENGTH_SIZE:
-                raise errors.StateOverflowError(BigInteger.__name__,
-                                                'length', self.LENGTH_SIZE,
-                                                num_bytes)
+                raise errors.StateOverflowError(
+                    BigInteger.__name__, 'length', self.LENGTH_SIZE,
+                    num_bytes)
 
 
 class Enumeration(Integer):
