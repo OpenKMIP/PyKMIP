@@ -15,6 +15,8 @@
 
 from testtools import TestCase
 
+from kmip.core.attributes import OperationPolicyName
+
 from kmip.core.utils import BytearrayStream
 
 
@@ -60,3 +62,24 @@ class TestName(TestCase):
 
     def test_maximum_read(self):
         self.skip('Not implemented')
+
+
+class TestOperationPolicyName(TestCase):
+
+    def setUp(self):
+        super(TestOperationPolicyName, self).setUp()
+
+    def tearDown(self):
+        super(TestOperationPolicyName, self).tearDown()
+
+    def _test_operation_policy_name(self, value):
+        opn = OperationPolicyName(value)
+
+        msg = "expected {0}, received {1}".format(value, opn.value)
+        self.assertEqual(value, opn.value, msg)
+
+    def test_operation_policy_name(self):
+        self._test_operation_policy_name('test')
+
+    def test_operation_policy_name_on_none(self):
+        self._test_operation_policy_name(None)

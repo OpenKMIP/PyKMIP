@@ -25,6 +25,7 @@ from kmip.core.attributes import Name
 from kmip.core.attributes import ObjectGroup
 from kmip.core.attributes import UniqueIdentifier
 from kmip.core.attributes import ObjectType
+from kmip.core.attributes import OperationPolicyName
 
 from kmip.core import utils
 
@@ -185,7 +186,7 @@ class AttributeValueFactory(object):
         raise NotImplementedError()
 
     def _create_operation_policy_name(self, name):
-        raise NotImplementedError()
+        return OperationPolicyName(name)
 
     def _create_cryptographic_usage_mask(self, flags):
         mask = None

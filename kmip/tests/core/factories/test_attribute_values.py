@@ -15,6 +15,8 @@
 
 from testtools import TestCase
 
+from kmip.core.enums import AttributeType
+from kmip.core.attributes import OperationPolicyName
 from kmip.core.factories.attribute_values import AttributeValueFactory
 
 
@@ -26,3 +28,32 @@ class TestAttributeValueFactory(TestCase):
 
     def tearDown(self):
         super(TestAttributeValueFactory, self).tearDown()
+
+    # TODO (peter-hamilton) Consider even further modularity
+    def _test_operation_policy_name(self, opn, value):
+        msg = "expected {0}, received {1}".format(OperationPolicyName, opn)
+        self.assertIsInstance(opn, OperationPolicyName, msg)
+
+        msg = "expected {0}, received {1}".format(value, opn.value)
+        self.assertEqual(value, opn.value, msg)
+
+    def _test_create_attribute_value_operation_policy_name(self, value):
+        opn = self.factory.create_attribute_value(
+            AttributeType.OPERATION_POLICY_NAME, value)
+        self._test_operation_policy_name(opn, value)
+
+    def _test_create_operation_policy_name(self, value):
+        opn = self.factory._create_operation_policy_name(value)
+        self._test_operation_policy_name(opn, value)
+
+    def test_create_attribute_value_operation_policy_name(self):
+        self._test_create_attribute_value_operation_policy_name('test')
+
+    def test_create_attribute_value_operation_policy_name_on_none(self):
+        self._test_create_attribute_value_operation_policy_name(None)
+
+    def test_create_operation_policy_name(self):
+        self._test_create_operation_policy_name('test')
+
+    def test_create_operation_policy_name_on_none(self):
+        self._test_create_operation_policy_name(None)

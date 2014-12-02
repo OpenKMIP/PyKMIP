@@ -259,6 +259,14 @@ class CertificateType(Enumeration):
                                              Tags.CERTIFICATE_TYPE)
 
 
+# 3.18
+class OperationPolicyName(TextString):
+
+    def __init__(self, value=None):
+        super(OperationPolicyName, self).__init__(
+            value, Tags.OPERATION_POLICY_NAME)
+
+
 # 3.19
 class CryptographicUsageMask(Integer):
 
