@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
 import time
 
 from kmip.core.messages.messages import RequestMessage
@@ -43,6 +44,7 @@ from kmip.core.utils import BytearrayStream
 
 class Processor(object):
     def __init__(self, handler):
+        self.logger = logging.getLogger(__name__)
         self._handler = handler
 
     def process(self, istream, ostream):

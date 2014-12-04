@@ -19,7 +19,8 @@ from kmip.core.messages import contents
 from kmip.core.messages.contents import AsynchronousCorrelationValue
 from kmip.core.messages.contents import BatchErrorContinuationOption
 
-from kmip.core.messages import payloads
+from kmip.core.factories.payloads.request import RequestPayloadFactory
+from kmip.core.factories.payloads.response import ResponsePayloadFactory
 
 from kmip.core.primitives import Struct
 
@@ -175,6 +176,9 @@ class RequestBatchItem(Struct):
                  request_payload=None,
                  message_extension=None):
         super(self.__class__, self).__init__(tag=Tags.REQUEST_BATCH_ITEM)
+
+        self.payload_factory = RequestPayloadFactory()
+
         self.operation = operation
         self.unique_batch_item_id = unique_batch_item_id
         self.request_payload = request_payload
@@ -193,9 +197,10 @@ class RequestBatchItem(Struct):
             self.unique_batch_item_id = contents.UniqueBatchItemID()
             self.unique_batch_item_id.read(tstream)
 
-        # Lookup the response payload class that belongs to the operation
-        cls = payloads.REQUEST_MAP.get(self.operation.enum)
-        self.request_payload = cls()
+        # Dynamically create the response payload class that belongs to the
+        # operation
+        self.request_payload = self.payload_factory.create(
+            self.operation.enum)
         self.request_payload.read(tstream)
 
         # Read the message extension if it is present
@@ -237,6 +242,9 @@ class ResponseBatchItem(Struct):
                  response_payload=None,
                  message_extension=None):
         super(self.__class__, self).__init__(tag=Tags.RESPONSE_BATCH_ITEM)
+
+        self.payload_factory = ResponsePayloadFactory()
+
         self.operation = operation
         self.unique_batch_item_id = unique_batch_item_id
         self.result_status = result_status
@@ -280,11 +288,11 @@ class ResponseBatchItem(Struct):
             self.async_correlation_value = AsynchronousCorrelationValue()
             self.async_correlation_value.read(tstream)
 
-        # Lookup the response payload class that belongs to the operation
-        cls = payloads.RESPONSE_MAP.get(self.operation.enum)
-        expected = cls()
+        # Dynamically create the response payload class that belongs to the
+        # operation
+        expected = self.payload_factory.create(self.operation.enum)
         if self.is_tag_next(expected.tag, tstream):
-            self.response_payload = cls()
+            self.response_payload = expected
             self.response_payload.read(tstream)
 
         # Read the message extension if it is present

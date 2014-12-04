@@ -31,14 +31,18 @@ class KMIPProtocol(object):
     def write(self, data):
         if len(data) > 0:
             sbuffer = bytes(data)
-            self.logger.debug('buffer: {0}'.format(binascii.hexlify(sbuffer)))
+            self.logger.debug('KMIPProtocol.write: {0}'.format(
+                binascii.hexlify(sbuffer)))
             self.socket.sendall(sbuffer)
 
     def read(self):
         header = self._recv_all(self.HEADER_SIZE)
         msg_size = unpack('!I', header[4:])[0]
         payload = self._recv_all(msg_size)
-        return BytearrayStream(header + payload)
+        data = BytearrayStream(header + payload)
+        self.logger.debug('KMIPProtocol.read: {0}'.format(
+            binascii.hexlify(bytes(data.buffer))))
+        return data
 
     def _recv_all(self, total_bytes_to_be_read):
         bytes_read = 0
