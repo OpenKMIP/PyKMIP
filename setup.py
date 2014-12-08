@@ -30,7 +30,6 @@ setuptools.setup(
     install_requires=[
         "enum34",
         "six",
-        "sqlalchemy",
     ],
     classifiers=[
         "Intended Audience :: Developers",
