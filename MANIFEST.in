@@ -2,3 +2,4 @@ include AUTHORS.txt CHANGES.txt LICENSE.txt README.rst
 global-include logconfig.ini
 recursive-include bin run_server.sh
 recursive-include kmip *.py
+include kmip/demos/certs/server.*

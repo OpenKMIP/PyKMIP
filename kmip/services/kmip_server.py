@@ -81,10 +81,10 @@ class KMIPServer(object):
         self.port = int(conf.get_valid_value(port, 'server',
                                              'port', conf.DEFAULT_PORT))
         self.keyfile = conf.get_valid_value(
-            keyfile, 'server', 'keyfile', conf.DEFAULT_CERTFILE)
+            keyfile, 'server', 'keyfile', conf.DEFAULT_KEYFILE)
 
         self.certfile = conf.get_valid_value(
-            certfile, 'server', 'certfile', conf.DEFAULT_KEYFILE)
+            certfile, 'server', 'certfile', conf.DEFAULT_CERTFILE)
 
         self.cert_reqs = getattr(ssl, conf.get_valid_value(
             cert_reqs, 'server', 'cert_reqs', 'CERT_NONE'))
