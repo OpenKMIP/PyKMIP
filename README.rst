@@ -148,15 +148,6 @@ For more information on KMIP version 1.1, see the following documentation:
 * `Key Management Interoperability Protocol Profiles Version 1.1`_
 * `Key Management Interoperability Protocol Test Cases Version 1.1`_
 
-Contributors
-============
-
-Many thanks to the developers who created PyKMIP:
-
-* `Nathan Reller <nathan.reller@jhuapl.edu>`_
-* `Peter Hamilton <peter.hamilton@jhuapl.edu>`_
-* `Kaitlin Farr <kaitlin.farr@jhuapl.edu>`_
-
 .. _code base: https://github.com/OpenKMIP/PyKMIP
 .. _Organization for the Advancement of Structured Information Standards: https://www.oasis-open.org/
 .. _Key Management Interoperability Protocol Specification Version 1.1: http://docs.oasis-open.org/kmip/spec/v1.1/os/kmip-spec-v1.1-os.html
