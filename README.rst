@@ -53,7 +53,6 @@ KMIP operations to add to PyKMIP:
 
 * Discover Versions
 * List
-* Locate
 * Check
 * Revoke
 * Get Attributes
