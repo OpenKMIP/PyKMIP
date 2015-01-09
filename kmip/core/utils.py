@@ -107,3 +107,16 @@ class BytearrayStream(io.RawIOBase):
 
     def length(self):
         return len(self.buffer)
+
+    def __str__(self):
+        sbuffer = bytes(self.buffer[0:])
+        return str(hexlify(sbuffer))
+
+    def __len__(self):
+        return len(self.buffer)
+
+    def __eq__(self, other):
+        if isinstance(other, BytearrayStream):
+            return (self.buffer == other.buffer)
+        else:
+            return NotImplemented

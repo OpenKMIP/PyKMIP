@@ -16,6 +16,7 @@
 from kmip.core.factories.payloads import PayloadFactory
 
 from kmip.core.messages.payloads import create
+from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import locate
@@ -26,6 +27,9 @@ class ResponsePayloadFactory(PayloadFactory):
 
     def _create_create_payload(self):
         return create.CreateResponsePayload()
+
+    def _create_create_key_pair_payload(self):
+        return create_key_pair.CreateKeyPairResponsePayload()
 
     def _create_register_payload(self):
         return register.RegisterResponsePayload()

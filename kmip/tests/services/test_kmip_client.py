@@ -26,6 +26,7 @@ from kmip.core.enums import CredentialType
 from kmip.core.enums import CryptographicAlgorithm
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import ObjectType
+from kmip.core.enums import Operation as OperationEnum
 from kmip.core.enums import KeyFormatType
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import ResultReason
@@ -37,17 +38,28 @@ from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.factories.credentials import CredentialFactory
 from kmip.core.factories.secrets import SecretFactory
 
+from kmip.core.messages.messages import RequestBatchItem
+from kmip.core.messages.messages import ResponseBatchItem
+from kmip.core.messages.messages import ResponseMessage
+from kmip.core.messages.contents import Operation
+from kmip.core.messages.payloads.create_key_pair import \
+    CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
+
 from kmip.core.objects import Attribute
+from kmip.core.objects import CommonTemplateAttribute
+from kmip.core.objects import PrivateKeyTemplateAttribute
+from kmip.core.objects import PublicKeyTemplateAttribute
 from kmip.core.objects import TemplateAttribute
 
 from kmip.core.secrets import SymmetricKey
 
 from kmip.services.kmip_client import KMIPProxy
+from kmip.services.results import CreateKeyPairResult
 
 import kmip.core.utils as utils
 
 
-class TestKMIPClient(TestCase):
+class TestKMIPClientIntegration(TestCase):
     STARTUP_TIME = 1.0
     SHUTDOWN_TIME = 0.1
     KMIP_PORT = 9090
@@ -55,7 +67,7 @@ class TestKMIPClient(TestCase):
         os.path.abspath(__file__)), '../../demos/certs/server.crt'))
 
     def setUp(self):
-        super(TestKMIPClient, self).setUp()
+        super(TestKMIPClientIntegration, self).setUp()
 
         self.attr_factory = AttributeFactory()
         self.cred_factory = CredentialFactory()
@@ -82,7 +94,7 @@ class TestKMIPClient(TestCase):
             raise e
 
     def tearDown(self):
-        super(TestKMIPClient, self).tearDown()
+        super(TestKMIPClientIntegration, self).tearDown()
 
         # Close the client proxy and shutdown the server
         self.client.close()
@@ -248,66 +260,6 @@ class TestKMIPClient(TestCase):
                                        expected, observed, 'value')
         self.assertEqual(expected, observed, message)
 
-    # TODO (peter-hamilton) Modify for credential type and/or add new test
-    def test_build_credential(self):
-        username = 'username'
-        password = 'password'
-        cred_type = CredentialType.USERNAME_AND_PASSWORD
-        self.client.username = username
-        self.client.password = password
-
-        credential = self.client._build_credential()
-
-        message = utils.build_er_error(credential.__class__, 'type',
-                                       cred_type,
-                                       credential.credential_type.enum,
-                                       'value')
-        self.assertEqual(CredentialType.USERNAME_AND_PASSWORD,
-                         credential.credential_type.enum,
-                         message)
-
-        message = utils.build_er_error(
-            credential.__class__, 'type', username,
-            credential.credential_value.username.value, 'value')
-        self.assertEqual(username, credential.credential_value.username.value,
-                         message)
-
-        message = utils.build_er_error(
-            credential.__class__, 'type', password,
-            credential.credential_value.password.value, 'value')
-        self.assertEqual(password, credential.credential_value.password.value,
-                         message)
-
-    def test_build_credential_no_username(self):
-        username = None
-        password = 'password'
-        self.client.username = username
-        self.client.password = password
-
-        exception = self.assertRaises(ValueError,
-                                      self.client._build_credential)
-        self.assertEqual('cannot build credential, username is None',
-                         str(exception))
-
-    def test_build_credential_no_password(self):
-        username = 'username'
-        password = None
-        self.client.username = username
-        self.client.password = password
-
-        exception = self.assertRaises(ValueError,
-                                      self.client._build_credential)
-        self.assertEqual('cannot build credential, password is None',
-                         str(exception))
-
-    def test_build_credential_no_creds(self):
-        self.client.username = None
-        self.client.password = None
-
-        credential = self.client._build_credential()
-
-        self.assertEqual(None, credential)
-
     def _shutdown_server(self):
         if self.server.poll() is not None:
             return
@@ -445,3 +397,163 @@ class TestKMIPClient(TestCase):
         message = utils.build_er_error(Attribute, 'value', expected, observed,
                                        'attribute_value')
         self.assertEqual(expected, observed, message)
+
+
+class TestKMIPClient(TestCase):
+
+    def setUp(self):
+        super(TestKMIPClient, self).setUp()
+
+        self.attr_factory = AttributeFactory()
+        self.cred_factory = CredentialFactory()
+        self.secret_factory = SecretFactory()
+
+        self.client = KMIPProxy()
+
+    def tearDown(self):
+        super(TestKMIPClient, self).tearDown()
+
+    # TODO (peter-hamilton) Modify for credential type and/or add new test
+    def test_build_credential(self):
+        username = 'username'
+        password = 'password'
+        cred_type = CredentialType.USERNAME_AND_PASSWORD
+        self.client.username = username
+        self.client.password = password
+
+        credential = self.client._build_credential()
+
+        message = utils.build_er_error(credential.__class__, 'type',
+                                       cred_type,
+                                       credential.credential_type.enum,
+                                       'value')
+        self.assertEqual(CredentialType.USERNAME_AND_PASSWORD,
+                         credential.credential_type.enum,
+                         message)
+
+        message = utils.build_er_error(
+            credential.__class__, 'type', username,
+            credential.credential_value.username.value, 'value')
+        self.assertEqual(username, credential.credential_value.username.value,
+                         message)
+
+        message = utils.build_er_error(
+            credential.__class__, 'type', password,
+            credential.credential_value.password.value, 'value')
+        self.assertEqual(password, credential.credential_value.password.value,
+                         message)
+
+    def test_build_credential_no_username(self):
+        username = None
+        password = 'password'
+        self.client.username = username
+        self.client.password = password
+
+        exception = self.assertRaises(ValueError,
+                                      self.client._build_credential)
+        self.assertEqual('cannot build credential, username is None',
+                         str(exception))
+
+    def test_build_credential_no_password(self):
+        username = 'username'
+        password = None
+        self.client.username = username
+        self.client.password = password
+
+        exception = self.assertRaises(ValueError,
+                                      self.client._build_credential)
+        self.assertEqual('cannot build credential, password is None',
+                         str(exception))
+
+    def test_build_credential_no_creds(self):
+        self.client.username = None
+        self.client.password = None
+
+        credential = self.client._build_credential()
+
+        self.assertEqual(None, credential)
+
+    def _test_build_create_key_pair_batch_item(self, common, private, public):
+        batch_item = self.client._build_create_key_pair_batch_item(
+            common_template_attribute=common,
+            private_key_template_attribute=private,
+            public_key_template_attribute=public)
+
+        base = "expected {0}, received {1}"
+        msg = base.format(RequestBatchItem, batch_item)
+        self.assertIsInstance(batch_item, RequestBatchItem, msg)
+
+        operation = batch_item.operation
+
+        msg = base.format(Operation, operation)
+        self.assertIsInstance(operation, Operation, msg)
+
+        operation_enum = operation.enum
+
+        msg = base.format(OperationEnum.CREATE_KEY_PAIR, operation_enum)
+        self.assertEqual(OperationEnum.CREATE_KEY_PAIR, operation_enum, msg)
+
+        payload = batch_item.request_payload
+
+        msg = base.format(CreateKeyPairRequestPayload, payload)
+        self.assertIsInstance(payload, CreateKeyPairRequestPayload, msg)
+
+        common_observed = payload.common_template_attribute
+        private_observed = payload.private_key_template_attribute
+        public_observed = payload.public_key_template_attribute
+
+        msg = base.format(common, common_observed)
+        self.assertEqual(common, common_observed, msg)
+
+        msg = base.format(private, private_observed)
+        self.assertEqual(private, private_observed, msg)
+
+        msg = base.format(public, public_observed)
+        self.assertEqual(public, public_observed)
+
+    def test_build_create_key_pair_batch_item_with_input(self):
+        self._test_build_create_key_pair_batch_item(
+            CommonTemplateAttribute(),
+            PrivateKeyTemplateAttribute(),
+            PublicKeyTemplateAttribute())
+
+    def test_build_create_key_pair_batch_item_no_input(self):
+        self._test_build_create_key_pair_batch_item(None, None, None)
+
+    def test_process_batch_items(self):
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.CREATE_KEY_PAIR),
+            response_payload=CreateKeyPairResponsePayload())
+        response = ResponseMessage(batch_items=[batch_item, batch_item])
+        results = self.client._process_batch_items(response)
+
+        base = "expected {0}, received {1}"
+        msg = base.format(list, results)
+        self.assertIsInstance(results, list, msg)
+
+        msg = "number of results " + base.format(2, len(results))
+        self.assertEqual(2, len(results), msg)
+
+        for result in results:
+            msg = base.format(CreateKeyPairResult, result)
+            self.assertIsInstance(result, CreateKeyPairResult, msg)
+
+    def test_process_batch_items_no_batch_items(self):
+        response = ResponseMessage(batch_items=[])
+        results = self.client._process_batch_items(response)
+
+        base = "expected {0}, received {1}"
+        msg = base.format(list, results)
+        self.assertIsInstance(results, list, msg)
+
+        msg = "number of results " + base.format(0, len(results))
+        self.assertEqual(0, len(results), msg)
+
+    def test_process_create_key_pair_batch_item(self):
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.CREATE_KEY_PAIR),
+            response_payload=CreateKeyPairResponsePayload())
+        result = self.client._process_create_key_pair_batch_item(batch_item)
+
+        msg = "expected {0}, received {1}".format(CreateKeyPairResult, result)
+        self.assertIsInstance(result, CreateKeyPairResult, msg)

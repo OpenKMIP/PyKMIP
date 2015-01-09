@@ -19,20 +19,21 @@ from kmip.core.enums import Operation
 from kmip.core.factories.payloads.request import RequestPayloadFactory
 
 from kmip.core.messages.payloads import create
+from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import register
 
 
-class TestPayloadFactory(testtools.TestCase):
+class TestRequestPayloadFactory(testtools.TestCase):
 
     def setUp(self):
-        super(TestPayloadFactory, self).setUp()
+        super(TestRequestPayloadFactory, self).setUp()
         self.factory = RequestPayloadFactory()
 
     def tearDown(self):
-        super(TestPayloadFactory, self).tearDown()
+        super(TestRequestPayloadFactory, self).tearDown()
 
     def _test_not_implemented(self, func, args):
         self.assertRaises(NotImplementedError, func, args)
@@ -46,8 +47,9 @@ class TestPayloadFactory(testtools.TestCase):
         self._test_payload_type(payload, create.CreateRequestPayload)
 
     def test_create_create_key_pair_payload(self):
-        self._test_not_implemented(
-            self.factory.create, Operation.CREATE_KEY_PAIR)
+        payload = self.factory.create(Operation.CREATE_KEY_PAIR)
+        self._test_payload_type(
+            payload, create_key_pair.CreateKeyPairRequestPayload)
 
     def test_create_register_payload(self):
         payload = self.factory.create(Operation.REGISTER)

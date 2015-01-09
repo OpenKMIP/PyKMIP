@@ -61,6 +61,22 @@ class CreateResult(OperationResult):
             self.template_attribute = None
 
 
+class CreateKeyPairResult(OperationResult):
+
+    def __init__(self,
+                 result_status,
+                 result_reason=None,
+                 result_message=None,
+                 private_key_uuid=None,
+                 public_key_uuid=None,
+                 private_key_template_attribute=None,
+                 public_key_template_attribute=None):
+        self.private_key_uuid = private_key_uuid
+        self.public_key_uuid = public_key_uuid
+        self.private_key_template_attribute = private_key_template_attribute
+        self.public_key_template_attribute = public_key_template_attribute
+
+
 class RegisterResult(OperationResult):
 
     def __init__(self,

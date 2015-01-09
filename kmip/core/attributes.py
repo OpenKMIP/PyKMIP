@@ -31,9 +31,22 @@ from enum import Enum
 # 3.1
 class UniqueIdentifier(TextString):
 
+    def __init__(self, value=None, tag=Tags.UNIQUE_IDENTIFIER):
+        super(UniqueIdentifier, self).__init__(value, tag)
+
+
+class PrivateKeyUniqueIdentifier(UniqueIdentifier):
+
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value,
-                                             Tags.UNIQUE_IDENTIFIER)
+        super(PrivateKeyUniqueIdentifier, self).__init__(
+            value, Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER)
+
+
+class PublicKeyUniqueIdentifier(UniqueIdentifier):
+
+    def __init__(self, value=None):
+        super(PublicKeyUniqueIdentifier, self).__init__(
+            value, Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER)
 
 
 # 3.2

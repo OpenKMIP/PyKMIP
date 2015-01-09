@@ -56,23 +56,28 @@ class KMIP(object):
         pass
 
     def create(self, object_type, template_attribute, credential=None):
-        raise NotImplementedError
+        raise NotImplementedError()
+
+    def create_key_pair(self, common_template_attribute,
+                        private_key_template_attribute,
+                        public_key_template_attribute):
+        raise NotImplementedError()
 
     def register(self, object_type, template_attribute, secret,
                  credential=None):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def get(self, uuid=None, key_format_type=None, key_compression_type=None,
             key_wrapping_specification=None, credential=None):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def destroy(self, uuid, credential=None):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def locate(self, maximum_items=None, storate_status_mask=None,
                object_group_member=None, attributes=None,
                credential=None):
-        raise NotImplementedError
+        raise NotImplementedError()
 
 
 class KMIPImpl(KMIP):
@@ -129,10 +134,14 @@ class KMIPImpl(KMIP):
         s_uuid, uuid_attribute = self._save(key, attributes)
         ret_attributes.append(uuid_attribute)
         template_attribute = TemplateAttribute(attributes=ret_attributes)
-        return CreateResult(ResultStatus(RS.SUCCESS),
-                            object_type=object_type,
+        return CreateResult(ResultStatus(RS.SUCCESS), object_type=object_type,
                             uuid=UniqueIdentifier(s_uuid),
                             template_attribute=template_attribute)
+
+    def create_key_pair(self, common_template_attribute,
+                        private_key_template_attribute,
+                        public_key_template_attribute):
+        raise NotImplementedError()
 
     def register(self, object_type, template_attribute, secret,
                  credential=None):
@@ -229,10 +238,8 @@ class KMIPImpl(KMIP):
         # currently only symmetric keys are supported, fix this in future
         object_type = ObjectType(OT.SYMMETRIC_KEY)
         ret_value = RS.SUCCESS
-        return GetResult(ResultStatus(ret_value),
-                         object_type=object_type,
-                         uuid=uuid,
-                         secret=managed_object)
+        return GetResult(ResultStatus(ret_value), object_type=object_type,
+                         uuid=uuid, secret=managed_object)
 
     def destroy(self, uuid):
         self.logger.debug('destroy() called')
@@ -268,8 +275,7 @@ class KMIPImpl(KMIP):
             msg = ResultMessage('Locate Operation Not Supported')
             reason = ResultReason(ResultReasonEnum.OPERATION_NOT_SUPPORTED)
             return LocateResult(ResultStatus(RS.OPERATION_FAILED),
-                                result_reason=reason,
-                                result_message=msg)
+                                result_reason=reason, result_message=msg)
 
     def _validate_req_field(self, attrs, name, expected, msg, required=True):
         self.logger.debug('Validating attribute %s' % name)

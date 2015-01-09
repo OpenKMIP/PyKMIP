@@ -541,6 +541,15 @@ class TextString(Base):
     def __repr__(self):
         return '<TextString, %s>' % (self.value)
 
+    def __eq__(self, other):
+        if isinstance(other, TextString):
+            return self.value == other.value
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class ByteString(Base):
     PADDING_SIZE = 8

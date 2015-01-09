@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from six.moves import xrange
+
 from kmip.core import attributes
 from kmip.core.attributes import CryptographicParameters
 
@@ -108,6 +110,22 @@ class Attribute(Struct):
         self.length = tstream.length()
         super(self.__class__, self).write(ostream)
         ostream.write(tstream.buffer)
+
+    def __eq__(self, other):
+        if isinstance(other, Attribute):
+            if self.attribute_name != other.attribute_name:
+                return False
+            elif self.attribute_index != other.attribute_index:
+                return False
+            elif self.attribute_value != other.attribute_value:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 # 2.1.2
@@ -793,14 +811,24 @@ class TemplateAttribute(Struct):
 
     def __init__(self,
                  names=None,
-                 attributes=None):
-        super(self.__class__, self).__init__(tag=Tags.TEMPLATE_ATTRIBUTE)
-        self.names = names
-        self.attributes = attributes
+                 attributes=None,
+                 tag=Tags.TEMPLATE_ATTRIBUTE):
+        super(TemplateAttribute, self).__init__(tag)
+
+        if names is None:
+            self.names = list()
+        else:
+            self.names = names
+
+        if attributes is None:
+            self.attributes = list()
+        else:
+            self.attributes = attributes
+
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(TemplateAttribute, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.names = list()
@@ -825,16 +853,14 @@ class TemplateAttribute(Struct):
         tstream = BytearrayStream()
 
         # Write the names and attributes of the template attribute
-        if self.names is not None:
-            for name in self.names:
-                name.write(tstream)
-        if self.attributes is not None:
-            for attribute in self.attributes:
-                attribute.write(tstream)
+        for name in self.names:
+            name.write(tstream)
+        for attribute in self.attributes:
+            attribute.write(tstream)
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(TemplateAttribute, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -843,3 +869,55 @@ class TemplateAttribute(Struct):
     def __validate(self):
         # TODO (peter-hamilton) Finish implementation.
         pass
+
+    def __eq__(self, other):
+        if isinstance(other, TemplateAttribute):
+            if len(self.names) != len(other.names):
+                return False
+            if len(self.attributes) != len(other.attributes):
+                return False
+
+            for i in xrange(len(self.names)):
+                a = self.names[i]
+                b = other.names[i]
+
+                if a != b:
+                    return False
+
+            for i in xrange(len(self.attributes)):
+                a = self.attributes[i]
+                b = other.attributes[i]
+
+                if a != b:
+                    return False
+
+            return True
+        else:
+            return NotImplemented
+
+
+class CommonTemplateAttribute(TemplateAttribute):
+
+    def __init__(self,
+                 names=None,
+                 attributes=None):
+        super(CommonTemplateAttribute, self).__init__(
+            names, attributes, Tags.COMMON_TEMPLATE_ATTRIBUTE)
+
+
+class PrivateKeyTemplateAttribute(TemplateAttribute):
+
+    def __init__(self,
+                 names=None,
+                 attributes=None):
+        super(PrivateKeyTemplateAttribute, self).__init__(
+            names, attributes, Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE)
+
+
+class PublicKeyTemplateAttribute(TemplateAttribute):
+
+    def __init__(self,
+                 names=None,
+                 attributes=None):
+        super(PublicKeyTemplateAttribute, self).__init__(
+            names, attributes, Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE)
