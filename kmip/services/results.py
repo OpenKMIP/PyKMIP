@@ -71,6 +71,8 @@ class CreateKeyPairResult(OperationResult):
                  public_key_uuid=None,
                  private_key_template_attribute=None,
                  public_key_template_attribute=None):
+        super(CreateKeyPairResult, self).__init__(
+            result_status, result_reason, result_message)
         self.private_key_uuid = private_key_uuid
         self.public_key_uuid = public_key_uuid
         self.private_key_template_attribute = private_key_template_attribute
