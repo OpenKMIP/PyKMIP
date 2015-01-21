@@ -14,23 +14,28 @@
 # under the License.
 
 from kmip.core import attributes
+from kmip.core import misc
 from kmip.core import objects
 
 from kmip.core.enums import Tags
-
+from kmip.core.messages.payloads.create_key_pair import \
+    CreateKeyPairResponsePayload
 from kmip.core.primitives import Struct
-
 from kmip.core.utils import BytearrayStream
 
 
-class CreateKeyPairRequestPayload(Struct):
+class RekeyKeyPairRequestPayload(Struct):
 
     def __init__(self,
+                 private_key_uuid=None,
+                 offset=None,
                  common_template_attribute=None,
                  private_key_template_attribute=None,
                  public_key_template_attribute=None):
-        super(CreateKeyPairRequestPayload, self).__init__(Tags.REQUEST_PAYLOAD)
+        super(RekeyKeyPairRequestPayload, self).__init__(Tags.REQUEST_PAYLOAD)
 
+        self.private_key_uuid = private_key_uuid
+        self.offset = offset
         self.common_template_attribute = common_template_attribute
         self.private_key_template_attribute = private_key_template_attribute
         self.public_key_template_attribute = public_key_template_attribute
@@ -38,8 +43,16 @@ class CreateKeyPairRequestPayload(Struct):
         self.validate()
 
     def read(self, istream):
-        super(CreateKeyPairRequestPayload, self).read(istream)
+        super(RekeyKeyPairRequestPayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
+
+        if self.is_tag_next(Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER, tstream):
+            self.private_key_uuid = attributes.PrivateKeyUniqueIdentifier()
+            self.private_key_uuid.read(tstream)
+
+        if self.is_tag_next(Tags.OFFSET, tstream):
+            self.offset = misc.Offset()
+            self.offset.read(tstream)
 
         if self.is_tag_next(Tags.COMMON_TEMPLATE_ATTRIBUTE, tstream):
             self.common_template_attribute = objects.CommonTemplateAttribute()
@@ -61,6 +74,12 @@ class CreateKeyPairRequestPayload(Struct):
     def write(self, ostream):
         tstream = BytearrayStream()
 
+        if self.private_key_uuid is not None:
+            self.private_key_uuid.write(tstream)
+
+        if self.offset is not None:
+            self.offset.write(tstream)
+
         if self.common_template_attribute is not None:
             self.common_template_attribute.write(tstream)
 
@@ -71,13 +90,29 @@ class CreateKeyPairRequestPayload(Struct):
             self.public_key_template_attribute.write(tstream)
 
         self.length = tstream.length()
-        super(CreateKeyPairRequestPayload, self).write(ostream)
+        super(RekeyKeyPairRequestPayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
         self.__validate()
 
     def __validate(self):
+        if self.private_key_uuid is not None:
+            if not isinstance(self.private_key_uuid,
+                              attributes.PrivateKeyUniqueIdentifier):
+                msg = "invalid private key unique identifier"
+                msg += "; expected {0}, received {1}".format(
+                    attributes.PrivateKeyUniqueIdentifier,
+                    self.private_key_uuid)
+                raise TypeError(msg)
+
+        if self.offset is not None:
+            if not isinstance(self.offset, misc.Offset):
+                msg = "invalid offset"
+                msg += "; expected {0}, received {1}".format(
+                    misc.Offset, self.offset)
+                raise TypeError(msg)
+
         if self.common_template_attribute is not None:
             if not isinstance(self.common_template_attribute,
                               objects.CommonTemplateAttribute):
@@ -106,102 +141,13 @@ class CreateKeyPairRequestPayload(Struct):
                 raise TypeError(msg)
 
 
-class CreateKeyPairResponsePayload(Struct):
+class RekeyKeyPairResponsePayload(CreateKeyPairResponsePayload):
 
     def __init__(self,
                  private_key_uuid=None,
                  public_key_uuid=None,
                  private_key_template_attribute=None,
                  public_key_template_attribute=None):
-        super(CreateKeyPairResponsePayload, self).__init__(
-            Tags.RESPONSE_PAYLOAD)
-
-        # Private and public UUIDs are required so make defaults as backup
-        if private_key_uuid is None:
-            self.private_key_uuid = attributes.PrivateKeyUniqueIdentifier('')
-        else:
-            self.private_key_uuid = private_key_uuid
-
-        if public_key_uuid is None:
-            self.public_key_uuid = attributes.PublicKeyUniqueIdentifier('')
-        else:
-            self.public_key_uuid = public_key_uuid
-
-        self.private_key_template_attribute = private_key_template_attribute
-        self.public_key_template_attribute = public_key_template_attribute
-
-        self.validate()
-
-    def read(self, istream):
-        super(CreateKeyPairResponsePayload, self).read(istream)
-        tstream = BytearrayStream(istream.read(self.length))
-
-        self.private_key_uuid.read(tstream)
-        self.public_key_uuid.read(tstream)
-
-        if self.is_tag_next(Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE, tstream):
-            self.private_key_template_attribute = \
-                objects.PrivateKeyTemplateAttribute()
-            self.private_key_template_attribute.read(tstream)
-
-        if self.is_tag_next(Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE, tstream):
-            self.public_key_template_attribute = \
-                objects.PublicKeyTemplateAttribute()
-            self.public_key_template_attribute.read(tstream)
-
-        self.is_oversized(tstream)
-        self.validate()
-
-    def write(self, ostream):
-        tstream = BytearrayStream()
-
-        self.private_key_uuid.write(tstream)
-        self.public_key_uuid.write(tstream)
-
-        if self.private_key_template_attribute is not None:
-            self.private_key_template_attribute.write(tstream)
-
-        if self.public_key_template_attribute is not None:
-            self.public_key_template_attribute.write(tstream)
-
-        self.length = tstream.length()
-        super(CreateKeyPairResponsePayload, self).write(ostream)
-        ostream.write(tstream.buffer)
-
-    def validate(self):
-        self.__validate()
-
-    def __validate(self):
-        if not isinstance(self.private_key_uuid,
-                          attributes.PrivateKeyUniqueIdentifier):
-            msg = "invalid private key unique identifier"
-            msg += "; expected {0}, received {1}".format(
-                attributes.PrivateKeyUniqueIdentifier,
-                self.private_key_uuid)
-            raise TypeError(msg)
-
-        if not isinstance(self.public_key_uuid,
-                          attributes.PublicKeyUniqueIdentifier):
-            msg = "invalid public key unique identifier"
-            msg += "; expected {0}, received {1}".format(
-                attributes.PublicKeyUniqueIdentifier,
-                self.public_key_uuid)
-            raise TypeError(msg)
-
-        if self.private_key_template_attribute is not None:
-            if not isinstance(self.private_key_template_attribute,
-                              objects.PrivateKeyTemplateAttribute):
-                msg = "invalid private key template attribute"
-                msg += "; expected {0}, received {1}".format(
-                    objects.PrivateKeyTemplateAttribute,
-                    self.private_key_template_attribute)
-                raise TypeError(msg)
-
-        if self.public_key_template_attribute is not None:
-            if not isinstance(self.public_key_template_attribute,
-                              objects.PublicKeyTemplateAttribute):
-                msg = "invalid public key template attribute"
-                msg += "; expected {0}, received {1}".format(
-                    objects.PublicKeyTemplateAttribute,
-                    self.public_key_template_attribute)
-                raise TypeError(msg)
+        super(RekeyKeyPairResponsePayload, self).__init__(
+            private_key_uuid, public_key_uuid, private_key_template_attribute,
+            public_key_template_attribute)

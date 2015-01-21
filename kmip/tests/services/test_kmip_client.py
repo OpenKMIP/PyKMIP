@@ -21,6 +21,8 @@ import os
 import sys
 import time
 
+from kmip.core.attributes import PrivateKeyUniqueIdentifier
+
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CredentialType
 from kmip.core.enums import CryptographicAlgorithm
@@ -44,6 +46,10 @@ from kmip.core.messages.messages import ResponseMessage
 from kmip.core.messages.contents import Operation
 from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
+from kmip.core.messages.payloads.rekey_key_pair import \
+    RekeyKeyPairRequestPayload, RekeyKeyPairResponsePayload
+
+from kmip.core.misc import Offset
 
 from kmip.core.objects import Attribute
 from kmip.core.objects import CommonTemplateAttribute
@@ -55,10 +61,12 @@ from kmip.core.secrets import SymmetricKey
 
 from kmip.services.kmip_client import KMIPProxy
 from kmip.services.results import CreateKeyPairResult
+from kmip.services.results import RekeyKeyPairResult
 
 import kmip.core.utils as utils
 
 
+# TODO (peter-hamilton) Move integration tests into separate module
 class TestKMIPClientIntegration(TestCase):
     STARTUP_TIME = 1.0
     SHUTDOWN_TIME = 0.1
@@ -520,6 +528,65 @@ class TestKMIPClient(TestCase):
     def test_build_create_key_pair_batch_item_no_input(self):
         self._test_build_create_key_pair_batch_item(None, None, None)
 
+    def _test_build_rekey_key_pair_batch_item(self, uuid, offset, common,
+                                              private, public):
+        batch_item = self.client._build_rekey_key_pair_batch_item(
+            private_key_uuid=uuid, offset=offset,
+            common_template_attribute=common,
+            private_key_template_attribute=private,
+            public_key_template_attribute=public)
+
+        base = "expected {0}, received {1}"
+        msg = base.format(RequestBatchItem, batch_item)
+        self.assertIsInstance(batch_item, RequestBatchItem, msg)
+
+        operation = batch_item.operation
+
+        msg = base.format(Operation, operation)
+        self.assertIsInstance(operation, Operation, msg)
+
+        operation_enum = operation.enum
+
+        msg = base.format(OperationEnum.REKEY_KEY_PAIR, operation_enum)
+        self.assertEqual(OperationEnum.REKEY_KEY_PAIR, operation_enum, msg)
+
+        payload = batch_item.request_payload
+
+        msg = base.format(RekeyKeyPairRequestPayload, payload)
+        self.assertIsInstance(payload, RekeyKeyPairRequestPayload, msg)
+
+        private_key_uuid_observed = payload.private_key_uuid
+        offset_observed = payload.offset
+        common_observed = payload.common_template_attribute
+        private_observed = payload.private_key_template_attribute
+        public_observed = payload.public_key_template_attribute
+
+        msg = base.format(uuid, private_key_uuid_observed)
+        self.assertEqual(uuid, private_key_uuid_observed, msg)
+
+        msg = base.format(offset, offset_observed)
+        self.assertEqual(offset, offset_observed, msg)
+
+        msg = base.format(common, common_observed)
+        self.assertEqual(common, common_observed, msg)
+
+        msg = base.format(private, private_observed)
+        self.assertEqual(private, private_observed, msg)
+
+        msg = base.format(public, public_observed)
+        self.assertEqual(public, public_observed)
+
+    def test_build_rekey_key_pair_batch_item_with_input(self):
+        self._test_build_rekey_key_pair_batch_item(
+            PrivateKeyUniqueIdentifier(), Offset(),
+            CommonTemplateAttribute(),
+            PrivateKeyTemplateAttribute(),
+            PublicKeyTemplateAttribute())
+
+    def test_build_rekey_key_pair_batch_item_no_input(self):
+        self._test_build_rekey_key_pair_batch_item(
+            None, None, None, None, None)
+
     def test_process_batch_items(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE_KEY_PAIR),
@@ -549,6 +616,24 @@ class TestKMIPClient(TestCase):
         msg = "number of results " + base.format(0, len(results))
         self.assertEqual(0, len(results), msg)
 
+    def test_get_batch_item_processor(self):
+        base = "expected {0}, received {1}"
+
+        expected = self.client._process_create_key_pair_batch_item
+        observed = self.client._get_batch_item_processor(
+            OperationEnum.CREATE_KEY_PAIR)
+        msg = base.format(expected, observed)
+        self.assertEqual(expected, observed, msg)
+
+        expected = self.client._process_rekey_key_pair_batch_item
+        observed = self.client._get_batch_item_processor(
+            OperationEnum.REKEY_KEY_PAIR)
+        msg = base.format(expected, observed)
+        self.assertEqual(expected, observed, msg)
+
+        self.assertRaisesRegexp(ValueError, "no processor for operation",
+                                self.client._get_batch_item_processor, None)
+
     def test_process_create_key_pair_batch_item(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE_KEY_PAIR),
@@ -557,3 +642,12 @@ class TestKMIPClient(TestCase):
 
         msg = "expected {0}, received {1}".format(CreateKeyPairResult, result)
         self.assertIsInstance(result, CreateKeyPairResult, msg)
+
+    def test_process_rekey_key_pair_batch_item(self):
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.REKEY_KEY_PAIR),
+            response_payload=RekeyKeyPairResponsePayload())
+        result = self.client._process_rekey_key_pair_batch_item(batch_item)
+
+        msg = "expected {0}, received {1}".format(RekeyKeyPairResult, result)
+        self.assertIsInstance(result, RekeyKeyPairResult, msg)

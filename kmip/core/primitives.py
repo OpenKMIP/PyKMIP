@@ -175,6 +175,9 @@ class Integer(Base):
         super(Integer, self).__init__(tag, type=Types.INTEGER)
 
         self.value = value
+        if self.value is None:
+            self.value = 0
+
         self.length = self.LENGTH
         self.padding_length = self.LENGTH
 
@@ -222,6 +225,15 @@ class Integer(Base):
 
     def __repr__(self):
         return '<Integer, %d>' % (self.value)
+
+    def __eq__(self, other):
+        if isinstance(other, Integer):
+            return self.value == other.value
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class LongInteger(Base):

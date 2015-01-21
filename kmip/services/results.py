@@ -99,6 +99,22 @@ class RegisterResult(OperationResult):
             self.template_attribute = None
 
 
+class RekeyKeyPairResult(CreateKeyPairResult):
+
+    def __init__(self,
+                 result_status,
+                 result_reason=None,
+                 result_message=None,
+                 private_key_uuid=None,
+                 public_key_uuid=None,
+                 private_key_template_attribute=None,
+                 public_key_template_attribute=None):
+        super(RekeyKeyPairResult, self).__init__(
+            result_status, result_reason, result_message, private_key_uuid,
+            public_key_uuid, private_key_template_attribute,
+            public_key_template_attribute)
+
+
 class GetResult(OperationResult):
 
     def __init__(self,

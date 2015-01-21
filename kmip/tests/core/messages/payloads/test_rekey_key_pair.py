@@ -16,17 +16,22 @@
 from testtools import TestCase
 
 from kmip.core import attributes
+from kmip.core import misc
 from kmip.core import objects
 from kmip.core import utils
 
-from kmip.core.messages.payloads import create_key_pair
+from kmip.core.messages.payloads import rekey_key_pair
 
 
-class TestCreateKeyPairRequestPayload(TestCase):
+class TestRekeyKeyPairRequestPayload(TestCase):
 
     def setUp(self):
-        super(TestCreateKeyPairRequestPayload, self).setUp()
+        super(TestRekeyKeyPairRequestPayload, self).setUp()
 
+        self.uuid = '00000000-0000-0000-0000-000000000000'
+        self.private_key_uuid = attributes.PrivateKeyUniqueIdentifier(
+            self.uuid)
+        self.offset = misc.Offset(0)
         self.common_template_attribute = objects.CommonTemplateAttribute()
         self.private_key_template_attribute = \
             objects.PrivateKeyTemplateAttribute()
@@ -36,50 +41,84 @@ class TestCreateKeyPairRequestPayload(TestCase):
         self.encoding_empty = utils.BytearrayStream((
             b'\x42\x00\x79\x01\x00\x00\x00\x00'))
         self.encoding_full = utils.BytearrayStream((
-            b'\x42\x00\x79\x01\x00\x00\x00\x18\x42\x00\x1F\x01\x00\x00\x00\x00'
-            b'\x42\x00\x65\x01\x00\x00\x00\x00\x42\x00\x6E\x01\x00\x00\x00'
-            b'\x00'))
+            b'\x42\x00\x79\x01\x00\x00\x00\x58\x42\x00\x66\x07\x00\x00\x00\x24'
+            b'\x30\x30\x30\x30\x30\x30\x30\x30\x2d\x30\x30\x30\x30\x2d\x30\x30'
+            b'\x30\x30\x2d\x30\x30\x30\x30\x2d\x30\x30\x30\x30\x30\x30\x30\x30'
+            b'\x30\x30\x30\x30\x00\x00\x00\x00\x42\x00\x58\x0A\x00\x00\x00\x04'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00\x42\x00\x1F\x01\x00\x00\x00\x00'
+            b'\x42\x00\x65\x01\x00\x00\x00\x00\x42\x00\x6E\x01\x00\x00\x00\x00'
+            ))
 
     def tearDown(self):
-        super(TestCreateKeyPairRequestPayload, self).tearDown()
+        super(TestRekeyKeyPairRequestPayload, self).tearDown()
 
     def test_init_with_none(self):
-        create_key_pair.CreateKeyPairRequestPayload()
+        rekey_key_pair.RekeyKeyPairRequestPayload()
 
     def test_init_with_args(self):
-        create_key_pair.CreateKeyPairRequestPayload(
-            self.common_template_attribute,
+        rekey_key_pair.RekeyKeyPairRequestPayload(
+            self.private_key_uuid, self.offset, self.common_template_attribute,
             self.private_key_template_attribute,
             self.public_key_template_attribute)
 
+    def test_validate_with_invalid_private_key_unique_identifier(self):
+        kwargs = {'private_key_uuid': 'invalid', 'offset': None,
+                  'common_template_attribute': None,
+                  'private_key_template_attribute': None,
+                  'public_key_template_attribute': None}
+        self.assertRaisesRegexp(
+            TypeError, "invalid private key unique identifier",
+            rekey_key_pair.RekeyKeyPairRequestPayload, **kwargs)
+
+    def test_validate_with_invalid_offset(self):
+        kwargs = {'private_key_uuid': None, 'offset': 'invalid',
+                  'common_template_attribute': None,
+                  'private_key_template_attribute': None,
+                  'public_key_template_attribute': None}
+        self.assertRaisesRegexp(
+            TypeError, "invalid offset",
+            rekey_key_pair.RekeyKeyPairRequestPayload, **kwargs)
+
     def test_validate_with_invalid_common_template_attribute(self):
-        kwargs = {'common_template_attribute': 'invalid',
+        kwargs = {'private_key_uuid': None, 'offset': None,
+                  'common_template_attribute': 'invalid',
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid common template attribute",
-            create_key_pair.CreateKeyPairRequestPayload, **kwargs)
+            rekey_key_pair.RekeyKeyPairRequestPayload, **kwargs)
 
     def test_validate_with_invalid_private_key_template_attribute(self):
-        kwargs = {'common_template_attribute': None,
+        kwargs = {'private_key_uuid': None, 'offset': None,
+                  'common_template_attribute': None,
                   'private_key_template_attribute': 'invalid',
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid private key template attribute",
-            create_key_pair.CreateKeyPairRequestPayload, **kwargs)
+            rekey_key_pair.RekeyKeyPairRequestPayload, **kwargs)
 
     def test_validate_with_invalid_public_key_template_attribute(self):
-        kwargs = {'common_template_attribute': None,
+        kwargs = {'private_key_uuid': None, 'offset': None,
+                  'common_template_attribute': None,
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': 'invalid'}
-        self.assertRaises(
+        self.assertRaisesRegexp(
             TypeError, "invalid public key template attribute",
-            create_key_pair.CreateKeyPairRequestPayload, **kwargs)
+            rekey_key_pair.RekeyKeyPairRequestPayload, **kwargs)
 
-    def _test_read(self, stream, payload, common_template_attribute,
-                   private_key_template_attribute,
+    def _test_read(self, stream, payload, private_key_uuid, offset,
+                   common_template_attribute, private_key_template_attribute,
                    public_key_template_attribute):
         payload.read(stream)
+
+        msg = "private_key_uuid decoding mismatch"
+        msg += "; expected {0}, received {1}".format(
+            private_key_uuid, payload.private_key_uuid)
+        self.assertEqual(private_key_uuid, payload.private_key_uuid, msg)
+
+        msg = "offset decoding mismatch"
+        msg += "; expected {0}, received {1}".format(offset, payload.offset)
+        self.assertEqual(offset, payload.offset, msg)
 
         msg = "common_template_attribute decoding mismatch"
         msg += "; expected {0}, received {1}".format(
@@ -103,15 +142,16 @@ class TestCreateKeyPairRequestPayload(TestCase):
 
     def test_read_with_none(self):
         stream = self.encoding_empty
-        payload = create_key_pair.CreateKeyPairRequestPayload()
+        payload = rekey_key_pair.RekeyKeyPairRequestPayload()
 
-        self._test_read(stream, payload, None, None, None)
+        self._test_read(stream, payload, None, None, None, None, None)
 
     def test_read_with_args(self):
         stream = self.encoding_full
-        payload = create_key_pair.CreateKeyPairRequestPayload()
+        payload = rekey_key_pair.RekeyKeyPairRequestPayload()
 
-        self._test_read(stream, payload, self.common_template_attribute,
+        self._test_read(stream, payload, self.private_key_uuid, self.offset,
+                        self.common_template_attribute,
                         self.private_key_template_attribute,
                         self.public_key_template_attribute)
 
@@ -133,24 +173,24 @@ class TestCreateKeyPairRequestPayload(TestCase):
 
     def test_write_with_none(self):
         stream = utils.BytearrayStream()
-        payload = create_key_pair.CreateKeyPairRequestPayload()
+        payload = rekey_key_pair.RekeyKeyPairRequestPayload()
 
         self._test_write(stream, payload, self.encoding_empty)
 
     def test_write_with_args(self):
         stream = utils.BytearrayStream()
-        payload = create_key_pair.CreateKeyPairRequestPayload(
-            self.common_template_attribute,
+        payload = rekey_key_pair.RekeyKeyPairRequestPayload(
+            self.private_key_uuid, self.offset, self.common_template_attribute,
             self.private_key_template_attribute,
             self.public_key_template_attribute)
 
         self._test_write(stream, payload, self.encoding_full)
 
 
-class TestCreateKeyPairResponsePayload(TestCase):
+class TestRekeyKeyPairResponsePayload(TestCase):
 
     def setUp(self):
-        super(TestCreateKeyPairResponsePayload, self).setUp()
+        super(TestRekeyKeyPairResponsePayload, self).setUp()
 
         self.uuid = '00000000-0000-0000-0000-000000000000'
         self.private_key_uuid = attributes.PrivateKeyUniqueIdentifier(
@@ -179,13 +219,13 @@ class TestCreateKeyPairResponsePayload(TestCase):
             b'\x42\x00\x6E\x01\x00\x00\x00\x00'))
 
     def tearDown(self):
-        super(TestCreateKeyPairResponsePayload, self).tearDown()
+        super(TestRekeyKeyPairResponsePayload, self).tearDown()
 
     def test_init_with_none(self):
-        create_key_pair.CreateKeyPairResponsePayload()
+        rekey_key_pair.RekeyKeyPairResponsePayload()
 
     def test_init_with_args(self):
-        create_key_pair.CreateKeyPairResponsePayload(
+        rekey_key_pair.RekeyKeyPairResponsePayload(
             self.private_key_uuid, self.public_key_uuid,
             self.private_key_template_attribute,
             self.public_key_template_attribute)
@@ -197,7 +237,7 @@ class TestCreateKeyPairResponsePayload(TestCase):
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid private key unique identifier",
-            create_key_pair.CreateKeyPairResponsePayload, **kwargs)
+            rekey_key_pair.RekeyKeyPairResponsePayload, **kwargs)
 
     def test_validate_with_invalid_public_key_unique_identifier(self):
         kwargs = {'private_key_uuid': None,
@@ -206,25 +246,25 @@ class TestCreateKeyPairResponsePayload(TestCase):
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid public key unique identifier",
-            create_key_pair.CreateKeyPairResponsePayload, **kwargs)
+            rekey_key_pair.RekeyKeyPairResponsePayload, **kwargs)
 
     def test_validate_with_invalid_private_key_template_attribute(self):
-        kwargs = {'private_key_uuid': self.private_key_uuid,
-                  'public_key_uuid': self.public_key_uuid,
+        kwargs = {'private_key_uuid': None,
+                  'public_key_uuid': None,
                   'private_key_template_attribute': 'invalid',
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid private key template attribute",
-            create_key_pair.CreateKeyPairResponsePayload, **kwargs)
+            rekey_key_pair.RekeyKeyPairResponsePayload, **kwargs)
 
     def test_validate_with_invalid_public_key_template_attribute(self):
-        kwargs = {'private_key_uuid': self.private_key_uuid,
-                  'public_key_uuid': self.public_key_uuid,
+        kwargs = {'private_key_uuid': None,
+                  'public_key_uuid': None,
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid public key template attribute",
-            create_key_pair.CreateKeyPairResponsePayload, **kwargs)
+            rekey_key_pair.RekeyKeyPairResponsePayload, **kwargs)
 
     def _test_read(self, stream, payload, private_key_uuid, public_key_uuid,
                    private_key_template_attribute,
@@ -257,14 +297,14 @@ class TestCreateKeyPairResponsePayload(TestCase):
 
     def test_read_with_none(self):
         stream = self.encoding_empty
-        payload = create_key_pair.CreateKeyPairResponsePayload()
+        payload = rekey_key_pair.RekeyKeyPairResponsePayload()
 
         self._test_read(stream, payload, self.empty_private_key_uuid,
                         self.empty_public_key_uuid, None, None)
 
     def test_read_with_args(self):
         stream = self.encoding_full
-        payload = create_key_pair.CreateKeyPairResponsePayload(
+        payload = rekey_key_pair.RekeyKeyPairResponsePayload(
             self.private_key_uuid, self.public_key_uuid,
             self.private_key_template_attribute,
             self.public_key_template_attribute)
@@ -292,13 +332,13 @@ class TestCreateKeyPairResponsePayload(TestCase):
 
     def test_write_with_none(self):
         stream = utils.BytearrayStream()
-        payload = create_key_pair.CreateKeyPairResponsePayload()
+        payload = rekey_key_pair.RekeyKeyPairResponsePayload()
 
         self._test_write(stream, payload, self.encoding_empty)
 
     def test_write_with_args(self):
         stream = utils.BytearrayStream()
-        payload = create_key_pair.CreateKeyPairResponsePayload(
+        payload = rekey_key_pair.RekeyKeyPairResponsePayload(
             self.private_key_uuid, self.public_key_uuid,
             self.private_key_template_attribute,
             self.public_key_template_attribute)

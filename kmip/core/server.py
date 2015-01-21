@@ -67,6 +67,12 @@ class KMIP(object):
                  credential=None):
         raise NotImplementedError()
 
+    def rekey_key_pair(self, private_key_unique_identifier,
+                       offset, common_template_attribute,
+                       private_key_template_attribute,
+                       public_key_template_attribute):
+        raise NotImplementedError()
+
     def get(self, uuid=None, key_format_type=None, key_compression_type=None,
             key_wrapping_specification=None, credential=None):
         raise NotImplementedError()
@@ -191,6 +197,12 @@ class KMIPImpl(KMIP):
         return RegisterResult(ResultStatus(RS.SUCCESS),
                               uuid=UniqueIdentifier(s_uuid),
                               template_attribute=template_attribute)
+
+    def rekey_key_pair(self, private_key_unique_identifier,
+                       offset, common_template_attribute,
+                       private_key_template_attribute,
+                       public_key_template_attribute):
+        raise NotImplementedError()
 
     def get(self,
             uuid=None,

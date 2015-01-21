@@ -20,6 +20,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import locate
+from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 
 
@@ -33,6 +34,9 @@ class RequestPayloadFactory(PayloadFactory):
 
     def _create_register_payload(self):
         return register.RegisterRequestPayload()
+
+    def _create_rekey_key_pair_payload(self):
+        return rekey_key_pair.RekeyKeyPairRequestPayload()
 
     def _create_locate_payload(self):
         return locate.LocateRequestPayload()

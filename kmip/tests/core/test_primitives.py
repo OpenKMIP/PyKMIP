@@ -281,8 +281,8 @@ class TestInteger(TestCase):
     def test_init_unset(self):
         i = Integer()
 
-        self.assertEqual(None, i.value,
-                         self.bad_value.format('value', None, i.value))
+        self.assertEqual(0, i.value,
+                         self.bad_value.format('value', 0, i.value))
         self.assertEqual(i.LENGTH, i.length,
                          self.bad_value.format('length', i.LENGTH, i.length))
         self.assertEqual(i.LENGTH, i.padding_length,
@@ -858,8 +858,8 @@ class TestEnumeration(TestCase):
 
         self.assertEqual(None, e.enum,
                          self.bad_value.format('enum', None, e.enum))
-        self.assertEqual(None, e.value,
-                         self.bad_value.format('value', None, e.value))
+        self.assertEqual(0, e.value,
+                         self.bad_value.format('value', 0, e.value))
 
     def test_validate_on_valid(self):
         e = Enumeration()

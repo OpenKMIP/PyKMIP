@@ -15,10 +15,11 @@
 
 from kmip.services.results import CreateResult
 from kmip.services.results import CreateKeyPairResult
-from kmip.services.results import GetResult
 from kmip.services.results import DestroyResult
-from kmip.services.results import RegisterResult
+from kmip.services.results import GetResult
 from kmip.services.results import LocateResult
+from kmip.services.results import RegisterResult
+from kmip.services.results import RekeyKeyPairResult
 
 from kmip.core import attributes as attr
 
@@ -32,17 +33,18 @@ from kmip.core.server import KMIP
 
 from kmip.core.messages.contents import Authentication
 from kmip.core.messages.contents import BatchCount
-from kmip.core.messages.contents import ProtocolVersion
 from kmip.core.messages.contents import Operation
+from kmip.core.messages.contents import ProtocolVersion
 
 from kmip.core.messages import messages
 
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
-from kmip.core.messages.payloads import get
-from kmip.core.messages.payloads import register
-from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import destroy
+from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import locate
+from kmip.core.messages.payloads import rekey_key_pair
+from kmip.core.messages.payloads import register
 
 from kmip.services.kmip_protocol import KMIPProtocol
 
@@ -134,6 +136,22 @@ class KMIPProxy(KMIP):
                               secret=secret,
                               credential=credential)
 
+    def rekey_key_pair(self, batch=False, private_key_uuid=None, offset=None,
+                       common_template_attribute=None,
+                       private_key_template_attribute=None,
+                       public_key_template_attribute=None, credential=None):
+        batch_item = self._build_rekey_key_pair_batch_item(
+            private_key_uuid, offset, common_template_attribute,
+            private_key_template_attribute, public_key_template_attribute)
+
+        if batch:
+            self.batch_items.append(batch_item)
+        else:
+            request = self._build_request_message(credential, [batch_item])
+            response = self._send_and_receive_message(request)
+            results = self._process_batch_items(response)
+            return results[0]
+
     def locate(self, maximum_items=None, storage_status_mask=None,
                object_group_member=None, attributes=None, credential=None):
         return self._locate(maximum_items=maximum_items,
@@ -194,6 +212,21 @@ class KMIPProxy(KMIP):
             operation=operation, request_payload=payload)
         return batch_item
 
+    def _build_rekey_key_pair_batch_item(self,
+                                         private_key_uuid=None, offset=None,
+                                         common_template_attribute=None,
+                                         private_key_template_attribute=None,
+                                         public_key_template_attribute=None):
+        operation = Operation(OperationEnum.REKEY_KEY_PAIR)
+        payload = rekey_key_pair.RekeyKeyPairRequestPayload(
+            private_key_uuid, offset,
+            common_template_attribute=common_template_attribute,
+            private_key_template_attribute=private_key_template_attribute,
+            public_key_template_attribute=public_key_template_attribute)
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=payload)
+        return batch_item
+
     def _process_batch_items(self, response):
         results = []
         for batch_item in response.batch_items:
@@ -206,10 +239,13 @@ class KMIPProxy(KMIP):
     def _get_batch_item_processor(self, operation):
         if operation == OperationEnum.CREATE_KEY_PAIR:
             return self._process_create_key_pair_batch_item
+        elif operation == OperationEnum.REKEY_KEY_PAIR:
+            return self._process_rekey_key_pair_batch_item
         else:
-            raise ValueError("no processor for given operation")
+            raise ValueError("no processor for operation: {0}".format(
+                operation))
 
-    def _process_create_key_pair_batch_item(self, batch_item):
+    def _process_key_pair_batch_item(self, batch_item, result):
         payload = batch_item.response_payload
 
         payload_private_key_uuid = None
@@ -225,14 +261,19 @@ class KMIPProxy(KMIP):
             payload_public_key_template_attribute = \
                 payload.public_key_template_attribute
 
-        result = CreateKeyPairResult(batch_item.result_status,
-                                     batch_item.result_reason,
-                                     batch_item.result_message,
-                                     payload_private_key_uuid,
-                                     payload_public_key_uuid,
-                                     payload_private_key_template_attribute,
-                                     payload_public_key_template_attribute)
-        return result
+        return result(batch_item.result_status, batch_item.result_reason,
+                      batch_item.result_message, payload_private_key_uuid,
+                      payload_public_key_uuid,
+                      payload_private_key_template_attribute,
+                      payload_public_key_template_attribute)
+
+    def _process_create_key_pair_batch_item(self, batch_item):
+        return self._process_key_pair_batch_item(
+            batch_item, CreateKeyPairResult)
+
+    def _process_rekey_key_pair_batch_item(self, batch_item):
+        return self._process_key_pair_batch_item(
+            batch_item, RekeyKeyPairResult)
 
     def _get(self,
              unique_identifier=None,

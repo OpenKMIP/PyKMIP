@@ -23,6 +23,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import locate
+from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 
 
@@ -156,8 +157,9 @@ class TestRequestPayloadFactory(testtools.TestCase):
             self.factory.create, Operation.PUT)
 
     def test_create_rekey_key_pair_payload(self):
-        self._test_not_implemented(
-            self.factory.create, Operation.REKEY_KEY_PAIR)
+        payload = self.factory.create(Operation.REKEY_KEY_PAIR)
+        self._test_payload_type(
+            payload, rekey_key_pair.RekeyKeyPairRequestPayload)
 
     def test_create_discover_versions_payload(self):
         self._test_not_implemented(
