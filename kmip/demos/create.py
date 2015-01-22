@@ -16,6 +16,7 @@
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CredentialType
 from kmip.core.enums import ObjectType
+from kmip.core.enums import ResultStatus
 from kmip.core.enums import CryptographicAlgorithm
 from kmip.core.enums import CryptographicUsageMask
 
@@ -33,12 +34,11 @@ if __name__ == '__main__':
     f_log = os.path.join(os.path.dirname(__file__), '..', 'logconfig.ini')
     logging.config.fileConfig(f_log)
     logger = logging.getLogger(__name__)
-
     attribute_factory = AttributeFactory()
     credential_factory = CredentialFactory()
 
     credential_type = CredentialType.USERNAME_AND_PASSWORD
-    credential_value = {'Username': 'Peter', 'Password': 'abc123'}
+    credential_value = {'Username': 'user', 'Password': 'abc123'}
     credential = credential_factory.create_credential(credential_type,
                                                       credential_value)
 
@@ -54,7 +54,10 @@ if __name__ == '__main__':
     attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
     usage_mask = attribute_factory.create_attribute(attribute_type,
                                                     mask_flags)
-    attributes = [algorithm, usage_mask]
+    attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
+    length = attribute_factory.create_attribute(attribute_type,
+                                                128)
+    attributes = [algorithm, usage_mask, length]
     template_attribute = TemplateAttribute(attributes=attributes)
 
     result = client.create(object_type, template_attribute,
@@ -63,7 +66,13 @@ if __name__ == '__main__':
 
     logger.debug('create() result status: {}'.format(
         result.result_status.enum))
-    logger.debug('created object type: {}'.format(result.object_type.enum))
-    logger.debug('created UUID: {}'.format(result.uuid.value))
-    logger.debug('created template attribute: {}'.
-                 format(result.template_attribute))
+    if result.result_status.enum == ResultStatus.SUCCESS:
+        logger.debug('created object type: {}'.format(result.object_type.enum))
+        logger.debug('created UUID: {}'.format(result.uuid.value))
+        logger.debug('created template attribute: {}'.
+                     format(result.template_attribute))
+    else:
+        logger.debug('create() result reason: {}'.format(
+            result.result_reason.enum))
+        logger.debug('create() result message: {}'.format(
+            result.result_message.value))

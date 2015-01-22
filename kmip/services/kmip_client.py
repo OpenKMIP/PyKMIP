@@ -83,6 +83,21 @@ class KMIPProxy(KMIP):
 
     def open(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        self.logger.debug("KMIPProxy keyfile: {0}".format(self.keyfile))
+        self.logger.debug("KMIPProxy certfile: {0}".format(self.certfile))
+        self.logger.debug(
+            "KMIPProxy cert_reqs: {0} (CERT_REQUIRED: {1})".format(
+                self.cert_reqs, ssl.CERT_REQUIRED))
+        self.logger.debug(
+            "KMIPProxy ssl_version: {0} (PROTOCOL_SSLv23: {1})".format(
+                self.ssl_version, ssl.PROTOCOL_SSLv23))
+        self.logger.debug("KMIPProxy ca_certs: {0}".format(self.ca_certs))
+        self.logger.debug("KMIPProxy do_handshake_on_connect: {0}".format(
+            self.do_handshake_on_connect))
+        self.logger.debug("KMIPProxy suppress_ragged_eofs: {0}".format(
+            self.suppress_ragged_eofs))
+
         self.socket = ssl.wrap_socket(
             sock,
             keyfile=self.keyfile,
