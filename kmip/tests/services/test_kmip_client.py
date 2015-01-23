@@ -43,9 +43,14 @@ from kmip.core.factories.secrets import SecretFactory
 from kmip.core.messages.messages import RequestBatchItem
 from kmip.core.messages.messages import ResponseBatchItem
 from kmip.core.messages.messages import ResponseMessage
+
 from kmip.core.messages.contents import Operation
+from kmip.core.messages.contents import ProtocolVersion
+
 from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
+from kmip.core.messages.payloads.discover_versions import \
+    DiscoverVersionsRequestPayload, DiscoverVersionsResponsePayload
 from kmip.core.messages.payloads.rekey_key_pair import \
     RekeyKeyPairRequestPayload, RekeyKeyPairResponsePayload
 
@@ -60,7 +65,9 @@ from kmip.core.objects import TemplateAttribute
 from kmip.core.secrets import SymmetricKey
 
 from kmip.services.kmip_client import KMIPProxy
+
 from kmip.services.results import CreateKeyPairResult
+from kmip.services.results import DiscoverVersionsResult
 from kmip.services.results import RekeyKeyPairResult
 
 import kmip.core.utils as utils
@@ -587,6 +594,45 @@ class TestKMIPClient(TestCase):
         self._test_build_rekey_key_pair_batch_item(
             None, None, None, None, None)
 
+    def _test_build_discover_versions_batch_item(self, protocol_versions):
+        batch_item = self.client._build_discover_versions_batch_item(
+            protocol_versions)
+
+        base = "expected {0}, received {1}"
+        msg = base.format(RequestBatchItem, batch_item)
+        self.assertIsInstance(batch_item, RequestBatchItem, msg)
+
+        operation = batch_item.operation
+
+        msg = base.format(Operation, operation)
+        self.assertIsInstance(operation, Operation, msg)
+
+        operation_enum = operation.enum
+
+        msg = base.format(OperationEnum.DISCOVER_VERSIONS, operation_enum)
+        self.assertEqual(OperationEnum.DISCOVER_VERSIONS, operation_enum, msg)
+
+        payload = batch_item.request_payload
+
+        if protocol_versions is None:
+            protocol_versions = list()
+
+        msg = base.format(DiscoverVersionsRequestPayload, payload)
+        self.assertIsInstance(payload, DiscoverVersionsRequestPayload, msg)
+
+        observed = payload.protocol_versions
+
+        msg = base.format(protocol_versions, observed)
+        self.assertEqual(protocol_versions, observed, msg)
+
+    def test_build_discover_versions_batch_item_with_input(self):
+        protocol_versions = [ProtocolVersion.create(1, 0)]
+        self._test_build_discover_versions_batch_item(protocol_versions)
+
+    def test_build_discover_versions_batch_item_no_input(self):
+        protocol_versions = None
+        self._test_build_discover_versions_batch_item(protocol_versions)
+
     def test_process_batch_items(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE_KEY_PAIR),
@@ -651,3 +697,29 @@ class TestKMIPClient(TestCase):
 
         msg = "expected {0}, received {1}".format(RekeyKeyPairResult, result)
         self.assertIsInstance(result, RekeyKeyPairResult, msg)
+
+    def _test_process_discover_versions_batch_item(self, protocol_versions):
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.DISCOVER_VERSIONS),
+            response_payload=DiscoverVersionsResponsePayload(
+                protocol_versions))
+        result = self.client._process_discover_versions_batch_item(batch_item)
+
+        base = "expected {0}, received {1}"
+        msg = base.format(DiscoverVersionsResult, result)
+        self.assertIsInstance(result, DiscoverVersionsResult, msg)
+
+        # The payload maps protocol_versions to an empty list on None
+        if protocol_versions is None:
+            protocol_versions = list()
+
+        msg = base.format(protocol_versions, result.protocol_versions)
+        self.assertEqual(protocol_versions, result.protocol_versions, msg)
+
+    def test_process_discover_versions_batch_item_with_results(self):
+        protocol_versions = [ProtocolVersion.create(1, 0)]
+        self._test_process_discover_versions_batch_item(protocol_versions)
+
+    def test_process_discover_versions_batch_item_no_results(self):
+        protocol_versions = None
+        self._test_process_discover_versions_batch_item(protocol_versions)

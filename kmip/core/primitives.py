@@ -233,7 +233,10 @@ class Integer(Base):
             return NotImplemented
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        if isinstance(other, Integer):
+            return not self.__eq__(other)
+        else:
+            return NotImplemented
 
 
 class LongInteger(Base):

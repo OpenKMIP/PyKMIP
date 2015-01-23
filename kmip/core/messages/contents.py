@@ -13,7 +13,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core import enums
+from kmip.core.enums import BatchErrorContinuationOption
+from kmip.core.enums import KeyCompressionType
+from kmip.core.enums import KeyFormatType
+from kmip.core.enums import Operation
+from kmip.core.enums import ResultStatus
+from kmip.core.enums import ResultReason
+from kmip.core.enums import Tags
+
 from kmip.core import objects
 from kmip.core import utils
 
@@ -31,28 +38,38 @@ class ProtocolVersion(Struct):
 
     class ProtocolVersionMajor(Integer):
         def __init__(self, value=None):
-            super(self.__class__, self).\
-                __init__(value, enums.Tags.PROTOCOL_VERSION_MAJOR)
+            super(ProtocolVersion.ProtocolVersionMajor, self).\
+                __init__(value, Tags.PROTOCOL_VERSION_MAJOR)
 
     class ProtocolVersionMinor(Integer):
         def __init__(self, value=None):
-            super(self.__class__, self).\
-                __init__(value, enums.Tags.PROTOCOL_VERSION_MINOR)
+            super(ProtocolVersion.ProtocolVersionMinor, self).\
+                __init__(value, Tags.PROTOCOL_VERSION_MINOR)
 
     def __init__(self,
                  protocol_version_major=None,
                  protocol_version_minor=None):
-        super(self.__class__, self).__init__(tag=enums.Tags.PROTOCOL_VERSION)
-        self.protocol_version_major = protocol_version_major
-        self.protocol_version_minor = protocol_version_minor
+        super(ProtocolVersion, self).__init__(Tags.PROTOCOL_VERSION)
+
+        if protocol_version_major is None:
+            self.protocol_version_major = \
+                ProtocolVersion.ProtocolVersionMajor()
+        else:
+            self.protocol_version_major = protocol_version_major
+
+        if protocol_version_minor is None:
+            self.protocol_version_minor = \
+                ProtocolVersion.ProtocolVersionMinor()
+        else:
+            self.protocol_version_minor = protocol_version_minor
+
+        self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(ProtocolVersion, self).read(istream)
         tstream = utils.BytearrayStream(istream.read(self.length))
 
         # Read the major and minor portions of the version number
-        self.protocol_version_major = ProtocolVersion.ProtocolVersionMajor()
-        self.protocol_version_minor = ProtocolVersion.ProtocolVersionMinor()
         self.protocol_version_major.read(tstream)
         self.protocol_version_minor.read(tstream)
 
@@ -67,57 +84,97 @@ class ProtocolVersion(Struct):
 
         # Write the length and value of the protocol version
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(ProtocolVersion, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+        self.__validate()
+
+    def __validate(self):
+        if not isinstance(self.protocol_version_major,
+                          ProtocolVersion.ProtocolVersionMajor):
+            msg = "invalid protocol version major"
+            msg += "; expected {0}, received {1}".format(
+                ProtocolVersion.ProtocolVersionMajor,
+                self.protocol_version_major)
+            raise TypeError(msg)
+
+        if not isinstance(self.protocol_version_minor,
+                          ProtocolVersion.ProtocolVersionMinor):
+            msg = "invalid protocol version minor"
+            msg += "; expected {0}, received {1}".format(
+                ProtocolVersion.ProtocolVersionMinor,
+                self.protocol_version_minor)
+            raise TypeError(msg)
+
+    def __eq__(self, other):
+        if isinstance(other, ProtocolVersion):
+            if ((self.protocol_version_major ==
+                    other.protocol_version_major)
+                    and
+                    (self.protocol_version_minor ==
+                     other.protocol_version_minor)):
+                return True
+            else:
+                return False
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ProtocolVersion):
+            return not self.__eq__(other)
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        major = self.protocol_version_major.value
+        minor = self.protocol_version_minor.value
+        return "{0}.{1}".format(major, minor)
 
     @classmethod
     def create(cls, major, minor):
-        major_version = cls.ProtocolVersionMajor(major)
-        minor_version = cls.ProtocolVersionMinor(minor)
-        return ProtocolVersion(major_version, minor_version)
+        major = cls.ProtocolVersionMajor(major)
+        minor = cls.ProtocolVersionMinor(minor)
+        return ProtocolVersion(major, minor)
 
 
 # 6.2
 class Operation(Enumeration):
-    ENUM_TYPE = enums.Operation
+    ENUM_TYPE = Operation
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, enums.Tags.OPERATION)
+        super(Operation, self).__init__(value, Tags.OPERATION)
 
 
 # 6.3
 class MaximumResponseSize(Integer):
     def __init__(self, value=None):
-        super(self.__class__, self).\
-            __init__(value, enums.Tags.MAXIMUM_RESPONSE_SIZE)
+        super(MaximumResponseSize, self).\
+            __init__(value, Tags.MAXIMUM_RESPONSE_SIZE)
 
 
 # 6.4
 class UniqueBatchItemID(ByteString):
     def __init__(self, value=None):
-        super(self.__class__, self)\
-            .__init__(value, enums.Tags.UNIQUE_BATCH_ITEM_ID)
+        super(UniqueBatchItemID, self)\
+            .__init__(value, Tags.UNIQUE_BATCH_ITEM_ID)
 
 
 # 6.5
 class TimeStamp(DateTime):
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, enums.Tags.TIME_STAMP)
+        super(TimeStamp, self).__init__(value, Tags.TIME_STAMP)
 
 
 # 6.6
 class Authentication(Struct):
 
     def __init__(self, credential=None):
-        super(self.__class__, self).__init__(tag=enums.Tags.AUTHENTICATION)
+        super(Authentication, self).__init__(Tags.AUTHENTICATION)
         self.credential = credential
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(Authentication, self).read(istream)
         tstream = utils.BytearrayStream(istream.read(self.length))
 
         # Read the credential
@@ -134,7 +191,7 @@ class Authentication(Struct):
 
         # Write the length and value of the protocol version
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(Authentication, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -145,80 +202,80 @@ class Authentication(Struct):
 # 6.7
 class AsynchronousIndicator(Boolean):
     def __init__(self, value=None):
-        super(self.__class__, self).\
-            __init__(value, enums.Tags.ASYNCHRONOUS_INDICATOR)
+        super(AsynchronousIndicator, self).\
+            __init__(value, Tags.ASYNCHRONOUS_INDICATOR)
 
 
 # 6.8
 class AsynchronousCorrelationValue(ByteString):
     def __init__(self, value=None):
-        super(self.__class__, self).\
-            __init__(value, enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE)
+        super(AsynchronousCorrelationValue, self).\
+            __init__(value, Tags.ASYNCHRONOUS_CORRELATION_VALUE)
 
 
 # 6.9
 class ResultStatus(Enumeration):
-    ENUM_TYPE = enums.ResultStatus
+    ENUM_TYPE = ResultStatus
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, enums.Tags.RESULT_STATUS)
+        super(ResultStatus, self).__init__(value, Tags.RESULT_STATUS)
 
 
 # 6.10
 class ResultReason(Enumeration):
-    ENUM_TYPE = enums.ResultReason
+    ENUM_TYPE = ResultReason
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, enums.Tags.RESULT_REASON)
+        super(ResultReason, self).__init__(value, Tags.RESULT_REASON)
 
 
 # 6.11
 class ResultMessage(TextString):
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, enums.Tags.RESULT_MESSAGE)
+        super(ResultMessage, self).__init__(value, Tags.RESULT_MESSAGE)
 
 
 # 6.12
 class BatchOrderOption(Boolean):
     def __init__(self, value=None):
-        super(self.__class__, self).\
-            __init__(value, enums.Tags.BATCH_ORDER_OPTION)
+        super(BatchOrderOption, self).\
+            __init__(value, Tags.BATCH_ORDER_OPTION)
 
 
 # 6.13
 class BatchErrorContinuationOption(Enumeration):
-    ENUM_TYPE = enums.BatchErrorContinuationOption
+    ENUM_TYPE = BatchErrorContinuationOption
 
     def __init__(self, value=None):
-        super(self.__class__, self).\
-            __init__(value, enums.Tags.BATCH_ERROR_CONTINUATION_OPTION)
+        super(BatchErrorContinuationOption, self).\
+            __init__(value, Tags.BATCH_ERROR_CONTINUATION_OPTION)
 
 
 # 6.14
 class BatchCount(Integer):
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, enums.Tags.BATCH_COUNT)
+        super(BatchCount, self).__init__(value, Tags.BATCH_COUNT)
 
 
 # 6.16
 class MessageExtension(Struct):
     def __init__(self):
-        super(self.__class__, self).__init__(tag=enums.Tags.MESSAGE_EXTENSION)
+        super(MessageExtension, self).__init__(Tags.MESSAGE_EXTENSION)
 
 
 # 9.1.3.2.2
 class KeyCompressionType(Enumeration):
-    ENUM_TYPE = enums.KeyCompressionType
+    ENUM_TYPE = KeyCompressionType
 
     def __init__(self, value=None):
-        super(self.__class__, self).\
-            __init__(value, enums.Tags.KEY_COMPRESSION_TYPE)
+        super(KeyCompressionType, self).\
+            __init__(value, Tags.KEY_COMPRESSION_TYPE)
 
 
 # 9.1.3.2.3
 class KeyFormatType(Enumeration):
-    ENUM_TYPE = enums.KeyFormatType
+    ENUM_TYPE = KeyFormatType
 
     def __init__(self, value=None):
-        super(self.__class__, self).\
-            __init__(value, enums.Tags.KEY_FORMAT_TYPE)
+        super(KeyFormatType, self).\
+            __init__(value, Tags.KEY_FORMAT_TYPE)

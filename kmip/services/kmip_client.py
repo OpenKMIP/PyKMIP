@@ -16,6 +16,7 @@
 from kmip.services.results import CreateResult
 from kmip.services.results import CreateKeyPairResult
 from kmip.services.results import DestroyResult
+from kmip.services.results import DiscoverVersionsResult
 from kmip.services.results import GetResult
 from kmip.services.results import LocateResult
 from kmip.services.results import RegisterResult
@@ -41,6 +42,7 @@ from kmip.core.messages import messages
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
+from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import rekey_key_pair
@@ -174,6 +176,19 @@ class KMIPProxy(KMIP):
                             object_group_member=object_group_member,
                             attributes=attributes, credential=credential)
 
+    def discover_versions(self, batch=False, protocol_versions=None,
+                          credential=None):
+        batch_item = self._build_discover_versions_batch_item(
+            protocol_versions)
+
+        if batch:
+            self.batch_items.append(batch_item)
+        else:
+            request = self._build_request_message(credential, [batch_item])
+            response = self._send_and_receive_message(request)
+            results = self._process_batch_items(response)
+            return results[0]
+
     def _create(self,
                 object_type=None,
                 template_attribute=None,
@@ -242,6 +257,16 @@ class KMIPProxy(KMIP):
             operation=operation, request_payload=payload)
         return batch_item
 
+    def _build_discover_versions_batch_item(self, protocol_versions=None):
+        operation = Operation(OperationEnum.DISCOVER_VERSIONS)
+
+        payload = discover_versions.DiscoverVersionsRequestPayload(
+            protocol_versions)
+
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=payload)
+        return batch_item
+
     def _process_batch_items(self, response):
         results = []
         for batch_item in response.batch_items:
@@ -256,6 +281,8 @@ class KMIPProxy(KMIP):
             return self._process_create_key_pair_batch_item
         elif operation == OperationEnum.REKEY_KEY_PAIR:
             return self._process_rekey_key_pair_batch_item
+        elif operation == OperationEnum.DISCOVER_VERSIONS:
+            return self._process_discover_versions_batch_item
         else:
             raise ValueError("no processor for operation: {0}".format(
                 operation))
@@ -289,6 +316,15 @@ class KMIPProxy(KMIP):
     def _process_rekey_key_pair_batch_item(self, batch_item):
         return self._process_key_pair_batch_item(
             batch_item, RekeyKeyPairResult)
+
+    def _process_discover_versions_batch_item(self, batch_item):
+        payload = batch_item.response_payload
+
+        result = DiscoverVersionsResult(
+            batch_item.result_status, batch_item.result_reason,
+            batch_item.result_message, payload.protocol_versions)
+
+        return result
 
     def _get(self,
              unique_identifier=None,

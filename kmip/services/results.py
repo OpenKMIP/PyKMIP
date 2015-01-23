@@ -172,3 +172,15 @@ class LocateResult(OperationResult):
                                              result_reason,
                                              result_message)
         self.uuids = uuids
+
+
+class DiscoverVersionsResult(OperationResult):
+
+    def __init__(self,
+                 result_status,
+                 result_reason=None,
+                 result_message=None,
+                 protocol_versions=None):
+        super(DiscoverVersionsResult, self).__init__(
+            result_status, result_reason, result_message)
+        self.protocol_versions = protocol_versions
