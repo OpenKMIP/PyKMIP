@@ -77,8 +77,8 @@ if __name__ == '__main__':
                              credential)
     client.close()
 
-    logger.debug('register() result status: {}'.format(
+    logger.debug('register() result status: {0}'.format(
         result.result_status.enum))
-    logger.debug('registered UUID: {}'.format(result.uuid.value))
-    logger.debug('registered template attribute: {}'.
+    logger.debug('registered UUID: {0}'.format(result.uuid.value))
+    logger.debug('registered template attribute: {0}'.
                  format(result.template_attribute))

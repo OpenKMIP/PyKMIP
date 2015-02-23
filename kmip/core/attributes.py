@@ -104,14 +104,14 @@ class Name(Struct):
                 not isinstance(self.name_value, Name.NameValue) and \
                 not isinstance(self.name_value, str):
             member = 'name_value'
-            raise TypeError(msg.format('{}.{}'.format(name, member),
+            raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                        'name_value', type(Name.NameValue),
                                        type(self.name_value)))
         if self.name_type and \
                 not isinstance(self.name_type, Name.NameType) and \
                 not isinstance(self.name_type, str):
             member = 'name_type'
-            raise TypeError(msg.format('{}.{}'.format(name, member),
+            raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                        'name_type', type(Name.NameType),
                                        type(self.name_type)))
 
@@ -125,7 +125,7 @@ class Name(Struct):
             name = 'Name'
             msg = ErrorStrings.BAD_EXP_RECV
             member = 'name_value'
-            raise TypeError(msg.format('{}.{}'.format(name, member),
+            raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                        'name_value', type(Name.NameValue),
                                        type(name_value)))
 
@@ -137,7 +137,7 @@ class Name(Struct):
             name = 'Name'
             msg = ErrorStrings.BAD_EXP_RECV
             member = 'name_type'
-            raise TypeError(msg.format('{}.{}'.format(name, member),
+            raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                        'name_type', type(Name.NameType),
                                        type(name_type)))
 
@@ -357,27 +357,27 @@ class ApplicationSpecificInformation(Struct):
         if self.application_namespace is not None:
             if self.application_data is None:
                 member = 'application_data'
-                raise ValueError(msg.format('{}.{}'.format(name, member),
+                raise ValueError(msg.format('{0}.{1}'.format(name, member),
                                             'value', 'not None', 'None'))
             else:
                 member = 'application_namespace'
                 exp_type = self.ApplicationNamespace
                 if not isinstance(self.application_namespace, exp_type):
                     rcv_type = type(self.application_namespace)
-                    raise TypeError(msg.format('{}.{}'.format(name, member),
+                    raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                                'type', exp_type, rcv_type))
 
         if self.application_data is not None:
             if self.application_namespace is None:
                 member = 'application_namespace'
-                raise ValueError(msg.format('{}.{}'.format(name, member),
+                raise ValueError(msg.format('{0}.{1}'.format(name, member),
                                             'value', 'not None', 'None'))
             else:
                 member = 'application_data'
                 exp_type = self.ApplicationData
                 if not isinstance(self.application_data, exp_type):
                     rcv_type = type(self.application_data)
-                    raise TypeError(msg.format('{}.{}'.format(name, member),
+                    raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                                'type', exp_type, rcv_type))
 
     @classmethod

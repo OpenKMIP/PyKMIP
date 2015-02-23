@@ -121,7 +121,7 @@ class Processor(object):
             elif result_status.enum is RS.OPERATION_UNDONE:
                 result_reason = result[1]
             else:
-                msg = 'Unrecognized operation result status: {}'
+                msg = 'Unrecognized operation result status: {0}'
                 raise RuntimeError(msg.format(result_status))
 
             resp_bi = ResponseBatchItem(operation=operation,
@@ -144,7 +144,7 @@ class Processor(object):
                 elif batch_error_cont_option.enum is BECO.CONTINUE:
                     continue
                 else:
-                    msg = 'Unrecognized batch error continuation option: {}'
+                    msg = 'Unrecognized batch error continuation option: {0}'
                     raise RuntimeError(msg.format(batch_error_cont_option))
 
         response_batch_count = BatchCount(len(response_batch_items))

@@ -71,16 +71,16 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.debug('get() result status: {}'.format(
+    logger.debug('get() result status: {0}'.format(
         result.result_status.enum))
 
     if result.result_status.enum == ResultStatus.SUCCESS:
-        logger.debug('retrieved object type: {}'.format(
+        logger.debug('retrieved object type: {0}'.format(
             result.object_type.enum))
-        logger.debug('retrieved UUID: {}'.format(result.uuid.value))
-        logger.debug('retrieved secret: {}'.format(result.secret))
+        logger.debug('retrieved UUID: {0}'.format(result.uuid.value))
+        logger.debug('retrieved secret: {0}'.format(result.secret))
     else:
-        logger.debug('get() result reason: {}'.format(
+        logger.debug('get() result reason: {0}'.format(
             result.result_reason.enum))
-        logger.debug('get() result message: {}'.format(
+        logger.debug('get() result message: {0}'.format(
             result.result_message.value))

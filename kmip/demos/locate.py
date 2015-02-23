@@ -71,10 +71,10 @@ if __name__ == '__main__':
     result = client.locate(attributes=attrs, credential=credential)
     client.close()
 
-    logger.debug('locate() result status: {}'.
+    logger.debug('locate() result status: {0}'.
                  format(result.result_status.enum))
     if result.result_status.enum == ResultStatus.SUCCESS:
-        logger.debug('retrieved object type: {}'.
+        logger.debug('retrieved object type: {0}'.
                      format(result.object_type.enum))
-        logger.debug('Located UUIDs: {}'.format(','.join([u.value for u in
-                                                          result.uuids])))
+        logger.debug('Located UUIDs: {0}'.format(','.join([u.value for u in
+                                                           result.uuids])))

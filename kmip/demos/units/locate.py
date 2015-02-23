@@ -86,7 +86,7 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.debug('locate() result status: {}'.format(
+    logger.debug('locate() result status: {0}'.format(
         result.result_status.enum))
 
     if result.result_status.enum == ResultStatus.SUCCESS:
@@ -94,7 +94,7 @@ if __name__ == '__main__':
         for uuid in result.uuids:
             logging.debug('{0}'.format(uuid))
     else:
-        logger.debug('get() result reason: {}'.format(
+        logger.debug('get() result reason: {0}'.format(
             result.result_reason.enum))
-        logger.debug('get() result message: {}'.format(
+        logger.debug('get() result message: {0}'.format(
             result.result_message.value))

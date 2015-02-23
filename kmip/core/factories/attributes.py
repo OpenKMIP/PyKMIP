@@ -49,7 +49,7 @@ class AttributeFactory(object):
             pass
         else:
             msg = utils.build_er_error(Attribute, 'name',
-                                       '{} or {}'.format('Enum', 'str'),
+                                       '{0} or {1}'.format('Enum', 'str'),
                                        type(name))
             raise TypeError(msg)
 

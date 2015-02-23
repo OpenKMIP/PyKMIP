@@ -65,6 +65,6 @@ if __name__ == '__main__':
     result = client.destroy(uuid, credential)
     client.close()
 
-    logger.debug('destroy() result status: {}'.format(
+    logger.debug('destroy() result status: {0}'.format(
         result.result_status.enum))
-    logger.debug('destroyed UUID: {}'.format(result.uuid.value))
+    logger.debug('destroyed UUID: {0}'.format(result.uuid.value))

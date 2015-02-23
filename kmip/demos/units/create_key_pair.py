@@ -113,20 +113,20 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.debug('create_key_pair() result status: {}'.format(
+    logger.debug('create_key_pair() result status: {0}'.format(
         result.result_status.enum))
 
     if result.result_status.enum == ResultStatus.SUCCESS:
-        logger.debug('created private key UUID: {}'.format(
+        logger.debug('created private key UUID: {0}'.format(
             result.private_key_uuid))
-        logger.debug('created public key UUID: {}'.format(
+        logger.debug('created public key UUID: {0}'.format(
             result.public_key_uuid))
-        logger.debug('created private key template attribute: {}'.format(
+        logger.debug('created private key template attribute: {0}'.format(
             result.private_key_template_attribute))
-        logger.debug('created public key template attribute: {}'.format(
+        logger.debug('created public key template attribute: {0}'.format(
             result.public_key_template_attribute))
     else:
-        logger.debug('create() result reason: {}'.format(
+        logger.debug('create() result reason: {0}'.format(
             result.result_reason.enum))
-        logger.debug('create() result message: {}'.format(
+        logger.debug('create() result message: {0}'.format(
             result.result_message.value))

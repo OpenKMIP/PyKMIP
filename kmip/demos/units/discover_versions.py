@@ -47,7 +47,7 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.debug('discover_versions() result status: {}'.format(
+    logger.debug('discover_versions() result status: {0}'.format(
         result.result_status.enum))
 
     if result.result_status.enum == ResultStatus.SUCCESS:
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         else:
             logger.debug('number of protocol versions returned: 0')
     else:
-        logger.debug('discover_versions() result reason: {}'.format(
+        logger.debug('discover_versions() result reason: {0}'.format(
             result.result_reason.enum))
-        logger.debug('discover_versions() result message: {}'.format(
+        logger.debug('discover_versions() result message: {0}'.format(
             result.result_message.value))

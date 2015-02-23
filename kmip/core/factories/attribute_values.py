@@ -115,7 +115,7 @@ class AttributeValueFactory(object):
         else:
             if not isinstance(name, str):
                 raise ValueError('Unrecognized attribute type: '
-                                 '{}'.format(name))
+                                 '{0}'.format(name))
             elif name.startswith('x-'):
                 # Custom attribute indicated
                 value = self._create_custom_attribute(value)

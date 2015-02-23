@@ -64,7 +64,7 @@ class KeyFactory(object):
         elif key_format is KeyFormatType.TRANSPARENT_ECMQV_PUBLIC_KEY:
             return self._create_transparent_ecmqv_public_key(value)
         else:
-            msg = 'Unrecognized key format type: {}'
+            msg = 'Unrecognized key format type: {0}'
             raise ValueError(msg.format(key_format))
 
     def _create_raw_key(self, value):

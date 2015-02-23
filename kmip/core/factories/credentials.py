@@ -34,7 +34,7 @@ class CredentialFactory(object):
         elif cred_type is CredentialType.DEVICE:
             value = self._create_device_credential(value)
         else:
-            msg = 'Unrecognized credential type: {}'
+            msg = 'Unrecognized credential type: {0}'
             raise ValueError(msg.format(cred_type))
 
         return self._create_credential(cred_type, value)
