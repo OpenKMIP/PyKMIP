@@ -31,6 +31,9 @@ class TestAttributeValueFactory(TestCase):
 
     # TODO (peter-hamilton) Consider even further modularity
     def _test_operation_policy_name(self, opn, value):
+        if value is None:
+            value = ''
+
         msg = "expected {0}, received {1}".format(OperationPolicyName, opn)
         self.assertIsInstance(opn, OperationPolicyName, msg)
 

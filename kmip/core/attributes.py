@@ -299,36 +299,97 @@ class ObjectGroup(TextString):
 
 
 # 3.36
+class ApplicationNamespace(TextString):
+    """
+    The name of a namespace supported by the KMIP server.
+
+    A part of ApplicationSpecificInformation, sets of these are also potential
+    responses to a Query request. See Sections 3.36 and 4.25 of the KMIP v1.1
+    specification for more information.
+    """
+
+    def __init__(self, value=None):
+        """
+        Construct an ApplicationNamespace object.
+
+        Args:
+            value (str): A string representing a namespace. Optional, defaults
+                to None.
+        """
+        super(ApplicationNamespace, self).__init__(
+            value, Tags.APPLICATION_NAMESPACE)
+
+
+class ApplicationData(TextString):
+    """
+    A string representing data specific to an application namespace.
+
+    A part of ApplicationSpecificInformation. See Section 3.36 of the KMIP v1.1
+    specification for more information.
+    """
+
+    def __init__(self, value=None):
+        """
+        Construct an ApplicationData object.
+
+        Args:
+            value (str): A string representing data for a particular namespace.
+                Optional, defaults to None.
+        """
+        super(ApplicationData, self).__init__(value, Tags.APPLICATION_DATA)
+
+
 class ApplicationSpecificInformation(Struct):
+    """
+    A structure used to store data specific to the applications that use a
+    Managed Object.
 
-    class ApplicationNamespace(TextString):
+    An attribute of Managed Objects, it may be specified during the creation or
+    modification of any server Managed Object.
 
-        def __init__(self, value=None):
-            super(self.__class__,
-                  self).__init__(value, Tags.APPLICATION_NAMESPACE)
+    Attributes:
+        application_namespace: The name of a namespace supported by the server.
+        application_data: String data relevant to the specified namespace.
 
-    class ApplicationData(TextString):
+    See Section 3.36 of the KMIP v1.1 specification for more information.
+    """
 
-        def __init__(self, value=None):
-            super(self.__class__,
-                  self).__init__(value, Tags.APPLICATION_DATA)
+    def __init__(self, application_namespace=None, application_data=None):
+        """
+        Construct an ApplicationSpecificInformation object.
 
-    def __init__(self, application_namespace=None,
-                 application_data=None):
-        super(self.__class__,
-              self).__init__(Tags.APPLICATION_SPECIFIC_INFORMATION)
+        Args:
+            application_namespace (ApplicationNamespace): The name of a
+                namespace supported by the server. Optional, defaults to None.
+            application_data (ApplicationData): String data relevant to the
+                specified namespace. Optional, defaults to None.
+        """
+        super(ApplicationSpecificInformation, self).__init__(
+            Tags.APPLICATION_SPECIFIC_INFORMATION)
 
-        self.application_namespace = application_namespace
-        self.application_data = application_data
+        if application_namespace is None:
+            self.application_namespace = ApplicationNamespace()
+        else:
+            self.application_namespace = application_namespace
+
+        if application_data is None:
+            self.application_data = ApplicationData()
+        else:
+            self.application_data = application_data
 
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
-        tstream = BytearrayStream(istream.read(self.length))
+        """
+        Read the data encoding the ApplicationSpecificInformation object and
+        decode it into its constituent parts.
 
-        self.application_namespace = self.ApplicationNamespace()
-        self.application_data = self.ApplicationData()
+        Args:
+            istream (Stream): A data stream containing encoded object data,
+                supporting a read method; usually a BytearrayStream object.
+        """
+        super(ApplicationSpecificInformation, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
 
         self.application_namespace.read(tstream)
         self.application_data.read(tstream)
@@ -337,57 +398,68 @@ class ApplicationSpecificInformation(Struct):
         self.validate()
 
     def write(self, ostream):
+        """
+        Write the data encoding the ApplicationSpecificInformation object to a
+        stream.
+
+        Args:
+            ostream (Stream): A data stream in which to encode object data,
+                supporting a write method; usually a BytearrayStream object.
+        """
         tstream = BytearrayStream()
 
         self.application_namespace.write(tstream)
         self.application_data.write(tstream)
 
-        # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(ApplicationSpecificInformation, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
+        """
+        Error check the types of the different attributes of the
+        ApplicationSpecificInformation object.
+        """
         self.__validate()
 
     def __validate(self):
-        name = self.__class__.__name__
-        msg = ErrorStrings.BAD_EXP_RECV
+        if not isinstance(self.application_namespace, ApplicationNamespace):
+            msg = "invalid application namespace"
+            msg += "; expected {0}, received {1}".format(
+                ApplicationNamespace, self.application_namespace)
+            raise TypeError(msg)
 
-        if self.application_namespace is not None:
-            if self.application_data is None:
-                member = 'application_data'
-                raise ValueError(msg.format('{0}.{1}'.format(name, member),
-                                            'value', 'not None', 'None'))
-            else:
-                member = 'application_namespace'
-                exp_type = self.ApplicationNamespace
-                if not isinstance(self.application_namespace, exp_type):
-                    rcv_type = type(self.application_namespace)
-                    raise TypeError(msg.format('{0}.{1}'.format(name, member),
-                                               'type', exp_type, rcv_type))
-
-        if self.application_data is not None:
-            if self.application_namespace is None:
-                member = 'application_namespace'
-                raise ValueError(msg.format('{0}.{1}'.format(name, member),
-                                            'value', 'not None', 'None'))
-            else:
-                member = 'application_data'
-                exp_type = self.ApplicationData
-                if not isinstance(self.application_data, exp_type):
-                    rcv_type = type(self.application_data)
-                    raise TypeError(msg.format('{0}.{1}'.format(name, member),
-                                               'type', exp_type, rcv_type))
+        if not isinstance(self.application_data, ApplicationData):
+            msg = "invalid application data"
+            msg += "; expected {0}, received {1}".format(
+                ApplicationData, self.application_data)
+            raise TypeError(msg)
 
     @classmethod
     def create(cls, application_namespace, application_data):
-        namespace = ApplicationSpecificInformation.\
-            ApplicationNamespace(application_namespace)
-        data = ApplicationSpecificInformation.\
-            ApplicationData(application_data)
-        return ApplicationSpecificInformation(application_namespace=namespace,
-                                              application_data=data)
+        """
+        Construct an ApplicationSpecificInformation object from provided data
+        and namespace values.
+
+        Args:
+            application_namespace (str): The name of the application namespace.
+            application_data (str): Application data related to the namespace.
+
+        Returns:
+            ApplicationSpecificInformation: The newly created set of
+                application information.
+
+        Example:
+            >>> x = ApplicationSpecificInformation.create('namespace', 'data')
+            >>> x.application_namespace.value
+            'namespace'
+            >>> x.application_data.value
+            'data'
+        """
+        namespace = ApplicationNamespace(application_namespace)
+        data = ApplicationData(application_data)
+        return ApplicationSpecificInformation(
+            application_namespace=namespace, application_data=data)
 
 
 # 3.37

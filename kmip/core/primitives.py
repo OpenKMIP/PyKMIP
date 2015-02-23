@@ -81,15 +81,7 @@ class Base(object):
             min_bytes = 'a minimum of {0} bytes'.format(self.LENGTH_SIZE)
             raise errors.ReadValueError(Base.__name__, 'length', min_bytes,
                                         '{0} bytes'.format(num_bytes))
-        length = unpack('!I', lst)[0]
-
-        # Verify that the length matches the expected length, if one exists
-        if self.length is not None:
-            if length is not self.length:
-                raise errors.ReadValueError(Base.__name__, 'length',
-                                            self.length, length)
-        else:
-            self.length = length
+        self.length = unpack('!I', lst)[0]
 
     def read_value(self, istream):
         raise NotImplementedError()
@@ -487,7 +479,11 @@ class TextString(Base):
 
     def __init__(self, value=None, tag=Tags.DEFAULT):
         super(TextString, self).__init__(tag, type=Types.TEXT_STRING)
-        self.value = value
+
+        if value is None:
+            self.value = ''
+        else:
+            self.value = value
 
         self.validate()
 

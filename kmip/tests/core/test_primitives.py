@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from six import string_types
 from testtools import TestCase
 
 from kmip.core.enums import Tags
@@ -110,14 +111,6 @@ class TestBase(TestCase):
 
         # Check no exception thrown
         base.read_length(self.stream)
-
-    def test_read_length_error(self):
-        self.stream.write(b'\x00\x00\x00\x00')
-        base = Base()
-        base.length = 4
-
-        self.assertRaises(errors.ReadValueError, base.read_length,
-                          self.stream)
 
     def test_read_length_underflow(self):
         self.stream.write(b'\x00')
@@ -985,13 +978,18 @@ class TestTextString(TestCase):
                          self.bad_value.format('value', value, ts.value))
 
     def test_init_unset(self):
-        ts = TextString()
+        text_string = TextString()
 
-        self.assertIsInstance(ts.value, type(None),
-                              self.bad_type.format('value', type(None),
-                                                   type(ts.value)))
-        self.assertEqual(None, ts.value,
-                         self.bad_value.format('value', None, ts.value))
+        expected = string_types
+        observed = text_string.value
+
+        msg = "expected {0}, observed {1}".format(expected, observed)
+        self.assertIsInstance(observed, expected, msg)
+
+        expected = ''
+
+        msg = "expected {0}, observed {1}".format(expected, observed)
+        self.assertEqual(expected, observed, msg)
 
     def test_validate_on_valid(self):
         ts = TextString()
