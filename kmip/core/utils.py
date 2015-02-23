@@ -66,7 +66,7 @@ def build_er_error(class_object, descriptor, expected, received,
 class BytearrayStream(io.RawIOBase):
     def __init__(self, data=None):
         if data is None:
-            self.buffer = b''
+            self.buffer = bytes()
         else:
             self.buffer = bytes(data)
 
@@ -81,10 +81,11 @@ class BytearrayStream(io.RawIOBase):
         return data
 
     def readall(self):
-        data = self.buffer[0:]
-        self.buffer = self.buffer[len(self.buffer):]
+        data = self.buffer
+        self.buffer = bytes()
         return data
 
+    # TODO (peter-hamilton) Unused, add documentation or cut.
     def readinto(self, b):
         if len(b) <= len(self.buffer):
             num_bytes_to_read = len(b)
@@ -117,6 +118,17 @@ class BytearrayStream(io.RawIOBase):
 
     def __eq__(self, other):
         if isinstance(other, BytearrayStream):
-            return (self.buffer == other.buffer)
+            if len(self.buffer) != len(other.buffer):
+                return False
+            elif self.buffer != other.buffer:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, BytearrayStream):
+            return not (self == other)
         else:
             return NotImplemented

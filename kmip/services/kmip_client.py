@@ -19,6 +19,7 @@ from kmip.services.results import DestroyResult
 from kmip.services.results import DiscoverVersionsResult
 from kmip.services.results import GetResult
 from kmip.services.results import LocateResult
+from kmip.services.results import QueryResult
 from kmip.services.results import RegisterResult
 from kmip.services.results import RekeyKeyPairResult
 
@@ -45,6 +46,7 @@ from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import locate
+from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 
@@ -176,6 +178,31 @@ class KMIPProxy(KMIP):
                             object_group_member=object_group_member,
                             attributes=attributes, credential=credential)
 
+    def query(self, batch=False, query_functions=None, credential=None):
+        """
+        Send a Query request to the server.
+
+        Args:
+            batch (boolean): A flag indicating if the operation should be sent
+                with a batch of additional operations. Defaults to False.
+            query_functions (list): A list of QueryFunction enumerations
+                indicating what information the client wants from the server.
+                Optional, defaults to None.
+            credential (Credential): A Credential object containing
+                authentication information for the server. Optional, defaults
+                to None.
+        """
+        batch_item = self._build_query_batch_item(query_functions)
+
+        # TODO (peter-hamilton): Replace this with official client batch mode.
+        if batch:
+            self.batch_items.append(batch_item)
+        else:
+            request = self._build_request_message(credential, [batch_item])
+            response = self._send_and_receive_message(request)
+            results = self._process_batch_items(response)
+            return results[0]
+
     def discover_versions(self, batch=False, protocol_versions=None,
                           credential=None):
         batch_item = self._build_discover_versions_batch_item(
@@ -257,6 +284,13 @@ class KMIPProxy(KMIP):
             operation=operation, request_payload=payload)
         return batch_item
 
+    def _build_query_batch_item(self, query_functions=None):
+        operation = Operation(OperationEnum.QUERY)
+        payload = query.QueryRequestPayload(query_functions)
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=payload)
+        return batch_item
+
     def _build_discover_versions_batch_item(self, protocol_versions=None):
         operation = Operation(OperationEnum.DISCOVER_VERSIONS)
 
@@ -281,6 +315,8 @@ class KMIPProxy(KMIP):
             return self._process_create_key_pair_batch_item
         elif operation == OperationEnum.REKEY_KEY_PAIR:
             return self._process_rekey_key_pair_batch_item
+        elif operation == OperationEnum.QUERY:
+            return self._process_query_batch_item
         elif operation == OperationEnum.DISCOVER_VERSIONS:
             return self._process_discover_versions_batch_item
         else:
@@ -316,6 +352,35 @@ class KMIPProxy(KMIP):
     def _process_rekey_key_pair_batch_item(self, batch_item):
         return self._process_key_pair_batch_item(
             batch_item, RekeyKeyPairResult)
+
+    def _process_query_batch_item(self, batch_item):
+        payload = batch_item.response_payload
+
+        operations = None
+        object_types = None
+        vendor_identification = None
+        server_information = None
+        application_namespaces = None
+        extension_information = None
+
+        if payload is not None:
+            operations = payload.operations
+            object_types = payload.object_types
+            vendor_identification = payload.vendor_identification
+            server_information = payload.server_information
+            application_namespaces = payload.application_namespaces
+            extension_information = payload.extension_information
+
+        return QueryResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            operations,
+            object_types,
+            vendor_identification,
+            server_information,
+            application_namespaces,
+            extension_information)
 
     def _process_discover_versions_batch_item(self, batch_item):
         payload = batch_item.response_payload

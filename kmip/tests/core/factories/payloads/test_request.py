@@ -24,6 +24,7 @@ from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import locate
+from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 
@@ -138,8 +139,8 @@ class TestRequestPayloadFactory(testtools.TestCase):
             self.factory.create, Operation.VALIDATE)
 
     def test_create_query_payload(self):
-        self._test_not_implemented(
-            self.factory.create, Operation.QUERY)
+        payload = self.factory.create(Operation.QUERY)
+        self._test_payload_type(payload, query.QueryRequestPayload)
 
     def test_create_cancel_payload(self):
         self._test_not_implemented(

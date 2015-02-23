@@ -458,6 +458,15 @@ class KeyRoleType(Enum):
     PVKOTH    = 0x00000015
 
 
+# 9.1.3.2.24
+class QueryFunction(Enum):
+    QUERY_OPERATIONS             = 0x00000001
+    QUERY_OBJECTS                = 0x00000002
+    QUERY_SERVER_INFORMATION     = 0x00000003
+    QUERY_APPLICATION_NAMESPACES = 0x00000004
+    QUERY_EXTENSION_LIST         = 0x00000005
+    QUERY_EXTENSION_MAP          = 0x00000006
+
 # 9.1.3.2.27
 class Operation(Enum):
     CREATE               = 0x00000001

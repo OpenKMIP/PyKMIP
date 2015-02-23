@@ -156,8 +156,9 @@ class Struct(Base):
     def __init__(self, tag=Tags.DEFAULT):
         super(Struct, self).__init__(tag, type=Types.STRUCTURE)
 
+    # NOTE (peter-hamilton) If seen, should indicate repr needs to be defined
     def __repr__(self):
-        return '<Struct>'
+        return "Struct()"
 
 
 class Integer(Base):
@@ -216,7 +217,10 @@ class Integer(Base):
                                                 num_bytes)
 
     def __repr__(self):
-        return '<Integer, %d>' % (self.value)
+        return "{0}(value={1})".format(type(self).__name__, repr(self.value))
+
+    def __str__(self):
+        return "{0}".format(repr(self.value))
 
     def __eq__(self, other):
         if isinstance(other, Integer):
@@ -413,7 +417,11 @@ class Enumeration(Integer):
                                            Enum, type(self.enum)))
 
     def __repr__(self):
-        return '<Enumeration, %s, %d>' % (self.enum.name, self.enum.value)
+        return "Enumeration(value={0})".format(self.enum)
+
+    def __str__(self):
+        return "{0} - {1} - {2}".format(
+            type(self.enum), self.enum.name, self.enum.value)
 
 
 class Boolean(Base):
@@ -550,7 +558,10 @@ class TextString(Base):
                                            data_type))
 
     def __repr__(self):
-        return '<TextString, %s>' % (self.value)
+        return "{0}(value={1})".format(type(self).__name__, repr(self.value))
+
+    def __str__(self):
+        return "{0}".format(repr(self.value))
 
     def __eq__(self, other):
         if isinstance(other, TextString):

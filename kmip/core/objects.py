@@ -921,3 +921,244 @@ class PublicKeyTemplateAttribute(TemplateAttribute):
                  attributes=None):
         super(PublicKeyTemplateAttribute, self).__init__(
             names, attributes, Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE)
+
+
+# 2.1.9
+class ExtensionName(TextString):
+    """
+    The name of an extended Object.
+
+    A part of ExtensionInformation, specifically identifying an Object that is
+    a custom vendor addition to the KMIP specification. See Section 2.1.9 of
+    the KMIP 1.1 specification for more information.
+
+    Attributes:
+        value: The string data representing the extension name.
+    """
+    def __init__(self, value=''):
+        """
+        Construct an ExtensionName object.
+
+        Args:
+            value (str): The string data representing the extension name.
+                Optional, defaults to the empty string.
+        """
+        super(ExtensionName, self).__init__(value, Tags.EXTENSION_NAME)
+
+
+class ExtensionTag(Integer):
+    """
+    The tag of an extended Object.
+
+    A part of ExtensionInformation. See Section 2.1.9 of the KMIP 1.1
+    specification for more information.
+
+    Attributes:
+        value: The tag number identifying the extended object.
+    """
+    def __init__(self, value=0):
+        """
+        Construct an ExtensionTag object.
+
+        Args:
+            value (int): A number representing the extension tag. Often
+                displayed in hex format. Optional, defaults to 0.
+        """
+        super(ExtensionTag, self).__init__(value, Tags.EXTENSION_TAG)
+
+
+class ExtensionType(Integer):
+    """
+    The type of an extended Object.
+
+    A part of ExtensionInformation, specifically identifying the type of the
+    Object in the specification extension. See Section 2.1.9 of the KMIP 1.1
+    specification for more information.
+
+    Attributes:
+        value: The type enumeration for the extended object.
+    """
+    def __init__(self, value=None):
+        """
+        Construct an ExtensionType object.
+
+        Args:
+            value (Types): A number representing a Types enumeration value,
+                indicating the type of the extended Object. Optional, defaults
+                to None.
+        """
+        super(ExtensionType, self).__init__(value, Tags.EXTENSION_TYPE)
+
+
+class ExtensionInformation(Struct):
+    """
+    A structure describing Objects defined in KMIP specification extensions.
+
+    It is used specifically for Objects with Item Tag values in the Extensions
+    range and appears in responses to Query requests for server extension
+    information. See Sections 2.1.9 and 4.25 of the KMIP 1.1 specification for
+    more information.
+
+    Attributes:
+        extension_name: The name of the extended Object.
+        extension_tag: The tag of the extended Object.
+        extension_type: The type of the extended Object.
+    """
+    def __init__(self, extension_name=None, extension_tag=None,
+                 extension_type=None):
+        """
+        Construct an ExtensionInformation object.
+
+        Args:
+            extension_name (ExtensionName): The name of the extended Object.
+            extension_tag (ExtensionTag): The tag of the extended Object.
+            extension_type (ExtensionType): The type of the extended Object.
+        """
+        super(ExtensionInformation, self).__init__(Tags.EXTENSION_INFORMATION)
+
+        if extension_name is None:
+            self.extension_name = ExtensionName()
+        else:
+            self.extension_name = extension_name
+
+        self.extension_tag = extension_tag
+        self.extension_type = extension_type
+
+        self.validate()
+
+    def read(self, istream):
+        """
+        Read the data encoding the ExtensionInformation object and decode it
+        into its constituent parts.
+
+        Args:
+            istream (Stream): A data stream containing encoded object data,
+                supporting a read method; usually a BytearrayStream object.
+        """
+        super(ExtensionInformation, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+
+        self.extension_name.read(tstream)
+
+        if self.is_tag_next(Tags.EXTENSION_TAG, tstream):
+            self.extension_tag = ExtensionTag()
+            self.extension_tag.read(tstream)
+        if self.is_tag_next(Tags.EXTENSION_TYPE, tstream):
+            self.extension_type = ExtensionType()
+            self.extension_type.read(tstream)
+
+        self.is_oversized(tstream)
+        self.validate()
+
+    def write(self, ostream):
+        """
+        Write the data encoding the ExtensionInformation object to a stream.
+
+        Args:
+            ostream (Stream): A data stream in which to encode object data,
+                supporting a write method; usually a BytearrayStream object.
+        """
+        tstream = BytearrayStream()
+
+        self.extension_name.write(tstream)
+
+        if self.extension_tag is not None:
+            self.extension_tag.write(tstream)
+        if self.extension_type is not None:
+            self.extension_type.write(tstream)
+
+        self.length = tstream.length()
+        super(ExtensionInformation, self).write(ostream)
+        ostream.write(tstream.buffer)
+
+    def validate(self):
+        """
+        Error check the attributes of the ExtensionInformation object.
+        """
+        self.__validate()
+
+    def __validate(self):
+        if not isinstance(self.extension_name, ExtensionName):
+            msg = "invalid extension name"
+            msg += "; expected {0}, received {1}".format(
+                ExtensionName, self.extension_name)
+            raise TypeError(msg)
+
+        if self.extension_tag is not None:
+            if not isinstance(self.extension_tag, ExtensionTag):
+                msg = "invalid extension tag"
+                msg += "; expected {0}, received {1}".format(
+                    ExtensionTag, self.extension_tag)
+                raise TypeError(msg)
+
+        if self.extension_type is not None:
+            if not isinstance(self.extension_type, ExtensionType):
+                msg = "invalid extension type"
+                msg += "; expected {0}, received {1}".format(
+                    ExtensionType, self.extension_type)
+                raise TypeError(msg)
+
+    def __eq__(self, other):
+        if isinstance(other, ExtensionInformation):
+            if self.extension_name != other.extension_name:
+                return False
+            elif self.extension_tag != other.extension_tag:
+                return False
+            elif self.extension_type != other.extension_type:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ExtensionInformation):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        name = "extension_name={0}".format(repr(self.extension_name))
+        tag = "extension_tag={0}".format(repr(self.extension_tag))
+        typ = "extension_type={0}".format(repr(self.extension_type))
+        return "ExtensionInformation({0}, {1}, {2})".format(name, tag, typ)
+
+    def __str__(self):
+        return repr(self)
+
+    @classmethod
+    def create(cls, extension_name=None, extension_tag=None,
+               extension_type=None):
+        """
+        Construct an ExtensionInformation object from provided extension
+        values.
+
+        Args:
+            extension_name (str): The name of the extension. Optional,
+                defaults to None.
+            extension_tag (int): The tag number of the extension. Optional,
+                defaults to None.
+            extension_type (int): The type index of the extension. Optional,
+                defaults to None.
+
+        Returns:
+            ExtensionInformation: The newly created set of extension
+                information.
+
+        Example:
+            >>> x = ExtensionInformation.create('extension', 1, 1)
+            >>> x.extension_name.value
+            ExtensionName(value='extension')
+            >>> x.extension_tag.value
+            ExtensionTag(value=1)
+            >>> x.extension_type.value
+            ExtensionType(value=1)
+        """
+        extension_name = ExtensionName(extension_name)
+        extension_tag = ExtensionTag(extension_tag)
+        extension_type = ExtensionType(extension_type)
+
+        return ExtensionInformation(
+            extension_name=extension_name,
+            extension_tag=extension_tag,
+            extension_type=extension_type)

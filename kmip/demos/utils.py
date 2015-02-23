@@ -119,6 +119,8 @@ def build_cli_parser(operation):
             default=None,
             dest="length",
             help="Key length in bits (e.g., 128, 256)")
+    elif operation is Operation.QUERY:
+        pass
     elif operation is Operation.DISCOVER_VERSIONS:
         pass
     else:
