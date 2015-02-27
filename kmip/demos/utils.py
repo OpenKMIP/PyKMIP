@@ -40,6 +40,14 @@ def build_cli_parser(operation):
         default=None,
         dest="password",
         help="Password for KMIP server account")
+    parser.add_option(
+        "-c",
+        "--config",
+        action="store",
+        type="str",
+        default="client",
+        dest="config",
+        help="Client configuration group to load from configuration file")
 
     if operation is Operation.CREATE:
         parser.add_option(

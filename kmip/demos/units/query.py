@@ -37,6 +37,7 @@ if __name__ == '__main__':
 
     username = opts.username
     password = opts.password
+    config = opts.config
 
     # Build and setup logging and needed factories
     f_log = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
@@ -60,7 +61,7 @@ if __name__ == '__main__':
         QueryFunction(QueryFunctionEnum.QUERY_EXTENSION_MAP))
 
     # Build the client and connect to the server
-    client = KMIPProxy()
+    client = KMIPProxy(config=config)
     client.open()
 
     result = client.query(query_functions=query_functions)

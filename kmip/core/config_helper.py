@@ -13,12 +13,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-try:
-    from configparser import SafeConfigParser
-except ImportError:
-    from ConfigParser import SafeConfigParser
 import logging
 import os
+
+from six.moves.configparser import SafeConfigParser
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))

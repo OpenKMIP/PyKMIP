@@ -44,6 +44,7 @@ if __name__ == '__main__':
 
     username = opts.username
     password = opts.password
+    config = opts.config
     algorithm = opts.algorithm
     length = opts.length
 
@@ -76,7 +77,7 @@ if __name__ == '__main__':
         credential = credential_factory.create_credential(credential_type,
                                                           credential_value)
     # Build the client and connect to the server
-    client = KMIPProxy()
+    client = KMIPProxy(config=config)
     client.open()
 
     # Build the different object attributes

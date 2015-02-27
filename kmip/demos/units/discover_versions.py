@@ -32,15 +32,16 @@ if __name__ == '__main__':
 
     username = opts.username
     password = opts.password
+    config = opts.config
 
-    # Build and setup logging and needed factories
+    # Build and setup logging
     f_log = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
                          'logconfig.ini')
     logging.config.fileConfig(f_log)
     logger = logging.getLogger(__name__)
 
     # Build the client and connect to the server
-    client = KMIPProxy()
+    client = KMIPProxy(config=config)
     client.open()
 
     result = client.discover_versions()

@@ -72,17 +72,16 @@ class KMIPProxy(KMIP):
                  cert_reqs=None, ssl_version=None, ca_certs=None,
                  do_handshake_on_connect=None,
                  suppress_ragged_eofs=None,
-                 username=None,
-                 password=None):
+                 username=None, password=None, config='client'):
         super(self.__class__, self).__init__()
         self.logger = logging.getLogger(__name__)
         self.credential_factory = CredentialFactory()
+        self.config = config
 
         self._set_variables(host, port, keyfile, certfile,
                             cert_reqs, ssl_version, ca_certs,
                             do_handshake_on_connect, suppress_ragged_eofs,
                             username, password)
-
         self.batch_items = []
 
     def open(self):
@@ -624,42 +623,42 @@ class KMIPProxy(KMIP):
         conf = ConfigHelper()
 
         self.host = conf.get_valid_value(
-            host, 'client', 'host', conf.DEFAULT_HOST)
+            host, self.config, 'host', conf.DEFAULT_HOST)
 
         self.port = int(conf.get_valid_value(
-            port, 'client', 'port', conf.DEFAULT_PORT))
+            port, self.config, 'port', conf.DEFAULT_PORT))
 
         self.keyfile = conf.get_valid_value(
-            keyfile, 'client', 'keyfile', None)
+            keyfile, self.config, 'keyfile', None)
 
         self.certfile = conf.get_valid_value(
-            certfile, 'client', 'certfile', None)
+            certfile, self.config, 'certfile', None)
 
         self.cert_reqs = getattr(ssl, conf.get_valid_value(
-            cert_reqs, 'client', 'cert_reqs', 'CERT_REQUIRED'))
+            cert_reqs, self.config, 'cert_reqs', 'CERT_REQUIRED'))
 
         self.ssl_version = getattr(ssl, conf.get_valid_value(
-            ssl_version, 'client', 'ssl_version', conf.DEFAULT_SSL_VERSION))
+            ssl_version, self.config, 'ssl_version', conf.DEFAULT_SSL_VERSION))
 
         self.ca_certs = conf.get_valid_value(
-            ca_certs, 'client', 'ca_certs', conf.DEFAULT_CA_CERTS)
+            ca_certs, self.config, 'ca_certs', conf.DEFAULT_CA_CERTS)
 
         if conf.get_valid_value(
-                do_handshake_on_connect, 'client',
+                do_handshake_on_connect, self.config,
                 'do_handshake_on_connect', 'True') == 'True':
             self.do_handshake_on_connect = True
         else:
             self.do_handshake_on_connect = False
 
         if conf.get_valid_value(
-                suppress_ragged_eofs, 'client',
+                suppress_ragged_eofs, self.config,
                 'suppress_ragged_eofs', 'True') == 'True':
             self.suppress_ragged_eofs = True
         else:
             self.suppress_ragged_eofs = False
 
         self.username = conf.get_valid_value(
-            username, 'client', 'username', conf.DEFAULT_USERNAME)
+            username, self.config, 'username', conf.DEFAULT_USERNAME)
 
         self.password = conf.get_valid_value(
-            password, 'client', 'password', conf.DEFAULT_PASSWORD)
+            password, self.config, 'password', conf.DEFAULT_PASSWORD)
