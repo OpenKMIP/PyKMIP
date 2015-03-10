@@ -83,6 +83,14 @@ def build_cli_parser(operation):
             default=None,
             dest="length",
             help="Key length in bits (e.g., 128, 256)")
+        parser.add_option(
+            "-n",
+            "--name",
+            action="store",
+            type="str",
+            default=None,
+            dest="name",
+            help="Name of key pair to create")
     elif operation is Operation.DESTROY:
         parser.add_option(
             "-i",
@@ -135,3 +143,26 @@ def build_cli_parser(operation):
         raise ValueError("unrecognized operation: {0}".format(operation))
 
     return parser
+
+
+def log_template_attribute(logger, template_attribute):
+    names = template_attribute.names
+    attributes = template_attribute.attributes
+
+    logger.info('number of template attribute names: {0}'.format(len(names)))
+    for i in range(len(names)):
+        name = names[i]
+        logger.info('name {0}: {1}'.format(i, name))
+
+    logger.info('number of attributes: {0}'.format(len(attributes)))
+    for i in range(len(attributes)):
+        attribute = attributes[i]
+        attribute_name = attribute.attribute_name
+        attribute_index = attribute.attribute_index
+        attribute_value = attribute.attribute_value
+
+        logger.info('attribute {0}:'.format(i))
+        logger.info('   attribute_name: {0}'.format(attribute_name))
+        logger.info('   attribute_index: {0}'.format(attribute_index))
+        logger.info('   attribute_value: {0}'.format(
+            repr(attribute_value)))
