@@ -1151,11 +1151,11 @@ class TestByteString(TestCase):
         super(self.__class__, self).tearDown()
 
     def test_init(self):
-        value = bytearray(b'\x01\x02\x03')
+        value = b'\x01\x02\x03'
         bs = ByteString(value)
 
-        self.assertIsInstance(bs.value, bytearray,
-                              self.bad_type.format('value', bytearray,
+        self.assertIsInstance(bs.value, bytes,
+                              self.bad_type.format('value', bytes,
                                                    type(bs.value)))
         self.assertEqual(value, bs.value,
                          self.bad_value.format('value', value, bs.value))
@@ -1163,15 +1163,15 @@ class TestByteString(TestCase):
     def test_init_unset(self):
         bs = ByteString()
 
-        self.assertIsInstance(bs.value, type(None),
+        self.assertIsInstance(bs.value, bytes,
                               self.bad_type.format('value', type(None),
                                                    type(bs.value)))
-        self.assertEqual(None, bs.value,
+        self.assertEqual(bytes(), bs.value,
                          self.bad_value.format('value', None, bs.value))
 
     def test_validate_on_valid(self):
         bs = ByteString()
-        bs.value = bytearray(b'\x00')
+        bs.value = b'\x00'
 
         # Check no exception thrown.
         bs.validate()
@@ -1189,7 +1189,7 @@ class TestByteString(TestCase):
         self.assertRaises(TypeError, bs.validate)
 
     def test_read_value(self):
-        encoding = (b'\x01\x02\x03\x00\x00\x00\x00\x00')
+        encoding = b'\x01\x02\x03\x00\x00\x00\x00\x00'
         self.stream = BytearrayStream(encoding)
         bs = ByteString()
         bs.length = 0x03
@@ -1200,7 +1200,7 @@ class TestByteString(TestCase):
                          self.bad_read.format('value', expected, bs.value))
 
     def test_read_value_no_padding(self):
-        encoding = (b'\x01\x02\x03\x04\x05\x06\x07\x08')
+        encoding = b'\x01\x02\x03\x04\x05\x06\x07\x08'
         self.stream = BytearrayStream(encoding)
         bs = ByteString()
         bs.length = 0x08
@@ -1211,24 +1211,24 @@ class TestByteString(TestCase):
                          self.bad_read.format('value', expected, bs.value))
 
     def test_read_value_max_padding(self):
-        encoding = (b'\x01\x00\x00\x00\x00\x00\x00\x00')
+        encoding = b'\x01\x00\x00\x00\x00\x00\x00\x00'
         self.stream = BytearrayStream(encoding)
         bs = ByteString()
         bs.length = 0x01
         bs.read_value(self.stream)
 
-        expected = bytearray(b'\x01')
+        expected = b'\x01'
         self.assertEqual(expected, bs.value,
                          self.bad_read.format('value', expected, bs.value))
 
     def test_read_value_zero(self):
-        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x00')
+        encoding = b'\x00\x00\x00\x00\x00\x00\x00\x00'
         self.stream = BytearrayStream(encoding)
         bs = ByteString()
         bs.length = 0x01
         bs.read_value(self.stream)
 
-        expected = bytearray(b'\x00')
+        expected = b'\x00'
         self.assertEqual(expected, bs.value,
                          self.bad_read.format('value', expected, bs.value))
 
@@ -1239,7 +1239,7 @@ class TestByteString(TestCase):
         bs = ByteString()
         bs.read(self.stream)
 
-        expected = bytearray(b'\x01\x02\x03')
+        expected = b'\x01\x02\x03'
         self.assertEqual(expected, bs.value,
                          self.bad_read.format('value', expected, bs.value))
 
@@ -1252,9 +1252,9 @@ class TestByteString(TestCase):
         self.assertRaises(errors.ReadValueError, bs.read, self.stream)
 
     def test_write_value(self):
-        encoding = (b'\x01\x02\x03\x00\x00\x00\x00\x00')
+        encoding = b'\x01\x02\x03\x00\x00\x00\x00\x00'
         self.stream = BytearrayStream()
-        value = bytearray(b'\x01\x02\x03')
+        value = b'\x01\x02\x03'
         bs = ByteString(value)
         bs.write_value(self.stream)
 
@@ -1267,9 +1267,9 @@ class TestByteString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_no_padding(self):
-        encoding = (b'\x01\x02\x03\x04\x05\x06\x07\x08')
+        encoding = b'\x01\x02\x03\x04\x05\x06\x07\x08'
         self.stream = BytearrayStream()
-        value = bytearray(b'\x01\x02\x03\x04\x05\x06\x07\x08')
+        value = b'\x01\x02\x03\x04\x05\x06\x07\x08'
         bs = ByteString(value)
         bs.write_value(self.stream)
 
@@ -1282,9 +1282,9 @@ class TestByteString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_max_padding(self):
-        encoding = (b'\x01\x00\x00\x00\x00\x00\x00\x00')
+        encoding = b'\x01\x00\x00\x00\x00\x00\x00\x00'
         self.stream = BytearrayStream()
-        value = bytearray(b'\x01')
+        value = b'\x01'
         bs = ByteString(value)
         bs.write_value(self.stream)
 
@@ -1297,9 +1297,9 @@ class TestByteString(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
     def test_write_value_zero(self):
-        encoding = (b'\x00\x00\x00\x00\x00\x00\x00\x00')
+        encoding = b'\x00\x00\x00\x00\x00\x00\x00\x00'
         self.stream = BytearrayStream()
-        value = bytearray(b'\x00')
+        value = b'\x00'
         bs = ByteString(value)
         bs.write_value(self.stream)
 
@@ -1315,7 +1315,7 @@ class TestByteString(TestCase):
         encoding = (b'\x42\x00\x00\x08\x00\x00\x00\x03\x01\x02\x03\x00\x00\x00'
                     b'\x00\x00')
         self.stream = BytearrayStream()
-        value = bytearray(b'\x01\x02\x03')
+        value = b'\x01\x02\x03'
         bs = ByteString(value)
         bs.write(self.stream)
 

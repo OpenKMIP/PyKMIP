@@ -17,7 +17,11 @@ from testtools import TestCase
 
 from kmip.core.attributes import ApplicationData
 from kmip.core.attributes import ApplicationNamespace
+from kmip.core.attributes import DigestValue
+from kmip.core.attributes import HashingAlgorithm
 from kmip.core.attributes import OperationPolicyName
+
+from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 
 from kmip.core.utils import BytearrayStream
 
@@ -88,6 +92,93 @@ class TestOperationPolicyName(TestCase):
 
     def test_operation_policy_name_on_none(self):
         self._test_operation_policy_name(None)
+
+
+class TestHashingAlgorithm(TestCase):
+    """
+    A test suite for the HashingAlgorithm class.
+
+    Since HashingAlgorithm is a simple wrapper for the Enumeration primitive,
+    only a few tests pertaining to construction are needed.
+    """
+
+    def setUp(self):
+        super(TestHashingAlgorithm, self).setUp()
+
+    def tearDown(self):
+        super(TestHashingAlgorithm, self).tearDown()
+
+    def _test_init(self, value):
+        if (isinstance(value, HashingAlgorithmEnum)) or (value is None):
+            hashing_algorithm = HashingAlgorithm(value)
+
+            msg = "expected {0}, observed {1}".format(
+                value, hashing_algorithm.enum)
+            self.assertEqual(value, hashing_algorithm.enum, msg)
+        else:
+            self.assertRaises(TypeError, HashingAlgorithm, value)
+
+    def test_init_with_none(self):
+        """
+        Test that a HashingAlgorithm object can be constructed with no
+        specified value.
+        """
+        self._test_init(None)
+
+    def test_init_with_valid(self):
+        """
+        Test that a HashingAlgorithm object can be constructed with a valid
+        HashingAlgorithm enumeration value.
+        """
+        self._test_init(HashingAlgorithmEnum.MD5)
+
+    def test_init_with_invalid(self):
+        """
+        Test that a TypeError exception is raised when a non HashingAlgorithm
+        enumeration value is used to construct a HashingAlgorithm object.
+        """
+        self._test_init("invalid")
+
+
+class TestDigestValue(TestCase):
+    """
+    A test suite for the DigestValue class.
+
+    Since DigestValue is a simple wrapper for the ByteString primitive, only
+    a few tests pertaining to construction are needed.
+    """
+
+    def setUp(self):
+        super(TestDigestValue, self).setUp()
+
+    def tearDown(self):
+        super(TestDigestValue, self).tearDown()
+
+    def _test_init(self, value):
+        if (isinstance(value, bytes)) or (value is None):
+            digest_value = DigestValue(value)
+
+            if value is None:
+                value = bytes()
+
+            msg = "expected {0}, observed {1}".format(
+                value, digest_value.value)
+            self.assertEqual(value, digest_value.value, msg)
+        else:
+            self.assertRaises(TypeError, DigestValue, value)
+
+    def test_init_with_none(self):
+        """
+        Test that a DigestValue object can be constructed with no specified
+        value.
+        """
+        self._test_init(None)
+
+    def test_init_with_valid(self):
+        """
+        Test that a DigestValue object can be constructed with valid byte data.
+        """
+        self._test_init(b'\x00\x01\x02\x03')
 
 
 class TestApplicationNamespace(TestCase):

@@ -31,10 +31,11 @@ from kmip.core.factories.keys import KeyFactory
 from kmip.core.factories.secrets import SecretFactory
 from kmip.core.keys import RawKey
 
-from kmip.core.messages.contents import KeyFormatType
 from kmip.core.messages.contents import ResultStatus
 from kmip.core.messages.contents import ResultReason
 from kmip.core.messages.contents import ResultMessage
+
+from kmip.core.misc import KeyFormatType
 
 from kmip.core.objects import KeyBlock
 from kmip.core.objects import KeyValue
@@ -344,7 +345,7 @@ class KMIPImpl(KMIP):
         return OperationResult(status, reason, message)
 
     def _gen_symmetric_key(self, bit_length, crypto_alg):
-        key_format_type = KeyBlock.KeyFormatType(KeyFormatTypeEnum.RAW)
+        key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
         key_material = RawKey(bytearray(os.urandom(int(bit_length/8))))
         key_value = KeyValueStruct(key_format_type, key_material)
         crypto_length = CryptographicLength(bit_length)

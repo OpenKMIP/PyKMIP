@@ -19,8 +19,8 @@ from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
 
 from kmip.core.enums import ObjectType
-
 from kmip.core.errors import ErrorStrings
+from kmip.core.misc import KeyFormatType
 
 from kmip.core.objects import Attribute
 from kmip.core.objects import KeyBlock
@@ -75,7 +75,7 @@ class SecretFactory(object):
             cryptographic_length = value.get('cryptographic_length')
             key_wrapping_data = value.get('key_wrapping_data')
 
-            key_format_type = KeyBlock.KeyFormatType(key_type)
+            key_format_type = KeyFormatType(key_type)
 
             key_comp_type = None
             if key_compression_type is not None:

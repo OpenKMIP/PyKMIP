@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
 
@@ -30,7 +31,7 @@ class Offset(Interval):
 
     Used by Rekey and Recertify requests to indicate the time difference
     between the InitializationDate and the ActivationDate of the replacement
-    item to be created. See Sections 4.4, 4.5, and 4.8 of the KMIP v1.1
+    item to be created. See Sections 4.4, 4.5, and 4.8 of the KMIP 1.1
     specification for more information.
     """
 
@@ -50,7 +51,7 @@ class QueryFunction(Enumeration):
     An encodeable wrapper for the QueryFunction enumeration.
 
     Used by Query requests to specify the information to retrieve from the
-    KMIP server. See Sections 4.25 and 9.1.3.2.24 of the KMIP v1.1
+    KMIP server. See Sections 4.25 and 9.1.3.2.24 of the KMIP 1.1
     specification for more information.
     """
     ENUM_TYPE = QueryFunctionEnum
@@ -72,7 +73,7 @@ class VendorIdentification(TextString):
     A text string uniquely identifying a KMIP vendor.
 
     Returned by KMIP servers upon receipt of a Query request for server
-    information. See Section 4.25 of the KMIP v1.1. specification for more
+    information. See Section 4.25 of the KMIP 1.1. specification for more
     information.
     """
 
@@ -93,7 +94,7 @@ class ServerInformation(Struct):
     A structure containing vendor-specific fields and/or substructures.
 
     Returned by KMIP servers upon receipt of a Query request for server
-    information. See Section 4.25 of the KMIP v1.1 specification for more
+    information. See Section 4.25 of the KMIP 1.1 specification for more
     information.
 
     Note:
@@ -182,3 +183,26 @@ class ServerInformation(Struct):
 
     def __str__(self):
         return str(self.data)
+
+
+class KeyFormatType(Enumeration):
+    """
+    An encodeable wrapper for the KeyFormatType enumeration.
+
+    Used to identify the format of different types of keys in KeyBlock and
+    Digest objects, it can also be used to specify the format in which a key
+    is returned when using the Get operation. See Sections 2.1.3, 2.1.7, 3.17,
+    4.11, and 9.1.3.2.3 of the KMIP 1.1 specification for more information.
+    """
+    ENUM_TYPE = KeyFormatTypeEnum
+
+    def __init__(self, value=KeyFormatTypeEnum.RAW):
+        """
+        Construct a KeyFormatType object.
+
+        Args:
+            value (KeyFormatType): A KeyFormatType enumeration value,
+                (e.g., KeyFormatType.PKCS_1). Optional, default to
+                KeyFormatType.RAW.
+        """
+        super(KeyFormatType, self).__init__(value, Tags.KEY_FORMAT_TYPE)

@@ -417,7 +417,7 @@ class Enumeration(Integer):
                                            Enum, type(self.enum)))
 
     def __repr__(self):
-        return "Enumeration(value={0})".format(self.enum)
+        return "{0}(value={1})".format(type(self).__name__, self.enum)
 
     def __str__(self):
         return "{0} - {1} - {2}".format(
@@ -570,7 +570,10 @@ class TextString(Base):
             return NotImplemented
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        if isinstance(other, TextString):
+            return not (self == other)
+        else:
+            return NotImplemented
 
 
 class ByteString(Base):
@@ -579,7 +582,11 @@ class ByteString(Base):
 
     def __init__(self, value=None, tag=Tags.DEFAULT):
         super(ByteString, self).__init__(tag, type=Types.BYTE_STRING)
-        self.value = value
+
+        if value is None:
+            self.value = bytes()
+        else:
+            self.value = bytes(value)
 
         self.validate()
 
@@ -595,9 +602,10 @@ class ByteString(Base):
 
     def read_value(self, istream):
         # Read bytes into bytearray
-        self.value = bytearray()
+        data = bytearray()
         for _ in range(self.length):
-            self.value.append(istream.read(1)[0])
+            data.append(istream.read(1)[0])
+        self.value = bytes(data)
 
         # Read padding and check content
         self.padding_length = self.PADDING_SIZE - (self.length %
@@ -618,7 +626,8 @@ class ByteString(Base):
 
     def write_value(self, ostream):
         # Write bytes to stream
-        for byte in self.value:
+        data = bytearray(self.value)
+        for byte in data:
             ostream.write(pack(self.BYTE_FORMAT, byte))
 
         # Write padding to stream
@@ -633,15 +642,31 @@ class ByteString(Base):
         self.__validate()
 
     def __validate(self):
+        # TODO (peter-hamilton) Test is pointless, value is always bytes. Fix.
         if self.value is not None:
             data_type = type(self.value)
-            if data_type is not bytearray:
+            if data_type is not bytes:
                 msg = ErrorStrings.BAD_EXP_RECV
-                raise TypeError(msg.format('ByteString', 'value', bytearray,
+                raise TypeError(msg.format('ByteString', 'value', bytes,
                                            data_type))
 
     def __repr__(self):
-        return '<Integer, %s>' % (self.value)
+        return "{0}(value={1})".format(type(self).__name__, repr(self.value))
+
+    def __str__(self):
+        return "{0}".format(str(self.value))
+
+    def __eq__(self, other):
+        if isinstance(other, ByteString):
+            return self.value == other.value
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ByteString):
+            return not (self == other)
+        else:
+            return NotImplemented
 
 
 class DateTime(LongInteger):

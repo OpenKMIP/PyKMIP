@@ -15,7 +15,6 @@
 
 from kmip.core.enums import BatchErrorContinuationOption
 from kmip.core.enums import KeyCompressionType
-from kmip.core.enums import KeyFormatType
 from kmip.core.enums import Operation
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import ResultReason
@@ -270,12 +269,3 @@ class KeyCompressionType(Enumeration):
     def __init__(self, value=None):
         super(KeyCompressionType, self).\
             __init__(value, Tags.KEY_COMPRESSION_TYPE)
-
-
-# 9.1.3.2.3
-class KeyFormatType(Enumeration):
-    ENUM_TYPE = KeyFormatType
-
-    def __init__(self, value=None):
-        super(KeyFormatType, self).\
-            __init__(value, Tags.KEY_FORMAT_TYPE)

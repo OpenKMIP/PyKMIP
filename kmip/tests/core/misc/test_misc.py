@@ -16,8 +16,10 @@
 from six import string_types
 from testtools import TestCase
 
+from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
 
+from kmip.core.misc import KeyFormatType
 from kmip.core.misc import QueryFunction
 from kmip.core.misc import VendorIdentification
 
@@ -115,3 +117,49 @@ class TestVendorIdentification(TestCase):
         used to construct a VendorIdentification object.
         """
         self._test_init(0)
+
+
+class TestKeyFormatType(TestCase):
+    """
+    A test suite for the KeyFormatType class.
+
+    Since KeyFormatType is a simple wrapper for the Enumeration primitive,
+    only a few tests pertaining to construction are needed.
+    """
+
+    def setUp(self):
+        super(TestKeyFormatType, self).setUp()
+
+    def tearDown(self):
+        super(TestKeyFormatType, self).tearDown()
+
+    def _test_init(self, value):
+        if (isinstance(value, KeyFormatTypeEnum)) or (value is None):
+            key_format_type = KeyFormatType(value)
+
+            msg = "expected {0}, observed {1}".format(
+                value, key_format_type.enum)
+            self.assertEqual(value, key_format_type.enum, msg)
+        else:
+            self.assertRaises(TypeError, KeyFormatType, value)
+
+    def test_init_with_none(self):
+        """
+        Test that a KeyFormatType object can be constructed with no specified
+        value.
+        """
+        self._test_init(None)
+
+    def test_init_with_valid(self):
+        """
+        Test that a KeyFormatType object can be constructed with a valid
+        KeyFormatType enumeration value.
+        """
+        self._test_init(KeyFormatTypeEnum.RAW)
+
+    def test_init_with_invalid(self):
+        """
+        Test that a TypeError exception is raised when a non KeyFormatType
+        enumeration value is used to construct a KeyFormatType object.
+        """
+        self._test_init("invalid")

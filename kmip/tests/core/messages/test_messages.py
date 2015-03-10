@@ -43,13 +43,13 @@ from kmip.core.keys import RawKey
 
 from kmip.core.messages import contents
 from kmip.core.messages import messages
-
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import destroy
 
+from kmip.core.misc import KeyFormatType
 from kmip.core.primitives import TextString
 
 from kmip.core.secrets import SymmetricKey
@@ -1329,7 +1329,7 @@ class TestResponseMessage(TestCase):
                                                   type(key_block)))
 
             key_format_type = key_block.key_format_type
-            exp_type = objects.KeyBlock.KeyFormatType
+            exp_type = KeyFormatType
             rcv_type = type(key_format_type)
             self.assertIsInstance(key_format_type, exp_type,
                                   self.msg.format('key_format_type', 'type',

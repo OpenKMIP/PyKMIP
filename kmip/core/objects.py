@@ -28,6 +28,7 @@ from kmip.core.enums import Types
 from kmip.core.enums import CredentialType
 
 from kmip.core.errors import ErrorStrings
+from kmip.core.misc import KeyFormatType
 
 from kmip.core.primitives import Struct
 from kmip.core.primitives import TextString
@@ -343,12 +344,6 @@ class Credential(Struct):
 # 2.1.3
 class KeyBlock(Struct):
 
-    class KeyFormatType(Enumeration):
-        ENUM_TYPE = enums.KeyFormatType
-
-        def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.KEY_FORMAT_TYPE)
-
     class KeyCompressionType(Enumeration):
         ENUM_TYPE = enums.KeyCompressionType
 
@@ -376,7 +371,7 @@ class KeyBlock(Struct):
         super(self.__class__, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
-        self.key_format_type = KeyBlock.KeyFormatType()
+        self.key_format_type = KeyFormatType()
         self.key_format_type.read(tstream)
         key_format_type = self.key_format_type.enum
 
@@ -429,9 +424,9 @@ class KeyBlock(Struct):
 
     def __validate(self):
         if self.key_format_type is not None:
-            if type(self.key_format_type) is not KeyBlock.KeyFormatType:
+            if type(self.key_format_type) is not KeyFormatType:
                 member = 'KeyBlock.key_format_type'
-                exp_type = KeyBlock.KeyFormatType
+                exp_type = KeyFormatType
                 rcv_type = type(self.key_format_type)
                 msg = ErrorStrings.BAD_EXP_RECV.format(member, 'type',
                                                        exp_type, rcv_type)

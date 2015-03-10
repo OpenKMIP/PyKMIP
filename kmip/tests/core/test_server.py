@@ -21,6 +21,7 @@ from kmip.core.attributes import CryptographicUsageMask
 from kmip.core.attributes import UniqueIdentifier
 from kmip.core.attributes import ObjectType
 from kmip.core.attributes import Name
+
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask as CryptoUsageMaskEnum
@@ -30,13 +31,17 @@ from kmip.core.enums import ObjectType as ObjectTypeEnum
 from kmip.core.enums import ResultReason
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import NameType
+
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.keys import RawKey
+
 from kmip.core.messages.contents import KeyCompressionType
-from kmip.core.messages.contents import KeyFormatType
+from kmip.core.misc import KeyFormatType
+
 from kmip.core.objects import KeyBlock
 from kmip.core.objects import KeyValueStruct
 from kmip.core.objects import TemplateAttribute
+
 from kmip.core.secrets import SymmetricKey
 from kmip.core.server import KMIPImpl
 
@@ -466,7 +471,7 @@ class TestKMIPServer(TestCase):
     def _get_symmetric_key(self):
         # only need usage attribute
         attrs = [self._get_attrs()[1]]
-        key_format_type = KeyBlock.KeyFormatType(KeyFormatTypeEnum.RAW)
+        key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
         key_material = RawKey(self.key)
         key_value = KeyValueStruct(key_format_type, key_material, attrs)
         crypto_alg = CryptographicAlgorithm(self.algorithm_name)

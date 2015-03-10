@@ -15,13 +15,18 @@
 
 from kmip.core import enums
 
+from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
+from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
 
 from kmip.core.errors import ErrorStrings
 
-from kmip.core.primitives import Struct
-from kmip.core.primitives import Integer
+from kmip.core.misc import KeyFormatType
+
+from kmip.core.primitives import ByteString
 from kmip.core.primitives import Enumeration
+from kmip.core.primitives import Integer
+from kmip.core.primitives import Struct
 from kmip.core.primitives import TextString
 
 from kmip.core.utils import BytearrayStream
@@ -173,6 +178,28 @@ class CryptographicLength(Integer):
 
 
 # 3.6
+class HashingAlgorithm(Enumeration):
+    """
+    An encodeable wrapper for the HashingAlgorithm enumeration.
+
+    Used to specify the algorithm used to compute the Digest of a Managed
+    Object. See Sections 3.17 and 9.1.3.2.16 of the KMIP v1.1 specification
+    for more information.
+    """
+    ENUM_TYPE = enums.HashingAlgorithm
+
+    def __init__(self, value=HashingAlgorithmEnum.SHA_256):
+        """
+        Construct a HashingAlgorithm object.
+
+        Args:
+            value (HashingAlgorithm): A HashingAlgorithm enumeration value,
+                (e.g., HashingAlgorithm.MD5). Optional, defaults to
+                HashingAlgorithm.SHA_256.
+        """
+        super(HashingAlgorithm, self).__init__(value, Tags.HASHING_ALGORITHM)
+
+
 class CryptographicParameters(Struct):
 
     class BlockCipherMode(Enumeration):
@@ -188,13 +215,6 @@ class CryptographicParameters(Struct):
         def __init__(self, value=None):
             super(self.__class__, self).__init__(value,
                                                  Tags.PADDING_METHOD)
-
-    class HashingAlgorithm(Enumeration):
-        ENUM_TYPE = enums.HashingAlgorithm
-
-        def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.HASHING_ALGORITHM)
 
     class KeyRoleType(Enumeration):
         ENUM_TYPE = enums.KeyRoleType
@@ -227,7 +247,7 @@ class CryptographicParameters(Struct):
             self.padding_method.read(tstream)
 
         if self.is_tag_next(Tags.HASHING_ALGORITHM, tstream):
-            self.hashing_algorithm = CryptographicParameters.HashingAlgorithm()
+            self.hashing_algorithm = HashingAlgorithm()
             self.hashing_algorithm.read(tstream)
 
         if self.is_tag_next(Tags.KEY_ROLE_TYPE, tstream):
@@ -270,6 +290,218 @@ class CertificateType(Enumeration):
     def __init__(self, value=None):
         super(self.__class__, self).__init__(value,
                                              Tags.CERTIFICATE_TYPE)
+
+
+# 3.17
+class DigestValue(ByteString):
+    """
+    A byte string representing the hash value of a Digest.
+
+    Used to hold the bytes of the digest hash value. Automatically generated
+    by the KMIP server, the value is empty if the server does not have access
+    to the value or encoding of the related Managed Object. See Section 3.17
+    of the KMIP 1.1 specification for more information.
+
+    Attributes:
+        value: The bytes of the hash.
+    """
+
+    def __init__(self, value=b''):
+        """
+        Construct a DigestValue object.
+
+        Args:
+            value (bytes): The bytes of the hash. Optional, defaults to
+                the empty byte string.
+        """
+        super(DigestValue, self).__init__(value, Tags.DIGEST_VALUE)
+
+
+class Digest(Struct):
+    """
+    A structure storing a hash digest of a Managed Object.
+
+    Digests may be calculated for keys, secret data objects, certificates, and
+    opaque data objects and are generated when the object is created or
+    registered with the KMIP server. See Section 3.17 of the KMIP 1.1
+    specification for more information.
+
+    Attributes:
+        hashing_algorithm: The algorithm used to compute the hash digest.
+        digest_value: The bytes representing the hash digest value.
+        key_format_type: The type of the key the hash was generated for.
+    """
+
+    def __init__(self,
+                 hashing_algorithm=None,
+                 digest_value=None,
+                 key_format_type=None):
+        """
+        Construct a Digest object.
+
+        Args:
+            hashing_algorithm (HashingAlgorithm): The hash algorithm used to
+                compute the value of the digest. Optional, defaults to None.
+            digest_value (DigestValue): The byte string representing the
+                value of the hash digest. Optional, defaults to None.
+            key_format_type (KeyFormatType): The format type of the key the
+                hash was computed for, if the object in question is a key.
+                Optional, defaults to None.
+        """
+        super(Digest, self).__init__(Tags.DIGEST)
+
+        if hashing_algorithm is None:
+            self.hashing_algorithm = HashingAlgorithm()
+        else:
+            self.hashing_algorithm = hashing_algorithm
+
+        if digest_value is None:
+            self.digest_value = DigestValue()
+        else:
+            self.digest_value = digest_value
+
+        if key_format_type is None:
+            self.key_format_type = KeyFormatType()
+        else:
+            self.key_format_type = key_format_type
+
+        self.validate()
+
+    def read(self, istream):
+        """
+        Read the data encoding the Digest object and decode it into its
+        constituent parts.
+
+        Args:
+            istream (Stream): A data stream containing encoded object data,
+                supporting a read method; usually a BytearrayStream object.
+        """
+        super(Digest, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+
+        self.hashing_algorithm.read(tstream)
+        self.digest_value.read(tstream)
+        self.key_format_type.read(tstream)
+
+        self.is_oversized(tstream)
+        self.validate()
+
+    def write(self, ostream):
+        """
+        Write the data encoding the Digest object to a stream.
+
+        Args:
+            ostream (Stream): A data stream in which to encode object data,
+                supporting a write method; usually a BytearrayStream object.
+        """
+        tstream = BytearrayStream()
+
+        self.hashing_algorithm.write(tstream)
+        self.digest_value.write(tstream)
+        self.key_format_type.write(tstream)
+
+        self.length = tstream.length()
+        super(Digest, self).write(ostream)
+        ostream.write(tstream.buffer)
+
+    def validate(self):
+        """
+        Error check the attributes of the Digest object.
+        """
+        self.__validate()
+
+    def __validate(self):
+        # TODO (peter-hamilton) Add checks comparing the length of the digest
+        # value against the standard length for the stated hashing algorithm.
+        if not isinstance(self.hashing_algorithm, HashingAlgorithm):
+            msg = "invalid hashing algorithm"
+            msg += "; expected {0}, received {1}".format(
+                HashingAlgorithm, self.hashing_algorithm)
+            raise TypeError(msg)
+
+        if not isinstance(self.digest_value, DigestValue):
+            msg = "invalid digest value"
+            msg += "; expected {0}, received {1}".format(
+                DigestValue, self.digest_value)
+            raise TypeError(msg)
+
+        if not isinstance(self.key_format_type, KeyFormatType):
+            msg = "invalid key format type"
+            msg += "; expected {0}, received {1}".format(
+                KeyFormatType, self.key_format_type)
+            raise TypeError(msg)
+
+    def __eq__(self, other):
+        if isinstance(other, Digest):
+            if self.hashing_algorithm != other.hashing_algorithm:
+                return False
+            elif self.digest_value != other.digest_value:
+                return False
+            elif self.key_format_type != other.key_format_type:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, Digest):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        hashing_algorithm = "hashing_algorithm={0}".format(
+            repr(self.hashing_algorithm))
+        digest_value = "digest_value={0}".format(
+            repr(self.digest_value))
+        key_format_type = "key_format_type={0}".format(
+            repr(self.key_format_type))
+
+        return "Digest({0}, {1}, {2})".format(
+            hashing_algorithm, digest_value, key_format_type)
+
+    def __str__(self):
+        return str(self.digest_value)
+
+    @classmethod
+    def create(cls,
+               hashing_algorithm=HashingAlgorithmEnum.SHA_256,
+               digest_value=b'',
+               key_format_type=KeyFormatTypeEnum.RAW):
+        """
+        Construct a Digest object from provided digest values.
+
+        Args:
+            hashing_algorithm (HashingAlgorithm): An enumeration representing
+                the hash algorithm used to compute the digest. Optional,
+                defaults to HashingAlgorithm.SHA_256.
+            digest_value (byte string): The bytes of the digest hash. Optional,
+                defaults to the empty byte string.
+            key_format_type (KeyFormatType): An enumeration representing the
+                format of the key corresponding to the digest. Optional,
+                defaults to KeyFormatType.RAW.
+
+        Returns:
+            Digest: The newly created Digest.
+
+        Example:
+            >>> x = Digest.create(HashingAlgorithm.MD5, b'\x00',
+            ... KeyFormatType.RAW)
+            >>> x.hashing_algorithm
+            HashingAlgorithm(value=HashingAlgorithm.MD5)
+            >>> x.digest_value
+            DigestValue(value=bytearray(b'\x00'))
+            >>> x.key_format_type
+            KeyFormatType(value=KeyFormatType.RAW)
+        """
+        algorithm = HashingAlgorithm(hashing_algorithm)
+        value = DigestValue(bytearray(digest_value))
+        format_type = KeyFormatType(key_format_type)
+
+        return Digest(hashing_algorithm=algorithm,
+                      digest_value=value,
+                      key_format_type=format_type)
 
 
 # 3.18
