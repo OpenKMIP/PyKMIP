@@ -140,7 +140,12 @@ class KMIPProxy(KMIP):
 
     def get(self, uuid=None, key_format_type=None, key_compression_type=None,
             key_wrapping_specification=None, credential=None):
-        return self._get(unique_identifier=uuid, credential=credential)
+        return self._get(
+            unique_identifier=uuid,
+            key_format_type=key_format_type,
+            key_compression_type=key_compression_type,
+            key_wrapping_specification=key_wrapping_specification,
+            credential=credential)
 
     def destroy(self, uuid, credential=None):
         return self._destroy(unique_identifier=uuid,
@@ -406,7 +411,7 @@ class KMIPProxy(KMIP):
         if unique_identifier is not None:
             uuid = attr.UniqueIdentifier(unique_identifier)
         if key_format_type is not None:
-            kft = get.GetRequestPayload.KeyFormatType(key_format_type)
+            kft = get.GetRequestPayload.KeyFormatType(key_format_type.enum)
         if key_compression_type is not None:
             kct = key_compression_type
             kct = get.GetRequestPayload.KeyCompressionType(kct)

@@ -114,7 +114,7 @@ if __name__ == '__main__':
     secret_features.update([('cryptographic_algorithm', algorithm_enum)])
     secret_features.update([('cryptographic_length', length)])
 
-    secret = secret_factory.create_secret(object_type, secret_features)
+    secret = secret_factory.create(object_type, secret_features)
 
     # Register the SYMMETRIC_KEY object
     result = client.register(object_type, template_attribute, secret,

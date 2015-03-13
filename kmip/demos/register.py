@@ -71,7 +71,7 @@ if __name__ == '__main__':
     secret_features.update([('cryptographic_algorithm', algorithm_value)])
     secret_features.update([('cryptographic_length', 128)])
 
-    secret = secret_factory.create_secret(object_type, secret_features)
+    secret = secret_factory.create(object_type, secret_features)
 
     result = client.register(object_type, template_attribute, secret,
                              credential)

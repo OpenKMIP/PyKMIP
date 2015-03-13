@@ -1405,8 +1405,7 @@ class TestResponseMessage(TestCase):
                  'key_value': {'bytes': key},
                  'cryptographic_algorithm': crypto_algorithm,
                  'cryptographic_length': cryptographic_length}
-        secret = self.secret_factory.create_secret(ObjectType.SYMMETRIC_KEY,
-                                                   value)
+        secret = self.secret_factory.create(ObjectType.SYMMETRIC_KEY, value)
         resp_pl = get.GetResponsePayload(object_type=object_type,
                                          unique_identifier=uniq_id,
                                          secret=secret)

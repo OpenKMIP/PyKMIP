@@ -147,7 +147,7 @@ class TestKMIPClientIntegration(TestCase):
         result = self._create_symmetric_key()
         uuid = result.uuid.value
 
-        result = self.client.get(uuid, credential)
+        result = self.client.get(uuid=uuid, credential=credential)
 
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -172,7 +172,7 @@ class TestKMIPClientIntegration(TestCase):
         uuid = result.uuid.value
 
         # Verify the secret was created
-        result = self.client.get(uuid, credential)
+        result = self.client.get(uuid=uuid, credential=credential)
 
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -194,7 +194,7 @@ class TestKMIPClientIntegration(TestCase):
         self._check_uuid(result.uuid.value, str)
 
         # Verify the secret was destroyed
-        result = self.client.get(uuid, credential)
+        result = self.client.get(uuid=uuid, credential=credential)
 
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.OPERATION_FAILED)
@@ -239,8 +239,7 @@ class TestKMIPClientIntegration(TestCase):
         secret_features.update([('cryptographic_algorithm', algorithm_value)])
         secret_features.update([('cryptographic_length', 128)])
 
-        secret = self.secret_factory.create_secret(object_type,
-                                                   secret_features)
+        secret = self.secret_factory.create(object_type, secret_features)
 
         result = self.client.register(object_type, template_attribute, secret,
                                       credential)
@@ -256,7 +255,7 @@ class TestKMIPClientIntegration(TestCase):
                                          None]])
         # Check that the returned key bytes match what was provided
         uuid = result.uuid.value
-        result = self.client.get(uuid, credential)
+        result = self.client.get(uuid=uuid, credential=credential)
 
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.SUCCESS)

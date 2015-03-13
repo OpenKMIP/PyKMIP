@@ -130,7 +130,7 @@ class GetResponsePayload(Struct):
         self.unique_identifier.read(tstream)
 
         secret_type = self.object_type.enum
-        self.secret = self.secret_factory.create_secret(secret_type)
+        self.secret = self.secret_factory.create(secret_type)
         self.secret.read(tstream)
 
         self.is_oversized(tstream)

@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.core.enums import ObjectType
 from kmip.core.enums import Operation
 
 import optparse
@@ -109,6 +110,15 @@ def build_cli_parser(operation):
             default=None,
             dest="uuid",
             help="UUID of secret to retrieve from the KMIP server")
+        parser.add_option(
+            "-f",
+            "--format",
+            action="store",
+            type="str",
+            default=None,
+            dest="format",
+            help=("Format in which to retrieve the secret. Supported formats "
+                  "include: RAW, PKCS_1, PKCS_8, X_509"))
     elif operation is Operation.LOCATE:
         parser.add_option(
             "-n",
@@ -154,6 +164,10 @@ def log_template_attribute(logger, template_attribute):
         name = names[i]
         logger.info('name {0}: {1}'.format(i, name))
 
+    log_attribute_list(attributes)
+
+
+def log_attribute_list(logger, attributes):
     logger.info('number of attributes: {0}'.format(len(attributes)))
     for i in range(len(attributes)):
         attribute = attributes[i]
@@ -166,3 +180,75 @@ def log_template_attribute(logger, template_attribute):
         logger.info('   attribute_index: {0}'.format(attribute_index))
         logger.info('   attribute_value: {0}'.format(
             repr(attribute_value)))
+
+
+def log_secret(logger, secret_type, secret_value):
+    if secret_type is ObjectType.PRIVATE_KEY:
+        log_private_key(logger, secret_value)
+    elif secret_type is ObjectType.PUBLIC_KEY:
+        log_public_key(logger, secret_value)
+    else:
+        logger.info('generic secret: {0}'.format(secret_value))
+
+
+def log_public_key(logger, public_key):
+    key_block = public_key.key_block
+
+    log_key_block(logger, key_block)
+
+
+def log_private_key(logger, private_key):
+    key_block = private_key.key_block
+
+    log_key_block(logger, key_block)
+
+
+def log_key_block(logger, key_block):
+    if key_block is not None:
+        logger.info('key block:')
+
+        key_format_type = key_block.key_format_type
+        key_compression_type = key_block.key_compression_type
+        key_value = key_block.key_value
+        cryptographic_algorithm = key_block.cryptographic_algorithm
+        cryptographic_length = key_block.cryptographic_length
+        key_wrapping_data = key_block.key_wrapping_data
+
+        logger.info('* key format type: {0}'.format(key_format_type))
+        logger.info('* key compression type: {0}'.format(
+            key_compression_type))
+        logger.info('* cryptographic algorithm: {0}'.format(
+            cryptographic_algorithm))
+        logger.info('* cryptographic length: {0}'.format(
+            cryptographic_length))
+
+        log_key_value(logger, key_value)
+        log_key_wrapping_data(logger, key_wrapping_data)
+    else:
+        logger.info('key block: {0}'.format(key_block))
+
+
+def log_key_value(logger, key_value):
+    if key_value is not None:
+        key_format_type = key_value.key_format_type
+        key_value = key_value.key_value
+
+        logger.info('key format type: {0}'.format(key_format_type))
+
+        if key_value is not None:
+            logger.info('key value:')
+
+            key_material = key_value.key_material
+            attributes = key_value.attributes
+
+            logger.info('key material: {0}'.format(repr(key_material)))
+
+            log_attribute_list(logger, attributes)
+        else:
+            logger.info('key value: {0}'.format(key_value))
+    else:
+        logger.info('key value: {0}'.format(key_value))
+
+
+def log_key_wrapping_data(logger, key_wrapping_data):
+    logger.info('key wrapping data: {0}'.format(key_wrapping_data))

@@ -14,11 +14,14 @@
 # under the License.
 
 from kmip.core.enums import CredentialType
+from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Operation
 from kmip.core.enums import ResultStatus
 
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.factories.credentials import CredentialFactory
+
+from kmip.core.misc import KeyFormatType
 
 from kmip.demos import utils
 
@@ -38,11 +41,21 @@ if __name__ == '__main__':
     password = opts.password
     config = opts.config
     uuid = opts.uuid
+    format_type = opts.format
 
     # Exit early if the UUID is not specified
     if uuid is None:
         logging.debug('No UUID provided, exiting early from demo')
         sys.exit()
+
+    format_type_enum = None
+    if format_type is not None:
+        format_type_enum = getattr(KeyFormatTypeEnum, format_type, None)
+
+        if format_type_enum is None:
+            logging.error(
+                "Invalid key format type specified; exiting early from demo")
+            sys.exit()
 
     # Build and setup logging and needed factories
     f_log = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
@@ -63,12 +76,18 @@ if __name__ == '__main__':
                             'Password': password}
         credential = credential_factory.create_credential(credential_type,
                                                           credential_value)
+
+    key_format_type = None
+    if format_type_enum is not None:
+        key_format_type = KeyFormatType(format_type_enum)
+
     # Build the client and connect to the server
     client = KMIPProxy(config=config)
     client.open()
 
     # Retrieve the SYMMETRIC_KEY object
-    result = client.get(uuid, credential)
+    result = client.get(uuid=uuid, key_format_type=key_format_type,
+                        credential=credential)
     client.close()
 
     # Display operation results
@@ -79,7 +98,8 @@ if __name__ == '__main__':
         logger.debug('retrieved object type: {0}'.format(
             result.object_type.enum))
         logger.debug('retrieved UUID: {0}'.format(result.uuid.value))
-        logger.debug('retrieved secret: {0}'.format(result.secret))
+
+        utils.log_secret(logger, result.object_type.enum, result.secret)
     else:
         logger.debug('get() result reason: {0}'.format(
             result.result_reason.enum))

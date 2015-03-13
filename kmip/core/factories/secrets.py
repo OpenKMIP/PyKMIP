@@ -28,6 +28,8 @@ from kmip.core.objects import KeyWrappingData
 from kmip.core.objects import KeyValueStruct
 from kmip.core.objects import KeyValue
 
+from kmip.core.secrets import PrivateKey
+from kmip.core.secrets import PublicKey
 from kmip.core.secrets import SymmetricKey
 from kmip.core.secrets import Template
 
@@ -43,15 +45,15 @@ class SecretFactory(object):
         self.template_input = self.base_error.format('Template', '{0}', '{1}',
                                                      '{2}')
 
-    def create_secret(self, secret_type, value=None):
+    def create(self, secret_type, value=None):
         if secret_type is ObjectType.CERTIFICATE:
             return self._create_certificate(value)
         elif secret_type is ObjectType.SYMMETRIC_KEY:
             return self._create_symmetric_key(value)
         elif secret_type is ObjectType.PUBLIC_KEY:
-            return self._create_public_key(value)
+            return self._create_public_key()
         elif secret_type is ObjectType.PRIVATE_KEY:
-            return self._create_private_key(value)
+            return self._create_private_key()
         elif secret_type is ObjectType.SPLIT_KEY:
             return self._create_split_key(value)
         elif secret_type is ObjectType.TEMPLATE:
@@ -106,11 +108,11 @@ class SecretFactory(object):
                                  key_wrap_data)
             return SymmetricKey(key_block)
 
-    def _create_public_key(self, value):
-        raise NotImplementedError()
+    def _create_public_key(self):
+        return PublicKey()
 
-    def _create_private_key(self, value):
-        raise NotImplementedError()
+    def _create_private_key(self):
+        return PrivateKey()
 
     def _create_split_key(self, value):
         raise NotImplementedError()
