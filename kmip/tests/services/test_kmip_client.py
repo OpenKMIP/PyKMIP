@@ -21,15 +21,17 @@ import os
 import sys
 import time
 
+from kmip.core.attributes import CryptographicAlgorithm
+from kmip.core.attributes import CryptographicLength
 from kmip.core.attributes import PrivateKeyUniqueIdentifier
 
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CredentialType
-from kmip.core.enums import CryptographicAlgorithm
+from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import ObjectType
 from kmip.core.enums import Operation as OperationEnum
-from kmip.core.enums import KeyFormatType
+from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import ResultReason
@@ -44,10 +46,8 @@ from kmip.core.factories.secrets import SecretFactory
 from kmip.core.messages.messages import RequestBatchItem
 from kmip.core.messages.messages import ResponseBatchItem
 from kmip.core.messages.messages import ResponseMessage
-
 from kmip.core.messages.contents import Operation
 from kmip.core.messages.contents import ProtocolVersion
-
 from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
 from kmip.core.messages.payloads.discover_versions import \
@@ -57,6 +57,7 @@ from kmip.core.messages.payloads.query import \
 from kmip.core.messages.payloads.rekey_key_pair import \
     RekeyKeyPairRequestPayload, RekeyKeyPairResponsePayload
 
+from kmip.core.misc import KeyFormatType
 from kmip.core.misc import Offset
 from kmip.core.misc import QueryFunction
 from kmip.core.misc import ServerInformation
@@ -64,6 +65,9 @@ from kmip.core.misc import VendorIdentification
 
 from kmip.core.objects import Attribute
 from kmip.core.objects import CommonTemplateAttribute
+from kmip.core.objects import KeyBlock
+from kmip.core.objects import KeyMaterial
+from kmip.core.objects import KeyValue
 from kmip.core.objects import PrivateKeyTemplateAttribute
 from kmip.core.objects import PublicKeyTemplateAttribute
 from kmip.core.objects import TemplateAttribute
@@ -218,7 +222,7 @@ class TestKMIPClientIntegration(TestCase):
                                                          credential_value)
 
         object_type = ObjectType.SYMMETRIC_KEY
-        algorithm_value = CryptographicAlgorithm.AES
+        algorithm_value = CryptoAlgorithmEnum.AES
         mask_flags = [CryptographicUsageMask.ENCRYPT,
                       CryptographicUsageMask.DECRYPT]
         attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
@@ -227,19 +231,26 @@ class TestKMIPClientIntegration(TestCase):
         attributes = [usage_mask]
         template_attribute = TemplateAttribute(attributes=attributes)
 
-        secret_features = {}
+        key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
 
-        key_format_type = KeyFormatType.RAW
-        secret_features.update([('key_format_type', key_format_type)])
+        key_data = (
+            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00')
 
-        key_data = {'bytes': bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00'
-                                       b'\x00\x00\x00\x00\x00\x00\x00\x00')}
+        key_material = KeyMaterial(key_data)
+        key_value = KeyValue(key_material)
+        cryptographic_algorithm = CryptographicAlgorithm(algorithm_value)
+        cryptographic_length = CryptographicLength(128)
 
-        secret_features.update([('key_value', key_data)])
-        secret_features.update([('cryptographic_algorithm', algorithm_value)])
-        secret_features.update([('cryptographic_length', 128)])
+        key_block = KeyBlock(
+            key_format_type=key_format_type,
+            key_compression_type=None,
+            key_value=key_value,
+            cryptographic_algorithm=cryptographic_algorithm,
+            cryptographic_length=cryptographic_length,
+            key_wrapping_data=None)
 
-        secret = self.secret_factory.create(object_type, secret_features)
+        secret = SymmetricKey(key_block)
 
         result = self.client.register(object_type, template_attribute, secret,
                                       credential)
@@ -273,9 +284,9 @@ class TestKMIPClientIntegration(TestCase):
 
         key_block = result.secret.key_block
         key_value = key_block.key_value
-        key_material = key_value.key_value.key_material
+        key_material = key_value.key_material
 
-        expected = key_data.get('bytes')
+        expected = key_data
         observed = key_material.value
         message = utils.build_er_error(key_material.__class__, 'value',
                                        expected, observed, 'value')
@@ -303,7 +314,7 @@ class TestKMIPClientIntegration(TestCase):
         attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
         algorithm = self.attr_factory.create_attribute(
             attribute_type,
-            CryptographicAlgorithm.AES)
+            CryptoAlgorithmEnum.AES)
 
         mask_flags = [CryptographicUsageMask.ENCRYPT,
                       CryptographicUsageMask.DECRYPT]

@@ -24,8 +24,8 @@ from kmip.core.misc import KeyFormatType
 
 from kmip.core.objects import Attribute
 from kmip.core.objects import KeyBlock
+from kmip.core.objects import KeyMaterial
 from kmip.core.objects import KeyWrappingData
-from kmip.core.objects import KeyValueStruct
 from kmip.core.objects import KeyValue
 
 from kmip.core.secrets import PrivateKey
@@ -84,12 +84,8 @@ class SecretFactory(object):
                 key_comp_type = KeyBlock.KeyCompressionType(
                     key_compression_type)
 
-            key_material = self.key_factory.create_key(key_type,
-                                                       key_value)
-            key_val_struc = KeyValueStruct(key_format_type=key_format_type,
-                                           key_material=key_material)
-            key_value = KeyValue(key_value=key_val_struc,
-                                 key_format_type=key_format_type)
+            key_material = KeyMaterial(key_value)
+            key_value = KeyValue(key_material)
             crypto_algorithm = CryptographicAlgorithm(cryptographic_algorithm)
             crypto_length = CryptographicLength(cryptographic_length)
 

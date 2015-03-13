@@ -33,13 +33,13 @@ from kmip.core.enums import ResultStatus
 from kmip.core.enums import NameType
 
 from kmip.core.factories.attributes import AttributeFactory
-from kmip.core.keys import RawKey
 
 from kmip.core.messages.contents import KeyCompressionType
 from kmip.core.misc import KeyFormatType
 
 from kmip.core.objects import KeyBlock
-from kmip.core.objects import KeyValueStruct
+from kmip.core.objects import KeyMaterial
+from kmip.core.objects import KeyValue
 from kmip.core.objects import TemplateAttribute
 
 from kmip.core.secrets import SymmetricKey
@@ -472,8 +472,8 @@ class TestKMIPServer(TestCase):
         # only need usage attribute
         attrs = [self._get_attrs()[1]]
         key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
-        key_material = RawKey(self.key)
-        key_value = KeyValueStruct(key_format_type, key_material, attrs)
+        key_material = KeyMaterial(self.key)
+        key_value = KeyValue(key_material, attrs)
         crypto_alg = CryptographicAlgorithm(self.algorithm_name)
         crypto_length = CryptographicLength(self.key_length)
         usage = CryptographicUsageMask(self.usage_mask)

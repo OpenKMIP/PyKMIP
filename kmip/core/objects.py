@@ -19,7 +19,6 @@ from kmip.core import attributes
 from kmip.core.attributes import CryptographicParameters
 
 from kmip.core.factories.attribute_values import AttributeValueFactory
-from kmip.core.factories.keys import KeyFactory
 
 from kmip.core import enums
 from kmip.core.enums import AttributeType
@@ -373,13 +372,12 @@ class KeyBlock(Struct):
 
         self.key_format_type = KeyFormatType()
         self.key_format_type.read(tstream)
-        key_format_type = self.key_format_type.enum
 
         if self.is_tag_next(Tags.KEY_COMPRESSION_TYPE, tstream):
             self.key_compression_type = KeyBlock.KeyCompressionType()
             self.key_compression_type.read(tstream)
 
-        self.key_value = KeyValue(key_format_type=key_format_type)
+        self.key_value = KeyValue()
         self.key_value.read(tstream)
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_ALGORITHM, tstream):
@@ -434,35 +432,78 @@ class KeyBlock(Struct):
 
 
 # 2.1.4
-class KeyValueString(ByteString):
+class KeyMaterial(ByteString):
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, Tags.KEY_VALUE)
+        super(self.__class__, self).__init__(value, Tags.KEY_MATERIAL)
 
 
-class KeyValueStruct(Struct):
+# TODO (peter-hamilton) Get rid of this and replace with a KeyMaterial factory.
+class KeyMaterialStruct(Struct):
+
+    def __init__(self):
+        super(KeyMaterialStruct, self).__init__(Tags.SERVER_INFORMATION)
+
+        self.data = BytearrayStream()
+
+        self.validate()
+
+    def read(self, istream):
+        super(KeyMaterialStruct, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+
+        self.data = BytearrayStream(tstream.read())
+
+        self.is_oversized(tstream)
+        self.validate()
+
+    def write(self, ostream):
+        tstream = BytearrayStream()
+        tstream.write(self.data.buffer)
+
+        self.length = tstream.length()
+        super(KeyMaterialStruct, self).write(ostream)
+        ostream.write(tstream.buffer)
+
+    def validate(self):
+        self.__validate()
+
+    def __validate(self):
+        # NOTE (peter-hamilton): Intentional pass, no way to validate data.
+        pass
+
+
+class KeyValue(Struct):
 
     def __init__(self,
-                 key_format_type=None,
                  key_material=None,
                  attributes=None):
         super(self.__class__, self).__init__(Tags.KEY_VALUE)
-        self.key_format_type = key_format_type
-        self.key_material = key_material
-        self.attributes = attributes
-        self.key_factory = KeyFactory()
+
+        if key_material is None:
+            self.key_material = KeyMaterial()
+        else:
+            self.key_material = key_material
+
+        if attributes is None:
+            self.attributes = list()
+        else:
+            self.attributes = attributes
+
         self.validate()
 
     def read(self, istream):
         super(self.__class__, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
-        self.key_material = self.key_factory.create_key(self.key_format_type)
-        self.key_material.read(tstream)
+        # TODO (peter-hamilton) Replace this with a KeyMaterial factory.
+        if self.is_type_next(Types.STRUCTURE, tstream):
+            self.key_material = KeyMaterialStruct()
+            self.key_material.read(tstream)
+        else:
+            self.key_material = KeyMaterial()
+            self.key_material.read(tstream)
 
-        self.attributes = list()
-
-        # Read the attributes, 0 or more
         while self.is_tag_next(Tags.ATTRIBUTE, tstream):
             attribute = Attribute()
             attribute.read(tstream)
@@ -476,11 +517,9 @@ class KeyValueStruct(Struct):
 
         self.key_material.write(tstream)
 
-        if self.attributes is not None:
-            for attribute in self.attributes:
-                attribute.write(tstream)
+        for attribute in self.attributes:
+            attribute.write(tstream)
 
-        # Write the length and value of the credential
         self.length = tstream.length()
         super(self.__class__, self).write(ostream)
         ostream.write(tstream.buffer)
@@ -489,56 +528,26 @@ class KeyValueStruct(Struct):
         self.__validate()
 
     def __validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+        # TODO (peter-hamilton) Replace with check against KeyMaterial factory.
+        if not isinstance(self.key_material, KeyMaterial):
+            msg = "invalid key material"
+            msg += "; expected {0}, received {1}".format(
+                KeyMaterial, self.key_material)
+            raise TypeError(msg)
 
-
-class KeyValue(Struct):
-    '''
-    KeyValue can be either a ByteString or a Struct. Therefore, this class
-    acts as a wrapper for two different KeyValue objects, KeyValueString,
-    which represents the ByteString format, and KeyValueStruct, which
-    represents the Struct format, both of which are defined above. This
-    KeyValue object does not read or write itself; instead, it reads and
-    writes its internal key_value attribute, which is either a KeyValueString
-    or a KeyValueStruct.
-
-    When reading, the class determines what the format of its internal
-    structure should be by looking at the type of the object it will read
-    using KeyValue.is_type_next(). This is one of the only places in the
-    code where this approach is used.
-    '''
-
-    def __init__(self,
-                 key_value=None,
-                 key_format_type=None):
-        super(self.__class__, self).__init__(Tags.KEY_VALUE)
-        self.key_value = key_value
-        self.key_format_type = key_format_type
-        if self.key_value is not None:
-            self.type = key_value.type
-        self.validate()
-
-    def read(self, istream):
-        if self.is_type_next(Types.BYTE_STRING, istream):
-            self.key_value = KeyValueString()
-            self.key_value.read(istream)
-        elif self.is_type_next(Types.STRUCTURE, istream):
-            kft = self.key_format_type
-            self.key_value = KeyValueStruct(key_format_type=kft)
-            self.key_value.read(istream)
-
-    def write(self, ostream):
-        tstream = BytearrayStream()
-        self.key_value.write(tstream)
-        ostream.write(tstream.buffer)
-
-    def validate(self):
-        self.__validate()
-
-    def __validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+        if isinstance(self.attributes, list):
+            for i in xrange(len(self.attributes)):
+                attribute = self.attributes[i]
+                if not isinstance(attribute, Attribute):
+                    msg = "invalid attribute ({0} in list)".format(i)
+                    msg += "; expected {0}, received {1}".format(
+                        Attribute, attribute)
+                    raise TypeError(msg)
+        else:
+            msg = "invalid attributes list"
+            msg += "; expected {0}, received {1}".format(
+                list, self.attributes)
+            raise TypeError(msg)
 
 
 # 2.1.5

@@ -29,7 +29,6 @@ from kmip.core.enums import ResultStatus as RS
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.factories.keys import KeyFactory
 from kmip.core.factories.secrets import SecretFactory
-from kmip.core.keys import RawKey
 
 from kmip.core.messages.contents import ResultStatus
 from kmip.core.messages.contents import ResultReason
@@ -38,8 +37,8 @@ from kmip.core.messages.contents import ResultMessage
 from kmip.core.misc import KeyFormatType
 
 from kmip.core.objects import KeyBlock
+from kmip.core.objects import KeyMaterial
 from kmip.core.objects import KeyValue
-from kmip.core.objects import KeyValueStruct
 from kmip.core.objects import TemplateAttribute
 from kmip.core.repo.mem_repo import MemRepo
 from kmip.core.secrets import SymmetricKey
@@ -346,8 +345,8 @@ class KMIPImpl(KMIP):
 
     def _gen_symmetric_key(self, bit_length, crypto_alg):
         key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
-        key_material = RawKey(bytearray(os.urandom(int(bit_length/8))))
-        key_value = KeyValueStruct(key_format_type, key_material)
+        key_material = KeyMaterial(os.urandom(int(bit_length/8)))
+        key_value = KeyValue(key_material)
         crypto_length = CryptographicLength(bit_length)
         key_block = KeyBlock(key_format_type, None, key_value, crypto_alg,
                              crypto_length, None)
@@ -385,7 +384,6 @@ class KMIPImpl(KMIP):
             kv = key_block.key_value
             if isinstance(kv, KeyValue):
                 kv = key_block.key_value
-            if isinstance(kv, KeyValueStruct):
                 if kv.attributes is not None:
                     self.logger.debug('adding the key value struct attributes')
                     attributes.extend(kv.attributes)

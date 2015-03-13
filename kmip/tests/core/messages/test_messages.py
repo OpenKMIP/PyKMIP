@@ -24,22 +24,21 @@ from kmip.core.attributes import ApplicationData
 from kmip.core.attributes import ApplicationNamespace
 from kmip.core.attributes import ApplicationSpecificInformation
 from kmip.core.attributes import ContactInformation
+from kmip.core.attributes import CryptographicAlgorithm
+from kmip.core.attributes import CryptographicLength
 from kmip.core.attributes import Name
 from kmip.core.attributes import ObjectGroup
 
 from kmip.core import enums
 from kmip.core.enums import AttributeType
-from kmip.core.enums import CryptographicAlgorithm
+from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import NameType
-from kmip.core.enums import ObjectType
 
 from kmip.core import errors
 from kmip.core.errors import ErrorStrings
 
 from kmip.core import objects
-
-from kmip.core.keys import RawKey
 
 from kmip.core.messages import contents
 from kmip.core.messages import messages
@@ -357,7 +356,7 @@ class TestRequestMessage(TestCase):
         object_type = attr.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
 
         name = AttributeType.CRYPTOGRAPHIC_ALGORITHM
-        value = CryptographicAlgorithm.AES
+        value = CryptoAlgorithmEnum.AES
         attr_a = self.attribute_factory.create_attribute(name, value)
 
         name = AttributeType.CRYPTOGRAPHIC_LENGTH
@@ -1341,13 +1340,13 @@ class TestResponseMessage(TestCase):
                                                   objects.KeyValue,
                                                   type(key_value)))
 
-            key_material = key_value.key_value.key_material
-            value = bytearray(b'\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85'
-                              b'\x5E\x25\xC8\xCD\x5E\x4C\xA1\x31\x45\x57\x29'
-                              b'\xD3\xC8')
-            self.assertIsInstance(key_material, RawKey,
+            key_material = key_value.key_material
+            value = (
+                b'\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85\x5E\x25\xC8\xCD'
+                b'\x5E\x4C\xA1\x31\x45\x57\x29\xD3\xC8')
+            self.assertIsInstance(key_material, objects.KeyMaterial,
                                   self.msg.format('key_material', 'type',
-                                                  RawKey,
+                                                  objects.KeyMaterial,
                                                   type(key_material)))
             exp = utils.hexlify_bytearray(value)
             obs = utils.hexlify_bytearray(key_material.value)
@@ -1395,17 +1394,29 @@ class TestResponseMessage(TestCase):
         uuid = '49a1ca88-6bea-4fb2-b450-7e58802c3038'
         uniq_id = attr.UniqueIdentifier(uuid)
 
-        key_type = enums.KeyFormatType.RAW
-        key = bytearray(b'\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85\x5E\x25'
-                        b'\xC8\xCD\x5E\x4C\xA1\x31\x45\x57\x29\xD3\xC8')
+        key = (
+            b'\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
+            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8')
 
         crypto_algorithm = enums.CryptographicAlgorithm.TRIPLE_DES
         cryptographic_length = 168
-        value = {'key_format_type': key_type,
-                 'key_value': {'bytes': key},
-                 'cryptographic_algorithm': crypto_algorithm,
-                 'cryptographic_length': cryptographic_length}
-        secret = self.secret_factory.create(ObjectType.SYMMETRIC_KEY, value)
+        key_format_type = KeyFormatType(enums.KeyFormatType.RAW)
+
+        key_material = objects.KeyMaterial(key)
+        key_value = objects.KeyValue(key_material)
+        cryptographic_algorithm = CryptographicAlgorithm(crypto_algorithm)
+        cryptographic_length = CryptographicLength(cryptographic_length)
+
+        key_block = objects.KeyBlock(
+            key_format_type=key_format_type,
+            key_compression_type=None,
+            key_value=key_value,
+            cryptographic_algorithm=cryptographic_algorithm,
+            cryptographic_length=cryptographic_length,
+            key_wrapping_data=None)
+
+        secret = SymmetricKey(key_block)
+
         resp_pl = get.GetResponsePayload(object_type=object_type,
                                          unique_identifier=uniq_id,
                                          secret=secret)
