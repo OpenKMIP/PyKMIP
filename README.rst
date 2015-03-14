@@ -1,145 +1,163 @@
 ------
 PyKMIP
 ------
-
 PyKMIP is a Python implementation of the Key Management Interoperability
-Protocol (KMIP) specification, supporting version 1.1 of the KMIP standard.
-The KMIP standard is governed by the `Organization for the Advancement of
-Structured Information Standards`_ (OASIS) and specifies a
-client/server-based protocol to perform key, certificate, and secret object
-management, including storage and maintenance operations.
+Protocol (KMIP). KMIP is a client/server communication protocol for the
+storage and maintenance of key, certificate, and secret objects. The standard
+is governed by the `Organization for the Advancement of Structured Information
+Standards`_ (OASIS). PyKMIP supports a subset of features in version 1.1 of
+the KMIP specification.
 
-The PyKMIP library currently provides a KMIP client and server supporting
-the following operations for the KMIP SymmetricKey managed object:
+The PyKMIP library provides a KMIP client supporting the following operations:
 
 * Create
-* Register
-* Get
+* CreateKeyPair
 * Destroy
+* DiscoverVersions
+* Get
+* Locate
+* Query
+* Register
+* RekeyKeyPair
 
-Note that KMIP specifies profiles that tailor the standard to specific use
-cases. The `KMIP Profile Support`_ section includes several profiles that
-need to be developed for PyKMIP to fully support symmetric key storage and
-generation capabilities.  A list of operations necessary for these profiles
-is included.
+The library also includes a software-based KMIP server, which supports basic
+versions of the following operations:
 
-The PyKMIP software-based KMIP server is intended for use only in testing
-and demonstration environments. Note that the PyKMIP server is **NOT**
-intended to be a substitute for secured, hardware-based KMIP appliances.
-The PyKMIP client should be used for operational purposes only with a
-hardware-based KMIP server. The development of the PyKMIP client and server
-should take place in parallel to facilitate testing of each operation as it
-is developed.
+* Create
+* Destroy
+* Get
+* Register
+
+For a high-level overview of KMIP, check out the `KMIP Wikipedia page`_. For
+comprehensive documentation from OASIS and information about the KMIP
+community, visit the `KMIP Technical Committee home page`_.
+
+Usage
+=====
+The KMIP client can be configured to connect to a KMIP server using settings
+found in ``kmip/kmipconfig.ini``. Users can specify the connection
+configuration settings to use on client instantiation, allowing applications
+to support multiple key storage backends simultaneously, one client per
+backend.
+
+An example client configuration settings block is shown below::
+
+  [client]
+  host=127.0.0.1
+  port=5696
+  keyfile=/path/to/key/file
+  certfile=/path/to/cert/file
+  cert_reqs=CERT_REQUIRED
+  ssl_version=PROTOCOL_SSLv23
+  ca_certs=/path/to/ca/cert/file
+  do_handshake_on_connect=True
+  suppress_ragged_eofs=True
+  username=None
+  password=None
+
+Many of these settings correspond to the settings for ``ssl.wrap_socket``,
+which is used to establish secure connections to KMIP backends. For more
+information, check out the `Python SSL library documentation`_.
+
+The KMIP software server also pulls settings from ``kmip/kmipconfig.ini``.
+However, the server is intended for use only in testing and demonstration
+environments. The server is **not** intended to be a substitute for secure,
+hardware-based key management appliances. The PyKMIP client should be used
+for operational purposes **only** with a hardware-based KMIP server.
+
+An example server configuration settings block is shown below::
+
+  [server]
+  host=127.0.0.1
+  port=5696
+  keyfile=/path/to/key/file
+  certfile=/path/to/cert/file
+  cert_reqs=CERT_NONE
+  ssl_version=PROTOCOL_SSLv23
+  ca_certs=/path/to/ca/cert/file
+  do_handshake_on_connect=True
+  suppress_ragged_eofs=True
+
+When used together, the KMIP client and KMIP server use certificate files
+found in ``kmip/demos/certs``. These files should be replaced with alternative
+certificates for standalone deployments.
+
+For examples of how to instantiate the KMIP client and how to use the
+different client operations, check out the unit demos found under
+``kmip/demos/units``.
+
+Profiles
+========
+The KMIP standard includes various profiles that tailor the standard for
+specific use cases (e.g., symmetric key storage with TLS 1.2). These profiles
+specify conformance to certain operations and attributes.
+
+The PyKMIP client provides full support for the following profile(s):
+
+* Basic Discover Versions Client KMIP Profile
+
+Development
+===========
+The development plan for PyKMIP follows the requirements for the following
+KMIP profiles. The foundation for symmetric and asymmetric key operation
+support is already built into the library.
+
+Client profiles:
+
+* Basic Baseline Client KMIP Profile
+* Basic Symmetric Key Store Client KMIP Profile
+* Basic Symmetric Key Foundry Client KMIP Profile
+* Basic Asymmetric Key Store Client KMIP Profile
+* Basic Asymmetric Key Foundry Client KMIP Profile
+
+Server profiles:
+
+* Basic Discover Versions Server KMIP Profile
+* Basic Baseline Server KMIP Profile
+* Basic Symmetric Key Store and Server KMIP Profile
+* Basic Symmetric Key Foundry and Server KMIP Profile
+* Basic Asymmetric Key Store Server KMIP Profile
+* Basic Asymmetric Key Foundry and Server KMIP Profile
+
+Testing
+-------
+The PyKMIP test suite is composed of two parts: a unit test suite composed of
+over 500 unit tests, and an integration test suite that runs against
+instantiations of the software KMIP server. The tests are managed by a
+combination of the ``tox``, ``pytest``, and ``flake8`` libraries and cover
+approximately 80% of the code.
+
+There are several ways to run different versions of the tests. To run, use one
+of the following commands in the PyKMIP root directory.
+
+To run all of the tests::
+
+  $ tox
+
+To run the Python syntax and format compliance tests::
+
+  $ tox -e pep8
+
+To run the test suite against Python 2.7::
+
+  $ tox -e py27
+
+For more information and a list of supported ``tox`` environments, see
+``tox.ini`` in the PyKMIP root directory.
 
 Platforms
 =========
-PyKMIP has been tested and runs on Ubuntu 12.04 LTS.
+PyKMIP has been tested and runs on the following platform(s):
 
-.. _KMIP Profile Support:
-
-KMIP Profile Support
-====================
-The KMIP standard includes various profiles that tailor the standard for
-specific use cases (e.g., symmetric key storage with TLS 1.2). These
-profiles specify conformance to certain operations and attributes. The
-operations listed below are needed to support symmetric key profiles, which
-are also provided below. We would appreciate help in the development of
-these operations, and have listed our recommended order of development
-prioritization in descending order. Since active development of these
-features is already underway, please check the `code base`_ to assess the
-status of operations prior to development.
-
-KMIP operations to add to PyKMIP:
-
-* Discover Versions
-* List
-* Check
-* Revoke
-* Get Attributes
-* Get Attribute List
-* Add Attribute
-* Modify Attribute
-* Delete Attribute
-* Activate
-* Query
-
-Note that the Create, Register, Get, and Destroy operations were completed
-with the initial version of PyKMIP to allow very basic KMIP symmetric key
-operations.
-
-Server Profiles
----------------
-Server profiles that support KMIP symmetric key operations:
-
-* `Basic Baseline Server KMIP Profile`_ (includes TLS 1.0+)
-
-  * Client-to-Server operations needed for this (see the `Baseline Server Clause`_) include:
-
-    * Locate
-    * Check
-    * Get
-    * Get Attributes
-    * Get Attribute
-    * List
-    * Add Attribute
-    * Modify Attribute
-    * Delete Attribute
-    * Activate
-    * Revoke
-    * Destroy
-    * Query
-    * Discover Versions
-
-* `Symmetric Key Store and Server TLS 1.2 Authentication KMIP Profile`_
-
-  * Client-to-Server operations needed for this (see the `Symmetric Key Store and Server Conformance Clause`_) include all operations from the `Basic Baseline Server KMIP Profile`_ and also the Register operation.
-
-* `Symmetric Key Foundry and Server TLS 1.2 Authentication KMIP profile`_
-
-  * Client-to-Server operations needed for this (see the `Symmetric Key Foundry and Server Conformance Clause`_) include all operations from the `Basic Baseline Server KMIP Profile`_ and also the Create operation.
-
-Client Profiles
----------------
-Client profiles that support KMIP symmetric key operations:
-
-* `Basic Baseline Client KMIP Profile`_ (includes TLS 1.0+)
-
-  * Client-to-Server operations needed for this (see the `Baseline Client Clause`_) include:
-
-    * Locate
-    * Check
-    * Get
-    * Get Attributes
-    * Get Attribute
-    * List
-    * Add Attribute
-    * Modify Attribute
-    * Delete Attribute
-    * Activate
-    * Revoke
-    * Destroy
-    * Query
-    * Discover Versions
-
-* `Symmetric Key Store Client TLS 1.2 Authentication KMIP Profile`_
-
-  * Client-to-Server operations needed for this (see the `Symmetric Key Store Client Conformance Clause`_) include all operations from the `Basic Baseline Client KMIP Profile`_ and also the Register operation.
-
-* `Symmetric Key Foundry Client TLS 1.2 Authentication KMIP Profile`_
-
-  * Client-to-Server operations needed for this (see the `Symmetric Key Foundry Client Conformance Clause`_) include all operations from the `Basic Baseline Client KMIP Profile`_ and also the Create operation.
-
-* `Storage Client TLS 1.2 Authentication KMIP Profile`_
-
-  * Client-to-Server operations needed for this (see the `Storage Client Conformance Clauses`_) include all operations from the `Basic Baseline Client KMIP Profile`_, the Register operation from the `Symmetric Key Store Client TLS 1.2 Authentication KMIP Profile`_, and the Create operation from the `Symmetric Key Foundry Client TLS 1.2 Authentication KMIP Profile`_.
+* Ubuntu 12.04 LTS
 
 References
 ==========
 The source code for PyKMIP is hosted on GitHub and the library is available
 for installation from the Python Package Index (PyPI):
 
-* `GitHub <https://github.com/OpenKMIP/PyKMIP>`_
-* `PyPI <https://pypi.python.org/pypi/PyKMIP>`_
+* `PyKMIP on GitHub <https://github.com/OpenKMIP/PyKMIP>`_
+* `PyKMIP on PyPI <https://pypi.python.org/pypi/PyKMIP>`_
 
 For more information on KMIP version 1.1, see the following documentation:
 
@@ -152,17 +170,6 @@ For more information on KMIP version 1.1, see the following documentation:
 .. _Key Management Interoperability Protocol Specification Version 1.1: http://docs.oasis-open.org/kmip/spec/v1.1/os/kmip-spec-v1.1-os.html
 .. _Key Management Interoperability Protocol Profiles Version 1.1: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html
 .. _Key Management Interoperability Protocol Test Cases Version 1.1: http://docs.oasis-open.org/kmip/testcases/v1.1/cn01/kmip-testcases-v1.1-cn01.html
-.. _Basic Baseline Server KMIP Profile: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820691
-.. _Symmetric Key Store and Server TLS 1.2 Authentication KMIP Profile: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820703
-.. _Symmetric Key Foundry and Server TLS 1.2 Authentication KMIP Profile: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820704
-.. _Basic Baseline Client KMIP Profile: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820711
-.. _Symmetric Key Store Client TLS 1.2 Authentication KMIP Profile: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820723
-.. _Symmetric Key Foundry Client TLS 1.2 Authentication KMIP Profile: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820724
-.. _Storage Client TLS 1.2 Authentication KMIP Profile: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820731
-.. _Baseline Server Clause: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820736
-.. _Symmetric Key Store and Server Conformance Clause: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820742
-.. _Symmetric Key Foundry and Server Conformance Clause: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820745
-.. _Baseline Client Clause: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820766
-.. _Symmetric Key Store Client Conformance Clause: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820772
-.. _Symmetric Key Foundry Client Conformance Clause: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820775
-.. _Storage Client Conformance Clauses: http://docs.oasis-open.org/kmip/profiles/v1.1/os/kmip-profiles-v1.1-os.html#_Toc332820793
+.. _Python SSL library documentation: https://docs.python.org/dev/library/ssl.html#socket-creation
+.. _KMIP Wikipedia page: https://en.wikipedia.org/wiki/Key_Management_Interoperability_Protocol
+.. _KMIP Technical Committee home page: https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=kmip

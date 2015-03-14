@@ -1,4 +1,17 @@
-0.2.0 - November 12, 2014
+0.3.0 - March 14, 2015
+* Add client support for the DiscoverVersions and Query operations
+* Add client support for the CreateKeyPair and ReKeyKeyPair operations
+* Add support for registering and retrieving PublicKeys and PrivateKeys
+* Add unit demos demonstrating how to use individual KMIP client operations
+* Add custom configuration support to the KMIP client
+* Add inline documentation for new KMIP objects, attributes and payloads
+* Add additional unit test suites for new KMIP objects, attributes and payloads
+* Add dependency for the six library to handle Python version support
+* Update README with a condensed description and breakdown of the library
+* Fix bug with unindexed format strings (impacts Python 2.6)
+* Fix missing certificate file issue when installing library from PyPI
+
+0.2.0 - November 17, 2014
 * Add configuration file support
 * Add client support for the Locate operation
 * Update README with additional information and reStructuredText format

@@ -17,7 +17,7 @@ import setuptools
 
 setuptools.setup(
     name='PyKMIP',
-    version='0.2.0',
+    version='0.3.0',
     description='KMIP v1.1 library',
     keywords='KMIP',
     author='Peter Hamilton',
@@ -35,11 +35,9 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Natural Language :: English",
-        "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX",
         "Operating System :: POSIX :: BSD",
         "Operating System :: POSIX :: Linux",
-        "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.6",
