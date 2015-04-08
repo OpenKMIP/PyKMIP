@@ -330,10 +330,11 @@ class SecretDataType(Enum):
     PASSWORD = 0x00000001
     SEED     = 0x00000002
 
-
 # 9.1.3.2.10
 class OpaqueDataType(Enum):
-    pass
+    NONE = 0x80000000 # Not defined by the standard, but we need something.
+                      # The standard does say that values starting 0x8xxxxxx
+                      # are considered extensions
 
 
 # 9.1.3.2.11

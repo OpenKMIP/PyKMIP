@@ -28,8 +28,10 @@ from kmip.core.objects import KeyMaterial
 from kmip.core.objects import KeyWrappingData
 from kmip.core.objects import KeyValue
 
+from kmip.core.secrets import OpaqueObject
 from kmip.core.secrets import PrivateKey
 from kmip.core.secrets import PublicKey
+from kmip.core.secrets import SecretData
 from kmip.core.secrets import SymmetricKey
 from kmip.core.secrets import Template
 
@@ -70,6 +72,51 @@ class SecretFactory(object):
         if value is None:
             return SymmetricKey()
         else:
+            key_block = self._build_key_block(value)
+            return SymmetricKey(key_block)
+
+    def _create_public_key(self):
+        return PublicKey()
+
+    def _create_private_key(self):
+        return PrivateKey()
+
+    def _create_split_key(self, value):
+        raise NotImplementedError()
+
+    def _create_template(self, value):
+        if value is None:
+            return Template()
+        else:
+            if not isinstance(value, list):
+                msg = utils.build_er_error(Template,
+                                           'constructor argument type', list,
+                                           type(value))
+                raise TypeError(msg)
+            else:
+                for val in value:
+                    if not isinstance(val, Attribute):
+                        msg = utils.build_er_error(Template,
+                                                   'constructor argument type',
+                                                   Attribute, type(val))
+                        raise TypeError(msg)
+            return Template(value)
+
+    def _create_secret_data(self, value):
+        if value:
+            kind = SecretData.SecretDataType(value.get("secret_data_type"))
+            key_block = self._build_key_block(value)
+            return SecretData(kind, key_block)
+        return SecretData()
+
+    def _create_opaque_data(self, value):
+        if value:
+            kind = OpaqueObject.OpaqueDataType(value.get("opaque_data_type"))
+            data = OpaqueObject.OpaqueDataValue(value.get("opaque_data_value"))
+            return OpaqueObject(kind, data)
+        return OpaqueObject()
+
+    def _build_key_block(self, value):
             key_type = value.get('key_format_type')
             key_compression_type = value.get('key_compression_type')
             key_value = value.get('key_value')
@@ -102,37 +149,4 @@ class SecretFactory(object):
                                  crypto_algorithm,
                                  crypto_length,
                                  key_wrap_data)
-            return SymmetricKey(key_block)
-
-    def _create_public_key(self):
-        return PublicKey()
-
-    def _create_private_key(self):
-        return PrivateKey()
-
-    def _create_split_key(self, value):
-        raise NotImplementedError()
-
-    def _create_template(self, value):
-        if value is None:
-            return Template()
-        else:
-            if not isinstance(value, list):
-                msg = utils.build_er_error(Template,
-                                           'constructor argument type', list,
-                                           type(value))
-                raise TypeError(msg)
-            else:
-                for val in value:
-                    if not isinstance(val, Attribute):
-                        msg = utils.build_er_error(Template,
-                                                   'constructor argument type',
-                                                   Attribute, type(val))
-                        raise TypeError(msg)
-            return Template(value)
-
-    def _create_secret_data(self, value):
-        raise NotImplementedError()
-
-    def _create_opaque_data(self, value):
-        raise NotImplementedError()
+            return key_block

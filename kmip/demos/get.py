@@ -60,7 +60,7 @@ if __name__ == '__main__':
                            credential)
     uuid = result.uuid.value
 
-    result = client.get(uuid, credential)
+    result = client.get(uuid=uuid, credential=credential)
     client.close()
 
     logger.debug('get() result status: {0}'.format(result.result_status.enum))
