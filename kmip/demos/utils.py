@@ -21,6 +21,7 @@ from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import ObjectType
 from kmip.core.enums import Operation
+from kmip.core.enums import SecretDataType
 
 from kmip.core.factories.attributes import AttributeFactory
 
@@ -33,6 +34,7 @@ from kmip.core.objects import KeyValue
 from kmip.core.secrets import PrivateKey
 from kmip.core.secrets import PublicKey
 from kmip.core.secrets import SymmetricKey
+from kmip.core.secrets import SecretData
 
 import optparse
 import sys
@@ -165,7 +167,7 @@ def build_cli_parser(operation):
             default="SYMMETRIC_KEY",
             dest="type",
             help=("Type of the object to register. Supported types include: "
-                  "PRIVATE_KEY, PUBLIC_KEY, SYMMETRIC_KEY"))
+                  "PRIVATE_KEY, PUBLIC_KEY, SYMMETRIC_KEY, SECRET_DATA"))
     elif operation is Operation.QUERY:
         pass
     elif operation is Operation.DISCOVER_VERSIONS:
@@ -177,7 +179,8 @@ def build_cli_parser(operation):
 
 
 def build_cryptographic_usage_mask(logger, object_type):
-    if object_type == ObjectType.SYMMETRIC_KEY:
+    if (object_type == ObjectType.SYMMETRIC_KEY or
+       object_type == ObjectType.SECRET_DATA):
         flags = [CryptographicUsageMask.ENCRYPT,
                  CryptographicUsageMask.DECRYPT]
     elif object_type == ObjectType.PUBLIC_KEY:
@@ -215,13 +218,18 @@ def build_object(logger, object_type, key_format_type):
         return PublicKey(key_block)
     elif object_type == ObjectType.PRIVATE_KEY:
         return PrivateKey(key_block)
+    elif object_type == ObjectType.SECRET_DATA:
+        kind = SecretData.SecretDataType(SecretDataType.PASSWORD)
+        return SecretData(secret_data_type=kind,
+                          key_block=key_block)
     else:
         logger.error("Unrecognized object type, could not build object")
         sys.exit()
 
 
 def build_cryptographic_length(logger, object_type):
-    if object_type == ObjectType.SYMMETRIC_KEY:
+    if (object_type == ObjectType.SYMMETRIC_KEY or
+       object_type == ObjectType.SECRET_DATA):
         return CryptographicLength(128)
     elif object_type == ObjectType.PUBLIC_KEY:
         return CryptographicLength(1024)
@@ -234,7 +242,8 @@ def build_cryptographic_length(logger, object_type):
 
 
 def build_cryptographic_algorithm(logger, object_type):
-    if object_type == ObjectType.SYMMETRIC_KEY:
+    if (object_type == ObjectType.SYMMETRIC_KEY or
+       object_type == ObjectType.SECRET_DATA):
         return CryptographicAlgorithm(CryptoAlgorithmEnum.AES)
     elif object_type == ObjectType.PUBLIC_KEY:
         return CryptographicAlgorithm(CryptoAlgorithmEnum.RSA)
@@ -247,7 +256,8 @@ def build_cryptographic_algorithm(logger, object_type):
 
 
 def build_key_value(logger, object_type):
-    if object_type == ObjectType.SYMMETRIC_KEY:
+    if (object_type == ObjectType.SYMMETRIC_KEY
+       or object_type == ObjectType.SECRET_DATA):
         return (
             b'\x30\x82\x02\x76\x02\x01\x00\x30\x0D\x06\x09\x2A\x86\x48\x86\xF7'
             b'\x0D\x01\x01\x01\x05\x00\x04\x82\x02\x60\x30\x82\x02\x5C\x02\x01'
