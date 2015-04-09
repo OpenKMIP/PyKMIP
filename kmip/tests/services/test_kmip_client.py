@@ -26,6 +26,8 @@ from kmip.core.attributes import CryptographicLength
 from kmip.core.attributes import PrivateKeyUniqueIdentifier
 
 from kmip.core.enums import AttributeType
+from kmip.core.enums import AuthenticationSuite
+from kmip.core.enums import ConformanceClause
 from kmip.core.enums import CredentialType
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
@@ -837,3 +839,115 @@ class TestKMIPClient(TestCase):
     def test_process_discover_versions_batch_item_no_results(self):
         protocol_versions = None
         self._test_process_discover_versions_batch_item(protocol_versions)
+
+
+class TestClientProfileInformation(TestCase):
+    """
+    A test suite for client profile information support.
+    """
+
+    def setUp(self):
+        super(TestClientProfileInformation, self).setUp()
+
+        self.client = KMIPProxy()
+
+        self.conformance_clauses = [ConformanceClause.DISCOVER_VERSIONS]
+        self.authentication_suites = [AuthenticationSuite.BASIC]
+
+        self.client.conformance_clauses = self.conformance_clauses
+        self.client.authentication_suites = self.authentication_suites
+
+    def tearDown(self):
+        super(TestClientProfileInformation, self).tearDown()
+
+    def test_get_supported_conformance_clauses(self):
+        """
+        Test that the list of supporting conformance clauses can be retrieved.
+        """
+        conformance_clauses = self.client.get_supported_conformance_clauses()
+        self.assertEqual(self.conformance_clauses, conformance_clauses)
+
+    def test_get_supported_authentication_suites(self):
+        """
+        Test that the list of supporting authentication suites can be
+        retrieved.
+        """
+        auth_suites = self.client.get_supported_authentication_suites()
+        self.assertEqual(self.authentication_suites, auth_suites)
+
+    def test_is_conformance_clause_supported_with_valid(self):
+        """
+        Test that the conformance clause support predicate returns True for
+        a ConformanceClause that is supported.
+        """
+        clause = ConformanceClause.DISCOVER_VERSIONS
+        supported = self.client.is_conformance_clause_supported(clause)
+        self.assertTrue(supported)
+
+    def test_is_conformance_clause_supported_with_invalid(self):
+        """
+        Test that the conformance clause support predicate returns False for
+        a ConformanceClause that is not supported.
+        """
+        clause = ConformanceClause.BASELINE
+        supported = self.client.is_conformance_clause_supported(clause)
+        self.assertFalse(supported)
+
+    def test_is_authentication_suite_supported_with_valid(self):
+        """
+        Test that the authentication suite support predicate returns True for
+        an AuthenticationSuite that is supported.
+        """
+        suite = AuthenticationSuite.BASIC
+        supported = self.client.is_authentication_suite_supported(suite)
+        self.assertTrue(supported)
+
+    def test_is_authentication_suite_supported_with_invalid(self):
+        """
+        Test that the authentication suite support predicate returns False for
+        an AuthenticationSuite that is not supported.
+        """
+        suite = AuthenticationSuite.TLS12
+        supported = self.client.is_authentication_suite_supported(suite)
+        self.assertFalse(supported)
+
+    def test_is_profile_supported(self):
+        """
+        Test that the profile support predicate returns True for valid profile
+        components.
+        """
+        supported = self.client.is_profile_supported(
+            ConformanceClause.DISCOVER_VERSIONS,
+            AuthenticationSuite.BASIC)
+        self.assertTrue(supported)
+
+    # TODO (peter-hamilton) Replace following 3 tests with 1 parameterized test
+    def test_is_profile_supported_with_invalid_conformance_clause(self):
+        """
+        Test that the profile support predicate returns False for an invalid
+        conformance clause.
+        """
+        supported = self.client.is_profile_supported(
+            ConformanceClause.BASELINE,
+            AuthenticationSuite.BASIC)
+        self.assertFalse(supported)
+
+    def test_is_profile_supported_with_invalid_authentication_suite(self):
+        """
+        Test that the profile support predicate returns False for an invalid
+        authentication suite.
+        """
+        supported = self.client.is_profile_supported(
+            ConformanceClause.DISCOVER_VERSIONS,
+            AuthenticationSuite.TLS12)
+        self.assertFalse(supported)
+
+    def test_is_profile_supported_with_invalid_profile_components(self):
+        """
+        Test that the profile support predicate returns False for invalid
+        profile components.
+        """
+        supported = self.client.is_profile_supported(
+            ConformanceClause.BASELINE,
+            AuthenticationSuite.TLS12)
+        self.assertFalse(supported)

@@ -25,8 +25,10 @@ from kmip.services.results import RekeyKeyPairResult
 
 from kmip.core import attributes as attr
 
-from kmip.core.enums import Operation as OperationEnum
+from kmip.core.enums import AuthenticationSuite
+from kmip.core.enums import ConformanceClause
 from kmip.core.enums import CredentialType
+from kmip.core.enums import Operation as OperationEnum
 
 from kmip.core.factories.credentials import CredentialFactory
 
@@ -83,6 +85,105 @@ class KMIPProxy(KMIP):
                             do_handshake_on_connect, suppress_ragged_eofs,
                             username, password)
         self.batch_items = []
+
+        self.conformance_clauses = [
+            ConformanceClause.DISCOVER_VERSIONS]
+
+        self.authentication_suites = [
+            AuthenticationSuite.BASIC,
+            AuthenticationSuite.TLS12]
+
+    def get_supported_conformance_clauses(self):
+        """
+        Get the list of conformance clauses supported by the client.
+
+        Returns:
+            list: A shallow copy of the list of supported conformance clauses.
+
+        Example:
+            >>> client.get_supported_conformance_clauses()
+            [<ConformanceClause.DISCOVER_VERSIONS: 1>]
+        """
+        return self.conformance_clauses[:]
+
+    def get_supported_authentication_suites(self):
+        """
+        Get the list of authentication suites supported by the client.
+
+        Returns:
+            list: A shallow copy of the list of supported authentication
+                suites.
+
+        Example:
+            >>> client.get_supported_authentication_suites()
+            [<AuthenticationSuite.BASIC: 1>, <AuthenticationSuite.TLS12: 2>]
+        """
+        return self.authentication_suites[:]
+
+    def is_conformance_clause_supported(self, conformance_clause):
+        """
+        Check if a ConformanceClause is supported by the client.
+
+        Args:
+            conformance_clause (ConformanceClause): A ConformanceClause
+                enumeration to check against the list of supported
+                ConformanceClauses.
+
+        Returns:
+            bool: True if the ConformanceClause is supported, False otherwise.
+
+        Example:
+            >>> clause = ConformanceClause.DISCOVER_VERSIONS
+            >>> client.is_conformance_clause_supported(clause)
+            True
+            >>> clause = ConformanceClause.BASELINE
+            >>> client.is_conformance_clause_supported(clause)
+            False
+        """
+        return conformance_clause in self.conformance_clauses
+
+    def is_authentication_suite_supported(self, authentication_suite):
+        """
+        Check if an AuthenticationSuite is supported by the client.
+
+        Args:
+            authentication_suite (AuthenticationSuite): An AuthenticationSuite
+                enumeration to check against the list of supported
+                AuthenticationSuites.
+
+        Returns:
+            bool: True if the AuthenticationSuite is supported, False
+                otherwise.
+
+        Example:
+            >>> suite = AuthenticationSuite.BASIC
+            >>> client.is_authentication_suite_supported(suite)
+            True
+            >>> suite = AuthenticationSuite.TLS12
+            >>> client.is_authentication_suite_supported(suite)
+            False
+        """
+        return authentication_suite in self.authentication_suites
+
+    def is_profile_supported(self, conformance_clause, authentication_suite):
+        """
+        Check if a profile is supported by the client.
+
+        Args:
+            conformance_clause (ConformanceClause):
+            authentication_suite (AuthenticationSuite):
+
+        Returns:
+            bool: True if the profile is supported, False otherwise.
+
+        Example:
+            >>> client.is_profile_supported(
+            ... ConformanceClause.DISCOVER_VERSIONS,
+            ... AuthenticationSuite.BASIC)
+            True
+        """
+        return (self.is_conformance_clause_supported(conformance_clause) and
+                self.is_authentication_suite_supported(authentication_suite))
 
     def open(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

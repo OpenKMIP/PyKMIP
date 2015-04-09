@@ -61,6 +61,42 @@ class AttributeType(Enum):
     CUSTOM_ATTRIBUTE                 = 'Custom Attribute'
 
 
+class ConformanceClause(Enum):
+    """
+    The specification of KMIP features supported by KMIP clients and servers.
+
+    The conformance clause defines the KMIP objects and operations that need
+    to be supported for a specific feature set. The clause is one of two core
+    components that make up a KMIP client/server profile. For more information,
+    see Section 5 of the KMIP 1.1 profiles document.
+    """
+    DISCOVER_VERSIONS                      = 1
+    BASELINE                               = 2
+    SECRET_DATA                            = 3
+    SYMMETRIC_KEY_STORE                    = 4
+    SYMMETRIC_KEY_FOUNDRY                  = 5
+    ASYMMETRIC_KEY_STORE                   = 6
+    ASYMMETRIC_KEY_AND_CERTIFICATE_STORE   = 7
+    ASYMMETRIC_KEY_FOUNDRY                 = 8
+    CERTIFICATE                            = 9
+    ASYMMETRIC_KEY_FOUNDRY_AND_CERTIFICATE = 10
+    STORAGE                                = 11
+
+
+class AuthenticationSuite(Enum):
+    """
+    The type of authentication suite used by KMIP clients and servers.
+
+    The authentication suite defines the protocol versions and cipher suites
+    that should be used to secure KMIP client/server communications. An
+    authentication suite is one of two core components that make up a KMIP
+    client/server profile. For more information, see Section 3 of the KMIP
+    1.1 profiles document.
+    """
+    BASIC = 1
+    TLS12 = 2
+
+
 # 9.1.1.2
 class Types(Enum):
     DEFAULT      = 0x00
