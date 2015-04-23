@@ -1,3 +1,8 @@
+0.3.1 - April 23, 2015
+* Add KMIP profile information to the client
+* Add support for registering/retrieving SecretData and Opaque objects
+* Update the SecretFactory to build Public/PrivateKeys with user data
+
 0.3.0 - March 14, 2015
 * Add client support for the DiscoverVersions and Query operations
 * Add client support for the CreateKeyPair and ReKeyKeyPair operations
