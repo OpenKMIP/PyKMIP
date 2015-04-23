@@ -48,14 +48,33 @@ class SecretFactory(object):
                                                      '{2}')
 
     def create(self, secret_type, value=None):
+        """
+        Create a secret object of the specified type with the given value.
+
+        Args:
+            secret_type (ObjectType): An ObjectType enumeration specifying the
+                type of secret to create.
+            value (dict): A dictionary containing secret data. Optional,
+                defaults to None.
+
+        Returns:
+            secret: The newly constructed secret object.
+
+        Raises:
+            TypeError: If the provided secret type is unrecognized.
+
+        Example:
+            >>> factory.create(ObjectType.SYMMETRIC_KEY)
+            SymmetricKey(...)
+        """
         if secret_type is ObjectType.CERTIFICATE:
             return self._create_certificate(value)
         elif secret_type is ObjectType.SYMMETRIC_KEY:
             return self._create_symmetric_key(value)
         elif secret_type is ObjectType.PUBLIC_KEY:
-            return self._create_public_key()
+            return self._create_public_key(value)
         elif secret_type is ObjectType.PRIVATE_KEY:
-            return self._create_private_key()
+            return self._create_private_key(value)
         elif secret_type is ObjectType.SPLIT_KEY:
             return self._create_split_key(value)
         elif secret_type is ObjectType.TEMPLATE:
@@ -64,6 +83,9 @@ class SecretFactory(object):
             return self._create_secret_data(value)
         elif secret_type is ObjectType.OPAQUE_DATA:
             return self._create_opaque_data(value)
+        else:
+            raise TypeError("Unrecognized secret type: {0}".format(
+                secret_type))
 
     def _create_certificate(self, value):
         raise NotImplementedError()
@@ -75,11 +97,19 @@ class SecretFactory(object):
             key_block = self._build_key_block(value)
             return SymmetricKey(key_block)
 
-    def _create_public_key(self):
-        return PublicKey()
+    def _create_public_key(self, value):
+        if value is None:
+            return PublicKey()
+        else:
+            key_block = self._build_key_block(value)
+            return PublicKey(key_block)
 
-    def _create_private_key(self):
-        return PrivateKey()
+    def _create_private_key(self, value):
+        if value is None:
+            return PrivateKey()
+        else:
+            key_block = self._build_key_block(value)
+            return PrivateKey(key_block)
 
     def _create_split_key(self, value):
         raise NotImplementedError()
