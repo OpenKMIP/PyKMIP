@@ -442,7 +442,7 @@ class KeyMaterial(ByteString):
 class KeyMaterialStruct(Struct):
 
     def __init__(self):
-        super(KeyMaterialStruct, self).__init__(Tags.SERVER_INFORMATION)
+        super(KeyMaterialStruct, self).__init__(Tags.KEY_MATERIAL)
 
         self.data = BytearrayStream()
 
