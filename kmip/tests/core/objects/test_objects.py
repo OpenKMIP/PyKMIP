@@ -16,9 +16,35 @@
 from six import string_types
 from testtools import TestCase
 
+from kmip.core.enums import Tags
+
 from kmip.core.objects import ExtensionName
 from kmip.core.objects import ExtensionTag
 from kmip.core.objects import ExtensionType
+from kmip.core.objects import KeyMaterialStruct
+
+
+class TestKeyMaterialStruct(TestCase):
+    """
+    A test suite for the KeyMaterialStruct.
+
+    A placeholder test suite. Should be removed when KeyMaterialStruct is
+    removed from the code base.
+    """
+
+    def setUp(self):
+        super(TestKeyMaterialStruct, self).setUp()
+
+    def tearDown(self):
+        super(TestKeyMaterialStruct, self).tearDown()
+
+    def test_valid_tag(self):
+        """
+        Test that the KeyMaterialStruct tag is valid.
+        """
+        struct = KeyMaterialStruct()
+
+        self.assertEqual(Tags.KEY_MATERIAL, struct.tag)
 
 
 class TestExtensionName(TestCase):
