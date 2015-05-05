@@ -420,8 +420,7 @@ class Enumeration(Integer):
         return "{0}(value={1})".format(type(self).__name__, self.enum)
 
     def __str__(self):
-        return "{0} - {1} - {2}".format(
-            type(self.enum), self.enum.name, self.enum.value)
+        return "{0}.{1}".format(type(self.enum).__name__, self.enum.name)
 
 
 class Boolean(Base):
