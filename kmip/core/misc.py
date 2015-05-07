@@ -17,12 +17,34 @@ from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
 
+from kmip.core.primitives import ByteString
 from kmip.core.primitives import Enumeration
 from kmip.core.primitives import Interval
 from kmip.core.primitives import Struct
 from kmip.core.primitives import TextString
 
 from kmip.core.utils import BytearrayStream
+
+
+class CertificateValue(ByteString):
+    """
+    The bytes of a DER-encoded X.509 public key certificate.
+
+    Used by the Certificate Managed Object to store the bytes of the
+    certificate. See Section 2.2.1 of the KMIP 1.1. specification for more
+    information.
+    """
+
+    def __init__(self, value=b''):
+        """
+        Construct a CertificateValue byte string.
+
+        Args:
+            value (bytes): A byte string (e.g., b'\x00\x01...') containing the
+                certificate bytes to store. Optional, defaults to the empty
+                byte string.
+        """
+        super(CertificateValue, self).__init__(value, Tags.CERTIFICATE_VALUE)
 
 
 class Offset(Interval):

@@ -28,6 +28,7 @@ from kmip.core.objects import KeyMaterial
 from kmip.core.objects import KeyWrappingData
 from kmip.core.objects import KeyValue
 
+from kmip.core.secrets import Certificate
 from kmip.core.secrets import OpaqueObject
 from kmip.core.secrets import PrivateKey
 from kmip.core.secrets import PublicKey
@@ -68,7 +69,7 @@ class SecretFactory(object):
             SymmetricKey(...)
         """
         if secret_type is ObjectType.CERTIFICATE:
-            return self._create_certificate(value)
+            return self._create_certificate()
         elif secret_type is ObjectType.SYMMETRIC_KEY:
             return self._create_symmetric_key(value)
         elif secret_type is ObjectType.PUBLIC_KEY:
@@ -87,8 +88,8 @@ class SecretFactory(object):
             raise TypeError("Unrecognized secret type: {0}".format(
                 secret_type))
 
-    def _create_certificate(self, value):
-        raise NotImplementedError()
+    def _create_certificate(self):
+        return Certificate()
 
     def _create_symmetric_key(self, value):
         if value is None:

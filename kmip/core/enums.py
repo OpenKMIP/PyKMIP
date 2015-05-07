@@ -349,7 +349,12 @@ class WrappingMethod(Enum):
 
 
 # 9.1.3.2.6
-class CertificateType(Enum):
+class CertificateTypeEnum(Enum):
+    """
+    The type of a Certificate Managed Object.
+
+    For more information, see Section 2.2.1 of the KMIP 1.1 specification.
+    """
     X_509 = 0x00000001
     PGP   = 0x00000002
 

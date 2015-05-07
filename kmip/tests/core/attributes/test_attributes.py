@@ -17,10 +17,12 @@ from testtools import TestCase
 
 from kmip.core.attributes import ApplicationData
 from kmip.core.attributes import ApplicationNamespace
+from kmip.core.attributes import CertificateType
 from kmip.core.attributes import DigestValue
 from kmip.core.attributes import HashingAlgorithm
 from kmip.core.attributes import OperationPolicyName
 
+from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 
 from kmip.core.utils import BytearrayStream
@@ -138,6 +140,50 @@ class TestHashingAlgorithm(TestCase):
         enumeration value is used to construct a HashingAlgorithm object.
         """
         self._test_init("invalid")
+
+
+# TODO (peter-hamilton) Replace with generic Enumeration subclass test suite.
+class TestCertificateType(TestCase):
+    """
+    A test suite for the CertificateType class.
+
+    Since CertificateType is a simple wrapper for the Enumeration primitive,
+    only a few tests pertaining to construction are needed.
+    """
+
+    def setUp(self):
+        super(TestCertificateType, self).setUp()
+
+    def tearDown(self):
+        super(TestCertificateType, self).tearDown()
+
+    def _test_init(self, value):
+        if (isinstance(value, CertificateTypeEnum)) or (value is None):
+            if value is None:
+                certificate_type = CertificateType()
+                value = CertificateTypeEnum.X_509
+            else:
+                certificate_type = CertificateType(value)
+
+            msg = "expected {0}, observed {1}".format(
+                value, certificate_type.enum)
+            self.assertEqual(value, certificate_type.enum, msg)
+        else:
+            self.assertRaises(TypeError, CertificateType, value)
+
+    def test_init_with_none(self):
+        """
+        Test that a CertificateType object can be constructed with no specified
+        value.
+        """
+        self._test_init(None)
+
+    def test_init_with_valid(self):
+        """
+        Test that a CertificateType object can be constructed with valid byte
+        data.
+        """
+        self._test_init(CertificateTypeEnum.PGP)
 
 
 class TestDigestValue(TestCase):

@@ -13,15 +13,61 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from six import binary_type
 from six import string_types
+
 from testtools import TestCase
 
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
 
+from kmip.core.misc import CertificateValue
 from kmip.core.misc import KeyFormatType
 from kmip.core.misc import QueryFunction
 from kmip.core.misc import VendorIdentification
+
+
+# TODO (peter-hamilton) Replace with generic ByteString subclass test suite.
+class TestCertificateValue(TestCase):
+    """
+    A test suite for the CertificateValue class.
+
+    Since CertificateValue is a simple wrapper for the ByteString primitive,
+    only a few tests pertaining to construction are needed.
+    """
+
+    def setUp(self):
+        super(TestCertificateValue, self).setUp()
+
+    def tearDown(self):
+        super(TestCertificateValue, self).tearDown()
+
+    def _test_init(self, value):
+        if (isinstance(value, binary_type)) or (value is None):
+            certificate_value = CertificateValue(value)
+
+            if value is None:
+                value = b''
+
+            msg = "expected {0}, observed {1}".format(
+                value, certificate_value.value)
+            self.assertEqual(value, certificate_value.value, msg)
+        else:
+            self.assertRaises(TypeError, CertificateValue, value)
+
+    def test_init_with_none(self):
+        """
+        Test that a CertificateValue object can be constructed with no
+        specified value.
+        """
+        self._test_init(None)
+
+    def test_init_with_valid(self):
+        """
+        Test that a CertificateValue object can be constructed with a valid,
+        byte-string value.
+        """
+        self._test_init(b'\x00\x01\x02')
 
 
 class TestQueryFunction(TestCase):

@@ -18,6 +18,8 @@ from kmip.core.attributes import CertificateType
 from kmip.core import enums
 from kmip.core.enums import Tags
 
+from kmip.core.misc import CertificateValue
+
 from kmip.core.objects import Attribute
 from kmip.core.objects import KeyBlock
 
@@ -33,52 +35,102 @@ from kmip.core.utils import BytearrayStream
 # 2.2
 # 2.2.1
 class Certificate(Struct):
+    """
+    A structure representing a DER-encoded X.509 public key certificate.
 
-    class CertificateValue(ByteString):
+    See Section 2.2.1 of the KMIP 1.1 specification for more information.
 
-        def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.CERTIFICATE_VALUE)
+    Attributes:
+        certificate_type: The type of the certificate.
+        certificate_value: The bytes of the certificate.
+    """
 
     def __init__(self,
                  certificate_type=None,
                  certificate_value=None):
-        super(self.__class__, self).__init__(Tags.CERTIFICATE)
-        self.certificate_type = certificate_type
-        self.certificate_value = certificate_value
-        self.validate()
+        """
+        Construct a Certificate object.
+
+        Args:
+            certificate_type (CertificateTypeEnum): The type of the
+                certificate. Optional, defaults to None.
+            certificate_value (bytes): The bytes of the certificate. Optional,
+                defaults to None.
+        """
+        super(Certificate, self).__init__(Tags.CERTIFICATE)
+
+        if certificate_type is None:
+            self.certificate_type = CertificateType()
+        else:
+            self.certificate_type = CertificateType(certificate_type)
+
+        if certificate_value is None:
+            self.certificate_value = CertificateValue()
+        else:
+            self.certificate_value = CertificateValue(certificate_value)
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        """
+        Read the data encoding the Certificate object and decode it into its
+        constituent parts.
+
+        Args:
+            istream (Stream): A data stream containing encoded object data,
+                supporting a read method; usually a BytearrayStream object.
+        """
+        super(Certificate, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.certificate_type = CertificateType()
-        self.certificate_value = Certificate.CertificateValue()
+        self.certificate_value = CertificateValue()
 
         self.certificate_type.read(tstream)
         self.certificate_value.read(tstream)
 
         self.is_oversized(tstream)
-        self.validate()
 
     def write(self, ostream):
+        """
+        Write the data encoding the Certificate object to a stream.
+
+        Args:
+            ostream (Stream): A data stream in which to encode object data,
+                supporting a write method; usually a BytearrayStream object.
+        """
         tstream = BytearrayStream()
 
-        # Write the details of the certificate
         self.certificate_type.write(tstream)
         self.certificate_value.write(tstream)
 
-        # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(Certificate, self).write(ostream)
         ostream.write(tstream.buffer)
 
-    def validate(self):
-        self.__validate()
+    def __eq__(self, other):
+        if isinstance(other, Certificate):
+            if self.certificate_type != other.certificate_type:
+                return False
+            elif self.certificate_value != other.certificate_value:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
 
-    def __validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+    def __ne__(self, other):
+        if isinstance(other, Certificate):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        return "{0}(certificate_type={1}, certificate_value=b'{2}')".format(
+            type(self).__name__,
+            str(self.certificate_type),
+            str(self.certificate_value))
+
+    def __str__(self):
+        return "{0}".format(str(self.certificate_value))
 
 
 # 2.2.2

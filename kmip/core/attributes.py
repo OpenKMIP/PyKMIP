@@ -15,6 +15,7 @@
 
 from kmip.core import enums
 
+from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
@@ -283,16 +284,28 @@ class CryptographicParameters(Struct):
         pass
 
 
-# 3.8
 class CertificateType(Enumeration):
-    ENUM_TYPE = enums.CertificateType
+    """
+    An encodeable wrapper for the CertificateType enumeration.
 
-    def __init__(self, value=None):
-        super(self.__class__, self).__init__(value,
-                                             Tags.CERTIFICATE_TYPE)
+    Used to specify the type of the encoded bytes of a Certificate Managed
+    Object. See Sections 2.2.1 and 3.8 of the KMIP v1.1 specification for more
+    information.
+    """
+    ENUM_TYPE = enums.CertificateTypeEnum
+
+    def __init__(self, value=CertificateTypeEnum.X_509):
+        """
+        Construct a CertificateType object.
+
+        Args:
+            value (CertificateTypeEnum): A CertificateTypeEnum enumeration
+                value, (e.g., CertificateTypeEnum.PGP). Optional, defaults to
+                CertificateTypeEnum.X_509.
+        """
+        super(CertificateType, self).__init__(value, Tags.CERTIFICATE_TYPE)
 
 
-# 3.17
 class DigestValue(ByteString):
     """
     A byte string representing the hash value of a Digest.
