@@ -60,11 +60,11 @@ def build_cli_parser():
                       dest="port", help="Port number for KMIP services")
     parser.add_option("-k", "--keyfile", action="store",
                       default=os.path.normpath(os.path.join(
-                          FILE_PATH, '../../demos/certs/server.key')),
+                          FILE_PATH, '../utils/certs/server.key')),
                       dest="keyfile")
     parser.add_option("-c", "--certfile", action="store",
                       default=os.path.normpath(os.path.join(
-                          FILE_PATH, '../../demos/certs/server.crt')),
+                          FILE_PATH, '../utils/certs/server.crt')),
                       dest="certfile")
     parser.add_option("-r", "--cert_reqs", action="store",
                       default="CERT_NONE", dest="cert_reqs")
