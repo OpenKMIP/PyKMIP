@@ -25,7 +25,7 @@ setuptools.setup(
     url='https://github.com/OpenKMIP/PyKMIP',
     license='Apache License, Version 2.0',
     packages=setuptools.find_packages(exclude=["kmip.tests", "kmip.tests.*"]),
-    package_data={'kmip': ['logconfig.ini'],
+    package_data={'kmip': ['kmipconfig.ini', 'logconfig.ini'],
                   'kmip.demos': ['certs/server.crt', 'certs/server.key']},
     install_requires=[
         "enum34",

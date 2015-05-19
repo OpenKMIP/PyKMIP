@@ -122,7 +122,7 @@ Server profiles:
 Testing
 -------
 The PyKMIP test suite is composed of two parts: a unit test suite composed of
-over 500 unit tests, and an integration test suite that runs against
+over 550 unit tests, and an integration test suite that runs against
 instantiations of the software KMIP server. The tests are managed by a
 combination of the ``tox``, ``pytest``, and ``flake8`` libraries and cover
 approximately 80% of the code.
@@ -130,7 +130,7 @@ approximately 80% of the code.
 There are several ways to run different versions of the tests. To run, use one
 of the following commands in the PyKMIP root directory.
 
-To run all of the tests::
+To run all of the unit tests::
 
   $ tox
 
@@ -138,9 +138,13 @@ To run the Python syntax and format compliance tests::
 
   $ tox -e pep8
 
-To run the test suite against Python 2.7::
+To run the unit test suite against Python 2.7::
 
   $ tox -e py27
+
+To run the integration test suite against the default Python installation:
+
+  $ tox -e integration
 
 For more information and a list of supported ``tox`` environments, see
 ``tox.ini`` in the PyKMIP root directory.
