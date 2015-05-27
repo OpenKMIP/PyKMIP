@@ -417,11 +417,14 @@ class TestKMIPClientIntegration(TestCase):
                                          None]])
 
     def test_symmetric_key_register(self):
+        pass
 
     def test_symmetric_key_locate(self):
+        pass
 
     def test_symmetric_key_get(self):
-
+        pass
+    
     def test_symmetric_key_destroy(self):
         credential_type = CredentialType.USERNAME_AND_PASSWORD
         credential_value = {'Username': 'Peter', 'Password': 'abc123'}
