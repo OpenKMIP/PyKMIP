@@ -113,155 +113,6 @@ class TestKMIPClientIntegration(TestCase):
     #                                     [str, 'Unique Identifier', str,
     #                                      None]])
 
-    def test_get(self):
-        credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-        credential = self.cred_factory.create_credential(credential_type,
-                                                         credential_value)
-        result = self._create_symmetric_key()
-        uuid = result.uuid.value
-
-        result = self.client.get(uuid=uuid, credential=credential)
-
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
-
-        # Check the secret type
-        secret = result.secret
-
-        expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
-        self.assertIsInstance(secret, expected, message)
-
-    def test_destroy(self):
-        credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-        credential = self.cred_factory.create_credential(credential_type,
-                                                         credential_value)
-        result = self._create_symmetric_key()
-        uuid = result.uuid.value
-
-        # Verify the secret was created
-        result = self.client.get(uuid=uuid, credential=credential)
-
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
-
-        secret = result.secret
-
-        expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
-        self.assertIsInstance(secret, expected, message)
-
-        # Destroy the SYMMETRIC_KEY object
-        result = self.client.destroy(uuid, credential)
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_uuid(result.uuid.value, str)
-
-        # Verify the secret was destroyed
-        result = self.client.get(uuid=uuid, credential=credential)
-
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.OPERATION_FAILED)
-
-        expected = ResultReason
-        observed = type(result.result_reason.enum)
-        message = utils.build_er_error(result.result_reason.__class__, 'type',
-                                       expected, observed)
-        self.assertEqual(expected, observed, message)
-
-        expected = ResultReason.ITEM_NOT_FOUND
-        observed = result.result_reason.enum
-        message = utils.build_er_error(result.result_reason.__class__,
-                                       'value', expected, observed)
-        self.assertEqual(expected, observed, message)
-
-    def test_register(self):
-        credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-        credential = self.cred_factory.create_credential(credential_type,
-                                                         credential_value)
-
-        object_type = ObjectType.SYMMETRIC_KEY
-        algorithm_value = CryptoAlgorithmEnum.AES
-        mask_flags = [CryptographicUsageMask.ENCRYPT,
-                      CryptographicUsageMask.DECRYPT]
-        attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
-        usage_mask = self.attr_factory.create_attribute(attribute_type,
-                                                        mask_flags)
-        attributes = [usage_mask]
-        template_attribute = TemplateAttribute(attributes=attributes)
-
-        key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
-
-        key_data = (
-            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
-
-        key_material = KeyMaterial(key_data)
-        key_value = KeyValue(key_material)
-        cryptographic_algorithm = CryptographicAlgorithm(algorithm_value)
-        cryptographic_length = CryptographicLength(128)
-
-        key_block = KeyBlock(
-            key_format_type=key_format_type,
-            key_compression_type=None,
-            key_value=key_value,
-            cryptographic_algorithm=cryptographic_algorithm,
-            cryptographic_length=cryptographic_length,
-            key_wrapping_data=None)
-
-        secret = SymmetricKey(key_block)
-
-        result = self.client.register(object_type, template_attribute, secret,
-                                      credential)
-
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_uuid(result.uuid.value, str)
-
-        # Check the template attribute type
-        self._check_template_attribute(result.template_attribute,
-                                       TemplateAttribute, 1,
-                                       [[str, 'Unique Identifier', str,
-                                         None]])
-        # Check that the returned key bytes match what was provided
-        uuid = result.uuid.value
-        result = self.client.get(uuid=uuid, credential=credential)
-
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
-
-        # Check the secret type
-        secret = result.secret
-
-        expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
-        self.assertIsInstance(secret, expected, message)
-
-        key_block = result.secret.key_block
-        key_value = key_block.key_value
-        key_material = key_value.key_material
-
-        expected = key_data
-        observed = key_material.value
-        message = utils.build_er_error(key_material.__class__, 'value',
-                                       expected, observed, 'value')
-        self.assertEqual(expected, observed, message)
-
     def _shutdown_server(self):
         if self.server.poll() is not None:
             return
@@ -417,14 +268,109 @@ class TestKMIPClientIntegration(TestCase):
                                          None]])
 
     def test_symmetric_key_register(self):
-        pass
+        credential_type = CredentialType.USERNAME_AND_PASSWORD
+        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
+        credential = self.cred_factory.create_credential(credential_type,
+                                                         credential_value)
+
+        object_type = ObjectType.SYMMETRIC_KEY
+        algorithm_value = CryptoAlgorithmEnum.AES
+        mask_flags = [CryptographicUsageMask.ENCRYPT,
+                      CryptographicUsageMask.DECRYPT]
+        attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
+        usage_mask = self.attr_factory.create_attribute(attribute_type,
+                                                        mask_flags)
+        attributes = [usage_mask]
+        template_attribute = TemplateAttribute(attributes=attributes)
+
+        key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
+
+        key_data = (
+            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00')
+
+        key_material = KeyMaterial(key_data)
+        key_value = KeyValue(key_material)
+        cryptographic_algorithm = CryptographicAlgorithm(algorithm_value)
+        cryptographic_length = CryptographicLength(128)
+
+        key_block = KeyBlock(
+            key_format_type=key_format_type,
+            key_compression_type=None,
+            key_value=key_value,
+            cryptographic_algorithm=cryptographic_algorithm,
+            cryptographic_length=cryptographic_length,
+            key_wrapping_data=None)
+
+        secret = SymmetricKey(key_block)
+
+        result = self.client.register(object_type, template_attribute, secret,
+                                      credential)
+
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_uuid(result.uuid.value, str)
+
+        # Check the template attribute type
+        self._check_template_attribute(result.template_attribute,
+                                       TemplateAttribute, 1,
+                                       [[str, 'Unique Identifier', str,
+                                         None]])
+        # Check that the returned key bytes match what was provided
+        uuid = result.uuid.value
+        result = self.client.get(uuid=uuid, credential=credential)
+
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_object_type(result.object_type.enum, ObjectType,
+                                ObjectType.SYMMETRIC_KEY)
+        self._check_uuid(result.uuid.value, str)
+
+        # Check the secret type
+        secret = result.secret
+
+        expected = SymmetricKey
+        message = utils.build_er_error(result.__class__, 'type', expected,
+                                       secret, 'secret')
+        self.assertIsInstance(secret, expected, message)
+
+        key_block = result.secret.key_block
+        key_value = key_block.key_value
+        key_material = key_value.key_material
+
+        expected = key_data
+        observed = key_material.value
+        message = utils.build_er_error(key_material.__class__, 'value',
+                                       expected, observed, 'value')
+        self.assertEqual(expected, observed, message)
 
     def test_symmetric_key_locate(self):
         pass
 
     def test_symmetric_key_get(self):
-        pass
-    
+        credential_type = CredentialType.USERNAME_AND_PASSWORD
+        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
+        credential = self.cred_factory.create_credential(credential_type,
+                                                         credential_value)
+        result = self._create_symmetric_key()
+        uuid = result.uuid.value
+
+        result = self.client.get(uuid=uuid, credential=credential)
+
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_object_type(result.object_type.enum, ObjectType,
+                                ObjectType.SYMMETRIC_KEY)
+        self._check_uuid(result.uuid.value, str)
+
+        # Check the secret type
+        secret = result.secret
+
+        expected = SymmetricKey
+        message = utils.build_er_error(result.__class__, 'type', expected,
+                                       secret, 'secret')
+        self.assertIsInstance(secret, expected, message)
+
     def test_symmetric_key_destroy(self):
         credential_type = CredentialType.USERNAME_AND_PASSWORD
         credential_value = {'Username': 'Peter', 'Password': 'abc123'}
