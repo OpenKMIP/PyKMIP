@@ -59,6 +59,7 @@ class TestKMIPClientIntegration(TestCase):
     STARTUP_TIME = 1.0
     SHUTDOWN_TIME = 0.1
     KMIP_PORT = 9090
+    KMIP_CONFIG='hp'
     CA_CERTS_PATH = os.path.normpath(os.path.join(os.path.dirname(
         os.path.abspath(__file__)), '../utils/certs/server.crt'))
 
@@ -82,8 +83,9 @@ class TestKMIPClientIntegration(TestCase):
 
         # Set up and open the client proxy; shutdown the server if open fails
         try:
-            self.client = KMIPProxy(port=self.KMIP_PORT,
-                                    ca_certs=self.CA_CERTS_PATH)
+            # self.client = KMIPProxy(port=self.KMIP_PORT,
+            #                         ca_certs=self.CA_CERTS_PATH)
+            self.client = KMIPProxy(config=self.KMIP_CONFIG)
             self.client.open()
         except Exception as e:
             self._shutdown_server()
