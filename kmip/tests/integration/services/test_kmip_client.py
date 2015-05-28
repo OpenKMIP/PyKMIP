@@ -96,23 +96,6 @@ class TestKMIPClientIntegration(TestCase):
         self.client.close()
         self._shutdown_server()
 
-    # def test_create(self):
-    #     result = self._create_symmetric_key()
-    #
-    #     self._check_result_status(result.result_status.enum, ResultStatus,
-    #                               ResultStatus.SUCCESS)
-    #     self._check_object_type(result.object_type.enum, ObjectType,
-    #                             ObjectType.SYMMETRIC_KEY)
-    #     self._check_uuid(result.uuid.value, str)
-    #
-    #     # Check the template attribute type
-    #     self._check_template_attribute(result.template_attribute,
-    #                                    TemplateAttribute, 2,
-    #                                    [[str, 'Cryptographic Length', int,
-    #                                      256],
-    #                                     [str, 'Unique Identifier', str,
-    #                                      None]])
-
     def _shutdown_server(self):
         if self.server.poll() is not None:
             return
@@ -125,28 +108,32 @@ class TestKMIPClientIntegration(TestCase):
             if self.server.poll() is None:
                 raise KMIPServerZombieError(pid)
 
-    def _create_symmetric_key(self):
-        credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-        credential = self.cred_factory.create_credential(credential_type,
-                                                         credential_value)
+    def _create_symmetric_key(self, credential=None, object_type=None,
+                              attributes=None):
 
-        object_type = ObjectType.SYMMETRIC_KEY
-        attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
-        algorithm = self.attr_factory.create_attribute(
-            attribute_type,
-            CryptoAlgorithmEnum.AES)
+        if credential is None:
+            credential_type = CredentialType.USERNAME_AND_PASSWORD
+            credential_value = {'Username': 'Peter', 'Password': 'abc123'}
+            credential = self.cred_factory.create_credential(
+                credential_type, credential_value)
 
-        mask_flags = [CryptographicUsageMask.ENCRYPT,
-                      CryptographicUsageMask.DECRYPT]
-        attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
-        usage_mask = self.attr_factory.create_attribute(attribute_type,
-                                                        mask_flags)
-        attributes = [algorithm, usage_mask]
+        if object_type is None:
+            object_type = ObjectType.SYMMETRIC_KEY
+
+        if attributes is None:
+            attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
+            algorithm = self.attr_factory.create_attribute(
+                attribute_type,
+                CryptoAlgorithmEnum.AES)
+            mask_flags = [CryptographicUsageMask.ENCRYPT,
+                          CryptographicUsageMask.DECRYPT]
+            attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
+            usage_mask = self.attr_factory.create_attribute(attribute_type,
+                                                            mask_flags)
+            attributes = [algorithm, usage_mask]
+
         template_attribute = TemplateAttribute(attributes=attributes)
-
-        return self.client.create(object_type, template_attribute,
-                                  credential)
+        return self.client.create(object_type, template_attribute, credential)
 
     def _check_result_status(self, result_status, result_status_type,
                              result_status_value):
@@ -344,8 +331,98 @@ class TestKMIPClientIntegration(TestCase):
                                        expected, observed, 'value')
         self.assertEqual(expected, observed, message)
 
-    def test_symmetric_key_locate(self):
-        pass
+    # def test_symmetric_key_locate(self):
+    #     # Create three keys with different attributes for the test
+    #     # key 1
+    #
+    #     KEY1 = 0
+    #     KEY2 = 1
+    #     KEY3 = 2
+    #
+    #     result = []
+    #     uuid = []
+    #
+    #     # Create key 1
+    #     credential_type = CredentialType.USERNAME_AND_PASSWORD
+    #     credential_value = {'Username': 'Peter', 'Password': 'abc123'}
+    #     credential = self.cred_factory.create_credential(credential_type,
+    #                                                      credential_value)
+    #
+    #     result.append(self._create_symmetric_key(credential=credential))
+    #     uuid.append(result[KEY1].uuid.value)
+    #
+    #     # Disable "Fresh" attribute by "getting" the key
+    #     self.client.get(uuid[KEY1], credential=credential)
+    #
+    #     # Create key 2
+    #     # Change credentials, change usage mask, change algorithm, set fresh
+    #     credential_type = CredentialType.USERNAME_AND_PASSWORD
+    #     credential_value = {'Username': 'Doc', 'Password': 'flux_capacitor'}
+    #     credential = self.cred_factory.create_credential(credential_type,
+    #                                                      credential_value)
+    #
+    #     attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
+    #     algorithm = self.attr_factory.create_attribute(
+    #         attribute_type,
+    #         CryptoAlgorithmEnum.BLOWFISH)
+    #     mask_flags = [CryptographicUsageMask.ENCRYPT,
+    #                   CryptographicUsageMask.DECRYPT,
+    #                   CryptographicUsageMask.KEY_AGREEMENT,
+    #                   CryptographicUsageMask.CERTIFICATE_SIGN]
+    #     attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
+    #     usage_mask = self.attr_factory.create_attribute(attribute_type,
+    #                                                     mask_flags)
+    #     attribute_type = AttributeType.FRESH
+    #     fresh_status = True
+    #     obj_group_member = self.attr_factory.create_attribute(
+    #         attribute_type, fresh_status)
+    #     attributes = [algorithm, usage_mask, obj_group_member]
+    #
+    #     result.append(self._create_symmetric_key(credential=credential,
+    #                                              attributes=attributes))
+    #     uuid.append(result[KEY2].uuid.value)
+    #
+    #     # Create key 3
+    #     credential_type = CredentialType.USERNAME_AND_PASSWORD
+    #     credential_value = {'Username': 'Peter', 'Password': 'abc123'}
+    #     credential = self.cred_factory.create_credential(credential_type,
+    #                                                      credential_value)
+    #
+    #     result.append(self._create_symmetric_key(credential=credential))
+    #     uuid.append(result[KEY3].uuid.value)
+    #
+    #
+    #     # test fresh attribute
+    #
+    #     credential_type = CredentialType.USERNAME_AND_PASSWORD
+    #     credential_value = {'Username': 'Peter', 'Password': 'abc123'}
+    #     credential = self.cred_factory.create_credential(credential_type,
+    #                                                      credential_value)
+    #
+    #     result = self.client.locate(credential=credential)
+    #
+    #
+    #     # Destroy all keys
+    #
+    #     result = []
+    #
+    #     # Destroy keys 1,3
+    #     credential_type = CredentialType.USERNAME_AND_PASSWORD
+    #     credential_value = {'Username': 'Peter', 'Password': 'abc123'}
+    #     credential = self.cred_factory.create_credential(credential_type,
+    #                                                      credential_value)
+    #
+    #     result.append(self.client.destroy(uuid[KEY1], credential))
+    #     result.append(self.client.destroy(uuid[KEY3], credential))
+    # 
+    #     # Destroy key 2
+    #     credential_type = CredentialType.USERNAME_AND_PASSWORD
+    #     credential_value = {'Username': 'Doc', 'Password': 'flux_capacitor'}
+    #     credential = self.cred_factory.create_credential(credential_type,
+    #                                                      credential_value)
+    #
+    #     result.append(self.client.destroy(uuid[KEY2], credential))
+
 
     def test_symmetric_key_get(self):
         credential_type = CredentialType.USERNAME_AND_PASSWORD
