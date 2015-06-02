@@ -32,7 +32,7 @@ class RegisterRequestPayload(Struct):
                  object_type=None,
                  template_attribute=None,
                  secret=None):
-        super(self.__class__, self).__init__(Tags.REQUEST_PAYLOAD)
+        super(RegisterRequestPayload, self).__init__(Tags.REQUEST_PAYLOAD)
 
         self.secret_factory = SecretFactory()
         self.object_type = object_type
@@ -42,7 +42,7 @@ class RegisterRequestPayload(Struct):
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(RegisterRequestPayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.object_type = attributes.ObjectType()
@@ -73,7 +73,7 @@ class RegisterRequestPayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(RegisterRequestPayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -89,7 +89,7 @@ class RegisterResponsePayload(Struct):
     def __init__(self,
                  unique_identifier=None,
                  template_attribute=None):
-        super(self.__class__, self).__init__(Tags.RESPONSE_PAYLOAD)
+        super(RegisterResponsePayload, self).__init__(Tags.RESPONSE_PAYLOAD)
 
         self.unique_identifier = unique_identifier
         self.template_attribute = template_attribute
@@ -97,7 +97,7 @@ class RegisterResponsePayload(Struct):
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(RegisterResponsePayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
@@ -121,7 +121,7 @@ class RegisterResponsePayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(RegisterResponsePayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):

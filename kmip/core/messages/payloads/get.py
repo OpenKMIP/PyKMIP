@@ -35,22 +35,23 @@ class GetRequestPayload(Struct):
         ENUM_TYPE = enums.KeyCompressionType
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.KEY_COMPRESSION_TYPE)
+            super(GetRequestPayload.KeyCompressionType, self).__init__(
+                value, Tags.KEY_COMPRESSION_TYPE)
 
     # 9.1.3.2.3
     class KeyFormatType(Enumeration):
         ENUM_TYPE = enums.KeyFormatType
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.KEY_FORMAT_TYPE)
+            super(GetRequestPayload.KeyFormatType, self).__init__(
+                value, Tags.KEY_FORMAT_TYPE)
 
     def __init__(self,
                  unique_identifier=None,
                  key_format_type=None,
                  key_compression_type=None,
                  key_wrapping_specification=None):
-        super(self.__class__, self).__init__(tag=enums.Tags.REQUEST_PAYLOAD)
+        super(GetRequestPayload, self).__init__(tag=enums.Tags.REQUEST_PAYLOAD)
         self.unique_identifier = unique_identifier
         self.key_format_type = key_format_type
         self.key_compression_type = key_compression_type
@@ -58,7 +59,7 @@ class GetRequestPayload(Struct):
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(GetRequestPayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.UNIQUE_IDENTIFIER, tstream):
@@ -95,7 +96,7 @@ class GetRequestPayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(GetRequestPayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -112,7 +113,7 @@ class GetResponsePayload(Struct):
                  object_type=None,
                  unique_identifier=None,
                  secret=None):
-        super(self.__class__, self).__init__(tag=Tags.RESPONSE_PAYLOAD)
+        super(GetResponsePayload, self).__init__(tag=Tags.RESPONSE_PAYLOAD)
         self.object_type = object_type
         self.unique_identifier = unique_identifier
         self.secret = secret
@@ -120,7 +121,7 @@ class GetResponsePayload(Struct):
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(GetResponsePayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.object_type = attributes.ObjectType()
@@ -145,7 +146,7 @@ class GetResponsePayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(GetResponsePayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):

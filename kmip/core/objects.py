@@ -45,18 +45,20 @@ class Attribute(Struct):
     class AttributeName(TextString):
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.ATTRIBUTE_NAME)
+            super(Attribute.AttributeName, self).__init__(
+                value, Tags.ATTRIBUTE_NAME)
 
     class AttributeIndex(Integer):
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.ATTRIBUTE_INDEX)
+            super(Attribute.AttributeIndex, self).__init__(
+                value, Tags.ATTRIBUTE_INDEX)
 
     def __init__(self,
                  attribute_name=None,
                  attribute_index=None,
                  attribute_value=None):
-        super(self.__class__, self).__init__(tag=Tags.ATTRIBUTE)
+        super(Attribute, self).__init__(tag=Tags.ATTRIBUTE)
 
         self.value_factory = AttributeValueFactory()
 
@@ -68,7 +70,7 @@ class Attribute(Struct):
             attribute_value.tag = Tags.ATTRIBUTE_VALUE
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(Attribute, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         # Read the name of the attribute
@@ -108,7 +110,7 @@ class Attribute(Struct):
 
         # Write the length and value of the attribute
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(Attribute, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def __eq__(self, other):
@@ -136,26 +138,32 @@ class Credential(Struct):
         ENUM_TYPE = CredentialType
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.CREDENTIAL_TYPE)
+            super(Credential.CredentialType, self).__init__(
+                value, Tags.CREDENTIAL_TYPE)
 
     class UsernamePasswordCredential(Struct):
 
         class Username(TextString):
             def __init__(self, value=None):
-                super(self.__class__, self).__init__(value, Tags.USERNAME)
+                super(Credential.UsernamePasswordCredential.Username,
+                      self).__init__(
+                    value, Tags.USERNAME)
 
         class Password(TextString):
             def __init__(self, value=None):
-                super(self.__class__, self).__init__(value, Tags.PASSWORD)
+                super(Credential.UsernamePasswordCredential.Password,
+                      self).__init__(
+                    value, Tags.PASSWORD)
 
         def __init__(self, username=None, password=None):
-            super(self.__class__, self).__init__(tag=Tags.CREDENTIAL_VALUE)
+            super(Credential.UsernamePasswordCredential, self).__init__(
+                tag=Tags.CREDENTIAL_VALUE)
             self.username = username
             self.password = password
             self.validate()
 
         def read(self, istream):
-            super(self.__class__, self).read(istream)
+            super(Credential.UsernamePasswordCredential, self).read(istream)
             tstream = BytearrayStream(istream.read(self.length))
 
             # Read the username of the credential
@@ -179,7 +187,7 @@ class Credential(Struct):
 
             # Write the length and value of the credential
             self.length = tstream.length()
-            super(self.__class__, self).write(ostream)
+            super(Credential.UsernamePasswordCredential, self).write(ostream)
             ostream.write(tstream.buffer)
 
         def validate(self):
@@ -230,7 +238,8 @@ class Credential(Struct):
                      network_identifier=None,
                      machine_identifier=None,
                      media_identifier=None):
-            super(self.__class__, self).__init__(tag=Tags.CREDENTIAL_VALUE)
+            super(Credential.DeviceCredential, self).__init__(
+                tag=Tags.CREDENTIAL_VALUE)
             super.device_serial_number = device_serial_number
             super.password = password
             super.device_identifier = device_identifier
@@ -239,7 +248,7 @@ class Credential(Struct):
             super.media_identifier = media_identifier
 
         def read(self, istream):
-            super(self.__class__, self).read(istream)
+            super(Credential.DeviceCredential, self).read(istream)
             tstream = BytearrayStream(istream.read(self.length))
 
             # Read the password if it is next
@@ -293,19 +302,19 @@ class Credential(Struct):
 
             # Write the length and value of the credential
             self.length = tstream.length()
-            super(self.__class__, self).write(ostream)
+            super(Credential.DeviceCredential, self).write(ostream)
             ostream.write(tstream.buffer)
 
         def validate(self):
             pass
 
     def __init__(self, credential_type=None, credential_value=None):
-        super(self.__class__, self).__init__(tag=Tags.CREDENTIAL)
+        super(Credential, self).__init__(tag=Tags.CREDENTIAL)
         self.credential_type = credential_type
         self.credential_value = credential_value
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(Credential, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         # Read the type of the credential
@@ -333,7 +342,7 @@ class Credential(Struct):
 
         # Write the length and value of the credential
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(Credential, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -347,8 +356,8 @@ class KeyBlock(Struct):
         ENUM_TYPE = enums.KeyCompressionType
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.KEY_COMPRESSION_TYPE)
+            super(KeyBlock.KeyCompressionType, self).__init__(
+                value, Tags.KEY_COMPRESSION_TYPE)
 
     def __init__(self,
                  key_format_type=None,
@@ -357,7 +366,7 @@ class KeyBlock(Struct):
                  cryptographic_algorithm=None,
                  cryptographic_length=None,
                  key_wrapping_data=None):
-        super(self.__class__, self).__init__(Tags.KEY_BLOCK)
+        super(KeyBlock, self).__init__(Tags.KEY_BLOCK)
         self.key_format_type = key_format_type
         self.key_compression_type = key_compression_type
         self.key_value = key_value
@@ -367,7 +376,7 @@ class KeyBlock(Struct):
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(KeyBlock, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.key_format_type = KeyFormatType()
@@ -414,7 +423,7 @@ class KeyBlock(Struct):
 
         # Write the length and value of the credential
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(KeyBlock, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -435,7 +444,7 @@ class KeyBlock(Struct):
 class KeyMaterial(ByteString):
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, Tags.KEY_MATERIAL)
+        super(KeyMaterial, self).__init__(value, Tags.KEY_MATERIAL)
 
 
 # TODO (peter-hamilton) Get rid of this and replace with a KeyMaterial factory.
@@ -478,7 +487,7 @@ class KeyValue(Struct):
     def __init__(self,
                  key_material=None,
                  attributes=None):
-        super(self.__class__, self).__init__(Tags.KEY_VALUE)
+        super(KeyValue, self).__init__(Tags.KEY_VALUE)
 
         if key_material is None:
             self.key_material = KeyMaterial()
@@ -493,7 +502,7 @@ class KeyValue(Struct):
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(KeyValue, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         # TODO (peter-hamilton) Replace this with a KeyMaterial factory.
@@ -521,7 +530,7 @@ class KeyValue(Struct):
             attribute.write(tstream)
 
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(KeyValue, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -571,14 +580,14 @@ class KeyInformation(Struct):
                  unique_identifier=None,
                  cryptographic_parameters=None,
                  tag=Tags.ENCRYPTION_KEY_INFORMATION):
-        super(self.__class__, self).\
-            __init__(tag=Tags.ENCRYPTION_KEY_INFORMATION)
+        super(KeyInformation, self).__init__(
+            tag=Tags.ENCRYPTION_KEY_INFORMATION)
         self.unique_identifier = unique_identifier
         self.cryptographic_parameters = cryptographic_parameters
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(KeyInformation, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
@@ -601,7 +610,7 @@ class KeyInformation(Struct):
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(KeyInformation, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -618,8 +627,8 @@ class EncryptionKeyInformation(KeyInformation):
                  unique_identifier=None,
                  cryptographic_parameters=None,
                  tag=Tags.ENCRYPTION_KEY_INFORMATION):
-        super(self.__class__, self).\
-            __init__(unique_identifier, cryptographic_parameters, tag)
+        super(EncryptionKeyInformation, self).__init__(
+            unique_identifier, cryptographic_parameters, tag)
 
     def validate(self):
         self.__validate()
@@ -635,8 +644,8 @@ class MACSignatureKeyInformation(KeyInformation):
                  unique_identifier=None,
                  cryptographic_parameters=None,
                  tag=Tags.MAC_SIGNATURE_KEY_INFORMATION):
-        super(self.__class__, self).\
-            __init__(unique_identifier, cryptographic_parameters, tag)
+        super(MACSignatureKeyInformation, self).__init__(
+            unique_identifier, cryptographic_parameters, tag)
 
     def validate(self):
         self.__validate()
@@ -651,12 +660,14 @@ class KeyWrappingData(Struct):
     class MACSignature(ByteString):
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.MAC_SIGNATURE)
+            super(KeyWrappingData.MACSignature, self).__init__(
+                value, Tags.MAC_SIGNATURE)
 
     class IVCounterNonce(ByteString):
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.IV_COUNTER_NONCE)
+            super(KeyWrappingData.IVCounterNonce, self).__init__(
+                value, Tags.IV_COUNTER_NONCE)
 
     def __init__(self,
                  wrapping_method=None,
@@ -665,7 +676,7 @@ class KeyWrappingData(Struct):
                  mac_signature=None,
                  iv_counter_nonce=None,
                  encoding_option=None):
-        super(self.__class__, self).__init__(Tags.KEY_WRAPPING_DATA)
+        super(KeyWrappingData, self).__init__(Tags.KEY_WRAPPING_DATA)
         self.wrapping_method = wrapping_method
         self.encryption_key_information = encryption_key_information
         self.mac_signature_key_information = mac_signature_key_information
@@ -675,7 +686,7 @@ class KeyWrappingData(Struct):
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(KeyWrappingData, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.wrapping_method = WrappingMethod()
@@ -723,7 +734,7 @@ class KeyWrappingData(Struct):
 
         # Write the length and value of the key wrapping data
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(KeyWrappingData, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -740,7 +751,8 @@ class KeyWrappingSpecification(Struct):
     class AttributeName(TextString):
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.ATTRIBUTE_NAME)
+            super(KeyWrappingSpecification.AttributeName, self).__init__(
+                value, Tags.ATTRIBUTE_NAME)
 
     def __init__(self,
                  wrapping_method=None,
@@ -748,8 +760,8 @@ class KeyWrappingSpecification(Struct):
                  mac_signature_key_information=None,
                  attribute_name=None,
                  encoding_option=None):
-        super(self.__class__, self).\
-            __init__(tag=Tags.KEY_WRAPPING_SPECIFICATION)
+        super(KeyWrappingSpecification, self).__init__(
+            tag=Tags.KEY_WRAPPING_SPECIFICATION)
         self.wrapping_method = wrapping_method
         self.encryption_key_information = encryption_key_information
         self.mac_signature_key_information = mac_signature_key_information
@@ -757,7 +769,7 @@ class KeyWrappingSpecification(Struct):
         self.encoding_option = encoding_option
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(KeyWrappingSpecification, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.wrapping_method = WrappingMethod()
@@ -799,7 +811,7 @@ class KeyWrappingSpecification(Struct):
 
         # Write the length and value of the key wrapping data
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(KeyWrappingSpecification, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
