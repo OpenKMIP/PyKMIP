@@ -72,13 +72,13 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.debug('destroy() result status: {0}'.format(
+    logger.info('destroy() result status: {0}'.format(
         result.result_status.enum))
 
     if result.result_status.enum == ResultStatus.SUCCESS:
-        logger.debug('destroyed UUID: {0}'.format(result.uuid.value))
+        logger.info('destroyed UUID: {0}'.format(result.uuid.value))
     else:
-        logger.debug('destroy() result reason: {0}'.format(
+        logger.info('destroy() result reason: {0}'.format(
             result.result_reason.enum))
-        logger.debug('destroy() result message: {0}'.format(
+        logger.info('destroy() result message: {0}'.format(
             result.result_message.value))

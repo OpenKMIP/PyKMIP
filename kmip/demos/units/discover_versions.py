@@ -48,21 +48,21 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.debug('discover_versions() result status: {0}'.format(
+    logger.info('discover_versions() result status: {0}'.format(
         result.result_status.enum))
 
     if result.result_status.enum == ResultStatus.SUCCESS:
         protocol_versions = result.protocol_versions
         if isinstance(protocol_versions, list):
-            logger.debug('number of protocol versions returned: {0}'.format(
+            logger.info('number of protocol versions returned: {0}'.format(
                 len(protocol_versions)))
             for protocol_version in protocol_versions:
-                logging.debug('protocol version supported: {0}'.format(
-                    protocol_version))
+                logger.info('protocol version supported: {0}'.format(
+                            protocol_version))
         else:
-            logger.debug('number of protocol versions returned: 0')
+            logger.info('number of protocol versions returned: 0')
     else:
-        logger.debug('discover_versions() result reason: {0}'.format(
+        logger.info('discover_versions() result reason: {0}'.format(
             result.result_reason.enum))
-        logger.debug('discover_versions() result message: {0}'.format(
+        logger.info('discover_versions() result message: {0}'.format(
             result.result_message.value))

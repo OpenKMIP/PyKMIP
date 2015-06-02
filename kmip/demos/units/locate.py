@@ -87,15 +87,15 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.debug('locate() result status: {0}'.format(
+    logger.info('locate() result status: {0}'.format(
         result.result_status.enum))
 
     if result.result_status.enum == ResultStatus.SUCCESS:
-        logger.debug('located UUIDs:')
+        logger.info('located UUIDs:')
         for uuid in result.uuids:
-            logging.debug('{0}'.format(uuid))
+            logger.info('{0}'.format(uuid))
     else:
-        logger.debug('get() result reason: {0}'.format(
+        logger.info('get() result reason: {0}'.format(
             result.result_reason.enum))
-        logger.debug('get() result message: {0}'.format(
+        logger.info('get() result message: {0}'.format(
             result.result_message.value))

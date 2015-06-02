@@ -38,7 +38,7 @@ else:
             },
             'handlers': {
                 'consoleHandler': {
-                    'level': 'DEBUG',
+                    'level': 'INFO',
                     'class': 'logging.StreamHandler',
                     'formatter': 'simpleFormatter',
                     'stream': sys.stdout
@@ -46,7 +46,7 @@ else:
             },
             'loggers': {
                 'root': {
-                    'level': 'DEBUG',
+                    'level': 'INFO',
                     'handlers': ['consoleHandler']
                 }
             }
