@@ -29,13 +29,14 @@ class CreateRequestPayload(Struct):
     def __init__(self,
                  object_type=None,
                  template_attribute=None):
-        super(self.__class__, self).__init__(tag=enums.Tags.REQUEST_PAYLOAD)
+        super(CreateRequestPayload, self).__init__(
+            tag=enums.Tags.REQUEST_PAYLOAD)
         self.object_type = object_type
         self.template_attribute = template_attribute
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(CreateRequestPayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.object_type = attributes.ObjectType()
@@ -56,7 +57,7 @@ class CreateRequestPayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(CreateRequestPayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -70,14 +71,15 @@ class CreateResponsePayload(Struct):
                  object_type=None,
                  unique_identifier=None,
                  template_attribute=None):
-        super(self.__class__, self).__init__(tag=enums.Tags.RESPONSE_PAYLOAD)
+        super(CreateResponsePayload, self).__init__(
+            tag=enums.Tags.RESPONSE_PAYLOAD)
         self.object_type = object_type
         self.unique_identifier = unique_identifier
         self.template_attribute = template_attribute
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(CreateResponsePayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.object_type = attributes.ObjectType()
@@ -105,7 +107,7 @@ class CreateResponsePayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(CreateResponsePayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):

@@ -33,25 +33,25 @@ class LocateRequestPayload(Struct):
         ENUM_TYPE = enums.ObjectGroupMember
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.OBJECT_GROUP_MEMBER)
+            super(LocateRequestPayload.ObjectGroupMember, self).__init__(
+                value, Tags.OBJECT_GROUP_MEMBER)
 
     class MaximumItems(Integer):
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.MAXIMUM_ITEMS)
+            super(LocateRequestPayload.MaximumItems, self).__init__(
+                value, Tags.MAXIMUM_ITEMS)
 
     # 9.1.3.3.2
     class StorageStatusMask(Enumeration):
         ENUM_TYPE = enums.StorageStatusMask
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.STORAGE_STATUS_MASK)
+            super(LocateRequestPayload.StorageStatusMask, self).__init__(
+                value, Tags.STORAGE_STATUS_MASK)
 
     def __init__(self, maximum_items=None, storage_status_mask=None,
                  object_group_member=None, attributes=None):
-        super(self.__class__, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+        super(LocateRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
         self.maximum_items = maximum_items
         self.storage_status_mask = storage_status_mask
         self.object_group_member = object_group_member
@@ -59,7 +59,7 @@ class LocateRequestPayload(Struct):
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(LocateRequestPayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
         if self.is_tag_next(Tags.MAXIMUM_ITEMS, tstream):
             self.maximum_items = LocateRequestPayload.MaximumItems()
@@ -89,7 +89,7 @@ class LocateRequestPayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(LocateRequestPayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -103,12 +103,13 @@ class LocateRequestPayload(Struct):
 class LocateResponsePayload(Struct):
 
     def __init__(self, unique_identifiers=[]):
-        super(self.__class__, self).__init__(enums.Tags.RESPONSE_PAYLOAD)
+        super(LocateResponsePayload, self).__init__(
+            enums.Tags.RESPONSE_PAYLOAD)
         self.unique_identifiers = unique_identifiers or []
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(LocateResponsePayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         while self.is_tag_next(Tags.UNIQUE_IDENTIFIER, tstream):
@@ -127,7 +128,7 @@ class LocateResponsePayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(LocateResponsePayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):

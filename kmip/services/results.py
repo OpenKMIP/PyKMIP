@@ -42,9 +42,8 @@ class CreateResult(OperationResult):
                  object_type=None,
                  uuid=None,
                  template_attribute=None):
-        super(self.__class__, self).__init__(result_status,
-                                             result_reason,
-                                             result_message)
+        super(CreateResult, self).__init__(
+            result_status, result_reason, result_message)
         if object_type is not None:
             self.object_type = object_type
         else:
@@ -87,9 +86,8 @@ class RegisterResult(OperationResult):
                  result_message=None,
                  uuid=None,
                  template_attribute=None):
-        super(self.__class__, self).__init__(result_status,
-                                             result_reason,
-                                             result_message)
+        super(RegisterResult, self).__init__(
+            result_status, result_reason, result_message)
         if uuid is not None:
             self.uuid = uuid
         else:
@@ -126,9 +124,8 @@ class GetResult(OperationResult):
                  object_type=None,
                  uuid=None,
                  secret=None):
-        super(self.__class__, self).__init__(result_status,
-                                             result_reason,
-                                             result_message)
+        super(GetResult, self).__init__(
+            result_status, result_reason, result_message)
         if object_type is not None:
             self.object_type = object_type
         else:
@@ -152,9 +149,8 @@ class DestroyResult(OperationResult):
                  result_reason=None,
                  result_message=None,
                  uuid=None):
-        super(self.__class__, self).__init__(result_status,
-                                             result_reason,
-                                             result_message)
+        super(DestroyResult, self).__init__(
+            result_status, result_reason, result_message)
         if uuid is not None:
             self.uuid = uuid
         else:
@@ -168,9 +164,8 @@ class LocateResult(OperationResult):
                  result_reason=None,
                  result_message=None,
                  uuids=None):
-        super(self.__class__, self).__init__(result_status,
-                                             result_reason,
-                                             result_message)
+        super(LocateResult, self).__init__(
+            result_status, result_reason, result_message)
         self.uuids = uuids
 
 

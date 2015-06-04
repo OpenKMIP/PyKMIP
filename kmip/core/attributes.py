@@ -61,23 +61,23 @@ class Name(Struct):
     class NameValue(TextString):
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.NAME_VALUE)
+            super(Name.NameValue, self).__init__(value, Tags.NAME_VALUE)
 
     class NameType(Enumeration):
 
         ENUM_TYPE = enums.NameType
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.NAME_TYPE)
+            super(Name.NameType, self).__init__(value, Tags.NAME_TYPE)
 
     def __init__(self, name_value=None, name_type=None):
-        super(self.__class__, self).__init__(tag=Tags.NAME)
+        super(Name, self).__init__(tag=Tags.NAME)
         self.name_value = name_value
         self.name_type = name_type
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(Name, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         # Read the value and type of the name
@@ -97,14 +97,14 @@ class Name(Struct):
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(Name, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
         self.__validate()
 
     def __validate(self):
-        name = self.__class__.__name__
+        name = Name.__name__
         msg = ErrorStrings.BAD_EXP_RECV
         if self.name_value and \
                 not isinstance(self.name_value, Name.NameValue) and \
@@ -157,7 +157,7 @@ class ObjectType(Enumeration):
     ENUM_TYPE = enums.ObjectType
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, Tags.OBJECT_TYPE)
+        super(ObjectType, self).__init__(value, Tags.OBJECT_TYPE)
 
 
 # 3.4
@@ -166,16 +166,16 @@ class CryptographicAlgorithm(Enumeration):
     ENUM_TYPE = enums.CryptographicAlgorithm
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value,
-                                             Tags.CRYPTOGRAPHIC_ALGORITHM)
+        super(CryptographicAlgorithm, self).__init__(
+            value, Tags.CRYPTOGRAPHIC_ALGORITHM)
 
 
 # 3.5
 class CryptographicLength(Integer):
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value,
-                                             Tags.CRYPTOGRAPHIC_LENGTH)
+        super(CryptographicLength, self).__init__(
+            value, Tags.CRYPTOGRAPHIC_LENGTH)
 
 
 # 3.6
@@ -207,36 +207,37 @@ class CryptographicParameters(Struct):
         ENUM_TYPE = enums.BlockCipherMode
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.BLOCK_CIPHER_MODE)
+            super(CryptographicParameters.BlockCipherMode, self).__init__(
+                value, Tags.BLOCK_CIPHER_MODE)
 
     class PaddingMethod(Enumeration):
         ENUM_TYPE = enums.PaddingMethod
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.PADDING_METHOD)
+            super(CryptographicParameters.PaddingMethod, self).__init__(
+                value, Tags.PADDING_METHOD)
 
     class KeyRoleType(Enumeration):
         ENUM_TYPE = enums.KeyRoleType
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value,
-                                                 Tags.KEY_ROLE_TYPE)
+            super(CryptographicParameters.KeyRoleType, self).__init__(
+                value, Tags.KEY_ROLE_TYPE)
 
     def __init__(self,
                  block_cipher_mode=None,
                  padding_method=None,
                  hashing_algorithm=None,
                  key_role_type=None):
-        super(self.__class__, self).__init__(tag=Tags.CRYPTOGRAPHIC_PARAMETERS)
+        super(CryptographicParameters, self).__init__(
+            tag=Tags.CRYPTOGRAPHIC_PARAMETERS)
         self.block_cipher_mode = block_cipher_mode
         self.padding_method = padding_method
         self.hashing_algorithm = hashing_algorithm
         self.key_role_type = key_role_type
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(CryptographicParameters, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.BLOCK_CIPHER_MODE, tstream):
@@ -273,7 +274,7 @@ class CryptographicParameters(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(CryptographicParameters, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -531,16 +532,15 @@ class CryptographicUsageMask(Integer):
     ENUM_TYPE = enums.CryptographicUsageMask
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value,
-                                             Tags.CRYPTOGRAPHIC_USAGE_MASK)
+        super(CryptographicUsageMask, self).__init__(
+            value, Tags.CRYPTOGRAPHIC_USAGE_MASK)
 
 
 # 3.33
 class ObjectGroup(TextString):
 
     def __init__(self, value=None):
-        super(self.__class__,
-              self).__init__(value, Tags.OBJECT_GROUP)
+        super(ObjectGroup, self).__init__(value, Tags.OBJECT_GROUP)
 
 
 # 3.36
@@ -711,8 +711,8 @@ class ApplicationSpecificInformation(Struct):
 class ContactInformation(TextString):
 
     def __init__(self, value=None):
-        super(self.__class__,
-              self).__init__(value, Tags.CONTACT_INFORMATION)
+        super(ContactInformation, self).__init__(
+            value, Tags.CONTACT_INFORMATION)
 
 
 # 3.39
@@ -722,5 +722,4 @@ class ContactInformation(TextString):
 class CustomAttribute(TextString):
 
     def __init__(self, value=None):
-        super(self.__class__,
-              self).__init__(value, Tags.ATTRIBUTE_VALUE)
+        super(CustomAttribute, self).__init__(value, Tags.ATTRIBUTE_VALUE)
