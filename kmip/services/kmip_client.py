@@ -75,7 +75,7 @@ class KMIPProxy(KMIP):
                  do_handshake_on_connect=None,
                  suppress_ragged_eofs=None,
                  username=None, password=None, config='client'):
-        super(self.__class__, self).__init__()
+        super(KMIPProxy, self).__init__()
         self.logger = logging.getLogger(__name__)
         self.credential_factory = CredentialFactory()
         self.config = config

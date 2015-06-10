@@ -89,7 +89,7 @@ class KMIP(object):
 class KMIPImpl(KMIP):
 
     def __init__(self):
-        super(self.__class__, self).__init__()
+        super(KMIPImpl, self).__init__()
         self.logger = logging.getLogger(__name__)
         self.key_factory = KeyFactory()
         self.secret_factory = SecretFactory()
@@ -393,5 +393,5 @@ class KMIPImpl(KMIP):
 class InvalidFieldException(Exception):
 
     def __init__(self, result):
-        super(self.__class__, self).__init__()
+        super(InvalidFieldException, self).__init__()
         self.result = result

@@ -28,37 +28,37 @@ from kmip.core.utils import BytearrayStream
 class RawKey(ByteString):
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, Tags.KEY_MATERIAL)
+        super(RawKey, self).__init__(value, Tags.KEY_MATERIAL)
 
 
 class OpaqueKey(ByteString):
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, Tags.KEY_MATERIAL)
+        super(OpaqueKey, self).__init__(value, Tags.KEY_MATERIAL)
 
 
 class PKCS1Key(ByteString):
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, Tags.KEY_MATERIAL)
+        super(PKCS1Key, self).__init__(value, Tags.KEY_MATERIAL)
 
 
 class PKCS8Key(ByteString):
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, Tags.KEY_MATERIAL)
+        super(PKCS8Key, self).__init__(value, Tags.KEY_MATERIAL)
 
 
 class X509Key(ByteString):
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, Tags.KEY_MATERIAL)
+        super(X509Key, self).__init__(value, Tags.KEY_MATERIAL)
 
 
 class ECPrivateKey(ByteString):
 
     def __init__(self, value=None):
-        super(self.__class__, self).__init__(value, Tags.KEY_MATERIAL)
+        super(ECPrivateKey, self).__init__(value, Tags.KEY_MATERIAL)
 
 
 # 2.1.7.1
@@ -67,15 +67,15 @@ class TransparentSymmetricKey(Struct):
     class Key(ByteString):
 
         def __init__(self, value=None):
-            super(self.__class__, self).__init__(value, Tags.KEY)
+            super(TransparentSymmetricKey.Key, self).__init__(value, Tags.KEY)
 
     def __init__(self, key=None):
-        super(self.__class__, self).__init__(Tags.KEY_MATERIAL)
+        super(TransparentSymmetricKey, self).__init__(Tags.KEY_MATERIAL)
         self.key = key
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(TransparentSymmetricKey, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.key = TransparentSymmetricKey.Key()
@@ -91,7 +91,7 @@ class TransparentSymmetricKey(Struct):
 
         # Write the length and value of the key wrapping data
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(TransparentSymmetricKey, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):

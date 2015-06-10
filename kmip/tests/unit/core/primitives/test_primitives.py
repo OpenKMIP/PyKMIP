@@ -36,7 +36,7 @@ from kmip.core.primitives import ByteString
 class TestBase(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestBase, self).setUp()
         self.stream = BytearrayStream()
         self.bad_init = 'Bad Base initialization: attribute {0} missing'
         self.bad_write = ErrorStrings.BAD_EXP_RECV.format('Base.{0}', 'write',
@@ -48,7 +48,7 @@ class TestBase(TestCase):
                                                           '{2}')
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestBase, self).tearDown()
 
     def test_is_oversized(self):
         base = Base()
@@ -246,7 +246,7 @@ class TestBase(TestCase):
 class TestInteger(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestInteger, self).setUp()
         self.stream = BytearrayStream()
         self.max_byte_int = 4294967295
         self.max_int = 2147483647
@@ -258,7 +258,7 @@ class TestInteger(TestCase):
         self.bad_read = ('Bad Integer.value read: expected {0}, received {1}')
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestInteger, self).tearDown()
 
     def test_init(self):
         i = Integer(0)
@@ -434,7 +434,7 @@ class TestInteger(TestCase):
 class TestLongInteger(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestLongInteger, self).setUp()
         self.stream = BytearrayStream()
         self.max_byte_long = 18446744073709551615
         self.max_long = 9223372036854775807
@@ -447,7 +447,7 @@ class TestLongInteger(TestCase):
                          '{1}')
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestLongInteger, self).tearDown()
 
     def test_init(self):
         i = LongInteger(0)
@@ -616,7 +616,7 @@ class TestLongInteger(TestCase):
 class TestBigInteger(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestBigInteger, self).setUp()
         self.stream = BytearrayStream()
         self.max_byte_long = 18446744073709551615
         self.max_long = 9223372036854775807
@@ -629,7 +629,7 @@ class TestBigInteger(TestCase):
                          'received {1}')
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestBigInteger, self).tearDown()
 
     def test_big_integer(self):
         self.skip('BigInteger implementation incomplete')
@@ -814,7 +814,7 @@ class TestBigInteger(TestCase):
 class TestEnumeration(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestEnumeration, self).setUp()
         self.stream = BytearrayStream()
         Enumeration.ENUM_TYPE = Types
         self.bad_type = ErrorStrings.BAD_EXP_RECV.format('Enumeration.{0}',
@@ -830,7 +830,7 @@ class TestEnumeration(TestCase):
                                                              'write')
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestEnumeration, self).tearDown()
 
     def test_init(self):
         e = Enumeration(Types.DEFAULT)
@@ -909,11 +909,11 @@ class TestEnumeration(TestCase):
 class TestBoolean(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestBoolean, self).setUp()
         self.stream = BytearrayStream()
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestBoolean, self).tearDown()
 
     def test_init(self):
         self.skip('')
@@ -946,7 +946,7 @@ class TestBoolean(TestCase):
 class TestTextString(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestTextString, self).setUp()
         self.stream = BytearrayStream()
         self.bad_type = ErrorStrings.BAD_EXP_RECV.format('TextString.{0}',
                                                          'type', '{1}', '{2}')
@@ -965,7 +965,7 @@ class TestTextString(TestCase):
                                                            '{1} bytes')
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestTextString, self).tearDown()
 
     def test_init(self):
         value = 'Hello World'
@@ -1129,7 +1129,7 @@ class TestTextString(TestCase):
 class TestByteString(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestByteString, self).setUp()
         self.stream = BytearrayStream()
         self.bad_type = ErrorStrings.BAD_EXP_RECV.format('ByteString.{0}',
                                                          'type', '{1}', '{2}')
@@ -1148,7 +1148,7 @@ class TestByteString(TestCase):
                                                            '{1} bytes')
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestByteString, self).tearDown()
 
     def test_init(self):
         value = b'\x01\x02\x03'
@@ -1331,11 +1331,11 @@ class TestByteString(TestCase):
 class TestDateTime(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestDateTime, self).setUp()
         self.stream = BytearrayStream()
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestDateTime, self).tearDown()
 
     def test_init(self):
         self.skip('')
@@ -1362,11 +1362,11 @@ class TestDateTime(TestCase):
 class TestInterval(TestCase):
 
     def setUp(self):
-        super(self.__class__, self).setUp()
+        super(TestInterval, self).setUp()
         self.stream = BytearrayStream()
 
     def tearDown(self):
-        super(self.__class__, self).tearDown()
+        super(TestInterval, self).tearDown()
 
     def test_init(self):
         self.skip('')

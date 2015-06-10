@@ -27,12 +27,12 @@ class DestroyRequestPayload(Struct):
 
     def __init__(self,
                  unique_identifier=None):
-        super(self.__class__, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+        super(DestroyRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
         self.unique_identifier = unique_identifier
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(DestroyRequestPayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.UNIQUE_IDENTIFIER, tstream):
@@ -50,7 +50,7 @@ class DestroyRequestPayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(DestroyRequestPayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -65,12 +65,13 @@ class DestroyResponsePayload(Struct):
 
     def __init__(self,
                  unique_identifier=None):
-        super(self.__class__, self).__init__(enums.Tags.RESPONSE_PAYLOAD)
+        super(DestroyResponsePayload, self).__init__(
+            enums.Tags.RESPONSE_PAYLOAD)
         self.unique_identifier = unique_identifier
         self.validate()
 
     def read(self, istream):
-        super(self.__class__, self).read(istream)
+        super(DestroyResponsePayload, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
@@ -86,7 +87,7 @@ class DestroyResponsePayload(Struct):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(self.__class__, self).write(ostream)
+        super(DestroyResponsePayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
     def validate(self):
