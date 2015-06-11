@@ -72,7 +72,7 @@ class TestIntegration(TestCase):
     def tearDown(self):
         super(TestIntegration, self).tearDown()
 
-    def _create_symmetric_key(self):
+    def _create_symmetric_key(self, name_value=None):
 
         object_type = ObjectType.SYMMETRIC_KEY
         attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
@@ -90,7 +90,10 @@ class TestIntegration(TestCase):
         key_length_obj = self.attr_factory.create_attribute(attribute_type,
                                                             key_length)
         name = Attribute.AttributeName('Name')
-        name_value = Name.NameValue('Integration Test - Create Key')
+
+        if name_value is None:
+            name_value = Name.NameValue('Integration Test - Key')
+
         name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
         value = Name(name_value=name_value, name_type=name_type)
         name = Attribute(attribute_name=name, attribute_value=value)
@@ -236,7 +239,8 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, observed)
 
     def test_symmetric_key_create(self):
-        result = self._create_symmetric_key()
+        result = self._create_symmetric_key(name_value='Integration Test - '
+                                                       'Create Key')
 
         # TODO: Remove trace
         # pytest.set_trace()
@@ -280,7 +284,7 @@ class TestIntegration(TestCase):
                                                         mask_flags)
 
         name = Attribute.AttributeName('Name')
-        name_value = Name.NameValue('Integration Test - Key Registration')
+        name_value = Name.NameValue('Integration Test - Register Key')
         name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
         value = Name(name_value=name_value, name_type=name_type)
         name = Attribute(attribute_name=name, attribute_value=value)
@@ -360,7 +364,8 @@ class TestIntegration(TestCase):
 
     def test_symmetric_key_get(self):
 
-        result = self._create_symmetric_key()
+        result = self._create_symmetric_key(name_value='Integration Test - '
+                                                       'Get Key')
 
         # TODO: Remove trace
         pytest.set_trace()
