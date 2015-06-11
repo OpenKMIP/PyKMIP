@@ -249,13 +249,9 @@ class TestIntegration(TestCase):
         object_type = ObjectType.SYMMETRIC_KEY
 
         attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
-        algorithm = self.attr_factory.create_attribute(
+        algorithm_obj = self.attr_factory.create_attribute(
             attribute_type,
             CryptoAlgorithmEnum.AES)
-        algorithm_enum = getattr(CryptographicAlgorithm, algorithm, None)
-
-        algorithm_obj = self.attr_factory.create_attribute(attribute_type,
-                                                           algorithm_enum)
 
         mask_flags = [CryptographicUsageMask.ENCRYPT,
                       CryptographicUsageMask.DECRYPT]
