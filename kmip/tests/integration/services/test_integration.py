@@ -53,6 +53,9 @@ import kmip.core.utils as utils
 
 
 
+import pytest
+
+
 @pytest.mark.usefixtures("client")
 class TestIntegration(TestCase):
 
@@ -235,6 +238,8 @@ class TestIntegration(TestCase):
     def test_symmetric_key_create(self):
         result = self._create_symmetric_key()
 
+        pytest.set_trace()
+
         self.logger.debug(result)
         self.logger.debug(result.result_reason)
         self.logger.debug(result.result_message)
@@ -244,6 +249,7 @@ class TestIntegration(TestCase):
         self._check_object_type(result.object_type.enum, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
+
 
         self.logger.debug(result.template_attribute.enum)
 
