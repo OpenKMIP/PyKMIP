@@ -370,12 +370,12 @@ class TestIntegration(TestCase):
                                             'Integration Test - Get Key')
 
         # TODO: Remove trace
-        pytest.set_trace()
+        # pytest.set_trace()
 
         uuid = result.uuid.value
 
         # TODO: Remove trace
-        pytest.set_trace()
+        # pytest.set_trace()
 
 
         result = self.client.get(uuid=uuid, credential=None)
@@ -393,56 +393,57 @@ class TestIntegration(TestCase):
         message = utils.build_er_error(result.__class__, 'type', expected,
                                        secret, 'secret')
         self.assertIsInstance(secret, expected, message)
-    #
-    # def test_symmetric_key_destroy(self):
-    #     credential_type = CredentialType.USERNAME_AND_PASSWORD
-    #     credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-    #     credential = self.cred_factory.create_credential(credential_type,
-    #                                                      credential_value)
-    #     result = self._create_symmetric_key()
-    #     uuid = result.uuid.value
-    #
-    #     # Verify the secret was created
-    #     result = self.client.get(uuid=uuid, credential=credential)
-    #
-    #     self._check_result_status(result.result_status.enum, ResultStatus,
-    #                               ResultStatus.SUCCESS)
-    #     self._check_object_type(result.object_type.enum, ObjectType,
-    #                             ObjectType.SYMMETRIC_KEY)
-    #     self._check_uuid(result.uuid.value, str)
-    #
-    #     secret = result.secret
-    #
-    #     expected = SymmetricKey
-    #     message = utils.build_er_error(result.__class__, 'type', expected,
-    #                                    secret, 'secret')
-    #     self.assertIsInstance(secret, expected, message)
-    #
-    #     # Destroy the SYMMETRIC_KEY object
-    #     result = self.client.destroy(uuid, credential)
-    #     self._check_result_status(result.result_status.enum, ResultStatus,
-    #                               ResultStatus.SUCCESS)
-    #     self._check_uuid(result.uuid.value, str)
-    #
-    #     # Verify the secret was destroyed
-    #     result = self.client.get(uuid=uuid, credential=credential)
-    #
-    #     self._check_result_status(result.result_status.enum, ResultStatus,
-    #                               ResultStatus.OPERATION_FAILED)
-    #
-    #     expected = ResultReason
-    #     observed = type(result.result_reason.enum)
-    #     message = utils.build_er_error(result.result_reason.__class__, 'type',
-    #                                    expected, observed)
-    #     self.assertEqual(expected, observed, message)
-    #
-    #     expected = ResultReason.ITEM_NOT_FOUND
-    #     observed = result.result_reason.enum
-    #     message = utils.build_er_error(result.result_reason.__class__,
-    #                                    'value', expected, observed)
-    #     self.assertEqual(expected, observed, message)
-    #
-    #
+
+    def test_symmetric_key_destroy(self):
+
+        result = self._create_symmetric_key(key_name='Integration Test - '
+                                                     'Destroy Key')
+        uuid = result.uuid.value
+
+        # Verify the secret was created
+        result = self.client.get(uuid=uuid, credential=None)
+
+        # TODO: Remove trace
+        pytest.set_trace()
+
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_object_type(result.object_type.enum, ObjectType,
+                                ObjectType.SYMMETRIC_KEY)
+        self._check_uuid(result.uuid.value, str)
+
+        secret = result.secret
+
+        expected = SymmetricKey
+        message = utils.build_er_error(result.__class__, 'type', expected,
+                                       secret, 'secret')
+        self.assertIsInstance(secret, expected, message)
+
+        # Destroy the SYMMETRIC_KEY object
+        result = self.client.destroy(uuid)
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_uuid(result.uuid.value, str)
+
+        # Verify the secret was destroyed
+        result = self.client.get(uuid=uuid, credential=None)
+
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.OPERATION_FAILED)
+
+        expected = ResultReason
+        observed = type(result.result_reason.enum)
+        message = utils.build_er_error(result.result_reason.__class__, 'type',
+                                       expected, observed)
+        self.assertEqual(expected, observed, message)
+
+        expected = ResultReason.ITEM_NOT_FOUND
+        observed = result.result_reason.enum
+        message = utils.build_er_error(result.result_reason.__class__,
+                                       'value', expected, observed)
+        self.assertEqual(expected, observed, message)
+
+
     # def test_private_key_create(self):
     #     pass
     #
