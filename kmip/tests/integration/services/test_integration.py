@@ -247,11 +247,15 @@ class TestIntegration(TestCase):
 
         # Check the template attribute type
         self._check_template_attribute(result.template_attribute,
-                                       TemplateAttribute, 2,
+                                       TemplateAttribute, 4,
                                        [[str, 'Cryptographic Length', int,
                                          128],
                                         [str, 'Unique Identifier', str,
-                                         None]])
+                                         None],
+                                        [str, 'Cryptographic Algorithm', int,
+                                         CryptoAlgorithmEnum.AES],
+                                        [str, 'Name', str, 'Integration Test '
+                                                           'Key']])
 
     # def test_symmetric_key_create_v2(self):
     #
