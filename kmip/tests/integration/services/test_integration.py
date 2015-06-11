@@ -63,8 +63,6 @@ class TestIntegration(TestCase):
     def tearDown(self):
         super(TestIntegration, self).tearDown()
 
-        self.client.close()
-
     def _create_symmetric_key(self):
         credential_type = CredentialType.USERNAME_AND_PASSWORD
         credential_value = {'Username': 'Peter', 'Password': 'abc123'}
