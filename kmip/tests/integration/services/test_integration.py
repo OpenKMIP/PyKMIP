@@ -16,22 +16,34 @@
 import pytest
 from testtools import TestCase
 
+from kmip.core.attributes import CryptographicAlgorithm
+from kmip.core.attributes import CryptographicLength
+
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CredentialType
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
+from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import ObjectType
 from kmip.core.enums import ResultStatus
+from kmip.core.enums import ResultReason
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
 
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.factories.credentials import CredentialFactory
 from kmip.core.factories.secrets import SecretFactory
 
+from kmip.core.misc import KeyFormatType
+
 from kmip.core.objects import Attribute
+from kmip.core.objects import KeyBlock
+from kmip.core.objects import KeyMaterial
+from kmip.core.objects import KeyValue
 from kmip.core.objects import TemplateAttribute
 
 from kmip.core.misc import QueryFunction
+
+from kmip.core.secrets import SymmetricKey
 
 import kmip.core.utils as utils
 
