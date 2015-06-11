@@ -253,9 +253,6 @@ class TestIntegration(TestCase):
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
-
-        self.logger.debug(result.template_attribute.enum)
-
         # TODO: ask peter why this is none when a key is successfully created
         # # Check the template attribute type
         # self._check_template_attribute(result.template_attribute,
