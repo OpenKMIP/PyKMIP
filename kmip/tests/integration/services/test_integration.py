@@ -361,6 +361,10 @@ class TestIntegration(TestCase):
     def test_symmetric_key_get(self):
 
         result = self._create_symmetric_key()
+
+        # TODO: Remove trace
+        pytest.set_trace()
+
         uuid = result.uuid.value
 
         # TODO: Remove trace
