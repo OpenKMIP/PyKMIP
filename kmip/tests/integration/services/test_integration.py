@@ -273,7 +273,7 @@ class TestIntegration(TestCase):
         self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
                           result.uuid.value])
         # TODO: Remove trace
-        pytest.set_trace()
+        # pytest.set_trace()
 
         self.client.destroy(result.uuid.value)
 
