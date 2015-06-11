@@ -72,7 +72,7 @@ class TestIntegration(TestCase):
     def tearDown(self):
         super(TestIntegration, self).tearDown()
 
-    def _create_symmetric_key(self, name_value=None):
+    def _create_symmetric_key(self, key_name=None):
 
         object_type = ObjectType.SYMMETRIC_KEY
         attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
@@ -91,11 +91,10 @@ class TestIntegration(TestCase):
                                                             key_length)
         name = Attribute.AttributeName('Name')
 
-        # TODO: Remove trace
-        pytest.set_trace()
-
-        if name_value is None:
+        if key_name is None:
             name_value = Name.NameValue('Integration Test - Key')
+        else:
+            name_value = Name.NameValue(key_name)
 
         name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
         value = Name(name_value=name_value, name_type=name_type)
@@ -242,7 +241,7 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, observed)
 
     def test_symmetric_key_create(self):
-        result = self._create_symmetric_key(name_value=
+        result = self._create_symmetric_key(key_name=
                                             'Integration Test - Create Key')
 
         # TODO: Remove trace
@@ -367,7 +366,7 @@ class TestIntegration(TestCase):
 
     def test_symmetric_key_get(self):
 
-        result = self._create_symmetric_key(name_value=
+        result = self._create_symmetric_key(key_name=
                                             'Integration Test - Get Key')
 
         # TODO: Remove trace
