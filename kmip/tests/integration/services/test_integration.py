@@ -82,16 +82,15 @@ class TestIntegration(TestCase):
         attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
         usage_mask = self.attr_factory.create_attribute(attribute_type,
                                                         mask_flags)
-        key_length = 256
+        key_length = 128
         attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
         key_length_obj = self.attr_factory.create_attribute(attribute_type,
                                                             key_length)
         name = Attribute.AttributeName('Name')
-        name_value = Name.NameValue('Test Key')
+        name_value = Name.NameValue('Integration Test Key')
         name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
         value = Name(name_value=name_value, name_type=name_type)
         name = Attribute(attribute_name=name, attribute_value=value)
-
 
         attributes = [algorithm, usage_mask, key_length_obj, name]
         template_attribute = TemplateAttribute(attributes=attributes)
@@ -249,7 +248,7 @@ class TestIntegration(TestCase):
         self._check_template_attribute(result.template_attribute,
                                        TemplateAttribute, 2,
                                        [[str, 'Cryptographic Length', int,
-                                         256],
+                                         128],
                                         [str, 'Unique Identifier', str,
                                          None]])
 
