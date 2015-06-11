@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
 import pytest
 from testtools import TestCase
 
@@ -54,6 +55,8 @@ class TestIntegration(TestCase):
 
     def setUp(self):
         super(TestIntegration, self).setUp()
+
+        self.logger = logging.getLogger(__name__)
 
         self.attr_factory = AttributeFactory()
         self.cred_factory = CredentialFactory()
@@ -222,6 +225,10 @@ class TestIntegration(TestCase):
 
     def test_symmetric_key_create(self):
         result = self._create_symmetric_key()
+
+        self.logger.debug(result.result_reason.enum)
+        self.logger.debug(result.result_message.value)
+
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.SUCCESS)
         self._check_object_type(result.object_type.enum, ObjectType,
