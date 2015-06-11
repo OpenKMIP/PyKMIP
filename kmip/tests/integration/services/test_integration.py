@@ -242,8 +242,8 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, observed)
 
     def test_symmetric_key_create(self):
-        result = self._create_symmetric_key(name_value='Integration Test - '
-                                                       'Create Key')
+        result = self._create_symmetric_key(name_value=
+                                            'Integration Test - Create Key')
 
         # TODO: Remove trace
         # pytest.set_trace()
@@ -367,8 +367,8 @@ class TestIntegration(TestCase):
 
     def test_symmetric_key_get(self):
 
-        result = self._create_symmetric_key(name_value='Integration Test - '
-                                                       'Get Key')
+        result = self._create_symmetric_key(name_value=
+                                            'Integration Test - Get Key')
 
         # TODO: Remove trace
         pytest.set_trace()
