@@ -1,3 +1,11 @@
+0.3.2 - June 11, 2015
+* Add support for registering and retrieving Certificates
+* Update unit demos to work with Certificates
+* Reorganize test suite into unit and integration test suites
+* Remove old demo scripts
+* Fix bug with incorrect KeyMaterialStruct tag
+* Fix bug causing infinite recursion with object inheritance
+
 0.3.1 - April 23, 2015
 * Add KMIP profile information to the client
 * Add support for registering/retrieving SecretData and Opaque objects

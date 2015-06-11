@@ -17,7 +17,7 @@ import setuptools
 
 setuptools.setup(
     name='PyKMIP',
-    version='0.3.1',
+    version='0.3.2',
     description='KMIP v1.1 library',
     keywords='KMIP',
     author='Peter Hamilton',
