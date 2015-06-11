@@ -241,8 +241,8 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, observed)
 
     def test_symmetric_key_create(self):
-        result = self._create_symmetric_key(key_name=
-                                            'Integration Test - Create Key')
+        key_name = 'Integration Test - Create Key'
+        result = self._create_symmetric_key(key_name=key_name)
 
         # TODO: Remove trace
         # pytest.set_trace()
@@ -272,6 +272,9 @@ class TestIntegration(TestCase):
         #                                 [str, 'Name', str, 'Integration Test '
         #                                                    'Key']])
 
+        self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
+                          result.uuid.value])
+        self.client.destroy(result.uuid.value)
 
 
 
@@ -286,7 +289,8 @@ class TestIntegration(TestCase):
                                                         mask_flags)
 
         name = Attribute.AttributeName('Name')
-        name_value = Name.NameValue('Integration Test - Register Key')
+        key_name = 'Integration Test - Register Key'
+        name_value = Name.NameValue(key_name)
         name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
         value = Name(name_value=name_value, name_type=name_type)
         name = Attribute(attribute_name=name, attribute_value=value)
@@ -364,10 +368,15 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, observed, message)
 
 
+        self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
+                          result.uuid.value])
+        self.client.destroy(result.uuid.value)
+
+
     def test_symmetric_key_get(self):
 
-        result = self._create_symmetric_key(key_name=
-                                            'Integration Test - Get Key')
+        key_name = 'Integration Test - Get Key'
+        result = self._create_symmetric_key(key_name=key_name)
 
         # TODO: Remove trace
         # pytest.set_trace()
@@ -394,6 +403,11 @@ class TestIntegration(TestCase):
                                        secret, 'secret')
         self.assertIsInstance(secret, expected, message)
 
+        self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
+                          result.uuid.value])
+        self.client.destroy(result.uuid.value)
+
+
     def test_symmetric_key_destroy(self):
 
         result = self._create_symmetric_key(key_name='Integration Test - '
@@ -419,6 +433,8 @@ class TestIntegration(TestCase):
                                        secret, 'secret')
         self.assertIsInstance(secret, expected, message)
 
+        self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
+                          result.uuid.value])
         # Destroy the SYMMETRIC_KEY object
         result = self.client.destroy(uuid)
         self._check_result_status(result.result_status.enum, ResultStatus,
