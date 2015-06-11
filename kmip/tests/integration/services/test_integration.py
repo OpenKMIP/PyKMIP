@@ -235,8 +235,9 @@ class TestIntegration(TestCase):
     def test_symmetric_key_create(self):
         result = self._create_symmetric_key()
 
+        self.logger.debug(result)
         self.logger.debug(result.result_reason)
-        self.logger.debug(result.result_message.value)
+        self.logger.debug(result.result_message)
 
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.SUCCESS)
