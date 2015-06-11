@@ -312,7 +312,7 @@ class TestIntegration(TestCase):
         result = self.client.register(object_type, template_attribute, secret,
                                       credential=None)
         # TODO: Remove trace
-        pytest.set_trace()
+        # pytest.set_trace()
 
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -329,7 +329,7 @@ class TestIntegration(TestCase):
         result = self.client.get(uuid=uuid, credential=None)
 
         # TODO: Remove trace
-        pytest.set_trace()
+        # pytest.set_trace()
 
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -358,29 +358,30 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, observed, message)
 
 
-    # def test_symmetric_key_get(self):
-    #     credential_type = CredentialType.USERNAME_AND_PASSWORD
-    #     credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-    #     credential = self.cred_factory.create_credential(credential_type,
-    #                                                      credential_value)
-    #     result = self._create_symmetric_key()
-    #     uuid = result.uuid.value
-    #
-    #     result = self.client.get(uuid=uuid, credential=credential)
-    #
-    #     self._check_result_status(result.result_status.enum, ResultStatus,
-    #                               ResultStatus.SUCCESS)
-    #     self._check_object_type(result.object_type.enum, ObjectType,
-    #                             ObjectType.SYMMETRIC_KEY)
-    #     self._check_uuid(result.uuid.value, str)
-    #
-    #     # Check the secret type
-    #     secret = result.secret
-    #
-    #     expected = SymmetricKey
-    #     message = utils.build_er_error(result.__class__, 'type', expected,
-    #                                    secret, 'secret')
-    #     self.assertIsInstance(secret, expected, message)
+    def test_symmetric_key_get(self):
+
+        result = self._create_symmetric_key()
+        uuid = result.uuid.value
+
+        # TODO: Remove trace
+        pytest.set_trace()
+
+
+        result = self.client.get(uuid=uuid, credential=None)
+
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_object_type(result.object_type.enum, ObjectType,
+                                ObjectType.SYMMETRIC_KEY)
+        self._check_uuid(result.uuid.value, str)
+
+        # Check the secret type
+        secret = result.secret
+
+        expected = SymmetricKey
+        message = utils.build_er_error(result.__class__, 'type', expected,
+                                       secret, 'secret')
+        self.assertIsInstance(secret, expected, message)
     #
     # def test_symmetric_key_destroy(self):
     #     credential_type = CredentialType.USERNAME_AND_PASSWORD
