@@ -407,9 +407,6 @@ class TestKMIPClientIntegration(TestCase):
     def test_private_key_register(self):
         pass
 
-    def test_private_key_locate(self):
-        pass
-
     def test_private_key_get(self):
         pass
 
@@ -420,9 +417,6 @@ class TestKMIPClientIntegration(TestCase):
         pass
 
     def test_public_key_register(self):
-        pass
-
-    def test_public_key_locate(self):
         pass
 
     def test_public_key_get(self):
