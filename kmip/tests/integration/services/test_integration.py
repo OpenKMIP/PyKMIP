@@ -296,7 +296,8 @@ class TestIntegration(TestCase):
             self.logger.debug('create() result message: {0}'.format(
                 result.result_message.value))
 
-
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.SUCCESS)
 
 
 
