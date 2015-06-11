@@ -90,7 +90,7 @@ class TestIntegration(TestCase):
         key_length_obj = self.attr_factory.create_attribute(attribute_type,
                                                             key_length)
         name = Attribute.AttributeName('Name')
-        name_value = Name.NameValue('Integration Test Key')
+        name_value = Name.NameValue('Integration Test - Create Key')
         name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
         value = Name(name_value=name_value, name_type=name_type)
         name = Attribute(attribute_name=name, attribute_value=value)
@@ -266,137 +266,92 @@ class TestIntegration(TestCase):
         #                                 [str, 'Name', str, 'Integration Test '
         #                                                    'Key']])
 
-    # def test_symmetric_key_create_v2(self):
-    #
-    #     object_type = ObjectType.SYMMETRIC_KEY
-    #
-    #     attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
-    #     algorithm_obj = self.attr_factory.create_attribute(
-    #         attribute_type,
-    #         CryptoAlgorithmEnum.AES)
-    #
-    #     mask_flags = [CryptographicUsageMask.ENCRYPT,
-    #                   CryptographicUsageMask.DECRYPT]
-    #     attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
-    #     usage_mask = self.attr_factory.create_attribute(attribute_type,
-    #                                                     mask_flags)
-    #
-    #     attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
-    #     length = 128
-    #     length_obj = self.attr_factory.create_attribute(attribute_type,
-    #                                                     length)
-    #     name = Attribute.AttributeName('Name')
-    #     name_value = Name.NameValue('Test Key')
-    #     name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
-    #     value = Name(name_value=name_value, name_type=name_type)
-    #     name = Attribute(attribute_name=name, attribute_value=value)
-    #
-    #     attributes = [algorithm_obj, usage_mask, length_obj, name]
-    #     template_attribute = TemplateAttribute(attributes=attributes)
-    #
-    #     # Create the SYMMETRIC_KEY object
-    #     result = self.client.create(object_type, template_attribute,
-    #                            credential=None)
-    #
-    #     # Display operation results
-    #     self.logger.debug('create() result status: {0}'.format(
-    #         result.result_status.enum))
-    #
-    #     if result.result_status.enum == ResultStatus.SUCCESS:
-    #         self.logger.debug('created object type: {0}'.format(
-    #             result.object_type.enum))
-    #         self.logger.debug('created UUID: {0}'.format(result.uuid.value))
-    #         self.logger.debug('created template attribute: {0}'.
-    #                      format(result.template_attribute))
-    #     else:
-    #         self.logger.debug('create() result reason: {0}'.format(
-    #             result.result_reason.enum))
-    #         self.logger.debug('create() result message: {0}'.format(
-    #             result.result_message.value))
-    #
-    #     self._check_result_status(result.result_status.enum, ResultStatus,
-    #                               ResultStatus.SUCCESS)
 
 
 
-    # def test_symmetric_key_register(self):
-    #     credential_type = CredentialType.USERNAME_AND_PASSWORD
-    #     credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-    #     credential = self.cred_factory.create_credential(credential_type,
-    #                                                      credential_value)
-    #
-    #     object_type = ObjectType.SYMMETRIC_KEY
-    #     algorithm_value = CryptoAlgorithmEnum.AES
-    #     mask_flags = [CryptographicUsageMask.ENCRYPT,
-    #                   CryptographicUsageMask.DECRYPT]
-    #     attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
-    #     usage_mask = self.attr_factory.create_attribute(attribute_type,
-    #                                                     mask_flags)
-    #     attributes = [usage_mask]
-    #     template_attribute = TemplateAttribute(attributes=attributes)
-    #
-    #     key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
-    #
-    #     key_data = (
-    #         b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-    #         b'\x00')
-    #
-    #     key_material = KeyMaterial(key_data)
-    #     key_value = KeyValue(key_material)
-    #     cryptographic_algorithm = CryptographicAlgorithm(algorithm_value)
-    #     cryptographic_length = CryptographicLength(128)
-    #
-    #     key_block = KeyBlock(
-    #         key_format_type=key_format_type,
-    #         key_compression_type=None,
-    #         key_value=key_value,
-    #         cryptographic_algorithm=cryptographic_algorithm,
-    #         cryptographic_length=cryptographic_length,
-    #         key_wrapping_data=None)
-    #
-    #     secret = SymmetricKey(key_block)
-    #
-    #     result = self.client.register(object_type, template_attribute, secret,
-    #                                   credential)
-    #
-    #     self._check_result_status(result.result_status.enum, ResultStatus,
-    #                               ResultStatus.SUCCESS)
-    #     self._check_uuid(result.uuid.value, str)
-    #
-    #     # Check the template attribute type
-    #     self._check_template_attribute(result.template_attribute,
-    #                                    TemplateAttribute, 1,
-    #                                    [[str, 'Unique Identifier', str,
-    #                                      None]])
-    #     # Check that the returned key bytes match what was provided
-    #     uuid = result.uuid.value
-    #     result = self.client.get(uuid=uuid, credential=credential)
-    #
-    #     self._check_result_status(result.result_status.enum, ResultStatus,
-    #                               ResultStatus.SUCCESS)
-    #     self._check_object_type(result.object_type.enum, ObjectType,
-    #                             ObjectType.SYMMETRIC_KEY)
-    #     self._check_uuid(result.uuid.value, str)
-    #
-    #     # Check the secret type
-    #     secret = result.secret
-    #
-    #     expected = SymmetricKey
-    #     message = utils.build_er_error(result.__class__, 'type', expected,
-    #                                    secret, 'secret')
-    #     self.assertIsInstance(secret, expected, message)
-    #
-    #     key_block = result.secret.key_block
-    #     key_value = key_block.key_value
-    #     key_material = key_value.key_material
-    #
-    #     expected = key_data
-    #     observed = key_material.value
-    #     message = utils.build_er_error(key_material.__class__, 'value',
-    #                                    expected, observed, 'value')
-    #     self.assertEqual(expected, observed, message)
-    #
-    #
+    def test_symmetric_key_register(self):
+
+        object_type = ObjectType.SYMMETRIC_KEY
+        algorithm_value = CryptoAlgorithmEnum.AES
+        mask_flags = [CryptographicUsageMask.ENCRYPT,
+                      CryptographicUsageMask.DECRYPT]
+        attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
+        usage_mask = self.attr_factory.create_attribute(attribute_type,
+                                                        mask_flags)
+
+        name = Attribute.AttributeName('Name')
+        name_value = Name.NameValue('Integration Test - Key Registration')
+        name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
+        value = Name(name_value=name_value, name_type=name_type)
+        name = Attribute(attribute_name=name, attribute_value=value)
+
+        attributes = [usage_mask, name]
+        template_attribute = TemplateAttribute(attributes=attributes)
+
+        key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
+
+        key_data = (
+            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00')
+
+        key_material = KeyMaterial(key_data)
+        key_value = KeyValue(key_material)
+        cryptographic_algorithm = CryptographicAlgorithm(algorithm_value)
+        cryptographic_length = CryptographicLength(128)
+
+        key_block = KeyBlock(
+            key_format_type=key_format_type,
+            key_compression_type=None,
+            key_value=key_value,
+            cryptographic_algorithm=cryptographic_algorithm,
+            cryptographic_length=cryptographic_length,
+            key_wrapping_data=None)
+
+        secret = SymmetricKey(key_block)
+
+        result = self.client.register(object_type, template_attribute, secret,
+                                      credential=None)
+
+        pytest.set_trace()
+
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_uuid(result.uuid.value, str)
+
+        # Check the template attribute type
+        self._check_template_attribute(result.template_attribute,
+                                       TemplateAttribute, 1,
+                                       [[str, 'Unique Identifier', str,
+                                         None]])
+        # Check that the returned key bytes match what was provided
+        uuid = result.uuid.value
+        result = self.client.get(uuid=uuid, credential=credential)
+
+        self._check_result_status(result.result_status.enum, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_object_type(result.object_type.enum, ObjectType,
+                                ObjectType.SYMMETRIC_KEY)
+        self._check_uuid(result.uuid.value, str)
+
+        # Check the secret type
+        secret = result.secret
+
+        expected = SymmetricKey
+        message = utils.build_er_error(result.__class__, 'type', expected,
+                                       secret, 'secret')
+        self.assertIsInstance(secret, expected, message)
+
+        key_block = result.secret.key_block
+        key_value = key_block.key_value
+        key_material = key_value.key_material
+
+        expected = key_data
+        observed = key_material.value
+        message = utils.build_er_error(key_material.__class__, 'value',
+                                       expected, observed, 'value')
+        self.assertEqual(expected, observed, message)
+
+
     # def test_symmetric_key_get(self):
     #     credential_type = CredentialType.USERNAME_AND_PASSWORD
     #     credential_value = {'Username': 'Peter', 'Password': 'abc123'}
