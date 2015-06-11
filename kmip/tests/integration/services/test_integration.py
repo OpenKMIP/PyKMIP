@@ -19,12 +19,15 @@ from testtools import TestCase
 
 from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
+from kmip.core.attributes import Name
+
 
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CredentialType
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
+from kmip.core.enums import NameType
 from kmip.core.enums import ObjectType
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import ResultReason
@@ -219,25 +222,83 @@ class TestIntegration(TestCase):
 
         self.assertEqual(expected, observed)
 
-    def test_symmetric_key_create(self):
-        result = self._create_symmetric_key()
+    # def test_symmetric_key_create(self):
+    #     self.skip("skipping test")
+    #
+    #     result = self._create_symmetric_key()
+    #
+    #     self.logger.debug(result.result_reason.enum)
+    #     self.logger.debug(result.result_message.value)
+    #
+    #     self._check_result_status(result.result_status.enum, ResultStatus,
+    #                               ResultStatus.SUCCESS)
+    #     self._check_object_type(result.object_type.enum, ObjectType,
+    #                             ObjectType.SYMMETRIC_KEY)
+    #     self._check_uuid(result.uuid.value, str)
+    #
+    #     # Check the template attribute type
+    #     self._check_template_attribute(result.template_attribute,
+    #                                    TemplateAttribute, 2,
+    #                                    [[str, 'Cryptographic Length', int,
+    #                                      256],
+    #                                     [str, 'Unique Identifier', str,
+    #                                      None]])
 
-        self.logger.debug(result.result_reason.enum)
-        self.logger.debug(result.result_message.value)
+    def test_symmetric_key_create_v2(self):
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
+        object_type = ObjectType.SYMMETRIC_KEY
 
-        # Check the template attribute type
-        self._check_template_attribute(result.template_attribute,
-                                       TemplateAttribute, 2,
-                                       [[str, 'Cryptographic Length', int,
-                                         256],
-                                        [str, 'Unique Identifier', str,
-                                         None]])
+        attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
+        algorithm = self.attr_factory.create_attribute(
+            attribute_type,
+            CryptoAlgorithmEnum.AES)
+        algorithm_enum = getattr(CryptographicAlgorithm, algorithm, None)
+
+        algorithm_obj = self.attr_factory.create_attribute(attribute_type,
+                                                           algorithm_enum)
+
+        mask_flags = [CryptographicUsageMask.ENCRYPT,
+                      CryptographicUsageMask.DECRYPT]
+        attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
+        usage_mask = self.attr_factory.create_attribute(attribute_type,
+                                                        mask_flags)
+
+        attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
+        length = 128
+        length_obj = self.attr_factory.create_attribute(attribute_type,
+                                                        length)
+        name = Attribute.AttributeName('Name')
+        name_value = Name.NameValue('Test Key')
+        name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
+        value = Name(name_value=name_value, name_type=name_type)
+        name = Attribute(attribute_name=name, attribute_value=value)
+
+        attributes = [algorithm_obj, usage_mask, length_obj, name]
+        template_attribute = TemplateAttribute(attributes=attributes)
+
+        # Create the SYMMETRIC_KEY object
+        result = self.client.create(object_type, template_attribute,
+                               credential)
+
+        # Display operation results
+        self.logger.debug('create() result status: {0}'.format(
+            result.result_status.enum))
+
+        if result.result_status.enum == ResultStatus.SUCCESS:
+            self.logger.debug('created object type: {0}'.format(
+                result.object_type.enum))
+            self.logger.debug('created UUID: {0}'.format(result.uuid.value))
+            self.logger.debug('created template attribute: {0}'.
+                         format(result.template_attribute))
+        else:
+            self.logger.debug('create() result reason: {0}'.format(
+                result.result_reason.enum))
+            self.logger.debug('create() result message: {0}'.format(
+                result.result_message.value))
+
+
+
+
 
     # def test_symmetric_key_register(self):
     #     credential_type = CredentialType.USERNAME_AND_PASSWORD
