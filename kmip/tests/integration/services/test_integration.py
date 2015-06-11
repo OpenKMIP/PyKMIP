@@ -91,6 +91,9 @@ class TestIntegration(TestCase):
                                                             key_length)
         name = Attribute.AttributeName('Name')
 
+        # TODO: Remove trace
+        pytest.set_trace()
+
         if name_value is None:
             name_value = Name.NameValue('Integration Test - Key')
 
