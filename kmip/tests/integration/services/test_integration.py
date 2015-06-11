@@ -234,8 +234,6 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, observed)
 
     def test_symmetric_key_create(self):
-        self.skip("skipping test")
-
         result = self._create_symmetric_key()
 
         self.logger.debug(result.result_reason.enum)
