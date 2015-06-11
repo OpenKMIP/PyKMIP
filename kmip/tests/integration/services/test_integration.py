@@ -67,10 +67,6 @@ class TestIntegration(TestCase):
         super(TestIntegration, self).tearDown()
 
     def _create_symmetric_key(self):
-        credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-        credential = self.cred_factory.create_credential(credential_type,
-                                                         credential_value)
 
         object_type = ObjectType.SYMMETRIC_KEY
         attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
@@ -87,7 +83,7 @@ class TestIntegration(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
 
         return self.client.create(object_type, template_attribute,
-                                  credential)
+                                  credential=None)
 
     def _check_result_status(self, result_status, result_status_type,
                              result_status_value):
