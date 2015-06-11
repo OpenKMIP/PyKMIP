@@ -244,8 +244,6 @@ class TestIntegration(TestCase):
         key_name = 'Integration Test - Create Key'
         result = self._create_symmetric_key(key_name=key_name)
 
-        # TODO: Remove trace
-        # pytest.set_trace()
 
         # TODO: ask peter why result.result_message is none when a key is
         # successfully created
@@ -274,9 +272,10 @@ class TestIntegration(TestCase):
 
         self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
                           result.uuid.value])
+        # TODO: Remove trace
+        pytest.set_trace()
+
         self.client.destroy(result.uuid.value)
-
-
 
     def test_symmetric_key_register(self):
 
@@ -410,8 +409,8 @@ class TestIntegration(TestCase):
 
     def test_symmetric_key_destroy(self):
 
-        result = self._create_symmetric_key(key_name='Integration Test - '
-                                                     'Destroy Key')
+        key_name = 'Integration Test - Destroy Key'
+        result = self._create_symmetric_key(key_name=key_name)
         uuid = result.uuid.value
 
         # Verify the secret was created
