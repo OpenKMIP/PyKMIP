@@ -404,7 +404,7 @@ class TestIntegration(TestCase):
         result = self.client.get(uuid=uuid, credential=None)
 
         # TODO: Remove trace
-        pytest.set_trace()
+        # pytest.set_trace()
 
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.SUCCESS)
