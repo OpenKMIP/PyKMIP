@@ -274,7 +274,7 @@ class TestIntegration(TestCase):
 
         # Create the SYMMETRIC_KEY object
         result = self.client.create(object_type, template_attribute,
-                               credential)
+                               credential=None)
 
         # Display operation results
         self.logger.debug('create() result status: {0}'.format(
