@@ -448,6 +448,10 @@ class TestIntegration(TestCase):
         """
         key_name = 'Integration Test - Destroy Key'
         result = self._create_symmetric_key(key_name=key_name)
+
+        # TODO: Remove trace
+        pytest.set_trace()
+
         uuid = result.uuid.value
 
         # Verify the secret was created
