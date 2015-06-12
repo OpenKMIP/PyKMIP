@@ -118,8 +118,11 @@ class TestIntegration(TestCase):
         :param result_status_value: value of the result status
         :return:
         """
-        result_status = result.result_status.enum
 
+        # TODO: Remove trace
+        pytest.set_trace()
+
+        result_status = result.result_status.enum
         # Error check the result status type and value
         expected = result_status_type
         message = utils.build_er_error(result_status_type, 'type', expected,
@@ -448,9 +451,6 @@ class TestIntegration(TestCase):
         """
         key_name = 'Integration Test - Destroy Key'
         result = self._create_symmetric_key(key_name=key_name)
-
-        # TODO: Remove trace
-        pytest.set_trace()
 
         uuid = result.uuid.value
 
