@@ -409,6 +409,9 @@ class TestIntegration(TestCase):
                          result.uuid.value)
 
         result = self.client.destroy(result.uuid.value)
+
+        # TODO: Remove trace
+        pytest.set_trace()
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
 
     def test_symmetric_key_get(self):
