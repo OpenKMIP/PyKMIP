@@ -472,14 +472,14 @@ class TestIntegration(TestCase):
                           result.uuid.value)
         # Destroy the SYMMETRIC_KEY object
         result = self.client.destroy(uuid)
-        self._check_result_status(result.result_status.enum, ResultStatus,
+        self._check_result_status(result, ResultStatus,
                                   ResultStatus.SUCCESS)
         self._check_uuid(result.uuid.value, str)
 
         # Verify the secret was destroyed
         result = self.client.get(uuid=uuid, credential=None)
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
+        self._check_result_status(result, ResultStatus,
                                   ResultStatus.OPERATION_FAILED)
 
         expected = ResultReason
