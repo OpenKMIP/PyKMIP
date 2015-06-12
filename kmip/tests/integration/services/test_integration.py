@@ -68,18 +68,21 @@ class TestIntegration(TestCase):
         self.cred_factory = CredentialFactory()
         self.secret_factory = SecretFactory()
 
-
     def tearDown(self):
         super(TestIntegration, self).tearDown()
 
     def _create_symmetric_key(self, key_name=None):
-
+        """
+        Helper function for creating symmetric keys. Used any time a key
+        needs to be created.
+        :param key_name: name of the key to be created
+        :return: returns the result of the "create key" operation as
+        provided by the KMIP appliance
+        """
         object_type = ObjectType.SYMMETRIC_KEY
         attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
-        algorithm = self.attr_factory.create_attribute(
-            attribute_type,
-            CryptoAlgorithmEnum.AES)
-
+        algorithm = self.attr_factory.create_attribute(attribute_type,
+                                                       CryptoAlgorithmEnum.AES)
         mask_flags = [CryptographicUsageMask.ENCRYPT,
                       CryptographicUsageMask.DECRYPT]
         attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
@@ -99,15 +102,24 @@ class TestIntegration(TestCase):
         name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
         value = Name(name_value=name_value, name_type=name_type)
         name = Attribute(attribute_name=name, attribute_value=value)
-
         attributes = [algorithm, usage_mask, key_length_obj, name]
         template_attribute = TemplateAttribute(attributes=attributes)
 
         return self.client.create(object_type, template_attribute,
                                   credential=None)
 
-    def _check_result_status(self, result_status, result_status_type,
+    def _check_result_status(self, result, result_status_type,
                              result_status_value):
+        """
+        Helper function for checking the status of KMIP appliance actions.
+        Verifies the result status type and value.
+        :param result: result object
+        :param result_status_type: type of result status received
+        :param result_status_value: value of the result status
+        :return:
+        """
+        result_status = result.result_status.enum
+
         # Error check the result status type and value
         expected = result_status_type
         message = utils.build_er_error(result_status_type, 'type', expected,
@@ -117,9 +129,19 @@ class TestIntegration(TestCase):
         expected = result_status_value
         message = utils.build_er_error(result_status_type, 'value', expected,
                                        result_status)
+        if result_status is ResultStatus.OPERATION_FAILED:
+            self.logger.debug(result)
+            self.logger.debug(result.result_reason)
+            self.logger.debug(result.result_message)
         self.assertEqual(expected, result_status, message)
 
     def _check_uuid(self, uuid, uuid_type):
+        """
+        Helper function for checking UUID type and value for errors
+        :param uuid: UUID of a created key
+        :param uuid_type: UUID type
+        :return:
+        """
         # Error check the UUID type and value
         not_expected = None
         message = utils.build_er_error(uuid_type, 'type',
@@ -132,6 +154,13 @@ class TestIntegration(TestCase):
 
     def _check_object_type(self, object_type, object_type_type,
                            object_type_value):
+        """
+        Checks the type and value of a given object type.
+        :param object_type:
+        :param object_type_type:
+        :param object_type_value:
+        :return:
+        """
         # Error check the object type type and value
         expected = object_type_type
         message = utils.build_er_error(object_type_type, 'type', expected,
@@ -146,6 +175,14 @@ class TestIntegration(TestCase):
     def _check_template_attribute(self, template_attribute,
                                   template_attribute_type, num_attributes,
                                   attribute_features):
+        """
+        Checks the value and type of a given template attribute
+        :param template_attribute:
+        :param template_attribute_type:
+        :param num_attributes:
+        :param attribute_features:
+        :return:
+        """
         # Error check the template attribute type
         expected = template_attribute_type
         message = utils.build_er_error(template_attribute.__class__, 'type',
@@ -167,6 +204,15 @@ class TestIntegration(TestCase):
     def _check_attribute(self, attribute, attribute_name_type,
                          attribute_name_value, attribute_value_type,
                          attribute_value_value):
+        """
+        Checks the value and type of a given attribute
+        :param attribute:
+        :param attribute_name_type:
+        :param attribute_name_value:
+        :param attribute_value_type:
+        :param attribute_value_value:
+        :return:
+        """
         # Error check the attribute name and value type and value
         attribute_name = attribute.attribute_name
         attribute_value = attribute.attribute_value
@@ -182,6 +228,13 @@ class TestIntegration(TestCase):
 
     def _check_attribute_name(self, attribute_name, attribute_name_type,
                               attribute_name_value):
+        """
+        Checks the attribute name for a given attribute
+        :param attribute_name:
+        :param attribute_name_type:
+        :param attribute_name_value:
+        :return:
+        """
         # Error check the attribute name type and value
         expected = attribute_name_type
         observed = type(attribute_name.value)
@@ -197,6 +250,13 @@ class TestIntegration(TestCase):
 
     def _check_attribute_value(self, attribute_value, attribute_value_type,
                                attribute_value_value):
+        """
+        Checks the attribute value for a given attribute
+        :param attribute_value:
+        :param attribute_value_type:
+        :param attribute_value_value:
+        :return:
+        """
         expected = attribute_value_type
         observed = type(attribute_value.value)
         message = utils.build_er_error(Attribute, 'type', expected, observed,
@@ -241,44 +301,34 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, observed)
 
     def test_symmetric_key_create(self):
+        """
+        Test that symmetric keys are properly created
+        :return:
+        """
         key_name = 'Integration Test - Create Key'
         result = self._create_symmetric_key(key_name=key_name)
 
-
-        # TODO: ask peter why result.result_message is none when a key is
-        # successfully created
-        self.logger.debug(result)
-        self.logger.debug(result.result_reason)
-        self.logger.debug(result.result_message)
-
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
         self._check_object_type(result.object_type.enum, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
-        # TODO: ask peter why this is none when a key is successfully created
-        # # Check the template attribute type
-        # self._check_template_attribute(result.template_attribute,
-        #                                TemplateAttribute, 4,
-        #                                [[str, 'Cryptographic Length', int,
-        #                                  128],
-        #                                 [str, 'Unique Identifier', str,
-        #                                  None],
-        #                                 [str, 'Cryptographic Algorithm', int,
-        #                                  CryptoAlgorithmEnum.AES],
-        #                                 [str, 'Name', str, 'Integration Test '
-        #                                                    'Key']])
+        self.logger.info('Destroying key: ' + key_name + '\n With UUID: ' +
+                         result.uuid.value)
 
-        self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
-                          result.uuid.value])
         # TODO: Remove trace
-        # pytest.set_trace()
+        pytest.set_trace()
 
-        self.client.destroy(result.uuid.value)
+        # TODO: Add a result check for the destroy functionality. We want to
+        #  make sure that the key was properly destroyed.
+        result = self.client.destroy(result.uuid.value)
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
 
     def test_symmetric_key_register(self):
-
+        """
+        Tests that symmetric keys are properly registered
+        :return:
+        """
         object_type = ObjectType.SYMMETRIC_KEY
         algorithm_value = CryptoAlgorithmEnum.AES
         mask_flags = [CryptographicUsageMask.ENCRYPT,
@@ -321,31 +371,17 @@ class TestIntegration(TestCase):
         result = self.client.register(object_type, template_attribute, secret,
                                       credential=None)
         # TODO: Remove trace
-        # pytest.set_trace()
+        pytest.set_trace()
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
         self._check_uuid(result.uuid.value, str)
 
-        # TODO: Check why the template attribute is None. Ask Peter
-        # # Check the template attribute type
-        # self._check_template_attribute(result.template_attribute,
-        #                                TemplateAttribute, 1,
-        #                                [[str, 'Unique Identifier', str,
-        #                                  None]])
         # Check that the returned key bytes match what was provided
         uuid = result.uuid.value
         result = self.client.get(uuid=uuid, credential=None)
 
-        # TODO: Remove trace
-        # pytest.set_trace()
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
-
-        # # TODO: verify why result has no object_type property
-        # self._check_object_type(result.object_type.enum, ObjectType,
-        #                         ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
         # Check the secret type
@@ -366,30 +402,28 @@ class TestIntegration(TestCase):
                                        expected, observed, 'value')
         self.assertEqual(expected, observed, message)
 
+        self.logger.info('Destroying key: ' + key_name + '\nWith UUID: ' +
+                         result.uuid.value)
 
-        self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
-                          result.uuid.value])
-        self.client.destroy(result.uuid.value)
-
+        result = self.client.destroy(result.uuid.value)
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
 
     def test_symmetric_key_get(self):
-
+        """
+        Tests that key data can be retrieved from the appliance
+        :return:
+        """
         key_name = 'Integration Test - Get Key'
         result = self._create_symmetric_key(key_name=key_name)
 
-        # TODO: Remove trace
-        # pytest.set_trace()
-
         uuid = result.uuid.value
-
-        # TODO: Remove trace
-        # pytest.set_trace()
-
 
         result = self.client.get(uuid=uuid, credential=None)
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
+        # TODO: Remove trace
+        pytest.set_trace()
+
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
         self._check_object_type(result.object_type.enum, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
@@ -402,13 +436,16 @@ class TestIntegration(TestCase):
                                        secret, 'secret')
         self.assertIsInstance(secret, expected, message)
 
-        self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
-                          result.uuid.value])
+        self.logger.info('Destroying key: ' + key_name + '\nWith UUID: ' +
+                         result.uuid.value)
         self.client.destroy(result.uuid.value)
 
 
     def test_symmetric_key_destroy(self):
-
+        """
+        Tests that symmetric keys are properly destroyed
+        :return:
+        """
         key_name = 'Integration Test - Destroy Key'
         result = self._create_symmetric_key(key_name=key_name)
         uuid = result.uuid.value
@@ -417,7 +454,7 @@ class TestIntegration(TestCase):
         result = self.client.get(uuid=uuid, credential=None)
 
         # TODO: Remove trace
-        # pytest.set_trace()
+        pytest.set_trace()
 
         self._check_result_status(result.result_status.enum, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -426,14 +463,13 @@ class TestIntegration(TestCase):
         self._check_uuid(result.uuid.value, str)
 
         secret = result.secret
-
         expected = SymmetricKey
         message = utils.build_er_error(result.__class__, 'type', expected,
                                        secret, 'secret')
         self.assertIsInstance(secret, expected, message)
 
-        self.logger.info(['Destroying key: ', key_name, '\nWith UUID: ',
-                          result.uuid.value])
+        self.logger.info('Destroying key: ' + key_name + '\nWith UUID: ' +
+                          result.uuid.value)
         # Destroy the SYMMETRIC_KEY object
         result = self.client.destroy(uuid)
         self._check_result_status(result.result_status.enum, ResultStatus,
