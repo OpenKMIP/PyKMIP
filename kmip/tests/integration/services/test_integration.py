@@ -119,9 +119,6 @@ class TestIntegration(TestCase):
         :return:
         """
 
-        # TODO: Remove trace
-        pytest.set_trace()
-
         result_status = result.result_status.enum
         # Error check the result status type and value
         expected = result_status_type
@@ -410,8 +407,6 @@ class TestIntegration(TestCase):
 
         result = self.client.destroy(result.uuid.value)
 
-        # TODO: Remove trace
-        pytest.set_trace()
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
 
     def test_symmetric_key_get(self):
@@ -463,8 +458,7 @@ class TestIntegration(TestCase):
         # TODO: Remove trace
         pytest.set_trace()
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
-                                  ResultStatus.SUCCESS)
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
         self._check_object_type(result.object_type.enum, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
