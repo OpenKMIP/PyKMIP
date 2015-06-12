@@ -95,9 +95,9 @@ class TestIntegration(TestCase):
         name = Attribute.AttributeName('Name')
 
         if key_name is None:
-            name_value = Name.NameValue('Integration Test - Key')
-        else:
-            name_value = Name.NameValue(key_name)
+            key_name = 'Integration Test - Key'
+
+        name_value = Name.NameValue(key_name)
 
         name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
         value = Name(name_value=name_value, name_type=name_type)
