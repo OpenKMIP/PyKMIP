@@ -17,6 +17,8 @@ import logging.config
 import os
 import sys
 
+exec(open('kmip/version.py').read())
+
 path = os.path.join(os.path.dirname(__file__), 'logconfig.ini')
 
 if os.path.exists(path):
