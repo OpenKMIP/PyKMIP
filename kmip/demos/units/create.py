@@ -121,17 +121,17 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.debug('create() result status: {0}'.format(
+    logger.info('create() result status: {0}'.format(
         result.result_status.enum))
 
     if result.result_status.enum == ResultStatus.SUCCESS:
-        logger.debug('created object type: {0}'.format(
+        logger.info('created object type: {0}'.format(
             result.object_type.enum))
-        logger.debug('created UUID: {0}'.format(result.uuid.value))
-        logger.debug('created template attribute: {0}'.
-                     format(result.template_attribute))
+        logger.info('created UUID: {0}'.format(result.uuid.value))
+        logger.info('created template attribute: {0}'.
+                    format(result.template_attribute))
     else:
-        logger.debug('create() result reason: {0}'.format(
+        logger.info('create() result reason: {0}'.format(
             result.result_reason.enum))
-        logger.debug('create() result message: {0}'.format(
+        logger.info('create() result message: {0}'.format(
             result.result_message.value))

@@ -72,15 +72,15 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.debug('register() result status: {0}'.format(
+    logger.info('register() result status: {0}'.format(
         result.result_status.enum))
 
     if result.result_status.enum == ResultStatus.SUCCESS:
-        logger.debug('registered UUID: {0}'.format(result.uuid.value))
-        logger.debug('registered template attribute: {0}'.
-                     format(result.template_attribute))
+        logger.info('registered UUID: {0}'.format(result.uuid.value))
+        logger.info('registered template attribute: {0}'.
+                    format(result.template_attribute))
     else:
-        logger.debug('register() result reason: {0}'.format(
+        logger.info('register() result reason: {0}'.format(
             result.result_reason.enum))
-        logger.debug('register() result message: {0}'.format(
+        logger.info('register() result message: {0}'.format(
             result.result_message.value))
