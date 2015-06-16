@@ -415,10 +415,9 @@ class Enumeration(Integer):
 
     def __validate(self):
         if self.enum is not None:
-            if type(self.enum) is not self.ENUM_TYPE:
-                msg = ErrorStrings.BAD_EXP_RECV
-                raise TypeError(msg.format(Enumeration.__name__, 'value',
-                                           Enum, type(self.enum)))
+            if not isinstance(self.enum, Enum):
+                raise TypeError("expected {0}, observed {1}".format(
+                    type(self.enum), Enum))
 
     def __repr__(self):
         return "{0}(value={1})".format(type(self).__name__, self.enum)
