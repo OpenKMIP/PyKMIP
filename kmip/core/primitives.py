@@ -164,7 +164,7 @@ class Struct(Base):
 class Integer(Base):
     LENGTH = 4
 
-    def __init__(self, value=None, tag=Tags.DEFAULT):
+    def __init__(self, value=None, tag=Tags.DEFAULT, signed=True):
         super(Integer, self).__init__(tag, type=Types.INTEGER)
 
         self.value = value
@@ -173,6 +173,10 @@ class Integer(Base):
 
         self.length = self.LENGTH
         self.padding_length = self.LENGTH
+        if signed:
+            self.pack_string = '!i'
+        else:
+            self.pack_string = '!I'
 
         self.validate()
 
@@ -181,8 +185,8 @@ class Integer(Base):
             raise errors.ReadValueError(Integer.__name__, 'length',
                                         self.LENGTH, self.length)
 
-        self.value = unpack('!i', istream.read(self.length))[0]
-        pad = unpack('!i', istream.read(self.padding_length))[0]
+        self.value = unpack(self.pack_string, istream.read(self.length))[0]
+        pad = unpack(self.pack_string, istream.read(self.padding_length))[0]
 
         if pad is not 0:
             raise errors.ReadValueError(Integer.__name__, 'pad', 0,
@@ -194,8 +198,8 @@ class Integer(Base):
         self.read_value(istream)
 
     def write_value(self, ostream):
-        ostream.write(pack('!i', self.value))
-        ostream.write(pack('!i', 0))
+        ostream.write(pack(self.pack_string, self.value))
+        ostream.write(pack(self.pack_string, 0))
 
     def write(self, ostream):
         super(Integer, self).write(ostream)
@@ -393,9 +397,9 @@ class Enumeration(Integer):
         self.validate()
 
         if self.enum is None:
-            super(Enumeration, self).__init__(None, tag)
+            super(Enumeration, self).__init__(None, tag, False)
         else:
-            super(Enumeration, self).__init__(self.enum.value, tag)
+            super(Enumeration, self).__init__(self.enum.value, tag, False)
         self.type = Types.ENUMERATION
 
     def read(self, istream):
