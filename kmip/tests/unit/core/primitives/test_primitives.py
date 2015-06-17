@@ -906,43 +906,6 @@ class TestEnumeration(TestCase):
         self.assertEqual(encoding, result, self.bad_encoding)
 
 
-class TestBoolean(TestCase):
-
-    def setUp(self):
-        super(TestBoolean, self).setUp()
-        self.stream = BytearrayStream()
-
-    def tearDown(self):
-        super(TestBoolean, self).tearDown()
-
-    def test_init(self):
-        self.skip('')
-
-    def test_init_unset(self):
-        self.skip('')
-
-    def test_validate_on_valid(self):
-        self.skip('')
-
-    def test_validate_on_valid_unset(self):
-        self.skip('')
-
-    def test_validate_on_invalid_type(self):
-        self.skip('')
-
-    def test_read_value(self):
-        self.skip('')
-
-    def test_read(self):
-        self.skip('')
-
-    def test_write_value(self):
-        self.skip('')
-
-    def test_write(self):
-        self.skip('')
-
-
 class TestTextString(TestCase):
 
     def setUp(self):
