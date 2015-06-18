@@ -207,7 +207,9 @@ class Integer(Base):
     def __validate(self):
         if self.value is not None:
             data_type = type(self.value)
-            if data_type is not int:
+            if data_type is long:
+                self.value = int(self.value)
+            elif data_type is not int:
                 raise errors.StateTypeError(Integer.__name__, int,
                                             data_type)
             num_bytes = utils.count_bytes(self.value)
