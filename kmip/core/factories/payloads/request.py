@@ -15,6 +15,7 @@
 
 from kmip.core.factories.payloads import PayloadFactory
 
+from kmip.core.messages.payloads import activate
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
@@ -54,3 +55,6 @@ class RequestPayloadFactory(PayloadFactory):
 
     def _create_discover_versions_payload(self):
         return discover_versions.DiscoverVersionsRequestPayload()
+
+    def _create_activate_payload(self):
+        return activate.ActivateRequestPayload()

@@ -18,6 +18,7 @@ import testtools
 from kmip.core.enums import Operation
 from kmip.core.factories.payloads.request import RequestPayloadFactory
 
+from kmip.core.messages.payloads import activate
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
@@ -115,8 +116,8 @@ class TestRequestPayloadFactory(testtools.TestCase):
             self.factory.create, Operation.GET_USAGE_ALLOCATION)
 
     def test_create_activate_payload(self):
-        self._test_not_implemented(
-            self.factory.create, Operation.ACTIVATE)
+        payload = self.factory.create(Operation.ACTIVATE)
+        self._test_payload_type(payload, activate.ActivateRequestPayload)
 
     def test_create_revoke_payload(self):
         self._test_not_implemented(

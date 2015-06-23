@@ -78,6 +78,22 @@ class CreateKeyPairResult(OperationResult):
         self.public_key_template_attribute = public_key_template_attribute
 
 
+class ActivateResult(OperationResult):
+
+    def __init__(self,
+                 result_status,
+                 result_reason=None,
+                 result_message=None,
+                 uuid=None):
+        super(ActivateResult, self).__init__(
+            result_status, result_reason, result_message)
+
+        if uuid is not None:
+            self.uuid = uuid
+        else:
+            self.uuid = None
+
+
 class RegisterResult(OperationResult):
 
     def __init__(self,
