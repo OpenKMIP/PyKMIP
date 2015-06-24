@@ -299,7 +299,7 @@ class TestIntegration(TestCase):
 
         self.assertEqual(expected, observed)
 
-    def test_symmetric_key_create-get-destroy(self):
+    def test_symmetric_key_create_get_destroy(self):
         """
         Test that symmetric keys are properly created
         :return:
@@ -360,7 +360,7 @@ class TestIntegration(TestCase):
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
 
-    def test_symmetric_key_register-get-destroy(self):
+    def test_symmetric_key_register_get_destroy(self):
         """
         Tests that symmetric keys are properly registered
         :return:
