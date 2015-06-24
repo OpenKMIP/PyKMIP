@@ -120,18 +120,16 @@ class TestIntegration(TestCase):
         result_status = result.result_status.enum
         # Error check the result status type and value
         expected = result_status_type
-        message = utils.build_er_error(result_status_type, 'type', expected,
-                                       result_status)
-        self.assertIsInstance(result_status, expected, message)
+
+        self.assertIsInstance(result_status, expected)
 
         expected = result_status_value
-        message = utils.build_er_error(result_status_type, 'value', expected,
-                                       result_status)
+
         if result_status is ResultStatus.OPERATION_FAILED:
             self.logger.debug(result)
             self.logger.debug(result.result_reason)
             self.logger.debug(result.result_message)
-        self.assertEqual(expected, result_status, message)
+        self.assertEqual(expected, result_status)
 
     def _check_uuid(self, uuid, uuid_type):
         """
@@ -142,13 +140,11 @@ class TestIntegration(TestCase):
         """
         # Error check the UUID type and value
         not_expected = None
-        message = utils.build_er_error(uuid_type, 'type',
-                                       'not {0}'.format(not_expected), uuid)
-        self.assertNotEqual(not_expected, uuid, message)
+
+        self.assertNotEqual(not_expected, uuid)
 
         expected = uuid_type
-        message = utils.build_er_error(uuid_type, 'type', expected, uuid)
-        self.assertEqual(expected, type(uuid), message)
+        self.assertEqual(expected, type(uuid))
 
     def _check_object_type(self, object_type, object_type_type,
                            object_type_value):
@@ -160,14 +156,12 @@ class TestIntegration(TestCase):
         """
         # Error check the object type type and value
         expected = object_type_type
-        message = utils.build_er_error(object_type_type, 'type', expected,
-                                       object_type)
-        self.assertIsInstance(object_type, expected, message)
+
+        self.assertIsInstance(object_type, expected)
 
         expected = object_type_value
-        message = utils.build_er_error(object_type_type, 'value', expected,
-                                       object_type)
-        self.assertEqual(expected, object_type, message)
+
+        self.assertEqual(expected, object_type)
 
     def _check_template_attribute(self, template_attribute,
                                   template_attribute_type, num_attributes,
@@ -181,16 +175,13 @@ class TestIntegration(TestCase):
         """
         # Error check the template attribute type
         expected = template_attribute_type
-        message = utils.build_er_error(template_attribute.__class__, 'type',
-                                       expected, template_attribute)
-        self.assertIsInstance(template_attribute, expected, message)
+
+        self.assertIsInstance(template_attribute, expected)
 
         attributes = template_attribute.attributes
 
         expected = num_attributes
         observed = len(attributes)
-        message = utils.build_er_error(TemplateAttribute.__class__, 'number',
-                                       expected, observed, 'attributes')
 
         for i in range(num_attributes):
             features = attribute_features[i]
@@ -232,15 +223,13 @@ class TestIntegration(TestCase):
         # Error check the attribute name type and value
         expected = attribute_name_type
         observed = type(attribute_name.value)
-        message = utils.build_er_error(attribute_name_type, 'type', expected,
-                                       observed)
-        self.assertEqual(expected, observed, message)
+
+        self.assertEqual(expected, observed)
 
         expected = attribute_name_value
         observed = attribute_name.value
-        message = utils.build_er_error(attribute_name_type, 'value', expected,
-                                       observed)
-        self.assertEqual(expected, observed, message)
+
+        self.assertEqual(expected, observed)
 
     def _check_attribute_value(self, attribute_value, attribute_value_type,
                                attribute_value_value):
@@ -252,15 +241,13 @@ class TestIntegration(TestCase):
         """
         expected = attribute_value_type
         observed = type(attribute_value.value)
-        message = utils.build_er_error(Attribute, 'type', expected, observed,
-                                       'attribute_value')
-        self.assertEqual(expected, observed, message)
+
+        self.assertEqual(expected, observed)
 
         expected = attribute_value_value
         observed = attribute_value.value
-        message = utils.build_er_error(Attribute, 'value', expected, observed,
-                                       'attribute_value')
-        self.assertEqual(expected, observed, message)
+
+        self.assertEqual(expected, observed)
 
     def test_discover_versions(self):
         result = self.client.discover_versions()
@@ -335,15 +322,13 @@ class TestIntegration(TestCase):
 
         expected = ResultReason
         observed = type(result.result_reason.enum)
-        message = utils.build_er_error(result.result_reason.__class__, 'type',
-                                       expected, observed)
-        self.assertEqual(expected, observed, message)
+
+        self.assertEqual(expected, observed)
 
         expected = ResultReason.ITEM_NOT_FOUND
         observed = result.result_reason.enum
-        message = utils.build_er_error(result.result_reason.__class__,
-                                       'value', expected, observed)
-        self.assertEqual(expected, observed, message)
+
+        self.assertEqual(expected, observed)
 
 
     def test_symmetric_key_register_get_destroy(self):
@@ -408,9 +393,8 @@ class TestIntegration(TestCase):
         secret = result.secret
 
         expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
-        self.assertIsInstance(secret, expected, message)
+
+        self.assertIsInstance(secret, expected)
 
         key_block = result.secret.key_block
         key_value = key_block.key_value
@@ -418,9 +402,8 @@ class TestIntegration(TestCase):
 
         expected = key_data
         observed = key_material.value
-        message = utils.build_er_error(key_material.__class__, 'value',
-                                       expected, observed, 'value')
-        self.assertEqual(expected, observed, message)
+
+        self.assertEqual(expected, observed)
 
         self.logger.debug('Destroying key: ' + key_name + '\nWith UUID: ' +
                          result.uuid.value)
