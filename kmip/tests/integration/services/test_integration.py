@@ -115,7 +115,6 @@ class TestIntegration(TestCase):
         :param result: result object
         :param result_status_type: type of result status received
         :param result_status_value: value of the result status
-        :return:
         """
 
         result_status = result.result_status.enum
@@ -158,7 +157,6 @@ class TestIntegration(TestCase):
         :param object_type:
         :param object_type_type:
         :param object_type_value:
-        :return:
         """
         # Error check the object type type and value
         expected = object_type_type
@@ -180,7 +178,6 @@ class TestIntegration(TestCase):
         :param template_attribute_type:
         :param num_attributes:
         :param attribute_features:
-        :return:
         """
         # Error check the template attribute type
         expected = template_attribute_type
@@ -210,7 +207,6 @@ class TestIntegration(TestCase):
         :param attribute_name_value:
         :param attribute_value_type:
         :param attribute_value_value:
-        :return:
         """
         # Error check the attribute name and value type and value
         attribute_name = attribute.attribute_name
@@ -232,7 +228,6 @@ class TestIntegration(TestCase):
         :param attribute_name:
         :param attribute_name_type:
         :param attribute_name_value:
-        :return:
         """
         # Error check the attribute name type and value
         expected = attribute_name_type
@@ -254,7 +249,6 @@ class TestIntegration(TestCase):
         :param attribute_value:
         :param attribute_value_type:
         :param attribute_value_value:
-        :return:
         """
         expected = attribute_value_type
         observed = type(attribute_value.value)
@@ -302,7 +296,6 @@ class TestIntegration(TestCase):
     def test_symmetric_key_create_get_destroy(self):
         """
         Test that symmetric keys are properly created
-        :return:
         """
         key_name = 'Integration Test - Create-Get-Destroy Key'
         result = self._create_symmetric_key(key_name=key_name)
@@ -312,11 +305,7 @@ class TestIntegration(TestCase):
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
-
         result = self.client.get(uuid=result.uuid.value, credential=None)
-        uuid = result.uuid.value
-
-        result = self.client.get(uuid=uuid, credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
         self._check_object_type(result.object_type.enum, ObjectType,
@@ -327,9 +316,7 @@ class TestIntegration(TestCase):
         secret = result.secret
 
         expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
-        self.assertIsInstance(secret, expected, message)
+        self.assertIsInstance(secret, expected)
 
 
         self.logger.debug('Destroying key: ' + key_name + '\n With UUID: ' +
@@ -362,7 +349,6 @@ class TestIntegration(TestCase):
     def test_symmetric_key_register_get_destroy(self):
         """
         Tests that symmetric keys are properly registered
-        :return:
         """
         object_type = ObjectType.SYMMETRIC_KEY
         algorithm_value = CryptoAlgorithmEnum.AES
@@ -412,7 +398,6 @@ class TestIntegration(TestCase):
         # Check that the returned key bytes match what was provided
         uuid = result.uuid.value
         result = self.client.get(uuid=uuid, credential=None)
-        result = self.client.get(uuid=uuid, credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
         self._check_object_type(result.object_type.enum, ObjectType,
@@ -437,7 +422,7 @@ class TestIntegration(TestCase):
                                        expected, observed, 'value')
         self.assertEqual(expected, observed, message)
 
-        self.logger.info('Destroying key: ' + key_name + '\nWith UUID: ' +
+        self.logger.debug('Destroying key: ' + key_name + '\nWith UUID: ' +
                          result.uuid.value)
 
         result = self.client.destroy(result.uuid.value)
@@ -453,12 +438,10 @@ class TestIntegration(TestCase):
 
         expected = ResultReason
         observed = type(result.result_reason.enum)
-        message = utils.build_er_error(result.result_reason.__class__, 'type',
-                                       expected, observed)
-        self.assertEqual(expected, observed, message)
+
+        self.assertEqual(expected, observed)
 
         expected = ResultReason.ITEM_NOT_FOUND
         observed = result.result_reason.enum
-        message = utils.build_er_error(result.result_reason.__class__,
-                                       'value', expected, observed)
-        self.assertEqual(expected, observed, message)
+
+        self.assertEqual(expected, observed)
