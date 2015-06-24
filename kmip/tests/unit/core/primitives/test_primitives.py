@@ -18,6 +18,7 @@ from testtools import TestCase
 
 from kmip.core.enums import Tags
 from kmip.core.enums import Types
+from kmip.core.enums import OpaqueDataType
 
 from kmip.core.utils import BytearrayStream
 
@@ -905,42 +906,19 @@ class TestEnumeration(TestCase):
                                                                  len_rcv))
         self.assertEqual(encoding, result, self.bad_encoding)
 
+    def test_write_unsigned(self):
+        """
+        Test that a large enumeration value is written correctly as an
+        unsigned integer.
+        """
+        encoding = (b'\x42\x00\x00\x05\x00\x00\x00\x04\x80\x00\x00\x00\x00\x00'
+                    b'\x00\x00')
+        e = Enumeration(OpaqueDataType.NONE)
+        e.write(self.stream)
+        result = self.stream.read()
 
-class TestBoolean(TestCase):
-
-    def setUp(self):
-        super(TestBoolean, self).setUp()
-        self.stream = BytearrayStream()
-
-    def tearDown(self):
-        super(TestBoolean, self).tearDown()
-
-    def test_init(self):
-        self.skip('')
-
-    def test_init_unset(self):
-        self.skip('')
-
-    def test_validate_on_valid(self):
-        self.skip('')
-
-    def test_validate_on_valid_unset(self):
-        self.skip('')
-
-    def test_validate_on_invalid_type(self):
-        self.skip('')
-
-    def test_read_value(self):
-        self.skip('')
-
-    def test_read(self):
-        self.skip('')
-
-    def test_write_value(self):
-        self.skip('')
-
-    def test_write(self):
-        self.skip('')
+        self.assertEqual(len(encoding), len(result))
+        self.assertEqual(encoding, result)
 
 
 class TestTextString(TestCase):

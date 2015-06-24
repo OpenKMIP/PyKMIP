@@ -22,7 +22,7 @@ from six import add_metaclass
 @add_metaclass(ABCMeta)
 class ManagedObject:
     """
-    The abstract base object of the simplified KMIP object hierarchy.
+    The abstract base class of the simplified KMIP object hierarchy.
 
     A ManagedObject is a core KMIP object that is the subject of key
     management operations. It contains various attributes that are common to
@@ -98,3 +98,81 @@ class ManagedObject:
     @abstractmethod
     def __ne__(self, other):
         pass
+
+
+class CryptographicObject(ManagedObject):
+    """
+    The abstract base class of all ManagedObjects related to cryptography.
+
+    A CryptographicObject is a core KMIP object that is the subject of key
+    management operations. It contains various attributes that are common to
+    all types of CryptographicObjects, including keys and certificates.
+
+    For more information, see Section 2.2 of the KMIP 1.1 specification.
+
+    Attributes:
+        cryptographic_usage_masks: A list of usage mask enumerations
+            describing how the CryptographicObject will be used.
+    """
+
+    @abstractmethod
+    def __init__(self):
+        """
+        Create a CryptographicObject.
+        """
+
+        super(CryptographicObject, self).__init__()
+
+        self.crpytographic_usage_masks = list()
+
+        # All remaining attributes are not considered part of the public API
+        # and are subject to change.
+        self._digests = list()
+
+        # The following attributes are placeholders for attributes that are
+        # unsupported by kmip.core
+        self._activation_date = None
+        self._compromise_date = None
+        self._compromise_occurrence_date = None
+        self._deactivation_date = None
+        self._destroy_date = None
+        self._fresh = None
+        self._lease_time = None
+        self._links = list()
+        self._revocation_reason = None
+        self._state = None
+
+
+class Key(CryptographicObject):
+    """
+    The abstract base class of all ManagedObjects that are cryptographic keys.
+
+    A Key is a core KMIP object that is the subject of key management
+    operations. It contains various attributes that are common to all types of
+    Keys, including symmetric and asymmetric keys.
+
+    For more information, see Section 2.2 of the KMIP 1.1 specification.
+
+    Attributes:
+        cryptographic_algorithm: A CryptographicAlgorithm enumeration defining
+            the algorithm the key should be used with.
+        cryptographic_length: An int defining the length of the key in bits.
+    """
+
+    @abstractmethod
+    def __init__(self, value=None, algorithm=None, length=None):
+        """
+        Create a Key object.
+        """
+        super(Key, self).__init__()
+
+        self.cryptographic_algorithm = None
+        self.cryptographic_length = None
+
+        # All remaining attributes are not considered part of the public API
+        # and are subject to change.
+        self._cryptographic_parameters = list()
+
+        # The following attributes are placeholders for attributes that are
+        # unsupported by kmip.core
+        self._usage_limits = None
