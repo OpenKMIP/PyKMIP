@@ -358,7 +358,6 @@ class TestIntegration(TestCase):
                                        'value', expected, observed)
         self.assertEqual(expected, observed, message)
 
-        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
 
     def test_symmetric_key_register_get_destroy(self):
         """
