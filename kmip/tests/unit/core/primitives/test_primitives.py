@@ -297,14 +297,22 @@ class TestInteger(TestCase):
         i.validate()
 
     def test_validate_on_invalid_type(self):
-        i = Integer()
-        i.value = 'test'
+        """
+        Test that a TypeError is thrown on input of invalid type (e.g., str).
+        """
+        self.assertRaises(TypeError, Integer, 'invalid')
 
-        self.assertRaises(errors.StateTypeError, i.validate)
+    def test_validate_on_invalid_value_too_big(self):
+        """
+        Test that a ValueError is thrown on input that is too large.
+        """
+        self.assertRaises(ValueError, Integer, Integer.MAX + 1)
 
-    def test_validate_on_invalid_value(self):
-        self.assertRaises(errors.StateOverflowError, Integer,
-                          self.max_byte_int + 1)
+    def test_validate_on_invalid_value_too_small(self):
+        """
+        Test that a ValueError is thrown on input that is too small.
+        """
+        self.assertRaises(ValueError, Integer, Integer.MIN - 1)
 
     def test_read_value(self):
         encoding = (b'\x00\x00\x00\x01\x00\x00\x00\x00')
