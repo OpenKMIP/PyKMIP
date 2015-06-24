@@ -299,7 +299,7 @@ class TestIntegration(TestCase):
 
         self.assertEqual(expected, observed)
 
-    def test_symmetric_key_create(self):
+    def test_symmetric_key_create-get-destroy(self):
         """
         Test that symmetric keys are properly created
         :return:
@@ -336,9 +336,31 @@ class TestIntegration(TestCase):
                          result.uuid.value)
 
         result = self.client.destroy(result.uuid.value)
+        self._check_result_status(result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_uuid(result.uuid.value, str)
+
+        # Verify the secret was destroyed
+        result = self.client.get(uuid=uuid, credential=None)
+
+        self._check_result_status(result, ResultStatus,
+                                  ResultStatus.OPERATION_FAILED)
+
+        expected = ResultReason
+        observed = type(result.result_reason.enum)
+        message = utils.build_er_error(result.result_reason.__class__, 'type',
+                                       expected, observed)
+        self.assertEqual(expected, observed, message)
+
+        expected = ResultReason.ITEM_NOT_FOUND
+        observed = result.result_reason.enum
+        message = utils.build_er_error(result.result_reason.__class__,
+                                       'value', expected, observed)
+        self.assertEqual(expected, observed, message)
+
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
 
-    def test_symmetric_key_register(self):
+    def test_symmetric_key_register-get-destroy(self):
         """
         Tests that symmetric keys are properly registered
         :return:
@@ -352,7 +374,7 @@ class TestIntegration(TestCase):
                                                         mask_flags)
 
         name = Attribute.AttributeName('Name')
-        key_name = 'Integration Test - Register Key'
+        key_name = 'Integration Test - Register-Get-Destroy Key'
         name_value = Name.NameValue(key_name)
         name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
         value = Name(name_value=name_value, name_type=name_type)
@@ -391,9 +413,11 @@ class TestIntegration(TestCase):
         # Check that the returned key bytes match what was provided
         uuid = result.uuid.value
         result = self.client.get(uuid=uuid, credential=None)
+        result = self.client.get(uuid=uuid, credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-
+        self._check_object_type(result.object_type.enum, ObjectType,
+                                ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
         # Check the secret type
@@ -418,67 +442,6 @@ class TestIntegration(TestCase):
                          result.uuid.value)
 
         result = self.client.destroy(result.uuid.value)
-
-        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-
-    def test_symmetric_key_get(self):
-        """
-        Tests that key data can be retrieved from the appliance
-        :return:
-        """
-        key_name = 'Integration Test - Get Key'
-        result = self._create_symmetric_key(key_name=key_name)
-
-        uuid = result.uuid.value
-
-        result = self.client.get(uuid=uuid, credential=None)
-
-        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
-
-        # Check the secret type
-        secret = result.secret
-
-        expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
-        self.assertIsInstance(secret, expected, message)
-
-        self.logger.info('Destroying key: ' + key_name + '\nWith UUID: ' +
-                         result.uuid.value)
-        self.client.destroy(result.uuid.value)
-
-
-    def test_symmetric_key_destroy(self):
-        """
-        Tests that symmetric keys are properly destroyed
-        :return:
-        """
-        key_name = 'Integration Test - Destroy Key'
-        result = self._create_symmetric_key(key_name=key_name)
-
-        uuid = result.uuid.value
-
-        # Verify the secret was created
-        result = self.client.get(uuid=uuid, credential=None)
-
-        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
-
-        secret = result.secret
-        expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
-        self.assertIsInstance(secret, expected, message)
-
-        self.logger.info('Destroying key: ' + key_name + '\nWith UUID: ' +
-                          result.uuid.value)
-        # Destroy the SYMMETRIC_KEY object
-        result = self.client.destroy(uuid)
         self._check_result_status(result, ResultStatus,
                                   ResultStatus.SUCCESS)
         self._check_uuid(result.uuid.value, str)
