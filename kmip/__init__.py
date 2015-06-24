@@ -17,7 +17,9 @@ import logging.config
 import os
 import sys
 
-exec(open('kmip/version.py').read())
+version = os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), 'version.py')
+exec(open(version).read())
 
 path = os.path.join(os.path.dirname(__file__), 'logconfig.ini')
 
