@@ -571,7 +571,7 @@ class EncodingOption(Enumeration):
     ENUM_TYPE = enums.EncodingOption
 
     def __init__(self, value=None):
-        super(WrappingMethod, self).__init__(value, Tags.ENCODING_OPTION)
+        super(EncodingOption, self).__init__(value, Tags.ENCODING_OPTION)
 
 
 class KeyInformation(Struct):
@@ -580,8 +580,7 @@ class KeyInformation(Struct):
                  unique_identifier=None,
                  cryptographic_parameters=None,
                  tag=Tags.ENCRYPTION_KEY_INFORMATION):
-        super(KeyInformation, self).__init__(
-            tag=Tags.ENCRYPTION_KEY_INFORMATION)
+        super(KeyInformation, self).__init__(tag=tag)
         self.unique_identifier = unique_identifier
         self.cryptographic_parameters = cryptographic_parameters
         self.validate()
