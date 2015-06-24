@@ -304,7 +304,7 @@ class TestIntegration(TestCase):
         Test that symmetric keys are properly created
         :return:
         """
-        key_name = 'Integration Test - Create Key'
+        key_name = 'Integration Test - Create-Get-Destroy Key'
         result = self._create_symmetric_key(key_name=key_name)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
@@ -312,7 +312,27 @@ class TestIntegration(TestCase):
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
-        self.logger.info('Destroying key: ' + key_name + '\n With UUID: ' +
+
+        result = self.client.get(uuid=result.uuid.value, credential=None)
+        uuid = result.uuid.value
+
+        result = self.client.get(uuid=uuid, credential=None)
+
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
+        self._check_object_type(result.object_type.enum, ObjectType,
+                                ObjectType.SYMMETRIC_KEY)
+        self._check_uuid(result.uuid.value, str)
+
+        # Check the secret type
+        secret = result.secret
+
+        expected = SymmetricKey
+        message = utils.build_er_error(result.__class__, 'type', expected,
+                                       secret, 'secret')
+        self.assertIsInstance(secret, expected, message)
+
+
+        self.logger.debug('Destroying key: ' + key_name + '\n With UUID: ' +
                          result.uuid.value)
 
         result = self.client.destroy(result.uuid.value)
