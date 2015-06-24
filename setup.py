@@ -13,9 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import setuptools
 
-exec(open('kmip/version.py').read())
+version = os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), 'kmip', 'version.py')
+exec(open(version).read())
 
 setuptools.setup(
     name='PyKMIP',
