@@ -328,7 +328,7 @@ class TestIntegration(TestCase):
         self._check_uuid(result.uuid.value, str)
 
         # Verify the secret was destroyed
-        result = self.client.get(uuid=uuid, credential=None)
+        result = self.client.get(uuid=result.uuid.value, credential=None)
 
         self._check_result_status(result, ResultStatus,
                                   ResultStatus.OPERATION_FAILED)
