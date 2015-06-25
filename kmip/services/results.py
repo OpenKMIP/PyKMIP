@@ -249,3 +249,15 @@ class DiscoverVersionsResult(OperationResult):
         super(DiscoverVersionsResult, self).__init__(
             result_status, result_reason, result_message)
         self.protocol_versions = protocol_versions
+
+
+class RevokeResult(OperationResult):
+
+    def __init__(self,
+                 result_status,
+                 result_reason=None,
+                 result_message=None,
+                 unique_identifier=None):
+        super(RevokeResult, self).__init__(
+            result_status, result_reason, result_message)
+        self.unique_identifier = unique_identifier
