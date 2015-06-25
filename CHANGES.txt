@@ -1,3 +1,14 @@
+0.3.3 - June 25, 2015
+* Add the core ManagedObject class hierarchy for the new Pie API
+* Add updated Boolean primitive implementation and test suite
+* Add integration tests for symmetric key creation and registration
+* Update demo and client logging to log at the INFO level by default
+* Update README with improved testing instructions
+* Fix bug causing enumerations to be encoded as signed integers
+* Fix bug with mismatched EncodingOption tag
+* Fix bug with relative path use for version number handling
+* Fix bug with Integer primitive breaking on valid long integer values
+
 0.3.2 - June 11, 2015
 * Add support for registering and retrieving Certificates
 * Update unit demos to work with Certificates

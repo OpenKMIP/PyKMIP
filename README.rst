@@ -32,6 +32,7 @@ For a high-level overview of KMIP, check out the `KMIP Wikipedia page`_. For
 comprehensive documentation from OASIS and information about the KMIP
 community, visit the `KMIP Technical Committee home page`_.
 
+.. _Usage:
 Usage
 =====
 The KMIP client can be configured to connect to a KMIP server using settings
@@ -122,10 +123,10 @@ Server profiles:
 Testing
 -------
 The PyKMIP test suite is composed of two parts: a unit test suite composed of
-over 550 unit tests, and an integration test suite that runs against
-instantiations of the software KMIP server. The tests are managed by a
-combination of the ``tox``, ``pytest``, and ``flake8`` libraries and cover
-approximately 80% of the code.
+over 600 unit tests, and an integration test suite that runs various tests
+against instantiations of the software KMIP server and real KMIP appliances.
+The tests are managed by a combination of the ``tox``, ``pytest``, and
+``flake8`` libraries and cover approximately 80% of the code.
 
 There are several ways to run different versions of the tests. To run, use one
 of the following commands in the PyKMIP root directory.
@@ -142,9 +143,13 @@ To run the unit test suite against Python 2.7::
 
   $ tox -e py27
 
-To run the integration test suite against the default Python installation:
+The integration tests require a configuration flag whose value corresponds to
+a client configuration section in the ``kmipconfig.ini`` configuration file.
+See the Usage_ section for more information.
 
-  $ tox -e integration
+To run the integration test suite with a specific configuration setup:
+
+  $ tox -e integration -- --config <section-name>
 
 For more information and a list of supported ``tox`` environments, see
 ``tox.ini`` in the PyKMIP root directory.
