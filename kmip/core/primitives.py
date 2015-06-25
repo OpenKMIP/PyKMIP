@@ -165,6 +165,10 @@ class Struct(Base):
 class Integer(Base):
     LENGTH = 4
 
+    # Set for signed 32-bit integers
+    MIN = -2147483648
+    MAX = 2147483647
+
     def __init__(self, value=None, tag=Tags.DEFAULT, signed=True):
         super(Integer, self).__init__(tag, type=Types.INTEGER)
 
@@ -207,19 +211,23 @@ class Integer(Base):
         self.write_value(ostream)
 
     def validate(self):
-        self.__validate()
+        """
+        Verify that the value of the Integer object is valid.
 
-    def __validate(self):
+        Raises:
+            TypeError: if the value is not of type int or long
+            ValueError: if the value cannot be represented by a signed 32-bit
+                integer
+        """
         if self.value is not None:
-            data_type = type(self.value)
-            if data_type is not int:
-                raise errors.StateTypeError(Integer.__name__, int,
-                                            data_type)
-            num_bytes = utils.count_bytes(self.value)
-            if num_bytes > self.length:
-                raise errors.StateOverflowError(Integer.__name__,
-                                                'value', self.length,
-                                                num_bytes)
+            if type(self.value) not in six.integer_types:
+                raise TypeError('expected (one of): {0}, observed: {1}'.format(
+                    six.integer_types, type(self.value)))
+            else:
+                if self.value > Integer.MAX:
+                    raise ValueError('integer value greater than accepted max')
+                elif self.value < Integer.MIN:
+                    raise ValueError('integer value less than accepted min')
 
     def __repr__(self):
         return "{0}(value={1})".format(type(self).__name__, repr(self.value))
