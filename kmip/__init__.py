@@ -17,9 +17,11 @@ import logging.config
 import os
 import sys
 
-version = os.path.join(os.path.dirname(
+# Dynamically set __version__
+version_path = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), 'version.py')
-exec(open(version).read())
+with open(version_path, 'r') as version_file:
+    exec(version_file.read())
 
 path = os.path.join(os.path.dirname(__file__), 'logconfig.ini')
 
