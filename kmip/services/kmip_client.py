@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.services.results import ActivateResult
 from kmip.services.results import CreateResult
 from kmip.services.results import CreateKeyPairResult
 from kmip.services.results import DestroyResult
@@ -42,6 +43,7 @@ from kmip.core.messages.contents import ProtocolVersion
 
 from kmip.core.messages import messages
 
+from kmip.core.messages.payloads import activate
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
@@ -238,6 +240,19 @@ class KMIPProxy(KMIP):
             response = self._send_and_receive_message(request)
             results = self._process_batch_items(response)
             return results[0]
+
+    def activate(self, uuid=None, credential=None):
+        """
+        Send an Activate request to the server.
+
+        Args:
+            uuid (string): The unique identifier of a managed cryptographic
+                object that should be activated.
+            credential (Credential): A Credential object containing
+                authentication information for the server. Optional, defaults
+                to None.
+        """
+        return self._activate(uuid, credential=credential)
 
     def get(self, uuid=None, key_format_type=None, key_compression_type=None,
             key_wrapping_specification=None, credential=None):
@@ -550,6 +565,37 @@ class KMIPProxy(KMIP):
                            payload_object_type,
                            payload_unique_identifier,
                            payload_secret)
+        return result
+
+    def _activate(self, unique_identifier=None, credential=None):
+        operation = Operation(OperationEnum.ACTIVATE)
+
+        uuid = None
+        if unique_identifier is not None:
+            uuid = attr.UniqueIdentifier(unique_identifier)
+
+        payload = activate.ActivateRequestPayload(unique_identifier=uuid)
+
+        batch_item = messages.RequestBatchItem(operation=operation,
+                                               request_payload=payload)
+        message = self._build_request_message(credential, [batch_item])
+        self._send_message(message)
+        message = messages.ResponseMessage()
+        data = self._receive_message()
+        message.read(data)
+        batch_items = message.batch_items
+        batch_item = batch_items[0]
+        payload = batch_item.response_payload
+
+        if payload is None:
+            payload_unique_identifier = None
+        else:
+            payload_unique_identifier = payload.unique_identifier
+
+        result = ActivateResult(batch_item.result_status,
+                                batch_item.result_reason,
+                                batch_item.result_message,
+                                payload_unique_identifier)
         return result
 
     def _destroy(self,

@@ -12,6 +12,7 @@ The PyKMIP library provides a KMIP client supporting the following operations:
 
 * Create
 * CreateKeyPair
+* Activate
 * Destroy
 * DiscoverVersions
 * Get
