@@ -20,6 +20,7 @@ from kmip.core.attributes import ContactInformation
 from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
 from kmip.core.attributes import CryptographicUsageMask
+from kmip.core.attributes import CryptographicParameters
 from kmip.core.attributes import CustomAttribute
 from kmip.core.attributes import Digest
 from kmip.core.attributes import Name
@@ -27,6 +28,7 @@ from kmip.core.attributes import ObjectGroup
 from kmip.core.attributes import UniqueIdentifier
 from kmip.core.attributes import ObjectType
 from kmip.core.attributes import OperationPolicyName
+from kmip.core.attributes import HashingAlgorithm
 
 from kmip.core import utils
 
@@ -151,7 +153,31 @@ class AttributeValueFactory(object):
         return CryptographicLength(length)
 
     def _create_cryptographic_parameters(self, params):
-        raise NotImplementedError()
+        block_cipher_mode = None
+        if 'block_cipher_mode' in params:
+            block_cipher_mode = CryptographicParameters.BlockCipherMode(
+                params.get('block_cipher_mode'))
+
+        padding_method = None
+        if 'padding_method' in params:
+            padding_method = CryptographicParameters.PaddingMethod(
+                params.get('padding_method'))
+
+        key_role_type = None
+        if 'key_role_type' in params:
+            key_role_type = CryptographicParameters.KeyRoleType(
+                params.get('key_role_type'))
+
+        hashing_algorithm = None
+        if 'hashing_algorithm' in params:
+            hashing_algorithm = HashingAlgorithm(
+                params.get("hashing_algorithm"))
+
+        return CryptographicParameters(
+            block_cipher_mode=block_cipher_mode,
+            padding_method=padding_method,
+            hashing_algorithm=hashing_algorithm,
+            key_role_type=key_role_type)
 
     def _create_cryptographic_domain_parameters(self, params):
         raise NotImplementedError()
