@@ -28,6 +28,7 @@ from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
+from kmip.core.messages.payloads import revoke
 
 
 class TestRequestPayloadFactory(testtools.TestCase):
@@ -120,8 +121,8 @@ class TestRequestPayloadFactory(testtools.TestCase):
         self._test_payload_type(payload, activate.ActivateRequestPayload)
 
     def test_create_revoke_payload(self):
-        self._test_not_implemented(
-            self.factory.create, Operation.REVOKE)
+        payload = self.factory.create(Operation.REVOKE)
+        self._test_payload_type(payload, revoke.RevokeRequestPayload)
 
     def test_create_destroy_payload(self):
         payload = self.factory.create(Operation.DESTROY)

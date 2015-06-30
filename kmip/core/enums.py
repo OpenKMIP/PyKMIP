@@ -620,3 +620,12 @@ class ObjectGroupMember(Enum):
 class StorageStatusMask(Enum):
     ONLINE_STORAGE      = 0x00000001
     ARCHIVAL_STORAGE    = 0x00000002
+
+class RevocationReasonCode(Enum):
+    UNSPECIFIED            = 0x00000001
+    KEY_COMPROMISE         = 0x00000002
+    CA_COMPROMISE          = 0x00000003
+    AFFILIATION_CHANGED    = 0x00000004
+    SUPERSEDED             = 0x00000005
+    CESSATION_OF_OPERATION = 0x00000006
+    PRIVILEGE_WITHDRAWN    = 0x00000007

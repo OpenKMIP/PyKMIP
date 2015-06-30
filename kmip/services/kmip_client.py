@@ -23,6 +23,7 @@ from kmip.services.results import LocateResult
 from kmip.services.results import QueryResult
 from kmip.services.results import RegisterResult
 from kmip.services.results import RekeyKeyPairResult
+from kmip.services.results import RevokeResult
 
 from kmip.core import attributes as attr
 
@@ -53,6 +54,7 @@ from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
+from kmip.core.messages.payloads import revoke
 
 from kmip.services.kmip_protocol import KMIPProtocol
 
@@ -262,6 +264,12 @@ class KMIPProxy(KMIP):
             key_compression_type=key_compression_type,
             key_wrapping_specification=key_wrapping_specification,
             credential=credential)
+
+    def revoke(self, uuid, reason, message=None, credential=None):
+        return self._revoke(unique_identifier=uuid,
+                            revocation_code=reason,
+                            revocation_message=message,
+                            credential=credential)
 
     def destroy(self, uuid, credential=None):
         return self._destroy(unique_identifier=uuid,
@@ -629,6 +637,43 @@ class KMIPProxy(KMIP):
                                batch_item.result_reason,
                                batch_item.result_message,
                                payload_unique_identifier)
+        return result
+
+    def _revoke(self, unique_identifier=None, revocation_code=None,
+                revocation_message=None, credential=None):
+        operation = Operation(OperationEnum.REVOKE)
+
+        reason = objects.RevocationReason(code=revocation_code,
+                                          message=revocation_message)
+        uuid = None
+        if unique_identifier is not None:
+            uuid = attr.UniqueIdentifier(unique_identifier)
+
+        payload = revoke.RevokeRequestPayload(
+            unique_identifier=uuid,
+            revocation_reason=reason,
+            compromise_date=None)  # TODO(tim-kelsey): sort out date handling
+
+        batch_item = messages.RequestBatchItem(operation=operation,
+                                               request_payload=payload)
+        message = self._build_request_message(credential, [batch_item])
+        self._send_message(message)
+        message = messages.ResponseMessage()
+        data = self._receive_message()
+        message.read(data)
+        batch_items = message.batch_items
+        batch_item = batch_items[0]
+        payload = batch_item.response_payload
+
+        if payload is None:
+            payload_unique_identifier = None
+        else:
+            payload_unique_identifier = payload.unique_identifier
+
+        result = RevokeResult(batch_item.result_status,
+                              batch_item.result_reason,
+                              batch_item.result_message,
+                              payload_unique_identifier)
         return result
 
     def _register(self,

@@ -25,6 +25,7 @@ from kmip.core.enums import AttributeType
 from kmip.core.enums import Tags
 from kmip.core.enums import Types
 from kmip.core.enums import CredentialType
+from kmip.core.enums import RevocationReasonCode as RevocationReasonCodeEnum
 
 from kmip.core.errors import ErrorStrings
 from kmip.core.misc import KeyFormatType
@@ -1177,3 +1178,102 @@ class ExtensionInformation(Struct):
             extension_name=extension_name,
             extension_tag=extension_tag,
             extension_type=extension_type)
+
+
+# 3.31, 9.1.3.2.19
+class RevocationReasonCode(Enumeration):
+    ENUM_TYPE = RevocationReasonCodeEnum
+
+    def __init__(self, value=RevocationReasonCodeEnum.UNSPECIFIED):
+        super(RevocationReasonCode, self).__init__(
+            value=value, tag=Tags.REVOCATION_REASON_CODE)
+
+
+# 3.31
+class RevocationReason(Struct):
+    """
+    A structure describing  the reason for a revocation operation.
+
+    See Sections 2.1.9 and 4.25 of the KMIP 1.1 specification for
+    more information.
+
+    Attributes:
+        code: The revocation reason code enumeration
+        message: An optional revocation message
+    """
+
+    def __init__(self, code=None, message=None):
+        """
+        Construct a RevocationReason object.
+
+        Parameters:
+            code(RevocationReasonCode): revocation reason code
+            message(string): An optional revocation message
+        """
+        super(RevocationReason, self).__init__(tag=Tags.REVOCATION_REASON)
+        if code is not None:
+            self.revocation_code = RevocationReasonCode(value=code)
+        else:
+            self.revocation_code = RevocationReasonCode()
+
+        if message is not None:
+            self.revocation_message = TextString(
+                value=message,
+                tag=Tags.REVOCATION_MESSAGE)
+        else:
+            self.revocation_message = None
+
+        self.validate()
+
+    def read(self, istream):
+        """
+        Read the data encoding the RevocationReason object and decode it
+        into its constituent parts.
+
+        Args:
+            istream (Stream): A data stream containing encoded object data,
+                supporting a read method; usually a BytearrayStream object.
+        """
+        super(RevocationReason, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+
+        self.revocation_code = RevocationReasonCode()
+        self.revocation_code.read(tstream)
+
+        if self.is_tag_next(Tags.REVOCATION_MESSAGE, tstream):
+            self.revocation_message = TextString()
+            self.revocation_message.read(tstream)
+
+        self.is_oversized(tstream)
+        self.validate()
+
+    def write(self, ostream):
+        """
+        Write the data encoding the RevocationReason object to a stream.
+
+        Args:
+            ostream (Stream): A data stream in which to encode object data,
+                supporting a write method; usually a BytearrayStream object.
+        """
+        tstream = BytearrayStream()
+
+        self.revocation_code.write(tstream)
+        if self.revocation_message is not None:
+            self.revocation_message.write(tstream)
+
+        # Write the length and value
+        self.length = tstream.length()
+        super(RevocationReason, self).write(ostream)
+        ostream.write(tstream.buffer)
+
+    def validate(self):
+        """
+        validate the RevocationReason object
+        """
+        if not isinstance(self.revocation_code, RevocationReasonCode):
+            msg = "RevocationReaonCode expected"
+            raise TypeError(msg)
+        if self.revocation_message is not None:
+            if not isinstance(self.revocation_message, TextString):
+                msg = "TextString expect"
+                raise TypeError(msg)
