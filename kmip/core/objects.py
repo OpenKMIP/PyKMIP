@@ -387,7 +387,10 @@ class KeyBlock(Struct):
             self.key_compression_type = KeyBlock.KeyCompressionType()
             self.key_compression_type.read(tstream)
 
-        self.key_value = KeyValue()
+        if self.is_type_next(Types.BYTE_STRING, tstream):
+            self.key_value = ByteString(tag=Tags.KEY_VALUE)
+        else:
+            self.key_value = KeyValue()
         self.key_value.read(tstream)
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_ALGORITHM, tstream):

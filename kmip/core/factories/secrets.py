@@ -17,6 +17,7 @@ from kmip.core.factories.keys import KeyFactory
 
 from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
+from kmip.core.attributes import UniqueIdentifier
 
 from kmip.core.enums import ObjectType
 from kmip.core.errors import ErrorStrings
@@ -26,6 +27,10 @@ from kmip.core.objects import Attribute
 from kmip.core.objects import KeyBlock
 from kmip.core.objects import KeyMaterial
 from kmip.core.objects import KeyWrappingData
+from kmip.core.objects import WrappingMethod
+from kmip.core.objects import EncodingOption
+from kmip.core.objects import EncryptionKeyInformation
+from kmip.core.objects import MACSignatureKeyInformation
 from kmip.core.objects import KeyValue
 
 from kmip.core.secrets import Certificate
@@ -148,36 +153,67 @@ class SecretFactory(object):
         return OpaqueObject()
 
     def _build_key_block(self, value):
-            key_type = value.get('key_format_type')
-            key_compression_type = value.get('key_compression_type')
-            key_value = value.get('key_value')
-            cryptographic_algorithm = value.get('cryptographic_algorithm')
-            cryptographic_length = value.get('cryptographic_length')
-            key_wrapping_data = value.get('key_wrapping_data')
+        key_type = value.get('key_format_type')
+        key_compression_type = value.get('key_compression_type')
+        key_value = value.get('key_value')
+        cryptographic_algorithm = value.get('cryptographic_algorithm')
+        cryptographic_length = value.get('cryptographic_length')
+        key_wrapping_data = value.get('key_wrapping_data')
 
-            key_format_type = KeyFormatType(key_type)
+        key_format_type = KeyFormatType(key_type)
 
-            key_comp_type = None
-            if key_compression_type is not None:
-                key_comp_type = KeyBlock.KeyCompressionType(
-                    key_compression_type)
+        key_comp_type = None
+        if key_compression_type is not None:
+            key_comp_type = KeyBlock.KeyCompressionType(
+                key_compression_type)
 
-            key_material = KeyMaterial(key_value)
-            key_value = KeyValue(key_material)
-            crypto_algorithm = CryptographicAlgorithm(cryptographic_algorithm)
-            crypto_length = CryptographicLength(cryptographic_length)
+        key_material = KeyMaterial(key_value)
+        key_value = KeyValue(key_material)
+        crypto_algorithm = CryptographicAlgorithm(cryptographic_algorithm)
+        crypto_length = CryptographicLength(cryptographic_length)
 
-            key_wrap_data = None
-            if key_wrapping_data is not None:
-                # TODO (peter-hamilton) This currently isn't used in the tests
-                # TODO (peter-hamilton) but needs to be updated to properly
-                # TODO (peter-hamilton) create a KeyWrappingData object.
-                key_wrap_data = KeyWrappingData(key_wrapping_data)
+        key_wrap_data = None
+        if key_wrapping_data is not None:
+            key_wrap_data = self._build_key_wrapping_data(key_wrapping_data)
 
-            key_block = KeyBlock(key_format_type,
-                                 key_comp_type,
-                                 key_value,
-                                 crypto_algorithm,
-                                 crypto_length,
-                                 key_wrap_data)
-            return key_block
+        key_block = KeyBlock(key_format_type,
+                             key_comp_type,
+                             key_value,
+                             crypto_algorithm,
+                             crypto_length,
+                             key_wrap_data)
+        return key_block
+
+    def _build_key_wrapping_data(self, wrap_data):
+        wrapping_method = WrappingMethod(wrap_data.get('wrap_method'))
+
+        enc_key_info = None
+        # NOTE(2.1.5): we will use the crypto params from the identified key
+        if 'encryption_key_uuid' in wrap_data:
+            enc_key_info = EncryptionKeyInformation(
+                unique_identifier=UniqueIdentifier(
+                    wrap_data.get('encryption_key_uuid')))
+
+        mac_key_info = None
+        # NOTE(2.1.5): we will use the crypto params from the identified key
+        if 'mac_key_uuid' in wrap_data:
+            mac_key_info = MACSignatureKeyInformation(
+                unique_identifier=UniqueIdentifier(
+                    value=wrap_data.get('mac_key_uuid')))
+
+        mac_signature = wrap_data.get('mac_signature')  # byte string
+        iv_nonce = wrap_data.get('iv_counter_nonce')  # byte string
+
+        encoding_option = None
+        if 'encoding_option' in wrap_data:
+            encoding_option = EncodingOption(wrap_data.get('encoding_option'))
+
+        key_wrapping_data = KeyWrappingData(
+            wrapping_method=wrapping_method,
+            encryption_key_information=enc_key_info,
+            mac_signature_key_information=mac_key_info,
+            mac_signature=mac_signature,
+            iv_counter_nonce=iv_nonce,
+            encoding_option=encoding_option)
+
+        return key_wrapping_data
