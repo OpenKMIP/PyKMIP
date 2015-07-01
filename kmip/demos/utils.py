@@ -134,6 +134,15 @@ def build_cli_parser(operation):
             default=None,
             dest="uuid",
             help="UUID of secret to activate on the KMIP server")
+    elif operation is Operation.REVOKE:
+        parser.add_option(
+            "-i",
+            "--uuid",
+            action="store",
+            type="str",
+            default=None,
+            dest="uuid",
+            help="UUID of secret to revoke on the KMIP server")
     elif operation is Operation.GET:
         parser.add_option(
             "-i",
