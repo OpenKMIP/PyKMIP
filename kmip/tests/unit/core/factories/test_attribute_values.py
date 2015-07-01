@@ -20,10 +20,13 @@ from kmip.core.enums import BlockCipherMode
 from kmip.core.enums import HashingAlgorithm
 from kmip.core.enums import PaddingMethod
 from kmip.core.enums import KeyRoleType
+from kmip.core.enums import Tags
 
 from kmip.core import attributes
 from kmip.core.attributes import CryptographicParameters
 from kmip.core.attributes import OperationPolicyName
+
+from kmip.core.primitives import DateTime
 
 from kmip.core.factories.attribute_values import AttributeValueFactory
 
@@ -132,3 +135,56 @@ class TestAttributeValueFactory(TestCase):
         # noqa - E128 continuation line under-indented for visual indent
         self._test_cryptograpic_parameters(cp, None, None, None,
             attributes.HashingAlgorithm(HashingAlgorithm.SHA_512))  # noqa
+
+    def _test_date_value(self, date, value, tag):
+        msg = "expected {0}, received {1}"
+        self.assertIsInstance(date, DateTime, msg.format(
+            DateTime, date.__class__))
+
+        self.assertEqual(date.value, value, msg.format(value, date.value))
+        self.assertEqual(date.tag, tag, msg.format(tag, date.tag))
+
+    def test_create_initial_date(self):
+        date = self.factory.create_attribute_value(
+            AttributeType.INITIAL_DATE, 0)
+        self._test_date_value(date, 0, Tags.INITIAL_DATE)
+
+    def test_create_activation_date(self):
+        date = self.factory.create_attribute_value(
+            AttributeType.ACTIVATION_DATE, 0)
+        self._test_date_value(date, 0, Tags.ACTIVATION_DATE)
+
+    def test_create_process_start_date(self):
+        date = self.factory.create_attribute_value(
+            AttributeType.PROCESS_START_DATE, 0)
+        self._test_date_value(date, 0, Tags.PROCESS_START_DATE)
+
+    def test_create_protect_stop_date(self):
+        date = self.factory.create_attribute_value(
+            AttributeType.PROTECT_STOP_DATE, 0)
+        self._test_date_value(date, 0, Tags.PROTECT_STOP_DATE)
+
+    def test_create_deactivation_date(self):
+        date = self.factory.create_attribute_value(
+            AttributeType.DEACTIVATION_DATE, 0)
+        self._test_date_value(date, 0, Tags.DEACTIVATION_DATE)
+
+    def test_create_destroy_date(self):
+        date = self.factory.create_attribute_value(
+            AttributeType.DESTROY_DATE, 0)
+        self._test_date_value(date, 0, Tags.DESTROY_DATE)
+
+    def test_create_compromise_occurance_date(self):
+        date = self.factory.create_attribute_value(
+            AttributeType.COMPROMISE_OCCURRENCE_DATE, 0)
+        self._test_date_value(date, 0, Tags.COMPROMISE_OCCURRENCE_DATE)
+
+    def test_create_compromise_date(self):
+        date = self.factory.create_attribute_value(
+            AttributeType.COMPROMISE_DATE, 0)
+        self._test_date_value(date, 0, Tags.COMPROMISE_DATE)
+
+    def test_create_archive_date(self):
+        date = self.factory.create_attribute_value(
+            AttributeType.ARCHIVE_DATE, 0)
+        self._test_date_value(date, 0, Tags.ARCHIVE_DATE)
