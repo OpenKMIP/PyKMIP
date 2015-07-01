@@ -14,6 +14,9 @@
 # under the License.
 
 from kmip.core.enums import AttributeType
+from kmip.core.enums import Tags
+
+from kmip.core.primitives import DateTime
 
 from kmip.core.attributes import ApplicationSpecificInformation
 from kmip.core.attributes import ContactInformation
@@ -234,34 +237,34 @@ class AttributeValueFactory(object):
         raise NotImplementedError()
 
     def _create_initial_date(self, date):
-        raise NotImplementedError()
+        return DateTime(value=date, tag=Tags.INITIAL_DATE)
 
     def _create_activation_date(self, date):
-        raise NotImplementedError()
+        return DateTime(value=date, tag=Tags.ACTIVATION_DATE)
 
     def _create_process_start_date(self, date):
-        raise NotImplementedError()
+        return DateTime(value=date, tag=Tags.PROCESS_START_DATE)
 
     def _create_protect_stop_date(self, date):
-        raise NotImplementedError()
+        return DateTime(value=date, tag=Tags.PROTECT_STOP_DATE)
 
     def _create_deactivation_date(self, date):
-        raise NotImplementedError()
+        return DateTime(value=date, tag=Tags.DEACTIVATION_DATE)
 
     def _create_destroy_date(self, date):
-        raise NotImplementedError()
+        return DateTime(value=date, tag=Tags.DESTROY_DATE)
 
     def _create_compromise_occurrence_date(self, date):
-        raise NotImplementedError()
+        return DateTime(value=date, tag=Tags.COMPROMISE_OCCURRENCE_DATE)
 
     def _create_compromise_date(self, date):
-        raise NotImplementedError()
+        return DateTime(value=date, tag=Tags.COMPROMISE_DATE)
 
     def _create_revocation_reason(self, reason):
         raise NotImplementedError()
 
     def _create_archive_date(self, date):
-        raise NotImplementedError()
+        return DateTime(value=date, tag=Tags.ARCHIVE_DATE)
 
     def _create_object_group(self, group):
         if group is not None and not isinstance(group, str):
