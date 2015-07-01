@@ -35,6 +35,10 @@ class DummyManagedObject(ManagedObject):
 
         self._object_type = object_type
 
+    def validate(self):
+        super(DummyManagedObject, self).validate()
+        return
+
     def __repr__(self):
         super(DummyManagedObject, self).__repr__()
         return ''
@@ -93,6 +97,13 @@ class TestManagedObject(TestCase):
             dummy.object_type = 'placeholder'
 
         self.assertRaises(AttributeError, set_object_type)
+
+    def test_validate(self):
+        """
+        Test that validate can be called on a ManagedObject.
+        """
+        dummy = DummyManagedObject()
+        dummy.validate()
 
     def test_repr(self):
         """
