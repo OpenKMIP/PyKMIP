@@ -30,6 +30,9 @@ class DummyKey(Key):
         """
         super(DummyKey, self).__init__()
 
+    def validate(self):
+        return
+
     def __repr__(self):
         return ''
 
