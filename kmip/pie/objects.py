@@ -313,3 +313,122 @@ class SymmetricKey(Key):
             return not (self == other)
         else:
             return NotImplemented
+
+
+class PublicKey(CryptographicObject):
+    """
+    The PublicKey class of the simplified KMIP object hierarchy.
+
+    A PublicKey is a core KMIP object that is the subject of key management
+    operations. For more information, see Section 2.2 of the KMIP 1.1
+    specification.
+
+    Attributes:
+        cryptographic_algorithm: The type of algorithm for the PublicKey.
+        cryptographic_length: The length in bits of the PublicKey.
+        value: The bytes of the PublicKey.
+        cryptographic_usage_masks: The list of usage mask flags for PublicKey
+            application.
+        names: The list of string names of the PublicKey.
+    """
+
+    def __init__(self, algorithm, length, value, masks=None,
+                 name='Public Key'):
+        """
+        Create a PublicKey.
+
+        Args:
+            algorithm(CryptographicAlgorithm): An enumeration identifying the
+                type of algorithm for the key.
+            length(int): The length in bits of the key.
+            value(bytes): The bytes representing the key.
+            masks(list): A list of CryptographicUsageMask enumerations
+                defining how the key will be used.
+            name(string): The string name of the key.
+        """
+        super(PublicKey, self).__init__()
+
+        self._object_type = ObjectType.PUBLIC_KEY
+
+        self.value = value
+        self.cryptographic_algorithm = algorithm
+        self.cryptographic_length = length
+        self.names = [name]
+
+        if masks:
+            self.cryptographic_usage_masks = masks
+        else:
+            self.cryptographic_usage_masks = list()
+
+        # All remaining attributes are not considered part of the public API
+        # and are subject to change.
+
+        # The following attributes are placeholders for attributes that are
+        # unsupported by kmip.core
+        self._cryptographic_domain_parameters = list()
+
+        self.validate()
+
+    def validate(self):
+        """
+        Verify that the contents of the PublicKey object are valid.
+
+        Raises:
+            TypeError: if the types of any PublicKey attributes are invalid.
+        """
+        if not isinstance(self.value, bytes):
+            raise TypeError("key value must be bytes")
+        elif not isinstance(self.cryptographic_algorithm,
+                            CryptographicAlgorithm):
+            raise TypeError("key algorithm must be a CryptographicAlgorithm "
+                            "enumeration")
+        elif not isinstance(self.cryptographic_length, six.integer_types):
+            raise TypeError("key length must be an integer")
+        elif not isinstance(self.cryptographic_usage_masks, list):
+            raise TypeError("key usage masks must be a list")
+
+        mask_count = len(self.cryptographic_usage_masks)
+        for i in range(mask_count):
+            mask = self.cryptographic_usage_masks[i]
+            if not isinstance(mask, CryptographicUsageMask):
+                position = "({0} in list)".format(i)
+                raise TypeError(
+                    "key mask {0} must be a CryptographicUsageMask "
+                    "enumeration".format(position))
+
+        name_count = len(self.names)
+        for i in range(name_count):
+            name = self.names[i]
+            if not isinstance(name, six.string_types):
+                position = "({0} in list)".format(i)
+                raise TypeError("key name {0} must be a string".format(
+                    position))
+
+    def __repr__(self):
+        algorithm = "algorithm={0}".format(self.cryptographic_algorithm)
+        length = "length={0}".format(self.cryptographic_length)
+        value = "value={0}".format(self.value)
+
+        return "PublicKey({0}, {1}, {2})".format(algorithm, length, value)
+
+    def __str__(self):
+        return str(self.value)
+
+    def __eq__(self, other):
+        if isinstance(other, PublicKey):
+            if self.value != other.value:
+                return False
+            elif self.cryptographic_algorithm != other.cryptographic_algorithm:
+                return False
+            elif self.cryptographic_length != other.cryptographic_length:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, PublicKey):
+            return not (self == other)
+        else:
+            return NotImplemented
