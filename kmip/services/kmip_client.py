@@ -78,7 +78,7 @@ class KMIPProxy(KMIP):
                  cert_reqs=None, ssl_version=None, ca_certs=None,
                  do_handshake_on_connect=None,
                  suppress_ragged_eofs=None,
-                 username=None, password=None, config='client'):
+                 username=None, password=None, timeout=30, config='client'):
         super(KMIPProxy, self).__init__()
         self.logger = logging.getLogger(__name__)
         self.credential_factory = CredentialFactory()
@@ -87,7 +87,7 @@ class KMIPProxy(KMIP):
         self._set_variables(host, port, keyfile, certfile,
                             cert_reqs, ssl_version, ca_certs,
                             do_handshake_on_connect, suppress_ragged_eofs,
-                            username, password)
+                            username, password, timeout)
         self.batch_items = []
 
         self.conformance_clauses = [
@@ -217,7 +217,13 @@ class KMIPProxy(KMIP):
             suppress_ragged_eofs=self.suppress_ragged_eofs)
         self.protocol = KMIPProtocol(self.socket)
 
-        self.socket.connect((self.host, self.port))
+        self.socket.settimeout(self.timeout)
+
+        try:
+            self.socket.connect((self.host, self.port))
+        except socket.timeout as e:
+            self.logger.error("timeout occurred while connecting to appliance")
+            raise e
 
     def close(self):
         self.socket.shutdown(socket.SHUT_RDWR)
@@ -816,7 +822,7 @@ class KMIPProxy(KMIP):
     def _set_variables(self, host, port, keyfile, certfile,
                        cert_reqs, ssl_version, ca_certs,
                        do_handshake_on_connect, suppress_ragged_eofs,
-                       username, password):
+                       username, password, timeout):
         conf = ConfigHelper()
 
         self.host = conf.get_valid_value(
@@ -859,3 +865,12 @@ class KMIPProxy(KMIP):
 
         self.password = conf.get_valid_value(
             password, self.config, 'password', conf.DEFAULT_PASSWORD)
+
+        self.timeout = conf.get_valid_value(
+            timeout, self.config, 'timeout', conf.DEFAULT_TIMEOUT)
+        if self.timeout < 0:
+            self.logger.warning(
+                "Negative timeout value specified, "
+                "resetting to safe default of {0} seconds".format(
+                    conf.DEFAULT_TIMEOUT))
+            self.timeout = conf.DEFAULT_TIMEOUT

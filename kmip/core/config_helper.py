@@ -36,6 +36,9 @@ class ConfigHelper(object):
     DEFAULT_USERNAME = None
     DEFAULT_PASSWORD = None
 
+    # Timeout measured in seconds
+    DEFAULT_TIMEOUT = 30
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -78,6 +81,7 @@ class ConfigHelper(object):
                 return_value = default_value
                 self.logger.debug(DEFAULT_MSG.format(default_value,
                                                      config_option_name))
+        # TODO (peter-hamilton): Think about adding better value validation
         if return_value == self.NONE_VALUE:
             return None
         else:
