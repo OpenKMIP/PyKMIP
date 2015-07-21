@@ -27,16 +27,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from testtools import TestCase
+import binascii
+import testtools
 
-from kmip.core.enums import CryptographicAlgorithm
-from kmip.core.enums import CryptographicUsageMask
-from kmip.core.enums import ObjectType
-
-from kmip.pie.objects import PrivateKey
+from kmip.core import enums
+from kmip.pie import objects
 
 
-class TestPrivateKey(TestCase):
+class TestPrivateKey(testtools.TestCase):
     """
     Test suite for PrivateKey.
     """
@@ -170,12 +168,15 @@ class TestPrivateKey(TestCase):
         """
         Test that a PrivateKey object can be instantiated.
         """
-        key = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
+        key = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
 
-        self.assertEqual(key.cryptographic_algorithm,
-                         CryptographicAlgorithm.RSA)
+        self.assertEqual(
+            key.cryptographic_algorithm, enums.CryptographicAlgorithm.RSA)
         self.assertEqual(key.cryptographic_length, 1024)
         self.assertEqual(key.value, self.bytes_1024)
+        self.assertEqual(key.key_format_type, enums.KeyFormatType.PKCS_8)
         self.assertEqual(key.cryptographic_usage_masks, list())
         self.assertEqual(key.names, ['Private Key'])
 
@@ -183,29 +184,33 @@ class TestPrivateKey(TestCase):
         """
         Test that a PrivateKey object can be instantiated with all arguments.
         """
-        key = PrivateKey(
-            CryptographicAlgorithm.RSA,
+        key = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA,
             1024,
             self.bytes_1024,
-            masks=[CryptographicUsageMask.ENCRYPT,
-                   CryptographicUsageMask.DECRYPT],
+            enums.KeyFormatType.PKCS_8,
+            masks=[enums.CryptographicUsageMask.ENCRYPT,
+                   enums.CryptographicUsageMask.DECRYPT],
             name='Test Private Key')
 
         self.assertEqual(key.cryptographic_algorithm,
-                         CryptographicAlgorithm.RSA)
+                         enums.CryptographicAlgorithm.RSA)
         self.assertEqual(key.cryptographic_length, 1024)
         self.assertEqual(key.value, self.bytes_1024)
+        self.assertEqual(key.key_format_type, enums.KeyFormatType.PKCS_8)
         self.assertEqual(key.cryptographic_usage_masks,
-                         [CryptographicUsageMask.ENCRYPT,
-                          CryptographicUsageMask.DECRYPT])
+                         [enums.CryptographicUsageMask.ENCRYPT,
+                          enums.CryptographicUsageMask.DECRYPT])
         self.assertEqual(key.names, ['Test Private Key'])
 
     def test_get_object_type(self):
         """
         Test that the object type can be retrieved from the PrivateKey.
         """
-        expected = ObjectType.PRIVATE_KEY
-        key = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
+        expected = enums.ObjectType.PRIVATE_KEY
+        key = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
         observed = key.object_type
         self.assertEqual(expected, observed)
 
@@ -214,59 +219,85 @@ class TestPrivateKey(TestCase):
         Test that a TypeError is raised when an invalid algorithm value is
         used to construct a PrivateKey.
         """
-        args = ('invalid', 1024, self.bytes_1024)
-        self.assertRaises(TypeError, PrivateKey, *args)
+        args = ('invalid', 1024, self.bytes_1024, enums.KeyFormatType.PKCS_8)
+        self.assertRaises(TypeError, objects.PrivateKey, *args)
 
     def test_validate_on_invalid_length(self):
         """
         Test that a TypeError is raised when an invalid length value is used
         to construct a PrivateKey.
         """
-        args = (CryptographicAlgorithm.RSA, 'invalid', self.bytes_1024)
-        self.assertRaises(TypeError, PrivateKey, *args)
+        args = (enums.CryptographicAlgorithm.RSA, 'invalid', self.bytes_1024,
+                enums.KeyFormatType.PKCS_8)
+        self.assertRaises(TypeError, objects.PrivateKey, *args)
 
     def test_validate_on_invalid_value(self):
         """
         Test that a TypeError is raised when an invalid value is used to
         construct a PrivateKey.
         """
-        args = (CryptographicAlgorithm.RSA, 1024, 0)
-        self.assertRaises(TypeError, PrivateKey, *args)
+        args = (enums.CryptographicAlgorithm.RSA, 1024, 0,
+                enums.KeyFormatType.PKCS_8)
+        self.assertRaises(TypeError, objects.PrivateKey, *args)
+
+    def test_validate_on_invalid_format_type(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to
+        construct a PrivateKey.
+        """
+        args = (enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+                'invalid')
+        self.assertRaises(TypeError, objects.PrivateKey, *args)
+
+    def test_validate_on_invalid_format_type_value(self):
+        """
+        Test that a ValueError is raised when an invalid format type is used to
+        construct a PrivateKey.
+        """
+        args = (enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+                enums.KeyFormatType.OPAQUE)
+        self.assertRaises(ValueError, objects.PrivateKey, *args)
 
     def test_validate_on_invalid_masks(self):
         """
         Test that a TypeError is raised when an invalid masks value is used to
         construct a PrivateKey.
         """
-        args = (CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
+        args = (enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+                enums.KeyFormatType.PKCS_8)
         kwargs = {'masks': 'invalid'}
-        self.assertRaises(TypeError, PrivateKey, *args, **kwargs)
+        self.assertRaises(TypeError, objects.PrivateKey, *args, **kwargs)
 
     def test_validate_on_invalid_mask(self):
         """
         Test that a TypeError is raised when an invalid mask value is used to
         construct a PrivateKey.
         """
-        args = (CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
+        args = (enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+                enums.KeyFormatType.PKCS_8)
         kwargs = {'masks': ['invalid']}
-        self.assertRaises(TypeError, PrivateKey, *args, **kwargs)
+        self.assertRaises(TypeError, objects.PrivateKey, *args, **kwargs)
 
     def test_validate_on_invalid_name(self):
         """
         Test that a TypeError is raised when an invalid name value is used to
         construct a PrivateKey.
         """
-        args = (CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
+        args = (enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+                enums.KeyFormatType.PKCS_8)
         kwargs = {'name': 0}
-        self.assertRaises(TypeError, PrivateKey, *args, **kwargs)
+        self.assertRaises(TypeError, objects.PrivateKey, *args, **kwargs)
 
     def test_repr(self):
         """
         Test that repr can be applied to a PrivateKey.
         """
-        key = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
-        args = "algorithm={0}, length={1}, value={2}".format(
-            CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
+        key = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
+        args = "algorithm={0}, length={1}, value={2}, format_type={3}".format(
+            enums.CryptographicAlgorithm.RSA, 1024,
+            binascii.hexlify(self.bytes_1024), enums.KeyFormatType.PKCS_8)
         expected = "PrivateKey({0})".format(args)
         observed = repr(key)
         self.assertEqual(expected, observed)
@@ -275,8 +306,10 @@ class TestPrivateKey(TestCase):
         """
         Test that str can be applied to a PrivateKey.
         """
-        key = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
-        expected = str(self.bytes_1024)
+        key = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
+        expected = str(binascii.hexlify(self.bytes_1024))
         observed = str(key)
         self.assertEqual(expected, observed)
 
@@ -285,8 +318,12 @@ class TestPrivateKey(TestCase):
         Test that the equality operator returns True when comparing two
         PrivateKey objects with the same data.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
-        b = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
@@ -295,8 +332,12 @@ class TestPrivateKey(TestCase):
         Test that the equality operator returns False when comparing two
         PrivateKey objects with different data.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
-        b = PrivateKey(CryptographicAlgorithm.AES, 1024, self.bytes_1024)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.AES, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
@@ -305,8 +346,12 @@ class TestPrivateKey(TestCase):
         Test that the equality operator returns False when comparing two
         PrivateKey objects with different data.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
-        b = PrivateKey(CryptographicAlgorithm.RSA, 2048, self.bytes_1024)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
@@ -315,8 +360,26 @@ class TestPrivateKey(TestCase):
         Test that the equality operator returns False when comparing two
         PrivateKey objects with different data.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
-        b = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_2048)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_2048,
+            enums.KeyFormatType.PKCS_8)
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_format_type(self):
+        """
+        Test that the equality operator returns False when comparing two
+        PrivateKey objects with different data.
+        """
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_1)
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
@@ -325,7 +388,9 @@ class TestPrivateKey(TestCase):
         Test that the equality operator returns False when comparing a
         PrivateKey object to a non-PrivateKey object.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
         b = "invalid"
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -335,8 +400,12 @@ class TestPrivateKey(TestCase):
         Test that the inequality operator returns False when comparing
         two PrivateKey objects with the same internal data.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 2048, self.bytes_2048)
-        b = PrivateKey(CryptographicAlgorithm.RSA, 2048, self.bytes_2048)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_1)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_1)
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
@@ -345,8 +414,12 @@ class TestPrivateKey(TestCase):
         Test that the equality operator returns True when comparing two
         PrivateKey objects with different data.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 2048, self.bytes_2048)
-        b = PrivateKey(CryptographicAlgorithm.AES, 2048, self.bytes_2048)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_1)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.AES, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_1)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
@@ -355,8 +428,12 @@ class TestPrivateKey(TestCase):
         Test that the equality operator returns True when comparing two
         PrivateKey objects with different data.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 2048, self.bytes_2048)
-        b = PrivateKey(CryptographicAlgorithm.RSA, 1024, self.bytes_1024)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_8)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
@@ -365,8 +442,26 @@ class TestPrivateKey(TestCase):
         Test that the equality operator returns True when comparing two
         PrivateKey objects with different data.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 2048, self.bytes_2048)
-        b = PrivateKey(CryptographicAlgorithm.RSA, 2048, self.bytes_1024)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_8)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_1024,
+            enums.KeyFormatType.PKCS_8)
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_format_type(self):
+        """
+        Test that the equality operator returns True when comparing two
+        PrivateKey objects with different data.
+        """
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_8)
+        b = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_1)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
@@ -375,7 +470,9 @@ class TestPrivateKey(TestCase):
         Test that the equality operator returns True when comparing a
         PrivateKey object to a non-PrivateKey object.
         """
-        a = PrivateKey(CryptographicAlgorithm.RSA, 2048, self.bytes_2048)
+        a = objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_1)
         b = "invalid"
         self.assertTrue(a != b)
         self.assertTrue(b != a)
