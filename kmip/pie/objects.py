@@ -16,11 +16,10 @@
 from abc import ABCMeta
 from abc import abstractmethod
 
+import binascii
 import six
 
-from kmip.core.enums import CryptographicAlgorithm
-from kmip.core.enums import CryptographicUsageMask
-from kmip.core.enums import ObjectType
+from kmip.core import enums
 
 
 @six.add_metaclass(ABCMeta)
@@ -168,10 +167,12 @@ class Key(CryptographicObject):
         cryptographic_algorithm: A CryptographicAlgorithm enumeration defining
             the algorithm the key should be used with.
         cryptographic_length: An int defining the length of the key in bits.
+        key_format_type: A KeyFormatType enumeration defining the format of
+            the key value.
     """
 
     @abstractmethod
-    def __init__(self, value=None, algorithm=None, length=None):
+    def __init__(self):
         """
         Create a Key object.
         """
@@ -179,6 +180,7 @@ class Key(CryptographicObject):
 
         self.cryptographic_algorithm = None
         self.cryptographic_length = None
+        self.key_format_type = None
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -201,6 +203,7 @@ class SymmetricKey(Key):
         cryptographic_algorithm: The type of algorithm for the SymmetricKey.
         cryptographic_length: The length in bits of the SymmetricKey value.
         value: The bytes of the SymmetricKey.
+        key_format_type: The format of the key value.
         cryptographic_usage_masks: The list of usage mask flags for
             SymmetricKey application.
         names: The string names of the SymmetricKey.
@@ -217,12 +220,14 @@ class SymmetricKey(Key):
             length(int): The length in bits of the key.
             value(bytes): The bytes representing the key.
             masks(list): A list of CryptographicUsageMask enumerations defining
-                how the key will be used.
-            name(string): The string name of the key.
+                how the key will be used. Optional, defaults to None.
+            name(string): The string name of the key. Optional, defaults to
+                'Symmetric Key'.
         """
         super(SymmetricKey, self).__init__()
 
-        self._object_type = ObjectType.SYMMETRIC_KEY
+        self._object_type = enums.ObjectType.SYMMETRIC_KEY
+        self.key_format_type = enums.KeyFormatType.RAW
 
         self.value = value
         self.cryptographic_algorithm = algorithm
@@ -255,7 +260,7 @@ class SymmetricKey(Key):
         if not isinstance(self.value, bytes):
             raise TypeError("key value must be bytes")
         elif not isinstance(self.cryptographic_algorithm,
-                            CryptographicAlgorithm):
+                            enums.CryptographicAlgorithm):
             raise TypeError("key algorithm must be a CryptographicAlgorithm "
                             "enumeration")
         elif not isinstance(self.cryptographic_length, six.integer_types):
@@ -266,7 +271,7 @@ class SymmetricKey(Key):
         mask_count = len(self.cryptographic_usage_masks)
         for i in range(mask_count):
             mask = self.cryptographic_usage_masks[i]
-            if not isinstance(mask, CryptographicUsageMask):
+            if not isinstance(mask, enums.CryptographicUsageMask):
                 position = "({0} in list)".format(i)
                 raise TypeError(
                     "key mask {0} must be a CryptographicUsageMask "
@@ -288,12 +293,12 @@ class SymmetricKey(Key):
     def __repr__(self):
         algorithm = "algorithm={0}".format(self.cryptographic_algorithm)
         length = "length={0}".format(self.cryptographic_length)
-        value = "value={0}".format(self.value)
+        value = "value={0}".format(binascii.hexlify(self.value))
 
         return "SymmetricKey({0}, {1}, {2})".format(algorithm, length, value)
 
     def __str__(self):
-        return str(self.value)
+        return str(binascii.hexlify(self.value))
 
     def __eq__(self, other):
         if isinstance(other, SymmetricKey):
@@ -315,7 +320,7 @@ class SymmetricKey(Key):
             return NotImplemented
 
 
-class PublicKey(CryptographicObject):
+class PublicKey(Key):
     """
     The PublicKey class of the simplified KMIP object hierarchy.
 
@@ -327,12 +332,14 @@ class PublicKey(CryptographicObject):
         cryptographic_algorithm: The type of algorithm for the PublicKey.
         cryptographic_length: The length in bits of the PublicKey.
         value: The bytes of the PublicKey.
+        key_format_type: The format of the key value.
         cryptographic_usage_masks: The list of usage mask flags for PublicKey
             application.
         names: The list of string names of the PublicKey.
     """
 
-    def __init__(self, algorithm, length, value, masks=None,
+    def __init__(self, algorithm, length, value,
+                 format_type=enums.KeyFormatType.X_509, masks=None,
                  name='Public Key'):
         """
         Create a PublicKey.
@@ -342,17 +349,25 @@ class PublicKey(CryptographicObject):
                 type of algorithm for the key.
             length(int): The length in bits of the key.
             value(bytes): The bytes representing the key.
+            format_type(KeyFormatType): An enumeration defining the format of
+                the key value. Optional, defaults to enums.KeyFormatType.X_509.
             masks(list): A list of CryptographicUsageMask enumerations
-                defining how the key will be used.
-            name(string): The string name of the key.
+                defining how the key will be used. Optional, defaults to None.
+            name(string): The string name of the key. Optional, defaults to
+                'Public Key'.
         """
         super(PublicKey, self).__init__()
 
-        self._object_type = ObjectType.PUBLIC_KEY
+        self._object_type = enums.ObjectType.PUBLIC_KEY
+        self._valid_formats = [
+            enums.KeyFormatType.RAW,
+            enums.KeyFormatType.X_509,
+            enums.KeyFormatType.PKCS_1]
 
         self.value = value
         self.cryptographic_algorithm = algorithm
         self.cryptographic_length = length
+        self.key_format_type = format_type
         self.names = [name]
 
         if masks:
@@ -379,18 +394,26 @@ class PublicKey(CryptographicObject):
         if not isinstance(self.value, bytes):
             raise TypeError("key value must be bytes")
         elif not isinstance(self.cryptographic_algorithm,
-                            CryptographicAlgorithm):
+                            enums.CryptographicAlgorithm):
             raise TypeError("key algorithm must be a CryptographicAlgorithm "
                             "enumeration")
         elif not isinstance(self.cryptographic_length, six.integer_types):
             raise TypeError("key length must be an integer")
+        elif not isinstance(self.key_format_type, enums.KeyFormatType):
+            raise TypeError("key format type must be a KeyFormatType "
+                            "enumeration")
+        elif self.key_format_type not in self._valid_formats:
+            raise ValueError("key format type must be one of {0}".format(
+                self._valid_formats))
         elif not isinstance(self.cryptographic_usage_masks, list):
             raise TypeError("key usage masks must be a list")
+
+        # TODO (peter-hamilton) Verify that the key bytes match the key format
 
         mask_count = len(self.cryptographic_usage_masks)
         for i in range(mask_count):
             mask = self.cryptographic_usage_masks[i]
-            if not isinstance(mask, CryptographicUsageMask):
+            if not isinstance(mask, enums.CryptographicUsageMask):
                 position = "({0} in list)".format(i)
                 raise TypeError(
                     "key mask {0} must be a CryptographicUsageMask "
@@ -407,16 +430,20 @@ class PublicKey(CryptographicObject):
     def __repr__(self):
         algorithm = "algorithm={0}".format(self.cryptographic_algorithm)
         length = "length={0}".format(self.cryptographic_length)
-        value = "value={0}".format(self.value)
+        value = "value={0}".format(binascii.hexlify(self.value))
+        format_type = "format_type={0}".format(self.key_format_type)
 
-        return "PublicKey({0}, {1}, {2})".format(algorithm, length, value)
+        return "PublicKey({0}, {1}, {2}, {3})".format(
+            algorithm, length, value, format_type)
 
     def __str__(self):
-        return str(self.value)
+        return str(binascii.hexlify(self.value))
 
     def __eq__(self, other):
         if isinstance(other, PublicKey):
             if self.value != other.value:
+                return False
+            elif self.key_format_type != other.key_format_type:
                 return False
             elif self.cryptographic_algorithm != other.cryptographic_algorithm:
                 return False
@@ -434,7 +461,7 @@ class PublicKey(CryptographicObject):
             return NotImplemented
 
 
-class PrivateKey(CryptographicObject):
+class PrivateKey(Key):
     """
     The PrivateKey class of the simplified KMIP object hierarchy.
 
@@ -446,12 +473,14 @@ class PrivateKey(CryptographicObject):
         cryptographic_algorithm: The type of algorithm for the PrivateKey.
         cryptographic_length: The length in bits of the PrivateKey.
         value: The bytes of the PrivateKey.
+        key_format_type: The format of the key value.
         cryptographic_usage_masks: The list of usage mask flags for PrivateKey
-            application.
-        names: The list of string names of the PrivateKey.
+            application. Optional, defaults to None.
+        names: The list of string names of the PrivateKey. Optional, defaults
+            to 'Private Key'.
     """
 
-    def __init__(self, algorithm, length, value, masks=None,
+    def __init__(self, algorithm, length, value, format_type, masks=None,
                  name='Private Key'):
         """
         Create a PrivateKey.
@@ -461,17 +490,24 @@ class PrivateKey(CryptographicObject):
                 type of algorithm for the key.
             length(int): The length in bits of the key.
             value(bytes): The bytes representing the key.
+            format_type(KeyFormatType): An enumeration defining the format of
+                the key value.
             masks(list): A list of CryptographicUsageMask enumerations
                 defining how the key will be used.
             name(string): The string name of the key.
         """
         super(PrivateKey, self).__init__()
 
-        self._object_type = ObjectType.PRIVATE_KEY
+        self._object_type = enums.ObjectType.PRIVATE_KEY
+        self._valid_formats = [
+            enums.KeyFormatType.RAW,
+            enums.KeyFormatType.PKCS_1,
+            enums.KeyFormatType.PKCS_8]
 
         self.value = value
         self.cryptographic_algorithm = algorithm
         self.cryptographic_length = length
+        self.key_format_type = format_type
         self.names = [name]
 
         if masks:
@@ -498,18 +534,26 @@ class PrivateKey(CryptographicObject):
         if not isinstance(self.value, bytes):
             raise TypeError("key value must be bytes")
         elif not isinstance(self.cryptographic_algorithm,
-                            CryptographicAlgorithm):
+                            enums.CryptographicAlgorithm):
             raise TypeError("key algorithm must be a CryptographicAlgorithm "
                             "enumeration")
         elif not isinstance(self.cryptographic_length, six.integer_types):
             raise TypeError("key length must be an integer")
+        elif not isinstance(self.key_format_type, enums.KeyFormatType):
+            raise TypeError("key format type must be a KeyFormatType "
+                            "enumeration")
+        elif self.key_format_type not in self._valid_formats:
+            raise ValueError("key format type must be one of {0}".format(
+                self._valid_formats))
         elif not isinstance(self.cryptographic_usage_masks, list):
             raise TypeError("key usage masks must be a list")
+
+        # TODO (peter-hamilton) Verify that the key bytes match the key format
 
         mask_count = len(self.cryptographic_usage_masks)
         for i in range(mask_count):
             mask = self.cryptographic_usage_masks[i]
-            if not isinstance(mask, CryptographicUsageMask):
+            if not isinstance(mask, enums.CryptographicUsageMask):
                 position = "({0} in list)".format(i)
                 raise TypeError(
                     "key mask {0} must be a CryptographicUsageMask "
@@ -526,16 +570,20 @@ class PrivateKey(CryptographicObject):
     def __repr__(self):
         algorithm = "algorithm={0}".format(self.cryptographic_algorithm)
         length = "length={0}".format(self.cryptographic_length)
-        value = "value={0}".format(self.value)
+        value = "value={0}".format(binascii.hexlify(self.value))
+        format_type = "format_type={0}".format(self.key_format_type)
 
-        return "PrivateKey({0}, {1}, {2})".format(algorithm, length, value)
+        return "PrivateKey({0}, {1}, {2}, {3})".format(
+            algorithm, length, value, format_type)
 
     def __str__(self):
-        return str(self.value)
+        return str(binascii.hexlify(self.value))
 
     def __eq__(self, other):
         if isinstance(other, PrivateKey):
             if self.value != other.value:
+                return False
+            elif self.key_format_type != other.key_format_type:
                 return False
             elif self.cryptographic_algorithm != other.cryptographic_algorithm:
                 return False

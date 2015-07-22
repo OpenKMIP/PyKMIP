@@ -13,16 +13,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from testtools import TestCase
+import binascii
+import testtools
 
-from kmip.core.enums import CryptographicAlgorithm
-from kmip.core.enums import CryptographicUsageMask
-from kmip.core.enums import ObjectType
-
-from kmip.pie.objects import SymmetricKey
+from kmip.core import enums
+from kmip.pie import objects
 
 
-class TestSymmetricKey(TestCase):
+class TestSymmetricKey(testtools.TestCase):
     """
     Test suite for SymmetricKey.
     """
@@ -54,10 +52,11 @@ class TestSymmetricKey(TestCase):
         """
         Test that a SymmetricKey object can be instantiated.
         """
-        key = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        key = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
 
         self.assertEqual(key.cryptographic_algorithm,
-                         CryptographicAlgorithm.AES)
+                         enums.CryptographicAlgorithm.AES)
         self.assertEqual(key.cryptographic_length, 128)
         self.assertEqual(key.value, self.bytes_128a)
         self.assertEqual(key.cryptographic_usage_masks, list())
@@ -67,29 +66,30 @@ class TestSymmetricKey(TestCase):
         """
         Test that a SymmetricKey object can be instantiated with all arguments.
         """
-        key = SymmetricKey(
-            CryptographicAlgorithm.AES,
+        key = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
             128,
             self.bytes_128a,
-            masks=[CryptographicUsageMask.ENCRYPT,
-                   CryptographicUsageMask.DECRYPT],
+            masks=[enums.CryptographicUsageMask.ENCRYPT,
+                   enums.CryptographicUsageMask.DECRYPT],
             name='Test Symmetric Key')
 
         self.assertEqual(key.cryptographic_algorithm,
-                         CryptographicAlgorithm.AES)
+                         enums.CryptographicAlgorithm.AES)
         self.assertEqual(key.cryptographic_length, 128)
         self.assertEqual(key.value, self.bytes_128a)
         self.assertEqual(key.cryptographic_usage_masks,
-                         [CryptographicUsageMask.ENCRYPT,
-                          CryptographicUsageMask.DECRYPT])
+                         [enums.CryptographicUsageMask.ENCRYPT,
+                          enums.CryptographicUsageMask.DECRYPT])
         self.assertEqual(key.names, ['Test Symmetric Key'])
 
     def test_get_object_type(self):
         """
         Test that the object type can be retrieved from the SymmetricKey.
         """
-        expected = ObjectType.SYMMETRIC_KEY
-        key = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        expected = enums.ObjectType.SYMMETRIC_KEY
+        key = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         observed = key.object_type
 
         self.assertEqual(expected, observed)
@@ -101,82 +101,84 @@ class TestSymmetricKey(TestCase):
         """
         args = ('invalid', 128, self.bytes_128a)
 
-        self.assertRaises(TypeError, SymmetricKey, *args)
+        self.assertRaises(TypeError, objects.SymmetricKey, *args)
 
     def test_validate_on_invalid_length(self):
         """
         Test that a TypeError is raised when an invalid length value is used
         to construct a SymmetricKey.
         """
-        args = (CryptographicAlgorithm.AES, 'invalid', self.bytes_128a)
+        args = (enums.CryptographicAlgorithm.AES, 'invalid', self.bytes_128a)
 
-        self.assertRaises(TypeError, SymmetricKey, *args)
+        self.assertRaises(TypeError, objects.SymmetricKey, *args)
 
     def test_validate_on_invalid_value(self):
         """
         Test that a TypeError is raised when an invalid value is used to
         construct a SymmetricKey.
         """
-        args = (CryptographicAlgorithm.AES, 128, 0)
+        args = (enums.CryptographicAlgorithm.AES, 128, 0)
 
-        self.assertRaises(TypeError, SymmetricKey, *args)
+        self.assertRaises(TypeError, objects.SymmetricKey, *args)
 
     def test_validate_on_invalid_masks(self):
         """
         Test that a TypeError is raised when an invalid masks value is used to
         construct a SymmetricKey.
         """
-        args = (CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        args = (enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         kwargs = {'masks': 'invalid'}
 
-        self.assertRaises(TypeError, SymmetricKey, *args, **kwargs)
+        self.assertRaises(TypeError, objects.SymmetricKey, *args, **kwargs)
 
     def test_validate_on_invalid_mask(self):
         """
         Test that a TypeError is raised when an invalid mask value is used to
         construct a SymmetricKey.
         """
-        args = (CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        args = (enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         kwargs = {'masks': ['invalid']}
 
-        self.assertRaises(TypeError, SymmetricKey, *args, **kwargs)
+        self.assertRaises(TypeError, objects.SymmetricKey, *args, **kwargs)
 
     def test_validate_on_invalid_name(self):
         """
         Test that a TypeError is raised when an invalid name value is used to
         construct a SymmetricKey.
         """
-        args = (CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        args = (enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         kwargs = {'name': 0}
 
-        self.assertRaises(TypeError, SymmetricKey, *args, **kwargs)
+        self.assertRaises(TypeError, objects.SymmetricKey, *args, **kwargs)
 
     def test_validate_on_invalid_length_value(self):
         """
         Test that a ValueError is raised when an invalid length value is
         used to construct a SymmetricKey.
         """
-        args = (CryptographicAlgorithm.AES, 256, self.bytes_128a)
+        args = (enums.CryptographicAlgorithm.AES, 256, self.bytes_128a)
 
-        self.assertRaises(ValueError, SymmetricKey, *args)
+        self.assertRaises(ValueError, objects.SymmetricKey, *args)
 
     def test_validate_on_invalid_value_length(self):
         """
         Test that a ValueError is raised when an invalid value is used to
         construct a SymmetricKey.
         """
-        args = (CryptographicAlgorithm.AES, 128, self.bytes_256a)
+        args = (enums.CryptographicAlgorithm.AES, 128, self.bytes_256a)
 
-        self.assertRaises(ValueError, SymmetricKey, *args)
+        self.assertRaises(ValueError, objects.SymmetricKey, *args)
 
     def test_repr(self):
         """
         Test that repr can be applied to a SymmetricKey.
         """
-        key = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        key = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
 
         args = "algorithm={0}, length={1}, value={2}".format(
-            CryptographicAlgorithm.AES, 128, self.bytes_128a)
+            enums.CryptographicAlgorithm.AES, 128,
+            binascii.hexlify(self.bytes_128a))
         expected = "SymmetricKey({0})".format(args)
         observed = repr(key)
 
@@ -186,8 +188,9 @@ class TestSymmetricKey(TestCase):
         """
         Test that str can be applied to a SymmetricKey.
         """
-        key = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        expected = str(self.bytes_128a)
+        key = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        expected = str(binascii.hexlify(self.bytes_128a))
         observed = str(key)
 
         self.assertEqual(expected, observed)
@@ -197,8 +200,10 @@ class TestSymmetricKey(TestCase):
         Test that the equality operator returns True when comparing two
         SymmetricKey objects with the same data.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        b = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
@@ -208,8 +213,10 @@ class TestSymmetricKey(TestCase):
         Test that the equality operator returns False when comparing two
         SymmetricKey objects with different data.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = SymmetricKey(CryptographicAlgorithm.RSA, 128, self.bytes_128a)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        b = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.RSA, 128, self.bytes_128a)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -219,8 +226,10 @@ class TestSymmetricKey(TestCase):
         Test that the equality operator returns False when comparing two
         SymmetricKey objects with different data.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = SymmetricKey(CryptographicAlgorithm.AES, 256, self.bytes_256a)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        b = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 256, self.bytes_256a)
         b.value = self.bytes_128a
 
         self.assertFalse(a == b)
@@ -231,8 +240,10 @@ class TestSymmetricKey(TestCase):
         Test that the equality operator returns False when comparing two
         SymmetricKey objects with different data.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128b)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        b = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128b)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -242,7 +253,8 @@ class TestSymmetricKey(TestCase):
         Test that the equality operator returns False when comparing a
         SymmetricKey object to a non-SymmetricKey object.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         b = "invalid"
 
         self.assertFalse(a == b)
@@ -253,41 +265,49 @@ class TestSymmetricKey(TestCase):
         Test that the inequality operator returns False when comparing
         two SymmetricKey objects with the same internal data.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        b = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
     def test_not_equal_on_not_equal_algorithm(self):
         """
-        Test that the equality operator returns True when comparing two
+        Test that the inequality operator returns True when comparing two
         SymmetricKey objects with different data.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = SymmetricKey(CryptographicAlgorithm.RSA, 128, self.bytes_128a)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        b = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.RSA, 128, self.bytes_128a)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
     def test_not_equal_on_not_equal_length(self):
         """
-        Test that the equality operator returns True when comparing two
+        Test that the inequality operator returns True when comparing two
         SymmetricKey objects with different data.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = SymmetricKey(CryptographicAlgorithm.AES, 256, self.bytes_256a)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        b = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 256, self.bytes_256a)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
     def test_not_equal_on_not_equal_value(self):
         """
-        Test that the equality operator returns True when comparing two
+        Test that the inequality operator returns True when comparing two
         SymmetricKey objects with different data.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128b)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        b = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128b)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -297,7 +317,8 @@ class TestSymmetricKey(TestCase):
         Test that the equality operator returns True when comparing a
         SymmetricKey object to a non-SymmetricKey object.
         """
-        a = SymmetricKey(CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        a = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         b = "invalid"
 
         self.assertTrue(a != b)
