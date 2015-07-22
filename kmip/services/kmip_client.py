@@ -96,6 +96,7 @@ class KMIPProxy(KMIP):
         self.authentication_suites = [
             AuthenticationSuite.BASIC,
             AuthenticationSuite.TLS12]
+        self.socket = None
 
     def get_supported_conformance_clauses(self):
         """
@@ -225,8 +226,16 @@ class KMIPProxy(KMIP):
             self.logger.error("timeout occurred while connecting to appliance")
             raise e
 
+    def __del__(self):
+        # Close the socket properly, helpful in case close() is not called.
+        self.close()
+
     def close(self):
-        self.socket.shutdown(socket.SHUT_RDWR)
+        # Shutdown and close the socket.
+        if self.socket:
+            self.socket.shutdown(socket.SHUT_RDWR)
+            self.socket.close()
+            self.socket = None
 
     def create(self, object_type, template_attribute, credential=None):
         object_type = attr.ObjectType(object_type)
