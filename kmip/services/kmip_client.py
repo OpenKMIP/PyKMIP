@@ -555,7 +555,8 @@ class KMIPProxy(KMIP):
             kct = key_compression_type
             kct = get.GetRequestPayload.KeyCompressionType(kct)
         if key_wrapping_specification is not None:
-            kws = objects.KeyWrappingSpecification(key_wrapping_specification)
+            kws = objects.KeyWrappingSpecification(
+                **key_wrapping_specification)
 
         req_pl = get.GetRequestPayload(unique_identifier=uuid,
                                        key_format_type=kft,

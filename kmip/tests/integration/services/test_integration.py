@@ -19,9 +19,11 @@ from testtools import TestCase
 from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
 from kmip.core.attributes import Name
+from kmip.core.attributes import UniqueIdentifier
 
 
 from kmip.core.enums import AttributeType
+from kmip.core.enums import BlockCipherMode
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
@@ -29,7 +31,9 @@ from kmip.core.enums import NameType
 from kmip.core.enums import ObjectType
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import ResultReason
+from kmip.core.enums import RevocationReasonCode
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
+from kmip.core.enums import WrappingMethod as WrappingMethodEnum
 
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.factories.credentials import CredentialFactory
@@ -38,16 +42,19 @@ from kmip.core.factories.secrets import SecretFactory
 from kmip.core.misc import KeyFormatType
 
 from kmip.core.objects import Attribute
+from kmip.core.objects import EncryptionKeyInformation
 from kmip.core.objects import KeyBlock
 from kmip.core.objects import KeyMaterial
 from kmip.core.objects import KeyValue
+from kmip.core.objects import KeyWrappingSpecification
 from kmip.core.objects import TemplateAttribute
+from kmip.core.objects import WrappingMethod
 
 from kmip.core.misc import QueryFunction
 
 from kmip.core.secrets import SymmetricKey
 
-
+import time
 import pytest
 
 
@@ -98,6 +105,67 @@ class TestIntegration(TestCase):
         value = Name(name_value=name_value, name_type=name_type)
         name = Attribute(attribute_name=name, attribute_value=value)
         attributes = [algorithm, usage_mask, key_length_obj, name]
+        template_attribute = TemplateAttribute(attributes=attributes)
+
+        return self.client.create(object_type, template_attribute,
+                                  credential=None)
+
+    def _create_symmetric_wrapping_key(self, key_name=None):
+        """
+        Helper function for creating symmetric keys that are suitable for use
+        as wrapping keys. Used any time a key wrapping key needs to be created.
+        :param key_name: name of the key to be created
+        :return: returns the result of the "create key" operation as
+        provided by the KMIP appliance
+        """
+        object_type = ObjectType.SYMMETRIC_KEY
+        attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
+        algorithm = self.attr_factory.create_attribute(attribute_type,
+                                                       CryptoAlgorithmEnum.AES)
+        mask_flags = [CryptographicUsageMask.ENCRYPT,
+                      CryptographicUsageMask.DECRYPT,
+                      CryptographicUsageMask.WRAP_KEY,
+                      CryptographicUsageMask.UNWRAP_KEY]
+        attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
+        usage_mask = self.attr_factory.create_attribute(attribute_type,
+                                                        mask_flags)
+
+        crypto_params_attr = self.attr_factory.create_attribute(
+            name=AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            value={"block_cipher_mode": BlockCipherMode.NIST_KEY_WRAP})
+
+        activation_date_attr = self.attr_factory.create_attribute(
+            name=AttributeType.ACTIVATION_DATE,
+            value=0)
+
+        process_start_date_attr = self.attr_factory.create_attribute(
+            name=AttributeType.PROCESS_START_DATE,
+            value=10)
+
+        protect_stop_date_attr = self.attr_factory.create_attribute(
+            name=AttributeType.PROTECT_STOP_DATE,
+            value=int(time.time())+10000)
+
+        key_length = 128
+
+        attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
+        key_length_obj = self.attr_factory.create_attribute(attribute_type,
+                                                            key_length)
+        name = Attribute.AttributeName('Name')
+
+        if key_name is None:
+            key_name = 'Integration Test - Wrapping Key'
+
+        name_value = Name.NameValue(key_name)
+
+        name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
+        value = Name(name_value=name_value, name_type=name_type)
+        name = Attribute(attribute_name=name, attribute_value=value)
+
+        attributes = [algorithm, usage_mask, key_length_obj, name,
+                      crypto_params_attr, activation_date_attr,
+                      process_start_date_attr, protect_stop_date_attr]
+
         template_attribute = TemplateAttribute(attributes=attributes)
 
         return self.client.create(object_type, template_attribute,
@@ -419,3 +487,75 @@ class TestIntegration(TestCase):
         observed = result.result_reason.enum
 
         self.assertEqual(expected, observed)
+
+    def test_symmetric_key_register_wrapped_get_destroy(self):
+        key_name = 'Integration Test - DEK'
+        result = self._create_symmetric_key(key_name=key_name)
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
+        self._check_uuid(result.uuid.value, str)
+        dek_uuid = result.uuid.value
+
+        key_name = 'Integration Test - KEK'
+        result = self._create_symmetric_wrapping_key(key_name=key_name)
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
+        self._check_uuid(result.uuid.value, str)
+        kek_uuid = result.uuid.value
+
+        kws = {  # key wrapping specification
+            'wrapping_method': WrappingMethod(WrappingMethodEnum.ENCRYPT),
+            'encryption_key_information': EncryptionKeyInformation(
+                unique_identifier=UniqueIdentifier(kek_uuid)),
+            "attribute_name": KeyWrappingSpecification.AttributeName(
+                value="Cryptographic Usage Mask")}
+
+        # get and verify the unwrapped DEK
+        dek_clear_result = self.client.get(uuid=dek_uuid, credential=None,
+                                           key_wrapping_specification=None)
+        self._check_result_status(dek_clear_result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+
+        # get and verify the wrapped DEK
+        dek_wrapped_result = self.client.get(uuid=dek_uuid, credential=None,
+                                             key_wrapping_specification=kws)
+        self._check_result_status(dek_wrapped_result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+
+        self.assertEqual(dek_clear_result.uuid.value,
+                         dek_wrapped_result.uuid.value)
+
+        clear_key = (dek_clear_result.secret.key_block.key_value.
+                     key_material.value)
+
+        wrapped_key = (dek_wrapped_result.secret.key_block.key_value.value)
+
+        # the wrapped key data should not be the same as the clear key data
+        self.assertNotEqual(clear_key, wrapped_key)
+
+        result = self.client.destroy(dek_uuid)
+        self._check_result_status(result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_uuid(result.uuid.value, str)
+
+        # Verify the secret was destroyed
+        result = self.client.get(uuid=dek_uuid, credential=None)
+
+        self._check_result_status(result, ResultStatus,
+                                  ResultStatus.OPERATION_FAILED)
+
+        # have to revoke the kek before destruction
+        result = self.client.revoke(
+            uuid=kek_uuid,
+            reason=RevocationReasonCode.CESSATION_OF_OPERATION,
+            message="destroy",
+            credential=None)
+
+        result = self.client.destroy(kek_uuid)
+        self._check_result_status(result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+        self._check_uuid(result.uuid.value, str)
+
+        # Verify the secret was destroyed
+        result = self.client.get(uuid=dek_uuid, credential=None)
+
+        self._check_result_status(result, ResultStatus,
+                                  ResultStatus.OPERATION_FAILED)
