@@ -15,7 +15,8 @@
 
 import pytest
 
-from kmip.services.kmip_client import KMIPProxy
+from kmip.services import kmip_client
+from kmip.pie import client as pclient
 
 
 def pytest_addoption(parser):
@@ -30,7 +31,21 @@ def pytest_addoption(parser):
 def client(request):
     config = request.config.getoption("--config")
 
-    client = KMIPProxy(config=config)
+    client = kmip_client.KMIPProxy(config=config)
+    client.open()
+
+    def finalize():
+        client.close()
+
+    request.addfinalizer(finalize)
+    request.cls.client = client
+
+
+@pytest.fixture(scope="class")
+def simple(request):
+    config = request.config.getoption("--config")
+
+    client = pclient.ProxyKmipClient(config=config)
     client.open()
 
     def finalize():
