@@ -43,11 +43,11 @@ import optparse
 import sys
 
 
-def build_cli_parser(operation):
+def build_cli_parser(operation=None):
     # Build the argument parser and setup expected options
     parser = optparse.OptionParser(
         usage="%prog [options]",
-        description="Run KMIP client {0} operation".format(operation.name))
+        description="Run KMIP client operation")
 
     parser.add_option(
         "-u",
@@ -190,12 +190,6 @@ def build_cli_parser(operation):
             help=("Type of the object to register. Supported types include: "
                   "CERTIFICATE, PRIVATE_KEY, PUBLIC_KEY, SYMMETRIC_KEY, "
                   "SECRET_DATA"))
-    elif operation is Operation.QUERY:
-        pass
-    elif operation is Operation.DISCOVER_VERSIONS:
-        pass
-    else:
-        raise ValueError("unrecognized operation: {0}".format(operation))
 
     return parser
 
