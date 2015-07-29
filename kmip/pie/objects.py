@@ -599,3 +599,157 @@ class PrivateKey(Key):
             return not (self == other)
         else:
             return NotImplemented
+
+
+class Certificate(CryptographicObject):
+    """
+    The Certificate class of the simplified KMIP object hierarchy.
+
+    A Certificate is a core KMIP object that is the subject of key management
+    operations. For more information, see Section 2.2 of the KMIP 1.1
+    specification.
+
+    Attributes:
+        certificate_type: The type of the Certificate.
+        value: The bytes of the Certificate.
+        cryptographic_usage_masks: The list of usage mask flags for
+            Certificate application.
+        names: The list of string names of the Certificate.
+    """
+
+    @abstractmethod
+    def __init__(self, certificate_type, value, masks=None,
+                 name='Certificate'):
+        """
+        Create a Certificate.
+
+        Args:
+            certificate_type(CertificateType): An enumeration defining the
+                type of the certificate.
+            value(bytes): The bytes representing the certificate.
+            masks(list): A list of CryptographicUsageMask enumerations
+                defining how the certificate will be used.
+            name(string): The string name of the certificate.
+        """
+        super(Certificate, self).__init__()
+
+        self._object_type = enums.ObjectType.CERTIFICATE
+
+        self.value = value
+        self.certificate_type = certificate_type
+        self.names = [name]
+
+        if masks:
+            self.cryptographic_usage_masks = masks
+        else:
+            self.cryptographic_usage_masks = list()
+
+        # All remaining attributes are not considered part of the public API
+        # and are subject to change.
+        self._cryptographic_algorithm = None
+        self._cryptographic_length = None
+        self._certificate_length = None
+
+        # The following attributes are placeholders for attributes that are
+        # unsupported by kmip.core
+        self._cryptographic_parameters = list()
+        self._digital_signature_algorithm = list()
+
+        self.validate()
+
+    def validate(self):
+        """
+        Verify that the contents of the Certificate object are valid.
+
+        Raises:
+            TypeError: if the types of any Certificate attributes are invalid.
+        """
+        if not isinstance(self.value, bytes):
+            raise TypeError("certificate value must be bytes")
+        elif not isinstance(self.certificate_type,
+                            enums.CertificateTypeEnum):
+            raise TypeError("certificate type must be a CertificateTypeEnum "
+                            "enumeration")
+        elif not isinstance(self.cryptographic_usage_masks, list):
+            raise TypeError("certificate usage masks must be a list")
+
+        mask_count = len(self.cryptographic_usage_masks)
+        for i in range(mask_count):
+            mask = self.cryptographic_usage_masks[i]
+            if not isinstance(mask, enums.CryptographicUsageMask):
+                position = "({0} in list)".format(i)
+                raise TypeError(
+                    "certificate mask {0} must be a CryptographicUsageMask "
+                    "enumeration".format(position))
+
+        name_count = len(self.names)
+        for i in range(name_count):
+            name = self.names[i]
+            if not isinstance(name, six.string_types):
+                position = "({0} in list)".format(i)
+                raise TypeError("certificate name {0} must be a string".format(
+                    position))
+
+    def __str__(self):
+        return str(binascii.hexlify(self.value))
+
+
+class X509Certificate(Certificate):
+    """
+    The X509Certificate class of the simplified KMIP object hierarchy.
+
+    An X509Certificate is a core KMIP object that is the subject of key
+    management operations. For more information, see Section 2.2 of the KMIP
+    1.1 specification.
+
+    Attributes:
+        value: The bytes of the Certificate.
+        cryptographic_usage_masks: The list of usage mask flags for
+            Certificate application.
+        names: The list of string names of the Certificate.
+    """
+
+    def __init__(self, value, masks=None, name='X.509 Certificate'):
+        """
+        Create an X509Certificate.
+
+        Args:
+            value(bytes): The bytes representing the certificate.
+            masks(list): A list of CryptographicUsageMask enumerations
+                defining how the certificate will be used.
+            name(string): The string name of the certificate.
+        """
+        super(X509Certificate, self).__init__(
+            enums.CertificateTypeEnum.X_509, value, masks, name)
+
+        # All remaining attributes are not considered part of the public API
+        # and are subject to change.
+
+        # The following attributes are placeholders for attributes that are
+        # unsupported by kmip.core
+        self._x509_certificate_identifier = None
+        self._x509_certificate_subject = None
+        self._x509_certificate_issuer = None
+
+        self.validate()
+
+    def __repr__(self):
+        certificate_type = "certificate_type={0}".format(self.certificate_type)
+        value = "value={0}".format(binascii.hexlify(self.value))
+
+        return "X509Certificate({0}, {1})".format(certificate_type, value)
+
+    def __eq__(self, other):
+        if isinstance(other, X509Certificate):
+            if self.value != other.value:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, X509Certificate):
+            return not (self == other)
+        else:
+            return NotImplemented

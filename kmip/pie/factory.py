@@ -14,6 +14,7 @@
 # under the License.
 
 from kmip.core import attributes
+from kmip.core import enums
 from kmip.core import misc
 from kmip.core import objects as cobjects
 from kmip.core import secrets
@@ -55,8 +56,21 @@ class ObjectFactory:
             return self._build_core_key(obj, secrets.PrivateKey)
         elif isinstance(obj, secrets.PrivateKey):
             return self._build_pie_key(obj, pobjects.PrivateKey)
+        elif isinstance(obj, pobjects.Certificate):
+            return self._build_core_certificate(obj)
+        elif isinstance(obj, secrets.Certificate):
+            return self._build_pie_certificate(obj)
         else:
             raise TypeError("object type unsupported and cannot be converted")
+
+    def _build_pie_certificate(self, cert):
+        certificate_type = cert.certificate_type.enum
+        value = cert.certificate_value.value
+
+        if certificate_type == enums.CertificateTypeEnum.X_509:
+            return pobjects.X509Certificate(value)
+        else:
+            raise TypeError("core certificate type not supported")
 
     def _build_pie_key(self, key, cls):
         algorithm = key.key_block.cryptographic_algorithm.enum
@@ -75,6 +89,9 @@ class ObjectFactory:
                 return key
         else:
             return cls(algorithm, length, value, format_type)
+
+    def _build_core_certificate(self, cert):
+        return secrets.Certificate(cert.certificate_type, cert.value)
 
     def _build_core_key(self, key, cls):
         algorithm = key.cryptographic_algorithm
