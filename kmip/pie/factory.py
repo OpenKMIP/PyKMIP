@@ -60,6 +60,10 @@ class ObjectFactory:
             return self._build_core_certificate(obj)
         elif isinstance(obj, secrets.Certificate):
             return self._build_pie_certificate(obj)
+        elif isinstance(obj, pobjects.SecretData):
+            return self._build_core_secret_data(obj)
+        elif isinstance(obj, secrets.SecretData):
+            return self._build_pie_secret_data(obj)
         else:
             raise TypeError("object type unsupported and cannot be converted")
 
@@ -93,6 +97,12 @@ class ObjectFactory:
     def _build_core_certificate(self, cert):
         return secrets.Certificate(cert.certificate_type, cert.value)
 
+    def _build_pie_secret_data(self, secret):
+        secret_data_type = secret.secret_data_type.enum
+        value = secret.key_block.key_value.key_material.value
+
+        return pobjects.SecretData(value, secret_data_type)
+
     def _build_core_key(self, key, cls):
         algorithm = key.cryptographic_algorithm
         length = key.cryptographic_length
@@ -111,3 +121,20 @@ class ObjectFactory:
             key_wrapping_data=None)
 
         return cls(key_block)
+
+    def _build_core_secret_data(self, secret):
+        secret_data_type = secret.data_type
+        value = secret.value
+
+        key_material = cobjects.KeyMaterial(value)
+        key_value = cobjects.KeyValue(key_material)
+        key_block = cobjects.KeyBlock(
+            key_format_type=misc.KeyFormatType(enums.KeyFormatType.OPAQUE),
+            key_compression_type=None,
+            key_value=key_value,
+            cryptographic_algorithm=None,
+            cryptographic_length=None,
+            key_wrapping_data=None)
+        data_type = secrets.SecretData.SecretDataType(secret_data_type)
+
+        return secrets.SecretData(data_type, key_block)
