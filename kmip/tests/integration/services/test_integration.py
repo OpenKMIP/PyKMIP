@@ -27,6 +27,7 @@ from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import NameType
 from kmip.core.enums import ObjectType
+from kmip.core.enums import OpaqueDataType
 from kmip.core.enums import SecretDataType
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import ResultReason
@@ -54,6 +55,7 @@ from kmip.core.secrets import PrivateKey
 from kmip.core.secrets import PublicKey
 from kmip.core.secrets import Certificate
 from kmip.core.secrets import SecretData
+from kmip.core.secrets import OpaqueObject
 
 import pytest
 
@@ -1056,3 +1058,97 @@ class TestIntegration(TestCase):
         pass_observed = type(pass_result_destroyed_result.result_reason.enum)
 
         self.assertEqual(expected, pass_observed)
+
+    def test_opaque_data_register_get_destroy(self):
+        """
+        Tests that opaque objects can be properly registered, retrieved,
+        and destroyed
+        """
+
+        opaque_obj_type = ObjectType.OPAQUE_DATA
+        opaque_obj_data_type = OpaqueObject.OpaqueDataType(OpaqueDataType.NONE)
+
+        name = Attribute.AttributeName('Name')
+        opaque_obj_name = 'Integration Test - Register-Get-Destroy Opaque Data'
+
+        opaque_obj_name_value = Name.NameValue(opaque_obj_name)
+
+        name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
+        opaque_obj_value = Name(name_value=opaque_obj_name_value,
+                                name_type=name_type)
+
+        opaque_obj_name_attr = Attribute(attribute_name=name,
+                                         attribute_value=opaque_obj_value)
+
+        opaque_obj_attributes = [opaque_obj_name_attr]
+
+        opaque_obj_template_attribute = TemplateAttribute(
+            attributes=opaque_obj_attributes)
+
+        opaque_obj_data = OpaqueObject.OpaqueDataValue((
+            b'\x30\x82\x03\x12\x30\x82\x01\xFA\xA0\x03\x02\x01\x02\x02\x01\x01'
+            b'\x30\x0D\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x05\x05\x00\x30'
+            b'\x3B\x31\x0B\x30\x09\x06\x03\x55\x04\x06\x13\x02\x55\x53\x31\x0D'
+            b'\x30\x0B\x06\x03\x55\x04\x0A\x13\x04\x54\x45\x53\x54\x31\x0E\x30'
+        ))
+
+        opaque_obj = OpaqueObject(opaque_data_type=opaque_obj_data_type,
+                                  opaque_data_value=opaque_obj_data)
+
+        opaque_obj_result = self.client.register(opaque_obj_type,
+                                                 opaque_obj_template_attribute,
+                                                 opaque_obj, credential=None)
+
+        self._check_result_status(opaque_obj_result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+
+        self._check_uuid(opaque_obj_result.uuid.value, str)
+
+        # Check that the returned key bytes match what was provided
+        opaque_obj_uuid = opaque_obj_result.uuid.value
+
+        opaque_obj_result = self.client.get(uuid=opaque_obj_uuid,
+                                            credential=None)
+
+        self._check_result_status(opaque_obj_result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+
+        self._check_object_type(opaque_obj_result.object_type.enum, ObjectType,
+                                ObjectType.OPAQUE_DATA)
+
+        self._check_uuid(opaque_obj_result.uuid.value, str)
+
+        # Check the secret type
+        opaque_obj_secret = opaque_obj_result.secret
+
+        opaque_obj_secret_expected = OpaqueObject
+
+        self.assertIsInstance(opaque_obj_secret, opaque_obj_secret_expected)
+
+        opaque_obj_material = opaque_obj_result.secret.opaque_data_value.value
+        expected = opaque_obj_data.value
+
+        self.assertEqual(expected, opaque_obj_material)
+
+        self.logger.debug('Destroying opaque object: ' + opaque_obj_name +
+                          '\nWith " "UUID: ' + opaque_obj_result.uuid.value)
+
+        opaque_obj_result = self.client.destroy(opaque_obj_result.uuid.value)
+
+        self._check_result_status(opaque_obj_result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+
+        self._check_uuid(opaque_obj_result.uuid.value, str)
+
+        # Verify the secret was destroyed
+        opaque_obj_result_destroyed_result = self.client.get(
+            uuid=opaque_obj_uuid, credential=None)
+
+        self._check_result_status(opaque_obj_result_destroyed_result,
+                                  ResultStatus, ResultStatus.OPERATION_FAILED)
+
+        expected = ResultReason
+        opaque_obj_observed = \
+            type(opaque_obj_result_destroyed_result.result_reason.enum)
+
+        self.assertEqual(expected, opaque_obj_observed)
