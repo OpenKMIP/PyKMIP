@@ -27,6 +27,7 @@ from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import NameType
 from kmip.core.enums import ObjectType
+from kmip.core.enums import SecretDataType
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import ResultReason
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
@@ -52,6 +53,7 @@ from kmip.core.secrets import SymmetricKey
 from kmip.core.secrets import PrivateKey
 from kmip.core.secrets import PublicKey
 from kmip.core.secrets import Certificate
+from kmip.core.secrets import SecretData
 
 import pytest
 
@@ -946,3 +948,111 @@ class TestIntegration(TestCase):
         cert_observed = type(cert_result_destroyed_result.result_reason.enum)
 
         self.assertEqual(expected, cert_observed)
+
+    def test_passphrase_register_get_destroy(self):
+        """
+        Tests that passphrases can be properly registered, retrieved,
+        and destroyed
+        """
+
+        # properties copied from test case example :
+        # http://docs.oasis-open.org/kmip/testcases/v1.1/cn01/kmip-testcases-v1.1-cn01.html#_Toc333488777
+
+        pass_obj_type = ObjectType.SECRET_DATA
+
+        mask_flags = [CryptographicUsageMask.VERIFY]
+        attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
+        usage_mask = self.attr_factory.create_attribute(attribute_type,
+                                                        mask_flags)
+
+        name = Attribute.AttributeName('Name')
+        pass_name = 'Integration Test - Register-Get-Destroy Passphrase'
+
+        pass_name_value = Name.NameValue(pass_name)
+
+        name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
+        pass_value = Name(name_value=pass_name_value, name_type=name_type)
+
+        pass_name_attr = Attribute(attribute_name=name,
+                                   attribute_value=pass_value)
+
+        pass_attributes = [usage_mask, pass_name_attr]
+
+        pass_template_attribute = TemplateAttribute(
+            attributes=pass_attributes)
+
+        pass_format_type = SecretData.SecretDataType(
+            SecretDataType.PASSWORD)
+
+        key_format_type = KeyFormatType(KeyFormatTypeEnum.OPAQUE)
+        key_data = b'\x70\x65\x65\x6b\x2d\x61\x2d\x62\x6f\x6f\x21\x21'
+
+        key_material = KeyMaterial(key_data)
+        key_value = KeyValue(key_material)
+
+        key_block = KeyBlock(
+            key_format_type=key_format_type,
+            key_compression_type=None,
+            key_value=key_value,
+            key_wrapping_data=None)
+
+        pass_obj = SecretData(secret_data_type=pass_format_type,
+                              key_block=key_block)
+
+        pass_result = self.client.register(pass_obj_type,
+                                           pass_template_attribute,
+                                           pass_obj, credential=None)
+
+        self._check_result_status(pass_result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+
+        self._check_uuid(pass_result.uuid.value, str)
+
+        # Check that the returned key bytes match what was provided
+        pass_uuid = pass_result.uuid.value
+
+        pass_result = self.client.get(uuid=pass_uuid, credential=None)
+
+        self._check_result_status(pass_result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+
+        self._check_object_type(pass_result.object_type.enum, ObjectType,
+                                ObjectType.SECRET_DATA)
+
+        self._check_uuid(pass_result.uuid.value, str)
+
+        # Check the secret type
+        pass_secret = pass_result.secret
+
+        pass_secret_expected = SecretData
+
+        self.assertIsInstance(pass_secret, pass_secret_expected)
+
+        pass_material = pass_result.secret.key_block.key_value.key_material\
+            .value
+
+        expected = key_data
+
+        self.assertEqual(expected, pass_material)
+
+        self.logger.debug('Destroying cert: ' + pass_name +
+                          '\nWith " "UUID: ' + pass_result.uuid.value)
+
+        pass_result = self.client.destroy(pass_result.uuid.value)
+
+        self._check_result_status(pass_result, ResultStatus,
+                                  ResultStatus.SUCCESS)
+
+        self._check_uuid(pass_result.uuid.value, str)
+
+        # Verify the secret was destroyed
+        pass_result_destroyed_result = self.client.get(uuid=pass_uuid,
+                                                       credential=None)
+
+        self._check_result_status(pass_result_destroyed_result, ResultStatus,
+                                  ResultStatus.OPERATION_FAILED)
+
+        expected = ResultReason
+        pass_observed = type(pass_result_destroyed_result.result_reason.enum)
+
+        self.assertEqual(expected, pass_observed)
