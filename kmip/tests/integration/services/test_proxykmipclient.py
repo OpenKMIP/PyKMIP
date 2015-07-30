@@ -352,3 +352,30 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 exceptions.KmipOperationFailure, self.client.get, uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.destroy, uid)
+
+    def test_secret_data_register_get_destroy(self):
+        """
+        Test that the ProxyKmipClient can register, retrieve, and destroy a
+        secret.
+        """
+        # Secret encoding obtained from Section 3.1.5 of the KMIP 1.1 test
+        # documentation.
+        secret = objects.SecretData(
+            (b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64'),
+            enums.SecretDataType.PASSWORD)
+
+        uid = self.client.register(secret)
+        self.assertIsInstance(uid, six.string_types)
+
+        try:
+            result = self.client.get(uid)
+            self.assertIsInstance(result, objects.SecretData)
+            self.assertEqual(
+                result, secret, "expected {0}\nobserved {1}".format(
+                    result, secret))
+        finally:
+            self.client.destroy(uid)
+            self.assertRaises(
+                exceptions.KmipOperationFailure, self.client.get, uid)
+            self.assertRaises(
+                exceptions.KmipOperationFailure, self.client.destroy, uid)
