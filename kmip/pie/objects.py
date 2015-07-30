@@ -753,3 +753,109 @@ class X509Certificate(Certificate):
             return not (self == other)
         else:
             return NotImplemented
+
+
+class SecretData(CryptographicObject):
+    """
+    The SecretData class of the simplified KMIP object hierarchy.
+
+    SecretData is one of several CryptographicObjects and is one of the core
+    KMIP objects that are the subject of key management operations. For more
+    information, see Section 2.2 of the KMIP 1.1 specification.
+
+    Attributes:
+        cryptographic_usage_masks: A list of usage mask enumerations
+            describing how the CryptographicObject will be used.
+        data_type: The type of the secret value.
+    """
+
+    def __init__(self, value, data_type, masks=None, name='Secret Data'):
+        """
+        Create a SecretData object.
+
+        Args:
+            value(bytes): The bytes representing secret data.
+            data_type(SecretDataType): An enumeration defining the type of the
+                secret value.
+            masks(list): A list of CryptographicUsageMask enumerations
+                defining how the key will be used.
+            name(string): The string name of the key.
+        """
+        super(SecretData, self).__init__()
+
+        self._object_type = enums.ObjectType.SECRET_DATA
+
+        self.value = value
+        self.data_type = data_type
+        self.names = [name]
+
+        if masks:
+            self.cryptographic_usage_masks = masks
+        else:
+            self.cryptographic_usage_masks = list()
+
+        # All remaining attributes are not considered part of the public API
+        # and are subject to change.
+
+        # The following attributes are placeholders for attributes that are
+        # unsupported by kmip.core
+
+        self.validate()
+
+    def validate(self):
+        """
+        Verify that the contents of the SecretData object are valid.
+
+        Raises:
+            TypeError: if the types of any SecretData attributes are invalid.
+        """
+        if not isinstance(self.value, bytes):
+            raise TypeError("secret value must be bytes")
+        elif not isinstance(self.data_type, enums.SecretDataType):
+            raise TypeError("secret data type must be a SecretDataType "
+                            "enumeration")
+        elif not isinstance(self.cryptographic_usage_masks, list):
+            raise TypeError("secret data usage masks must be a list")
+
+        mask_count = len(self.cryptographic_usage_masks)
+        for i in range(mask_count):
+            mask = self.cryptographic_usage_masks[i]
+            if not isinstance(mask, enums.CryptographicUsageMask):
+                position = "({0} in list)".format(i)
+                raise TypeError(
+                    "secret data mask {0} must be a CryptographicUsageMask "
+                    "enumeration".format(position))
+
+        name_count = len(self.names)
+        for i in range(name_count):
+            name = self.names[i]
+            if not isinstance(name, six.string_types):
+                position = "({0} in list)".format(i)
+                raise TypeError("secret data name {0} must be a string".format(
+                    position))
+
+    def __repr__(self):
+        value = "value={0}".format(binascii.hexlify(self.value))
+        data_type = "data_type={0}".format(self.data_type)
+
+        return "SecretData({0}, {1})".format(value, data_type)
+
+    def __str__(self):
+        return str(binascii.hexlify(self.value))
+
+    def __eq__(self, other):
+        if isinstance(other, SecretData):
+            if self.value != other.value:
+                return False
+            elif self.data_type != other.data_type:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, SecretData):
+            return not (self == other)
+        else:
+            return NotImplemented
