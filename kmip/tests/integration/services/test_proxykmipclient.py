@@ -379,3 +379,28 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 exceptions.KmipOperationFailure, self.client.get, uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.destroy, uid)
+
+    def test_opaque_object_register_get_destroy(self):
+        """
+        Test that the ProxyKmipClient can register, retrieve, and destroy an
+        opaque object.
+        """
+        # Object encoding obtained from Section 3.1.5 of the KMIP 1.1 test
+        # documentation.
+        obj = objects.OpaqueObject(
+            b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64',
+            enums.OpaqueDataType.NONE)
+        uid = self.client.register(obj)
+        self.assertIsInstance(uid, six.string_types)
+
+        try:
+            result = self.client.get(uid)
+            self.assertIsInstance(result, objects.OpaqueObject)
+            self.assertEqual(
+                result, obj, "expected {0}\nobserved {1}".format(result, obj))
+        finally:
+            self.client.destroy(uid)
+            self.assertRaises(
+                exceptions.KmipOperationFailure, self.client.get, uid)
+            self.assertRaises(
+                exceptions.KmipOperationFailure, self.client.destroy, uid)
