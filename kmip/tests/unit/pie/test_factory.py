@@ -186,6 +186,8 @@ class TestObjectFactory(testtools.TestCase):
             b'\x11\xEB\xB2\x5A\x7F\x86')
         self.secret_bytes = (
             b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64')
+        self.opaque_bytes = (
+            b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64')
 
     def tearDown(self):
         super(TestObjectFactory, self).tearDown()
@@ -394,6 +396,39 @@ class TestObjectFactory(testtools.TestCase):
         self.assertIsInstance(pie_key, pobjects.SecretData)
         self.assertEqual(enums.SecretDataType.PASSWORD, pie_key.data_type)
         self.assertEqual(self.secret_bytes, pie_key.value)
+
+    def test_convert_opaque_object_pie_to_core(self):
+        """
+        Test that a Pie opaque object can be converted into a core opaque
+        object.
+        """
+        pie_obj = pobjects.OpaqueObject(
+            self.opaque_bytes, enums.OpaqueDataType.NONE)
+        core_obj = self.factory.convert(pie_obj)
+
+        self.assertIsInstance(core_obj, secrets.OpaqueObject)
+
+        opaque_type = core_obj.opaque_data_type.enum
+        self.assertEqual(enums.OpaqueDataType.NONE, opaque_type)
+
+        value = core_obj.opaque_data_value.value
+        self.assertEqual(self.opaque_bytes, value)
+
+    def test_convert_opaque_object_core_to_pie(self):
+        """
+        Test that a core opaque object can be converted into a Pie opaque
+        object.
+        """
+        opaque_data_type = secrets.OpaqueObject.OpaqueDataType(
+            enums.OpaqueDataType.NONE)
+        opaque_data_value = secrets.OpaqueObject.OpaqueDataValue(
+            self.opaque_bytes)
+        core_obj = secrets.OpaqueObject(opaque_data_type, opaque_data_value)
+        pie_obj = self.factory.convert(core_obj)
+
+        self.assertIsInstance(pie_obj, pobjects.OpaqueObject)
+        self.assertEqual(enums.OpaqueDataType.NONE, pie_obj.opaque_type)
+        self.assertEqual(self.opaque_bytes, pie_obj.value)
 
     def test_build_pie_symmetric_key(self):
         """
