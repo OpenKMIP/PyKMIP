@@ -64,6 +64,10 @@ class ObjectFactory:
             return self._build_core_secret_data(obj)
         elif isinstance(obj, secrets.SecretData):
             return self._build_pie_secret_data(obj)
+        elif isinstance(obj, pobjects.OpaqueObject):
+            return self._build_core_opaque_object(obj)
+        elif isinstance(obj, secrets.OpaqueObject):
+            return self._build_pie_opaque_object(obj)
         else:
             raise TypeError("object type unsupported and cannot be converted")
 
@@ -94,14 +98,16 @@ class ObjectFactory:
         else:
             return cls(algorithm, length, value, format_type)
 
-    def _build_core_certificate(self, cert):
-        return secrets.Certificate(cert.certificate_type, cert.value)
-
     def _build_pie_secret_data(self, secret):
         secret_data_type = secret.secret_data_type.enum
         value = secret.key_block.key_value.key_material.value
 
         return pobjects.SecretData(value, secret_data_type)
+
+    def _build_pie_opaque_object(self, obj):
+        opaque_type = obj.opaque_data_type.enum
+        value = obj.opaque_data_value.value
+        return pobjects.OpaqueObject(value, opaque_type)
 
     def _build_core_key(self, key, cls):
         algorithm = key.cryptographic_algorithm
@@ -122,6 +128,9 @@ class ObjectFactory:
 
         return cls(key_block)
 
+    def _build_core_certificate(self, cert):
+        return secrets.Certificate(cert.certificate_type, cert.value)
+
     def _build_core_secret_data(self, secret):
         secret_data_type = secret.data_type
         value = secret.value
@@ -138,3 +147,11 @@ class ObjectFactory:
         data_type = secrets.SecretData.SecretDataType(secret_data_type)
 
         return secrets.SecretData(data_type, key_block)
+
+    def _build_core_opaque_object(self, obj):
+        opaque_type = obj.opaque_type
+        value = obj.value
+
+        opaque_data_type = secrets.OpaqueObject.OpaqueDataType(opaque_type)
+        opaque_data_value = secrets.OpaqueObject.OpaqueDataValue(value)
+        return secrets.OpaqueObject(opaque_data_type, opaque_data_value)

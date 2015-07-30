@@ -859,3 +859,94 @@ class SecretData(CryptographicObject):
             return not (self == other)
         else:
             return NotImplemented
+
+
+class OpaqueObject(ManagedObject):
+    """
+    The OpaqueObject class of the simplified KMIP object hierarchy.
+
+    OpaqueObject is one of several ManagedObjects and is one of the core KMIP
+    objects that are the subject of key management operations. For more
+    information, see Section 2.2 of the KMIP 1.1 specification.
+
+    Attributes:
+        opaque_type: The type of the opaque value.
+    """
+
+    def __init__(self, value, opaque_type, name='Opaque Object'):
+        """
+        Create a OpaqueObject.
+
+        Args:
+            value(bytes): The bytes representing opaque data.
+            opaque_type(OpaqueDataType): An enumeration defining the type of
+                the opaque value.
+            name(string): The string name of the opaque object.
+        """
+        super(OpaqueObject, self).__init__()
+
+        self._object_type = enums.ObjectType.OPAQUE_DATA
+
+        self.value = value
+        self.opaque_type = opaque_type
+        self.names = [name]
+
+        # All remaining attributes are not considered part of the public API
+        # and are subject to change.
+        self._digest = None
+        self._revocation_reason = None
+
+        # The following attributes are placeholders for attributes that are
+        # unsupported by kmip.core
+        self._destroy_date = None
+        self._compromise_occurrence_date = None
+        self._compromise_date = None
+
+        self.validate()
+
+    def validate(self):
+        """
+        Verify that the contents of the OpaqueObject are valid.
+
+        Raises:
+            TypeError: if the types of any OpaqueObject attributes are invalid.
+        """
+        if not isinstance(self.value, bytes):
+            raise TypeError("opaque value must be bytes")
+        elif not isinstance(self.opaque_type, enums.OpaqueDataType):
+            raise TypeError("opaque data type must be an OpaqueDataType "
+                            "enumeration")
+
+        name_count = len(self.names)
+        for i in range(name_count):
+            name = self.names[i]
+            if not isinstance(name, six.string_types):
+                position = "({0} in list)".format(i)
+                raise TypeError("opaque data name {0} must be a string".format(
+                    position))
+
+    def __repr__(self):
+        value = "value={0}".format(binascii.hexlify(self.value))
+        opaque_type = "opaque_type={0}".format(self.opaque_type)
+
+        return "OpaqueObject({0}, {1})".format(value, opaque_type)
+
+    def __str__(self):
+        return str(binascii.hexlify(self.value))
+
+    def __eq__(self, other):
+        if isinstance(other, OpaqueObject):
+            if self.value != other.value:
+                return False
+            elif self.opaque_type != other.opaque_type:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, OpaqueObject):
+            return not (self == other)
+        else:
+            return NotImplemented
