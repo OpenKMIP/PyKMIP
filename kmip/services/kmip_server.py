@@ -66,11 +66,12 @@ class KMIPServer(object):
 
             factory = KMIPProtocolFactory()
             protocol = factory.getProtocol(connection)
+
             try:
                 while True:
                     self._processor.process(protocol, protocol)
             except Exception as e:
-                self.logger.error('KMIPServer {0} {1}'.format(type(e),e))
+                self.logger.error('KMIPServer {0} {1}'.format(type(e), e))
                 connection.close()
 
     def _set_variables(self, host, port, keyfile, certfile, cert_reqs,
