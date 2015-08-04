@@ -21,6 +21,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
@@ -47,6 +48,9 @@ class ResponsePayloadFactory(PayloadFactory):
 
     def _create_get_payload(self):
         return get.GetResponsePayload()
+
+    def _create_get_attribute_list_payload(self):
+        return get_attribute_list.GetAttributeListResponsePayload()
 
     def _create_destroy_payload(self):
         return destroy.DestroyResponsePayload()
