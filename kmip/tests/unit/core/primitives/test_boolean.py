@@ -15,15 +15,15 @@
 
 from testtools import TestCase
 
-from kmip.core.primitives import Boolean
-from kmip.core.utils import BytearrayStream
+from kmip.core import primitives
+from kmip.core import utils
 
 
 class TestBoolean(TestCase):
 
     def setUp(self):
         super(TestBoolean, self).setUp()
-        self.stream = BytearrayStream()
+        self.stream = utils.BytearrayStream()
 
     def tearDown(self):
         super(TestBoolean, self).tearDown()
@@ -32,28 +32,28 @@ class TestBoolean(TestCase):
         """
         Test that a Boolean object can be instantiated.
         """
-        boolean = Boolean(False)
+        boolean = primitives.Boolean(False)
         self.assertEqual(False, boolean.value)
 
     def test_init_unset(self):
         """
         Test that a Boolean object can be instantiated with no input.
         """
-        boolean = Boolean()
+        boolean = primitives.Boolean()
         self.assertEqual(True, boolean.value)
 
     def test_validate_on_valid(self):
         """
         Test that a Boolean object can be validated on good input.
         """
-        boolean = Boolean(True)
+        boolean = primitives.Boolean(True)
         boolean.validate()
 
     def test_validate_on_valid_unset(self):
         """
         Test that a Boolean object with no preset value can be validated.
         """
-        boolean = Boolean()
+        boolean = primitives.Boolean()
         boolean.validate()
 
     def test_validate_on_invalid_type(self):
@@ -61,20 +61,19 @@ class TestBoolean(TestCase):
         Test that a TypeError is raised when a Boolean object is built with an
         invalid value.
         """
-        self.assertRaises(TypeError, Boolean, 'invalid')
+        self.assertRaises(TypeError, primitives.Boolean, 'invalid')
 
     def test_read_true(self):
         """
         Test that a Boolean object representing the value True can be read
         from a byte stream.
         """
-        encoding = (b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    b'\x00\x01')
-        stream = BytearrayStream(encoding)
-        boolean = Boolean()
-
+        encoding = (
+            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
+            b'\x01')
+        stream = utils.BytearrayStream(encoding)
+        boolean = primitives.Boolean()
         boolean.read(stream)
-
         self.assertTrue(boolean.value)
 
     def test_read_false(self):
@@ -82,13 +81,12 @@ class TestBoolean(TestCase):
         Test that a Boolean object representing the value False can be read
         from a byte stream.
         """
-        encoding = (b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    b'\x00\x00')
-        stream = BytearrayStream(encoding)
-        boolean = Boolean()
-
+        encoding = (
+            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00')
+        stream = utils.BytearrayStream(encoding)
+        boolean = primitives.Boolean()
         boolean.read(stream)
-
         self.assertFalse(boolean.value)
 
     def test_read_bad_encoding(self):
@@ -97,21 +95,20 @@ class TestBoolean(TestCase):
         on a bad encoding.
         """
         encoding = (b'\x42\x00\x00\x06\x00\x00\x00\x08')
-        stream = BytearrayStream(encoding)
-        boolean = Boolean()
-
+        stream = utils.BytearrayStream(encoding)
+        boolean = primitives.Boolean()
         self.assertRaises(Exception, boolean.read, stream)
 
     def test_read_bad_value(self):
         """
         Test that a ValueError is raised when the Boolean read operations
-        reads a valid integer but invalid boolean.
+        reads a valid integer but invalid Boolean.
         """
-        encoding = (b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    b'\x00\x02')
-        stream = BytearrayStream(encoding)
-        boolean = Boolean()
-
+        encoding = (
+            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
+            b'\x02')
+        stream = utils.BytearrayStream(encoding)
+        boolean = primitives.Boolean()
         self.assertRaises(ValueError, boolean.read, stream)
 
     def test_write_true(self):
@@ -119,13 +116,12 @@ class TestBoolean(TestCase):
         Test that a Boolean object representing the value True can be written
         to a byte stream.
         """
-        encoding = (b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    b'\x00\x01')
-        stream = BytearrayStream()
-        boolean = Boolean(True)
-
+        encoding = (
+            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
+            b'\x01')
+        stream = utils.BytearrayStream()
+        boolean = primitives.Boolean(True)
         boolean.write(stream)
-
         self.assertEqual(encoding, stream.read())
 
     def test_write_false(self):
@@ -133,94 +129,75 @@ class TestBoolean(TestCase):
         Test that a Boolean object representing the value False can be written
         to a byte stream.
         """
-        encoding = (b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00'
-                    b'\x00\x00')
-        stream = BytearrayStream()
-        boolean = Boolean(False)
-
+        encoding = (
+            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00')
+        stream = utils.BytearrayStream()
+        boolean = primitives.Boolean(False)
         boolean.write(stream)
-
         self.assertEqual(encoding, stream.read())
 
     def test_write_bad_value(self):
         """
         Test that an Exception is raised when the Boolean write operation fails
-        on a bad boolean value.
+        on a bad Boolean value.
         """
-        stream = BytearrayStream()
-        boolean = Boolean()
+        stream = utils.BytearrayStream()
+        boolean = primitives.Boolean()
         boolean.value = 'invalid'
-
         self.assertRaises(Exception, boolean.write, stream)
 
     def test_repr_default(self):
         """
         Test that the representation of a Boolean object is formatted properly
-        and can be used by eval to create a new Boolean object.
         """
-        boolean = Boolean()
-
+        boolean = primitives.Boolean()
         self.assertEqual("Boolean(value=True)", repr(boolean))
-        self.assertEqual(boolean, eval(repr(boolean)))
 
     def test_repr_true(self):
         """
         Test that the representation of a Boolean object representing the
-        value True is formatted properly and can be used by eval to create a
-        new Boolean object.
+        value True is formatted properly.
         """
-        boolean = Boolean(True)
-
+        boolean = primitives.Boolean(True)
         self.assertEqual("Boolean(value=True)", repr(boolean))
-        self.assertEqual(boolean, eval(repr(boolean)))
-        self.assertTrue(eval(repr(boolean)).value)
 
     def test_repr_false(self):
         """
         Test that the representation of a Boolean object representing the
-        value False is formatted properly and can be used by eval to create a
-        new Boolean object.
+        value False is formatted properly.
         """
-        boolean = Boolean(False)
-
+        boolean = primitives.Boolean(False)
         self.assertEqual("Boolean(value=False)", repr(boolean))
-        self.assertEqual(boolean, eval(repr(boolean)))
-        self.assertFalse(eval(repr(boolean)).value)
 
     def test_str_default(self):
         """
         Test that the string representation of a Boolean object is formatted
         properly.
         """
-        boolean = Boolean()
-
-        self.assertEqual("True", str(boolean))
+        self.assertEqual("True", str(primitives.Boolean()))
 
     def test_str_true(self):
         """
         Test that the string representation of a Boolean object representing
         the value True is formatted properly.
         """
-        boolean = Boolean(True)
-
-        self.assertEqual("True", str(boolean))
+        self.assertEqual("True", str(primitives.Boolean(True)))
 
     def test_str_false(self):
         """
         Test that the string representation of a Boolean object representing
         the value False is formatted properly.
         """
-        boolean = Boolean(False)
-
-        self.assertEqual("False", str(boolean))
+        self.assertEqual("False", str(primitives.Boolean(False)))
 
     def test_equal_on_equal(self):
         """
         Test that the equality operator returns True when comparing two
         Boolean objects.
         """
-        a = Boolean(False)
-        b = Boolean(False)
+        a = primitives.Boolean(False)
+        b = primitives.Boolean(False)
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
@@ -230,8 +207,8 @@ class TestBoolean(TestCase):
         Test that the equality operator returns True when comparing two
         Boolean objects.
         """
-        a = Boolean()
-        b = Boolean()
+        a = primitives.Boolean()
+        b = primitives.Boolean()
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
@@ -241,8 +218,8 @@ class TestBoolean(TestCase):
         Test that the equality operator returns False when comparing two
         Boolean objects with different values.
         """
-        a = Boolean(True)
-        b = Boolean(False)
+        a = primitives.Boolean(True)
+        b = primitives.Boolean(False)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -252,7 +229,7 @@ class TestBoolean(TestCase):
         Test that the equality operator returns False when comparing a
         Boolean object to a non-Boolean object.
         """
-        a = Boolean()
+        a = primitives.Boolean()
         b = 'invalid'
 
         self.assertFalse(a == b)
@@ -263,8 +240,8 @@ class TestBoolean(TestCase):
         Test that the inequality operator returns False when comparing
         two Boolean objects with the same values.
         """
-        a = Boolean(False)
-        b = Boolean(False)
+        a = primitives.Boolean(False)
+        b = primitives.Boolean(False)
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
@@ -274,8 +251,8 @@ class TestBoolean(TestCase):
         Test that the inequality operator returns False when comparing
         two Boolean objects.
         """
-        a = Boolean()
-        b = Boolean()
+        a = primitives.Boolean()
+        b = primitives.Boolean()
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
@@ -285,8 +262,8 @@ class TestBoolean(TestCase):
         Test that the inequality operator returns True when comparing two
         Boolean objects with different values.
         """
-        a = Boolean(True)
-        b = Boolean(False)
+        a = primitives.Boolean(True)
+        b = primitives.Boolean(False)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -296,7 +273,7 @@ class TestBoolean(TestCase):
         Test that the inequality operator returns True when comparing a
         Boolean object to a non-Boolean object.
         """
-        a = Boolean()
+        a = primitives.Boolean()
         b = 'invalid'
 
         self.assertTrue(a != b)
