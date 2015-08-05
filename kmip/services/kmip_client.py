@@ -19,6 +19,7 @@ from kmip.services.results import CreateKeyPairResult
 from kmip.services.results import DestroyResult
 from kmip.services.results import DiscoverVersionsResult
 from kmip.services.results import GetResult
+from kmip.services.results import GetAttributeListResult
 from kmip.services.results import LocateResult
 from kmip.services.results import QueryResult
 from kmip.services.results import RegisterResult
@@ -50,6 +51,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
@@ -280,6 +282,25 @@ class KMIPProxy(KMIP):
             key_wrapping_specification=key_wrapping_specification,
             credential=credential)
 
+    def get_attribute_list(self, uid=None):
+        """
+        Send a GetAttributeList request to the server.
+
+        Args:
+            uid (string): The ID of the managed object with which the retrieved
+                attribute names should be associated.
+
+        Returns:
+            result (GetAttributeListResult): A structure containing the results
+                of the operation.
+        """
+        batch_item = self._build_get_attribute_list_batch_item(uid)
+
+        request = self._build_request_message(None, [batch_item])
+        response = self._send_and_receive_message(request)
+        results = self._process_batch_items(response)
+        return results[0]
+
     def revoke(self, uuid, reason, message=None, credential=None):
         return self._revoke(unique_identifier=uuid,
                             revocation_code=reason,
@@ -434,6 +455,13 @@ class KMIPProxy(KMIP):
             operation=operation, request_payload=payload)
         return batch_item
 
+    def _build_get_attribute_list_batch_item(self, uid=None):
+        operation = Operation(OperationEnum.GET_ATTRIBUTE_LIST)
+        payload = get_attribute_list.GetAttributeListRequestPayload(uid)
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=payload)
+        return batch_item
+
     def _build_discover_versions_batch_item(self, protocol_versions=None):
         operation = Operation(OperationEnum.DISCOVER_VERSIONS)
 
@@ -456,6 +484,8 @@ class KMIPProxy(KMIP):
     def _get_batch_item_processor(self, operation):
         if operation == OperationEnum.CREATE_KEY_PAIR:
             return self._process_create_key_pair_batch_item
+        elif operation == OperationEnum.GET_ATTRIBUTE_LIST:
+            return self._process_get_attribute_list_batch_item
         elif operation == OperationEnum.REKEY_KEY_PAIR:
             return self._process_rekey_key_pair_batch_item
         elif operation == OperationEnum.QUERY:
@@ -465,6 +495,23 @@ class KMIPProxy(KMIP):
         else:
             raise ValueError("no processor for operation: {0}".format(
                 operation))
+
+    def _process_get_attribute_list_batch_item(self, batch_item):
+        payload = batch_item.response_payload
+
+        uid = None
+        names = None
+
+        if payload:
+            uid = payload.uid
+            names = payload.attribute_names
+
+        return GetAttributeListResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            uid,
+            names)
 
     def _process_key_pair_batch_item(self, batch_item, result):
         payload = batch_item.response_payload

@@ -158,6 +158,21 @@ class GetResult(OperationResult):
             self.secret = None
 
 
+class GetAttributeListResult(OperationResult):
+
+    def __init__(
+            self,
+            result_status,
+            result_reason=None,
+            result_message=None,
+            uid=None,
+            names=None):
+        super(GetAttributeListResult, self).__init__(
+            result_status, result_reason, result_message)
+        self.uid = uid
+        self.names = names
+
+
 class DestroyResult(OperationResult):
 
     def __init__(self,

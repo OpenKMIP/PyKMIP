@@ -1152,3 +1152,43 @@ class TestIntegration(TestCase):
             type(opaque_obj_result_destroyed_result.result_reason.enum)
 
         self.assertEqual(expected, opaque_obj_observed)
+
+    def test_symmetric_key_create_getattributelist_destroy(self):
+        """
+        Test that the GetAttributeList operation works for a newly created key.
+        """
+        key_name = 'Integration Test - Create-GetAttributeList-Destroy Key'
+        result = self._create_symmetric_key(key_name=key_name)
+        uid = result.uuid.value
+
+        self.assertEqual(ResultStatus.SUCCESS, result.result_status.enum)
+        self.assertEqual(ObjectType.SYMMETRIC_KEY, result.object_type.enum)
+        self.assertIsInstance(uid, str)
+
+        try:
+            result = self.client.get_attribute_list(uid)
+
+            self.assertEqual(ResultStatus.SUCCESS, result.result_status.enum)
+            self.assertIsInstance(result.uid, str)
+            self.assertIsInstance(result.names, list)
+
+            for name in result.names:
+                self.assertIsInstance(name, str)
+
+            expected = [
+                'Cryptographic Algorithm',
+                'Cryptographic Length',
+                'Cryptographic Usage Mask',
+                'Unique Identifier',
+                'Object Type']
+            for name in expected:
+                self.assertIn(name, result.names)
+
+        finally:
+            result = self.client.destroy(uid)
+            self.assertEqual(ResultStatus.SUCCESS, result.result_status.enum)
+
+            result = self.client.get(uuid=result.uuid.value, credential=None)
+
+            self.assertEqual(
+                ResultStatus.OPERATION_FAILED, result.result_status.enum)
