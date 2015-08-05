@@ -161,6 +161,15 @@ def build_cli_parser(operation=None):
             dest="format",
             help=("Format in which to retrieve the secret. Supported formats "
                   "include: RAW, PKCS_1, PKCS_8, X_509"))
+    elif operation is Operation.GET_ATTRIBUTE_LIST:
+        parser.add_option(
+            "-i",
+            "--uuid",
+            action="store",
+            type="str",
+            default=None,
+            dest="uuid",
+            help="UID of a managed object")
     elif operation is Operation.LOCATE:
         parser.add_option(
             "-n",
