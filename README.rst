@@ -8,39 +8,51 @@ is governed by the `Organization for the Advancement of Structured Information
 Standards`_ (OASIS). PyKMIP supports a subset of features in version 1.1 of
 the KMIP specification.
 
-The PyKMIP library provides a KMIP client supporting the following operations:
-
-* Create
-* CreateKeyPair
-* Activate
-* Destroy
-* DiscoverVersions
-* Get
-* Locate
-* Query
-* Register
-* RekeyKeyPair
-
-The library also includes a software-based KMIP server, which supports basic
-versions of the following operations:
-
-* Create
-* Destroy
-* Get
-* Register
-
 For a high-level overview of KMIP, check out the `KMIP Wikipedia page`_. For
 comprehensive documentation from OASIS and information about the KMIP
 community, visit the `KMIP Technical Committee home page`_.
 
 .. _Usage:
+
 Usage
 =====
-The KMIP client can be configured to connect to a KMIP server using settings
-found in ``kmip/kmipconfig.ini``. Users can specify the connection
-configuration settings to use on client instantiation, allowing applications
-to support multiple key storage backends simultaneously, one client per
-backend.
+Client
+------
+There are two implementations of the KMIP client. The first,
+``kmip.services.kmip_client.KMIPProxy``, is the original client and provides
+support for the following operations:
+
+* ``Create``
+* ``CreateKeyPair``
+* ``Register``
+* ``Locate``
+* ``Get``
+* ``Activate``
+* ``Revoke``
+* ``Destroy``
+* ``Query``
+* ``DiscoverVersions``
+
+The second client, ``kmip.pie.client.ProxyKmipClient``, wraps the original
+``KMIPProxy`` and provides a simpler interface. It provides support for the
+following operations:
+
+* ``Create``
+* ``CreateKeyPair``
+* ``Register``
+* ``Get``
+* ``Destroy``
+
+For examples of how to create and use the different clients, see the scripts
+in ``kmip/demos``.
+
+Configuration
+*************
+A KMIP client can be configured in different ways to connect to a KMIP server.
+The first method is the default approach, which uses settings found in
+``kmip/kmipconfig.ini``. Users can specify the connection configuration
+settings to use on client instantiation, allowing applications to support
+multiple key storage backends simultaneously, one client per backend.
 
 An example client configuration settings block is shown below::
 
@@ -54,19 +66,54 @@ An example client configuration settings block is shown below::
   ca_certs=/path/to/ca/cert/file
   do_handshake_on_connect=True
   suppress_ragged_eofs=True
-  username=None
-  password=None
+  username=user
+  password=password
+
+The second configuration approach allows developers to specify the
+configuration settings when creating the client at run time. The following
+example demonstrates how to create the ``ProxyKmipClient``, directly
+specifying the different configuration values::
+
+  client = ProxyKmipClient(
+      hostname='127.0.0.1',
+      port=5696,
+      cert='/path/to/cert/file/',
+      key='/path/to/key/file/',
+      ca='/path/to/ca/cert/file/',
+      ssl_version='PROTOCOL_SSLv23',
+      username='user',
+      password='password',
+      config='client')
+
+A KMIP client will load the configuration settings found in the ``client``
+settings block by default. Settings specified at runtime, as in the above
+example, will take precedence over the default values found in the
+configuration file.
 
 Many of these settings correspond to the settings for ``ssl.wrap_socket``,
 which is used to establish secure connections to KMIP backends. For more
 information, check out the `Python SSL library documentation`_.
 
-The KMIP software server also pulls settings from ``kmip/kmipconfig.ini``.
+Server
+------
+In addition to the KMIP clients, PyKMIP provides a basic software
+implementation of a KMIP server, ``kmip.services.kmip_server.KMIPServer``.
 However, the server is intended for use only in testing and demonstration
-environments. The server is **not** intended to be a substitute for secure,
-hardware-based key management appliances. The PyKMIP client should be used
-for operational purposes **only** with a hardware-based KMIP server.
+environments. The server is **not** intended to be a substitute for a secure,
+hardware-based key management appliance. The PyKMIP client should be used for
+operational purposes **only** with a hardware-based KMIP server.
 
+The KMIP server provides basic support for the following operations:
+
+* ``Create``
+* ``Register``
+* ``Locate``
+* ``Get``
+* ``Destroy``
+
+Configuration
+*************
+The KMIP software server also pulls settings from ``kmip/kmipconfig.ini``.
 An example server configuration settings block is shown below::
 
   [server]
@@ -80,13 +127,9 @@ An example server configuration settings block is shown below::
   do_handshake_on_connect=True
   suppress_ragged_eofs=True
 
-When used together, the KMIP client and KMIP server use certificate files
+When used together, a KMIP client and KMIP server will use certificate files
 found in ``kmip/demos/certs``. These files should be replaced with alternative
 certificates for standalone deployments.
-
-For examples of how to instantiate the KMIP client and how to use the
-different client operations, check out the unit demos found under
-``kmip/demos/units``.
 
 Profiles
 ========
@@ -94,12 +137,15 @@ The KMIP standard includes various profiles that tailor the standard for
 specific use cases (e.g., symmetric key storage with TLS 1.2). These profiles
 specify conformance to certain operations and attributes.
 
-The PyKMIP client provides full support for the following profile(s):
+The PyKMIP ``KMIPProxy`` client provides full support for the following
+profile(s):
 
 * Basic Discover Versions Client KMIP Profile
 
 Development
 ===========
+Roadmap
+-------
 The development plan for PyKMIP follows the requirements for the following
 KMIP profiles. The foundation for symmetric and asymmetric key operation
 support is already built into the library.
@@ -123,11 +169,10 @@ Server profiles:
 
 Testing
 -------
-The PyKMIP test suite is composed of two parts: a unit test suite composed of
-over 600 unit tests, and an integration test suite that runs various tests
-against instantiations of the software KMIP server and real KMIP appliances.
-The tests are managed by a combination of the ``tox``, ``pytest``, and
-``flake8`` libraries and cover approximately 80% of the code.
+The PyKMIP test suite is composed of two parts, a unit test suite and an
+integration test suite that runs various tests against instantiations of the
+software KMIP server and real KMIP appliances. The tests are managed by a
+combination of the ``tox``, ``pytest``, and ``flake8`` libraries.
 
 There are several ways to run different versions of the tests. To run, use one
 of the following commands in the PyKMIP root directory.
@@ -145,10 +190,10 @@ To run the unit test suite against Python 2.7::
   $ tox -e py27
 
 The integration tests require a configuration flag whose value corresponds to
-a client configuration section in the ``kmipconfig.ini`` configuration file.
-See the Usage_ section for more information.
+the name of a client configuration section in the ``kmipconfig.ini``
+configuration file. See the Usage_ section for more information.
 
-To run the integration test suite with a specific configuration setup:
+To run the integration test suite with a specific configuration setup::
 
   $ tox -e integration -- --config <section-name>
 
@@ -160,6 +205,8 @@ Platforms
 PyKMIP has been tested and runs on the following platform(s):
 
 * Ubuntu 12.04 LTS
+
+PyKMIP is supported by Python 2.6, 2.7, 3.3, and 3.4.
 
 References
 ==========
