@@ -1,3 +1,18 @@
+0.4.0 - August 14, 2015
+* Add the official Pie API for a simpler KMIP interface
+* Add the ProxyKmipClient implementation of the Pie API
+* Add key, secret, and opaque objects to the Pie object hierarchy
+* Add unit demos for all ProxyKmipClient operations
+* Add complete unit and integration test suites for the Pie package
+* Add KMIPProxy client support/demos for the Activate and Revoke operations
+* Add KMIPProxy client connection timeout support
+* Add KMIPProxy integration tests for asymmetric key and secret/opaque objects
+* Add improved request error logging for the KMIPServer
+* Update README with additional information about the clients and Pie API
+* Remove AUTHORS in favor of Git commit history
+* Fix bug with dangling file handle when setting __version__
+* Fix bug with dangling socket connection upon client destruction
+
 0.3.3 - June 25, 2015
 * Add the core ManagedObject class hierarchy for the new Pie API
 * Add updated Boolean primitive implementation and test suite
