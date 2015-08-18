@@ -24,6 +24,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
@@ -93,8 +94,9 @@ class TestResponsePayloadFactory(testtools.TestCase):
             self.factory.create, Operation.GET_ATTRIBUTES)
 
     def test_create_get_attributes_list_payload(self):
-        self._test_not_implemented(
-            self.factory.create, Operation.GET_ATTRIBUTE_LIST)
+        payload = self.factory.create(Operation.GET_ATTRIBUTE_LIST)
+        self._test_payload_type(
+            payload, get_attribute_list.GetAttributeListResponsePayload)
 
     def test_create_add_attribute_payload(self):
         self._test_not_implemented(
