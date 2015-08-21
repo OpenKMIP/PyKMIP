@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import pytest
+
 from testtools import TestCase
 
 from subprocess import Popen
@@ -55,6 +57,7 @@ from kmip.services.kmip_client import KMIPProxy
 import kmip.core.utils as utils
 
 
+@pytest.mark.ignore
 class TestKMIPClientIntegration(TestCase):
     STARTUP_TIME = 1.0
     SHUTDOWN_TIME = 0.1
