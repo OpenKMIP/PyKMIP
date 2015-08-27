@@ -26,6 +26,7 @@ from kmip.core.enums import Tags
 from kmip.core.errors import ErrorStrings
 
 from kmip.core import errors
+from kmip.core import exceptions
 from kmip.core import utils
 
 
@@ -249,51 +250,110 @@ class Integer(Base):
 
 
 class LongInteger(Base):
+    """
+    An encodeable object representing a long integer value.
+
+    A LongInteger is one of the KMIP primitive object types. It is encoded as
+    a signed, big-endian, 64-bit integer. For more information, see Section
+    9.1 of the KMIP 1.1 specification.
+    """
+
     LENGTH = 8
 
-    def __init__(self, value=None, tag=Tags.DEFAULT):
+    # Bounds for signed 64-bit integers
+    MIN = -9223372036854775808
+    MAX = 9223372036854775807
+
+    def __init__(self, value=0, tag=Tags.DEFAULT):
+        """
+        Create a LongInteger.
+
+        Args:
+            value (int): The value of the LongInteger. Optional, defaults to 0.
+            tag (Tags): An enumeration defining the tag of the LongInteger.
+                Optional, defaults to Tags.DEFAULT.
+        """
         super(LongInteger, self).__init__(tag, type=Types.LONG_INTEGER)
         self.value = value
-        self.length = self.LENGTH
+        self.length = LongInteger.LENGTH
 
         self.validate()
 
-    def read_value(self, istream):
-        if self.length is not self.LENGTH:
-            raise errors.ReadValueError(LongInteger.__name__, 'length',
-                                        self.LENGTH, self.length)
+    def read(self, istream):
+        """
+        Read the encoding of the LongInteger from the input stream.
+
+        Args:
+            istream (stream): A buffer containing the encoded bytes of a
+                LongInteger. Usually a BytearrayStream object. Required.
+
+        Raises:
+            InvalidPrimitiveLength: if the long integer encoding read in has
+                an invalid encoded length.
+        """
+        super(LongInteger, self).read(istream)
+
+        if self.length is not LongInteger.LENGTH:
+            raise exceptions.InvalidPrimitiveLength(
+                "invalid long integer length read; "
+                "expected: {0}, observed: {1}".format(
+                    LongInteger.LENGTH, self.length))
 
         self.value = unpack('!q', istream.read(self.length))[0]
         self.validate()
 
-    def read(self, istream):
-        super(LongInteger, self).read(istream)
-        self.read_value(istream)
+    def write(self, ostream):
+        """
+        Write the encoding of the LongInteger to the output stream.
 
-    def write_value(self, ostream):
+        Args:
+            ostream (stream): A buffer to contain the encoded bytes of a
+                LongInteger. Usually a BytearrayStream object. Required.
+        """
+        super(LongInteger, self).write(ostream)
         ostream.write(pack('!q', self.value))
 
-    def write(self, ostream):
-        super(LongInteger, self).write(ostream)
-        self.write_value(ostream)
-
     def validate(self):
-        self.__validate()
+        """
+        Verify that the value of the LongInteger is valid.
 
-    def __validate(self):
+        Raises:
+            TypeError: if the value is not of type int or long
+            ValueError: if the value cannot be represented by a signed 64-bit
+                integer
+        """
         if self.value is not None:
-            data_type = type(self.value)
-            if data_type not in six.integer_types:
-                raise errors.StateTypeError(
-                    LongInteger.__name__, "{0}".format(six.integer_types),
-                    data_type)
-            num_bytes = utils.count_bytes(self.value)
-            if num_bytes > self.length:
-                raise errors.StateOverflowError(
-                    LongInteger.__name__, 'value', self.length, num_bytes)
+            if not isinstance(self.value, six.integer_types):
+                raise TypeError('expected (one of): {0}, observed: {1}'.format(
+                    six.integer_types, type(self.value)))
+            else:
+                if self.value > LongInteger.MAX:
+                    raise ValueError(
+                        'long integer value greater than accepted max')
+                elif self.value < LongInteger.MIN:
+                    raise ValueError(
+                        'long integer value less than accepted min')
 
     def __repr__(self):
-        return '<Long Integer, %d>' % (self.value)
+        return "LongInteger(value={0}, tag={1})".format(self.value, self.tag)
+
+    def __str__(self):
+        return str(self.value)
+
+    def __eq__(self, other):
+        if isinstance(other, LongInteger):
+            if self.value == other.value:
+                return True
+            else:
+                return False
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, LongInteger):
+            return not self.__eq__(other)
+        else:
+            return NotImplemented
 
 
 class BigInteger(Base):
