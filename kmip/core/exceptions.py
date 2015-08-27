@@ -19,3 +19,11 @@ class InvalidKmipEncoding(Exception):
     An exception raised when processing invalid KMIP message encodings.
     """
     pass
+
+
+class InvalidPrimitiveLength(Exception):
+    """
+    An exception raised for errors when processing primitives with invalid
+    lengths.
+    """
+    pass
