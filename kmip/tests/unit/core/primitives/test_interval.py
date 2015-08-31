@@ -28,7 +28,7 @@ class TestInterval(testtools.TestCase):
     def setUp(self):
         super(TestInterval, self).setUp()
 
-        # Encoding and value taken from Section 9.1.2 of the KMIP 1.1
+        # Encoding and value based on Section 9.1.2 of the KMIP 1.1
         # specification.
         self.value = 864000
         self.encoding = (
