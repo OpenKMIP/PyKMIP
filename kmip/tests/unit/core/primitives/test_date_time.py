@@ -14,36 +14,84 @@
 # under the License.
 
 import testtools
+import time
 
+from kmip.core import primitives
 from kmip.core import utils
 
 
 class TestDateTime(testtools.TestCase):
+    """
+    Test suite for the DateTime primitive.
+
+    Since DateTime is a subclass of LongInteger, the bulk of the functionality
+    tests are omitted due to redundancy with the LongInteger test suite.
+    """
 
     def setUp(self):
         super(TestDateTime, self).setUp()
-        self.stream = utils.BytearrayStream()
+
+        self.value = 1335514341
+        self.encoding = (
+            b'\x42\x00\x00\x09\x00\x00\x00\x08\x00\x00\x00\x00\x4F\x9A\x54'
+            b'\xE5')
 
     def tearDown(self):
         super(TestDateTime, self).tearDown()
 
     def test_init(self):
-        self.skip('')
+        """
+        Test that a DateTime can be instantiated.
+        """
+        date_time = primitives.DateTime(1)
+        self.assertEqual(1, date_time.value)
 
     def test_init_unset(self):
-        self.skip('')
-
-    def test_validate_on_valid(self):
-        self.skip('')
-
-    def test_validate_on_valid_unset(self):
-        self.skip('')
-
-    def test_validate_on_invalid_type(self):
-        self.skip('')
+        """
+        Test that a DateTime can be instantiated with no input.
+        """
+        date_time = primitives.DateTime()
+        self.assertNotEqual(date_time.value, None)
 
     def test_read(self):
-        self.skip('')
+        """
+        Test that a DateTime can be read from a byte stream.
+        """
+        stream = utils.BytearrayStream(self.encoding)
+        date_time = primitives.DateTime()
+        date_time.read(stream)
+        self.assertEqual(self.value, date_time.value)
 
     def test_write(self):
-        self.skip('')
+        """
+        Test that a DateTime can be written to a byte stream.
+        """
+        stream = utils.BytearrayStream()
+        date_time = primitives.DateTime(self.value)
+        date_time.write(stream)
+
+        result = stream.read()
+        self.assertEqual(len(self.encoding), len(result))
+        self.assertEqual(self.encoding, result)
+
+    def test_repr(self):
+        """
+        Test that the representation of a DateTime is formatted properly.
+        """
+        date_time = primitives.DateTime(1439299135)
+        value = "value={0}".format(date_time.value)
+        tag = "tag={0}".format(date_time.tag)
+        r = "DateTime({0}, {1})".format(value, tag)
+
+        self.assertEqual(r, repr(date_time))
+
+    def test_str(self):
+        """
+        Test that the string representation of a DateTime is formatted
+        properly.
+        """
+        t = (2015, 8, 11, 9, 18, 55, 1, 223, 1)
+        s = "Tue Aug 11 09:18:55 2015"
+
+        date_time = primitives.DateTime(int(time.mktime(t)))
+        self.assertEqual(s, str(date_time))

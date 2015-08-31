@@ -16,6 +16,7 @@
 import logging
 import six
 import sys
+import time
 
 from struct import pack, unpack
 from enum import Enum
@@ -806,10 +807,36 @@ class ByteString(Base):
 
 
 class DateTime(LongInteger):
+    """
+    An encodeable object representing a date/time value.
+
+    A DateTime is one of the KMIP primitive object types. It is encoded as
+    a signed, big-endian, 64-bit integer, representing a POSIX time value as
+    the number of seconds since the Epoch (1970 January 1, 00:00:00 UTC). For
+    more information, see Section 9.1 of the KMIP 1.1 specification.
+    """
 
     def __init__(self, value=None, tag=Tags.DEFAULT):
+        """
+        Create a DateTime.
+
+        Args:
+            value (int): The value of the DateTime in number of seconds since
+                the Epoch. See the time package for additional information.
+                Optional, defaults to the current time.
+            tag (Tags): An enumeration defining the tag of the LongInteger.
+                Optional, defaults to Tags.DEFAULT.
+        """
+        if value is None:
+            value = int(time.time())
         super(DateTime, self).__init__(value, tag)
         self.type = Types.DATE_TIME
+
+    def __repr__(self):
+        return "DateTime(value={0}, tag={1})".format(self.value, self.tag)
+
+    def __str__(self):
+        return time.ctime(self.value)
 
 
 class Interval(Integer):
