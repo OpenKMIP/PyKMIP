@@ -49,8 +49,19 @@ in ``kmip/demos``.
 Configuration
 *************
 A KMIP client can be configured in different ways to connect to a KMIP server.
-The first method is the default approach, which uses settings found in
-``kmip/kmipconfig.ini``. Users can specify the connection configuration
+The first method is the default approach, which uses settings found in the
+PyKMIP configuration file. The configuration file can be stored in several
+different locations, including:
+
+* ``<user home>/.pykmip/pykmip.conf``
+* ``/etc/pykmip/pykmip.conf``
+* ``<PyKMIP install>/kmip/pykmip.conf``
+* ``<PyKMIP install>/kmip/kmipconfig.ini``
+
+These locations are searched in order. For example, configuration data found
+in ``/etc`` will take priority over configuration information found in the
+PyKMIP installation directory. The ``kmipconfig.ini`` file name is supported
+for legacy installations. Users can specify the connection configuration
 settings to use on client instantiation, allowing applications to support
 multiple key storage backends simultaneously, one client per backend.
 
@@ -113,8 +124,8 @@ The KMIP server provides basic support for the following operations:
 
 Configuration
 *************
-The KMIP software server also pulls settings from ``kmip/kmipconfig.ini``.
-An example server configuration settings block is shown below::
+The KMIP software server also pulls settings from the PyKMIP configuration
+file. An example server configuration settings block is shown below::
 
   [server]
   host=127.0.0.1
@@ -127,9 +138,9 @@ An example server configuration settings block is shown below::
   do_handshake_on_connect=True
   suppress_ragged_eofs=True
 
-When used together, a KMIP client and KMIP server will use certificate files
-found in ``kmip/demos/certs``. These files should be replaced with alternative
-certificates for standalone deployments.
+When used together, a KMIP client and KMIP server by default use certificate
+files found in ``kmip/demos/certs``. These files should be replaced with
+alternative certificates for standalone deployments.
 
 Profiles
 ========
