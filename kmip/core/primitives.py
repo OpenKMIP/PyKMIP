@@ -839,8 +839,109 @@ class DateTime(LongInteger):
         return time.ctime(self.value)
 
 
-class Interval(Integer):
+class Interval(Base):
+    """
+    An encodeable object representing an interval of time.
 
-    def __init__(self, value=None, tag=Tags.DEFAULT):
-        super(Interval, self).__init__(value, tag)
-        self.type = Types.INTERVAL
+    An Interval is one of the KMIP primitive object types. It is encoded as
+    an unsigned, big-endian, 32-bit integer, where the value has a resolution
+    of one second. For more information, see Section 9.1 of the KMIP 1.1
+    specification.
+    """
+    LENGTH = 4
+
+    # Bounds for unsigned 32-bit integers
+    MIN = 0
+    MAX = 4294967296
+
+    def __init__(self, value=0, tag=Tags.DEFAULT):
+        super(Interval, self).__init__(tag, type=Types.INTERVAL)
+
+        self.value = value
+        self.length = Interval.LENGTH
+
+        self.validate()
+
+    def read(self, istream):
+        """
+        Read the encoding of the Interval from the input stream.
+
+        Args:
+            istream (stream): A buffer containing the encoded bytes of the
+                value of an Interval. Usually a BytearrayStream object.
+                Required.
+
+        Raises:
+            InvalidPrimitiveLength: if the Interval encoding read in has an
+                invalid encoded length.
+            InvalidPaddingBytes: if the Interval encoding read in does not use
+                zeroes for its padding bytes.
+        """
+        super(Interval, self).read(istream)
+
+        # Check for a valid length before even trying to parse the value.
+        if self.length != Interval.LENGTH:
+            raise exceptions.InvalidPrimitiveLength(
+                "interval length must be {0}".format(Interval.LENGTH))
+
+        # Decode the Interval value and the padding bytes.
+        self.value = unpack('!I', istream.read(Interval.LENGTH))[0]
+        pad = unpack('!I', istream.read(Interval.LENGTH))[0]
+
+        # Verify that the padding bytes are zero bytes.
+        if pad is not 0:
+            raise exceptions.InvalidPaddingBytes("padding bytes must be zero")
+
+        self.validate()
+
+    def write(self, ostream):
+        """
+        Write the encoding of the Interval to the output stream.
+
+        Args:
+            ostream (stream): A buffer to contain the encoded bytes of an
+                Interval. Usually a BytearrayStream object. Required.
+        """
+        super(Interval, self).write(ostream)
+        ostream.write(pack('!I', self.value))
+        ostream.write(pack('!I', 0))
+
+    def validate(self):
+        """
+        Verify that the value of the Interval is valid.
+
+        Raises:
+            TypeError: if the value is not of type int or long
+            ValueError: if the value cannot be represented by an unsigned
+                32-bit integer
+        """
+        if self.value is not None:
+            if type(self.value) not in six.integer_types:
+                raise TypeError('expected (one of): {0}, observed: {1}'.format(
+                    six.integer_types, type(self.value)))
+            else:
+                if self.value > Interval.MAX:
+                    raise ValueError(
+                        'interval value greater than accepted max')
+                elif self.value < Interval.MIN:
+                    raise ValueError('interval value less than accepted min')
+
+    def __repr__(self):
+        value = "value={0}".format(self.value)
+        tag = "tag={0}".format(self.tag)
+        return "Interval({0}, {1})".format(value, tag)
+
+    def __str__(self):
+        return "{0}".format(self.value)
+
+    def __eq__(self, other):
+        if isinstance(other, Interval):
+            return self.value == other.value
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, Interval):
+            return not self.__eq__(other)
+        else:
+            return NotImplemented
