@@ -36,6 +36,7 @@ from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
 from kmip.core.messages.payloads.discover_versions import \
     DiscoverVersionsRequestPayload, DiscoverVersionsResponsePayload
+from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads.query import \
     QueryRequestPayload, QueryResponsePayload
 from kmip.core.messages.payloads.rekey_key_pair import \
@@ -54,6 +55,7 @@ from kmip.services.kmip_client import KMIPProxy
 
 from kmip.services.results import CreateKeyPairResult
 from kmip.services.results import DiscoverVersionsResult
+from kmip.services.results import GetAttributeListResult
 from kmip.services.results import QueryResult
 from kmip.services.results import RekeyKeyPairResult
 
@@ -314,6 +316,19 @@ class TestKMIPClient(TestCase):
         protocol_versions = None
         self._test_build_discover_versions_batch_item(protocol_versions)
 
+    def test_build_get_attribute_list_batch_item(self):
+        uid = '00000000-1111-2222-3333-444444444444'
+        batch_item = self.client._build_get_attribute_list_batch_item(uid)
+
+        self.assertIsInstance(batch_item, RequestBatchItem)
+        self.assertIsInstance(batch_item.operation, Operation)
+        self.assertEqual(
+            OperationEnum.GET_ATTRIBUTE_LIST, batch_item.operation.enum)
+        self.assertIsInstance(
+            batch_item.request_payload,
+            get_attribute_list.GetAttributeListRequestPayload)
+        self.assertEqual(uid, batch_item.request_payload.uid)
+
     def test_process_batch_items(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE_KEY_PAIR),
@@ -360,6 +375,11 @@ class TestKMIPClient(TestCase):
 
         self.assertRaisesRegexp(ValueError, "no processor for operation",
                                 self.client._get_batch_item_processor, None)
+
+        expected = self.client._process_get_attribute_list_batch_item
+        observed = self.client._get_batch_item_processor(
+            OperationEnum.GET_ATTRIBUTE_LIST)
+        self.assertEqual(expected, observed)
 
     def _test_equality(self, expected, observed):
         msg = "expected {0}, observed {1}".format(expected, observed)
@@ -466,6 +486,20 @@ class TestKMIPClient(TestCase):
     def test_process_discover_versions_batch_item_no_results(self):
         protocol_versions = None
         self._test_process_discover_versions_batch_item(protocol_versions)
+
+    def test_process_get_attribute_list_batch_item(self):
+        uid = '00000000-1111-2222-3333-444444444444'
+        names = ['Cryptographic Algorithm', 'Cryptographic Length']
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            uid=uid, attribute_names=names)
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.GET_ATTRIBUTE_LIST),
+            response_payload=payload)
+        result = self.client._process_get_attribute_list_batch_item(batch_item)
+
+        self.assertIsInstance(result, GetAttributeListResult)
+        self.assertEqual(uid, result.uid)
+        self.assertEqual(names, result.names)
 
 
 class TestClientProfileInformation(TestCase):
