@@ -71,6 +71,17 @@ class KmipClient:
         pass
 
     @abc.abstractmethod
+    def get_attribute_list(self, uid):
+        """
+        Get a list of attribute names for a managed object on a KMIP appliance.
+
+        Args:
+            uid (string): The unique ID of the managed object whose attribute
+                names should be retrieved.
+        """
+        pass
+
+    @abc.abstractmethod
     def destroy(self, uid):
         """
         Destroy a managed object stored by a KMIP appliance.

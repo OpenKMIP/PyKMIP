@@ -38,6 +38,9 @@ class DummyKmipClient(api.KmipClient):
     def get(self, uid, *args, **kwargs):
         super(DummyKmipClient, self).get(uid)
 
+    def get_attribute_list(self, uid, *args, **kwargs):
+        super(DummyKmipClient, self).get_attribute_list(uid)
+
     def destroy(self, uid):
         super(DummyKmipClient, self).destroy(uid)
 
@@ -89,6 +92,13 @@ class TestKmipClient(testtools.TestCase):
         """
         dummy = DummyKmipClient()
         dummy.get('uid')
+
+    def test_get_attribute_list(self):
+        """
+        Test that the get_attribute_list method can be called without error.
+        """
+        dummy = DummyKmipClient()
+        dummy.get_attribute_list('uid')
 
     def test_destroy(self):
         """
