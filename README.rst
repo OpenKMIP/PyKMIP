@@ -27,6 +27,7 @@ support for the following operations:
 * ``Register``
 * ``Locate``
 * ``Get``
+* ``GetAttributeList``
 * ``Activate``
 * ``Revoke``
 * ``Destroy``
@@ -41,6 +42,7 @@ following operations:
 * ``CreateKeyPair``
 * ``Register``
 * ``Get``
+* ``GetAttributeList``
 * ``Destroy``
 
 For examples of how to create and use the different clients, see the scripts
