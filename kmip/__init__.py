@@ -15,13 +15,15 @@
 
 import logging.config
 import os
+import re
 import sys
 
 # Dynamically set __version__
 version_path = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), 'version.py')
 with open(version_path, 'r') as version_file:
-    exec(version_file.read())
+    mo = re.search(r"^.*= '(\d\.\d\.\d)'$", version_file.read(), re.MULTILINE)
+    __version__ = mo.group(1)
 
 path = os.path.join(os.path.dirname(__file__), 'logconfig.ini')
 
