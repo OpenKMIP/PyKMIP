@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core.repo.repo import ManagedObjectRepo
+from kmip.services.server.repo.repo import ManagedObjectRepo
 
 
 class MemRepo(ManagedObjectRepo):

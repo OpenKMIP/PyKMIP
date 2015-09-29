@@ -58,7 +58,7 @@ from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import revoke
 
-from kmip.services.kmip_protocol import KMIPProtocol
+from kmip.services.server.kmip_protocol import KMIPProtocol
 
 from kmip.core.config_helper import ConfigHelper
 

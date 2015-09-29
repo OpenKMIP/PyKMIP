@@ -40,8 +40,8 @@ from kmip.core.objects import KeyBlock
 from kmip.core.objects import KeyMaterial
 from kmip.core.objects import KeyValue
 from kmip.core.objects import TemplateAttribute
-from kmip.core.repo.mem_repo import MemRepo
 from kmip.core.secrets import SymmetricKey
+from kmip.services.server.repo.mem_repo import MemRepo
 from kmip.services.results import CreateResult
 from kmip.services.results import DestroyResult
 from kmip.services.results import GetResult
