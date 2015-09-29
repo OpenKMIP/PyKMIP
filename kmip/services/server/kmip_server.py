@@ -21,8 +21,8 @@ import ssl
 from kmip.core.config_helper import ConfigHelper
 from kmip.core.server import KMIPImpl
 
-from kmip.services.kmip_protocol import KMIPProtocolFactory
-from kmip.services.processor import Processor
+from kmip.services.server.kmip_protocol import KMIPProtocolFactory
+from kmip.services.server.processor import Processor
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
