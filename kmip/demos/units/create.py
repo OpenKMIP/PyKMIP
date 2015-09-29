@@ -122,16 +122,16 @@ if __name__ == '__main__':
 
     # Display operation results
     logger.info('create() result status: {0}'.format(
-        result.result_status.enum))
+        result.result_status.value))
 
-    if result.result_status.enum == ResultStatus.SUCCESS:
+    if result.result_status.value == ResultStatus.SUCCESS:
         logger.info('created object type: {0}'.format(
-            result.object_type.enum))
+            result.object_type.value))
         logger.info('created UUID: {0}'.format(result.uuid.value))
         logger.info('created template attribute: {0}'.
                     format(result.template_attribute))
     else:
         logger.info('create() result reason: {0}'.format(
-            result.result_reason.enum))
+            result.result_reason.value))
         logger.info('create() result message: {0}'.format(
             result.result_message.value))

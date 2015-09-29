@@ -88,10 +88,10 @@ class TestKMIPClient(TestCase):
 
         message = utils.build_er_error(credential.__class__, 'type',
                                        cred_type,
-                                       credential.credential_type.enum,
+                                       credential.credential_type.value,
                                        'value')
         self.assertEqual(CredentialType.USERNAME_AND_PASSWORD,
-                         credential.credential_type.enum,
+                         credential.credential_type.value,
                          message)
 
         message = utils.build_er_error(
@@ -151,7 +151,7 @@ class TestKMIPClient(TestCase):
         msg = base.format(Operation, operation)
         self.assertIsInstance(operation, Operation, msg)
 
-        operation_enum = operation.enum
+        operation_enum = operation.value
 
         msg = base.format(OperationEnum.CREATE_KEY_PAIR, operation_enum)
         self.assertEqual(OperationEnum.CREATE_KEY_PAIR, operation_enum, msg)
@@ -200,7 +200,7 @@ class TestKMIPClient(TestCase):
         msg = base.format(Operation, operation)
         self.assertIsInstance(operation, Operation, msg)
 
-        operation_enum = operation.enum
+        operation_enum = operation.value
 
         msg = base.format(OperationEnum.REKEY_KEY_PAIR, operation_enum)
         self.assertEqual(OperationEnum.REKEY_KEY_PAIR, operation_enum, msg)
@@ -254,7 +254,7 @@ class TestKMIPClient(TestCase):
         msg = base.format(Operation, operation)
         self.assertIsInstance(operation, Operation, msg)
 
-        operation_enum = operation.enum
+        operation_enum = operation.value
 
         msg = base.format(OperationEnum.QUERY, operation_enum)
         self.assertEqual(OperationEnum.QUERY, operation_enum, msg)
@@ -290,7 +290,7 @@ class TestKMIPClient(TestCase):
         msg = base.format(Operation, operation)
         self.assertIsInstance(operation, Operation, msg)
 
-        operation_enum = operation.enum
+        operation_enum = operation.value
 
         msg = base.format(OperationEnum.DISCOVER_VERSIONS, operation_enum)
         self.assertEqual(OperationEnum.DISCOVER_VERSIONS, operation_enum, msg)
@@ -323,7 +323,7 @@ class TestKMIPClient(TestCase):
         self.assertIsInstance(batch_item, RequestBatchItem)
         self.assertIsInstance(batch_item.operation, Operation)
         self.assertEqual(
-            OperationEnum.GET_ATTRIBUTE_LIST, batch_item.operation.enum)
+            OperationEnum.GET_ATTRIBUTE_LIST, batch_item.operation.value)
         self.assertIsInstance(
             batch_item.request_payload,
             get_attribute_list.GetAttributeListRequestPayload)

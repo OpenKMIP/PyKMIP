@@ -73,14 +73,14 @@ if __name__ == '__main__':
 
     # Display operation results
     logger.info('register() result status: {0}'.format(
-        result.result_status.enum))
+        result.result_status.value))
 
-    if result.result_status.enum == ResultStatus.SUCCESS:
+    if result.result_status.value == ResultStatus.SUCCESS:
         logger.info('registered UUID: {0}'.format(result.uuid.value))
         logger.info('registered template attribute: {0}'.
                     format(result.template_attribute))
     else:
         logger.info('register() result reason: {0}'.format(
-            result.result_reason.enum))
+            result.result_reason.value))
         logger.info('register() result message: {0}'.format(
             result.result_message.value))

@@ -125,9 +125,9 @@ if __name__ == '__main__':
 
     # Display operation results
     logger.info('create_key_pair() result status: {0}'.format(
-        result.result_status.enum))
+        result.result_status.value))
 
-    if result.result_status.enum == ResultStatus.SUCCESS:
+    if result.result_status.value == ResultStatus.SUCCESS:
         logger.info('created private key UUID: {0}'.format(
             result.private_key_uuid))
         logger.info('created public key UUID: {0}'.format(
@@ -144,6 +144,6 @@ if __name__ == '__main__':
                 logger, result.public_key_template_attribute)
     else:
         logger.info('create() result reason: {0}'.format(
-            result.result_reason.enum))
+            result.result_reason.value))
         logger.info('create() result message: {0}'.format(
             result.result_message.value))

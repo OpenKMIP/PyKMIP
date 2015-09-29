@@ -102,9 +102,9 @@ class TestKMIPClientIntegration(TestCase):
     def test_create(self):
         result = self._create_symmetric_key()
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
+        self._check_result_status(result.result_status.value, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
+        self._check_object_type(result.object_type.value, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
@@ -126,9 +126,9 @@ class TestKMIPClientIntegration(TestCase):
 
         result = self.client.get(uuid=uuid, credential=credential)
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
+        self._check_result_status(result.result_status.value, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
+        self._check_object_type(result.object_type.value, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
@@ -151,9 +151,9 @@ class TestKMIPClientIntegration(TestCase):
         # Verify the secret was created
         result = self.client.get(uuid=uuid, credential=credential)
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
+        self._check_result_status(result.result_status.value, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
+        self._check_object_type(result.object_type.value, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
@@ -166,24 +166,24 @@ class TestKMIPClientIntegration(TestCase):
 
         # Destroy the SYMMETRIC_KEY object
         result = self.client.destroy(uuid, credential)
-        self._check_result_status(result.result_status.enum, ResultStatus,
+        self._check_result_status(result.result_status.value, ResultStatus,
                                   ResultStatus.SUCCESS)
         self._check_uuid(result.uuid.value, str)
 
         # Verify the secret was destroyed
         result = self.client.get(uuid=uuid, credential=credential)
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
+        self._check_result_status(result.result_status.value, ResultStatus,
                                   ResultStatus.OPERATION_FAILED)
 
         expected = ResultReason
-        observed = type(result.result_reason.enum)
+        observed = type(result.result_reason.value)
         message = utils.build_er_error(result.result_reason.__class__, 'type',
                                        expected, observed)
         self.assertEqual(expected, observed, message)
 
         expected = ResultReason.ITEM_NOT_FOUND
-        observed = result.result_reason.enum
+        observed = result.result_reason.value
         message = utils.build_er_error(result.result_reason.__class__,
                                        'value', expected, observed)
         self.assertEqual(expected, observed, message)
@@ -228,7 +228,7 @@ class TestKMIPClientIntegration(TestCase):
         result = self.client.register(object_type, template_attribute, secret,
                                       credential)
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
+        self._check_result_status(result.result_status.value, ResultStatus,
                                   ResultStatus.SUCCESS)
         self._check_uuid(result.uuid.value, str)
 
@@ -241,9 +241,9 @@ class TestKMIPClientIntegration(TestCase):
         uuid = result.uuid.value
         result = self.client.get(uuid=uuid, credential=credential)
 
-        self._check_result_status(result.result_status.enum, ResultStatus,
+        self._check_result_status(result.result_status.value, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
+        self._check_object_type(result.object_type.value, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 

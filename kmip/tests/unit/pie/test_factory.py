@@ -243,8 +243,8 @@ class TestObjectFactory(testtools.TestCase):
         pie_key = self.factory.convert(core_key)
         self.assertIsInstance(pie_key, pobjects.SymmetricKey)
         self._test_pie_key(
-            pie_key, algorithm.enum, length.value, self.symmetric_bytes,
-            format_type.enum)
+            pie_key, algorithm.value, length.value, self.symmetric_bytes,
+            format_type.value)
 
     def test_convert_public_key_pie_to_core(self):
         """
@@ -282,8 +282,8 @@ class TestObjectFactory(testtools.TestCase):
         pie_key = self.factory.convert(core_key)
         self.assertIsInstance(pie_key, pobjects.PublicKey)
         self._test_pie_key(
-            pie_key, algorithm.enum, length.value, self.public_bytes,
-            format_type.enum)
+            pie_key, algorithm.value, length.value, self.public_bytes,
+            format_type.value)
 
     def test_convert_private_key_pie_to_core(self):
         """
@@ -321,8 +321,8 @@ class TestObjectFactory(testtools.TestCase):
         pie_key = self.factory.convert(core_key)
         self.assertIsInstance(pie_key, pobjects.PrivateKey)
         self._test_pie_key(
-            pie_key, algorithm.enum, length.value, self.private_bytes,
-            format_type.enum)
+            pie_key, algorithm.value, length.value, self.private_bytes,
+            format_type.value)
 
     def test_convert_certificate_pie_to_core(self):
         """
@@ -333,7 +333,7 @@ class TestObjectFactory(testtools.TestCase):
 
         self.assertIsInstance(core_cert, secrets.Certificate)
         self.assertEqual(
-            pie_cert.certificate_type, core_cert.certificate_type.enum)
+            pie_cert.certificate_type, core_cert.certificate_type.value)
         self.assertEqual(pie_cert.value, core_cert.certificate_value.value)
 
     def test_convert_certificate_core_to_pie(self):
@@ -346,7 +346,7 @@ class TestObjectFactory(testtools.TestCase):
 
         self.assertIsInstance(pie_cert, pobjects.X509Certificate)
         self.assertEqual(
-            core_cert.certificate_type.enum, pie_cert.certificate_type)
+            core_cert.certificate_type.value, pie_cert.certificate_type)
         self.assertEqual(core_cert.certificate_value.value, pie_cert.value)
 
     def test_convert_secret_data_pie_to_core(self):
@@ -360,7 +360,7 @@ class TestObjectFactory(testtools.TestCase):
 
         self.assertIsInstance(core_secret, secrets.SecretData)
 
-        data_type = core_secret.secret_data_type.enum
+        data_type = core_secret.secret_data_type.value
         self.assertEqual(enums.SecretDataType.PASSWORD, data_type)
 
         key_block = core_secret.key_block
@@ -408,7 +408,7 @@ class TestObjectFactory(testtools.TestCase):
 
         self.assertIsInstance(core_obj, secrets.OpaqueObject)
 
-        opaque_type = core_obj.opaque_data_type.enum
+        opaque_type = core_obj.opaque_data_type.value
         self.assertEqual(enums.OpaqueDataType.NONE, opaque_type)
 
         value = core_obj.opaque_data_value.value
@@ -453,8 +453,8 @@ class TestObjectFactory(testtools.TestCase):
 
         self.assertIsInstance(pie_key, pobjects.SymmetricKey)
         self._test_pie_key(
-            pie_key, algorithm.enum, length.value, self.symmetric_bytes,
-            format_type.enum)
+            pie_key, algorithm.value, length.value, self.symmetric_bytes,
+            format_type.value)
 
     def test_build_pie_symmetric_key_on_invalid_format(self):
         """
@@ -503,8 +503,8 @@ class TestObjectFactory(testtools.TestCase):
 
         self.assertIsInstance(pie_key, pobjects.PublicKey)
         self._test_pie_key(
-            pie_key, algorithm.enum, length.value, self.public_bytes,
-            format_type.enum)
+            pie_key, algorithm.value, length.value, self.public_bytes,
+            format_type.value)
 
     def test_build_core_key(self):
         """
@@ -537,13 +537,13 @@ class TestObjectFactory(testtools.TestCase):
 
         key_format_type = key_block.key_format_type
         self.assertIsInstance(key_format_type, misc.KeyFormatType)
-        self.assertEqual(key_format_type.enum, format_type)
+        self.assertEqual(key_format_type.value, format_type)
 
         cryptographic_algorithm = key_block.cryptographic_algorithm
         self.assertIsInstance(
             cryptographic_algorithm, attributes.CryptographicAlgorithm)
         self.assertEqual(
-            cryptographic_algorithm.enum, algorithm)
+            cryptographic_algorithm.value, algorithm)
 
         cryptographic_length = key_block.cryptographic_length
         self.assertIsInstance(

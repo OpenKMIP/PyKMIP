@@ -66,7 +66,7 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.create(obj_type, template_attribute)
         self.assertNotEqual(None, res, 'result is None')
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
 
     def test_create_no_length(self):
@@ -76,7 +76,7 @@ class TestKMIPServer(TestCase):
         res = self.kmip.create(obj_type, template_attribute)
         self.assertNotEqual(None, res, 'result is None')
         attrs = res.template_attribute.attributes
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
         self.assertTrue(self._check_attr_exists(attributes[2], attrs),
                         'length attribute not returned')
@@ -87,8 +87,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.create(obj_type, template_attribute)
         self.assertNotEqual(None, res, 'result is None')
-        self.assertEqual(ResultStatus.OPERATION_FAILED, res.result_status.enum,
-                         'result status did not return failed')
+        self.assertEqual(
+            ResultStatus.OPERATION_FAILED,
+            res.result_status.value,
+            'result status did not return failed')
 
     def test_create_no_usage_mask(self):
         obj_type = ObjectType(ObjectTypeEnum.SYMMETRIC_KEY)
@@ -96,8 +98,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.create(obj_type, template_attribute)
         self.assertNotEqual(None, res, 'result is None')
-        self.assertEqual(ResultStatus.OPERATION_FAILED, res.result_status.enum,
-                         'result status did not return failed')
+        self.assertEqual(
+            ResultStatus.OPERATION_FAILED,
+            res.result_status.value,
+            'result status did not return failed')
 
     def test_register(self):
         obj_type = ObjectType(ObjectTypeEnum.SYMMETRIC_KEY)
@@ -106,7 +110,7 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertNotEqual(None, res, 'result is None')
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
 
     def test_register_attrs_in_key_value(self):
@@ -119,7 +123,7 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertNotEqual(None, res, 'result is None')
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
 
     def test_register_attrs_in_template(self):
@@ -132,7 +136,7 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertNotEqual(None, res, 'result is None')
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
 
     def test_register_no_alg(self):
@@ -143,10 +147,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.ITEM_NOT_FOUND,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_alg_in_key_value_and_key_block(self):
@@ -157,10 +161,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.INDEX_OUT_OF_BOUNDS,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_alg_in_template_and_key_block(self):
@@ -170,10 +174,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.INDEX_OUT_OF_BOUNDS,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_alg_in_template_and_key_value(self):
@@ -185,10 +189,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.INDEX_OUT_OF_BOUNDS,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_invalid_alg(self):
@@ -222,10 +226,10 @@ class TestKMIPServer(TestCase):
             template_attribute = TemplateAttribute(attributes=attributes)
             res = self.kmip.register(obj_type, template_attribute, key)
             self.assertEqual(ResultStatus.OPERATION_FAILED,
-                             res.result_status.enum,
+                             res.result_status.value,
                              'result status did not return failed')
             self.assertEqual(ResultReason.INVALID_FIELD,
-                             res.result_reason.enum,
+                             res.result_reason.value,
                              'result reason did not match')
 
     def test_register_no_length(self):
@@ -236,10 +240,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.ITEM_NOT_FOUND,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_length_in_key_value_and_key_block(self):
@@ -250,10 +254,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.INDEX_OUT_OF_BOUNDS,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_length_in_template_and_key_block(self):
@@ -263,10 +267,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.INDEX_OUT_OF_BOUNDS,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_length_in_template_and_key_value(self):
@@ -278,10 +282,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.INDEX_OUT_OF_BOUNDS,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_invalid_length(self):
@@ -294,10 +298,10 @@ class TestKMIPServer(TestCase):
             template_attribute = TemplateAttribute(attributes=attributes)
             res = self.kmip.register(obj_type, template_attribute, key)
             self.assertEqual(ResultStatus.OPERATION_FAILED,
-                             res.result_status.enum,
+                             res.result_status.value,
                              'result status did not return failed')
             self.assertEqual(ResultReason.INVALID_FIELD,
-                             res.result_reason.enum,
+                             res.result_reason.value,
                              'result reason did not match')
 
     def test_register_no_usage_mask(self):
@@ -308,10 +312,10 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.ITEM_NOT_FOUND,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_no_object_type(self):
@@ -322,10 +326,10 @@ class TestKMIPServer(TestCase):
         res = self.kmip.register(obj_type, template_attribute, key)
         self.assertNotEqual(None, res, 'result is None')
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.ITEM_NOT_FOUND,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_register_unsupported_object_type(self):
@@ -344,10 +348,10 @@ class TestKMIPServer(TestCase):
             res = self.kmip.register(obj_type, template_attribute, key)
             self.assertNotEqual(None, res, 'result is None')
             self.assertEqual(ResultStatus.OPERATION_FAILED,
-                             res.result_status.enum,
+                             res.result_status.value,
                              'result status did not return failed')
             self.assertEqual(ResultReason.INVALID_FIELD,
-                             res.result_reason.enum,
+                             res.result_reason.value,
                              'result reason did not match')
 
     def test_register_object_type_mismatch(self):
@@ -366,23 +370,23 @@ class TestKMIPServer(TestCase):
             res = self.kmip.register(obj_type, template_attribute, key)
             self.assertNotEqual(None, res, 'result is None')
             self.assertEqual(ResultStatus.OPERATION_FAILED,
-                             res.result_status.enum,
+                             res.result_status.value,
                              'result status did not return failed')
             self.assertEqual(ResultReason.INVALID_FIELD,
-                             res.result_reason.enum,
+                             res.result_reason.value,
                              'result reason did not match')
 
     def test_get(self):
         uuid = self._create()
         key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
         res = self.kmip.get(uuid, key_format_type)
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
 
     def test_get_no_key_format_type(self):
         uuid = self._create()
         res = self.kmip.get(uuid, None)
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
 
     def test_get_unknown(self):
@@ -391,17 +395,18 @@ class TestKMIPServer(TestCase):
             key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
             res = self.kmip.get(uuid, key_format_type)
             self.assertEqual(ResultStatus.OPERATION_FAILED,
-                             res.result_status.enum,
+                             res.result_status.value,
                              'result status did not return failed')
             self.assertEqual(ResultReason.ITEM_NOT_FOUND,
-                             res.result_reason.enum,
+                             res.result_reason.value,
                              'result reason did not match')
 
     def test_get_no_uuid(self):
         self._create()
         key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
         res = self.kmip.get(None, key_format_type)
-        self.assertEqual(ResultStatus.OPERATION_FAILED, res.result_status.enum,
+        self.assertEqual(ResultStatus.OPERATION_FAILED,
+                         res.result_status.value,
                          'result status did not return failed')
 
     def test_get_with_key_compression(self):
@@ -410,36 +415,37 @@ class TestKMIPServer(TestCase):
         key_compression = KeyCompressionType(KeyCompressionTypeEnum.
                                              EC_PUBLIC_KEY_TYPE_UNCOMPRESSED)
         res = self.kmip.get(uuid, key_format_type, key_compression)
-        self.assertEqual(ResultStatus.OPERATION_FAILED, res.result_status.enum,
+        self.assertEqual(ResultStatus.OPERATION_FAILED,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.KEY_COMPRESSION_TYPE_NOT_SUPPORTED,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_destroy(self):
         uuid = self._create()
         key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
         res = self.kmip.get(uuid, key_format_type)
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
         res = self.kmip.destroy(uuid)
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
         res = self.kmip.destroy(uuid)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.ITEM_NOT_FOUND,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_destroy_no_uuid(self):
         res = self.kmip.destroy(None)
         self.assertEqual(ResultStatus.OPERATION_FAILED,
-                         res.result_status.enum,
+                         res.result_status.value,
                          'result status did not return failed')
         self.assertEqual(ResultReason.ITEM_NOT_FOUND,
-                         res.result_reason.enum,
+                         res.result_reason.value,
                          'result reason did not match')
 
     def test_destroy_unknown(self):
@@ -448,14 +454,14 @@ class TestKMIPServer(TestCase):
             key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
             res = self.kmip.get(uuid, key_format_type)
             self.assertEqual(ResultStatus.OPERATION_FAILED,
-                             res.result_status.enum,
+                             res.result_status.value,
                              'result status did not return failed')
             res = self.kmip.destroy(uuid)
             self.assertEqual(ResultStatus.OPERATION_FAILED,
-                             res.result_status.enum,
+                             res.result_status.value,
                              'result status did not return failed')
             self.assertEqual(ResultReason.ITEM_NOT_FOUND,
-                             res.result_reason.enum,
+                             res.result_reason.value,
                              'result reason did not match')
 
     def _create(self):
@@ -464,7 +470,7 @@ class TestKMIPServer(TestCase):
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.create(obj_type, template_attribute)
         self.assertNotEqual(None, res, 'result is None')
-        self.assertEqual(ResultStatus.SUCCESS, res.result_status.enum,
+        self.assertEqual(ResultStatus.SUCCESS, res.result_status.value,
                          'result status did not return success')
         return res.uuid
 
@@ -530,5 +536,7 @@ class TestKMIPServer(TestCase):
 
         attrs = [nameattr]
         res = self.kmip.locate(attributes=attrs)
-        self.assertEqual(ResultStatus.OPERATION_FAILED, res.result_status.enum,
-                         'locate result status did not return success')
+        self.assertEqual(
+            ResultStatus.OPERATION_FAILED,
+            res.result_status.value,
+            'locate result status did not return success')

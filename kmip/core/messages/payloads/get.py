@@ -32,19 +32,17 @@ class GetRequestPayload(Struct):
 
     # 9.1.3.2.2
     class KeyCompressionType(Enumeration):
-        ENUM_TYPE = enums.KeyCompressionType
 
         def __init__(self, value=None):
             super(GetRequestPayload.KeyCompressionType, self).__init__(
-                value, Tags.KEY_COMPRESSION_TYPE)
+                enums.KeyCompressionType, value, Tags.KEY_COMPRESSION_TYPE)
 
     # 9.1.3.2.3
     class KeyFormatType(Enumeration):
-        ENUM_TYPE = enums.KeyFormatType
 
         def __init__(self, value=None):
             super(GetRequestPayload.KeyFormatType, self).__init__(
-                value, Tags.KEY_FORMAT_TYPE)
+                enums.KeyFormatType, value, Tags.KEY_FORMAT_TYPE)
 
     def __init__(self,
                  unique_identifier=None,
@@ -130,7 +128,7 @@ class GetResponsePayload(Struct):
         self.object_type.read(tstream)
         self.unique_identifier.read(tstream)
 
-        secret_type = self.object_type.enum
+        secret_type = self.object_type.value
         self.secret = self.secret_factory.create(secret_type)
         self.secret.read(tstream)
 

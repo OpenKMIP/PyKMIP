@@ -170,7 +170,7 @@ class TestIntegration(TestCase):
         :param result_status_value: value of the result status
         """
 
-        result_status = result.result_status.enum
+        result_status = result.result_status.value
         # Error check the result status type and value
         expected = result_status_type
 
@@ -303,7 +303,7 @@ class TestIntegration(TestCase):
         result = self.client.discover_versions()
 
         expected = ResultStatus.SUCCESS
-        observed = result.result_status.enum
+        observed = result.result_status.value
 
         self.assertEqual(expected, observed)
 
@@ -326,7 +326,7 @@ class TestIntegration(TestCase):
         result = self.client.query(query_functions=query_functions)
 
         expected = ResultStatus.SUCCESS
-        observed = result.result_status.enum
+        observed = result.result_status.value
 
         self.assertEqual(expected, observed)
 
@@ -338,14 +338,14 @@ class TestIntegration(TestCase):
         result = self._create_symmetric_key(key_name=key_name)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
+        self._check_object_type(result.object_type.value, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
         result = self.client.get(uuid=result.uuid.value, credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
+        self._check_object_type(result.object_type.value, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
@@ -370,12 +370,12 @@ class TestIntegration(TestCase):
                                   ResultStatus.OPERATION_FAILED)
 
         expected = ResultReason
-        observed = type(result.result_reason.enum)
+        observed = type(result.result_reason.value)
 
         self.assertEqual(expected, observed)
 
         expected = ResultReason.ITEM_NOT_FOUND
-        observed = result.result_reason.enum
+        observed = result.result_reason.value
 
         self.assertEqual(expected, observed)
 
@@ -434,7 +434,7 @@ class TestIntegration(TestCase):
         result = self.client.get(uuid=uuid, credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.enum, ObjectType,
+        self._check_object_type(result.object_type.value, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
         self._check_uuid(result.uuid.value, str)
 
@@ -469,12 +469,12 @@ class TestIntegration(TestCase):
                                   ResultStatus.OPERATION_FAILED)
 
         expected = ResultReason
-        observed = type(result.result_reason.enum)
+        observed = type(result.result_reason.value)
 
         self.assertEqual(expected, observed)
 
         expected = ResultReason.ITEM_NOT_FOUND
-        observed = result.result_reason.enum
+        observed = result.result_reason.value
 
         self.assertEqual(expected, observed)
 
@@ -500,13 +500,13 @@ class TestIntegration(TestCase):
 
         self._check_result_status(priv_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_object_type(priv_key_result.object_type.enum, ObjectType,
+        self._check_object_type(priv_key_result.object_type.value, ObjectType,
                                 ObjectType.PRIVATE_KEY)
 
         self._check_uuid(priv_key_result.uuid.value, str)
         self._check_result_status(pub_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_object_type(pub_key_result.object_type.enum, ObjectType,
+        self._check_object_type(pub_key_result.object_type.value, ObjectType,
                                 ObjectType.PUBLIC_KEY)
 
         self._check_uuid(pub_key_result.uuid.value, str)
@@ -552,8 +552,8 @@ class TestIntegration(TestCase):
                                   ResultStatus.OPERATION_FAILED)
 
         expected = ResultReason
-        observed_priv = type(priv_key_destroyed_result.result_reason.enum)
-        observed_pub = type(pub_key_destroyed_result.result_reason.enum)
+        observed_priv = type(priv_key_destroyed_result.result_reason.value)
+        observed_pub = type(pub_key_destroyed_result.result_reason.value)
 
         self.assertEqual(expected, observed_priv)
         self.assertEqual(expected, observed_pub)
@@ -664,7 +664,7 @@ class TestIntegration(TestCase):
         self._check_result_status(priv_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_object_type(priv_key_result.object_type.enum, ObjectType,
+        self._check_object_type(priv_key_result.object_type.value, ObjectType,
                                 ObjectType.PRIVATE_KEY)
 
         self._check_uuid(priv_key_result.uuid.value, str)
@@ -704,7 +704,7 @@ class TestIntegration(TestCase):
                                   ResultStatus.OPERATION_FAILED)
 
         expected = ResultReason
-        priv_observed = type(priv_key_destroyed_result.result_reason.enum)
+        priv_observed = type(priv_key_destroyed_result.result_reason.value)
 
         self.assertEqual(expected, priv_observed)
 
@@ -771,7 +771,7 @@ class TestIntegration(TestCase):
         self._check_result_status(pub_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_object_type(pub_key_result.object_type.enum, ObjectType,
+        self._check_object_type(pub_key_result.object_type.value, ObjectType,
                                 ObjectType.PUBLIC_KEY)
         self._check_uuid(pub_key_result.uuid.value, str)
 
@@ -801,7 +801,7 @@ class TestIntegration(TestCase):
         self._check_result_status(pub_key_destroyed_result, ResultStatus,
                                   ResultStatus.OPERATION_FAILED)
         expected = ResultReason
-        pub_observed = type(pub_key_destroyed_result.result_reason.enum)
+        pub_observed = type(pub_key_destroyed_result.result_reason.value)
 
         self.assertEqual(expected, pub_observed)
 
@@ -911,7 +911,7 @@ class TestIntegration(TestCase):
         self._check_result_status(cert_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_object_type(cert_result.object_type.enum, ObjectType,
+        self._check_object_type(cert_result.object_type.value, ObjectType,
                                 ObjectType.CERTIFICATE)
 
         self._check_uuid(cert_result.uuid.value, str)
@@ -947,7 +947,7 @@ class TestIntegration(TestCase):
                                   ResultStatus.OPERATION_FAILED)
 
         expected = ResultReason
-        cert_observed = type(cert_result_destroyed_result.result_reason.enum)
+        cert_observed = type(cert_result_destroyed_result.result_reason.value)
 
         self.assertEqual(expected, cert_observed)
 
@@ -1018,7 +1018,7 @@ class TestIntegration(TestCase):
         self._check_result_status(pass_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_object_type(pass_result.object_type.enum, ObjectType,
+        self._check_object_type(pass_result.object_type.value, ObjectType,
                                 ObjectType.SECRET_DATA)
 
         self._check_uuid(pass_result.uuid.value, str)
@@ -1055,7 +1055,7 @@ class TestIntegration(TestCase):
                                   ResultStatus.OPERATION_FAILED)
 
         expected = ResultReason
-        pass_observed = type(pass_result_destroyed_result.result_reason.enum)
+        pass_observed = type(pass_result_destroyed_result.result_reason.value)
 
         self.assertEqual(expected, pass_observed)
 
@@ -1113,8 +1113,9 @@ class TestIntegration(TestCase):
         self._check_result_status(opaque_obj_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_object_type(opaque_obj_result.object_type.enum, ObjectType,
-                                ObjectType.OPAQUE_DATA)
+        self._check_object_type(
+            opaque_obj_result.object_type.value, ObjectType,
+            ObjectType.OPAQUE_DATA)
 
         self._check_uuid(opaque_obj_result.uuid.value, str)
 
@@ -1149,7 +1150,7 @@ class TestIntegration(TestCase):
 
         expected = ResultReason
         opaque_obj_observed = \
-            type(opaque_obj_result_destroyed_result.result_reason.enum)
+            type(opaque_obj_result_destroyed_result.result_reason.value)
 
         self.assertEqual(expected, opaque_obj_observed)
 

@@ -58,12 +58,12 @@ if __name__ == '__main__':
 
     # Display operation results
     logger.info('revoke() result status: {0}'.format(
-        result.result_status.enum))
+        result.result_status.value))
 
-    if result.result_status.enum == ResultStatus.SUCCESS:
+    if result.result_status.value == ResultStatus.SUCCESS:
         logger.info('revoked UUID: {0}'.format(result.unique_identifier.value))
     else:
         logger.info('revoke() result reason: {0}'.format(
-            result.result_reason.enum))
+            result.result_reason.value))
         logger.info('revoke() result message: {0}'.format(
             result.result_message.value))

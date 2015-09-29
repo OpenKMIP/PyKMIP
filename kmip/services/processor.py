@@ -109,16 +109,16 @@ class Processor(object):
             response_payload = None
             message_extension = None
 
-            if result_status.enum is RS.SUCCESS:
+            if result_status.value is RS.SUCCESS:
                 response_payload = result[3]
-            elif result_status.enum is RS.OPERATION_FAILED:
+            elif result_status.value is RS.OPERATION_FAILED:
                 failure_occurred = True
                 result_reason = result[1]
-            elif result_status.enum is RS.OPERATION_PENDING:
+            elif result_status.value is RS.OPERATION_PENDING:
                 # TODO (peter-hamilton) Need to add a way to track async
                 # TODO (peter-hamilton) operations.
                 asyn_cv = b'\x00'
-            elif result_status.enum is RS.OPERATION_UNDONE:
+            elif result_status.value is RS.OPERATION_UNDONE:
                 result_reason = result[1]
             else:
                 msg = 'Unrecognized operation result status: {0}'
@@ -135,13 +135,13 @@ class Processor(object):
             response_batch_items.append(resp_bi)
 
             if failure_occurred:
-                if batch_error_cont_option.enum is BECO.STOP:
+                if batch_error_cont_option.value is BECO.STOP:
                     break
-                elif batch_error_cont_option.enum is BECO.UNDO:
+                elif batch_error_cont_option.value is BECO.UNDO:
                     # TODO (peter-hamilton) Tell client to undo operations.
                     # TODO (peter-hamilton) Unclear what response should be.
                     break
-                elif batch_error_cont_option.enum is BECO.CONTINUE:
+                elif batch_error_cont_option.value is BECO.CONTINUE:
                     continue
                 else:
                     msg = 'Unrecognized batch error continuation option: {0}'
@@ -161,7 +161,7 @@ class Processor(object):
         raise NotImplementedError()
 
     def _process_operation(self, operation, payload):
-        op = operation.enum
+        op = operation.value
 
         if op is Operation.CREATE:
             return self._process_create_request(payload)

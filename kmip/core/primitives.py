@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import enum as enumeration
 import logging
 import six
 import struct
@@ -20,13 +21,10 @@ import sys
 import time
 
 from struct import pack, unpack
-from enum import Enum
-
-from kmip.core.enums import Types
-from kmip.core.enums import Tags
 
 from kmip.core.errors import ErrorStrings
 
+from kmip.core import enums
 from kmip.core import errors
 from kmip.core import exceptions
 from kmip.core import utils
@@ -37,7 +35,7 @@ class Base(object):
     TYPE_SIZE = 1
     LENGTH_SIZE = 4
 
-    def __init__(self, tag=Tags.DEFAULT, type=Types.DEFAULT):
+    def __init__(self, tag=enums.Tags.DEFAULT, type=enums.Types.DEFAULT):
         self.tag = tag
         self.type = type
         self.length = None
@@ -54,7 +52,7 @@ class Base(object):
         tts = istream.read(self.TAG_SIZE)
         tag = unpack('!I', b'\x00' + tts[0:self.TAG_SIZE])[0]
 
-        enum_tag = Tags(tag)
+        enum_tag = enums.Tags(tag)
 
         # Verify that the tag matches for the current object
         if enum_tag is not self.tag:
@@ -71,7 +69,7 @@ class Base(object):
                                         '{0} bytes'.format(num_bytes))
         typ = unpack('!B', tts)[0]
 
-        enum_typ = Types(typ)
+        enum_typ = enums.Types(typ)
 
         if enum_typ is not self.type:
             raise errors.ReadValueError(Base.__name__, 'type',
@@ -100,10 +98,10 @@ class Base(object):
         ostream.write(pack('!I', self.tag.value)[1:])
 
     def write_type(self, ostream):
-        if type(self.type) is not Types:
+        if type(self.type) is not enums.Types:
             msg = ErrorStrings.BAD_EXP_RECV
             raise TypeError(msg.format(Base.__name__, 'type',
-                                       Types, type(self.type)))
+                                       enums.Types, type(self.type)))
         ostream.write(pack('!B', self.type.value))
 
     def write_length(self, ostream):
@@ -157,8 +155,8 @@ class Base(object):
 
 class Struct(Base):
 
-    def __init__(self, tag=Tags.DEFAULT):
-        super(Struct, self).__init__(tag, type=Types.STRUCTURE)
+    def __init__(self, tag=enums.Tags.DEFAULT):
+        super(Struct, self).__init__(tag, type=enums.Types.STRUCTURE)
 
     # NOTE (peter-hamilton) If seen, should indicate repr needs to be defined
     def __repr__(self):
@@ -172,8 +170,8 @@ class Integer(Base):
     MIN = -2147483648
     MAX = 2147483647
 
-    def __init__(self, value=None, tag=Tags.DEFAULT, signed=True):
-        super(Integer, self).__init__(tag, type=Types.INTEGER)
+    def __init__(self, value=None, tag=enums.Tags.DEFAULT, signed=True):
+        super(Integer, self).__init__(tag, type=enums.Types.INTEGER)
 
         self.value = value
         if self.value is None:
@@ -266,7 +264,7 @@ class LongInteger(Base):
     MIN = -9223372036854775808
     MAX = 9223372036854775807
 
-    def __init__(self, value=0, tag=Tags.DEFAULT):
+    def __init__(self, value=0, tag=enums.Tags.DEFAULT):
         """
         Create a LongInteger.
 
@@ -275,7 +273,7 @@ class LongInteger(Base):
             tag (Tags): An enumeration defining the tag of the LongInteger.
                 Optional, defaults to Tags.DEFAULT.
         """
-        super(LongInteger, self).__init__(tag, type=Types.LONG_INTEGER)
+        super(LongInteger, self).__init__(tag, type=enums.Types.LONG_INTEGER)
         self.value = value
         self.length = LongInteger.LENGTH
 
@@ -367,9 +365,10 @@ class BigInteger(Base):
     Section 9.1 of the KMIP 1.1 specification.
     """
 
-    def __init__(self, value=0, tag=Tags.DEFAULT):
-        super(BigInteger, self).__init__(tag, type=Types.BIG_INTEGER)
+    def __init__(self, value=0, tag=enums.Tags.DEFAULT):
+        super(BigInteger, self).__init__(tag, type=enums.Types.BIG_INTEGER)
         self.value = value
+
         self.validate()
 
     def read(self, istream):
@@ -486,41 +485,132 @@ class BigInteger(Base):
             return NotImplemented
 
 
-class Enumeration(Integer):
-    ENUM_TYPE = None
+class Enumeration(Base):
+    """
+    An encodeable object representing an enumeration.
 
-    def __init__(self, value=None, tag=Tags.DEFAULT):
-        self.enum = value
+    An Enumeration is one of the KMIP primitive object types. It is encoded as
+    an unsigned, big-endian, 32-bit integer. For more information, see Section
+    9.1 of the KMIP 1.1 specification.
+    """
+    LENGTH = 4
+
+    # Bounds for unsigned 32-bit integers
+    MIN = 0
+    MAX = 4294967296
+
+    def __init__(self, enum, value=None, tag=enums.Tags.DEFAULT):
+        """
+        Create an Enumeration.
+
+        Args:
+            enum (class): The enumeration class of which value is a member
+                (e.g., Tags). Required.
+            value (int): The value of the Enumeration, must be an integer
+                (e.g., Tags.DEFAULT). Optional, defaults to None.
+            tag (Tags): An enumeration defining the tag of the Enumeration.
+                Optional, defaults to Tags.DEFAULT.
+        """
+        super(Enumeration, self).__init__(tag, enums.Types.ENUMERATION)
+
+        self.value = value
+        self.enum = enum
+        self.length = Enumeration.LENGTH
+
         self.validate()
 
-        if self.enum is None:
-            super(Enumeration, self).__init__(None, tag, False)
-        else:
-            super(Enumeration, self).__init__(self.enum.value, tag, False)
-        self.type = Types.ENUMERATION
-
     def read(self, istream):
+        """
+        Read the encoding of the Enumeration from the input stream.
+
+        Args:
+            istream (stream): A buffer containing the encoded bytes of an
+                Enumeration. Usually a BytearrayStream object. Required.
+
+        Raises:
+            InvalidPrimitiveLength: if the Enumeration encoding read in has an
+                invalid encoded length.
+            InvalidPaddingBytes: if the Enumeration encoding read in does not
+                use zeroes for its padding bytes.
+        """
         super(Enumeration, self).read(istream)
-        self.enum = self.ENUM_TYPE(self.value)
+
+        # Check for a valid length before even trying to parse the value.
+        if self.length != Enumeration.LENGTH:
+            raise exceptions.InvalidPrimitiveLength(
+                "enumeration length must be {0}".format(Enumeration.LENGTH))
+
+        # Decode the Enumeration value and the padding bytes.
+        value = unpack('!I', istream.read(Enumeration.LENGTH))[0]
+        self.value = self.enum(value)
+        pad = unpack('!I', istream.read(Enumeration.LENGTH))[0]
+
+        # Verify that the padding bytes are zero bytes.
+        if pad is not 0:
+            raise exceptions.InvalidPaddingBytes("padding bytes must be zero")
+
         self.validate()
 
     def write(self, ostream):
+        """
+        Write the encoding of the Enumeration to the output stream.
+
+        Args:
+            ostream (stream): A buffer to contain the encoded bytes of an
+                Enumeration. Usually a BytearrayStream object. Required.
+        """
         super(Enumeration, self).write(ostream)
+        ostream.write(pack('!I', self.value.value))
+        ostream.write(pack('!I', 0))
 
     def validate(self):
-        self.__validate()
+        """
+        Verify that the value of the Enumeration is valid.
 
-    def __validate(self):
-        if self.enum is not None:
-            if not isinstance(self.enum, Enum):
-                raise TypeError("expected {0}, observed {1}".format(
-                    type(self.enum), Enum))
+        Raises:
+            TypeError: if the enum is not of type Enum
+            ValueError: if the value is not of the expected Enum subtype or if
+                the value cannot be represented by an unsigned 32-bit integer
+        """
+        if not isinstance(self.enum, enumeration.EnumMeta):
+            raise TypeError(
+                'enumeration type {0} must be of type EnumMeta'.format(
+                    self.enum))
+        if self.value is not None:
+            if not isinstance(self.value, self.enum):
+                raise TypeError(
+                    'enumeration {0} must be of type {1}'.format(
+                        self.value, self.enum))
+            if type(self.value.value) not in six.integer_types:
+                raise TypeError('enumeration value must be an int')
+            else:
+                if self.value.value > Enumeration.MAX:
+                    raise ValueError(
+                        'enumeration value greater than accepted max')
+                elif self.value.value < Enumeration.MIN:
+                    raise ValueError(
+                        'enumeration value less than accepted min')
 
     def __repr__(self):
-        return "{0}(value={1})".format(type(self).__name__, self.enum)
+        enum = "enum={0}".format(self.enum.__name__)
+        value = "value={0}".format(self.value)
+        tag = "tag={0}".format(self.tag)
+        return "Enumeration({0}, {1}, {2})".format(enum, value, tag)
 
     def __str__(self):
-        return "{0}.{1}".format(type(self.enum).__name__, self.enum.name)
+        return str(self.value)
+
+    def __eq__(self, other):
+        if isinstance(other, Enumeration):
+            return ((self.enum == other.enum) and (self.value == other.value))
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, Enumeration):
+            return not self.__eq__(other)
+        else:
+            return NotImplemented
 
 
 class Boolean(Base):
@@ -534,7 +624,7 @@ class Boolean(Base):
     """
     LENGTH = 8
 
-    def __init__(self, value=True, tag=Tags.DEFAULT):
+    def __init__(self, value=True, tag=enums.Tags.DEFAULT):
         """
         Create a Boolean object.
 
@@ -543,7 +633,7 @@ class Boolean(Base):
             tag (Tags): An enumeration defining the tag of the Boolean object.
                 Optional, defaults to Tags.DEFAULT.
         """
-        super(Boolean, self).__init__(tag, type=Types.BOOLEAN)
+        super(Boolean, self).__init__(tag, type=enums.Types.BOOLEAN)
         self.logger = logging.getLogger(__name__)
         self.value = value
         self.length = self.LENGTH
@@ -649,8 +739,8 @@ class TextString(Base):
     PADDING_SIZE = 8
     BYTE_FORMAT = '!c'
 
-    def __init__(self, value=None, tag=Tags.DEFAULT):
-        super(TextString, self).__init__(tag, type=Types.TEXT_STRING)
+    def __init__(self, value=None, tag=enums.Tags.DEFAULT):
+        super(TextString, self).__init__(tag, type=enums.Types.TEXT_STRING)
 
         if value is None:
             self.value = ''
@@ -744,8 +834,8 @@ class ByteString(Base):
     PADDING_SIZE = 8
     BYTE_FORMAT = '!B'
 
-    def __init__(self, value=None, tag=Tags.DEFAULT):
-        super(ByteString, self).__init__(tag, type=Types.BYTE_STRING)
+    def __init__(self, value=None, tag=enums.Tags.DEFAULT):
+        super(ByteString, self).__init__(tag, type=enums.Types.BYTE_STRING)
 
         if value is None:
             self.value = bytes()
@@ -843,7 +933,7 @@ class DateTime(LongInteger):
     more information, see Section 9.1 of the KMIP 1.1 specification.
     """
 
-    def __init__(self, value=None, tag=Tags.DEFAULT):
+    def __init__(self, value=None, tag=enums.Tags.DEFAULT):
         """
         Create a DateTime.
 
@@ -857,7 +947,7 @@ class DateTime(LongInteger):
         if value is None:
             value = int(time.time())
         super(DateTime, self).__init__(value, tag)
-        self.type = Types.DATE_TIME
+        self.type = enums.Types.DATE_TIME
 
     def __repr__(self):
         return "DateTime(value={0}, tag={1})".format(self.value, self.tag)
@@ -881,8 +971,8 @@ class Interval(Base):
     MIN = 0
     MAX = 4294967296
 
-    def __init__(self, value=0, tag=Tags.DEFAULT):
-        super(Interval, self).__init__(tag, type=Types.INTERVAL)
+    def __init__(self, value=0, tag=enums.Tags.DEFAULT):
+        super(Interval, self).__init__(tag, type=enums.Types.INTERVAL)
 
         self.value = value
         self.length = Interval.LENGTH

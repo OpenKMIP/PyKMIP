@@ -54,12 +54,12 @@ if __name__ == '__main__':
 
     # Display operation results
     logger.info('activate() result status: {0}'.format(
-        result.result_status.enum))
+        result.result_status.value))
 
-    if result.result_status.enum == ResultStatus.SUCCESS:
+    if result.result_status.value == ResultStatus.SUCCESS:
         logger.info('activated UUID: {0}'.format(result.uuid.value))
     else:
         logger.info('activate() result reason: {0}'.format(
-            result.result_reason.enum))
+            result.result_reason.value))
         logger.info('activate() result message: {0}'.format(
             result.result_message.value))

@@ -226,9 +226,9 @@ class TestRequestMessage(TestCase):
                               msg.format(contents.Operation,
                                          type(operation)))
         msg = "Bad operation value: expected {0}, received {1}"
-        self.assertEqual(enums.Operation.CREATE, operation.enum,
+        self.assertEqual(enums.Operation.CREATE, operation.value,
                          msg.format(enums.Operation.CREATE,
-                                    operation.enum))
+                                    operation.value))
 
         request_payload = batch_item.request_payload
         msg = "Bad request payload type: expected {0}, received {1}"
@@ -243,9 +243,9 @@ class TestRequestMessage(TestCase):
                               msg.format(attr.ObjectType,
                                          type(object_type)))
         msg = "Bad object type value: expected {0}, received {1}"
-        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.enum,
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.value,
                          msg.format(enums.ObjectType.SYMMETRIC_KEY,
-                                    object_type.enum))
+                                    object_type.value))
 
         template_attribute = request_payload.template_attribute
         msg = "Bad template attribute type: expected {0}, received {1}"
@@ -284,11 +284,11 @@ class TestRequestMessage(TestCase):
         self.assertIsInstance(attribute_value, exp_type,
                               self.msg.format('attribute value', 'type',
                                               exp_type, rcv_type))
-        self.assertEquals(attribute_value.enum,
+        self.assertEquals(attribute_value.value,
                           enums.CryptographicAlgorithm.AES,
                           self.msg.format('cryptographic algorithm', 'value',
                                           enums.CryptographicAlgorithm.AES,
-                                          attribute_value.enum))
+                                          attribute_value.value))
 
         attribute_b = attributes[1]
         self.assertIsInstance(attribute_b, objects.Attribute,
@@ -455,9 +455,9 @@ class TestRequestMessage(TestCase):
                               msg.format(contents.Operation,
                                          type(operation)))
         msg = "Bad operation value: expected {0}, received {1}"
-        self.assertEqual(enums.Operation.GET, operation.enum,
+        self.assertEqual(enums.Operation.GET, operation.value,
                          msg.format(enums.Operation.GET,
-                                    operation.enum))
+                                    operation.value))
 
         request_payload = batch_item.request_payload
         msg = "Bad request payload type: expected {0}, received {1}"
@@ -572,7 +572,7 @@ class TestRequestMessage(TestCase):
                                          type(operation)))
         msg = "Bad operation value: expected {0}, received {1}"
         exp_value = enums.Operation.DESTROY
-        rcv_value = operation.enum
+        rcv_value = operation.value
         self.assertEqual(exp_value, rcv_value,
                          msg.format(exp_value, rcv_value))
 
@@ -689,7 +689,7 @@ class TestRequestMessage(TestCase):
                                              type(operation)))
             msg = "Bad operation value: expected {0}, received {1}"
             exp_value = enums.Operation.REGISTER
-            rcv_value = operation.enum
+            rcv_value = operation.value
             self.assertEqual(exp_value, rcv_value,
                              msg.format(exp_value, rcv_value))
 
@@ -707,7 +707,7 @@ class TestRequestMessage(TestCase):
                                              type(object_type)))
             msg = "Bad object type value: expected {0}, received {1}"
             exp_value = enums.ObjectType.TEMPLATE
-            rcv_value = object_type.enum
+            rcv_value = object_type.value
             self.assertEqual(exp_value, rcv_value,
                              msg.format(exp_value, rcv_value))
 
@@ -888,7 +888,7 @@ class TestRequestMessage(TestCase):
 
         msg = "Bad operation value: expected {0}, received {1}"
         exp_value = enums.Operation.LOCATE
-        rcv_value = operation.enum
+        rcv_value = operation.value
         self.assertEqual(exp_value, rcv_value,
                          msg.format(exp_value, rcv_value))
 
@@ -932,10 +932,12 @@ class TestRequestMessage(TestCase):
         self.assertIsInstance(attribute_value, exp_type,
                               self.msg.format('attribute value', 'type',
                                               exp_type, rcv_type))
-        self.assertEquals(attribute_value.enum, enums.ObjectType.SYMMETRIC_KEY,
-                          self.msg.format('ObjectType', 'value',
-                                          enums.ObjectType.SYMMETRIC_KEY,
-                                          attribute_value.enum))
+        self.assertEquals(
+            attribute_value.value,
+            enums.ObjectType.SYMMETRIC_KEY,
+            self.msg.format(
+                'ObjectType', 'value', enums.ObjectType.SYMMETRIC_KEY,
+                attribute_value.value))
 
         attribute_b = attributes[1]
         self.assertIsInstance(attribute_b, objects.Attribute,
@@ -1125,20 +1127,20 @@ class TestResponseMessage(TestCase):
                                   self.msg.format('operation', 'type',
                                                   contents.Operation,
                                                   type(operation)))
-            self.assertEqual(enums.Operation.CREATE, operation.enum,
+            self.assertEqual(enums.Operation.CREATE, operation.value,
                              self.msg.format('operation', 'value',
                                              enums.Operation.CREATE,
-                                             operation.enum))
+                                             operation.value))
 
             result_status = batch_item.result_status
             self.assertIsInstance(result_status, contents.ResultStatus,
                                   self.msg.format('result status', 'type',
                                                   contents.ResultStatus,
                                                   type(result_status)))
-            self.assertEqual(enums.ResultStatus.SUCCESS, result_status.enum,
+            self.assertEqual(enums.ResultStatus.SUCCESS, result_status.value,
                              self.msg.format('result status', 'value',
                                              enums.ResultStatus.SUCCESS,
-                                             result_status.enum))
+                                             result_status.value))
 
             response_payload = batch_item.response_payload
             exp_type = create.CreateResponsePayload
@@ -1152,10 +1154,10 @@ class TestResponseMessage(TestCase):
                                   self.msg.format('object type', 'type',
                                                   attr.ObjectType,
                                                   type(object_type)))
-            self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.enum,
+            self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.value,
                              self.msg.format('object type', 'value',
                                              enums.ObjectType.SYMMETRIC_KEY,
-                                             object_type.enum))
+                                             object_type.value))
 
             unique_identifier = response_payload.unique_identifier
             value = 'fb4b5b9c-6188-4c63-8142-fe9c328129fc'
@@ -1274,20 +1276,20 @@ class TestResponseMessage(TestCase):
                                   self.msg.format('operation', 'type',
                                                   contents.Operation,
                                                   type(operation)))
-            self.assertEqual(enums.Operation.GET, operation.enum,
+            self.assertEqual(enums.Operation.GET, operation.value,
                              self.msg.format('operation', 'value',
                                              enums.Operation.GET,
-                                             operation.enum))
+                                             operation.value))
 
             result_status = batch_item.result_status
             self.assertIsInstance(result_status, contents.ResultStatus,
                                   self.msg.format('result status', 'type',
                                                   contents.ResultStatus,
                                                   type(result_status)))
-            self.assertEqual(enums.ResultStatus.SUCCESS, result_status.enum,
+            self.assertEqual(enums.ResultStatus.SUCCESS, result_status.value,
                              self.msg.format('result status', 'value',
                                              enums.ResultStatus.SUCCESS,
-                                             result_status.enum))
+                                             result_status.value))
 
             response_payload = batch_item.response_payload
             exp_type = get.GetResponsePayload
@@ -1301,10 +1303,10 @@ class TestResponseMessage(TestCase):
                                   self.msg.format('object type', 'type',
                                                   attr.ObjectType,
                                                   type(object_type)))
-            self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.enum,
+            self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.value,
                              self.msg.format('object type', 'value',
                                              enums.ObjectType.SYMMETRIC_KEY,
-                                             object_type.enum))
+                                             object_type.value))
 
             unique_identifier = response_payload.unique_identifier
             value = '49a1ca88-6bea-4fb2-b450-7e58802c3038'
@@ -1360,7 +1362,7 @@ class TestResponseMessage(TestCase):
                                   self.msg.format('cryptographic_algorithm',
                                                   'type', exp_type, rcv_type))
             exp = enums.CryptographicAlgorithm.TRIPLE_DES
-            obs = cryptographic_algorithm.enum
+            obs = cryptographic_algorithm.value
             self.assertEqual(exp, obs,
                              self.msg.format('cryptographic_algorithm',
                                              'value', exp, obs))
@@ -1517,7 +1519,7 @@ class TestResponseMessage(TestCase):
                                              type(operation)))
             msg = "Bad operation value: expected {0}, received {1}"
             exp_value = enums.Operation.DESTROY
-            rcv_value = operation.enum
+            rcv_value = operation.value
             self.assertEqual(exp_value, rcv_value,
                              msg.format(exp_value, rcv_value))
 
@@ -1526,10 +1528,10 @@ class TestResponseMessage(TestCase):
                                   self.msg.format('result status', 'type',
                                                   contents.ResultStatus,
                                                   type(result_status)))
-            self.assertEqual(enums.ResultStatus.SUCCESS, result_status.enum,
+            self.assertEqual(enums.ResultStatus.SUCCESS, result_status.value,
                              self.msg.format('result status', 'value',
                                              enums.ResultStatus.SUCCESS,
-                                             result_status.enum))
+                                             result_status.value))
 
             response_payload = batch_item.response_payload
             msg = "Bad response payload type: expected {0}, received {1}"
@@ -1660,7 +1662,7 @@ class TestResponseMessage(TestCase):
                                              type(operation)))
             msg = "Bad operation value: expected {0}, received {1}"
             exp_value = enums.Operation.REGISTER
-            rcv_value = operation.enum
+            rcv_value = operation.value
             self.assertEqual(exp_value, rcv_value,
                              msg.format(exp_value, rcv_value))
 
@@ -1669,10 +1671,10 @@ class TestResponseMessage(TestCase):
                                   self.msg.format('result status', 'type',
                                                   contents.ResultStatus,
                                                   type(result_status)))
-            self.assertEqual(enums.ResultStatus.SUCCESS, result_status.enum,
+            self.assertEqual(enums.ResultStatus.SUCCESS, result_status.value,
                              self.msg.format('result status', 'value',
                                              enums.ResultStatus.SUCCESS,
-                                             result_status.enum))
+                                             result_status.value))
 
             response_payload = batch_item.response_payload
             msg = "Bad response payload type: expected {0}, received {1}"

@@ -170,12 +170,12 @@ class ProxyKmipClient(api.KmipClient):
         # Create the symmetric key and handle the results
         result = self.proxy.create(enums.ObjectType.SYMMETRIC_KEY, template)
 
-        status = result.result_status.enum
+        status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
             uid = result.uuid.value
             return uid
         else:
-            reason = result.result_reason.enum
+            reason = result.result_reason.value
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
@@ -215,13 +215,13 @@ class ProxyKmipClient(api.KmipClient):
         # Create the asymmetric key pair and handle the results
         result = self.proxy.create_key_pair(common_template_attribute=template)
 
-        status = result.result_status.enum
+        status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
             public_uid = result.public_key_uuid.value
             private_uid = result.private_key_uuid.value
             return public_uid, private_uid
         else:
-            reason = result.result_reason.enum
+            reason = result.result_reason.value
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
@@ -265,12 +265,12 @@ class ProxyKmipClient(api.KmipClient):
         secret = self.object_factory.convert(managed_object)
         result = self.proxy.register(object_type, template, secret)
 
-        status = result.result_status.enum
+        status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
             uid = result.uuid.value
             return uid
         else:
-            reason = result.result_reason.enum
+            reason = result.result_reason.value
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
@@ -300,12 +300,12 @@ class ProxyKmipClient(api.KmipClient):
         # Get the managed object and handle the results
         result = self.proxy.get(uid)
 
-        status = result.result_status.enum
+        status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
             managed_object = self.object_factory.convert(result.secret)
             return managed_object
         else:
-            reason = result.result_reason.enum
+            reason = result.result_reason.value
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
@@ -333,12 +333,12 @@ class ProxyKmipClient(api.KmipClient):
         # Get the list of attribute names for a managed object.
         result = self.proxy.get_attribute_list(uid)
 
-        status = result.result_status.enum
+        status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
             attribute_names = sorted(result.names)
             return attribute_names
         else:
-            reason = result.result_reason.enum
+            reason = result.result_reason.value
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
@@ -368,11 +368,11 @@ class ProxyKmipClient(api.KmipClient):
         # Destroy the managed object and handle the results
         result = self.proxy.destroy(uid)
 
-        status = result.result_status.enum
+        status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
             return
         else:
-            reason = result.result_reason.enum
+            reason = result.result_reason.value
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 

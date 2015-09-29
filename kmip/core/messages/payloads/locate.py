@@ -30,11 +30,10 @@ class LocateRequestPayload(Struct):
 
     # 9.1.3.2.33
     class ObjectGroupMember(Enumeration):
-        ENUM_TYPE = enums.ObjectGroupMember
 
         def __init__(self, value=None):
             super(LocateRequestPayload.ObjectGroupMember, self).__init__(
-                value, Tags.OBJECT_GROUP_MEMBER)
+                enums.ObjectGroupMember, value, Tags.OBJECT_GROUP_MEMBER)
 
     class MaximumItems(Integer):
         def __init__(self, value=None):
@@ -43,11 +42,10 @@ class LocateRequestPayload(Struct):
 
     # 9.1.3.3.2
     class StorageStatusMask(Enumeration):
-        ENUM_TYPE = enums.StorageStatusMask
 
         def __init__(self, value=None):
             super(LocateRequestPayload.StorageStatusMask, self).__init__(
-                value, Tags.STORAGE_STATUS_MASK)
+                enums.StorageStatusMask, value, Tags.STORAGE_STATUS_MASK)
 
     def __init__(self, maximum_items=None, storage_status_mask=None,
                  object_group_member=None, attributes=None):

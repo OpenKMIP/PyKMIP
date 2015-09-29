@@ -13,119 +13,271 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import enum as enumeration
 import testtools
 
 from kmip.core import enums
-from kmip.core import errors
+from kmip.core import exceptions
 from kmip.core import primitives
 from kmip.core import utils
+
+
+# flake8: noqa
+class DummyEnumeration(enumeration.Enum):
+    SMALL     = primitives.Enumeration.MIN
+    TOO_SMALL = primitives.Enumeration.MIN - 1
+    LARGE     = primitives.Enumeration.MAX
+    TOO_LARGE = primitives.Enumeration.MAX + 1
+    INVALID   = 'invalid'
 
 
 class TestEnumeration(testtools.TestCase):
 
     def setUp(self):
         super(TestEnumeration, self).setUp()
-        self.stream = utils.BytearrayStream()
-        primitives.Enumeration.ENUM_TYPE = enums.Types
-        self.bad_type = errors.ErrorStrings.BAD_EXP_RECV.format(
-            'primitives.Enumeration.{0}', 'type', '{1}', '{2}')
-        self.bad_value = errors.ErrorStrings.BAD_EXP_RECV.format(
-            'primitives.Enumeration.{0}', 'value', '{1}', '{2}')
-        self.bad_write = errors.ErrorStrings.BAD_EXP_RECV.format(
-            'primitives.Enumeration', 'write', '{0} bytes', '{1} bytes')
-        self.bad_encoding = errors.ErrorStrings.BAD_ENCODING.format(
-            'primitives.Enumeration', 'write')
+
+        self.encoding = (
+            b'\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00')
+        self.encoding_bad_length = (
+            b'\x42\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00')
+        self.encoding_bad_padding = (
+            b'\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00'
+            b'\xFF')
 
     def tearDown(self):
         super(TestEnumeration, self).tearDown()
 
     def test_init(self):
-        e = primitives.Enumeration(enums.Types.DEFAULT)
-
-        self.assertIsInstance(e.enum, enums.Types,
-                              self.bad_type.format('enum', enums.Types,
-                                                   type(e.enum)))
-        self.assertEqual(
-            enums.Types.DEFAULT, e.enum,
-            self.bad_value.format('enum', enums.Types.DEFAULT, e.enum))
-
-        default = enums.Types.DEFAULT
-        self.assertEqual(default.value, e.value,
-                         self.bad_value.format('value', default.value,
-                                               e.value))
+        """
+        Test that an Enumeration can be instantiated.
+        """
+        enum = primitives.Enumeration(
+            DummyEnumeration, DummyEnumeration.SMALL,
+            enums.Tags.ACTIVATION_DATE)
+        self.assertEqual(DummyEnumeration, enum.enum)
+        self.assertEqual(DummyEnumeration.SMALL, enum.value)
+        self.assertEqual(enums.Tags.ACTIVATION_DATE, enum.tag)
 
     def test_init_unset(self):
-        e = primitives.Enumeration()
+        """
+        Test that an Enumeration can be instantiated with no input.
+        """
+        enum = primitives.Enumeration(DummyEnumeration)
+        self.assertEqual(DummyEnumeration, enum.enum)
+        self.assertEqual(None, enum.value)
+        self.assertEqual(enums.Tags.DEFAULT, enum.tag)
 
-        self.assertEqual(None, e.enum,
-                         self.bad_value.format('enum', None, e.enum))
-        self.assertEqual(0, e.value,
-                         self.bad_value.format('value', 0, e.value))
+    def test_validate_on_invalid_enum_type(self):
+        """
+        Test that a TypeError is thrown on input of invalid enum type
+        (e.g., str).
+        """
+        args = ['invalid']
+        kwargs = {'value': enums.Tags.DEFAULT}
+        self.assertRaises(TypeError, primitives.Enumeration, *args, **kwargs)
 
-    def test_validate_on_valid(self):
-        e = primitives.Enumeration()
-        e.enum = enums.Types.DEFAULT
+    def test_validate_on_invalid_enum_value_type(self):
+        """
+        Test that a TypeError is thrown on input of invalid enum value type.
+        """
+        args = [DummyEnumeration]
+        kwargs = {'value': enums.Tags.DEFAULT}
+        self.assertRaises(TypeError, primitives.Enumeration, *args, **kwargs)
 
-        # Check no exception thrown
-        e.validate()
+    def test_validate_on_invalid_value_type(self):
+        """
+        Test that a TypeError is thrown on input of invalid value type
+        (e.g., str).
+        """
+        args = [DummyEnumeration]
+        kwargs = {'value': DummyEnumeration.INVALID}
+        self.assertRaises(TypeError, primitives.Enumeration, *args, **kwargs)
 
-    def test_validate_on_valid_unset(self):
-        e = primitives.Enumeration()
+    def test_validate_on_invalid_value_too_big(self):
+        """
+        Test that a ValueError is thrown on input that is too large.
+        """
+        args = [DummyEnumeration]
+        kwargs = {'value': DummyEnumeration.TOO_LARGE}
+        self.assertRaises(ValueError, primitives.Enumeration, *args, **kwargs)
 
-        # Check no exception thrown
-        e.validate()
-
-    def test_validate_on_invalid_type(self):
-        e = primitives.Enumeration()
-        e.enum = 0
-
-        self.assertRaises(TypeError, e.validate)
+    def test_validate_on_invalid_value_too_small(self):
+        """
+        Test that a ValueError is thrown on input that is too small.
+        """
+        args = [DummyEnumeration]
+        kwargs = {'value': DummyEnumeration.TOO_SMALL}
+        self.assertRaises(ValueError, primitives.Enumeration, *args, **kwargs)
 
     def test_read(self):
-        encoding = (
-            b'\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
-        self.stream = utils.BytearrayStream(encoding)
-        e = primitives.Enumeration()
-        e.read(self.stream)
+        """
+        Test that an Enumeration can be read from a byte stream.
+        """
+        stream = utils.BytearrayStream(self.encoding)
+        enum = primitives.Enumeration(DummyEnumeration)
+        enum.read(stream)
+        self.assertEqual(DummyEnumeration.SMALL, enum.value)
 
-        self.assertIsInstance(e.enum, enums.Types,
-                              self.bad_type.format('enum', enums.Types,
-                                                   type(e.enum)))
-        self.assertEqual(enums.Types.DEFAULT, e.enum,
-                         self.bad_value.format('enum', enums.Types.DEFAULT,
-                                               type(e.enum)))
-        default = enums.Types.DEFAULT
-        self.assertEqual(default.value, e.value,
-                         self.bad_value.format('value', default.value,
-                                               e.value))
+    def test_read_on_invalid_length(self):
+        """
+        Test that an InvalidPrimitiveLength exception is thrown when attempting
+        to decode an Enumeration with an invalid length.
+        """
+        stream = utils.BytearrayStream(self.encoding_bad_length)
+        enum = primitives.Enumeration(enums.Tags)
+
+        self.assertRaises(exceptions.InvalidPrimitiveLength, enum.read, stream)
+
+    def test_read_on_invalid_padding(self):
+        """
+        Test that an InvalidPrimitiveLength exception is thrown when attempting
+        to decode an Enumeration with invalid padding bytes.
+        """
+        stream = utils.BytearrayStream(self.encoding_bad_padding)
+        enum = primitives.Enumeration(enums.Types)
+
+        self.assertRaises(exceptions.InvalidPaddingBytes, enum.read, stream)
 
     def test_write(self):
-        encoding = (
-            b'\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
-        e = primitives.Enumeration(enums.Types.DEFAULT)
-        e.write(self.stream)
-
-        result = self.stream.read()
-        len_exp = len(encoding)
-        len_rcv = len(result)
-
-        self.assertEqual(len_exp, len_rcv, self.bad_write.format(len_exp,
-                                                                 len_rcv))
-        self.assertEqual(encoding, result, self.bad_encoding)
-
-    def test_write_unsigned(self):
         """
-        Test that a large primitives.Enumeration value is written correctly as
-        an unsigned integer.
+        Test that an Enumeration can be written to a byte stream.
         """
-        encoding = (
-            b'\x42\x00\x00\x05\x00\x00\x00\x04\x80\x00\x00\x00\x00\x00\x00'
-            b'\x00')
-        e = primitives.Enumeration(enums.OpaqueDataType.NONE)
-        e.write(self.stream)
-        result = self.stream.read()
+        stream = utils.BytearrayStream()
+        enum = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        enum.write(stream)
 
-        self.assertEqual(len(encoding), len(result))
-        self.assertEqual(encoding, result)
+        result = stream.read()
+        self.assertEqual(len(self.encoding), len(result))
+        self.assertEqual(self.encoding, result)
+
+    def test_repr(self):
+        """
+        Test that the representation of an Enumeration is formatted properly.
+        """
+        enum = "enum={0}".format(DummyEnumeration.__name__)
+        value = "value={0}".format(DummyEnumeration.SMALL)
+        tag = "tag={0}".format(enums.Tags.DEFAULT)
+        r = "Enumeration({0}, {1}, {2})".format(enum, value, tag)
+
+        enum = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        self.assertEqual(r, repr(enum))
+
+    def test_str(self):
+        """
+        Test that the string representation of an Enumeration is formatted
+        properly.
+        """
+        enum = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        self.assertEqual(str(DummyEnumeration.SMALL), str(enum.value))
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        Enumerations.
+        """
+        a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        b = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_equal_and_empty(self):
+        """
+        Test that the equality operator returns True when comparing two
+        Enumerations.
+        """
+        a = primitives.Enumeration(DummyEnumeration)
+        b = primitives.Enumeration(DummyEnumeration)
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal(self):
+        """
+        Test that the equality operator returns False when comparing two
+        Enumerations with different values.
+        """
+        a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        b = primitives.Enumeration(DummyEnumeration, DummyEnumeration.LARGE)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_enum(self):
+        """
+        Test that the equality operator returns False when comparing two
+        Enumerations with different enum types.
+        """
+        a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        b = primitives.Enumeration(enums.Tags, enums.Tags.DEFAULT)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing a
+        Enumeration to a non-Enumeration object.
+        """
+        a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        b = 'invalid'
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing
+        two Enumerations with the same values.
+        """
+        a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        b = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_equal_and_empty(self):
+        """
+        Test that the inequality operator returns False when comparing
+        two Enumerations.
+        """
+        a = primitives.Enumeration(DummyEnumeration)
+        b = primitives.Enumeration(DummyEnumeration)
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Enumerations with different values.
+        """
+        a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        b = primitives.Enumeration(DummyEnumeration, DummyEnumeration.LARGE)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_enum(self):
+        """
+        Test that the equality operator returns True when comparing two
+        Enumerations with different enum types.
+        """
+        a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        b = primitives.Enumeration(enums.Tags, enums.Tags.DEFAULT)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing a
+        Enumeration to a non-Enumeration object.
+        """
+        a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
+        b = 'invalid'
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)

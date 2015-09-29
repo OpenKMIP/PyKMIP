@@ -475,7 +475,7 @@ class KMIPProxy(KMIP):
     def _process_batch_items(self, response):
         results = []
         for batch_item in response.batch_items:
-            operation = batch_item.operation.enum
+            operation = batch_item.operation.value
             processor = self._get_batch_item_processor(operation)
             result = processor(batch_item)
             results.append(result)
@@ -597,7 +597,7 @@ class KMIPProxy(KMIP):
         if unique_identifier is not None:
             uuid = attr.UniqueIdentifier(unique_identifier)
         if key_format_type is not None:
-            kft = get.GetRequestPayload.KeyFormatType(key_format_type.enum)
+            kft = get.GetRequestPayload.KeyFormatType(key_format_type.value)
         if key_compression_type is not None:
             kct = key_compression_type
             kct = get.GetRequestPayload.KeyCompressionType(kct)
