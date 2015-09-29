@@ -21,11 +21,14 @@ from kmip.core.attributes import CertificateType
 from kmip.core.attributes import DigestValue
 from kmip.core.attributes import HashingAlgorithm
 from kmip.core.attributes import OperationPolicyName
+from kmip.core.attributes import Name
 
 from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 
 from kmip.core.utils import BytearrayStream
+
+from kmip.core.enums import NameType
 
 
 class TestNameValue(TestCase):
@@ -55,21 +58,57 @@ class TestName(TestCase):
     def setUp(self):
         super(TestName, self).setUp()
         self.stream = BytearrayStream()
+        self.badFormatName = 8675309
+        self.stringName1 = 'Jenny'
+        self.enumNameType = NameType.UNINTERPRETED_TEXT_STRING
 
     def tearDown(self):
         super(TestName, self).tearDown()
 
-    def test_minimum_write(self):
-        self.skip('Not implemented')
+    def test_bad_name_value_format(self):
+        """
+         Test that an error is raised in for an incorrectly formatted name
+         value
+        """
+        name_obj = Name()
+        name_obj.name_value = self.badFormatName
+        name_obj.name_type = self.enumNameType
 
-    def test_maximum_write(self):
-        self.skip('Not implemented')
+        self.assertRaises(TypeError, name_obj.validate)
 
-    def test_minimum_read(self):
-        self.skip('Not implemented')
+    def test_bad_name_type_format(self):
+        """
+         Test that an error is raised for an incorrectly formatted name type
+        """
+        name_obj = Name()
+        name_obj.name_value = self.stringName1
+        name_obj.name_type = self.badFormatName
 
-    def test_maximum_read(self):
-        self.skip('Not implemented')
+        self.assertRaises(TypeError, name_obj.validate)
+
+    def test_name_create_string_input(self):
+        """
+         Test the creation of object names with an enum value for the name type
+        """
+        name_obj = Name.create(self.stringName1, self.enumNameType)
+        self.assertIsInstance(name_obj.name_value, Name.NameValue)
+        self.assertEqual(self.stringName1, name_obj.name_value.value)
+
+    def test_name_create_bad_input(self):
+        """
+         Test the creation of object names with a bad value input
+        """
+        name_value = self.badFormatName
+        name_type = self.enumNameType
+
+        self.assertRaises(TypeError, Name.create, *(name_value, name_type))
+
+    def test_name_create_bad_type_input(self):
+        """
+         Test the creation of object names with a bad value input
+        """
+        self.assertRaises(TypeError, Name.create, *(self.stringName1,
+                                                    self.badFormatName))
 
 
 class TestOperationPolicyName(TestCase):
