@@ -76,7 +76,6 @@ class QueryFunction(Enumeration):
     KMIP server. See Sections 4.25 and 9.1.3.2.24 of the KMIP 1.1
     specification for more information.
     """
-    ENUM_TYPE = QueryFunctionEnum
 
     def __init__(self, value=None):
         """
@@ -87,7 +86,8 @@ class QueryFunction(Enumeration):
                 (e.g., QueryFunction.QUERY_OPERATIONS). Optional, default to
                 None.
         """
-        super(QueryFunction, self).__init__(value, Tags.QUERY_FUNCTION)
+        super(QueryFunction, self).__init__(
+            QueryFunctionEnum, value, Tags.QUERY_FUNCTION)
 
 
 class VendorIdentification(TextString):
@@ -216,7 +216,6 @@ class KeyFormatType(Enumeration):
     is returned when using the Get operation. See Sections 2.1.3, 2.1.7, 3.17,
     4.11, and 9.1.3.2.3 of the KMIP 1.1 specification for more information.
     """
-    ENUM_TYPE = KeyFormatTypeEnum
 
     def __init__(self, value=KeyFormatTypeEnum.RAW):
         """
@@ -227,4 +226,5 @@ class KeyFormatType(Enumeration):
                 (e.g., KeyFormatType.PKCS_1). Optional, default to
                 KeyFormatType.RAW.
         """
-        super(KeyFormatType, self).__init__(value, Tags.KEY_FORMAT_TYPE)
+        super(KeyFormatType, self).__init__(
+            KeyFormatTypeEnum, value, Tags.KEY_FORMAT_TYPE)

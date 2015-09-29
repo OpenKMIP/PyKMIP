@@ -88,14 +88,14 @@ if __name__ == '__main__':
 
     # Display operation results
     logger.info('locate() result status: {0}'.format(
-        result.result_status.enum))
+        result.result_status.value))
 
-    if result.result_status.enum == ResultStatus.SUCCESS:
+    if result.result_status.value == ResultStatus.SUCCESS:
         logger.info('located UUIDs:')
         for uuid in result.uuids:
             logger.info('{0}'.format(uuid))
     else:
         logger.info('get() result reason: {0}'.format(
-            result.result_reason.enum))
+            result.result_reason.value))
         logger.info('get() result message: {0}'.format(
             result.result_message.value))

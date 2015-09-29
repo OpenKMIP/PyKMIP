@@ -235,11 +235,10 @@ class SplitKey(Struct):
                 value, Tags.SPLIT_KEY_THRESHOLD)
 
     class SplitKeyMethod(Enumeration):
-        ENUM_TYPE = enums.SplitKeyMethod
 
         def __init__(self, value=None):
             super(SplitKey.SplitKeyMethod, self).__init__(
-                value, Tags.SPLIT_KEY_METHOD)
+                enums.SplitKeyMethod, value, Tags.SPLIT_KEY_METHOD)
 
     class PrimeFieldSize(BigInteger):
 
@@ -361,11 +360,10 @@ class Template(Struct):
 class SecretData(Struct):
 
     class SecretDataType(Enumeration):
-        ENUM_TYPE = enums.SecretDataType
 
         def __init__(self, value=None):
             super(SecretData.SecretDataType, self).__init__(
-                value, Tags.SECRET_DATA_TYPE)
+                enums.SecretDataType, value, Tags.SECRET_DATA_TYPE)
 
     def __init__(self,
                  secret_data_type=None,
@@ -411,11 +409,10 @@ class SecretData(Struct):
 class OpaqueObject(Struct):
 
     class OpaqueDataType(Enumeration):
-        ENUM_TYPE = enums.OpaqueDataType
 
         def __init__(self, value=None):
             super(OpaqueObject.OpaqueDataType, self).__init__(
-                value, Tags.OPAQUE_DATA_TYPE)
+                enums.OpaqueDataType, value, Tags.OPAQUE_DATA_TYPE)
 
     class OpaqueDataValue(ByteString):
 

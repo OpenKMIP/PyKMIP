@@ -154,8 +154,8 @@ class TestHashingAlgorithm(TestCase):
             hashing_algorithm = HashingAlgorithm(value)
 
             msg = "expected {0}, observed {1}".format(
-                value, hashing_algorithm.enum)
-            self.assertEqual(value, hashing_algorithm.enum, msg)
+                value, hashing_algorithm.value)
+            self.assertEqual(value, hashing_algorithm.value, msg)
         else:
             self.assertRaises(TypeError, HashingAlgorithm, value)
 
@@ -205,8 +205,8 @@ class TestCertificateType(TestCase):
                 certificate_type = CertificateType(value)
 
             msg = "expected {0}, observed {1}".format(
-                value, certificate_type.enum)
-            self.assertEqual(value, certificate_type.enum, msg)
+                value, certificate_type.value)
+            self.assertEqual(value, certificate_type.value, msg)
         else:
             self.assertRaises(TypeError, CertificateType, value)
 

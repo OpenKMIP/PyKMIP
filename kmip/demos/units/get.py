@@ -92,16 +92,16 @@ if __name__ == '__main__':
 
     # Display operation results
     logger.info('get() result status: {0}'.format(
-        result.result_status.enum))
+        result.result_status.value))
 
-    if result.result_status.enum == ResultStatus.SUCCESS:
+    if result.result_status.value == ResultStatus.SUCCESS:
         logger.info('retrieved object type: {0}'.format(
-            result.object_type.enum))
+            result.object_type.value))
         logger.info('retrieved UUID: {0}'.format(result.uuid.value))
 
-        utils.log_secret(logger, result.object_type.enum, result.secret)
+        utils.log_secret(logger, result.object_type.value, result.secret)
     else:
         logger.info('get() result reason: {0}'.format(
-            result.result_reason.enum))
+            result.result_reason.value))
         logger.info('get() result message: {0}'.format(
             result.result_message.value))

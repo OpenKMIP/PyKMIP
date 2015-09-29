@@ -51,7 +51,7 @@ class RegisterRequestPayload(Struct):
         self.object_type.read(tstream)
         self.template_attribute.read(tstream)
 
-        secret_type = self.object_type.enum
+        secret_type = self.object_type.value
         secret = self.secret_factory.create(secret_type)
 
         if self.is_tag_next(secret.tag, tstream):

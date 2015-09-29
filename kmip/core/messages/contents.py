@@ -13,13 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core.enums import BatchErrorContinuationOption
-from kmip.core.enums import KeyCompressionType
-from kmip.core.enums import Operation
-from kmip.core.enums import ResultStatus
-from kmip.core.enums import ResultReason
-from kmip.core.enums import Tags
-
+from kmip.core import enums
 from kmip.core import objects
 from kmip.core import utils
 
@@ -38,17 +32,17 @@ class ProtocolVersion(Struct):
     class ProtocolVersionMajor(Integer):
         def __init__(self, value=None):
             super(ProtocolVersion.ProtocolVersionMajor, self).\
-                __init__(value, Tags.PROTOCOL_VERSION_MAJOR)
+                __init__(value, enums.Tags.PROTOCOL_VERSION_MAJOR)
 
     class ProtocolVersionMinor(Integer):
         def __init__(self, value=None):
             super(ProtocolVersion.ProtocolVersionMinor, self).\
-                __init__(value, Tags.PROTOCOL_VERSION_MINOR)
+                __init__(value, enums.Tags.PROTOCOL_VERSION_MINOR)
 
     def __init__(self,
                  protocol_version_major=None,
                  protocol_version_minor=None):
-        super(ProtocolVersion, self).__init__(Tags.PROTOCOL_VERSION)
+        super(ProtocolVersion, self).__init__(enums.Tags.PROTOCOL_VERSION)
 
         if protocol_version_major is None:
             self.protocol_version_major = \
@@ -139,37 +133,37 @@ class ProtocolVersion(Struct):
 
 # 6.2
 class Operation(Enumeration):
-    ENUM_TYPE = Operation
 
     def __init__(self, value=None):
-        super(Operation, self).__init__(value, Tags.OPERATION)
+        super(Operation, self).__init__(
+            enums.Operation, value, enums.Tags.OPERATION)
 
 
 # 6.3
 class MaximumResponseSize(Integer):
     def __init__(self, value=None):
         super(MaximumResponseSize, self).\
-            __init__(value, Tags.MAXIMUM_RESPONSE_SIZE)
+            __init__(value, enums.Tags.MAXIMUM_RESPONSE_SIZE)
 
 
 # 6.4
 class UniqueBatchItemID(ByteString):
     def __init__(self, value=None):
         super(UniqueBatchItemID, self)\
-            .__init__(value, Tags.UNIQUE_BATCH_ITEM_ID)
+            .__init__(value, enums.Tags.UNIQUE_BATCH_ITEM_ID)
 
 
 # 6.5
 class TimeStamp(DateTime):
     def __init__(self, value=None):
-        super(TimeStamp, self).__init__(value, Tags.TIME_STAMP)
+        super(TimeStamp, self).__init__(value, enums.Tags.TIME_STAMP)
 
 
 # 6.6
 class Authentication(Struct):
 
     def __init__(self, credential=None):
-        super(Authentication, self).__init__(Tags.AUTHENTICATION)
+        super(Authentication, self).__init__(enums.Tags.AUTHENTICATION)
         self.credential = credential
 
     def read(self, istream):
@@ -202,70 +196,69 @@ class Authentication(Struct):
 class AsynchronousIndicator(Boolean):
     def __init__(self, value=None):
         super(AsynchronousIndicator, self).\
-            __init__(value, Tags.ASYNCHRONOUS_INDICATOR)
+            __init__(value, enums.Tags.ASYNCHRONOUS_INDICATOR)
 
 
 # 6.8
 class AsynchronousCorrelationValue(ByteString):
     def __init__(self, value=None):
         super(AsynchronousCorrelationValue, self).\
-            __init__(value, Tags.ASYNCHRONOUS_CORRELATION_VALUE)
+            __init__(value, enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE)
 
 
 # 6.9
 class ResultStatus(Enumeration):
-    ENUM_TYPE = ResultStatus
 
     def __init__(self, value=None):
-        super(ResultStatus, self).__init__(value, Tags.RESULT_STATUS)
+        super(ResultStatus, self).__init__(
+            enums.ResultStatus, value, enums.Tags.RESULT_STATUS)
 
 
 # 6.10
 class ResultReason(Enumeration):
-    ENUM_TYPE = ResultReason
 
     def __init__(self, value=None):
-        super(ResultReason, self).__init__(value, Tags.RESULT_REASON)
+        super(ResultReason, self).__init__(
+            enums.ResultReason, value, enums.Tags.RESULT_REASON)
 
 
 # 6.11
 class ResultMessage(TextString):
     def __init__(self, value=None):
-        super(ResultMessage, self).__init__(value, Tags.RESULT_MESSAGE)
+        super(ResultMessage, self).__init__(value, enums.Tags.RESULT_MESSAGE)
 
 
 # 6.12
 class BatchOrderOption(Boolean):
     def __init__(self, value=None):
         super(BatchOrderOption, self).\
-            __init__(value, Tags.BATCH_ORDER_OPTION)
+            __init__(value, enums.Tags.BATCH_ORDER_OPTION)
 
 
 # 6.13
 class BatchErrorContinuationOption(Enumeration):
-    ENUM_TYPE = BatchErrorContinuationOption
 
     def __init__(self, value=None):
-        super(BatchErrorContinuationOption, self).\
-            __init__(value, Tags.BATCH_ERROR_CONTINUATION_OPTION)
+        super(BatchErrorContinuationOption, self).__init__(
+            BatchErrorContinuationOption, value,
+            enums.Tags.BATCH_ERROR_CONTINUATION_OPTION)
 
 
 # 6.14
 class BatchCount(Integer):
     def __init__(self, value=None):
-        super(BatchCount, self).__init__(value, Tags.BATCH_COUNT)
+        super(BatchCount, self).__init__(value, enums.Tags.BATCH_COUNT)
 
 
 # 6.16
 class MessageExtension(Struct):
     def __init__(self):
-        super(MessageExtension, self).__init__(Tags.MESSAGE_EXTENSION)
+        super(MessageExtension, self).__init__(enums.Tags.MESSAGE_EXTENSION)
 
 
 # 9.1.3.2.2
 class KeyCompressionType(Enumeration):
-    ENUM_TYPE = KeyCompressionType
 
     def __init__(self, value=None):
-        super(KeyCompressionType, self).\
-            __init__(value, Tags.KEY_COMPRESSION_TYPE)
+        super(KeyCompressionType, self).__init__(
+            enums.KeyCompressionType, value, enums.Tags.KEY_COMPRESSION_TYPE)

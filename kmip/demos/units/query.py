@@ -69,9 +69,9 @@ if __name__ == '__main__':
 
     # Display operation results
     logger.info('query() result status: {0}'.format(
-        result.result_status.enum))
+        result.result_status.value))
 
-    if result.result_status.enum == ResultStatus.SUCCESS:
+    if result.result_status.value == ResultStatus.SUCCESS:
         operations = result.operations
         object_types = result.object_types
         vendor_identification = result.vendor_identification
@@ -106,6 +106,6 @@ if __name__ == '__main__':
 
     else:
         logger.info('query() result reason: {0}'.format(
-            result.result_reason.enum))
+            result.result_reason.value))
         logger.info('query() result message: {0}'.format(
             result.result_message.value))

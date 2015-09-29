@@ -136,11 +136,9 @@ class Credential(Struct):
 
     class CredentialType(Enumeration):
 
-        ENUM_TYPE = CredentialType
-
         def __init__(self, value=None):
             super(Credential.CredentialType, self).__init__(
-                value, Tags.CREDENTIAL_TYPE)
+                CredentialType, value, Tags.CREDENTIAL_TYPE)
 
     class UsernamePasswordCredential(Struct):
 
@@ -323,9 +321,9 @@ class Credential(Struct):
         self.credential_type.read(tstream)
 
         # Use the type to determine what credential value to read
-        if self.credential_type.enum is CredentialType.USERNAME_AND_PASSWORD:
+        if self.credential_type.value is CredentialType.USERNAME_AND_PASSWORD:
             self.credential_value = self.UsernamePasswordCredential()
-        elif self.credential_type.enum is CredentialType.DEVICE:
+        elif self.credential_type.value is CredentialType.DEVICE:
             self.credential_value = self.DeviceCredential()
         else:
             # TODO (peter-hamilton) Use more descriptive error here
@@ -354,11 +352,10 @@ class Credential(Struct):
 class KeyBlock(Struct):
 
     class KeyCompressionType(Enumeration):
-        ENUM_TYPE = enums.KeyCompressionType
 
         def __init__(self, value=None):
             super(KeyBlock.KeyCompressionType, self).__init__(
-                value, Tags.KEY_COMPRESSION_TYPE)
+                enums.KeyCompressionType, value, Tags.KEY_COMPRESSION_TYPE)
 
     def __init__(self,
                  key_format_type=None,
@@ -562,17 +559,17 @@ class KeyValue(Struct):
 
 # 2.1.5
 class WrappingMethod(Enumeration):
-    ENUM_TYPE = enums.WrappingMethod
 
     def __init__(self, value=None):
-        super(WrappingMethod, self).__init__(value, Tags.WRAPPING_METHOD)
+        super(WrappingMethod, self).__init__(
+            enums.WrappingMethod, value, Tags.WRAPPING_METHOD)
 
 
 class EncodingOption(Enumeration):
-    ENUM_TYPE = enums.EncodingOption
 
     def __init__(self, value=None):
-        super(EncodingOption, self).__init__(value, Tags.ENCODING_OPTION)
+        super(EncodingOption, self).__init__(
+            enums.EncodingOption, value, Tags.ENCODING_OPTION)
 
 
 class KeyInformation(Struct):
@@ -1182,11 +1179,11 @@ class ExtensionInformation(Struct):
 
 # 3.31, 9.1.3.2.19
 class RevocationReasonCode(Enumeration):
-    ENUM_TYPE = RevocationReasonCodeEnum
 
     def __init__(self, value=RevocationReasonCodeEnum.UNSPECIFIED):
         super(RevocationReasonCode, self).__init__(
-            value=value, tag=Tags.REVOCATION_REASON_CODE)
+            RevocationReasonCodeEnum, value=value,
+            tag=Tags.REVOCATION_REASON_CODE)
 
 
 # 3.31

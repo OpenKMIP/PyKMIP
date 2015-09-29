@@ -49,9 +49,9 @@ if __name__ == '__main__':
 
     # Display operation results
     logger.info('discover_versions() result status: {0}'.format(
-        result.result_status.enum))
+        result.result_status.value))
 
-    if result.result_status.enum == ResultStatus.SUCCESS:
+    if result.result_status.value == ResultStatus.SUCCESS:
         protocol_versions = result.protocol_versions
         if isinstance(protocol_versions, list):
             logger.info('number of protocol versions returned: {0}'.format(
@@ -63,6 +63,6 @@ if __name__ == '__main__':
             logger.info('number of protocol versions returned: 0')
     else:
         logger.info('discover_versions() result reason: {0}'.format(
-            result.result_reason.enum))
+            result.result_reason.value))
         logger.info('discover_versions() result message: {0}'.format(
             result.result_message.value))

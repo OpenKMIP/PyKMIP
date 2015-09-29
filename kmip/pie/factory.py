@@ -72,7 +72,7 @@ class ObjectFactory:
             raise TypeError("object type unsupported and cannot be converted")
 
     def _build_pie_certificate(self, cert):
-        certificate_type = cert.certificate_type.enum
+        certificate_type = cert.certificate_type.value
         value = cert.certificate_value.value
 
         if certificate_type == enums.CertificateTypeEnum.X_509:
@@ -81,10 +81,10 @@ class ObjectFactory:
             raise TypeError("core certificate type not supported")
 
     def _build_pie_key(self, key, cls):
-        algorithm = key.key_block.cryptographic_algorithm.enum
+        algorithm = key.key_block.cryptographic_algorithm.value
         length = key.key_block.cryptographic_length.value
         value = key.key_block.key_value.key_material.value
-        format_type = key.key_block.key_format_type.enum
+        format_type = key.key_block.key_format_type.value
 
         if cls is pobjects.SymmetricKey:
             key = cls(algorithm, length, value)
@@ -99,13 +99,13 @@ class ObjectFactory:
             return cls(algorithm, length, value, format_type)
 
     def _build_pie_secret_data(self, secret):
-        secret_data_type = secret.secret_data_type.enum
+        secret_data_type = secret.secret_data_type.value
         value = secret.key_block.key_value.key_material.value
 
         return pobjects.SecretData(value, secret_data_type)
 
     def _build_pie_opaque_object(self, obj):
-        opaque_type = obj.opaque_data_type.enum
+        opaque_type = obj.opaque_data_type.value
         value = obj.opaque_data_value.value
         return pobjects.OpaqueObject(value, opaque_type)
 

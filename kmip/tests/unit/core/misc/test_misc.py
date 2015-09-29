@@ -89,8 +89,8 @@ class TestQueryFunction(TestCase):
             query_function = QueryFunction(value)
 
             msg = "expected {0}, observed {1}".format(
-                value, query_function.enum)
-            self.assertEqual(value, query_function.enum, msg)
+                value, query_function.value)
+            self.assertEqual(value, query_function.value, msg)
         else:
             self.assertRaises(TypeError, QueryFunction, value)
 
@@ -184,8 +184,8 @@ class TestKeyFormatType(TestCase):
             key_format_type = KeyFormatType(value)
 
             msg = "expected {0}, observed {1}".format(
-                value, key_format_type.enum)
-            self.assertEqual(value, key_format_type.enum, msg)
+                value, key_format_type.value)
+            self.assertEqual(value, key_format_type.value, msg)
         else:
             self.assertRaises(TypeError, KeyFormatType, value)
 

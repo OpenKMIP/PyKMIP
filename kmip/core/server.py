@@ -102,24 +102,18 @@ class KMIPImpl(KMIP):
         bit_length = 256
         attributes = template_attribute.attributes
         ret_attributes = []
-        if object_type.enum != OT.SYMMETRIC_KEY:
+        if object_type.value != OT.SYMMETRIC_KEY:
             self.logger.debug('invalid object type')
             return self._get_invalid_field_result('invalid object type')
         try:
-            alg_attr =\
-                self._validate_req_field(attributes,
-                                         AT.CRYPTOGRAPHIC_ALGORITHM.value,
-                                         (CA.AES.value,),
-                                         'unsupported algorithm')
-            len_attr = self._validate_req_field(attributes,
-                                                AT.CRYPTOGRAPHIC_LENGTH.value,
-                                                (128, 256, 512),
-                                                'unsupported key length',
-                                                False)
-            self._validate_req_field(attributes,
-                                     AT.CRYPTOGRAPHIC_USAGE_MASK.value,
-                                     (),
-                                     '')
+            alg_attr = self._validate_req_field(
+                attributes, AT.CRYPTOGRAPHIC_ALGORITHM.value,
+                (CA.AES,), 'unsupported algorithm')
+            len_attr = self._validate_req_field(
+                attributes, AT.CRYPTOGRAPHIC_LENGTH.value,
+                (128, 256, 512), 'unsupported key length', False)
+            self._validate_req_field(
+                attributes, AT.CRYPTOGRAPHIC_USAGE_MASK.value, (), '')
         except InvalidFieldException as e:
             self.logger.debug('InvalidFieldException raised')
             return e.result
@@ -158,7 +152,7 @@ class KMIPImpl(KMIP):
         if object_type is None:
             self.logger.debug('invalid object type')
             return self._get_missing_field_result('object type')
-        if object_type.enum != OT.SYMMETRIC_KEY:
+        if object_type.value != OT.SYMMETRIC_KEY:
             self.logger.debug('invalid object type')
             return self._get_invalid_field_result('invalid object type')
         if secret is None or not isinstance(secret, SymmetricKey):
@@ -173,18 +167,14 @@ class KMIPImpl(KMIP):
 
         self.logger.debug('Verifying all attributes are valid and set')
         try:
-            self._validate_req_field(attributes,
-                                     AT.CRYPTOGRAPHIC_ALGORITHM.value,
-                                     (CA.AES.value,),
-                                     'unsupported algorithm')
-            self._validate_req_field(attributes,
-                                     AT.CRYPTOGRAPHIC_LENGTH.value,
-                                     (128, 256, 512),
-                                     'unsupported key length')
-            self._validate_req_field(attributes,
-                                     AT.CRYPTOGRAPHIC_USAGE_MASK.value,
-                                     (),
-                                     '')
+            self._validate_req_field(
+                attributes, AT.CRYPTOGRAPHIC_ALGORITHM.value, (CA.AES,),
+                'unsupported algorithm')
+            self._validate_req_field(
+                attributes, AT.CRYPTOGRAPHIC_LENGTH.value, (128, 256, 512),
+                'unsupported key length')
+            self._validate_req_field(
+                attributes, AT.CRYPTOGRAPHIC_USAGE_MASK.value, (), '')
         except InvalidFieldException as e:
             self.logger.debug('InvalidFieldException raised')
             return RegisterResult(e.result.result_status,
@@ -220,7 +210,7 @@ class KMIPImpl(KMIP):
         if key_format_type is None:
             self.logger.debug('key format type is None, setting to raw')
             key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
-        if key_format_type.enum != KeyFormatTypeEnum.RAW:
+        if key_format_type.value != KeyFormatTypeEnum.RAW:
             self.logger.debug('key format type is not raw')
             reason = ResultReason(ResultReasonEnum.
                                   KEY_FORMAT_TYPE_NOT_SUPPORTED)
@@ -370,7 +360,7 @@ class KMIPImpl(KMIP):
             self.logger.debug('crypto_alg set on key block')
             self.logger.debug('adding crypto algorithm attribute')
             at = AT.CRYPTOGRAPHIC_ALGORITHM
-            alg = key_block.cryptographic_algorithm.enum
+            alg = key_block.cryptographic_algorithm.value
             attributes.append(self.attribute_factory.create_attribute(at, alg))
         if key_block.cryptographic_length is not None:
             self.logger.debug('crypto_length set on key block')

@@ -200,7 +200,7 @@ class RequestBatchItem(Struct):
         # Dynamically create the response payload class that belongs to the
         # operation
         self.request_payload = self.payload_factory.create(
-            self.operation.enum)
+            self.operation.value)
         self.request_payload.read(tstream)
 
         # Read the message extension if it is present
@@ -290,7 +290,7 @@ class ResponseBatchItem(Struct):
 
         # Dynamically create the response payload class that belongs to the
         # operation
-        expected = self.payload_factory.create(self.operation.enum)
+        expected = self.payload_factory.create(self.operation.value)
         if self.is_tag_next(expected.tag, tstream):
             self.response_payload = expected
             self.response_payload.read(tstream)
