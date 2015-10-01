@@ -40,6 +40,8 @@ class TestDigest(TestCase):
             HashingAlgorithmEnum.SHA_256)
         self.hashing_algorithm_c = HashingAlgorithm(
             HashingAlgorithmEnum.SHA_256)
+        self.hashing_algorithm_d = HashingAlgorithm(
+            HashingAlgorithmEnum.SHA_1)
 
         self.digest_value_a = DigestValue(b'')
         self.digest_value_b = DigestValue(
@@ -316,9 +318,17 @@ class TestDigest(TestCase):
             digest_value=self.digest_value_b,
             key_format_type=self.key_format_type_b)
         b = Digest()
+        c = Digest(
+            hashing_algorithm=self.hashing_algorithm_d,
+            digest_value=self.digest_value_b,
+            key_format_type=self.key_format_type_c)
+        d = Digest(
+            key_format_type=self.key_format_type_c)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+        self.assertTrue(b != c)
+        self.assertTrue(b != d)
 
     def test_not_equal_on_type_mismatch(self):
         """
