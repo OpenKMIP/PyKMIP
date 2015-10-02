@@ -20,6 +20,15 @@ import enum
 
 
 class AttributeType(enum.Enum):
+    """
+    The name identifier of a managed object attribute.
+
+    The attribute type is the name of a specific attribute that can be
+    associated with a managed object. Every attribute contains this name in
+    addition to the actual attribute value. This enumeration is primarily used
+    to automatically map between attribute object encodings and the actual
+    attribute structures that are used to store the attribute data.
+    """
     UNIQUE_IDENTIFIER                = 'Unique Identifier'
     NAME                             = 'Name'
     OBJECT_TYPE                      = 'Object Type'
@@ -97,8 +106,18 @@ class AuthenticationSuite(enum.Enum):
     TLS12 = 2
 
 
-# 9.1.1.2
 class Types(enum.Enum):
+    """
+    The unique identifier of an entity primitive type.
+
+    The type is a unique identifier for every possible primitive KMIP entity
+    defined by the KMIP specification. Every KMIP object is a form of KMIP
+    primitive. The type is the second piece of an object that is encoded and
+    decoded during serialization.
+
+    While not defined by the specification, the DEFAULT tag is used as a
+    default type identifier for testing purposes.
+    """
     DEFAULT      = 0x00
     STRUCTURE    = 0x01
     INTEGER      = 0x02
@@ -112,8 +131,17 @@ class Types(enum.Enum):
     INTERVAL     = 0x0A
 
 
-# 9.1.3.1
 class Tags(enum.Enum):
+    """
+    The unique identifier of an entity type.
+
+    The tag is a unique identifier for every possible KMIP entity defined by
+    the KMIP specification. It is the first piece of an object that is encoded
+    and decoded during serialization.
+
+    While not defined by the specification, the DEFAULT tag is used as the
+    default tag for all KMIP primitives.
+    """
     DEFAULT                                = 0x420000
     ACTIVATION_DATE                        = 0x420001
     APPLICATION_DATA                       = 0x420002
@@ -302,22 +330,38 @@ class Tags(enum.Enum):
     X_509_CERTIFICATE_SUBJECT              = 0x4200B7
 
 
-# 9.1.3.2.1
 class CredentialType(enum.Enum):
+    """
+    The type of a credential object.
+
+    The credential type is a required attribute of a credential object. It
+    identifies the format and structure of the value of the credential.
+    """
     USERNAME_AND_PASSWORD = 0x00000001
     DEVICE                = 0x00000002
 
 
-# 9.1.3.2.2
 class KeyCompressionType(enum.Enum):
+    """
+    The technique used to compress an elliptic curve public key.
+
+    The key compression type is an attribute of a key block structure. If it
+    is omitted, it is inferred that the related public key is uncompressed.
+    """
     EC_PUBLIC_KEY_TYPE_UNCOMPRESSED           = 0x00000001
     EC_PUBLIC_KEY_TYPE_X9_62_COMPRESSED_PRIME = 0x00000002
     EC_PUBLIC_KEY_TYPE_X9_62_COMPRESSED_CHAR2 = 0x00000003
     EC_PUBLIC_KEY_TYPE_X9_62_HYBRID           = 0x00000004
 
 
-# 9.1.3.2.3
 class KeyFormatType(enum.Enum):
+    """
+    The format of the key data structure.
+
+    The key format type is a required attribute of a key block structure. It
+    is the differentiating feature that describes the structure of different
+    types of keys.
+    """
     RAW                           = 0x00000001
     OPAQUE                        = 0x00000002
     PKCS_1                        = 0x00000003
@@ -339,8 +383,14 @@ class KeyFormatType(enum.Enum):
     TRANSPARENT_ECMQV_PUBLIC_KEY  = 0x00000013
 
 
-# 9.1.3.2.4
 class WrappingMethod(enum.Enum):
+    """
+    The technique used to wrap a secret object.
+
+    The wrapping method is a required attribute of a key wrapping data
+    structure. It indicates how an algorithm is used to conduct the data
+    wrapping.
+    """
     ENCRYPT               = 0x00000001
     MAC_SIGN              = 0x00000002
     ENCRYPT_THEN_MAC_SIGN = 0x00000003
@@ -348,44 +398,130 @@ class WrappingMethod(enum.Enum):
     TR_31                 = 0x00000005
 
 
-# 9.1.3.2.6
+class RecommendedCurve(enum.Enum):
+    """
+    The type of algorithm for elliptic curve cryptography.
+
+    The recommended curve defines the algorithm associated with specific
+    classes of asymmetric keys. It is a required attribute of all transparent
+    key structures.
+    """
+    P_192 = 0x00000001
+    K_163 = 0x00000002
+    B_163 = 0x00000003
+    P_224 = 0x00000004
+    K_233 = 0x00000005
+    B_233 = 0x00000006
+    P_256 = 0x00000007
+    K_283 = 0x00000008
+    B_283 = 0x00000009
+    P_384 = 0x0000000A
+    K_409 = 0x0000000B
+    B_409 = 0x0000000C
+    P_521 = 0x0000000D
+    K_571 = 0x0000000E
+    B_571 = 0x0000000F
+
+
 class CertificateTypeEnum(enum.Enum):
     """
-    The type of a Certificate Managed Object.
+    The type of a certificate managed object.
 
-    For more information, see Section 2.2.1 of the KMIP 1.1 specification.
+    The certificate type identifies the format of a certificate. It can be
+    specified when creating or registering a certificate managed object.
     """
     X_509 = 0x00000001
     PGP   = 0x00000002
 
 
-# 9.1.3.2.8
+class DigitalSignatureAlgorithm(enum.Enum):
+    """
+    The algorithm used to create a digital signature.
+
+    The digital signature algorithm is an attribute associated with a
+    cryptographically signed object, usually a certificate. It can be
+    specified when registering a new managed object and is often managed
+    directly by the storage backend.
+    """
+    MD2_WITH_RSA      = 0x00000001
+    MD5_WITH_RSA      = 0x00000002
+    SHA1_WITH_RSA     = 0x00000003
+    SHA224_WITH_RSA   = 0x00000004
+    SHA256_WITH_RSA   = 0x00000005
+    SHA384_WITH_RSA   = 0x00000006
+    SHA512_WITH_RSA   = 0x00000007
+    RSASSA_PSS        = 0x00000008
+    DSA_WITH_SHA1     = 0x00000009
+    DSA_WITH_SHA224   = 0x0000000A
+    DSA_WITH_SHA256   = 0x0000000B
+    ECDSA_WITH_SHA1   = 0x0000000C
+    ECDSA_WITH_SHA224 = 0x0000000D
+    ECDSA_WITH_SHA256 = 0x0000000E
+    ECDSA_WITH_SHA384 = 0x0000000F
+    ECDSA_WITH_SHA512 = 0x00000010
+
+
 class SplitKeyMethod(enum.Enum):
+    """
+    The computation used to create a split key managed object.
+
+    The split key method is a required attribute of a split key managed object,
+    indicating how the parts of the split key were generated from the original
+    source secret. It is only used when working with split keys.
+    """
     XOR                            = 0x00000001
     POLYNOMIAL_SHARING_GF          = 0x00000002
     POLYNOMIAL_SHARING_PRIME_FIELD = 0x00000003
 
 
-# 9.1.3.2.9
 class SecretDataType(enum.Enum):
+    """
+    The type of a secret data value.
+
+    The secret data type indicates how to decode or interpret the value of a
+    secret object. It is a required attribute of a secret data managed object.
+    """
     PASSWORD = 0x00000001
     SEED     = 0x00000002
 
-# 9.1.3.2.10
+
 class OpaqueDataType(enum.Enum):
-    NONE = 0x80000000 # Not defined by the standard, but we need something.
-                      # The standard does say that values starting 0x8xxxxxx
-                      # are considered extensions
+    """
+    The type of an opaque data value.
+
+    The opaque data type is a custom value indicating how to decode or
+    interpret the value of an opaque object. Unlike all other enumerations,
+    the KMIP specification does not define any default opaque data types,
+    instead leaving the usage and definition up to the extension system
+    supported by a KMIP provider.
+
+    While not defined in the standard, the default type NONE is provided so
+    that basic opaque objects can still be defined, independent of a specific
+    vendor implementation. By definition as an extension, all opaque data type
+    enumeration values start with 0x80.
+    """
+    NONE = 0x80000000
 
 
-# 9.1.3.2.11
 class NameType(enum.Enum):
+    """
+    The type of a managed object name string.
+
+    The name type defines the format of a given name attribute value. Names
+    are common attributes for all managed objects.
+    """
     UNINTERPRETED_TEXT_STRING = 0x00000001
     URI                       = 0x00000002
 
 
-# 9.1.3.2.12
 class ObjectType(enum.Enum):
+    """
+    The type of a managed object.
+
+    The object type is a common attribute to all managed objects. It can be
+    set or specified upon object creation but is immutable once finalized. The
+    type can be used as a filter to locate sets of managed objects.
+    """
     CERTIFICATE   = 0x00000001
     SYMMETRIC_KEY = 0x00000002
     PUBLIC_KEY    = 0x00000003
@@ -396,8 +532,15 @@ class ObjectType(enum.Enum):
     OPAQUE_DATA   = 0x00000008
 
 
-# 9.1.3.2.13
 class CryptographicAlgorithm(enum.Enum):
+    """
+    The type of algorithm used for a cryptographic operation.
+
+    The cryptographic algorithm is a common attribute for cryptographic managed
+    objects and is used in various cryptographic structures and operations. It
+    is commonly specified during creation or registration of a cryptographic
+    object.
+    """
     DES         = 0x00000001
     TRIPLE_DES  = 0x00000002  # '3DES' is invalid syntax
     AES         = 0x00000003
@@ -425,8 +568,14 @@ class CryptographicAlgorithm(enum.Enum):
     TWOFISH     = 0x00000019
 
 
-# 9.1.3.2.14
 class BlockCipherMode(enum.Enum):
+    """
+    The mode dictating block processing in a cryptographic algorithm.
+
+    The block cipher mode is one of several features that make up a set of
+    cryptographic parameters, which can be used to describe all cryptographic
+    managed objects.
+    """
     CBC                  = 0x00000001
     ECB                  = 0x00000002
     PCBC                 = 0x00000003
@@ -446,37 +595,56 @@ class BlockCipherMode(enum.Enum):
     X9_102_AKW2          = 0x00000011
 
 
-# 9.1.3.2.15
 class PaddingMethod(enum.Enum):
-    NONE        = 0x00000001
-    OAEP        = 0x00000002
-    PKCS5       = 0x00000003
-    SSL3        = 0x00000004
-    ZEROS       = 0x00000005
-    ANSI_X9_23  = 0x00000006
-    ISO_10126   = 0x00000007
-    PKCS1_V_1_5 = 0x00000008
-    X9_31       = 0x00000009
-    PSS         = 0x0000000A
+    """
+    The type of padding technique used with a cryptographic algorithm.
+
+    The padding method is one of several features that make up a set of
+    cryptographic parameters, which can be used to describe all cryptographic
+    managed objects. 
+    """
+    NONE      = 0x00000001
+    OAEP      = 0x00000002
+    PKCS5     = 0x00000003
+    SSL3      = 0x00000004
+    ZEROS     = 0x00000005
+    ANSI_X923 = 0x00000006
+    ISO_10126 = 0x00000007
+    PKCS1_V15 = 0x00000008
+    X9_31     = 0x00000009
+    PSS       = 0x0000000A
 
 
-# 9.1.3.2.16
 class HashingAlgorithm(enum.Enum):
+    """
+    The type of algorithm used to generate a cryptographic hash.
+
+    The hashing algorithm is one of several features that make up a set of
+    cryptographic parameters, which can be used to describe all cryptographic
+    managed objects. It is also a required digest attribute, defining the
+    algorithm used to create the digest value.
+    """
     MD2        = 0x00000001
     MD4        = 0x00000002
     MD5        = 0x00000003
-    SHA_1      = 0x00000004
-    SHA_224    = 0x00000005
-    SHA_256    = 0x00000006
-    SHA_384    = 0x00000007
-    SHA_512    = 0x00000008
+    SHA1       = 0x00000004
+    SHA224     = 0x00000005
+    SHA256     = 0x00000006
+    SHA384     = 0x00000007
+    SHA512     = 0x00000008
     RIPEMD_160 = 0x00000009
     TIGER      = 0x0000000A
     WHIRLPOOL  = 0x0000000B
 
 
-# 9.1.3.2.17
 class KeyRoleType(enum.Enum):
+    """
+    The position a cryptographic managed object holds in a cryptosystem.
+
+    The key role type is one of several features that make up a set of
+    cryptographic parameters, which can be used to describe all cryptographic
+    managed objects. The set of key role types is defined by ANSI X9 TR-31.
+    """
     BDK       = 0x00000001
     CVK       = 0x00000002
     DEK       = 0x00000003
@@ -500,8 +668,116 @@ class KeyRoleType(enum.Enum):
     PVKOTH    = 0x00000015
 
 
-# 9.1.3.2.24
+class State(enum.Enum):
+    """
+    The mode a managed object is currently in.
+
+    The state is a common attribute of managed objects. It defines how a
+    managed object can be used and can change as different operations are
+    enacted upon the object. It is set dynamically by a server and is only
+    queryable by a client.
+    """
+    PRE_ACTIVE            = 0x00000001
+    ACTIVE                = 0x00000002
+    DEACTIVATED           = 0x00000003
+    COMPROMISED           = 0x00000004
+    DESTROYED             = 0x00000005
+    DESTROYED_COMPROMISED = 0x00000006
+
+
+class RevocationReasonCode(enum.Enum):
+    """
+    A code number used to designate why a managed object was revoked.
+
+    The revocation reason code is used, in conjunction with a revocation
+    message, to record why revocation occurred for a managed object. Revocation
+    involves a state change in the associated managed object and is usually
+    carried out explicitly using the revoke operation.
+    """
+    UNSPECIFIED            = 0x00000001
+    KEY_COMPROMISE         = 0x00000002
+    CA_COMPROMISE          = 0x00000003
+    AFFILIATION_CHANGED    = 0x00000004
+    SUPERSEDED             = 0x00000005
+    CESSATION_OF_OPERATION = 0x00000006
+    PRIVILEGE_WITHDRAWN    = 0x00000007
+
+
+class LinkType(enum.Enum):
+    """
+    The type of linkage between two managed objects.
+
+    The link type is a common attribute of managed objects. It is used to show
+    relationships between different objects, like between a public/private key
+    pair, or between a certificate and its public key. A managed object can
+    have multiple links associated with it and links themselves can be created
+    dynamically by the server and by the client upon or after  object creation.
+    The link type can also be used as a filter to locate sets of managed
+    objects.
+    """
+    CERTIFICATE_LINK            = 0x00000101
+    PUBLIC_KEY_LINK             = 0x00000102
+    PRIVATE_KEY_LINK            = 0x00000103
+    DERIVATION_BASE_OBJECT_LINK = 0x00000104
+    DERIVED_KEY_LINK            = 0x00000105
+    REPLACEMENT_OBJECT_LINK     = 0x00000106
+    REPLACED_OBJECT_LINK        = 0x00000107
+
+
+class DerivationMethod(enum.Enum):
+    """
+    The type of computation used to derive a new cryptographic object.
+
+    The derivation method is used to select a specific algorithm that will be
+    used, in conjunction with an existing managed object, to generate a new
+    key or secret data object. It is used exclusively with the derive key
+    operation.
+    """
+    PBKDF2          = 0x00000001
+    HASH            = 0x00000002
+    HMAC            = 0x00000003
+    ENCRYPT         = 0x00000004
+    NIST800_108_C   = 0x00000005
+    NIST800_108_F   = 0x00000006
+    NIST800_108_DPI = 0x00000007
+
+
+class CertificateRequestType(enum.Enum):
+    """
+    The type of a certificate request issued for certification.
+
+    The certificate request type is used when certifying or re-certifying a
+    specific certificate request. It can be omitted from the process if the
+    type information is included in an associated request template attribute.
+    """
+    CRMF    = 0x00000001
+    PKCS_10 = 0x00000002
+    PEM     = 0x00000003
+    PGP     = 0x00000004
+
+
+class ValidityIndicator(enum.Enum):
+    """
+    The result of validating a chain of certificates.
+
+    The validity indicator is used by a server to indicate if a chain of
+    certificate objects and references was correctly validated. It can
+    represent success, failure, or an unknown state if the server did not know
+    how to validate the certificate chain.
+    """
+    VALID   = 0x00000001
+    INVALID = 0x00000002
+    UNKNOWN = 0x00000003
+
+
 class QueryFunction(enum.Enum):
+    """
+    A flag representing a specific set of server-specific information.
+
+    The query function is used to uniquely identifying what server-specific
+    information should be returned by a query request. A list of these flags
+    are used exclusively by the request payload for the query operation.
+    """
     QUERY_OPERATIONS             = 0x00000001
     QUERY_OBJECTS                = 0x00000002
     QUERY_SERVER_INFORMATION     = 0x00000003
@@ -509,8 +785,43 @@ class QueryFunction(enum.Enum):
     QUERY_EXTENSION_LIST         = 0x00000005
     QUERY_EXTENSION_MAP          = 0x00000006
 
-# 9.1.3.2.27
+
+class CancellationResult(enum.Enum):
+    """
+    The final result of cancelling an operation.
+
+    The cancellation result is used by a server to indicate how a cancelled
+    operation was handled. It is used exclusively in the response payload for
+    the cancel operation.
+    """
+    CANCELED         = 0x00000001
+    UNABLE_TO_CANCEL = 0x00000002
+    COMPLETED        = 0x00000003
+    FAILED           = 0x00000004
+    UNAVAILABLE      = 0x00000005
+
+
+class PutFunction(enum.Enum):
+    """
+    The flag indicating the context of an object push to the client.
+
+    The put function defines if an object being pushed to a client is a new
+    object or if it is a replacement for an object already retrieved by the
+    client. It is used exclusively in the put operation message payload.
+    """
+    NEW     = 0x00000001
+    REPLACE = 0x00000002
+
+
 class Operation(enum.Enum):
+    """
+    The identifier of an action supported by the KMIP specification.
+
+    The operation defines what actions should be taken with the data provided
+    in the operation payload. It is required to decode the data provided in
+    each message payload. It is included in each request or response batch
+    item.
+    """
     CREATE               = 0x00000001
     CREATE_KEY_PAIR      = 0x00000002
     REGISTER             = 0x00000003
@@ -543,16 +854,29 @@ class Operation(enum.Enum):
     DISCOVER_VERSIONS    = 0x0000001E
 
 
-# 9.1.3.2.28
 class ResultStatus(enum.Enum):
+    """
+    The final status of an operation.
+
+    The result status is used to indicate whether an operation completed
+    successfully or failed during processing. It is included in each response
+    batch item for a response.
+    """
     SUCCESS           = 0x00000000
     OPERATION_FAILED  = 0x00000001
     OPERATION_PENDING = 0x00000002
     OPERATION_UNDONE  = 0x00000003
 
 
-# 9.1.3.2.29
 class ResultReason(enum.Enum):
+    """
+    A predefined explanation for a failure or partial success of an operation.
+
+    The result reason is used to provide additional information on the result
+    status of an operation. It is most often used upon operation failure but
+    may be used with other result states. The reason is included in each
+    response batch item for a response.
+    """
     ITEM_NOT_FOUND                      = 0x00000001
     RESPONSE_TOO_LARGE                  = 0x00000002
     AUTHENTICATION_NOT_SUCCESSFUL       = 0x00000003
@@ -574,22 +898,66 @@ class ResultReason(enum.Enum):
     GENERAL_FAILURE                     = 0x00000100
 
 
-# 9.1.3.2.30
 class BatchErrorContinuationOption(enum.Enum):
+    """
+    An error setting used to control the processing of batch items.
+
+    The batch error continuation option defines how the client wants the
+    server to handle batch item processing in the event of an operation
+    failure. The option is set in the request header of a request.
+    """
     CONTINUE = 0x00000001
     STOP     = 0x00000002
     UNDO     = 0x00000003
 
 
-# 9.1.3.2.32
+class UsageLimitsUnit(enum.Enum):
+    """
+    A unit of measure for a usage limit on a cryptographic managed object.
+
+    The usage limits unit defines what type of data to which a usage limit
+    applies. It is used primarily in a usage limit attribute and is typically
+    set during object creation or registration.
+    """
+    BYTE   = 0x00000001
+    OBJECT = 0x00000002
+
+
 class EncodingOption(enum.Enum):
+    """
+    The type of encoding used for a wrapped managed object.
+
+    The encoding option is used in both key wrapping specifications and key
+    wrapping data. It defines how the wrapped object was encoded so that it
+    can be correctly parsed once unwrapped.
+    """
     NO_ENCODING   = 0x00000001
     TTLV_ENCODING = 0x00000002
 
 
-# 9.1.3.3
-# 9.1.3.3.1
+class ObjectGroupMember(enum.Enum):
+    """
+    The group member state of a managed object.
+
+    The object group member reflects the freshness of a managed object. If a
+    managed object has never left the appliance, it is considered fresh. The
+    object group member can be used as a filter to locate sets of managed
+    objects.
+    """
+    GROUP_MEMBER_FRESH   = 0x00000001
+    GROUP_MEMBER_DEFAULT = 0x00000002
+
+
 class CryptographicUsageMask(enum.Enum):
+    """
+    A mask identifying a usage case for a cryptographic managed object.
+
+    The cryptographic usage mask is an attribute associated with cryptographic
+    managed objects. It is a bit mask made from one or more of the enumeration
+    values, combined via logical-or. The mask is often specified during object
+    creation or registration and can also be used as a filter to locate sets
+    of managed objects.
+    """
     SIGN                = 0x00000001
     VERIFY              = 0x00000002
     ENCRYPT             = 0x00000004
@@ -611,21 +979,14 @@ class CryptographicUsageMask(enum.Enum):
     TRANSLATE_WRAP      = 0x00040000
     TRANSLATE_UNWRAP    = 0x00080000
 
-# 9.1.3.2.33
-class ObjectGroupMember(enum.Enum):
-    GROUP_MEMBER_FRESH    = 0x00000001
-    GROUP_MEMBER_DEFAULT  = 0x00000002
 
-# 9.1.3.3.2
 class StorageStatusMask(enum.Enum):
+    """
+    A mask identifying a possible storage state for a managed object.
+
+    The storage state mask is a filter option used to locate sets of managed
+    objects. It is a bit mask made from one or more of the enumeration values,
+    combined via logical-or.
+    """
     ONLINE_STORAGE      = 0x00000001
     ARCHIVAL_STORAGE    = 0x00000002
-
-class RevocationReasonCode(enum.Enum):
-    UNSPECIFIED            = 0x00000001
-    KEY_COMPROMISE         = 0x00000002
-    CA_COMPROMISE          = 0x00000003
-    AFFILIATION_CHANGED    = 0x00000004
-    SUPERSEDED             = 0x00000005
-    CESSATION_OF_OPERATION = 0x00000006
-    PRIVILEGE_WITHDRAWN    = 0x00000007

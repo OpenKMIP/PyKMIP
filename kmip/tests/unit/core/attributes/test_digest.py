@@ -35,11 +35,11 @@ class TestDigest(TestCase):
         super(TestDigest, self).setUp()
 
         self.hashing_algorithm_a = HashingAlgorithm(
-            HashingAlgorithmEnum.SHA_256)
+            HashingAlgorithmEnum.SHA256)
         self.hashing_algorithm_b = HashingAlgorithm(
-            HashingAlgorithmEnum.SHA_256)
+            HashingAlgorithmEnum.SHA256)
         self.hashing_algorithm_c = HashingAlgorithm(
-            HashingAlgorithmEnum.SHA_256)
+            HashingAlgorithmEnum.SHA256)
 
         self.digest_value_a = DigestValue(b'')
         self.digest_value_b = DigestValue(
@@ -413,7 +413,7 @@ class TestDigest(TestCase):
         with no arguments.
         """
         digest = Digest.create()
-        hashing_algorithm = HashingAlgorithmEnum.SHA_256
+        hashing_algorithm = HashingAlgorithmEnum.SHA256
         digest_value = b''
         key_format_type = KeyFormatTypeEnum.RAW
 

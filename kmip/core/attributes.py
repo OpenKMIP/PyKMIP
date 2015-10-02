@@ -184,14 +184,14 @@ class HashingAlgorithm(Enumeration):
     for more information.
     """
 
-    def __init__(self, value=HashingAlgorithmEnum.SHA_256):
+    def __init__(self, value=HashingAlgorithmEnum.SHA256):
         """
         Construct a HashingAlgorithm object.
 
         Args:
             value (HashingAlgorithm): A HashingAlgorithm enumeration value,
                 (e.g., HashingAlgorithm.MD5). Optional, defaults to
-                HashingAlgorithm.SHA_256.
+                HashingAlgorithm.SHA256.
         """
         super(HashingAlgorithm, self).__init__(
             enums.HashingAlgorithm, value, Tags.HASHING_ALGORITHM)
@@ -473,7 +473,7 @@ class Digest(Struct):
 
     @classmethod
     def create(cls,
-               hashing_algorithm=HashingAlgorithmEnum.SHA_256,
+               hashing_algorithm=HashingAlgorithmEnum.SHA256,
                digest_value=b'',
                key_format_type=KeyFormatTypeEnum.RAW):
         """
@@ -482,7 +482,7 @@ class Digest(Struct):
         Args:
             hashing_algorithm (HashingAlgorithm): An enumeration representing
                 the hash algorithm used to compute the digest. Optional,
-                defaults to HashingAlgorithm.SHA_256.
+                defaults to HashingAlgorithm.SHA256.
             digest_value (byte string): The bytes of the digest hash. Optional,
                 defaults to the empty byte string.
             key_format_type (KeyFormatType): An enumeration representing the
