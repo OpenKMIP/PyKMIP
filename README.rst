@@ -1,6 +1,8 @@
 ------
 PyKMIP
 ------
+|coverage-status|
+
 PyKMIP is a Python implementation of the Key Management Interoperability
 Protocol (KMIP). KMIP is a client/server communication protocol for the
 storage and maintenance of key, certificate, and secret objects. The standard
@@ -243,3 +245,7 @@ For more information on KMIP version 1.1, see the following documentation:
 .. _Python SSL library documentation: https://docs.python.org/dev/library/ssl.html#socket-creation
 .. _KMIP Wikipedia page: https://en.wikipedia.org/wiki/Key_Management_Interoperability_Protocol
 .. _KMIP Technical Committee home page: https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=kmip
+.. |coverage-status| image:: https://coveralls.io/repos/OpenKMIP/PyKMIP/badge.svg
+  :target: https://coveralls.io/github/OpenKMIP/PyKMIP
+
+
