@@ -9,3 +9,4 @@ mock
 testscenarios
 testrepository
 sphinx
+bandit
