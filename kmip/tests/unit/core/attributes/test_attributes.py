@@ -18,17 +18,24 @@ from testtools import TestCase
 from kmip.core.attributes import ApplicationData
 from kmip.core.attributes import ApplicationNamespace
 from kmip.core.attributes import CertificateType
+from kmip.core.attributes import CryptographicParameters
 from kmip.core.attributes import DigestValue
 from kmip.core.attributes import HashingAlgorithm
-from kmip.core.attributes import OperationPolicyName
 from kmip.core.attributes import Name
+from kmip.core.attributes import OperationPolicyName
+from kmip.core.attributes import Tags
 
+from kmip.core.factories.attribute_values import AttributeValueFactory
+
+from kmip.core.enums import AttributeType
+from kmip.core.enums import BlockCipherMode
 from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
+from kmip.core.enums import KeyRoleType
+from kmip.core.enums import PaddingMethod
+from kmip.core.enums import NameType
 
 from kmip.core.utils import BytearrayStream
-
-from kmip.core.enums import NameType
 
 
 class TestNameValue(TestCase):
@@ -362,3 +369,67 @@ class TestApplicationData(TestCase):
         used to construct an ApplicationData object.
         """
         self._test_init(0)
+
+
+class TestCryptographicParameters(TestCase):
+    """
+    A test suite for the CryptographicParameters class
+    """
+
+    def setUp(self):
+        super(TestCryptographicParameters, self).setUp()
+
+        self.factory = AttributeValueFactory()
+
+        self.cp = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            {'block_cipher_mode': BlockCipherMode.CBC,
+             'padding_method': PaddingMethod.PKCS5,
+             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
+             'key_role_type': KeyRoleType.BDK})
+
+        self.cp_none = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS, {})
+
+        # Symmetric key object with Cryptographic Parameters
+        # Byte stream edited to add Key Role Type parameter
+        # Based on the KMIP Spec 1.1 Test Cases document
+        # 11.1 page 255 on the pdf version
+        self.key_req_with_crypt_params = BytearrayStream((
+            b'\x42\x00\x2B\x01\x00\x00\x00\x40'
+            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x5F\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b'\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        ))
+
+    def teardown(self):
+        super(TestDigestValue, self).tearDown()
+
+    def test_write_crypto_params(self):
+        ostream = BytearrayStream()
+        self.cp.write(ostream)
+        self.assertEqual(self.key_req_with_crypt_params, ostream)
+
+    def test_read_crypto_params(self):
+        CryptographicParameters.read(self.cp, self.key_req_with_crypt_params)
+
+        self.assertEqual(Tags.BLOCK_CIPHER_MODE.value,
+                         self.cp.block_cipher_mode.tag.value)
+        self.assertEqual(BlockCipherMode.CBC.value,
+                         self.cp.block_cipher_mode.value.value)
+
+        self.assertEqual(Tags.PADDING_METHOD.value,
+                         self.cp.padding_method.tag.value)
+        self.assertEqual(PaddingMethod.PKCS5.value,
+                         self.cp.padding_method.value.value)
+
+        self.assertEqual(Tags.KEY_ROLE_TYPE.value,
+                         self.cp.key_role_type.tag.value)
+        self.assertEqual(KeyRoleType.BDK.value,
+                         self.cp.key_role_type.value.value)
+
+        self.assertEqual(Tags.HASHING_ALGORITHM.value,
+                         self.cp.hashing_algorithm.tag.value)
+        self.assertEqual(HashingAlgorithmEnum.SHA_1.value,
+                         self.cp.hashing_algorithm.value.value)
