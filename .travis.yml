@@ -2,6 +2,7 @@ language: python
 install:
   - pip install tox
   - pip install bandit
+  - pip install codecov
   - pip install coveralls
 script:
   - tox
@@ -13,5 +14,5 @@ env:
   - TOXENV=py34
   - TOXENV=bandit
 after_success:
+  - codecov
   - coveralls
-
