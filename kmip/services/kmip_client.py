@@ -76,7 +76,8 @@ CONFIG_FILE = os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))
 
 class KMIPProxy(KMIP):
 
-    def __init__(self, host=None, port=None, keyfile=None, certfile=None,
+    def __init__(self, host=None, port=None, keyfile=None,
+                 certfile=None,
                  cert_reqs=None, ssl_version=None, ca_certs=None,
                  do_handshake_on_connect=None,
                  suppress_ragged_eofs=None,
@@ -193,7 +194,6 @@ class KMIPProxy(KMIP):
                 self.is_authentication_suite_supported(authentication_suite))
 
     def open(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.logger.debug("KMIPProxy keyfile: {0}".format(self.keyfile))
         self.logger.debug("KMIPProxy certfile: {0}".format(self.certfile))
@@ -209,6 +209,23 @@ class KMIPProxy(KMIP):
         self.logger.debug("KMIPProxy suppress_ragged_eofs: {0}".format(
             self.suppress_ragged_eofs))
 
+        for host in self.host_list:
+            self.host = host
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._create_socket(sock)
+            self.protocol = KMIPProtocol(self.socket)
+            try:
+                self.socket.connect((self.host, self.port))
+            except Exception as e:
+                self.logger.error("An error occurred while connecting to "
+                                  "appliance " + self.host)
+                self.socket.close()
+                self.socket = None
+            else:
+                return
+        raise e
+
+    def _create_socket(self, sock):
         self.socket = ssl.wrap_socket(
             sock,
             keyfile=self.keyfile,
@@ -218,15 +235,7 @@ class KMIPProxy(KMIP):
             ca_certs=self.ca_certs,
             do_handshake_on_connect=self.do_handshake_on_connect,
             suppress_ragged_eofs=self.suppress_ragged_eofs)
-        self.protocol = KMIPProtocol(self.socket)
-
         self.socket.settimeout(self.timeout)
-
-        try:
-            self.socket.connect((self.host, self.port))
-        except socket.timeout as e:
-            self.logger.error("timeout occurred while connecting to appliance")
-            raise e
 
     def __del__(self):
         # Close the socket properly, helpful in case close() is not called.
@@ -881,8 +890,13 @@ class KMIPProxy(KMIP):
                        username, password, timeout):
         conf = ConfigHelper()
 
-        self.host = conf.get_valid_value(
+        # TODO: set this to a host list
+        self.host_list_str = conf.get_valid_value(
             host, self.config, 'host', conf.DEFAULT_HOST)
+
+        self.host_list = self._build_host_list(self.host_list_str)
+
+        self.host = self.host_list[0]
 
         self.port = int(conf.get_valid_value(
             port, self.config, 'port', conf.DEFAULT_PORT))
@@ -922,11 +936,27 @@ class KMIPProxy(KMIP):
         self.password = conf.get_valid_value(
             password, self.config, 'password', conf.DEFAULT_PASSWORD)
 
-        self.timeout = conf.get_valid_value(
-            timeout, self.config, 'timeout', conf.DEFAULT_TIMEOUT)
+        self.timeout = int(conf.get_valid_value(
+            timeout, self.config, 'timeout', conf.DEFAULT_TIMEOUT))
         if self.timeout < 0:
             self.logger.warning(
                 "Negative timeout value specified, "
                 "resetting to safe default of {0} seconds".format(
                     conf.DEFAULT_TIMEOUT))
             self.timeout = conf.DEFAULT_TIMEOUT
+
+    def _build_host_list(self, host_list_str):
+        '''
+        This internal function takes the host string from the config file
+        and turns it into a list
+        :return: LIST host list
+        '''
+
+        host_list = []
+        if isinstance(host_list_str, str):
+            host_list = host_list_str.replace(' ', '').split(',')
+        else:
+            raise TypeError("Unrecognized variable type provided for host "
+                            "list string. 'String' type expected but '" +
+                            str(type(host_list_str)) + "' received")
+        return host_list
