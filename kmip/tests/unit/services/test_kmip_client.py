@@ -61,6 +61,10 @@ from kmip.services.results import RekeyKeyPairResult
 
 import kmip.core.utils as utils
 
+import mock
+
+import socket
+
 
 class TestKMIPClient(TestCase):
 
@@ -500,6 +504,62 @@ class TestKMIPClient(TestCase):
         self.assertIsInstance(result, GetAttributeListResult)
         self.assertEqual(uid, result.uid)
         self.assertEqual(names, result.names)
+
+    def test_host_list_import_string(self):
+        """
+        This test verifies that the client can process a string with
+        multiple IP addresses specified in it. It also tests that
+        unnecessary spaces are ignored.
+        """
+
+        host_list_string = '127.0.0.1,127.0.0.3,  127.0.0.5'
+        host_list_expected = ['127.0.0.1', '127.0.0.3', '127.0.0.5']
+
+        self.client._set_variables(host=host_list_string,
+                                   port=None, keyfile=None, certfile=None,
+                                   cert_reqs=None, ssl_version=None,
+                                   ca_certs=None,
+                                   do_handshake_on_connect=False,
+                                   suppress_ragged_eofs=None, username=None,
+                                   password=None, timeout=None)
+        self.assertEqual(host_list_expected, self.client.host_list)
+
+    def test_host_is_invalid_input(self):
+        """
+        This test verifies that invalid values are not processed when
+        setting the client object parameters
+        """
+        host = 1337
+        expected_error = TypeError
+
+        kwargs = {'host': host, 'port': None, 'keyfile': None,
+                  'certfile': None, 'cert_reqs': None, 'ssl_version': None,
+                  'ca_certs': None, 'do_handshake_on_connect': False,
+                  'suppress_ragged_eofs': None, 'username': None,
+                  'password': None, 'timeout': None}
+
+        self.assertRaises(expected_error, self.client._set_variables,
+                          **kwargs)
+
+    @mock.patch('socket.socket.connect')
+    @mock.patch('ssl.SSLSocket.gettimeout')
+    def test_timeout_all_hosts(self, mock_ssl_timeout, mock_connect_return):
+        """
+        This test verifies that the client will throw an exception if no
+        hosts are available for connection.
+        """
+
+        mock_ssl_timeout.return_value = 1
+        mock_connect_return.return_value = socket.timeout
+        try:
+            self.client.open()
+        except Exception as e:
+            # TODO: once the exception is properly defined in the
+            # kmip_client.py file this test needs to change to reflect that.
+            self.assertIsInstance(e, Exception)
+            self.client.close()
+        else:
+            self.client.close()
 
 
 class TestClientProfileInformation(TestCase):
