@@ -1162,14 +1162,14 @@ class TestIntegration(TestCase):
         result = self._create_symmetric_key(key_name=key_name)
         uid = result.uuid.value
 
-        self.assertEqual(ResultStatus.SUCCESS, result.result_status.enum)
-        self.assertEqual(ObjectType.SYMMETRIC_KEY, result.object_type.enum)
+        self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
+        self.assertEqual(ObjectType.SYMMETRIC_KEY, result.object_type.value)
         self.assertIsInstance(uid, str)
 
         try:
             result = self.client.get_attribute_list(uid)
 
-            self.assertEqual(ResultStatus.SUCCESS, result.result_status.enum)
+            self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
             self.assertIsInstance(result.uid, str)
             self.assertIsInstance(result.names, list)
 
@@ -1187,9 +1187,9 @@ class TestIntegration(TestCase):
 
         finally:
             result = self.client.destroy(uid)
-            self.assertEqual(ResultStatus.SUCCESS, result.result_status.enum)
+            self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
 
             result = self.client.get(uuid=result.uuid.value, credential=None)
 
             self.assertEqual(
-                ResultStatus.OPERATION_FAILED, result.result_status.enum)
+                ResultStatus.OPERATION_FAILED, result.result_status.value)
