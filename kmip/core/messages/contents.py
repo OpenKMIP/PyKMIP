@@ -240,7 +240,7 @@ class BatchErrorContinuationOption(Enumeration):
 
     def __init__(self, value=None):
         super(BatchErrorContinuationOption, self).__init__(
-            BatchErrorContinuationOption, value,
+            enums.BatchErrorContinuationOption, value,
             enums.Tags.BATCH_ERROR_CONTINUATION_OPTION)
 
 
