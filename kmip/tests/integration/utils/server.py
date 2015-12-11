@@ -20,7 +20,7 @@ import sys
 
 from kmip.core.config_helper import ConfigHelper
 
-from kmip.services.kmip_server import KMIPServer
+from kmip.services.server.kmip_server import KMIPServer
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
