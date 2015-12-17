@@ -199,6 +199,15 @@ def build_cli_parser(operation=None):
             help=("Type of the object to register. Supported types include: "
                   "CERTIFICATE, PRIVATE_KEY, PUBLIC_KEY, SYMMETRIC_KEY, "
                   "SECRET_DATA"))
+    elif operation is Operation.DISCOVER_VERSIONS:
+        parser.add_option(
+                "-v",
+                "--protocol-versions",
+                action="store",
+                type="str",
+                default=None,
+                dest="protocol_versions",
+                help=("Protocol versions supported by client. ex. '1.1,1.2 1.3'"))
 
     return parser
 
