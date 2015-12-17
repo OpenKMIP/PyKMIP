@@ -16,6 +16,8 @@
 from kmip.core.enums import Operation
 from kmip.core.enums import ResultStatus
 
+from kmip.core.messages.contents import ProtocolVersion
+
 from kmip.demos import utils
 
 from kmip.services.kmip_client import KMIPProxy
@@ -23,6 +25,7 @@ from kmip.services.kmip_client import KMIPProxy
 import logging
 import os
 import sys
+import re
 
 
 if __name__ == '__main__':
@@ -34,6 +37,13 @@ if __name__ == '__main__':
     password = opts.password
     config = opts.config
 
+    protocol_versions = list()
+    if opts.protocol_versions is not None:
+        for version in re.split(',| ', opts.protocol_versions):
+            mm = re.split('\.', version)
+            protocol_versions.append(ProtocolVersion.create(int(mm[0]),
+                                                            int(mm[1])))
+
     # Build and setup logging
     f_log = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
                          'logconfig.ini')
@@ -44,7 +54,7 @@ if __name__ == '__main__':
     client = KMIPProxy(config=config)
     client.open()
 
-    result = client.discover_versions()
+    result = client.discover_versions(protocol_versions=protocol_versions)
     client.close()
 
     # Display operation results
