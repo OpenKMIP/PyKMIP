@@ -103,10 +103,9 @@ class ProtocolVersion(Struct):
     def __eq__(self, other):
         if isinstance(other, ProtocolVersion):
             if ((self.protocol_version_major ==
-                    other.protocol_version_major)
-                    and
-                    (self.protocol_version_minor ==
-                     other.protocol_version_minor)):
+                 other.protocol_version_major) and
+                (self.protocol_version_minor ==
+                 other.protocol_version_minor)):
                 return True
             else:
                 return False
