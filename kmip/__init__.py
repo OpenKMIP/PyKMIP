@@ -17,6 +17,7 @@ import logging.config
 import os
 import re
 import sys
+import warnings
 
 # Dynamically set __version__
 version_path = os.path.join(os.path.dirname(
@@ -63,3 +64,11 @@ else:
         logging.basicConfig()
 
 __all__ = ['core', 'demos', 'services']
+
+if sys.version_info[:2] == (2, 6):
+    warnings.simplefilter("always")
+    warnings.warn(
+        ("Please use a newer version of Python (2.7.9+ preferred). PyKMIP "
+         "support for Python 2.6 will be abandoned in the future."),
+        PendingDeprecationWarning)
+    warnings.simplefilter("default")
