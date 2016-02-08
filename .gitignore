@@ -2,9 +2,11 @@
 .pydevproject
 *.pyc
 
+.cache/
 .coverage
 .tox/
 ChangeLog
 PyKMIP.egg-info/
 dist/
 htmlcov/
+tags
