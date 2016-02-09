@@ -61,10 +61,10 @@ class LocateRequestPayload(Struct):
         tstream = BytearrayStream(istream.read(self.length))
         if self.is_tag_next(Tags.MAXIMUM_ITEMS, tstream):
             self.maximum_items = LocateRequestPayload.MaximumItems()
-            self.maximum_items.read()
+            self.maximum_items.read(tstream)
         if self.is_tag_next(Tags.STORAGE_STATUS_MASK, tstream):
             self.storage_status_mask = LocateRequestPayload.StorageStatusMask()
-            self.storage_status_mask.read()
+            self.storage_status_mask.read(tstream)
         if self.is_tag_next(Tags.OBJECT_GROUP_MEMBER, tstream):
             self.object_group_member = LocateRequestPayload.ObjectGroupMember()
             self.object_group_member.read(tstream)
@@ -81,6 +81,8 @@ class LocateRequestPayload(Struct):
             self.maximum_items.write(tstream)
         if self.storage_status_mask is not None:
             self.storage_status_mask.write(tstream)
+        if self.object_group_member is not None:
+            self.object_group_member.write(tstream)
         if self.attributes is not None:
             for a in self.attributes:
                 a.write(tstream)
