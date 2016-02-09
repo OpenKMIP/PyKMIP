@@ -43,6 +43,8 @@ class TestNameValue(TestCase):
     def setUp(self):
         super(TestNameValue, self).setUp()
         self.stream = BytearrayStream()
+        self.stringName1 = 'Jenny'
+        self.stringName2 = 'Johnny'
 
     def tearDown(self):
         super(TestNameValue, self).tearDown()
@@ -59,6 +61,65 @@ class TestNameValue(TestCase):
     def test_read_with_padding(self):
         self.skip('Not implemented')
 
+    def test__eq(self):
+        name_val = Name.NameValue(self.stringName1)
+        same_name_val = Name.NameValue(self.stringName1)
+        other_name_val = Name.NameValue(self.stringName2)
+
+        self.assertTrue(name_val == same_name_val)
+        self.assertFalse(name_val == other_name_val)
+        self.assertFalse(name_val == 'invalid')
+
+    def test__str(self):
+        name_val = Name.NameValue(self.stringName1)
+        repr_name = "NameValue(value='{0}')".format(self.stringName1)
+
+        self.assertEqual(self.stringName1, str(name_val))
+        self.assertEqual(repr_name, repr(name_val))
+
+
+class TestNameType(TestCase):
+
+    def setUp(self):
+        super(TestNameType, self).setUp()
+        self.stream = BytearrayStream()
+        self.enum_uri = NameType.URI
+        self.enum_txt = NameType.UNINTERPRETED_TEXT_STRING
+
+    def tearDown(self):
+        super(TestNameType, self).tearDown()
+
+    def test_write_no_padding(self):
+        self.skip('Not implemented')
+
+    def test_write_with_padding(self):
+        self.skip('Not implemented')
+
+    def test_read_no_padding(self):
+        self.skip('Not implemented')
+
+    def test_read_with_padding(self):
+        self.skip('Not implemented')
+
+    def test__eq(self):
+        type_uri = Name.NameType(self.enum_uri)
+        same_type = Name.NameType(self.enum_uri)
+        type_txt = Name.NameType(self.enum_txt)
+
+        self.assertTrue(type_uri == same_type)
+        self.assertFalse(type_uri == type_txt)
+        self.assertFalse(type_uri == 'invalid')
+
+    def test__str(self):
+        type_uri = Name.NameType(self.enum_uri)
+        str_uri = "{0}".format(self.enum_uri)
+        repr_uri = "NameType(value=<{0}: {1}>)".format(
+                self.enum_uri,
+                self.enum_uri.value)
+
+        self.assertEqual(str_uri, str(type_uri))
+        self.assertEqual(repr_uri, repr(type_uri))
+
 
 class TestName(TestCase):
 
@@ -67,7 +128,9 @@ class TestName(TestCase):
         self.stream = BytearrayStream()
         self.badFormatName = 8675309
         self.stringName1 = 'Jenny'
+        self.stringName2 = 'Johnny'
         self.enumNameType = NameType.UNINTERPRETED_TEXT_STRING
+        self.enumNameTypeUri = NameType.URI
 
     def tearDown(self):
         super(TestName, self).tearDown()
@@ -116,6 +179,28 @@ class TestName(TestCase):
         """
         self.assertRaises(TypeError, Name.create, *(self.stringName1,
                                                     self.badFormatName))
+
+    def test__eq(self):
+        name_obj = Name.create(self.stringName1, self.enumNameType)
+        same_name = Name.create(self.stringName1, self.enumNameType)
+        other_name = Name.create(self.stringName2, self.enumNameType)
+        other_type = Name.create(self.stringName1, self.enumNameTypeUri)
+
+        self.assertTrue(name_obj == same_name)
+        self.assertFalse(name_obj == other_name)
+        self.assertFalse(name_obj == other_type)
+        self.assertFalse(name_obj == 'invalid')
+
+    def test__str(self):
+        name_obj = Name.create(self.stringName1, self.enumNameType)
+        repr_name = (
+                "Name(type=NameType(value="
+                "<NameType.UNINTERPRETED_TEXT_STRING: {0}>),"
+                "value=NameValue(value='{1}'))"
+                ).format(self.enumNameType.value, self.stringName1)
+
+        self.assertEqual(self.stringName1, str(name_obj))
+        self.assertEqual(repr_name, repr(name_obj))
 
 
 class TestOperationPolicyName(TestCase):
