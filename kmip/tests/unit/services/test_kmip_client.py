@@ -62,8 +62,9 @@ from kmip.services.results import RekeyKeyPairResult
 import kmip.core.utils as utils
 
 import mock
-
+import os
 import socket
+import ssl
 
 
 class TestKMIPClient(TestCase):
@@ -76,6 +77,16 @@ class TestKMIPClient(TestCase):
         self.secret_factory = SecretFactory()
 
         self.client = KMIPProxy()
+
+        KMIP_PORT = 9090
+        CA_CERTS_PATH = os.path.normpath(os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), '../utils/certs/server.crt'))
+
+        self.mock_client = KMIPProxy(host="IP_ADDR_1, IP_ADDR_2",
+                                     port=KMIP_PORT, ca_certs=CA_CERTS_PATH)
+        self.mock_client.socket = mock.MagicMock()
+        self.mock_client.socket.connect = mock.MagicMock()
+        self.mock_client.socket.close = mock.MagicMock()
 
     def tearDown(self):
         super(TestKMIPClient, self).tearDown()
@@ -541,25 +552,42 @@ class TestKMIPClient(TestCase):
         self.assertRaises(expected_error, self.client._set_variables,
                           **kwargs)
 
-    @mock.patch('socket.socket.connect')
-    @mock.patch('ssl.SSLSocket.gettimeout')
-    def test_timeout_all_hosts(self, mock_ssl_timeout, mock_connect_return):
+    @mock.patch.object(KMIPProxy, '_create_socket')
+    def test_open_server_conn_failover_fail(self, mock_create_socket):
         """
-        This test verifies that the client will throw an exception if no
-        hosts are available for connection.
+        This test verifies that the KMIP client throws an exception if no
+        servers are available for connection
         """
+        mock_create_socket.return_value = mock.MagicMock()
 
-        mock_ssl_timeout.return_value = 1
-        mock_connect_return.return_value = socket.timeout
-        try:
-            self.client.open()
-        except Exception as e:
-            # TODO: once the exception is properly defined in the
-            # kmip_client.py file this test needs to change to reflect that.
-            self.assertIsInstance(e, Exception)
-            self.client.close()
-        else:
-            self.client.close()
+        # Assumes both IP addresses fail connection attempts
+        self.mock_client.socket.connect.side_effect = [Exception, Exception]
+
+        self.assertRaises(Exception, self.mock_client.open)
+
+    @mock.patch.object(KMIPProxy, '_create_socket')
+    def test_open_server_conn_failover_succeed(self, mock_create_socket):
+        """
+        This test verifies that the KMIP client can setup a connection if at
+        least one connection is established
+        """
+        mock_create_socket.return_value = mock.MagicMock()
+
+        # Assumes IP_ADDR_1 is a bad address and IP_ADDR_2 is a good address
+        self.mock_client.socket.connect.side_effect = [Exception, None]
+
+        self.mock_client.open()
+
+        self.assertEqual('IP_ADDR_2', self.mock_client.host)
+
+    def test_socket_ssl_wrap(self):
+        """
+        This test tests that the KMIP socket is successfully wrapped into an
+        ssl socket
+        """
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client._create_socket(sock)
+        self.assertEqual(ssl.SSLSocket, type(self.client.socket))
 
 
 class TestClientProfileInformation(TestCase):

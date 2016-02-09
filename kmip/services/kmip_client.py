@@ -220,9 +220,10 @@ class KMIPProxy(KMIP):
                 self.logger.error("An error occurred while connecting to "
                                   "appliance " + self.host)
                 self.socket.close()
-                self.socket = None
             else:
                 return
+
+        self.socket = None
         raise e
 
     def _create_socket(self, sock):
