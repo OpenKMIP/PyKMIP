@@ -205,17 +205,73 @@ class CryptographicParameters(Struct):
             super(CryptographicParameters.BlockCipherMode, self).__init__(
                 enums.BlockCipherMode, value, Tags.BLOCK_CIPHER_MODE)
 
-    class PaddingMethod(Enumeration):
+        def __eq__(self, other):
+            if isinstance(other, CryptographicParameters.BlockCipherMode):
+                if self.tag.value != other.tag.value:
+                    return False
+                elif self.type.value != other.type.value:
+                    return False
+                elif self.value.value != other.value.value:
+                    return False
+                else:
+                    return True
+            else:
+                NotImplemented
 
+        def __ne__(self, other):
+            if isinstance(other, CryptographicParameters.BlockCipherMode):
+                return not (self == other)
+            else:
+                return NotImplemented
+
+    class PaddingMethod(Enumeration):
         def __init__(self, value=None):
             super(CryptographicParameters.PaddingMethod, self).__init__(
                 enums.PaddingMethod, value, Tags.PADDING_METHOD)
+
+        def __eq__(self, other):
+            if isinstance(other, CryptographicParameters.PaddingMethod):
+                if self.tag.value != other.tag.value:
+                    return False
+                elif self.type.value != other.type.value:
+                    return False
+                elif self.value.value != other.value.value:
+                    return False
+                else:
+                    return True
+            else:
+                NotImplemented
+
+        def __ne__(self, other):
+            if isinstance(other, CryptographicParameters.PaddingMethod):
+                return not (self == other)
+            else:
+                return NotImplemented
 
     class KeyRoleType(Enumeration):
 
         def __init__(self, value=None):
             super(CryptographicParameters.KeyRoleType, self).__init__(
                 enums.KeyRoleType, value, Tags.KEY_ROLE_TYPE)
+
+        def __eq__(self, other):
+            if isinstance(other, CryptographicParameters.KeyRoleType):
+                if self.tag.value != other.tag.value:
+                    return False
+                elif self.type.value != other.type.value:
+                    return False
+                elif self.value.value != other.value.value:
+                    return False
+                else:
+                    return True
+            else:
+                NotImplemented
+
+        def __ne__(self, other):
+            if isinstance(other, CryptographicParameters.KeyRoleType):
+                return not (self == other)
+            else:
+                return NotImplemented
 
     def __init__(self,
                  block_cipher_mode=None,
@@ -274,8 +330,49 @@ class CryptographicParameters(Struct):
         self.__validate()
 
     def __validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+        if self.block_cipher_mode is not None:
+            if not isinstance(self.block_cipher_mode, self.BlockCipherMode):
+                msg = "Invalid block cipher mode"
+                msg += "; expected {0}, received {1}".format(
+                    self.BlockCipherMode, self.block_cipher_mode)
+                raise TypeError(msg)
+        if self.padding_method is not None:
+            if not isinstance(self.padding_method, self.PaddingMethod):
+                msg = "Invalid padding method"
+                msg += "; expected {0}, received {1}".format(
+                    self.PaddingMethod, self.padding_method)
+                raise TypeError(msg)
+        if self.hashing_algorithm is not None:
+            if not isinstance(self.hashing_algorithm, HashingAlgorithm):
+                msg = "Invalid hashing algorithm"
+                msg += "; expected {0}, received {1}".format(
+                    HashingAlgorithm, self.hashing_algorithm)
+                raise TypeError(msg)
+        if self.key_role_type is not None:
+            if not isinstance(self.key_role_type, self.KeyRoleType):
+                msg = "Invalid key role type"
+                msg += "; expected {0}, received {1}".format(
+                    self.KeyRoleType, self.key_role_type)
+                raise TypeError(msg)
+
+    def __eq__(self, other):
+        if isinstance(other, CryptographicParameters):
+            if self.block_cipher_mode != other.block_cipher_mode:
+                return False
+            elif self.key_role_type != other.key_role_type:
+                return False
+            elif self.hashing_algorithm != other.hashing_algorithm:
+                return False
+            elif self.padding_method != other.padding_method:
+                return False
+            else:
+                return True
+
+    def __ne__(self, other):
+        if isinstance(other, CryptographicParameters):
+            return not self == other
+        else:
+            return NotImplemented
 
 
 class CertificateType(Enumeration):
