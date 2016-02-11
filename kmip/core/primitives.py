@@ -977,7 +977,7 @@ class DateTime(LongInteger):
         return "DateTime(value={0}, tag={1})".format(self.value, self.tag)
 
     def __str__(self):
-        return time.ctime(self.value)
+        return time.asctime(time.gmtime(self.value))
 
 
 class Interval(Base):

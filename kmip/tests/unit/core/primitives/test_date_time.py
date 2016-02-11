@@ -14,7 +14,6 @@
 # under the License.
 
 import testtools
-import time
 
 from kmip.core import primitives
 from kmip.core import utils
@@ -90,8 +89,7 @@ class TestDateTime(testtools.TestCase):
         Test that the string representation of a DateTime is formatted
         properly.
         """
-        t = (2015, 8, 11, 9, 18, 55, 1, 223, 1)
-        s = "Tue Aug 11 09:18:55 2015"
+        expected = 'Tue Aug 11 13:18:55 2015'
+        date_time = primitives.DateTime(1439299135)
 
-        date_time = primitives.DateTime(int(time.mktime(t)))
-        self.assertEqual(s, str(date_time))
+        self.assertEqual(expected, str(date_time))
