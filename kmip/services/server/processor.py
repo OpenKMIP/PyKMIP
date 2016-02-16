@@ -33,6 +33,8 @@ from kmip.core.messages.payloads.get import GetResponsePayload
 from kmip.core.messages.payloads.destroy import DestroyResponsePayload
 from kmip.core.messages.payloads.register import RegisterResponsePayload
 from kmip.core.messages.payloads.locate import LocateResponsePayload
+from kmip.core.messages.payloads.discover_versions import \
+    DiscoverVersionsResponsePayload
 
 from kmip.core.enums import Operation
 from kmip.core.enums import ResultStatus as RS
@@ -173,7 +175,10 @@ class Processor(object):
             return self._process_register_request(payload)
         elif op is Operation.LOCATE:
             return self._process_locate_request(payload)
+        elif op is Operation.DISCOVER_VERSIONS:
+            return self._process_discover_versions_request(payload)
         else:
+            self.logger.debug("Process operation: Not implemented")
             raise NotImplementedError()
 
     def _process_create_request(self, payload):
@@ -274,5 +279,21 @@ class Processor(object):
         uuids = result.uuids
 
         resp_pl = LocateResponsePayload(unique_identifiers=uuids)
+
+        return (result_status, result_reason, result_message, resp_pl)
+
+    def _process_discover_versions_request(self, payload):
+        protocol_versions = payload.protocol_versions
+
+        result = self._handler.discover_versions(
+                protocol_versions=protocol_versions)
+
+        result_status = result.result_status
+        result_reason = result.result_reason
+        result_protocol_versions = result.protocol_versions
+        result_message = result.result_message
+
+        resp_pl = DiscoverVersionsResponsePayload(
+                protocol_versions=result_protocol_versions)
 
         return (result_status, result_reason, result_message, resp_pl)
