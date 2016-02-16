@@ -33,6 +33,49 @@ def attribute_append_factory(index_attribute):
     return attribute_append
 
 
+class UsageMaskType(types.TypeDecorator):
+    """
+    Converts a list of enums.CryptographicUsageMask Enums in an integer
+    bitmask. This allows the database to only store an integer instead of a
+    list of enumbs. This also does the reverse of converting an integer bit
+    mask into a list enums.CryptographicUsageMask Enums.
+    """
+
+    impl = types.Integer
+
+    def process_bind_param(self, value, dialect):
+        """
+        Returns the integer value of the usage mask bitmask. This value is
+        stored in the database.
+
+        Args:
+            value(list<enums.CryptographicUsageMask>): list of enums in the
+            usage mask
+            dialect(string): SQL dialect
+        """
+        bitmask = 0x00
+        for e in value:
+            bitmask = bitmask | e.value
+        return bitmask
+
+    def process_result_value(self, value, dialect):
+        """
+        Returns a new list of enums.CryptographicUsageMask Enums. This converts
+        the integer value into the list of enums.
+
+        Args:
+            value(int): The integer value stored in the database that is used
+                to create the list of enums.CryptographicUsageMask Enums.
+            dialect(string): SQL dialect
+        """
+        masks = list()
+        if value:
+            for e in enums.CryptographicUsageMask:
+                if e.value & value:
+                    masks.append(e)
+        return masks
+
+
 class EnumType(types.TypeDecorator):
     """
     Converts a Python enum to an integer before storing it in the database.

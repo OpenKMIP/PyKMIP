@@ -14,7 +14,7 @@
 # under the License.
 
 from abc import abstractmethod
-from sqlalchemy import Column, event, ForeignKey, Integer, VARCHAR
+from sqlalchemy import Column, event, ForeignKey, Integer, VARBINARY
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
@@ -46,7 +46,7 @@ class ManagedObject(sql.Base):
     __tablename__ = 'managed_objects'
     unique_identifier = Column('uid', Integer, primary_key=True)
     _object_type = Column('object_type', sql.EnumType(enums.ObjectType))
-    value = Column('value', VARCHAR(1024))
+    value = Column('value', VARBINARY(1024))
     name_index = Column(Integer, default=0)
     _names = relationship('ManagedObjectName', back_populates='mo',
                           cascade='all, delete-orphan')
@@ -142,6 +142,16 @@ class CryptographicObject(ManagedObject):
             describing how the CryptographicObject will be used.
     """
 
+    __tablename__ = 'crypto_objects'
+    unique_identifier = Column('uid', Integer,
+                               ForeignKey('managed_objects.uid'),
+                               primary_key=True)
+    cryptographic_usage_masks = Column('cryptographic_usage_mask',
+                                       sql.UsageMaskType)
+    __mapper_args__ = {
+        'polymorphic_identity': 0x80000001
+    }
+
     @abstractmethod
     def __init__(self):
         """
@@ -188,6 +198,20 @@ class Key(CryptographicObject):
             the key value.
     """
 
+    __tablename__ = 'keys'
+    unique_identifier = Column('uid', Integer,
+                               ForeignKey('crypto_objects.uid'),
+                               primary_key=True)
+    cryptographic_algorithm = Column(
+        'cryptographic_algorithm', sql.EnumType(enums.CryptographicAlgorithm))
+    cryptographic_length = Column('cryptographic_length', Integer)
+    key_format_type = Column(
+        'key_format_type', sql.EnumType(enums.KeyFormatType))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 0x80000002
+    }
+
     @abstractmethod
     def __init__(self):
         """
@@ -226,6 +250,15 @@ class SymmetricKey(Key):
         names: The string names of the SymmetricKey.
     """
 
+    __tablename__ = 'symmetric_keys'
+    unique_identifier = Column('uid', Integer,
+                               ForeignKey('keys.uid'),
+                               primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': enums.ObjectType.SYMMETRIC_KEY
+    }
+
     def __init__(self, algorithm, length, value, masks=None,
                  name='Symmetric Key'):
         """
@@ -252,9 +285,7 @@ class SymmetricKey(Key):
         self.names = [name]
 
         if masks:
-            self.cryptographic_usage_masks = masks
-        else:
-            self.cryptographic_usage_masks = list()
+            self.cryptographic_usage_masks.extend(masks)
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -282,8 +313,6 @@ class SymmetricKey(Key):
                             "enumeration")
         elif not isinstance(self.cryptographic_length, six.integer_types):
             raise TypeError("key length must be an integer")
-        elif not isinstance(self.cryptographic_usage_masks, list):
-            raise TypeError("key usage masks must be a list")
 
         mask_count = len(self.cryptographic_usage_masks)
         for i in range(mask_count):
@@ -335,6 +364,10 @@ class SymmetricKey(Key):
             return not (self == other)
         else:
             return NotImplemented
+
+
+event.listen(SymmetricKey._names, 'append',
+             sql.attribute_append_factory("name_index"), retval=False)
 
 
 class PublicKey(Key):
@@ -389,8 +422,6 @@ class PublicKey(Key):
 
         if masks:
             self.cryptographic_usage_masks = masks
-        else:
-            self.cryptographic_usage_masks = list()
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -422,8 +453,6 @@ class PublicKey(Key):
         elif self.key_format_type not in self._valid_formats:
             raise ValueError("key format type must be one of {0}".format(
                 self._valid_formats))
-        elif not isinstance(self.cryptographic_usage_masks, list):
-            raise TypeError("key usage masks must be a list")
 
         # TODO (peter-hamilton) Verify that the key bytes match the key format
 
@@ -529,8 +558,6 @@ class PrivateKey(Key):
 
         if masks:
             self.cryptographic_usage_masks = masks
-        else:
-            self.cryptographic_usage_masks = list()
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -562,8 +589,6 @@ class PrivateKey(Key):
         elif self.key_format_type not in self._valid_formats:
             raise ValueError("key format type must be one of {0}".format(
                 self._valid_formats))
-        elif not isinstance(self.cryptographic_usage_masks, list):
-            raise TypeError("key usage masks must be a list")
 
         # TODO (peter-hamilton) Verify that the key bytes match the key format
 
@@ -658,8 +683,6 @@ class Certificate(CryptographicObject):
 
         if masks:
             self.cryptographic_usage_masks = masks
-        else:
-            self.cryptographic_usage_masks = list()
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -687,8 +710,6 @@ class Certificate(CryptographicObject):
                             enums.CertificateTypeEnum):
             raise TypeError("certificate type must be a CertificateTypeEnum "
                             "enumeration")
-        elif not isinstance(self.cryptographic_usage_masks, list):
-            raise TypeError("certificate usage masks must be a list")
 
         mask_count = len(self.cryptographic_usage_masks)
         for i in range(mask_count):
@@ -808,8 +829,6 @@ class SecretData(CryptographicObject):
 
         if masks:
             self.cryptographic_usage_masks = masks
-        else:
-            self.cryptographic_usage_masks = list()
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -831,8 +850,6 @@ class SecretData(CryptographicObject):
         elif not isinstance(self.data_type, enums.SecretDataType):
             raise TypeError("secret data type must be a SecretDataType "
                             "enumeration")
-        elif not isinstance(self.cryptographic_usage_masks, list):
-            raise TypeError("secret data usage masks must be a list")
 
         mask_count = len(self.cryptographic_usage_masks)
         for i in range(mask_count):

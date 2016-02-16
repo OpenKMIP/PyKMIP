@@ -17,7 +17,10 @@ import binascii
 import testtools
 
 from kmip.core import enums
-from kmip.pie import objects
+from kmip.pie import sqltypes
+from kmip.pie.objects import ManagedObject, SymmetricKey
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 class TestSymmetricKey(testtools.TestCase):
@@ -44,6 +47,8 @@ class TestSymmetricKey(testtools.TestCase):
             b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
             b'\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E'
             b'\x1F')
+        self.engine = create_engine('sqlite:///:memory:', echo=True)
+        sqltypes.Base.metadata.create_all(self.engine)
 
     def tearDown(self):
         super(TestSymmetricKey, self).tearDown()
@@ -52,7 +57,7 @@ class TestSymmetricKey(testtools.TestCase):
         """
         Test that a SymmetricKey object can be instantiated.
         """
-        key = objects.SymmetricKey(
+        key = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
 
         self.assertEqual(key.cryptographic_algorithm,
@@ -66,7 +71,7 @@ class TestSymmetricKey(testtools.TestCase):
         """
         Test that a SymmetricKey object can be instantiated with all arguments.
         """
-        key = objects.SymmetricKey(
+        key = SymmetricKey(
             enums.CryptographicAlgorithm.AES,
             128,
             self.bytes_128a,
@@ -88,7 +93,7 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the object type can be retrieved from the SymmetricKey.
         """
         expected = enums.ObjectType.SYMMETRIC_KEY
-        key = objects.SymmetricKey(
+        key = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         observed = key.object_type
 
@@ -101,7 +106,7 @@ class TestSymmetricKey(testtools.TestCase):
         """
         args = ('invalid', 128, self.bytes_128a)
 
-        self.assertRaises(TypeError, objects.SymmetricKey, *args)
+        self.assertRaises(TypeError, SymmetricKey, *args)
 
     def test_validate_on_invalid_length(self):
         """
@@ -110,7 +115,7 @@ class TestSymmetricKey(testtools.TestCase):
         """
         args = (enums.CryptographicAlgorithm.AES, 'invalid', self.bytes_128a)
 
-        self.assertRaises(TypeError, objects.SymmetricKey, *args)
+        self.assertRaises(TypeError, SymmetricKey, *args)
 
     def test_validate_on_invalid_value(self):
         """
@@ -119,7 +124,7 @@ class TestSymmetricKey(testtools.TestCase):
         """
         args = (enums.CryptographicAlgorithm.AES, 128, 0)
 
-        self.assertRaises(TypeError, objects.SymmetricKey, *args)
+        self.assertRaises(TypeError, SymmetricKey, *args)
 
     def test_validate_on_invalid_masks(self):
         """
@@ -129,7 +134,7 @@ class TestSymmetricKey(testtools.TestCase):
         args = (enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         kwargs = {'masks': 'invalid'}
 
-        self.assertRaises(TypeError, objects.SymmetricKey, *args, **kwargs)
+        self.assertRaises(TypeError, SymmetricKey, *args, **kwargs)
 
     def test_validate_on_invalid_mask(self):
         """
@@ -139,7 +144,7 @@ class TestSymmetricKey(testtools.TestCase):
         args = (enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         kwargs = {'masks': ['invalid']}
 
-        self.assertRaises(TypeError, objects.SymmetricKey, *args, **kwargs)
+        self.assertRaises(TypeError, SymmetricKey, *args, **kwargs)
 
     def test_validate_on_invalid_name(self):
         """
@@ -149,7 +154,7 @@ class TestSymmetricKey(testtools.TestCase):
         args = (enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         kwargs = {'name': 0}
 
-        self.assertRaises(TypeError, objects.SymmetricKey, *args, **kwargs)
+        self.assertRaises(TypeError, SymmetricKey, *args, **kwargs)
 
     def test_validate_on_invalid_length_value(self):
         """
@@ -158,7 +163,7 @@ class TestSymmetricKey(testtools.TestCase):
         """
         args = (enums.CryptographicAlgorithm.AES, 256, self.bytes_128a)
 
-        self.assertRaises(ValueError, objects.SymmetricKey, *args)
+        self.assertRaises(ValueError, SymmetricKey, *args)
 
     def test_validate_on_invalid_value_length(self):
         """
@@ -167,13 +172,13 @@ class TestSymmetricKey(testtools.TestCase):
         """
         args = (enums.CryptographicAlgorithm.AES, 128, self.bytes_256a)
 
-        self.assertRaises(ValueError, objects.SymmetricKey, *args)
+        self.assertRaises(ValueError, SymmetricKey, *args)
 
     def test_repr(self):
         """
         Test that repr can be applied to a SymmetricKey.
         """
-        key = objects.SymmetricKey(
+        key = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
 
         args = "algorithm={0}, length={1}, value={2}".format(
@@ -188,7 +193,7 @@ class TestSymmetricKey(testtools.TestCase):
         """
         Test that str can be applied to a SymmetricKey.
         """
-        key = objects.SymmetricKey(
+        key = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         expected = str(binascii.hexlify(self.bytes_128a))
         observed = str(key)
@@ -200,9 +205,9 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         SymmetricKey objects with the same data.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = objects.SymmetricKey(
+        b = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
 
         self.assertTrue(a == b)
@@ -213,9 +218,9 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SymmetricKey objects with different data.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = objects.SymmetricKey(
+        b = SymmetricKey(
             enums.CryptographicAlgorithm.RSA, 128, self.bytes_128a)
 
         self.assertFalse(a == b)
@@ -226,9 +231,9 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SymmetricKey objects with different data.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = objects.SymmetricKey(
+        b = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 256, self.bytes_256a)
         b.value = self.bytes_128a
 
@@ -240,9 +245,9 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SymmetricKey objects with different data.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = objects.SymmetricKey(
+        b = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128b)
 
         self.assertFalse(a == b)
@@ -253,7 +258,7 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the equality operator returns False when comparing a
         SymmetricKey object to a non-SymmetricKey object.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         b = "invalid"
 
@@ -265,9 +270,9 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the inequality operator returns False when comparing
         two SymmetricKey objects with the same internal data.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = objects.SymmetricKey(
+        b = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
 
         self.assertFalse(a != b)
@@ -278,9 +283,9 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SymmetricKey objects with different data.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = objects.SymmetricKey(
+        b = SymmetricKey(
             enums.CryptographicAlgorithm.RSA, 128, self.bytes_128a)
 
         self.assertTrue(a != b)
@@ -291,9 +296,9 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SymmetricKey objects with different data.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = objects.SymmetricKey(
+        b = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 256, self.bytes_256a)
 
         self.assertTrue(a != b)
@@ -304,9 +309,9 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SymmetricKey objects with different data.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
-        b = objects.SymmetricKey(
+        b = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128b)
 
         self.assertTrue(a != b)
@@ -317,9 +322,295 @@ class TestSymmetricKey(testtools.TestCase):
         Test that the equality operator returns True when comparing a
         SymmetricKey object to a non-SymmetricKey object.
         """
-        a = objects.SymmetricKey(
+        a = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_save(self):
+        """
+        Test that the object can be saved using SQLAlchemy. This will add it to
+        the database, verify that no exceptions are thrown, and check that its
+        unique identifier was set.
+        """
+        key = SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        session.add(key)
+        session.commit()
+        self.assertIsNotNone(key.unique_identifier)
+
+    def test_get(self):
+        """
+        Test that the object can be saved and then retrieved using SQLAlchemy.
+        This adds is to the database and then retrieves it by ID and verifies
+        some of the attributes.
+        """
+        test_name = 'bowser'
+        masks = [enums.CryptographicUsageMask.ENCRYPT,
+                 enums.CryptographicUsageMask.DECRYPT]
+        key = SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a,
+            masks=masks,
+            name=test_name)
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        session.add(key)
+        session.commit()
+
+        session = Session()
+        get_obj = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        session.commit()
+        self.assertEqual(1, len(get_obj.names))
+        self.assertEqual([test_name], get_obj.names)
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, get_obj.object_type)
+        self.assertEqual(self.bytes_128a, get_obj.value)
+        self.assertEqual(enums.CryptographicAlgorithm.AES,
+                         get_obj.cryptographic_algorithm)
+        self.assertEqual(128, get_obj.cryptographic_length)
+        self.assertEqual(enums.KeyFormatType.RAW, get_obj.key_format_type)
+        self.assertEqual(masks, get_obj.cryptographic_usage_masks)
+
+    def test_add_multiple_names(self):
+        """
+        Test that multiple names can be added to a managed object. This
+        verifies a few properties. First this verifies that names can be added
+        using simple strings. It also verifies that the index for each
+        subsequent string is set accordingly. Finally this tests that the names
+        can be saved and retrieved from the database.
+        """
+        expected_names = ['bowser', 'frumpy', 'big fat cat']
+        key = SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a,
+            name=expected_names[0])
+        key.names.append(expected_names[1])
+        key.names.append(expected_names[2])
+        self.assertEquals(3, key.name_index)
+        expected_mo_names = list()
+        for i, name in enumerate(expected_names):
+            expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
+        self.assertEquals(expected_mo_names, key._names)
+
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        session.add(key)
+        session.commit()
+
+        session = Session()
+        get_obj = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        session.commit()
+        self.assertEquals(expected_mo_names, get_obj._names)
+
+    def test_remove_name(self):
+        """
+        Tests that a name can be removed from the list of names. This will
+        verify that the list of names is correct. It will verify that updating
+        this object removes the name from the database.
+        """
+        names = ['bowser', 'frumpy', 'big fat cat']
+        remove_index = 1
+        key = SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a,
+            name=names[0])
+        key.names.append(names[1])
+        key.names.append(names[2])
+        key.names.pop(remove_index)
+        self.assertEquals(3, key.name_index)
+
+        expected_names = list()
+        expected_mo_names = list()
+        for i, name in enumerate(names):
+            if i != remove_index:
+                expected_names.append(name)
+                expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
+        self.assertEquals(expected_names, key.names)
+        self.assertEquals(expected_mo_names, key._names)
+
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        session.add(key)
+        session.commit()
+
+        session = Session()
+        get_obj = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        session.commit()
+        self.assertEquals(expected_names, get_obj.names)
+        self.assertEquals(expected_mo_names, get_obj._names)
+
+    def test_remove_and_add_name(self):
+        """
+        Tests that names can be removed from the list of names and more added.
+        This will verify that the list of names is correct. It will verify that
+        updating this object removes the name from the database. It will verify
+        that the indices for the removed names are not reused.
+        """
+        names = ['bowser', 'frumpy', 'big fat cat']
+        key = SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a,
+            name=names[0])
+        key.names.append(names[1])
+        key.names.append(names[2])
+        key.names.pop()
+        key.names.pop()
+        key.names.append('dog')
+        self.assertEquals(4, key.name_index)
+
+        expected_names = ['bowser', 'dog']
+        expected_mo_names = list()
+        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[0],
+                                                            0))
+        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[1],
+                                                            3))
+        self.assertEquals(expected_names, key.names)
+        self.assertEquals(expected_mo_names, key._names)
+
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        session.add(key)
+        session.commit()
+
+        session = Session()
+        get_obj = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        session.commit()
+        self.assertEquals(expected_names, get_obj.names)
+        self.assertEquals(expected_mo_names, get_obj._names)
+
+    def test_update_with_add_name(self):
+        """
+        Tests that an OpaqueObject already stored in the database can be
+        updated. This will store an OpaqueObject in the database. It will add a
+        name to it in one session, and then retrieve it in another session to
+        verify that it has all of the correct names.
+
+        This test and the subsequent test_udpate_* methods are different than
+        the name tests above because these are updating objects already stored
+        in the database. This tests will simulate what happens when the KMIP
+        client calls an add attribute method.
+        """
+        first_name = 'bowser'
+        key = SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a,
+            name=first_name)
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        session.add(key)
+        session.commit()
+
+        added_name = 'frumpy'
+        expected_names = [first_name, added_name]
+        expected_mo_names = list()
+        for i, name in enumerate(expected_names):
+            expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
+
+        session = Session()
+        update_key = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        update_key.names.append(added_name)
+        session.commit()
+
+        session = Session()
+        get_obj = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        session.commit()
+        self.assertEquals(expected_names, get_obj.names)
+        self.assertEquals(expected_mo_names, get_obj._names)
+
+    def test_update_with_remove_name(self):
+        """
+        Tests that an OpaqueObject already stored in the database can be
+        updated. This will store an OpaqueObject in the database. It will
+        remove a name from it in one session, and then retrieve it in another
+        session to verify that it has all of the correct names.
+        """
+        names = ['bowser', 'frumpy', 'big fat cat']
+        remove_index = 1
+        key = SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a,
+            name=names[0])
+        key.names.append(names[1])
+        key.names.append(names[2])
+
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        session.add(key)
+        session.commit()
+
+        expected_names = list()
+        expected_mo_names = list()
+        for i, name in enumerate(names):
+            if i != remove_index:
+                expected_names.append(name)
+                expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
+
+        session = Session()
+        update_key = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        update_key.names.pop(remove_index)
+        session.commit()
+
+        session = Session()
+        get_obj = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        session.commit()
+        self.assertEquals(expected_names, get_obj.names)
+        self.assertEquals(expected_mo_names, get_obj._names)
+
+    def test_update_with_remove_and_add_name(self):
+        """
+        Tests that an OpaqueObject already stored in the database can be
+        updated. This will store an OpaqueObject in the database. It will
+        remove a name and add another one to it in one session, and then
+        retrieve it in another session to verify that it has all of the correct
+        names. This simulates multiple operation being sent for the same
+        object.
+        """
+        names = ['bowser', 'frumpy', 'big fat cat']
+        key = SymmetricKey(
+            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a,
+            name=names[0])
+        key.names.append(names[1])
+        key.names.append(names[2])
+
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        session.add(key)
+        session.commit()
+
+        session = Session()
+        update_key = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        update_key.names.pop()
+        update_key.names.pop()
+        update_key.names.append('dog')
+        session.commit()
+
+        expected_names = ['bowser', 'dog']
+        expected_mo_names = list()
+        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[0],
+                                                            0))
+        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[1],
+                                                            3))
+
+        session = Session()
+        get_obj = session.query(SymmetricKey).filter(
+            ManagedObject.unique_identifier == key.unique_identifier
+            ).one()
+        session.commit()
+        self.assertEquals(expected_names, get_obj.names)
+        self.assertEquals(expected_mo_names, get_obj._names)
