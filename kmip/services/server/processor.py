@@ -260,7 +260,7 @@ class Processor(object):
 
     def _process_locate_request(self, payload):
         max_items = payload.maximum_items
-        storage_mask = payload.status_storage_mask
+        storage_mask = payload.storage_status_mask
         objgrp_member = payload.object_group_member
         attributes = payload.attributes
 
