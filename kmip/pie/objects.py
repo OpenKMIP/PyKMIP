@@ -13,17 +13,19 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from abc import ABCMeta
 from abc import abstractmethod
+from sqlalchemy import Column, event, ForeignKey, Integer, VARCHAR
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm import relationship
 
 import binascii
 import six
 
 from kmip.core import enums
+from kmip.pie import sqltypes as sql
 
 
-@six.add_metaclass(ABCMeta)
-class ManagedObject:
+class ManagedObject(sql.Base):
     """
     The abstract base class of the simplified KMIP object hierarchy.
 
@@ -41,6 +43,20 @@ class ManagedObject:
         object_type: An enumeration associated with the type of ManagedObject.
     """
 
+    __tablename__ = 'managed_objects'
+    unique_identifier = Column('uid', Integer, primary_key=True)
+    _object_type = Column('object_type', sql.EnumType(enums.ObjectType))
+    value = Column('value', VARCHAR(1024))
+    name_index = Column(Integer, default=0)
+    _names = relationship('ManagedObjectName', back_populates='mo',
+                          cascade='all, delete-orphan')
+    names = association_proxy('_names', 'name')
+
+    __mapper_args__ = {
+        'polymorphic_identity': 0x00000000,
+        'polymorphic_on': _object_type
+    }
+
     @abstractmethod
     def __init__(self):
         """
@@ -49,6 +65,7 @@ class ManagedObject:
         self.value = None
 
         self.unique_identifier = None
+        self.name_index = 0
         self.names = list()
         self._object_type = None
 
@@ -873,6 +890,15 @@ class OpaqueObject(ManagedObject):
         opaque_type: The type of the opaque value.
     """
 
+    __tablename__ = 'opaque_objects'
+    unique_identifier = Column('uid', Integer,
+                               ForeignKey('managed_objects.uid'),
+                               primary_key=True)
+    opaque_type = Column('opaque_type', sql.EnumType(enums.OpaqueDataType))
+    __mapper_args__ = {
+        'polymorphic_identity': enums.ObjectType.OPAQUE_DATA
+    }
+
     def __init__(self, value, opaque_type, name='Opaque Object'):
         """
         Create a OpaqueObject.
@@ -889,7 +915,7 @@ class OpaqueObject(ManagedObject):
 
         self.value = value
         self.opaque_type = opaque_type
-        self.names = [name]
+        self.names.append(name)
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -950,3 +976,7 @@ class OpaqueObject(ManagedObject):
             return not (self == other)
         else:
             return NotImplemented
+
+
+event.listen(OpaqueObject._names, 'append',
+             sql.attribute_append_factory("name_index"), retval=False)
