@@ -14,6 +14,7 @@
 # under the License.
 
 from testtools import TestCase
+from time import time
 
 from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
@@ -31,10 +32,14 @@ from kmip.core.enums import ObjectType as ObjectTypeEnum
 from kmip.core.enums import ResultReason
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import NameType
+from kmip.core.enums import StorageStatusMask
 
 from kmip.core.factories.attributes import AttributeFactory
 
 from kmip.core.messages.contents import KeyCompressionType
+
+from kmip.core.messages.payloads.locate import LocateRequestPayload
+
 from kmip.core.misc import KeyFormatType
 
 from kmip.core.objects import KeyBlock
@@ -464,9 +469,10 @@ class TestKMIPServer(TestCase):
                              res.result_reason.value,
                              'result reason did not match')
 
-    def _create(self):
+    def _create(self, object_name='TESTNAME', custom_attributes=[]):
         obj_type = ObjectType(ObjectTypeEnum.SYMMETRIC_KEY)
-        attributes = self._get_attrs()
+        attributes = self._get_attrs(name_attr_value=object_name)
+        attributes += custom_attributes
         template_attribute = TemplateAttribute(attributes=attributes)
         res = self.kmip.create(obj_type, template_attribute)
         self.assertNotEqual(None, res, 'result is None')
@@ -487,7 +493,7 @@ class TestKMIPServer(TestCase):
                              crypto_length, usage)
         return SymmetricKey(key_block)
 
-    def _get_attrs(self):
+    def _get_attrs(self, name_attr_value='TESTNAME'):
         attr_factory = AttributeFactory()
         algorithm = self._get_alg_attr(self.algorithm_name)
         length = self._get_length_attr(self.key_length)
@@ -496,7 +502,7 @@ class TestKMIPServer(TestCase):
                       CryptoUsageMaskEnum.DECRYPT]
         usage_mask = attr_factory.create_attribute(attribute_type,
                                                    mask_flags)
-        name_value = Name.NameValue(value='TESTNAME')
+        name_value = Name.NameValue(value=name_attr_value)
         name_type = Name.NameType(value=NameType.UNINTERPRETED_TEXT_STRING)
         value = Name.create(name_value, name_type)
         nameattr = attr_factory.create_attribute(AttributeType.NAME, value)
@@ -524,19 +530,90 @@ class TestKMIPServer(TestCase):
                     attr_expected.attribute_value.value
         return False
 
-    def test_locate(self):
-        self._create()
+    def _test_locate(self, maximum_items=None, storage_status_mask=None,
+                     object_group_member=None, attributes=None,
+                     name='TESTNAME'):
 
-        name_value = Name.NameValue(value='TESTNAME')
+        name_value = Name.NameValue(value=name)
         name_type = Name.NameType(value=NameType.UNINTERPRETED_TEXT_STRING)
         value = Name.create(name_value, name_type)
 
+        if attributes is None:
+            attributes = []
         attr_factory = AttributeFactory()
         nameattr = attr_factory.create_attribute(AttributeType.NAME, value)
+        attributes += [nameattr]
 
-        attrs = [nameattr]
-        res = self.kmip.locate(attributes=attrs)
-        self.assertEqual(
-            ResultStatus.OPERATION_FAILED,
-            res.result_status.value,
-            'locate result status did not return success')
+        return self.kmip.locate(
+                maximum_items=maximum_items,
+                storage_status_mask=storage_status_mask,
+                object_group_member=object_group_member,
+                attributes=attributes)
+
+    def test_locate(self):
+        object_name = 'TESTLOCATE'
+        self._create(object_name=object_name)
+        msg = 'locate result status did not return success'
+
+        res = self._test_locate(name=object_name)
+        status = res.result_status.value
+        self.assertEqual(ResultStatus.SUCCESS, status, msg)
+        self.assertEqual(len(res.uuids), 1, msg)
+
+    def test_locate_with_max_items(self):
+        object_name = 'TESTLOCATE with MXI'
+        self._create(object_name=object_name)
+        self._create(object_name=object_name)
+
+        for (num, expected) in [(0, 0), (1, 1), (2, 2), (3, 2)]:
+            msg = "locate(mxi={0}) failed".format(num)
+            mxi = LocateRequestPayload.MaximumItems(num)
+            res = self._test_locate(maximum_items=mxi, name=object_name)
+            status = res.result_status.value
+            self.assertEqual(ResultStatus.SUCCESS, status, msg)
+            self.assertEqual(len(res.uuids), expected, msg)
+
+    def test_locate_archived(self):
+        object_name = 'TESTLOCATE ARCHIVED'
+
+        attr_factory = AttributeFactory()
+        archive_date_attr = attr_factory.create_attribute(
+                AttributeType.ARCHIVE_DATE,
+                int(time()))
+        attrs = [archive_date_attr]
+
+        self._create(object_name=object_name, custom_attributes=attrs)
+
+        msg = "locate archived failed"
+
+        ssmask = LocateRequestPayload.StorageStatusMask(
+                StorageStatusMask.ARCHIVAL_STORAGE)
+        res = self._test_locate(name=object_name, storage_status_mask=ssmask)
+        status = res.result_status.value
+        self.assertEqual(ResultStatus.SUCCESS, status, msg)
+        self.assertEqual(len(res.uuids), 1, msg)
+
+        ssmask.value = StorageStatusMask.ONLINE_STORAGE
+        res = self._test_locate(name=object_name, storage_status_mask=ssmask)
+        status = res.result_status.value
+        self.assertEqual(ResultStatus.SUCCESS, status, msg)
+        self.assertEqual(len(res.uuids), 0, msg)
+
+    def test_locate_online(self):
+        object_name = 'TESTLOCATE ONLINE'
+
+        self._create(object_name=object_name)
+        msg = "locate online object failed"
+
+        ssmask = LocateRequestPayload.StorageStatusMask(
+                StorageStatusMask.ARCHIVAL_STORAGE)
+        res = self._test_locate(name=object_name, storage_status_mask=ssmask)
+        status = res.result_status.value
+        self.assertEqual(ResultStatus.SUCCESS, status, msg)
+        self.assertEqual(len(res.uuids), 0, msg)
+
+        ssmask.value = StorageStatusMask.ONLINE_STORAGE
+        res = self._test_locate(name=object_name, storage_status_mask=ssmask)
+        status = res.result_status.value
+        self.assertEqual(ResultStatus.SUCCESS, status, msg)
+        self.assertEqual(len(res.uuids), 1, msg)
