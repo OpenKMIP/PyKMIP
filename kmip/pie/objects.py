@@ -388,6 +388,15 @@ class PublicKey(Key):
         names: The list of string names of the PublicKey.
     """
 
+    __tablename__ = 'public_keys'
+    unique_identifier = Column('uid', Integer,
+                               ForeignKey('keys.uid'),
+                               primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': enums.ObjectType.PUBLIC_KEY
+    }
+
     def __init__(self, algorithm, length, value,
                  format_type=enums.KeyFormatType.X_509, masks=None,
                  name='Public Key'):
@@ -507,6 +516,10 @@ class PublicKey(Key):
             return NotImplemented
 
 
+event.listen(PublicKey._names, 'append',
+             sql.attribute_append_factory("name_index"), retval=False)
+
+
 class PrivateKey(Key):
     """
     The PrivateKey class of the simplified KMIP object hierarchy.
@@ -525,6 +538,15 @@ class PrivateKey(Key):
         names: The list of string names of the PrivateKey. Optional, defaults
             to 'Private Key'.
     """
+
+    __tablename__ = 'private_keys'
+    unique_identifier = Column('uid', Integer,
+                               ForeignKey('keys.uid'),
+                               primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': enums.ObjectType.PRIVATE_KEY
+    }
 
     def __init__(self, algorithm, length, value, format_type, masks=None,
                  name='Private Key'):
@@ -641,6 +663,10 @@ class PrivateKey(Key):
             return not (self == other)
         else:
             return NotImplemented
+
+
+event.listen(PrivateKey._names, 'append',
+             sql.attribute_append_factory("name_index"), retval=False)
 
 
 class Certificate(CryptographicObject):
