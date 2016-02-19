@@ -14,7 +14,7 @@
 # under the License.
 
 from abc import abstractmethod
-from sqlalchemy import Column, event, ForeignKey, Integer, VARBINARY
+from sqlalchemy import Column, event, ForeignKey, Integer, String, VARBINARY
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
@@ -46,6 +46,7 @@ class ManagedObject(sql.Base):
     __tablename__ = 'managed_objects'
     unique_identifier = Column('uid', Integer, primary_key=True)
     _object_type = Column('object_type', sql.EnumType(enums.ObjectType))
+    _class_type = Column('class_type', String(50))
     value = Column('value', VARBINARY(1024))
     name_index = Column(Integer, default=0)
     _names = relationship('ManagedObjectName', back_populates='mo',
@@ -53,8 +54,8 @@ class ManagedObject(sql.Base):
     names = association_proxy('_names', 'name')
 
     __mapper_args__ = {
-        'polymorphic_identity': 0x00000000,
-        'polymorphic_on': _object_type
+        'polymorphic_identity': 'ManagedObject',
+        'polymorphic_on': _class_type
     }
 
     @abstractmethod
@@ -149,7 +150,7 @@ class CryptographicObject(ManagedObject):
     cryptographic_usage_masks = Column('cryptographic_usage_mask',
                                        sql.UsageMaskType)
     __mapper_args__ = {
-        'polymorphic_identity': 0x80000001
+        'polymorphic_identity': 'CryptographicObject'
     }
 
     @abstractmethod
@@ -209,7 +210,7 @@ class Key(CryptographicObject):
         'key_format_type', sql.EnumType(enums.KeyFormatType))
 
     __mapper_args__ = {
-        'polymorphic_identity': 0x80000002
+        'polymorphic_identity': 'Key'
     }
 
     @abstractmethod
@@ -256,7 +257,7 @@ class SymmetricKey(Key):
                                primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': enums.ObjectType.SYMMETRIC_KEY
+        'polymorphic_identity': 'SymmetricKey'
     }
 
     def __init__(self, algorithm, length, value, masks=None,
@@ -394,7 +395,7 @@ class PublicKey(Key):
                                primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': enums.ObjectType.PUBLIC_KEY
+        'polymorphic_identity': 'PublicKey'
     }
 
     def __init__(self, algorithm, length, value,
@@ -545,7 +546,7 @@ class PrivateKey(Key):
                                primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': enums.ObjectType.PRIVATE_KEY
+        'polymorphic_identity': 'PrivateKey'
     }
 
     def __init__(self, algorithm, length, value, format_type, masks=None,
@@ -839,7 +840,7 @@ class SecretData(CryptographicObject):
                                primary_key=True)
     data_type = Column('data_type', sql.EnumType(enums.SecretDataType))
     __mapper_args__ = {
-        'polymorphic_identity': enums.ObjectType.SECRET_DATA
+        'polymorphic_identity': 'SecretData'
     }
 
     def __init__(self, value, data_type, masks=None, name='Secret Data'):
@@ -952,7 +953,7 @@ class OpaqueObject(ManagedObject):
                                primary_key=True)
     opaque_type = Column('opaque_type', sql.EnumType(enums.OpaqueDataType))
     __mapper_args__ = {
-        'polymorphic_identity': enums.ObjectType.OPAQUE_DATA
+        'polymorphic_identity': 'OpaqueData'
     }
 
     def __init__(self, value, opaque_type, name='Opaque Object'):
