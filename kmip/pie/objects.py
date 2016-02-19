@@ -833,6 +833,15 @@ class SecretData(CryptographicObject):
         data_type: The type of the secret value.
     """
 
+    __tablename__ = 'secret_data_objects'
+    unique_identifier = Column('uid', Integer,
+                               ForeignKey('crypto_objects.uid'),
+                               primary_key=True)
+    data_type = Column('data_type', sql.EnumType(enums.SecretDataType))
+    __mapper_args__ = {
+        'polymorphic_identity': enums.ObjectType.SECRET_DATA
+    }
+
     def __init__(self, value, data_type, masks=None, name='Secret Data'):
         """
         Create a SecretData object.
@@ -919,6 +928,10 @@ class SecretData(CryptographicObject):
             return not (self == other)
         else:
             return NotImplemented
+
+
+event.listen(SecretData._names, 'append',
+             sql.attribute_append_factory("name_index"), retval=False)
 
 
 class OpaqueObject(ManagedObject):
