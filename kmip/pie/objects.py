@@ -686,6 +686,17 @@ class Certificate(CryptographicObject):
         names: The list of string names of the Certificate.
     """
 
+    __tablename__ = 'certificates'
+    unique_identifier = Column('uid', Integer,
+                               ForeignKey('crypto_objects.uid'),
+                               primary_key=True)
+    certificate_type = Column(
+        'certificate_type', sql.EnumType(enums.CertificateTypeEnum))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Certificate'
+    }
+
     @abstractmethod
     def __init__(self, certificate_type, value, masks=None,
                  name='Certificate'):
@@ -774,6 +785,15 @@ class X509Certificate(Certificate):
         names: The list of string names of the Certificate.
     """
 
+    __tablename__ = 'x509_certificates'
+    unique_identifier = Column('uid', Integer,
+                               ForeignKey('certificates.uid'),
+                               primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'Certificate'
+    }
+
     def __init__(self, value, masks=None, name='X.509 Certificate'):
         """
         Create an X509Certificate.
@@ -818,6 +838,10 @@ class X509Certificate(Certificate):
             return not (self == other)
         else:
             return NotImplemented
+
+
+event.listen(X509Certificate._names, 'append',
+             sql.attribute_append_factory("name_index"), retval=False)
 
 
 class SecretData(CryptographicObject):
