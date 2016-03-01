@@ -130,24 +130,30 @@ class AttributeValueFactory(object):
 
     def _create_cryptographic_parameters(self, params):
         bcm = None
-        if 'block_cipher_mode' in params:
-            bcm = attributes.CryptographicParameters.BlockCipherMode(
-                params.get('block_cipher_mode'))
-
         padding_method = None
-        if 'padding_method' in params:
-            padding_method = attributes.CryptographicParameters.PaddingMethod(
-                params.get('padding_method'))
-
-        key_role_type = None
-        if 'key_role_type' in params:
-            key_role_type = attributes.CryptographicParameters.KeyRoleType(
-                params.get('key_role_type'))
-
         hashing_algorithm = None
-        if 'hashing_algorithm' in params:
-            hashing_algorithm = attributes.HashingAlgorithm(
-                params.get("hashing_algorithm"))
+        key_role_type = None
+
+        if params is not None:
+
+            if 'block_cipher_mode' in params:
+                bcm = attributes.CryptographicParameters.BlockCipherMode(
+                    params.get('block_cipher_mode'))
+
+            padding_method = None
+            if 'padding_method' in params:
+                padding_method = attributes.CryptographicParameters. \
+                    PaddingMethod(params.get('padding_method'))
+
+            key_role_type = None
+            if 'key_role_type' in params:
+                key_role_type = attributes.CryptographicParameters.KeyRoleType(
+                    params.get('key_role_type'))
+
+            hashing_algorithm = None
+            if 'hashing_algorithm' in params:
+                hashing_algorithm = attributes.HashingAlgorithm(
+                    params.get("hashing_algorithm"))
 
         return attributes.CryptographicParameters(
             block_cipher_mode=bcm,

@@ -49,6 +49,21 @@ class Attribute(Struct):
             super(Attribute.AttributeName, self).__init__(
                 value, Tags.ATTRIBUTE_NAME)
 
+        def __eq__(self, other):
+            if isinstance(other, Attribute.AttributeName):
+                if self.value != other.value:
+                    return False
+                else:
+                    return True
+            else:
+                NotImplemented
+
+        def __ne__(self, other):
+            if isinstance(other, Attribute.AttributeName):
+                return not (self == other)
+            else:
+                return NotImplemented
+
     class AttributeIndex(Integer):
 
         def __init__(self, value=None):
