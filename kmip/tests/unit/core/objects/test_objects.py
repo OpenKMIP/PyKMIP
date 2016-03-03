@@ -16,12 +16,115 @@
 from six import string_types
 from testtools import TestCase
 
+from kmip.core.enums import AttributeType
+from kmip.core.enums import BlockCipherMode
+from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
+from kmip.core.enums import KeyRoleType
+from kmip.core.enums import PaddingMethod
 from kmip.core.enums import Tags
 
+from kmip.core.factories.attributes import AttributeValueFactory
+
+from kmip.core.objects import Attribute
 from kmip.core.objects import ExtensionName
 from kmip.core.objects import ExtensionTag
 from kmip.core.objects import ExtensionType
 from kmip.core.objects import KeyMaterialStruct
+
+from kmip.core.utils import BytearrayStream
+
+
+class TestAttributeClass(TestCase):
+    """
+    A test suite for the Attribute class
+    """
+
+    def setUp(self):
+        super(TestAttributeClass, self).setUp()
+
+        name_a = 'CRYPTOGRAPHIC PARAMETERS'
+        name_b = 'CRYPTOGRAPHIC ALGORITHM'
+
+        self.attribute_name_a = Attribute.AttributeName(name_a)
+        self.attribute_name_b = Attribute.AttributeName(name_b)
+
+        self.factory = AttributeValueFactory()
+
+        self.attribute_value_a = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            {'block_cipher_mode': BlockCipherMode.CBC,
+             'padding_method': PaddingMethod.PKCS5,
+             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
+             'key_role_type': KeyRoleType.BDK})
+
+        self.attribute_value_b = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            {'block_cipher_mode': BlockCipherMode.CCM,
+             'padding_method': PaddingMethod.PKCS5,
+             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
+             'key_role_type': KeyRoleType.BDK})
+
+        index_a = 2
+        index_b = 3
+
+        self.attribute_index_a = Attribute.AttributeIndex(index_a)
+        self.attribute_index_b = Attribute.AttributeIndex(index_b)
+
+        self.attributeObj_a = Attribute(
+            attribute_name=self.attribute_name_a,
+            attribute_value=self.attribute_value_a,
+            attribute_index=self.attribute_index_a)
+
+        self.attributeObj_b = Attribute(
+            attribute_name=self.attribute_name_b,
+            attribute_value=self.attribute_value_a,
+            attribute_index=self.attribute_index_a)
+
+        self.attributeObj_c = Attribute(
+            attribute_name=self.attribute_name_a,
+            attribute_value=self.attribute_value_b,
+            attribute_index=self.attribute_index_a)
+
+        self.attributeObj_d = Attribute(
+            attribute_name=self.attribute_name_a,
+            attribute_value=self.attribute_value_a,
+            attribute_index=self.attribute_index_b)
+
+        self.key_req_with_crypt_params = BytearrayStream((
+            b'\x42\x00\x08\x01\x00\x00\x00\x78\x42\x00\x0a\x07\x00\x00\x00\x18'
+            b'\x43\x52\x59\x50\x54\x4f\x47\x52\x41\x50\x48\x49\x43\x20\x50\x41'
+            b'\x52\x41\x4d\x45\x54\x45\x52\x53'
+            b'\x42\x00\x09\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\x0b\x01\x00\x00\x00\x40'
+            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x5f\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b'\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        ))
+
+    def tearDown(self):
+        super(TestAttributeClass, self).tearDown()
+
+    def test_read(self):
+        attrObj = Attribute()
+        attrObj.read(self.key_req_with_crypt_params)
+        self.assertEqual(self.attributeObj_a, attrObj)
+
+    def test_write(self):
+        attrObj = Attribute(self.attribute_name_a, self.attribute_index_a,
+                            self.attribute_value_a)
+        ostream = BytearrayStream()
+        attrObj.write(ostream)
+
+        self.assertEqual(self.key_req_with_crypt_params, ostream)
+
+    def test_equal_on_equal(self):
+        self.assertFalse(self.attributeObj_a == self.attributeObj_b)
+        self.assertFalse(self.attributeObj_a == self.attributeObj_c)
+        self.assertFalse(self.attributeObj_a == self.attributeObj_d)
+
+    def test_not_equal_on_not_equal(self):
+        self.assertTrue(self.attributeObj_a != self.attributeObj_b)
 
 
 class TestKeyMaterialStruct(TestCase):

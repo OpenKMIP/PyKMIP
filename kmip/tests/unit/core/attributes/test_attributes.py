@@ -379,6 +379,7 @@ class TestCryptographicParameters(TestCase):
     def setUp(self):
         super(TestCryptographicParameters, self).setUp()
 
+        self.bad_enum_code = 8535937
         self.factory = AttributeValueFactory()
 
         self.cp = self.factory.create_attribute_value(
@@ -433,3 +434,54 @@ class TestCryptographicParameters(TestCase):
                          self.cp.hashing_algorithm.tag.value)
         self.assertEqual(HashingAlgorithmEnum.SHA_1.value,
                          self.cp.hashing_algorithm.value.value)
+
+    def test_bad_cipher_mode(self):
+        self.cp.block_cipher_mode = self.bad_enum_code
+        cp_valid = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            {'block_cipher_mode': BlockCipherMode.CBC,
+             'padding_method': PaddingMethod.PKCS5,
+             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
+             'key_role_type': KeyRoleType.BDK})
+        self.assertFalse(self.cp == cp_valid)
+        self.assertRaises(TypeError, self.cp.validate)
+
+    def test_bad_padding_method(self):
+        self.cp.padding_method = self.bad_enum_code
+        cp_valid = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            {'block_cipher_mode': BlockCipherMode.CBC,
+             'padding_method': PaddingMethod.PKCS5,
+             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
+             'key_role_type': KeyRoleType.BDK})
+        self.assertFalse(self.cp == cp_valid)
+        self.assertRaises(TypeError, self.cp.validate)
+
+    def test_bad_hash_algorithm(self):
+        self.cp.hashing_algorithm = self.bad_enum_code
+        cp_valid = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            {'block_cipher_mode': BlockCipherMode.CBC,
+             'padding_method': PaddingMethod.PKCS5,
+             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
+             'key_role_type': KeyRoleType.BDK})
+        self.assertFalse(self.cp == cp_valid)
+        self.assertRaises(TypeError, self.cp.validate)
+
+    def test_bad_key_role_type(self):
+        self.cp.key_role_type = self.bad_enum_code
+        cp_valid = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            {'block_cipher_mode': BlockCipherMode.CBC,
+             'padding_method': PaddingMethod.PKCS5,
+             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
+             'key_role_type': KeyRoleType.BDK})
+        self.assertFalse(self.cp == cp_valid)
+        self.assertRaises(TypeError, self.cp.validate)
+
+    def test_bad_object(self):
+        name_value = 'puppies'
+        name_type = NameType.UNINTERPRETED_TEXT_STRING
+        bad_obj = Name.create(name_value, name_type)
+
+        self.assertNotEqual(NotImplemented, bad_obj)
