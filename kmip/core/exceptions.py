@@ -53,7 +53,8 @@ class CryptographicFailure(KmipError):
         """
         super(CryptographicFailure, self).__init__(
             reason=enums.ResultReason.CRYPTOGRAPHIC_FAILURE,
-            message=message)
+            message=message
+        )
 
 
 class InvalidField(KmipError):
@@ -70,7 +71,44 @@ class InvalidField(KmipError):
         """
         super(InvalidField, self).__init__(
             reason=enums.ResultReason.INVALID_FIELD,
-            message=message)
+            message=message
+        )
+
+
+class InvalidMessage(KmipError):
+    """
+    An error generated when an invalid message is processed.
+    """
+
+    def __init__(self, message):
+        """
+        Create an InvalidMessage exception.
+
+        Args:
+            message (string): A string containing information about the error.
+        """
+        super(InvalidMessage, self).__init__(
+            reason=enums.ResultReason.INVALID_MESSAGE,
+            message=message
+        )
+
+
+class OperationNotSupported(KmipError):
+    """
+    An error generated when an unsupported operation is invoked.
+    """
+
+    def __init__(self, message):
+        """
+        Create an OperationNotSupported exception.
+
+        Args:
+            message (string): A string containing information about the error.
+        """
+        super(OperationNotSupported, self).__init__(
+            reason=enums.ResultReason.OPERATION_NOT_SUPPORTED,
+            message=message
+        )
 
 
 class InvalidKmipEncoding(Exception):
