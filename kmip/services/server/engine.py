@@ -26,12 +26,14 @@ import kmip
 from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import exceptions
+from kmip.core.factories import secrets
 
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
+from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import query
 
 from kmip.core import misc
@@ -51,13 +53,16 @@ class KmipEngine(object):
     client connections.
 
     Features that are not supported:
-        * KMIP versions > 1.1
+        * KMIP versions > 1.2
         * Numerous operations, objects, and attributes.
         * User authentication
         * Batch processing options: UNDO
         * Asynchronous operations
         * Operation policies
         * Object archival
+        * Key compression
+        * Key wrapping
+        * Key format conversions
     """
 
     def __init__(self):
@@ -376,29 +381,7 @@ class KmipEngine(object):
 
         return response_batch
 
-    def _process_operation(self, operation, payload):
-        if operation == enums.Operation.DESTROY:
-            return self._process_destroy(payload)
-        if operation == enums.Operation.QUERY:
-            return self._process_query(payload)
-        elif operation == enums.Operation.DISCOVER_VERSIONS:
-            return self._process_discover_versions(payload)
-        else:
-            raise exceptions.OperationNotSupported(
-                "{0} operation is not supported by the server.".format(
-                    operation.name.title()
-                )
-            )
-
-    @_kmip_version_supported('1.0')
-    def _process_destroy(self, payload):
-        self._logger.info("Processing operation: Destroy")
-
-        if payload.unique_identifier:
-            unique_identifier = payload.unique_identifier.value
-        else:
-            unique_identifier = self._id_placeholder
-
+    def _get_object_type(self, unique_identifier):
         try:
             object_type = self._data_session.query(
                 objects.ManagedObject._object_type
@@ -423,23 +406,169 @@ class KmipEngine(object):
             )
             raise e
 
-        table = self._object_map.get(object_type)
-        if table is None:
+        class_type = self._object_map.get(object_type)
+        if class_type is None:
             name = object_type.name
             raise exceptions.InvalidField(
                 "The {0} object type is not supported.".format(
                     ''.join(
-                        [x.capitalize() for x in name[9:].split('_')]
+                        [x.capitalize() for x in name.split('_')]
                     )
                 )
             )
+
+        return class_type
+
+    def _build_core_object(self, obj):
+        try:
+            object_type = obj._object_type
+        except Exception:
+            raise exceptions.InvalidField(
+                "Cannot build an unsupported object type."
+            )
+
+        value = {}
+
+        if object_type == enums.ObjectType.CERTIFICATE:
+            value = {
+                'certificate_type': obj.certificate_type,
+                'certificate_value': obj.value
+            }
+        elif object_type == enums.ObjectType.SYMMETRIC_KEY:
+            value = {
+                'cryptographic_algorithm': obj.cryptographic_algorithm,
+                'cryptographic_length': obj.cryptographic_length,
+                'key_format_type': obj.key_format_type,
+                'key_value': obj.value
+            }
+        elif object_type == enums.ObjectType.PUBLIC_KEY:
+            value = {
+                'cryptographic_algorithm': obj.cryptographic_algorithm,
+                'cryptographic_length': obj.cryptographic_length,
+                'key_format_type': obj.key_format_type,
+                'key_value': obj.value
+            }
+        elif object_type == enums.ObjectType.PRIVATE_KEY:
+            value = {
+                'cryptographic_algorithm': obj.cryptographic_algorithm,
+                'cryptographic_length': obj.cryptographic_length,
+                'key_format_type': obj.key_format_type,
+                'key_value': obj.value
+            }
+        elif object_type == enums.ObjectType.SECRET_DATA:
+            value = {
+                'key_format_type': enums.KeyFormatType.OPAQUE,
+                'key_value': obj.value,
+                'secret_data_type': obj.data_type
+            }
+        elif object_type == enums.ObjectType.OPAQUE_DATA:
+            value = {
+                'opaque_data_type': obj.opaque_type,
+                'opaque_data_value': obj.value
+            }
+        else:
+            name = object_type.name
+            raise exceptions.InvalidField(
+                "The {0} object type is not supported.".format(
+                    ''.join(
+                        [x.capitalize() for x in name.split('_')]
+                    )
+                )
+            )
+
+        secret_factory = secrets.SecretFactory()
+        return secret_factory.create(object_type, value)
+
+    def _process_operation(self, operation, payload):
+        if operation == enums.Operation.GET:
+            return self._process_get(payload)
+        elif operation == enums.Operation.DESTROY:
+            return self._process_destroy(payload)
+        elif operation == enums.Operation.QUERY:
+            return self._process_query(payload)
+        elif operation == enums.Operation.DISCOVER_VERSIONS:
+            return self._process_discover_versions(payload)
+        else:
+            raise exceptions.OperationNotSupported(
+                "{0} operation is not supported by the server.".format(
+                    operation.name.title()
+                )
+            )
+
+    @_kmip_version_supported('1.0')
+    def _process_get(self, payload):
+        self._logger.info("Processing operation: Get")
+
+        unique_identifier = self._id_placeholder
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier.value
+
+        key_format_type = None
+        if payload.key_format_type:
+            key_format_type = payload.key_format_type.value
+
+        if payload.key_compression_type:
+            raise exceptions.KeyCompressionTypeNotSupported(
+                "Key compression is not supported."
+            )
+
+        if payload.key_wrapping_specification:
+            raise exceptions.PermissionDenied(
+                "Key wrapping is not supported."
+            )
+
+        # TODO (peterhamilton) Process key wrapping information
+        # 1. Error check wrapping keys for accessibility and usability
+
+        object_type = self._get_object_type(unique_identifier)
+
+        managed_object = self._data_session.query(object_type).filter(
+            object_type.unique_identifier == unique_identifier
+        ).one()
+
+        if key_format_type:
+            if not hasattr(managed_object, 'key_format_type'):
+                raise exceptions.KeyFormatTypeNotSupported(
+                    "Key format is not applicable to the specified object."
+                )
+
+            # TODO (peterhamilton) Convert key to desired format if possible
+            if key_format_type != managed_object.key_format_type:
+                raise exceptions.KeyFormatTypeNotSupported(
+                    "Key format conversion from {0} to {1} is "
+                    "unsupported.".format(
+                        managed_object.key_format_type.name,
+                        key_format_type.name
+                    )
+                )
+
+        core_secret = self._build_core_object(managed_object)
+
+        response_payload = get.GetResponsePayload(
+            object_type=attributes.ObjectType(managed_object._object_type),
+            unique_identifier=attributes.UniqueIdentifier(unique_identifier),
+            secret=core_secret
+        )
+
+        return response_payload
+
+    @_kmip_version_supported('1.0')
+    def _process_destroy(self, payload):
+        self._logger.info("Processing operation: Destroy")
+
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier.value
+        else:
+            unique_identifier = self._id_placeholder
+
+        object_type = self._get_object_type(unique_identifier)
 
         # TODO (peterhamilton) Process attributes to see if destroy possible
         # 1. Check object state. If invalid, error out.
         # 2. Check object deactivation date. If invalid, error out.
 
-        self._data_session.query(table).filter(
-            table.unique_identifier == unique_identifier
+        self._data_session.query(object_type).filter(
+            object_type.unique_identifier == unique_identifier
         ).delete()
 
         response_payload = destroy.DestroyResponsePayload(
@@ -463,6 +592,7 @@ class KmipEngine(object):
 
         if enums.QueryFunction.QUERY_OPERATIONS in queries:
             operations = list([
+                contents.Operation(enums.Operation.GET),
                 contents.Operation(enums.Operation.DESTROY),
                 contents.Operation(enums.Operation.QUERY)
             ])

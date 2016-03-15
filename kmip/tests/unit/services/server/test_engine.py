@@ -28,12 +28,14 @@ from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core import misc
 from kmip.core import objects
+from kmip.core import secrets
 
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
+from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import query
 
 from kmip.pie import objects as pie_objects
@@ -638,14 +640,17 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
+        e._process_get = mock.MagicMock()
         e._process_destroy = mock.MagicMock()
         e._process_query = mock.MagicMock()
         e._process_discover_versions = mock.MagicMock()
 
+        e._process_operation(enums.Operation.GET, None)
         e._process_operation(enums.Operation.DESTROY, None)
         e._process_operation(enums.Operation.QUERY, None)
         e._process_operation(enums.Operation.DISCOVER_VERSIONS, None)
 
+        e._process_get.assert_called_with(None)
         e._process_destroy.assert_called_with(None)
         e._process_query.assert_called_with(None)
         e._process_discover_versions.assert_called_with(None)
@@ -667,6 +672,515 @@ class TestKmipEngine(testtools.TestCase):
             regex,
             e._process_operation,
             *args
+        )
+
+    def test_get_object_type(self):
+        """
+        Test that the object type of a stored object can be retrieved
+        correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+
+        e._data_session.add(obj_a)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+
+        object_type = e._get_object_type(id_a)
+        e._data_session.commit()
+
+        self.assertEqual(pie_objects.OpaqueObject, object_type)
+
+    def test_get_object_type_missing_object(self):
+        """
+        Test that an ItemNotFound error is generated when attempting to
+        retrieve the object type of an object that does not exist.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        args = ('1', )
+        regex = "Could not locate object: 1"
+        self.assertRaisesRegexp(
+            exceptions.ItemNotFound,
+            regex,
+            e._get_object_type,
+            *args
+        )
+        e._data_session.commit()
+        e._logger.warning.assert_called_once_with(
+            "Could not identify object type for object: 1"
+        )
+        self.assertTrue(e._logger.exception.called)
+
+    def test_get_object_type_multiple_objects(self):
+        """
+        Test that a sqlalchemy.orm.exc.MultipleResultsFound error is generated
+        when getting the object type of multiple objects map to the same
+        object ID.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        test_exception = exc.MultipleResultsFound()
+        e._data_session.query = mock.MagicMock(side_effect=test_exception)
+        e._logger = mock.MagicMock()
+
+        args = ('1', )
+        self.assertRaises(
+            exc.MultipleResultsFound,
+            e._get_object_type,
+            *args
+        )
+        e._data_session.commit()
+        e._logger.warning.assert_called_once_with(
+            "Multiple objects found for ID: 1"
+        )
+
+    def test_get_object_type_unsupported_type(self):
+        """
+        Test that an InvalidField error is generated when attempting to
+        get the object type of an object with an unsupported object type.
+        This should never happen by definition, but "Safety first!"
+        """
+        e = engine.KmipEngine()
+        e._object_map = {enums.ObjectType.OPAQUE_DATA: None}
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+
+        e._data_session.add(obj_a)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+
+        args = (id_a, )
+        name = enums.ObjectType.OPAQUE_DATA.name
+        regex = "The {0} object type is not supported.".format(
+            ''.join(
+                [x.capitalize() for x in name.split('_')]
+            )
+        )
+
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._get_object_type,
+            *args
+        )
+        e._data_session.commit()
+
+    def test_build_core_object(self):
+        """
+        Test that kmip.core objects can be built from simpler kmip.pie
+        objects.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+
+        # Test building a Certificate.
+        managed_object = pie_objects.X509Certificate(value=b'')
+        core_object = e._build_core_object(managed_object)
+
+        self.assertIsInstance(core_object, secrets.Certificate)
+        self.assertEqual(
+            b'',
+            core_object.certificate_value.value
+        )
+        self.assertEqual(
+            enums.CertificateTypeEnum.X_509,
+            core_object.certificate_type.value
+        )
+
+        # Test building a Symmetric Key.
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        core_object = e._build_core_object(managed_object)
+
+        self.assertIsInstance(core_object, secrets.SymmetricKey)
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            core_object.key_block.cryptographic_algorithm.value
+        )
+        self.assertEqual(
+            0,
+            core_object.key_block.cryptographic_length.value
+        )
+        self.assertEqual(
+            b'',
+            core_object.key_block.key_value.key_material.value
+        )
+
+        # Test building a Public Key.
+        managed_object = pie_objects.PublicKey(
+            enums.CryptographicAlgorithm.RSA,
+            0,
+            b''
+        )
+        core_object = e._build_core_object(managed_object)
+
+        self.assertIsInstance(core_object, secrets.PublicKey)
+        self.assertEqual(
+            enums.CryptographicAlgorithm.RSA,
+            core_object.key_block.cryptographic_algorithm.value
+        )
+        self.assertEqual(
+            0,
+            core_object.key_block.cryptographic_length.value
+        )
+        self.assertEqual(
+            b'',
+            core_object.key_block.key_value.key_material.value
+        )
+
+        # Test building a Private Key.
+        managed_object = pie_objects.PrivateKey(
+            enums.CryptographicAlgorithm.RSA,
+            0,
+            b'',
+            enums.KeyFormatType.PKCS_8
+        )
+        core_object = e._build_core_object(managed_object)
+
+        self.assertIsInstance(core_object, secrets.PrivateKey)
+        self.assertEqual(
+            enums.CryptographicAlgorithm.RSA,
+            core_object.key_block.cryptographic_algorithm.value
+        )
+        self.assertEqual(
+            0,
+            core_object.key_block.cryptographic_length.value
+        )
+        self.assertEqual(
+            b'',
+            core_object.key_block.key_value.key_material.value
+        )
+        self.assertEqual(
+            enums.KeyFormatType.PKCS_8,
+            core_object.key_block.key_format_type.value
+        )
+
+        # Test building a Secret Data.
+        managed_object = pie_objects.SecretData(
+            b'',
+            enums.SecretDataType.PASSWORD
+        )
+        core_object = e._build_core_object(managed_object)
+
+        self.assertIsInstance(core_object, secrets.SecretData)
+        self.assertEqual(
+            enums.SecretDataType.PASSWORD,
+            core_object.secret_data_type.value
+        )
+        self.assertEqual(
+            b'',
+            core_object.key_block.key_value.key_material.value
+        )
+
+        # Test building an Opaque Data.
+        managed_object = pie_objects.OpaqueObject(
+            b'',
+            enums.OpaqueDataType.NONE
+        )
+        core_object = e._build_core_object(managed_object)
+
+        self.assertIsInstance(core_object, secrets.OpaqueObject)
+        self.assertEqual(
+            enums.OpaqueDataType.NONE,
+            core_object.opaque_data_type.value
+        )
+        self.assertEqual(
+            b'',
+            core_object.opaque_data_value.value
+        )
+
+    def test_build_core_object_unsupported_type(self):
+        """
+        Test that an InvalidField error is generated when building
+        kmip.core objects that are unsupported.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+
+        args = (None, )
+        regex = "Cannot build an unsupported object type."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._build_core_object,
+            *args
+        )
+
+        class DummyObject:
+            def __init__(self):
+                self._object_type = enums.ObjectType.SPLIT_KEY
+
+        args = (DummyObject(), )
+        regex = "The SplitKey object type is not supported."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._build_core_object,
+            *args
+        )
+
+    def test_get(self):
+        """
+        Test that a Get request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+        obj_b = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+
+        e._data_session.add(obj_a)
+        e._data_session.add(obj_b)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+        id_b = str(obj_b.unique_identifier)
+
+        # Test by specifying the ID of the object to get.
+        payload = get.GetRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(id_a)
+        )
+
+        response_payload = e._process_get(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
+        )
+        self.assertEqual(
+            enums.ObjectType.OPAQUE_DATA,
+            response_payload.object_type.value
+        )
+        self.assertEqual(str(id_a), response_payload.unique_identifier.value)
+        self.assertIsInstance(response_payload.secret, secrets.OpaqueObject)
+        self.assertEqual(
+            enums.OpaqueDataType.NONE,
+            response_payload.secret.opaque_data_type.value
+        )
+        self.assertEqual(
+            b'',
+            response_payload.secret.opaque_data_value.value
+        )
+
+        e._data_session.commit()
+        e._data_store_session_factory()
+        e._logger.reset_mock()
+        e._id_placeholder = str(id_b)
+
+        # Test by using the ID placeholder to specify the object to get.
+        payload = get.GetRequestPayload()
+
+        response_payload = e._process_get(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
+        )
+        self.assertEqual(
+            enums.ObjectType.OPAQUE_DATA,
+            response_payload.object_type.value
+        )
+        self.assertEqual(str(id_b), response_payload.unique_identifier.value)
+        self.assertIsInstance(response_payload.secret, secrets.OpaqueObject)
+        self.assertEqual(
+            enums.OpaqueDataType.NONE,
+            response_payload.secret.opaque_data_type.value
+        )
+        self.assertEqual(
+            b'',
+            response_payload.secret.opaque_data_value.value
+        )
+
+        e._data_session.commit()
+
+    def test_get_with_unsupported_features(self):
+        """
+        Test that the right errors are generated when unsupported features
+        are used in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        # Test that specifying the key compression type generates an error.
+        payload = get.GetRequestPayload(
+            key_compression_type=get.GetRequestPayload.KeyCompressionType(
+                enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED
+            )
+        )
+
+        args = (payload, )
+        regex = "Key compression is not supported."
+        self.assertRaisesRegexp(
+            exceptions.KeyCompressionTypeNotSupported,
+            regex,
+            e._process_get,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
+        )
+
+        e._logger.reset_mock()
+
+        # Test that specifying the key wrapping specification generates an
+        # error.
+        payload = get.GetRequestPayload(
+            key_wrapping_specification=objects.KeyWrappingSpecification()
+        )
+
+        args = (payload, )
+        regex = "Key wrapping is not supported."
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
+            regex,
+            e._process_get,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
+        )
+
+    def test_get_with_key_format_type(self):
+        """
+        Test that the key format type is handled properly in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        obj_a = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(obj_a)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+
+        # Test that a key can be retrieved with the right key format.
+        payload = get.GetRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(id_a),
+            key_format_type=get.GetRequestPayload.KeyFormatType(
+                enums.KeyFormatType.RAW
+            )
+        )
+
+        response_payload = e._process_get(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
+        )
+
+        self.assertIsInstance(response_payload.secret, secrets.SymmetricKey)
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            response_payload.secret.key_block.cryptographic_algorithm.value
+        )
+        self.assertEqual(
+            0,
+            response_payload.secret.key_block.cryptographic_length.value
+        )
+        self.assertEqual(
+            b'',
+            response_payload.secret.key_block.key_value.key_material.value
+        )
+        self.assertEqual(
+            enums.KeyFormatType.RAW,
+            response_payload.secret.key_block.key_format_type.value
+        )
+
+        # Test that an error is generated when a key format conversion is
+        # required.
+        e._logger.reset_mock()
+
+        payload = get.GetRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(id_a),
+            key_format_type=get.GetRequestPayload.KeyFormatType(
+                enums.KeyFormatType.OPAQUE
+            )
+        )
+
+        args = (payload, )
+        regex = "Key format conversion from RAW to OPAQUE is unsupported."
+        self.assertRaisesRegexp(
+            exceptions.KeyFormatTypeNotSupported,
+            regex,
+            e._process_get,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
+        )
+
+        # Test that an error is generated when a key format is requested but
+        # does not apply to the given managed object.
+        e._data_session = e._data_store_session_factory()
+        e._logger.reset_mock()
+
+        obj_b = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+
+        e._data_session.add(obj_b)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_b = str(obj_b.unique_identifier)
+
+        payload = get.GetRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(id_b),
+            key_format_type=get.GetRequestPayload.KeyFormatType(
+                enums.KeyFormatType.RAW
+            )
+        )
+
+        args = (payload, )
+        regex = "Key format is not applicable to the specified object."
+        self.assertRaisesRegexp(
+            exceptions.KeyFormatTypeNotSupported,
+            regex,
+            e._process_get,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
         )
 
     def test_destroy(self):
@@ -735,112 +1249,6 @@ class TestKmipEngine(testtools.TestCase):
 
         e._data_session.commit()
 
-    def test_destroy_missing_object(self):
-        """
-        Test that an ItemNotFound error is generated when attempting to
-        destroy an object that does not exist.
-        """
-        e = engine.KmipEngine()
-        e._data_store = self.engine
-        e._data_store_session_factory = self.session_factory
-        e._data_session = e._data_store_session_factory()
-        e._logger = mock.MagicMock()
-
-        payload = destroy.DestroyRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier('1')
-        )
-
-        args = (payload, )
-        regex = "Could not locate object: 1"
-        self.assertRaisesRegexp(
-            exceptions.ItemNotFound,
-            regex,
-            e._process_destroy,
-            *args
-        )
-        e._data_session.commit()
-        e._logger.info.assert_called_once_with(
-            "Processing operation: Destroy"
-        )
-        e._logger.warning.assert_called_once_with(
-            "Could not identify object type for object: 1"
-        )
-        self.assertTrue(e._logger.exception.called)
-
-    def test_destroy_multiple_objects(self):
-        """
-        Test that a sqlalchemy.orm.exc.MultipleResultsFound error is generated
-        when multiple objects map to the same object ID.
-        """
-        e = engine.KmipEngine()
-        e._data_store = self.engine
-        e._data_store_session_factory = self.session_factory
-        e._data_session = e._data_store_session_factory()
-        test_exception = exc.MultipleResultsFound()
-        e._data_session.query = mock.MagicMock(side_effect=test_exception)
-        e._logger = mock.MagicMock()
-
-        payload = destroy.DestroyRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier('1')
-        )
-
-        args = (payload, )
-        self.assertRaises(
-            exc.MultipleResultsFound,
-            e._process_destroy,
-            *args
-        )
-        e._data_session.commit()
-        e._logger.info.assert_called_once_with(
-            "Processing operation: Destroy"
-        )
-        e._logger.warning.assert_called_once_with(
-            "Multiple objects found for ID: 1"
-        )
-
-    def test_destroy_unsupported_object_type(self):
-        """
-        Test that an InvalidField error is generated when attempting to
-        destroy an unsupported object type.
-        """
-        e = engine.KmipEngine()
-        e._object_map = {enums.ObjectType.OPAQUE_DATA: None}
-        e._data_store = self.engine
-        e._data_store_session_factory = self.session_factory
-        e._data_session = e._data_store_session_factory()
-        e._logger = mock.MagicMock()
-
-        obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
-
-        e._data_session.add(obj_a)
-        e._data_session.commit()
-        e._data_session = e._data_store_session_factory()
-
-        id_a = str(obj_a.unique_identifier)
-
-        payload = destroy.DestroyRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(id_a)
-        )
-
-        args = (payload, )
-        name = enums.ObjectType.OPAQUE_DATA.name
-        regex = "The {0} object type is not supported.".format(
-            ''.join(
-                [x.capitalize() for x in name[9:].split('_')]
-            )
-        )
-
-        self.assertRaisesRegexp(
-            exceptions.InvalidField,
-            regex,
-            e._process_destroy,
-            *args
-        )
-        e._data_session.commit()
-        e._logger.info.assert_called_once_with(
-            "Processing operation: Destroy"
-        )
-
     def test_query(self):
         """
         Test that a Query request can be processed correctly, for different
@@ -870,14 +1278,18 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsInstance(result, query.QueryResponsePayload)
         self.assertIsNotNone(result.operations)
-        self.assertEqual(2, len(result.operations))
+        self.assertEqual(3, len(result.operations))
         self.assertEqual(
-            enums.Operation.DESTROY,
+            enums.Operation.GET,
             result.operations[0].value
         )
         self.assertEqual(
-            enums.Operation.QUERY,
+            enums.Operation.DESTROY,
             result.operations[1].value
+        )
+        self.assertEqual(
+            enums.Operation.QUERY,
+            result.operations[2].value
         )
         self.assertEqual(list(), result.object_types)
         self.assertIsNotNone(result.vendor_identification)
@@ -897,18 +1309,10 @@ class TestKmipEngine(testtools.TestCase):
 
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsNotNone(result.operations)
-        self.assertEqual(3, len(result.operations))
-        self.assertEqual(
-            enums.Operation.DESTROY,
-            result.operations[0].value
-        )
-        self.assertEqual(
-            enums.Operation.QUERY,
-            result.operations[1].value
-        )
+        self.assertEqual(4, len(result.operations))
         self.assertEqual(
             enums.Operation.DISCOVER_VERSIONS,
-            result.operations[2].value
+            result.operations[-1].value
         )
 
     def test_discover_versions(self):
