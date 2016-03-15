@@ -14,21 +14,30 @@
 # under the License.
 
 import logging
+import sqlalchemy
+
+from sqlalchemy.orm import exc
+
 import threading
 import time
 
 import kmip
 
+from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import exceptions
 
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
+from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import query
 
 from kmip.core import misc
+
+from kmip.pie import sqltypes
+from kmip.pie import objects
 
 from kmip.services.server.crypto import engine
 
@@ -47,6 +56,8 @@ class KmipEngine(object):
         * User authentication
         * Batch processing options: UNDO
         * Asynchronous operations
+        * Operation policies
+        * Object archival
     """
 
     def __init__(self):
@@ -56,6 +67,16 @@ class KmipEngine(object):
         self._logger = logging.getLogger(__name__)
 
         self._cryptography_engine = engine.CryptographyEngine()
+
+        self._data_store = sqlalchemy.create_engine(
+            'sqlite:///:memory:',
+            echo=False
+        )
+        sqltypes.Base.metadata.create_all(self._data_store)
+        self._data_store_session_factory = sqlalchemy.orm.sessionmaker(
+            bind=self._data_store
+        )
+
         self._lock = threading.RLock()
 
         self._id_placeholder = None
@@ -67,6 +88,17 @@ class KmipEngine(object):
         ]
 
         self._protocol_version = self._protocol_versions[0]
+
+        self._object_map = {
+            enums.ObjectType.CERTIFICATE: objects.X509Certificate,
+            enums.ObjectType.SYMMETRIC_KEY: objects.SymmetricKey,
+            enums.ObjectType.PUBLIC_KEY: objects.PublicKey,
+            enums.ObjectType.PRIVATE_KEY: objects.PrivateKey,
+            enums.ObjectType.SPLIT_KEY: None,
+            enums.ObjectType.TEMPLATE: None,
+            enums.ObjectType.SECRET_DATA: objects.SecretData,
+            enums.ObjectType.OPAQUE_DATA: objects.OpaqueObject
+        }
 
     def _kmip_version_supported(supported):
         def decorator(function):
@@ -266,6 +298,9 @@ class KmipEngine(object):
 
     def _process_batch(self, request_batch, batch_handling, batch_order):
         response_batch = list()
+
+        self._data_session = self._data_store_session_factory()
+
         for batch_item in request_batch:
             error_occurred = False
 
@@ -342,6 +377,8 @@ class KmipEngine(object):
         return response_batch
 
     def _process_operation(self, operation, payload):
+        if operation == enums.Operation.DESTROY:
+            return self._process_destroy(payload)
         if operation == enums.Operation.QUERY:
             return self._process_query(payload)
         elif operation == enums.Operation.DISCOVER_VERSIONS:
@@ -352,6 +389,64 @@ class KmipEngine(object):
                     operation.name.title()
                 )
             )
+
+    @_kmip_version_supported('1.0')
+    def _process_destroy(self, payload):
+        self._logger.info("Processing operation: Destroy")
+
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier.value
+        else:
+            unique_identifier = self._id_placeholder
+
+        try:
+            object_type = self._data_session.query(
+                objects.ManagedObject._object_type
+            ).filter(
+                objects.ManagedObject.unique_identifier == unique_identifier
+            ).one()[0]
+        except exc.NoResultFound as e:
+            self._logger.warning(
+                "Could not identify object type for object: {0}".format(
+                    unique_identifier
+                )
+            )
+            self._logger.exception(e)
+            raise exceptions.ItemNotFound(
+                "Could not locate object: {0}".format(unique_identifier)
+            )
+        except exc.MultipleResultsFound as e:
+            self._logger.warning(
+                "Multiple objects found for ID: {0}".format(
+                    unique_identifier
+                )
+            )
+            raise e
+
+        table = self._object_map.get(object_type)
+        if table is None:
+            name = object_type.name
+            raise exceptions.InvalidField(
+                "The {0} object type is not supported.".format(
+                    ''.join(
+                        [x.capitalize() for x in name[9:].split('_')]
+                    )
+                )
+            )
+
+        # TODO (peterhamilton) Process attributes to see if destroy possible
+        # 1. Check object state. If invalid, error out.
+        # 2. Check object deactivation date. If invalid, error out.
+
+        self._data_session.query(table).filter(
+            table.unique_identifier == unique_identifier
+        ).delete()
+
+        response_payload = destroy.DestroyResponsePayload(
+            unique_identifier=attributes.UniqueIdentifier(unique_identifier)
+        )
+
+        return response_payload
 
     @_kmip_version_supported('1.0')
     def _process_query(self, payload):
@@ -368,6 +463,7 @@ class KmipEngine(object):
 
         if enums.QueryFunction.QUERY_OPERATIONS in queries:
             operations = list([
+                contents.Operation(enums.Operation.DESTROY),
                 contents.Operation(enums.Operation.QUERY)
             ])
 

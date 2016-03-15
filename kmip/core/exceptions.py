@@ -57,6 +57,24 @@ class CryptographicFailure(KmipError):
         )
 
 
+class IndexOutOfBounds(KmipError):
+    """
+    An error generated when exceeding the attribute instance limit.
+    """
+
+    def __init__(self, message):
+        """
+        Create an IndexOutOfBounds exception.
+
+        Args:
+            message (string): A string containing information about the error.
+        """
+        super(IndexOutOfBounds, self).__init__(
+            reason=enums.ResultReason.INDEX_OUT_OF_BOUNDS,
+            message=message
+        )
+
+
 class InvalidField(KmipError):
     """
     An error generated when an invalid field value is processed.
@@ -89,6 +107,24 @@ class InvalidMessage(KmipError):
         """
         super(InvalidMessage, self).__init__(
             reason=enums.ResultReason.INVALID_MESSAGE,
+            message=message
+        )
+
+
+class ItemNotFound(KmipError):
+    """
+    An error generated when a request item cannot be located.
+    """
+
+    def __init__(self, message):
+        """
+        Create an ItemNotFound exception.
+
+        Args:
+            message (string): A string containing information about the error.
+        """
+        super(ItemNotFound, self).__init__(
+            reason=enums.ResultReason.ITEM_NOT_FOUND,
             message=message
         )
 
