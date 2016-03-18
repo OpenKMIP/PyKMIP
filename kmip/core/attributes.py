@@ -63,11 +63,43 @@ class Name(Struct):
         def __init__(self, value=None):
             super(Name.NameValue, self).__init__(value, Tags.NAME_VALUE)
 
+        def __eq__(self, other):
+            if isinstance(other, Name.NameValue):
+                if self.value == other.value:
+                    return True
+                else:
+                    return False
+            else:
+                return NotImplemented
+
+        def __repr__(self):
+            return "{0}(value={1})".format(
+                    type(self).__name__, repr(self.value))
+
+        def __str__(self):
+            return "{0}".format(self.value)
+
     class NameType(Enumeration):
 
         def __init__(self, value=None):
             super(Name.NameType, self).__init__(
                 enums.NameType, value, Tags.NAME_TYPE)
+
+        def __eq__(self, other):
+            if isinstance(other, Name.NameType):
+                if self.value == other.value:
+                    return True
+                else:
+                    return False
+            else:
+                return NotImplemented
+
+        def __repr__(self):
+            return "{0}(value={1})".format(
+                    type(self).__name__, repr(self.value))
+
+        def __str__(self):
+            return "{0}".format(self.value)
 
     def __init__(self, name_value=None, name_type=None):
         super(Name, self).__init__(tag=Tags.NAME)
@@ -148,6 +180,25 @@ class Name(Struct):
 
         return Name(name_value=value,
                     name_type=n_type)
+
+    def __repr__(self):
+        return "{0}(type={1},value={2})".format(
+                type(self).__name__,
+                repr(self.name_type),
+                repr(self.name_value))
+
+    def __str__(self):
+        return "{0}".format(self.name_value.value)
+
+    def __eq__(self, other):
+        if isinstance(other, Name):
+            if self.name_value == other.name_value and \
+                        self.name_type == other.name_type:
+                return True
+            else:
+                return False
+        else:
+            return NotImplemented
 
 
 # 3.3
