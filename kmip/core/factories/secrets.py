@@ -20,6 +20,7 @@ from kmip.core.attributes import CryptographicLength
 
 from kmip.core.enums import ObjectType
 from kmip.core.errors import ErrorStrings
+
 from kmip.core.misc import KeyFormatType
 
 from kmip.core.objects import Attribute
@@ -69,7 +70,7 @@ class SecretFactory(object):
             SymmetricKey(...)
         """
         if secret_type is ObjectType.CERTIFICATE:
-            return self._create_certificate()
+            return self._create_certificate(value)
         elif secret_type is ObjectType.SYMMETRIC_KEY:
             return self._create_symmetric_key(value)
         elif secret_type is ObjectType.PUBLIC_KEY:
@@ -88,8 +89,14 @@ class SecretFactory(object):
             raise TypeError("Unrecognized secret type: {0}".format(
                 secret_type))
 
-    def _create_certificate(self):
-        return Certificate()
+    def _create_certificate(self, value):
+        if value:
+            return Certificate(
+                certificate_type=value.get('certificate_type'),
+                certificate_value=value.get('certificate_value')
+            )
+        else:
+            return Certificate()
 
     def _create_symmetric_key(self, value):
         if value is None:
@@ -164,8 +171,16 @@ class SecretFactory(object):
 
             key_material = KeyMaterial(key_value)
             key_value = KeyValue(key_material)
-            crypto_algorithm = CryptographicAlgorithm(cryptographic_algorithm)
-            crypto_length = CryptographicLength(cryptographic_length)
+
+            crypto_algorithm = None
+            if cryptographic_algorithm is not None:
+                crypto_algorithm = CryptographicAlgorithm(
+                    cryptographic_algorithm
+                )
+
+            crypto_length = None
+            if cryptographic_length is not None:
+                crypto_length = CryptographicLength(cryptographic_length)
 
             key_wrap_data = None
             if key_wrapping_data is not None:

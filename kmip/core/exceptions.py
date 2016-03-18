@@ -129,6 +129,44 @@ class ItemNotFound(KmipError):
         )
 
 
+class KeyCompressionTypeNotSupported(KmipError):
+    """
+    An error generated when dealing with unsupported key compression types
+    and operations.
+    """
+
+    def __init__(self, message):
+        """
+        Create a KeyCompressionTypeNotSupported exception.
+
+        Args:
+            message (string): A string containing information about the error.
+        """
+        super(KeyCompressionTypeNotSupported, self).__init__(
+            reason=enums.ResultReason.KEY_COMPRESSION_TYPE_NOT_SUPPORTED,
+            message=message
+        )
+
+
+class KeyFormatTypeNotSupported(KmipError):
+    """
+    An error generated when dealing with unsupported key formats
+    and operations.
+    """
+
+    def __init__(self, message):
+        """
+        Create a KeyFormatTypeNotSupported exception.
+
+        Args:
+            message (string): A string containing information about the error.
+        """
+        super(KeyFormatTypeNotSupported, self).__init__(
+            reason=enums.ResultReason.KEY_FORMAT_TYPE_NOT_SUPPORTED,
+            message=message
+        )
+
+
 class OperationNotSupported(KmipError):
     """
     An error generated when an unsupported operation is invoked.
@@ -143,6 +181,24 @@ class OperationNotSupported(KmipError):
         """
         super(OperationNotSupported, self).__init__(
             reason=enums.ResultReason.OPERATION_NOT_SUPPORTED,
+            message=message
+        )
+
+
+class PermissionDenied(KmipError):
+    """
+    An error generated when permission constraints are violated.
+    """
+
+    def __init__(self, message):
+        """
+        Create a PermissionDenied exception.
+
+        Args:
+            message (string): A string containing information about the error.
+        """
+        super(PermissionDenied, self).__init__(
+            reason=enums.ResultReason.PERMISSION_DENIED,
             message=message
         )
 
