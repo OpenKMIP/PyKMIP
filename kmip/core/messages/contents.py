@@ -118,6 +118,58 @@ class ProtocolVersion(Struct):
         else:
             return NotImplemented
 
+    def __lt__(self, other):
+        if isinstance(other, ProtocolVersion):
+            if self.protocol_version_major < other.protocol_version_major:
+                return True
+            elif self.protocol_version_major > other.protocol_version_major:
+                return False
+            elif self.protocol_version_minor < other.protocol_version_minor:
+                return True
+            else:
+                return False
+        else:
+            return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, ProtocolVersion):
+            if self.protocol_version_major > other.protocol_version_major:
+                return True
+            elif self.protocol_version_major < other.protocol_version_major:
+                return False
+            elif self.protocol_version_minor > other.protocol_version_minor:
+                return True
+            else:
+                return False
+        else:
+            return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, ProtocolVersion):
+            if self.protocol_version_major < other.protocol_version_major:
+                return True
+            elif self.protocol_version_major > other.protocol_version_major:
+                return False
+            elif self.protocol_version_minor <= other.protocol_version_minor:
+                return True
+            else:
+                return False
+        else:
+            return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, ProtocolVersion):
+            if self.protocol_version_major > other.protocol_version_major:
+                return True
+            elif self.protocol_version_major < other.protocol_version_major:
+                return False
+            elif self.protocol_version_minor >= other.protocol_version_minor:
+                return True
+            else:
+                return False
+        else:
+            return NotImplemented
+
     def __repr__(self):
         major = self.protocol_version_major.value
         minor = self.protocol_version_minor.value
