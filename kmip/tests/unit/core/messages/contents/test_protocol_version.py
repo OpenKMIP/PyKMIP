@@ -169,6 +169,78 @@ class TestProtocolVersion(TestCase):
 
         self.assertTrue(a != b)
 
+    def test_less_than(self):
+        """
+        Test that the less than operator returns True/False when comparing
+        two different ProtocolVersions.
+        """
+        a = ProtocolVersion.create(1, 0)
+        b = ProtocolVersion.create(1, 1)
+        c = ProtocolVersion.create(2, 0)
+        d = ProtocolVersion.create(0, 2)
+
+        self.assertTrue(a < b)
+        self.assertFalse(b < a)
+        self.assertFalse(a < a)
+        self.assertTrue(a < c)
+        self.assertFalse(c < a)
+        self.assertFalse(c < d)
+        self.assertTrue(d < c)
+
+    def test_greater_than(self):
+        """
+        Test that the greater than operator returns True/False when
+        comparing two different ProtocolVersions.
+        """
+        a = ProtocolVersion.create(1, 0)
+        b = ProtocolVersion.create(1, 1)
+        c = ProtocolVersion.create(2, 0)
+        d = ProtocolVersion.create(0, 2)
+
+        self.assertFalse(a > b)
+        self.assertTrue(b > a)
+        self.assertFalse(a > a)
+        self.assertFalse(a > c)
+        self.assertTrue(c > a)
+        self.assertTrue(c > d)
+        self.assertFalse(d > c)
+
+    def test_less_than_or_equal(self):
+        """
+        Test that the less than or equal operator returns True/False when
+        comparing two different ProtocolVersions.
+        """
+        a = ProtocolVersion.create(1, 0)
+        b = ProtocolVersion.create(1, 1)
+        c = ProtocolVersion.create(2, 0)
+        d = ProtocolVersion.create(0, 2)
+
+        self.assertTrue(a <= b)
+        self.assertFalse(b <= a)
+        self.assertTrue(a <= a)
+        self.assertTrue(a <= c)
+        self.assertFalse(c <= a)
+        self.assertFalse(c <= d)
+        self.assertTrue(d <= c)
+
+    def test_greater_than_or_equal(self):
+        """
+        Test that the greater than or equal operator returns True/False when
+        comparing two different ProtocolVersions.
+        """
+        a = ProtocolVersion.create(1, 0)
+        b = ProtocolVersion.create(1, 1)
+        c = ProtocolVersion.create(2, 0)
+        d = ProtocolVersion.create(0, 2)
+
+        self.assertFalse(a >= b)
+        self.assertTrue(b >= a)
+        self.assertTrue(a >= a)
+        self.assertFalse(a >= c)
+        self.assertTrue(c >= a)
+        self.assertTrue(c >= d)
+        self.assertFalse(d >= c)
+
     def test_repr(self):
         a = ProtocolVersion.create(1, 0)
 

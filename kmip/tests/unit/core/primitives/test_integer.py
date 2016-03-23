@@ -223,3 +223,159 @@ class TestInteger(testtools.TestCase):
         self.assertEqual(len_exp, len_rcv, self.bad_write.format(len_exp,
                                                                  len_rcv))
         self.assertEqual(encoding, result, self.bad_encoding)
+
+    def test_repr(self):
+        """
+        Test that the representation of an Integer is formatted properly.
+        """
+        integer = primitives.Integer()
+        value = "value={0}".format(integer.value)
+        self.assertEqual(
+            "Integer({0})".format(value), repr(integer))
+
+    def test_str(self):
+        """
+        Test that the string representation of an Integer is formatted
+        properly.
+        """
+        self.assertEqual("0", str(primitives.Integer()))
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        Integers.
+        """
+        a = primitives.Integer(1)
+        b = primitives.Integer(1)
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_equal_and_empty(self):
+        """
+        Test that the equality operator returns True when comparing two
+        Integers.
+        """
+        a = primitives.Integer()
+        b = primitives.Integer()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal(self):
+        """
+        Test that the equality operator returns False when comparing two
+        Integers with different values.
+        """
+        a = primitives.Integer(1)
+        b = primitives.Integer(2)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing an
+        Integer to a non-Integer object.
+        """
+        a = primitives.Integer()
+        b = 'invalid'
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing
+        two Integers with the same values.
+        """
+        a = primitives.Integer(1)
+        b = primitives.Integer(1)
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_equal_and_empty(self):
+        """
+        Test that the inequality operator returns False when comparing
+        two Integers.
+        """
+        a = primitives.Integer()
+        b = primitives.Integer()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Integers with different values.
+        """
+        a = primitives.Integer(1)
+        b = primitives.Integer(2)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing an
+        Integer to a non-Integer object.
+        """
+        a = primitives.Integer()
+        b = 'invalid'
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_less_than(self):
+        """
+        Test that the less than operator returns True/False when comparing
+        two Integers with different values.
+        """
+        a = primitives.Integer(1)
+        b = primitives.Integer(2)
+
+        self.assertTrue(a < b)
+        self.assertFalse(b < a)
+        self.assertFalse(a < a)
+
+    def test_greater_than(self):
+        """
+        Test that the greater than operator returns True/False when comparing
+        two Integers with different values.
+        """
+        a = primitives.Integer(1)
+        b = primitives.Integer(2)
+
+        self.assertFalse(a > b)
+        self.assertTrue(b > a)
+        self.assertFalse(b > b)
+
+    def test_less_than_or_equal(self):
+        """
+        Test that the less than or equal operator returns True/False when
+        comparing two Integers with different values.
+        """
+        a = primitives.Integer(1)
+        b = primitives.Integer(2)
+        c = primitives.Integer(1)
+
+        self.assertTrue(a <= b)
+        self.assertFalse(b <= c)
+        self.assertTrue(a <= c)
+        self.assertTrue(a <= a)
+
+    def test_greater_than_or_equal(self):
+        """
+        Test that the greater than or equal operator returns True/False when
+        comparing two Integers with different values.
+        """
+        a = primitives.Integer(1)
+        b = primitives.Integer(2)
+        c = primitives.Integer(1)
+
+        self.assertFalse(a >= b)
+        self.assertTrue(b >= c)
+        self.assertTrue(a >= c)
+        self.assertTrue(a >= a)

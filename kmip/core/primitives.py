@@ -231,10 +231,10 @@ class Integer(Base):
                     raise ValueError('integer value less than accepted min')
 
     def __repr__(self):
-        return "{0}(value={1})".format(type(self).__name__, repr(self.value))
+        return "{0}(value={1})".format(type(self).__name__, self.value)
 
     def __str__(self):
-        return "{0}".format(repr(self.value))
+        return str(self.value)
 
     def __eq__(self, other):
         if isinstance(other, Integer):
@@ -245,6 +245,30 @@ class Integer(Base):
     def __ne__(self, other):
         if isinstance(other, Integer):
             return not self.__eq__(other)
+        else:
+            return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, Integer):
+            return self.value < other.value
+        else:
+            return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, Integer):
+            return self.value > other.value
+        else:
+            return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, Integer):
+            return self.__eq__(other) or self.__lt__(other)
+        else:
+            return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, Integer):
+            return self.__eq__(other) or self.__gt__(other)
         else:
             return NotImplemented
 
