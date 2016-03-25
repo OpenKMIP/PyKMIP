@@ -30,6 +30,8 @@ from kmip.core import misc
 from kmip.core import objects
 from kmip.core import secrets
 
+from kmip.core.factories import attributes as factory
+
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
@@ -37,6 +39,7 @@ from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import query
+from kmip.core.messages.payloads import register
 
 from kmip.pie import objects as pie_objects
 from kmip.pie import sqltypes
@@ -640,16 +643,19 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
+        e._process_register = mock.MagicMock()
         e._process_get = mock.MagicMock()
         e._process_destroy = mock.MagicMock()
         e._process_query = mock.MagicMock()
         e._process_discover_versions = mock.MagicMock()
 
+        e._process_operation(enums.Operation.REGISTER, None)
         e._process_operation(enums.Operation.GET, None)
         e._process_operation(enums.Operation.DESTROY, None)
         e._process_operation(enums.Operation.QUERY, None)
         e._process_operation(enums.Operation.DISCOVER_VERSIONS, None)
 
+        e._process_register.assert_called_with(None)
         e._process_get.assert_called_with(None)
         e._process_destroy.assert_called_with(None)
         e._process_query.assert_called_with(None)
@@ -939,6 +945,634 @@ class TestKmipEngine(testtools.TestCase):
             exceptions.InvalidField,
             regex,
             e._build_core_object,
+            *args
+        )
+
+    def test_process_template_attribute(self):
+        """
+        Test that a template attribute structure can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        name = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Symmetric Key',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+        algorithm = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            enums.CryptographicAlgorithm.AES
+        )
+        length = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+            128
+        )
+        mask = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ]
+        )
+        template_attribute = objects.TemplateAttribute(
+            attributes=[name, algorithm, length, mask]
+        )
+
+        result = e._process_template_attribute(template_attribute)
+
+        self.assertIsInstance(result, dict)
+        self.assertEqual(4, len(result.keys()))
+        self.assertIn('Name', result.keys())
+        self.assertIn('Cryptographic Algorithm', result.keys())
+        self.assertIn('Cryptographic Length', result.keys())
+        self.assertIn('Cryptographic Usage Mask', result.keys())
+
+        self.assertEqual([name.attribute_value], result.get('Name'))
+        self.assertEqual(
+            algorithm.attribute_value,
+            result.get('Cryptographic Algorithm')
+        )
+        self.assertEqual(
+            length.attribute_value,
+            result.get('Cryptographic Length')
+        )
+        self.assertEqual(
+            mask.attribute_value,
+            result.get('Cryptographic Usage Mask')
+        )
+
+    def test_process_template_attribute_unsupported_features(self):
+        """
+        Test that the right errors are generated when unsupported features
+        are referenced while processing a template attribute.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Test that providing template names generates an InvalidField error.
+        template_attribute = objects.TemplateAttribute(
+            names=[
+                attributes.Name.create(
+                    'invalid',
+                    enums.NameType.UNINTERPRETED_TEXT_STRING
+                )
+            ]
+        )
+
+        args = (template_attribute, )
+        regex = "Attribute templates are not supported."
+        self.assertRaisesRegexp(
+            exceptions.ItemNotFound,
+            regex,
+            e._process_template_attribute,
+            *args
+        )
+
+        # Test that an unrecognized attribute generates an InvalidField error.
+        name = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Symmetric Key',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+        name.attribute_name.value = 'invalid'
+        template_attribute = objects.TemplateAttribute(attributes=[name])
+
+        args = (template_attribute, )
+        regex = "The invalid attribute is unsupported."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_template_attribute,
+            *args
+        )
+
+        # Test that missing indices generate an InvalidField error.
+        name_a = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Symmetric Key',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+        name_b = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Symmetric Key',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+
+        template_attribute = objects.TemplateAttribute(
+            attributes=[name_a, name_b]
+        )
+
+        args = (template_attribute, )
+        regex = "Attribute index missing from multivalued attribute."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_template_attribute,
+            *args
+        )
+
+        # Test that a non-zero index generates an InvalidField error.
+        algorithm = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            enums.CryptographicAlgorithm.AES,
+            1
+        )
+        template_attribute = objects.TemplateAttribute(attributes=[algorithm])
+
+        args = (template_attribute, )
+        regex = "Non-zero attribute index found for single-valued attribute."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_template_attribute,
+            *args
+        )
+
+        # Test that setting multiple values for a single-value attribute
+        # generates an InvalidField error.
+        algorithm_a = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            enums.CryptographicAlgorithm.AES
+        )
+        algorithm_b = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            enums.CryptographicAlgorithm.TRIPLE_DES
+        )
+
+        template_attribute = objects.TemplateAttribute(
+            attributes=[algorithm_a, algorithm_b]
+        )
+
+        args = (template_attribute, )
+        regex = (
+            "Cannot set multiple instances of the Cryptographic Algorithm "
+            "attribute."
+        )
+        self.assertRaisesRegexp(
+            exceptions.IndexOutOfBounds,
+            regex,
+            e._process_template_attribute,
+            *args
+        )
+
+    def test_set_attributes_on_managed_object(self):
+        """
+        Test that multiple attributes can be set on a given managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SecretData(
+            b'',
+            enums.SecretDataType.PASSWORD
+        )
+        managed_object.names = []
+        attribute_factory = factory.AttributeFactory()
+
+        name = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Secret Data',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+        mask = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ]
+        )
+        template_attribute = objects.TemplateAttribute(
+            attributes=[name, mask]
+        )
+        object_attributes = e._process_template_attribute(template_attribute)
+
+        self.assertEqual([], managed_object.names)
+        self.assertEqual([], managed_object.cryptographic_usage_masks)
+
+        e._set_attributes_on_managed_object(
+            managed_object,
+            object_attributes
+        )
+
+        self.assertEqual(['Test Secret Data'], managed_object.names)
+        self.assertEqual(
+            [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ],
+            managed_object.cryptographic_usage_masks
+        )
+
+    def test_set_attributes_on_managed_object_attribute_mismatch(self):
+        """
+        Test that an InvalidField error is generated when attempting to set
+        an attribute that is not applicable for a given managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.OpaqueObject(
+            b'',
+            enums.OpaqueDataType.NONE
+        )
+        attribute_factory = factory.AttributeFactory()
+
+        mask = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ]
+        )
+        template_attribute = objects.TemplateAttribute(attributes=[mask])
+        object_attributes = e._process_template_attribute(template_attribute)
+
+        args = (managed_object, object_attributes)
+        regex = (
+            "Cannot set Cryptographic Usage Mask attribute on OpaqueData "
+            "object."
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._set_attributes_on_managed_object,
+            *args
+        )
+
+    def test_set_attribute_on_managed_object(self):
+        """
+        Test that various attributes can be set correctly on a given
+        managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        name = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Symmetric Key',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+        algorithm = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            enums.CryptographicAlgorithm.AES
+        )
+        length = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+            0
+        )
+        mask = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ]
+        )
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        managed_object.names = []
+
+        self.assertEqual([], managed_object.names)
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            managed_object.cryptographic_algorithm
+        )
+        self.assertEqual(0, managed_object.cryptographic_length)
+        self.assertEqual([], managed_object.cryptographic_usage_masks)
+
+        e._set_attribute_on_managed_object(
+            managed_object,
+            ('Name', [name.attribute_value])
+        )
+
+        self.assertEqual(['Test Symmetric Key'], managed_object.names)
+
+        e._set_attribute_on_managed_object(
+            managed_object,
+            ('Cryptographic Algorithm', algorithm.attribute_value)
+        )
+
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            managed_object.cryptographic_algorithm
+        )
+
+        e._set_attribute_on_managed_object(
+            managed_object,
+            ('Cryptographic Length', length.attribute_value)
+        )
+
+        self.assertEqual(0, managed_object.cryptographic_length)
+
+        e._set_attribute_on_managed_object(
+            managed_object,
+            ('Cryptographic Usage Mask', mask.attribute_value)
+        )
+
+        self.assertEqual(
+            [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ],
+            managed_object.cryptographic_usage_masks
+        )
+
+    def test_set_attribute_on_managed_object_unsupported_features(self):
+        """
+        Test that the right errors are generated when unsupported features
+        are referenced while setting managed object attributes.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            8,
+            b'\x00'
+        )
+
+        # Test that multiple duplicate names cannot be set on an object.
+        name_a = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Symmetric Key',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+        name_b = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Symmetric Key',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+
+        args = (
+            managed_object,
+            ('Name', [name_a.attribute_value, name_b.attribute_value])
+        )
+        regex = "Cannot set duplicate name values."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._set_attribute_on_managed_object,
+            *args
+        )
+
+        # Test that a multivalued, unsupported attribute cannot be set on an
+        # object.
+        name_a = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Symmetric Key',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+        name_b = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                'Test Symmetric Key',
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+
+        args = (
+            managed_object,
+            ('Digest', [name_a.attribute_value, name_b.attribute_value])
+        )
+        regex = "The Digest attribute is unsupported."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._set_attribute_on_managed_object,
+            *args
+        )
+
+        # Test that a set attribute cannot be overwritten.
+        length = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+            128
+        )
+
+        args = (
+            managed_object,
+            ('Cryptographic Length', length.attribute_value)
+        )
+        regex = "Cannot overwrite the Cryptographic Length attribute."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._set_attribute_on_managed_object,
+            *args
+        )
+
+        # Test that an unsupported attribute cannot be set.
+        object_group = attribute_factory.create_attribute(
+            enums.AttributeType.OBJECT_GROUP,
+            'Test Group'
+        )
+
+        args = (
+            managed_object,
+            ('Object Group', object_group.attribute_value)
+        )
+        regex = "The Object Group attribute is unsupported."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._set_attribute_on_managed_object,
+            *args
+        )
+
+    def test_register(self):
+        """
+        Test that a Register request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Build a SymmetricKey for registration.
+        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        template_attribute = objects.TemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Symmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.AES
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    128
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT,
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        key_bytes = (
+            b'\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
+        secret = secrets.SymmetricKey(
+            key_block=objects.KeyBlock(
+                key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
+                key_value=objects.KeyValue(
+                    key_material=objects.KeyMaterial(key_bytes)
+                ),
+                cryptographic_algorithm=attributes.CryptographicAlgorithm(
+                    enums.CryptographicAlgorithm.AES
+                ),
+                cryptographic_length=attributes.CryptographicLength(128)
+            )
+        )
+
+        payload = register.RegisterRequestPayload(
+            object_type=object_type,
+            template_attribute=template_attribute,
+            secret=secret
+        )
+
+        response_payload = e._process_register(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Register"
+        )
+
+        uid = response_payload.unique_identifier.value
+        self.assertEqual('1', uid)
+
+        # Retrieve the stored object and verify all attributes were set
+        # appropriately.
+        symmetric_key = e._data_session.query(
+            pie_objects.SymmetricKey
+        ).filter(
+            pie_objects.ManagedObject.unique_identifier == uid
+        ).one()
+        self.assertEqual(
+            enums.KeyFormatType.RAW,
+            symmetric_key.key_format_type
+        )
+        self.assertEqual(1, len(symmetric_key.names))
+        self.assertIn('Test Symmetric Key', symmetric_key.names)
+        self.assertEqual(key_bytes, symmetric_key.value)
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            symmetric_key.cryptographic_algorithm
+        )
+        self.assertEqual(128, symmetric_key.cryptographic_length)
+        self.assertEqual(2, len(symmetric_key.cryptographic_usage_masks))
+        self.assertIn(
+            enums.CryptographicUsageMask.ENCRYPT,
+            symmetric_key.cryptographic_usage_masks
+        )
+        self.assertIn(
+            enums.CryptographicUsageMask.DECRYPT,
+            symmetric_key.cryptographic_usage_masks
+        )
+
+        self.assertEqual(uid, e._id_placeholder)
+
+    def test_register_unsupported_object_type(self):
+        """
+        Test that an InvalidField error is generated when attempting to
+        register an unsupported object type.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        object_type = attributes.ObjectType(enums.ObjectType.SPLIT_KEY)
+        payload = register.RegisterRequestPayload(object_type=object_type)
+
+        args = (payload, )
+        regex = "The SplitKey object type is not supported."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_register,
+            *args
+        )
+
+    def test_request_omitting_secret(self):
+        """
+        Test that an InvalidField error is generate when trying to register
+        a secret in absentia.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        payload = register.RegisterRequestPayload(object_type=object_type)
+
+        args = (payload, )
+        regex = "Cannot register a secret in absentia."
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_register,
             *args
         )
 
@@ -1278,18 +1912,22 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsInstance(result, query.QueryResponsePayload)
         self.assertIsNotNone(result.operations)
-        self.assertEqual(3, len(result.operations))
+        self.assertEqual(4, len(result.operations))
         self.assertEqual(
-            enums.Operation.GET,
+            enums.Operation.REGISTER,
             result.operations[0].value
         )
         self.assertEqual(
-            enums.Operation.DESTROY,
+            enums.Operation.GET,
             result.operations[1].value
         )
         self.assertEqual(
-            enums.Operation.QUERY,
+            enums.Operation.DESTROY,
             result.operations[2].value
+        )
+        self.assertEqual(
+            enums.Operation.QUERY,
+            result.operations[3].value
         )
         self.assertEqual(list(), result.object_types)
         self.assertIsNotNone(result.vendor_identification)
@@ -1309,7 +1947,7 @@ class TestKmipEngine(testtools.TestCase):
 
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsNotNone(result.operations)
-        self.assertEqual(4, len(result.operations))
+        self.assertEqual(5, len(result.operations))
         self.assertEqual(
             enums.Operation.DISCOVER_VERSIONS,
             result.operations[-1].value
@@ -1380,3 +2018,141 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: DiscoverVersions"
         )
         self.assertEqual([], result.protocol_versions)
+
+    def test_register_get_destroy(self):
+        """
+        Test that a managed object can be registered, retrieved, and destroyed
+        without error.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Build a SymmetricKey for registration.
+        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        template_attribute = objects.TemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Symmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.AES
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    128
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT,
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        key_bytes = (
+            b'\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
+        secret = secrets.SymmetricKey(
+            key_block=objects.KeyBlock(
+                key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
+                key_value=objects.KeyValue(
+                    key_material=objects.KeyMaterial(key_bytes)
+                ),
+                cryptographic_algorithm=attributes.CryptographicAlgorithm(
+                    enums.CryptographicAlgorithm.AES
+                ),
+                cryptographic_length=attributes.CryptographicLength(128)
+            )
+        )
+
+        # Register the symmetric key with the corresponding attributes
+        payload = register.RegisterRequestPayload(
+            object_type=object_type,
+            template_attribute=template_attribute,
+            secret=secret
+        )
+
+        response_payload = e._process_register(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Register"
+        )
+
+        uid = response_payload.unique_identifier.value
+        self.assertEqual('1', uid)
+
+        e._logger.reset_mock()
+
+        # Retrieve the registered key using Get and verify all fields set
+        payload = get.GetRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(uid)
+        )
+
+        response_payload = e._process_get(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
+        )
+        self.assertEqual(
+            enums.ObjectType.SYMMETRIC_KEY,
+            response_payload.object_type.value
+        )
+        self.assertEqual(str(uid), response_payload.unique_identifier.value)
+        self.assertIsInstance(response_payload.secret, secrets.SymmetricKey)
+        self.assertEqual(
+            key_bytes,
+            response_payload.secret.key_block.key_value.key_material.value
+        )
+        self.assertEqual(
+            enums.KeyFormatType.RAW,
+            response_payload.secret.key_block.key_format_type.value
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            response_payload.secret.key_block.cryptographic_algorithm.value
+        )
+        self.assertEqual(
+            128,
+            response_payload.secret.key_block.cryptographic_length.value
+        )
+
+        e._logger.reset_mock()
+
+        # Destroy the symmetric key and verify it cannot be accessed again
+        payload = destroy.DestroyRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(uid)
+        )
+
+        response_payload = e._process_destroy(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Destroy"
+        )
+        self.assertEqual(str(uid), response_payload.unique_identifier.value)
+        self.assertRaises(
+            exc.NoResultFound,
+            e._data_session.query(pie_objects.OpaqueObject).filter(
+                pie_objects.ManagedObject.unique_identifier == uid
+            ).one
+        )
+
+        e._data_session.commit()
+        e._data_store_session_factory()

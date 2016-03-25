@@ -14,6 +14,7 @@
 # under the License.
 
 import logging
+import six
 import sqlalchemy
 
 from sqlalchemy.orm import exc
@@ -35,12 +36,15 @@ from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import query
+from kmip.core.messages.payloads import register
 
 from kmip.core import misc
 
-from kmip.pie import sqltypes
+from kmip.pie import factory
 from kmip.pie import objects
+from kmip.pie import sqltypes
 
+from kmip.services.server import policy
 from kmip.services.server.crypto import engine
 
 
@@ -63,6 +67,9 @@ class KmipEngine(object):
         * Key compression
         * Key wrapping
         * Key format conversions
+        * Registration of empty managed objects (e.g., Private Keys)
+        * Managed object state tracking
+        * Managed object usage limit tracking and enforcement
     """
 
     def __init__(self):
@@ -105,6 +112,8 @@ class KmipEngine(object):
             enums.ObjectType.OPAQUE_DATA: objects.OpaqueObject
         }
 
+        self._attribute_policy = policy.AttributePolicy(self._protocol_version)
+
     def _kmip_version_supported(supported):
         def decorator(function):
             def wrapper(self, *args, **kwargs):
@@ -133,6 +142,9 @@ class KmipEngine(object):
     def _set_protocol_version(self, protocol_version):
         if protocol_version in self._protocol_versions:
             self._protocol_version = protocol_version
+            self._attribute_policy = policy.AttributePolicy(
+                self._protocol_version
+            )
         else:
             raise exceptions.InvalidMessage(
                 "KMIP {0} is not supported by the server.".format(
@@ -479,8 +491,134 @@ class KmipEngine(object):
         secret_factory = secrets.SecretFactory()
         return secret_factory.create(object_type, value)
 
+    def _process_template_attribute(self, template_attribute):
+        """
+        Given a kmip.core TemplateAttribute object, extract the attribute
+        value data into a usable dictionary format.
+        """
+        attributes = {}
+
+        if len(template_attribute.names) > 0:
+            raise exceptions.ItemNotFound(
+                "Attribute templates are not supported."
+            )
+
+        for attribute in template_attribute.attributes:
+            name = attribute.attribute_name.value
+
+            if not self._attribute_policy.is_attribute_supported(name):
+                raise exceptions.InvalidField(
+                    "The {0} attribute is unsupported.".format(name)
+                )
+
+            if self._attribute_policy.is_attribute_multivalued(name):
+                values = attributes.get(name, list())
+                if (not attribute.attribute_index) and len(values) > 0:
+                    raise exceptions.InvalidField(
+                        "Attribute index missing from multivalued attribute."
+                    )
+
+                values.append(attribute.attribute_value)
+                attributes.update([(name, values)])
+            else:
+                if attribute.attribute_index:
+                    if attribute.attribute_index.value != 0:
+                        raise exceptions.InvalidField(
+                            "Non-zero attribute index found for "
+                            "single-valued attribute."
+                        )
+                value = attributes.get(name, None)
+                if value:
+                    raise exceptions.IndexOutOfBounds(
+                        "Cannot set multiple instances of the "
+                        "{0} attribute.".format(name)
+                    )
+                else:
+                    attributes.update([(name, attribute.attribute_value)])
+
+        return attributes
+
+    def _set_attributes_on_managed_object(self, managed_object, attributes):
+        """
+        Given a kmip.pie object and a dictionary of attributes, attempt to set
+        the attribute values on the object.
+        """
+        for attribute_name, attribute_value in six.iteritems(attributes):
+            object_type = managed_object._object_type
+            if self._attribute_policy.is_attribute_applicable_to_object_type(
+                    attribute_name,
+                    object_type):
+                self._set_attribute_on_managed_object(
+                    managed_object,
+                    (attribute_name, attribute_value)
+                )
+            else:
+                name = object_type.name
+                raise exceptions.InvalidField(
+                    "Cannot set {0} attribute on {1} object.".format(
+                        attribute_name,
+                        ''.join([x.capitalize() for x in name.split('_')])
+                    )
+                )
+
+    def _set_attribute_on_managed_object(self, managed_object, attribute):
+        """
+        Set the attribute value on the kmip.pie managed object.
+        """
+        attribute_name = attribute[0]
+        attribute_value = attribute[1]
+
+        if self._attribute_policy.is_attribute_multivalued(attribute_name):
+            if attribute_name == 'Name':
+                managed_object.names.extend(
+                    [x.name_value.value for x in attribute_value]
+                )
+                for name in managed_object.names:
+                    if managed_object.names.count(name) > 1:
+                        raise exceptions.InvalidField(
+                            "Cannot set duplicate name values."
+                        )
+            else:
+                # TODO (peterhamilton) Remove when all attributes are supported
+                raise exceptions.InvalidField(
+                    "The {0} attribute is unsupported.".format(attribute_name)
+                )
+        else:
+            field = None
+            value = attribute_value.value
+
+            if attribute_name == 'Cryptographic Algorithm':
+                field = 'cryptographic_algorithm'
+            elif attribute_name == 'Cryptographic Length':
+                field = 'cryptographic_length'
+            elif attribute_name == 'Cryptographic Usage Mask':
+                field = 'cryptographic_usage_masks'
+                value = list()
+                for e in enums.CryptographicUsageMask:
+                    if e.value & attribute_value.value:
+                        value.append(e)
+
+            if field:
+                existing_value = getattr(managed_object, field)
+                if existing_value:
+                    if existing_value != value:
+                        raise exceptions.InvalidField(
+                            "Cannot overwrite the {0} attribute.".format(
+                                attribute_name
+                            )
+                        )
+                else:
+                    setattr(managed_object, field, value)
+            else:
+                # TODO (peterhamilton) Remove when all attributes are supported
+                raise exceptions.InvalidField(
+                    "The {0} attribute is unsupported.".format(attribute_name)
+                )
+
     def _process_operation(self, operation, payload):
-        if operation == enums.Operation.GET:
+        if operation == enums.Operation.REGISTER:
+            return self._process_register(payload)
+        elif operation == enums.Operation.GET:
             return self._process_get(payload)
         elif operation == enums.Operation.DESTROY:
             return self._process_destroy(payload)
@@ -494,6 +632,65 @@ class KmipEngine(object):
                     operation.name.title()
                 )
             )
+
+    @_kmip_version_supported('1.0')
+    def _process_register(self, payload):
+        self._logger.info("Processing operation: Register")
+
+        object_type = payload.object_type.value
+        template_attribute = payload.template_attribute
+
+        if self._object_map.get(object_type) is None:
+            name = object_type.name
+            raise exceptions.InvalidField(
+                "The {0} object type is not supported.".format(
+                    ''.join(
+                        [x.capitalize() for x in name.split('_')]
+                    )
+                )
+            )
+
+        if payload.secret:
+            secret = payload.secret
+        else:
+            # TODO (peterhamilton) It is possible to register 'empty' secrets
+            # like Private Keys. For now, that feature is not supported.
+            raise exceptions.InvalidField(
+                "Cannot register a secret in absentia."
+            )
+
+        object_attributes = {}
+        if template_attribute:
+            object_attributes = self._process_template_attribute(
+                template_attribute
+            )
+
+        managed_object_factory = factory.ObjectFactory()
+        managed_object = managed_object_factory.convert(secret)
+        managed_object.names = []
+
+        self._set_attributes_on_managed_object(
+            managed_object,
+            object_attributes
+        )
+
+        # TODO (peterhamilton) Set additional server-only attributes.
+
+        self._data_session.add(managed_object)
+
+        # NOTE (peterhamilton) SQLAlchemy will *not* assign an ID until
+        # commit is called. This makes future support for UNDO problematic.
+        self._data_session.commit()
+
+        response_payload = register.RegisterResponsePayload(
+            unique_identifier=attributes.UniqueIdentifier(
+                str(managed_object.unique_identifier)
+            )
+        )
+
+        self._id_placeholder = str(managed_object.unique_identifier)
+
+        return response_payload
 
     @_kmip_version_supported('1.0')
     def _process_get(self, payload):
@@ -592,6 +789,7 @@ class KmipEngine(object):
 
         if enums.QueryFunction.QUERY_OPERATIONS in queries:
             operations = list([
+                contents.Operation(enums.Operation.REGISTER),
                 contents.Operation(enums.Operation.GET),
                 contents.Operation(enums.Operation.DESTROY),
                 contents.Operation(enums.Operation.QUERY)
