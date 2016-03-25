@@ -20,6 +20,8 @@ from kmip.core.attributes import PrivateKeyUniqueIdentifier
 from kmip.core.enums import AuthenticationSuite
 from kmip.core.enums import ConformanceClause
 from kmip.core.enums import CredentialType
+from kmip.core.enums import ResultStatus as ResultStatusEnum
+from kmip.core.enums import ResultReason as ResultReasonEnum
 from kmip.core.enums import Operation as OperationEnum
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
 
@@ -31,6 +33,9 @@ from kmip.core.messages.messages import RequestBatchItem
 from kmip.core.messages.messages import ResponseBatchItem
 from kmip.core.messages.messages import ResponseMessage
 from kmip.core.messages.contents import Operation
+from kmip.core.messages.contents import ResultStatus
+from kmip.core.messages.contents import ResultReason
+from kmip.core.messages.contents import ResultMessage
 from kmip.core.messages.contents import ProtocolVersion
 from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
@@ -56,6 +61,7 @@ from kmip.services.kmip_client import KMIPProxy
 from kmip.services.results import CreateKeyPairResult
 from kmip.services.results import DiscoverVersionsResult
 from kmip.services.results import GetAttributeListResult
+from kmip.services.results import OperationResult
 from kmip.services.results import QueryResult
 from kmip.services.results import RekeyKeyPairResult
 
@@ -373,6 +379,28 @@ class TestKMIPClient(TestCase):
         msg = "number of results " + base.format(0, len(results))
         self.assertEqual(0, len(results), msg)
 
+    def test_process_batch_item_with_error(self):
+        result_status = ResultStatus(ResultStatusEnum.OPERATION_FAILED)
+        result_reason = ResultReason(ResultReasonEnum.INVALID_MESSAGE)
+        result_message = ResultMessage("message")
+
+        batch_item = ResponseBatchItem(
+            result_status=result_status,
+            result_reason=result_reason,
+            result_message=result_message)
+        response = ResponseMessage(batch_items=[batch_item])
+        results = self.client._process_batch_items(response)
+
+        base = "expected {0}, received {1}"
+        msg = "number of results " + base.format(1, len(results))
+        self.assertEqual(1, len(results), msg)
+
+        result = results[0]
+        self.assertIsInstance(result, OperationResult)
+        self.assertEqual(result.result_status, result_status)
+        self.assertEqual(result.result_reason, result_reason)
+        self.assertEqual(result.result_message.value, "message")
+
     def test_get_batch_item_processor(self):
         base = "expected {0}, received {1}"
 
@@ -389,7 +417,8 @@ class TestKMIPClient(TestCase):
         self.assertEqual(expected, observed, msg)
 
         self.assertRaisesRegexp(ValueError, "no processor for operation",
-                                self.client._get_batch_item_processor, None)
+                                self.client._get_batch_item_processor,
+                                0xA5A5A5A5)
 
         expected = self.client._process_get_attribute_list_batch_item
         observed = self.client._get_batch_item_processor(

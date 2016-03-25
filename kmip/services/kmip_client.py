@@ -21,6 +21,7 @@ from kmip.services.results import DiscoverVersionsResult
 from kmip.services.results import GetResult
 from kmip.services.results import GetAttributeListResult
 from kmip.services.results import LocateResult
+from kmip.services.results import OperationResult
 from kmip.services.results import QueryResult
 from kmip.services.results import RegisterResult
 from kmip.services.results import RekeyKeyPairResult
@@ -485,14 +486,18 @@ class KMIPProxy(KMIP):
     def _process_batch_items(self, response):
         results = []
         for batch_item in response.batch_items:
-            operation = batch_item.operation.value
+            operation = None
+            if batch_item.operation is not None:
+                operation = batch_item.operation.value
             processor = self._get_batch_item_processor(operation)
             result = processor(batch_item)
             results.append(result)
         return results
 
     def _get_batch_item_processor(self, operation):
-        if operation == OperationEnum.CREATE_KEY_PAIR:
+        if operation is None:
+            return self._process_response_error
+        elif operation == OperationEnum.CREATE_KEY_PAIR:
             return self._process_create_key_pair_batch_item
         elif operation == OperationEnum.GET_ATTRIBUTE_LIST:
             return self._process_get_attribute_list_batch_item
@@ -589,6 +594,12 @@ class KMIPProxy(KMIP):
             batch_item.result_status, batch_item.result_reason,
             batch_item.result_message, payload.protocol_versions)
 
+        return result
+
+    def _process_response_error(self, batch_item):
+        result = OperationResult(
+            batch_item.result_status, batch_item.result_reason,
+            batch_item.result_message)
         return result
 
     def _get(self,
