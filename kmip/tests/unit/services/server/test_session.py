@@ -38,6 +38,12 @@ class TestKmipSession(testtools.TestCase):
         """
         session.KmipSession(None, None, 'name')
 
+    def test_init_without_name(self):
+        """
+        Test that a KmipSession without 'name' can be created without errors.
+        """
+        session.KmipSession(None, None, None)
+
     def test_run(self):
         """
         Test that the message handling loop is handled properly on normal
