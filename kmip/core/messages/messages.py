@@ -288,12 +288,13 @@ class ResponseBatchItem(Struct):
             self.async_correlation_value = AsynchronousCorrelationValue()
             self.async_correlation_value.read(tstream)
 
-        # Dynamically create the response payload class that belongs to the
-        # operation
-        expected = self.payload_factory.create(self.operation.value)
-        if self.is_tag_next(expected.tag, tstream):
-            self.response_payload = expected
-            self.response_payload.read(tstream)
+        if (self.operation is not None):
+            # Dynamically create the response payload class that belongs to the
+            # operation
+            expected = self.payload_factory.create(self.operation.value)
+            if self.is_tag_next(expected.tag, tstream):
+                self.response_payload = expected
+                self.response_payload.read(tstream)
 
         # Read the message extension if it is present
         if self.is_tag_next(Tags.MESSAGE_EXTENSION, tstream):

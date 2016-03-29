@@ -1050,6 +1050,19 @@ class TestResponseMessage(TestCase):
             b'\x34\x39\x61\x31\x63\x61\x38\x38\x2d\x36\x62\x65\x61\x2d\x34\x66'
             b'\x62\x32\x2d\x62\x34\x35\x30\x2d\x37\x65\x35\x38\x38\x30\x32\x63'
             b'\x33\x30\x33\x38\x00\x00\x00\x00')
+        self.invalid_message_response = (
+            b'\x42\x00\x7b\x01\x00\x00\x00\xb0\x42\x00\x7a\x01\x00\x00\x00\x48'
+            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x92\x09\x00\x00\x00\x08'
+            b'\x00\x00\x00\x00\x56\xfa\x43\xbd\x42\x00\x0d\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x58'
+            b'\x42\x00\x7f\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x7e\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b'\x42\x00\x7d\x07\x00\x00\x00\x2a\x44\x65\x66\x61\x75\x6c\x74\x20'
+            b'\x72\x65\x73\x70\x6f\x6e\x73\x65\x2e\x20\x4e\x6f\x20\x6f\x70\x65'
+            b'\x72\x61\x74\x69\x6f\x6e\x73\x20\x73\x75\x70\x70\x6f\x72\x74\x65'
+            b'\x64\x2e\x00\x00\x00\x00\x00\x00')
 
     def tearDown(self):
         super(TestResponseMessage, self).tearDown()
@@ -1761,3 +1774,41 @@ class TestResponseMessage(TestCase):
                                          len_exp, len_rcv))
         msg = "Bad response message write: encoding mismatch"
         self.assertEqual(self.locate, result, msg)
+
+    def test_message_invalid_response_write(self):
+        # Batch item of 'INVALID MESSAGE' response
+        # has no 'operation' attribute
+        prot_ver = contents.ProtocolVersion.create(1, 1)
+
+        # Time stamp Tue Mar 29 10:58:37 2016
+        time_stamp = contents.TimeStamp(0x56fa43bd)
+
+        batch_count = contents.BatchCount(1)
+        resp_hdr = messages.ResponseHeader(protocol_version=prot_ver,
+                                           time_stamp=time_stamp,
+                                           batch_count=batch_count)
+
+        result_status = contents.ResultStatus(
+            enums.ResultStatus.OPERATION_FAILED)
+        result_reason = contents.ResultReason(
+            enums.ResultReason.INVALID_MESSAGE)
+        result_message = contents.ResultMessage(
+            "Default response. No operations supported.")
+
+        batch_item = messages.ResponseBatchItem(result_status=result_status,
+                                                result_reason=result_reason,
+                                                result_message=result_message)
+
+        response_message = messages.ResponseMessage(response_header=resp_hdr,
+                                                    batch_items=[batch_item])
+
+        response_message.write(self.stream)
+
+        result = self.stream.read()
+        len_exp = len(self.invalid_message_response)
+        len_rcv = len(result)
+        self.assertEqual(len_exp, len_rcv,
+                         self.msg.format('response message', 'write',
+                                         len_exp, len_rcv))
+        msg = "Bad response message write: encoding mismatch"
+        self.assertEqual(self.invalid_message_response, result, msg)
