@@ -32,6 +32,7 @@ from kmip.core.factories import secrets
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
+from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
@@ -616,7 +617,9 @@ class KmipEngine(object):
                 )
 
     def _process_operation(self, operation, payload):
-        if operation == enums.Operation.REGISTER:
+        if operation == enums.Operation.CREATE:
+            return self._process_create(payload)
+        elif operation == enums.Operation.REGISTER:
             return self._process_register(payload)
         elif operation == enums.Operation.GET:
             return self._process_get(payload)
@@ -632,6 +635,92 @@ class KmipEngine(object):
                     operation.name.title()
                 )
             )
+
+    @_kmip_version_supported('1.0')
+    def _process_create(self, payload):
+        self._logger.info("Processing operation: Create")
+
+        object_type = payload.object_type.value
+        template_attribute = payload.template_attribute
+
+        if object_type != enums.ObjectType.SYMMETRIC_KEY:
+            name = object_type.name
+            raise exceptions.InvalidField(
+                "Cannot create a {0} object with the Create operation.".format(
+                    ''.join([x.capitalize() for x in name.split('_')])
+                )
+            )
+
+        object_attributes = {}
+        if template_attribute:
+            object_attributes = self._process_template_attribute(
+                template_attribute
+            )
+
+        algorithm = object_attributes.get('Cryptographic Algorithm')
+        if algorithm:
+            algorithm = algorithm.value
+        else:
+            raise exceptions.InvalidField(
+                "The cryptographic algorithm must be specified as an "
+                "attribute."
+            )
+
+        length = object_attributes.get('Cryptographic Length')
+        if length:
+            length = length.value
+        else:
+            # TODO (peterhamilton) The cryptographic length is technically not
+            # required per the spec. Update the CryptographyEngine to accept a
+            # None length, allowing it to pick the length dynamically. Default
+            # to the strongest key size allowed for the algorithm type.
+            raise exceptions.InvalidField(
+                "The cryptographic length must be specified as an attribute."
+            )
+
+        usage_mask = object_attributes.get('Cryptographic Usage Mask')
+        if usage_mask is None:
+            raise exceptions.InvalidField(
+                "The cryptographic usage mask must be specified as an "
+                "attribute."
+            )
+
+        result = self._cryptography_engine.create_symmetric_key(
+            algorithm,
+            length
+        )
+
+        managed_object = objects.SymmetricKey(
+            algorithm,
+            length,
+            result.get('value')
+        )
+        managed_object.names = []
+
+        self._set_attributes_on_managed_object(
+            managed_object,
+            object_attributes
+        )
+
+        # TODO (peterhamilton) Set additional server-only attributes.
+
+        self._data_session.add(managed_object)
+
+        # NOTE (peterhamilton) SQLAlchemy will *not* assign an ID until
+        # commit is called. This makes future support for UNDO problematic.
+        self._data_session.commit()
+
+        response_payload = create.CreateResponsePayload(
+            object_type=payload.object_type,
+            unique_identifier=attributes.UniqueIdentifier(
+                str(managed_object.unique_identifier)
+            ),
+            template_attribute=None
+        )
+
+        self._id_placeholder = str(managed_object.unique_identifier)
+
+        return response_payload
 
     @_kmip_version_supported('1.0')
     def _process_register(self, payload):
@@ -789,6 +878,7 @@ class KmipEngine(object):
 
         if enums.QueryFunction.QUERY_OPERATIONS in queries:
             operations = list([
+                contents.Operation(enums.Operation.CREATE),
                 contents.Operation(enums.Operation.REGISTER),
                 contents.Operation(enums.Operation.GET),
                 contents.Operation(enums.Operation.DESTROY),
