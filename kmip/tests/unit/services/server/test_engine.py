@@ -36,6 +36,7 @@ from kmip.core.messages import contents
 from kmip.core.messages import messages
 
 from kmip.core.messages.payloads import create
+from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
@@ -645,6 +646,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger = mock.MagicMock()
 
         e._process_create = mock.MagicMock()
+        e._process_create_key_pair = mock.MagicMock()
         e._process_register = mock.MagicMock()
         e._process_get = mock.MagicMock()
         e._process_destroy = mock.MagicMock()
@@ -652,6 +654,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_discover_versions = mock.MagicMock()
 
         e._process_operation(enums.Operation.CREATE, None)
+        e._process_operation(enums.Operation.CREATE_KEY_PAIR, None)
         e._process_operation(enums.Operation.REGISTER, None)
         e._process_operation(enums.Operation.GET, None)
         e._process_operation(enums.Operation.DESTROY, None)
@@ -659,6 +662,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_operation(enums.Operation.DISCOVER_VERSIONS, None)
 
         e._process_create.assert_called_with(None)
+        e._process_create_key_pair.assert_called_with(None)
         e._process_register.assert_called_with(None)
         e._process_get.assert_called_with(None)
         e._process_destroy.assert_called_with(None)
@@ -1690,6 +1694,682 @@ class TestKmipEngine(testtools.TestCase):
         )
         e._logger.reset_mock()
 
+    def test_create_key_pair(self):
+        """
+        Test that a CreateKeyPair request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        response_payload = e._process_create_key_pair(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+
+        public_id = response_payload.public_key_uuid.value
+        self.assertEqual('1', public_id)
+        private_id = response_payload.private_key_uuid.value
+        self.assertEqual('2', private_id)
+
+        # Retrieve the stored public key and verify all attributes were set
+        # appropriately.
+        public_key = e._data_session.query(
+            pie_objects.PublicKey
+        ).filter(
+            pie_objects.ManagedObject.unique_identifier == public_id
+        ).one()
+        self.assertEqual(
+            enums.KeyFormatType.PKCS_1,
+            public_key.key_format_type
+        )
+        self.assertEqual(1, len(public_key.names))
+        self.assertIn('Test Asymmetric Key', public_key.names)
+        self.assertEqual(
+            enums.CryptographicAlgorithm.RSA,
+            public_key.cryptographic_algorithm
+        )
+        self.assertEqual(2048, public_key.cryptographic_length)
+        self.assertEqual(1, len(public_key.cryptographic_usage_masks))
+        self.assertIn(
+            enums.CryptographicUsageMask.ENCRYPT,
+            public_key.cryptographic_usage_masks
+        )
+
+        # Retrieve the stored private key and verify all attributes were set
+        # appropriately.
+        private_key = e._data_session.query(
+            pie_objects.PrivateKey
+        ).filter(
+            pie_objects.ManagedObject.unique_identifier == private_id
+        ).one()
+        self.assertEqual(
+            enums.KeyFormatType.PKCS_8,
+            private_key.key_format_type
+        )
+        self.assertEqual(1, len(private_key.names))
+        self.assertIn('Test Asymmetric Key', private_key.names)
+        self.assertEqual(
+            enums.CryptographicAlgorithm.RSA,
+            private_key.cryptographic_algorithm
+        )
+        self.assertEqual(2048, private_key.cryptographic_length)
+        self.assertEqual(1, len(private_key.cryptographic_usage_masks))
+        self.assertIn(
+            enums.CryptographicUsageMask.DECRYPT,
+            private_key.cryptographic_usage_masks
+        )
+
+        self.assertEqual(private_id, e._id_placeholder)
+
+    def test_create_key_pair_omitting_attributes(self):
+        """
+        Test that the right errors are generated when required attributes
+        are missing from a CreateKeyPair request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Test that a missing PublicKey CryptographicAlgorithm raises an error
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        args = (payload, )
+        regex = (
+            "The cryptographic algorithm must be specified as an attribute "
+            "for the public key."
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_create_key_pair,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+        e._logger.reset_mock()
+
+        # Test that a missing PrivateKey CryptographicAlgorithm raises an error
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        args = (payload, )
+        regex = (
+            "The cryptographic algorithm must be specified as an attribute "
+            "for the private key."
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_create_key_pair,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+        e._logger.reset_mock()
+
+        # Test that a missing PublicKey CryptographicLength raises an error
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        args = (payload, )
+        regex = (
+            "The cryptographic length must be specified as an attribute for "
+            "the public key."
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_create_key_pair,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+        e._logger.reset_mock()
+
+        # Test that a missing PrivateKey CryptographicLength raises an error
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        args = (payload, )
+        regex = (
+            "The cryptographic length must be specified as an attribute for "
+            "the private key."
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_create_key_pair,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+        e._logger.reset_mock()
+
+        # Test that a missing PublicKey CryptographicUsageMask raises an error
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        args = (payload, )
+        regex = (
+            "The cryptographic usage mask must be specified as an attribute "
+            "for the public key."
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_create_key_pair,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+        e._logger.reset_mock()
+
+        # Test that a missing PrivateKey CryptographicUsageMask raises an error
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        args = (payload, )
+        regex = (
+            "The cryptographic usage mask must be specified as an attribute "
+            "for the private key."
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_create_key_pair,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+        e._logger.reset_mock()
+
+    def test_create_key_pair_mismatched_attributes(self):
+        """
+        Test that the right errors are generated when required attributes
+        are mismatched in a CreateKeyPair request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Test that mismatched CryptographicAlgorithms raise an error.
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.DSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        args = (payload, )
+        regex = (
+            "The public and private key algorithms must be the same."
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_create_key_pair,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+        e._logger.reset_mock()
+
+        # Test that mismatched CryptographicAlgorithms raise an error.
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    4096
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        args = (payload, )
+        regex = (
+            "The public and private key lengths must be the same."
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_create_key_pair,
+            *args
+        )
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+        e._logger.reset_mock()
+
     def test_register(self):
         """
         Test that a Register request can be processed correctly.
@@ -2116,11 +2796,14 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Destroy"
         )
         self.assertEqual(str(id_a), response_payload.unique_identifier.value)
-        self.assertRaises(
-            exc.NoResultFound,
-            e._data_session.query(pie_objects.OpaqueObject).filter(
-                pie_objects.ManagedObject.unique_identifier == id_a
-            ).one
+
+        args = (payload, )
+        regex = "Could not locate object: {0}".format(id_a)
+        self.assertRaisesRegexp(
+            exceptions.ItemNotFound,
+            regex,
+            e._process_destroy,
+            *args
         )
 
         e._data_session.commit()
@@ -2139,11 +2822,14 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Destroy"
         )
         self.assertEqual(str(id_b), response_payload.unique_identifier.value)
-        self.assertRaises(
-            exc.NoResultFound,
-            e._data_session.query(pie_objects.OpaqueObject).filter(
-                pie_objects.ManagedObject.unique_identifier == id_b
-            ).one
+
+        args = (payload, )
+        regex = "Could not locate object: {0}".format(id_b)
+        self.assertRaisesRegexp(
+            exceptions.ItemNotFound,
+            regex,
+            e._process_destroy,
+            *args
         )
 
         e._data_session.commit()
@@ -2177,26 +2863,30 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsInstance(result, query.QueryResponsePayload)
         self.assertIsNotNone(result.operations)
-        self.assertEqual(5, len(result.operations))
+        self.assertEqual(6, len(result.operations))
         self.assertEqual(
             enums.Operation.CREATE,
             result.operations[0].value
         )
         self.assertEqual(
-            enums.Operation.REGISTER,
+            enums.Operation.CREATE_KEY_PAIR,
             result.operations[1].value
         )
         self.assertEqual(
-            enums.Operation.GET,
+            enums.Operation.REGISTER,
             result.operations[2].value
         )
         self.assertEqual(
-            enums.Operation.DESTROY,
+            enums.Operation.GET,
             result.operations[3].value
         )
         self.assertEqual(
-            enums.Operation.QUERY,
+            enums.Operation.DESTROY,
             result.operations[4].value
+        )
+        self.assertEqual(
+            enums.Operation.QUERY,
+            result.operations[5].value
         )
         self.assertEqual(list(), result.object_types)
         self.assertIsNotNone(result.vendor_identification)
@@ -2216,7 +2906,7 @@ class TestKmipEngine(testtools.TestCase):
 
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsNotNone(result.operations)
-        self.assertEqual(6, len(result.operations))
+        self.assertEqual(7, len(result.operations))
         self.assertEqual(
             enums.Operation.DISCOVER_VERSIONS,
             result.operations[-1].value
@@ -2401,11 +3091,232 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Destroy"
         )
         self.assertEqual(str(uid), response_payload.unique_identifier.value)
-        self.assertRaises(
-            exc.NoResultFound,
-            e._data_session.query(pie_objects.OpaqueObject).filter(
-                pie_objects.ManagedObject.unique_identifier == uid
-            ).one
+
+        args = (payload, )
+        regex = "Could not locate object: {0}".format(uid)
+        self.assertRaisesRegexp(
+            exceptions.ItemNotFound,
+            regex,
+            e._process_destroy,
+            *args
+        )
+
+        e._data_session.commit()
+        e._data_store_session_factory()
+
+    def test_create_key_pair_get_destroy(self):
+        """
+        Test that a key pair can be created, retrieved, and destroyed without
+        error.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Asymmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        response_payload = e._process_create_key_pair(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: CreateKeyPair"
+        )
+
+        public_id = response_payload.public_key_uuid.value
+        self.assertEqual('1', public_id)
+        private_id = response_payload.private_key_uuid.value
+        self.assertEqual('2', private_id)
+
+        e._logger.reset_mock()
+
+        # Retrieve the created public key using Get and verify all fields set
+        payload = get.GetRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(public_id)
+        )
+
+        response_payload = e._process_get(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
+        )
+        self.assertEqual(
+            enums.ObjectType.PUBLIC_KEY,
+            response_payload.object_type.value
+        )
+        self.assertEqual(
+            str(public_id),
+            response_payload.unique_identifier.value
+        )
+        self.assertIsInstance(response_payload.secret, secrets.PublicKey)
+
+        key_block = response_payload.secret.key_block
+        self.assertEqual(
+            enums.KeyFormatType.PKCS_1,
+            key_block.key_format_type.value
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.RSA,
+            key_block.cryptographic_algorithm.value
+        )
+        self.assertEqual(
+            2048,
+            key_block.cryptographic_length.value
+        )
+
+        e._logger.reset_mock()
+
+        # Retrieve the created private key using Get and verify all fields set
+        payload = get.GetRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(private_id)
+        )
+
+        response_payload = e._process_get(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Get"
+        )
+        self.assertEqual(
+            enums.ObjectType.PRIVATE_KEY,
+            response_payload.object_type.value
+        )
+        self.assertEqual(
+            str(private_id),
+            response_payload.unique_identifier.value
+        )
+        self.assertIsInstance(response_payload.secret, secrets.PrivateKey)
+
+        key_block = response_payload.secret.key_block
+        self.assertEqual(
+            enums.KeyFormatType.PKCS_8,
+            key_block.key_format_type.value
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.RSA,
+            key_block.cryptographic_algorithm.value
+        )
+        self.assertEqual(
+            2048,
+            key_block.cryptographic_length.value
+        )
+
+        e._data_session.commit()
+        e._data_store_session_factory()
+        e._logger.reset_mock()
+
+        # Destroy the public key and verify it cannot be accessed again
+        payload = destroy.DestroyRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(public_id)
+        )
+
+        response_payload = e._process_destroy(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Destroy"
+        )
+        self.assertEqual(
+            str(public_id),
+            response_payload.unique_identifier.value
+        )
+
+        e._data_session.commit()
+        e._data_store_session_factory()
+        e._logger.reset_mock()
+
+        args = (payload, )
+        regex = "Could not locate object: {0}".format(public_id)
+        self.assertRaisesRegexp(
+            exceptions.ItemNotFound,
+            regex,
+            e._process_destroy,
+            *args
+        )
+
+        e._data_session.commit()
+        e._data_store_session_factory()
+        e._logger.reset_mock()
+
+        # Destroy the private key and verify it cannot be accessed again
+        payload = destroy.DestroyRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(private_id)
+        )
+
+        response_payload = e._process_destroy(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_called_once_with(
+            "Processing operation: Destroy"
+        )
+        self.assertEqual(
+            str(private_id),
+            response_payload.unique_identifier.value
+        )
+
+        e._data_session.commit()
+        e._data_store_session_factory()
+        e._logger.reset_mock()
+
+        args = (payload, )
+        regex = "Could not locate object: {0}".format(private_id)
+        self.assertRaisesRegexp(
+            exceptions.ItemNotFound,
+            regex,
+            e._process_destroy,
+            *args
         )
 
         e._data_session.commit()
@@ -2539,11 +3450,14 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Destroy"
         )
         self.assertEqual(str(uid), response_payload.unique_identifier.value)
-        self.assertRaises(
-            exc.NoResultFound,
-            e._data_session.query(pie_objects.OpaqueObject).filter(
-                pie_objects.ManagedObject.unique_identifier == uid
-            ).one
+
+        args = (payload, )
+        regex = "Could not locate object: {0}".format(uid)
+        self.assertRaisesRegexp(
+            exceptions.ItemNotFound,
+            regex,
+            e._process_destroy,
+            *args
         )
 
         e._data_session.commit()

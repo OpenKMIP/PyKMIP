@@ -33,6 +33,7 @@ from kmip.core.messages import contents
 from kmip.core.messages import messages
 
 from kmip.core.messages.payloads import create
+from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
@@ -71,6 +72,7 @@ class KmipEngine(object):
         * Registration of empty managed objects (e.g., Private Keys)
         * Managed object state tracking
         * Managed object usage limit tracking and enforcement
+        * Cryptographic usage mask enforcement per object type
     """
 
     def __init__(self):
@@ -619,6 +621,8 @@ class KmipEngine(object):
     def _process_operation(self, operation, payload):
         if operation == enums.Operation.CREATE:
             return self._process_create(payload)
+        elif operation == enums.Operation.CREATE_KEY_PAIR:
+            return self._process_create_key_pair(payload)
         elif operation == enums.Operation.REGISTER:
             return self._process_register(payload)
         elif operation == enums.Operation.GET:
@@ -720,6 +724,167 @@ class KmipEngine(object):
 
         self._id_placeholder = str(managed_object.unique_identifier)
 
+        return response_payload
+
+    @_kmip_version_supported('1.0')
+    def _process_create_key_pair(self, payload):
+        self._logger.info("Processing operation: CreateKeyPair")
+
+        algorithm = None
+        length = None
+
+        # Process attribute sets
+        public_key_attributes = {}
+        private_key_attributes = {}
+        common_attributes = {}
+        if payload.public_key_template_attribute:
+            public_key_attributes = self._process_template_attribute(
+                payload.public_key_template_attribute
+            )
+        if payload.private_key_template_attribute:
+            private_key_attributes = self._process_template_attribute(
+                payload.private_key_template_attribute
+            )
+        if payload.common_template_attribute:
+            common_attributes = self._process_template_attribute(
+                payload.common_template_attribute
+            )
+
+        # Propagate common attributes if not overridden by the public/private
+        # attribute sets
+        for key, value in six.iteritems(common_attributes):
+            if key not in public_key_attributes.keys():
+                public_key_attributes.update([(key, value)])
+            if key not in private_key_attributes.keys():
+                private_key_attributes.update([(key, value)])
+
+        # Error check for required attributes.
+        public_algorithm = public_key_attributes.get('Cryptographic Algorithm')
+        if public_algorithm:
+            public_algorithm = public_algorithm.value
+        else:
+            raise exceptions.InvalidField(
+                "The cryptographic algorithm must be specified as an "
+                "attribute for the public key."
+            )
+
+        public_length = public_key_attributes.get('Cryptographic Length')
+        if public_length:
+            public_length = public_length.value
+        else:
+            # TODO (peterhamilton) The cryptographic length is technically not
+            # required per the spec. Update the CryptographyEngine to accept a
+            # None length, allowing it to pick the length dynamically. Default
+            # to the strongest key size allowed for the algorithm type.
+            raise exceptions.InvalidField(
+                "The cryptographic length must be specified as an attribute "
+                "for the public key."
+            )
+
+        public_usage_mask = public_key_attributes.get(
+            'Cryptographic Usage Mask'
+        )
+        if public_usage_mask is None:
+            raise exceptions.InvalidField(
+                "The cryptographic usage mask must be specified as an "
+                "attribute for the public key."
+            )
+
+        private_algorithm = private_key_attributes.get(
+            'Cryptographic Algorithm'
+        )
+        if private_algorithm:
+            private_algorithm = private_algorithm.value
+        else:
+            raise exceptions.InvalidField(
+                "The cryptographic algorithm must be specified as an "
+                "attribute for the private key."
+            )
+
+        private_length = private_key_attributes.get('Cryptographic Length')
+        if private_length:
+            private_length = private_length.value
+        else:
+            # TODO (peterhamilton) The cryptographic length is technically not
+            # required per the spec. Update the CryptographyEngine to accept a
+            # None length, allowing it to pick the length dynamically. Default
+            # to the strongest key size allowed for the algorithm type.
+            raise exceptions.InvalidField(
+                "The cryptographic length must be specified as an attribute "
+                "for the private key."
+            )
+
+        private_usage_mask = private_key_attributes.get(
+            'Cryptographic Usage Mask'
+        )
+        if private_usage_mask is None:
+            raise exceptions.InvalidField(
+                "The cryptographic usage mask must be specified as an "
+                "attribute for the private key."
+            )
+
+        if public_algorithm == private_algorithm:
+            algorithm = public_algorithm
+        else:
+            raise exceptions.InvalidField(
+                "The public and private key algorithms must be the same."
+            )
+
+        if public_length == private_length:
+            length = public_length
+        else:
+            raise exceptions.InvalidField(
+                "The public and private key lengths must be the same."
+            )
+
+        public, private = self._cryptography_engine.create_asymmetric_key_pair(
+            algorithm,
+            length
+        )
+
+        public_key = objects.PublicKey(
+            algorithm,
+            length,
+            public.get('value'),
+            public.get('format')
+        )
+        private_key = objects.PrivateKey(
+            algorithm,
+            length,
+            private.get('value'),
+            private.get('format')
+        )
+        public_key.names = []
+        private_key.names = []
+
+        self._set_attributes_on_managed_object(
+            public_key,
+            public_key_attributes
+        )
+        self._set_attributes_on_managed_object(
+            private_key,
+            private_key_attributes
+        )
+
+        # TODO (peterhamilton) Set additional server-only attributes.
+
+        self._data_session.add(public_key)
+        self._data_session.add(private_key)
+
+        # NOTE (peterhamilton) SQLAlchemy will *not* assign an ID until
+        # commit is called. This makes future support for UNDO problematic.
+        self._data_session.commit()
+
+        response_payload = create_key_pair.CreateKeyPairResponsePayload(
+            private_key_uuid=attributes.PrivateKeyUniqueIdentifier(
+                str(private_key.unique_identifier)
+            ),
+            public_key_uuid=attributes.PublicKeyUniqueIdentifier(
+                str(public_key.unique_identifier)
+            )
+        )
+
+        self._id_placeholder = str(private_key.unique_identifier)
         return response_payload
 
     @_kmip_version_supported('1.0')
@@ -847,19 +1012,21 @@ class KmipEngine(object):
         else:
             unique_identifier = self._id_placeholder
 
-        object_type = self._get_object_type(unique_identifier)
+        self._get_object_type(unique_identifier)
 
         # TODO (peterhamilton) Process attributes to see if destroy possible
         # 1. Check object state. If invalid, error out.
         # 2. Check object deactivation date. If invalid, error out.
 
-        self._data_session.query(object_type).filter(
-            object_type.unique_identifier == unique_identifier
+        self._data_session.query(objects.ManagedObject).filter(
+            objects.ManagedObject.unique_identifier == unique_identifier
         ).delete()
 
         response_payload = destroy.DestroyResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(unique_identifier)
         )
+
+        self._data_session.commit()
 
         return response_payload
 
@@ -879,6 +1046,7 @@ class KmipEngine(object):
         if enums.QueryFunction.QUERY_OPERATIONS in queries:
             operations = list([
                 contents.Operation(enums.Operation.CREATE),
+                contents.Operation(enums.Operation.CREATE_KEY_PAIR),
                 contents.Operation(enums.Operation.REGISTER),
                 contents.Operation(enums.Operation.GET),
                 contents.Operation(enums.Operation.DESTROY),
