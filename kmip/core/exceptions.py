@@ -203,6 +203,22 @@ class PermissionDenied(KmipError):
         )
 
 
+class ConfigurationError(Exception):
+    """
+    An error generated when a problem occurs with a client or server
+    configuration.
+    """
+    pass
+
+
+class NetworkingError(Exception):
+    """
+    An error generated when a problem occurs with client or server networking
+    activity.
+    """
+    pass
+
+
 class InvalidKmipEncoding(Exception):
     """
     An exception raised when processing invalid KMIP message encodings.
