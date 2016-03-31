@@ -14,7 +14,6 @@
 # under the License.
 
 import logging
-import os
 import sys
 
 from kmip.core import enums
@@ -23,6 +22,8 @@ from kmip.pie import client
 
 
 if __name__ == '__main__':
+    logger = utils.build_console_logger(logging.INFO)
+
     # Build and parse arguments
     parser = utils.build_cli_parser(enums.Operation.CREATE_KEY_PAIR)
     opts, args = parser.parse_args(sys.argv[1:])
@@ -33,17 +34,11 @@ if __name__ == '__main__':
 
     # Exit early if the arguments are not specified
     if algorithm is None:
-        logging.debug('No algorithm provided, exiting early from demo')
+        logger.error('No algorithm provided, exiting early from demo')
         sys.exit()
     if length is None:
-        logging.debug("No key length provided, exiting early from demo")
+        logger.error("No key length provided, exiting early from demo")
         sys.exit()
-
-    # Build and setup logging and needed factories
-    f_log = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
-                         'logconfig.ini')
-    logging.config.fileConfig(f_log)
-    logger = logging.getLogger(__name__)
 
     algorithm = getattr(enums.CryptographicAlgorithm, algorithm, None)
 

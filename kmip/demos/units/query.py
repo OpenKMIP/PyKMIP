@@ -14,7 +14,6 @@
 # under the License.
 
 import logging
-import os
 import sys
 
 from six.moves import xrange
@@ -31,6 +30,8 @@ from kmip.services.kmip_client import KMIPProxy
 
 
 if __name__ == '__main__':
+    logger = utils.build_console_logger(logging.INFO)
+
     # Build and parse arguments
     parser = utils.build_cli_parser(Operation.QUERY)
     opts, args = parser.parse_args(sys.argv[1:])
@@ -38,12 +39,6 @@ if __name__ == '__main__':
     username = opts.username
     password = opts.password
     config = opts.config
-
-    # Build and setup logging and needed factories
-    f_log = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
-                         'logconfig.ini')
-    logging.config.fileConfig(f_log)
-    logger = logging.getLogger(__name__)
 
     # Build query function list.
     query_functions = list()

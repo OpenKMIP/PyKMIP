@@ -23,12 +23,13 @@ from kmip.demos import utils
 from kmip.services.kmip_client import KMIPProxy
 
 import logging
-import os
 import sys
 import re
 
 
 if __name__ == '__main__':
+    logger = utils.build_console_logger(logging.INFO)
+
     # Build and parse arguments
     parser = utils.build_cli_parser(Operation.DISCOVER_VERSIONS)
     opts, args = parser.parse_args(sys.argv[1:])
@@ -43,12 +44,6 @@ if __name__ == '__main__':
             mm = re.split('\.', version)
             protocol_versions.append(ProtocolVersion.create(int(mm[0]),
                                                             int(mm[1])))
-
-    # Build and setup logging
-    f_log = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
-                         'logconfig.ini')
-    logging.config.fileConfig(f_log)
-    logger = logging.getLogger(__name__)
 
     # Build the client and connect to the server
     client = KMIPProxy(config=config)

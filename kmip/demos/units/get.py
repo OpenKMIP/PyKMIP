@@ -28,11 +28,12 @@ from kmip.demos import utils
 from kmip.services.kmip_client import KMIPProxy
 
 import logging
-import os
 import sys
 
 
 if __name__ == '__main__':
+    logger = utils.build_console_logger(logging.INFO)
+
     # Build and parse arguments
     parser = utils.build_cli_parser(Operation.GET)
     opts, args = parser.parse_args(sys.argv[1:])
@@ -45,7 +46,7 @@ if __name__ == '__main__':
 
     # Exit early if the UUID is not specified
     if uuid is None:
-        logging.debug('No UUID provided, exiting early from demo')
+        logger.error('No UUID provided, exiting early from demo')
         sys.exit()
 
     format_type_enum = None
@@ -53,15 +54,9 @@ if __name__ == '__main__':
         format_type_enum = getattr(KeyFormatTypeEnum, format_type, None)
 
         if format_type_enum is None:
-            logging.error(
+            logger.error(
                 "Invalid key format type specified; exiting early from demo")
             sys.exit()
-
-    # Build and setup logging and needed factories
-    f_log = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
-                         'logconfig.ini')
-    logging.config.fileConfig(f_log)
-    logger = logging.getLogger(__name__)
 
     attribute_factory = AttributeFactory()
     credential_factory = CredentialFactory()
