@@ -16,8 +16,15 @@
 import mock
 import socket
 import testtools
+import time
 
+from kmip.core import enums
 from kmip.core import utils
+
+from kmip.core.messages import contents
+from kmip.core.messages import messages
+
+from kmip.services.server import engine
 from kmip.services.server import session
 
 
@@ -98,9 +105,36 @@ class TestKmipSession(testtools.TestCase):
         Test that the correct logging and error handling occurs during the
         message handling loop.
         """
-        data = utils.BytearrayStream(())
+        data = utils.BytearrayStream()
 
-        kmip_session = session.KmipSession(None, None, 'name')
+        # Build a response and use it as a dummy processing result.
+        batch_item = messages.ResponseBatchItem(
+            result_status=contents.ResultStatus(
+                enums.ResultStatus.SUCCESS
+            ),
+            result_reason=contents.ResultReason(
+                enums.ResultReason.OBJECT_ARCHIVED
+            ),
+            result_message=contents.ResultMessage("Test message.")
+        )
+        batch_items = [batch_item]
+        header = messages.ResponseHeader(
+            protocol_version=contents.ProtocolVersion.create(1, 0),
+            time_stamp=contents.TimeStamp(int(time.time())),
+            batch_count=contents.BatchCount(len(batch_items))
+        )
+        message = messages.ResponseMessage(
+            response_header=header,
+            batch_items=batch_items
+        )
+
+        kmip_engine = engine.KmipEngine()
+        kmip_engine._logger = mock.MagicMock()
+        kmip_session = session.KmipSession(kmip_engine, None, 'name')
+        kmip_session._engine = mock.MagicMock()
+        kmip_session._engine.process_request = mock.MagicMock(
+            return_value=(message, kmip_session._max_response_size)
+        )
         kmip_session._logger = mock.MagicMock()
         kmip_session._connection = mock.MagicMock()
         kmip_session._receive_request = mock.MagicMock(return_value=data)
@@ -110,7 +144,7 @@ class TestKmipSession(testtools.TestCase):
 
         kmip_session._receive_request.assert_called_once_with()
         kmip_session._logger.info.assert_not_called()
-        kmip_session._logger.error.assert_not_called()
+        kmip_session._logger.warning.assert_not_called()
         kmip_session._logger.exception.assert_not_called()
         self.assertTrue(kmip_session._send_response.called)
 
@@ -123,7 +157,8 @@ class TestKmipSession(testtools.TestCase):
         """
         data = utils.BytearrayStream(())
 
-        kmip_session = session.KmipSession(None, None, 'name')
+        kmip_engine = engine.KmipEngine()
+        kmip_session = session.KmipSession(kmip_engine, None, 'name')
         kmip_session._logger = mock.MagicMock()
         kmip_session._connection = mock.MagicMock()
         kmip_session._receive_request = mock.MagicMock(return_value=data)
@@ -132,7 +167,7 @@ class TestKmipSession(testtools.TestCase):
         kmip_session._handle_message_loop()
 
         kmip_session._receive_request.assert_called_once_with()
-        kmip_session._logger.info.assert_called_once_with(
+        kmip_session._logger.warning.assert_called_once_with(
             "Failure parsing request message."
         )
         self.assertTrue(kmip_session._logger.exception.called)
@@ -147,7 +182,8 @@ class TestKmipSession(testtools.TestCase):
         """
         data = utils.BytearrayStream(())
 
-        kmip_session = session.KmipSession(None, None, 'name')
+        kmip_engine = engine.KmipEngine()
+        kmip_session = session.KmipSession(kmip_engine, None, 'name')
         kmip_session._logger = mock.MagicMock()
         kmip_session._connection = mock.MagicMock()
         kmip_session._receive_request = mock.MagicMock(return_value=data)
@@ -158,23 +194,40 @@ class TestKmipSession(testtools.TestCase):
 
         kmip_session._receive_request.assert_called_once_with()
         kmip_session._logger.info.assert_not_called()
-        self.assertTrue(kmip_session._logger.error.called)
+        self.assertTrue(kmip_session._logger.warning.called)
         kmip_session._logger.exception.assert_not_called()
         self.assertTrue(kmip_session._send_response.called)
 
-    def test_build_error_response(self):
+    @mock.patch('kmip.core.messages.messages.RequestMessage')
+    def test_handle_message_loop_with_unexpected_error(self, request_mock):
         """
-        Test that a default error response can be built correctly.
+        Test that the correct logging and error handling occurs when an
+        unexpected error is generated while processing a request.
+        """
+        data = utils.BytearrayStream(())
 
-        TODO (peterhamilton): Remove this test when the KmipEngine is added.
-        """
-        from kmip.core import enums
-        kmip_session = session.KmipSession(None, None, 'name')
-        kmip_session._build_error_response(
-            enums.ResultStatus.OPERATION_FAILED,
-            enums.ResultReason.GENERAL_FAILURE,
-            "General failure message."
+        kmip_engine = engine.KmipEngine()
+        kmip_engine._logger = mock.MagicMock()
+        kmip_session = session.KmipSession(kmip_engine, None, 'name')
+        kmip_session._engine = mock.MagicMock()
+        test_exception = Exception("Unexpected error.")
+        kmip_session._engine.process_request = mock.MagicMock(
+            side_effect=test_exception
         )
+        kmip_session._logger = mock.MagicMock()
+        kmip_session._connection = mock.MagicMock()
+        kmip_session._receive_request = mock.MagicMock(return_value=data)
+        kmip_session._send_response = mock.MagicMock()
+
+        kmip_session._handle_message_loop()
+
+        kmip_session._receive_request.assert_called_once_with()
+        kmip_session._logger.info.assert_not_called()
+        kmip_session._logger.warning.assert_called_once_with(
+            "An unexpected error occurred while processing request."
+        )
+        kmip_session._logger.exception.assert_called_once_with(test_exception)
+        self.assertTrue(kmip_session._send_response.called)
 
     def test_receive_request(self):
         """

@@ -17,13 +17,12 @@ import logging
 import socket
 import struct
 import threading
-import time
-
-from kmip.core.messages import messages
-from kmip.core import utils
 
 from kmip.core import enums
+from kmip.core import exceptions
 from kmip.core.messages import contents
+from kmip.core.messages import messages
+from kmip.core import utils
 
 
 class KmipSession(threading.Thread):
@@ -85,61 +84,65 @@ class KmipSession(threading.Thread):
         request_data = self._receive_request()
         request = messages.RequestMessage()
 
+        max_size = self._max_response_size
+
         try:
             request.read(request_data)
         except Exception as e:
-            self._logger.info("Failure parsing request message.")
+            self._logger.warning("Failure parsing request message.")
             self._logger.exception(e)
-            response = self._build_error_response(
-                enums.ResultStatus.OPERATION_FAILED,
+            response = self._engine.build_error_response(
+                contents.ProtocolVersion.create(1, 0),
                 enums.ResultReason.INVALID_MESSAGE,
                 "Error parsing request message. See server logs for more "
-                "information.")
-        else:
-            # TODO (peterhamilton): Replace this with a KmipEngine call.
-            response = self._build_error_response(
-                enums.ResultStatus.OPERATION_FAILED,
-                enums.ResultReason.INVALID_MESSAGE,
-                "Default response. No operations supported."
+                "information."
             )
+        else:
+            try:
+                response, max_response_size = self._engine.process_request(
+                    request
+                )
+                if max_response_size:
+                    max_size = max_response_size
+            except exceptions.KmipError as e:
+                response = self._engine.build_error_response(
+                    request.request_header.protocol_version,
+                    e.reason,
+                    str(e)
+                )
+            except Exception as e:
+                self._logger.warning(
+                    "An unexpected error occurred while processing request."
+                )
+                self._logger.exception(e)
+                response = self._engine.build_error_response(
+                    request.request_header.protocol_version,
+                    enums.ResultReason.GENERAL_FAILURE,
+                    "An unexpected error occurred while processing request. "
+                    "See server logs for more information."
+                )
 
         response_data = utils.BytearrayStream()
         response.write(response_data)
 
-        if len(response_data) > self._max_response_size:
-            self._logger.error(
+        if len(response_data) > max_size:
+            self._logger.warning(
                 "Response message length too large: "
                 "{0} bytes, max {1} bytes".format(
                     len(response_data),
                     self._max_response_size
                 )
             )
-            response = self._build_error_response(
-                enums.ResultStatus.OPERATION_FAILED,
+            response = self._engine.build_error_response(
+                request.request_header.protocol_version,
                 enums.ResultReason.RESPONSE_TOO_LARGE,
                 "Response message length too large. See server logs for "
-                "more information.")
+                "more information."
+            )
+            response_data = utils.BytearrayStream()
+            response.write(response_data)
 
         self._send_response(response_data.buffer)
-
-    def _build_error_response(self, status, reason, message):
-        """
-        TODO (peterhamilton): Move this into the KmipEngine.
-        """
-        header = messages.ResponseHeader(
-            protocol_version=contents.ProtocolVersion.create(1, 1),
-            time_stamp=contents.TimeStamp(int(time.time())),
-            batch_count=contents.BatchCount(1))
-        batch_item = messages.ResponseBatchItem(
-            result_status=contents.ResultStatus(status),
-            result_reason=contents.ResultReason(reason),
-            result_message=contents.ResultMessage(message)
-        )
-        response = messages.ResponseMessage(
-            response_header=header,
-            batch_items=[batch_item]
-        )
-        return response
 
     def _receive_request(self):
         header = self._receive_bytes(8)
