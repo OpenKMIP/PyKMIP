@@ -36,7 +36,8 @@ class CryptographyEngine(api.CryptographicEngine):
         """
         Construct a CryptographyEngine.
         """
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger('kmip.server.engine.cryptography')
+
         self._symmetric_key_algorithms = {
             enums.CryptographicAlgorithm.TRIPLE_DES: algorithms.TripleDES,
             enums.CryptographicAlgorithm.AES: algorithms.AES,

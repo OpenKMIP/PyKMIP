@@ -79,7 +79,7 @@ class KmipEngine(object):
         """
         Create a KmipEngine.
         """
-        self._logger = logging.getLogger(__name__)
+        self._logger = logging.getLogger('kmip.server.engine')
 
         self._cryptography_engine = engine.CryptographyEngine()
 

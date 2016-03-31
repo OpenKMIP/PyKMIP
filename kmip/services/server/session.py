@@ -51,10 +51,9 @@ class KmipSession(threading.Thread):
             kwargs={}
         )
 
-        if name is None:
-            name = self.name
-
-        self._logger = logging.getLogger('.'.join((__name__, name)))
+        self._logger = logging.getLogger(
+            'kmip.server.session.{0}'.format(self.name)
+        )
 
         self._engine = engine
         self._connection = connection
