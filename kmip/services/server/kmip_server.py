@@ -17,6 +17,7 @@ import logging
 import os
 import socket
 import ssl
+import warnings
 
 from kmip.core.config_helper import ConfigHelper
 from kmip.core.server import KMIPImpl
@@ -32,6 +33,14 @@ class KMIPServer(object):
     def __init__(self, host=None, port=None, keyfile=None, certfile=None,
                  cert_reqs=None, ssl_version=None, ca_certs=None,
                  do_handshake_on_connect=None, suppress_ragged_eofs=None):
+        warnings.simplefilter("always")
+        warnings.warn((
+            "Please use the newer KmipServer located in kmip.services.server. "
+            "This version of the server will be deprecated in the future."),
+            PendingDeprecationWarning
+        )
+        warnings.simplefilter("default")
+
         self.logger = logging.getLogger(__name__)
 
         self._set_variables(host, port, keyfile, certfile, cert_reqs,
