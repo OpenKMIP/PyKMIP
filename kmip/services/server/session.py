@@ -70,15 +70,18 @@ class KmipSession(threading.Thread):
         """
         self._logger.info("Starting session: {0}".format(self.name))
 
-        try:
-            self._handle_message_loop()
-        except Exception as e:
-            self._logger.info("Failure handling message loop")
-            self._logger.exception(e)
-        finally:
-            self._connection.shutdown(socket.SHUT_RDWR)
-            self._connection.close()
-            self._logger.info("Stopping session: {0}".format(self.name))
+        while True:
+            try:
+                self._handle_message_loop()
+            except exceptions.ConnectionClosed as e:
+                break
+            except Exception as e:
+                self._logger.info("Failure handling message loop")
+                self._logger.exception(e)
+
+        self._connection.shutdown(socket.SHUT_RDWR)
+        self._connection.close()
+        self._logger.info("Stopping session: {0}".format(self.name))
 
     def _handle_message_loop(self):
         request_data = self._receive_request()
@@ -164,6 +167,8 @@ class KmipSession(threading.Thread):
 
             if partial_message is None:
                 break
+            elif len(partial_message) == 0:
+                raise exceptions.ConnectionClosed()
             else:
                 bytes_received += len(partial_message)
                 message += partial_message
