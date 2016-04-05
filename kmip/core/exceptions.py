@@ -211,6 +211,14 @@ class ConfigurationError(Exception):
     pass
 
 
+class ConnectionClosed(Exception):
+    """
+    An exception generated when attempting to use a connection that has been
+    closed.
+    """
+    pass
+
+
 class NetworkingError(Exception):
     """
     An error generated when a problem occurs with client or server networking

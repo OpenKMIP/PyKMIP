@@ -19,6 +19,7 @@ import testtools
 import time
 
 from kmip.core import enums
+from kmip.core import exceptions
 from kmip.core import utils
 
 from kmip.core.messages import contents
@@ -58,13 +59,18 @@ class TestKmipSession(testtools.TestCase):
         """
         kmip_session = session.KmipSession(None, None, 'name')
         kmip_session._logger = mock.MagicMock()
-        kmip_session._handle_message_loop = mock.MagicMock()
+        kmip_session._handle_message_loop = mock.MagicMock(
+            side_effect=[
+                None,
+                exceptions.ConnectionClosed()
+            ]
+        )
         kmip_session._connection = mock.MagicMock()
 
         kmip_session.run()
 
         kmip_session._logger.info.assert_any_call("Starting session: name")
-        kmip_session._handle_message_loop.assert_called_once_with()
+        self.assertTrue(kmip_session._handle_message_loop.called)
         kmip_session._connection.shutdown.assert_called_once_with(
             socket.SHUT_RDWR
         )
@@ -82,13 +88,16 @@ class TestKmipSession(testtools.TestCase):
 
         test_exception = Exception("test")
         kmip_session._handle_message_loop = mock.MagicMock(
-            side_effect=test_exception
+            side_effect=[
+                test_exception,
+                exceptions.ConnectionClosed()
+            ]
         )
 
         kmip_session.run()
 
         kmip_session._logger.info.assert_any_call("Starting session: name")
-        kmip_session._handle_message_loop.assert_called_once_with()
+        self.assertTrue(kmip_session._handle_message_loop.called)
         kmip_session._logger.info.assert_any_call(
             "Failure handling message loop"
         )
@@ -266,6 +275,17 @@ class TestKmipSession(testtools.TestCase):
         kmip_session._connection.recv.assert_any_call(16)
         kmip_session._connection.recv.assert_called_with(8)
         self.assertEqual(content + content, observed)
+
+        kmip_session._connection.recv = mock.MagicMock(
+            side_effect=['']
+        )
+
+        args = (8, )
+        self.assertRaises(
+            exceptions.ConnectionClosed,
+            kmip_session._receive_bytes,
+            *args
+        )
 
     def test_receive_bytes_with_bad_length(self):
         """
