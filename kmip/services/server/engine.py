@@ -84,7 +84,7 @@ class KmipEngine(object):
         self._cryptography_engine = engine.CryptographyEngine()
 
         self._data_store = sqlalchemy.create_engine(
-            'sqlite:///:memory:',
+            'sqlite:////tmp/pykmip.database',
             echo=False
         )
         sqltypes.Base.metadata.create_all(self._data_store)
