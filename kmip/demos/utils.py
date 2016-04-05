@@ -13,6 +13,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import binascii
+import logging
+import optparse
+import sys
+
 from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
 
@@ -38,9 +43,17 @@ from kmip.core.secrets import PublicKey
 from kmip.core.secrets import SymmetricKey
 from kmip.core.secrets import SecretData
 
-import binascii
-import optparse
-import sys
+
+def build_console_logger(level):
+    logger = logging.getLogger('demo')
+    logger.setLevel(level)
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
 
 
 def build_cli_parser(operation=None):
