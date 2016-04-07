@@ -714,6 +714,12 @@ class KmipEngine(object):
         # commit is called. This makes future support for UNDO problematic.
         self._data_session.commit()
 
+        self._logger.info(
+            "Created a SymmetricKey with ID: {0}".format(
+                managed_object.unique_identifier
+            )
+        )
+
         response_payload = create.CreateResponsePayload(
             object_type=payload.object_type,
             unique_identifier=attributes.UniqueIdentifier(
@@ -875,6 +881,17 @@ class KmipEngine(object):
         # commit is called. This makes future support for UNDO problematic.
         self._data_session.commit()
 
+        self._logger.info(
+            "Created a PublicKey with ID: {0}".format(
+                public_key.unique_identifier
+            )
+        )
+        self._logger.info(
+            "Created a PrivateKey with ID: {0}".format(
+                private_key.unique_identifier
+            )
+        )
+
         response_payload = create_key_pair.CreateKeyPairResponsePayload(
             private_key_uuid=attributes.PrivateKeyUniqueIdentifier(
                 str(private_key.unique_identifier)
@@ -936,6 +953,13 @@ class KmipEngine(object):
         # commit is called. This makes future support for UNDO problematic.
         self._data_session.commit()
 
+        self._logger.info(
+            "Registered a {0} with ID: {1}".format(
+                ''.join([x.capitalize() for x in object_type.name.split('_')]),
+                managed_object.unique_identifier
+            )
+        )
+
         response_payload = register.RegisterResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(
                 str(managed_object.unique_identifier)
@@ -993,6 +1017,14 @@ class KmipEngine(object):
                     )
                 )
 
+        object_type = managed_object.object_type.name
+        self._logger.info(
+            "Getting a {0} with ID: {1}".format(
+                ''.join([x.capitalize() for x in object_type.split('_')]),
+                managed_object.unique_identifier
+            )
+        )
+
         core_secret = self._build_core_object(managed_object)
 
         response_payload = get.GetResponsePayload(
@@ -1017,6 +1049,10 @@ class KmipEngine(object):
         # TODO (peterhamilton) Process attributes to see if destroy possible
         # 1. Check object state. If invalid, error out.
         # 2. Check object deactivation date. If invalid, error out.
+
+        self._logger.info(
+            "Destroying an object with ID: {0}".format(unique_identifier)
+        )
 
         self._data_session.query(objects.ManagedObject).filter(
             objects.ManagedObject.unique_identifier == unique_identifier
