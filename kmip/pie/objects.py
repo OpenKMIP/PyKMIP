@@ -57,6 +57,9 @@ class ManagedObject(sql.Base):
         'polymorphic_identity': 'ManagedObject',
         'polymorphic_on': _class_type
     }
+    __table_args__ = {
+        'sqlite_autoincrement': True
+    }
 
     @abstractmethod
     def __init__(self):
@@ -152,6 +155,9 @@ class CryptographicObject(ManagedObject):
     __mapper_args__ = {
         'polymorphic_identity': 'CryptographicObject'
     }
+    __table_args__ = {
+        'sqlite_autoincrement': True
+    }
 
     @abstractmethod
     def __init__(self):
@@ -212,6 +218,9 @@ class Key(CryptographicObject):
     __mapper_args__ = {
         'polymorphic_identity': 'Key'
     }
+    __table_args__ = {
+        'sqlite_autoincrement': True
+    }
 
     @abstractmethod
     def __init__(self):
@@ -258,6 +267,9 @@ class SymmetricKey(Key):
 
     __mapper_args__ = {
         'polymorphic_identity': 'SymmetricKey'
+    }
+    __table_args__ = {
+        'sqlite_autoincrement': True
     }
 
     def __init__(self, algorithm, length, value, masks=None,
@@ -396,6 +408,9 @@ class PublicKey(Key):
 
     __mapper_args__ = {
         'polymorphic_identity': 'PublicKey'
+    }
+    __table_args__ = {
+        'sqlite_autoincrement': True
     }
 
     def __init__(self, algorithm, length, value,
@@ -548,6 +563,9 @@ class PrivateKey(Key):
     __mapper_args__ = {
         'polymorphic_identity': 'PrivateKey'
     }
+    __table_args__ = {
+        'sqlite_autoincrement': True
+    }
 
     def __init__(self, algorithm, length, value, format_type, masks=None,
                  name='Private Key'):
@@ -696,6 +714,9 @@ class Certificate(CryptographicObject):
     __mapper_args__ = {
         'polymorphic_identity': 'Certificate'
     }
+    __table_args__ = {
+        'sqlite_autoincrement': True
+    }
 
     @abstractmethod
     def __init__(self, certificate_type, value, masks=None,
@@ -793,6 +814,9 @@ class X509Certificate(Certificate):
     __mapper_args__ = {
         'polymorphic_identity': 'Certificate'
     }
+    __table_args__ = {
+        'sqlite_autoincrement': True
+    }
 
     def __init__(self, value, masks=None, name='X.509 Certificate'):
         """
@@ -865,6 +889,9 @@ class SecretData(CryptographicObject):
     data_type = Column('data_type', sql.EnumType(enums.SecretDataType))
     __mapper_args__ = {
         'polymorphic_identity': 'SecretData'
+    }
+    __table_args__ = {
+        'sqlite_autoincrement': True
     }
 
     def __init__(self, value, data_type, masks=None, name='Secret Data'):
@@ -978,6 +1005,9 @@ class OpaqueObject(ManagedObject):
     opaque_type = Column('opaque_type', sql.EnumType(enums.OpaqueDataType))
     __mapper_args__ = {
         'polymorphic_identity': 'OpaqueData'
+    }
+    __table_args__ = {
+        'sqlite_autoincrement': True
     }
 
     def __init__(self, value, opaque_type, name='Opaque Object'):
