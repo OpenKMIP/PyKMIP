@@ -1482,7 +1482,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Create"
         )
 
@@ -1545,7 +1545,7 @@ class TestKmipEngine(testtools.TestCase):
             *args
         )
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Create"
         )
 
@@ -1602,7 +1602,7 @@ class TestKmipEngine(testtools.TestCase):
             *args
         )
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Create"
         )
         e._logger.reset_mock()
@@ -1647,7 +1647,7 @@ class TestKmipEngine(testtools.TestCase):
             *args
         )
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Create"
         )
         e._logger.reset_mock()
@@ -1689,7 +1689,7 @@ class TestKmipEngine(testtools.TestCase):
             *args
         )
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Create"
         )
         e._logger.reset_mock()
@@ -1755,7 +1755,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
 
@@ -1888,7 +1888,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_create_key_pair,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
@@ -1954,7 +1954,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_create_key_pair,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
@@ -2020,7 +2020,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_create_key_pair,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
@@ -2086,7 +2086,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_create_key_pair,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
@@ -2150,7 +2150,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_create_key_pair,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
@@ -2214,7 +2214,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_create_key_pair,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
@@ -2296,7 +2296,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_create_key_pair,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
@@ -2365,7 +2365,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_create_key_pair,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
@@ -2437,7 +2437,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Register"
         )
 
@@ -2551,7 +2551,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
         self.assertEqual(
@@ -2581,7 +2581,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
         self.assertEqual(
@@ -2627,7 +2627,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_get,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
 
@@ -2647,7 +2647,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_get,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
 
@@ -2685,7 +2685,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
 
@@ -2726,7 +2726,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_get,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
 
@@ -2758,7 +2758,7 @@ class TestKmipEngine(testtools.TestCase):
             e._process_get,
             *args
         )
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
 
@@ -2792,7 +2792,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Destroy"
         )
         self.assertEqual(str(id_a), response_payload.unique_identifier.value)
@@ -2818,7 +2818,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Destroy"
         )
         self.assertEqual(str(id_b), response_payload.unique_identifier.value)
@@ -3030,7 +3030,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Create"
         )
 
@@ -3048,7 +3048,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
         self.assertEqual(
@@ -3087,7 +3087,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Destroy"
         )
         self.assertEqual(str(uid), response_payload.unique_identifier.value)
@@ -3166,7 +3166,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: CreateKeyPair"
         )
 
@@ -3186,7 +3186,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
         self.assertEqual(
@@ -3224,7 +3224,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
         self.assertEqual(
@@ -3264,7 +3264,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Destroy"
         )
         self.assertEqual(
@@ -3298,7 +3298,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Destroy"
         )
         self.assertEqual(
@@ -3391,7 +3391,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Register"
         )
 
@@ -3409,7 +3409,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Get"
         )
         self.assertEqual(
@@ -3446,7 +3446,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_called_once_with(
+        e._logger.info.assert_any_call(
             "Processing operation: Destroy"
         )
         self.assertEqual(str(uid), response_payload.unique_identifier.value)
