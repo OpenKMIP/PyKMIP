@@ -29,6 +29,8 @@ from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core.factories import secrets
 
+from kmip.core import objects as core_objects
+
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
@@ -670,17 +672,10 @@ class KmipEngine(object):
                 "attribute."
             )
 
-        length = object_attributes.get('Cryptographic Length')
-        if length:
-            length = length.value
-        else:
-            # TODO (peterhamilton) The cryptographic length is technically not
-            # required per the spec. Update the CryptographyEngine to accept a
-            # None length, allowing it to pick the length dynamically. Default
-            # to the strongest key size allowed for the algorithm type.
-            raise exceptions.InvalidField(
-                "The cryptographic length must be specified as an attribute."
-            )
+        length = None
+        requested_length = object_attributes.get('Cryptographic Length')
+        if requested_length is not None:
+            length = requested_length.value
 
         usage_mask = object_attributes.get('Cryptographic Usage Mask')
         if usage_mask is None:
@@ -693,6 +688,9 @@ class KmipEngine(object):
             algorithm,
             length
         )
+
+        if length is None:
+            length = len(result.get('value')) * 8
 
         managed_object = objects.SymmetricKey(
             algorithm,
@@ -707,7 +705,6 @@ class KmipEngine(object):
         )
 
         # TODO (peterhamilton) Set additional server-only attributes.
-
         self._data_session.add(managed_object)
 
         # NOTE (peterhamilton) SQLAlchemy will *not* assign an ID until
@@ -720,12 +717,24 @@ class KmipEngine(object):
             )
         )
 
+        ret_attributes = []
+        template_attribute = None
+        if requested_length is None:
+            crypto_length_attribute = self._attribute_factory.create_attribute(
+                enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                length)
+            ret_attributes.append(crypto_length_attribute)
+
+        if len(ret_attributes) > 0:
+            template_attribute = core_objects.TemplateAttribute(
+                attributes=ret_attributes)
+
         response_payload = create.CreateResponsePayload(
             object_type=payload.object_type,
             unique_identifier=attributes.UniqueIdentifier(
                 str(managed_object.unique_identifier)
             ),
-            template_attribute=None
+            template_attribute=template_attribute
         )
 
         self._id_placeholder = str(managed_object.unique_identifier)

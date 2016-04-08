@@ -1607,51 +1607,6 @@ class TestKmipEngine(testtools.TestCase):
         )
         e._logger.reset_mock()
 
-        # Test the error for omitting the Cryptographic Length
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
-        template_attribute = objects.TemplateAttribute(
-            attributes=[
-                attribute_factory.create_attribute(
-                    enums.AttributeType.NAME,
-                    attributes.Name.create(
-                        'Test Symmetric Key',
-                        enums.NameType.UNINTERPRETED_TEXT_STRING
-                    )
-                ),
-                attribute_factory.create_attribute(
-                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
-                    enums.CryptographicAlgorithm.AES
-                ),
-                attribute_factory.create_attribute(
-                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-                    [
-                        enums.CryptographicUsageMask.ENCRYPT,
-                        enums.CryptographicUsageMask.DECRYPT
-                    ]
-                )
-            ]
-        )
-        payload = create.CreateRequestPayload(
-            object_type,
-            template_attribute
-        )
-
-        args = (payload, )
-        regex = (
-            "The cryptographic length must be specified as an attribute."
-        )
-        self.assertRaisesRegexp(
-            exceptions.InvalidField,
-            regex,
-            e._process_create,
-            *args
-        )
-
-        e._logger.info.assert_any_call(
-            "Processing operation: Create"
-        )
-        e._logger.reset_mock()
-
         # Test the error for omitting the Cryptographic Usage Mask
         object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
         template_attribute = objects.TemplateAttribute(
