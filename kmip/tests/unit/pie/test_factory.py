@@ -562,3 +562,22 @@ class TestObjectFactory(testtools.TestCase):
         self.assertEqual(key.cryptographic_length, length)
         self.assertEqual(key.key_format_type, format_type)
         self.assertEqual(key.value, value)
+
+
+class TestCoreAttributeFactory(testtools.TestCase):
+    """
+    Test PIE proxy for the CoreAttributeFactory.
+    """
+
+    def setUp(self):
+        super(TestCoreAttributeFactory, self).setUp()
+        self.factory = factory.AttributeFactory()
+
+    def tearDown(self):
+        super(TestCoreAttributeFactory, self).tearDown()
+
+    def test_init(self):
+        """
+        Test that an ObjectFactory can be constructed.
+        """
+        factory.AttributeFactory()

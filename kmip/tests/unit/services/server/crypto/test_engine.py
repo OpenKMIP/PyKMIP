@@ -49,7 +49,24 @@ class TestCryptographyEngine(testtools.TestCase):
 
         self.assertIn('value', key)
         self.assertIn('format', key)
+        self.assertIn('cryptographic_length', key)
         self.assertEqual(enums.KeyFormatType.RAW, key.get('format'))
+
+    def test_create_symmetric_key_without_length_specified(self):
+        """
+        Test that a symmetric key can be created without specified
+        CryptographicLength.
+        """
+        engine = crypto.CryptographyEngine()
+        key = engine.create_symmetric_key(
+            enums.CryptographicAlgorithm.AES
+        )
+
+        self.assertIn('value', key)
+        self.assertIn('format', key)
+        self.assertIn('cryptographic_length', key)
+        self.assertEqual(enums.KeyFormatType.RAW, key.get('format'))
+        self.assertEqual(256, key.get('cryptographic_length'))
 
     def test_create_symmetric_key_with_invalid_algorithm(self):
         """

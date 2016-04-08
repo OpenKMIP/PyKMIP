@@ -1549,10 +1549,10 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Create"
         )
 
-    def test_create_omitting_attributes(self):
+    def test_create_omitting_cryptoigraphic_algorithm(self):
         """
         Test that InvalidField errors are generated when trying to create
-        a symmetric key without required attributes.
+        a symmetric key without required 'CryptographicAlgorithm' attribute.
         """
         e = engine.KmipEngine()
         e._data_store = self.engine
@@ -1562,7 +1562,6 @@ class TestKmipEngine(testtools.TestCase):
 
         attribute_factory = factory.AttributeFactory()
 
-        # Test the error for omitting the Cryptographic Algorithm
         object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
         template_attribute = objects.TemplateAttribute(
             attributes=[
@@ -1607,52 +1606,19 @@ class TestKmipEngine(testtools.TestCase):
         )
         e._logger.reset_mock()
 
-        # Test the error for omitting the Cryptographic Length
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
-        template_attribute = objects.TemplateAttribute(
-            attributes=[
-                attribute_factory.create_attribute(
-                    enums.AttributeType.NAME,
-                    attributes.Name.create(
-                        'Test Symmetric Key',
-                        enums.NameType.UNINTERPRETED_TEXT_STRING
-                    )
-                ),
-                attribute_factory.create_attribute(
-                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
-                    enums.CryptographicAlgorithm.AES
-                ),
-                attribute_factory.create_attribute(
-                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-                    [
-                        enums.CryptographicUsageMask.ENCRYPT,
-                        enums.CryptographicUsageMask.DECRYPT
-                    ]
-                )
-            ]
-        )
-        payload = create.CreateRequestPayload(
-            object_type,
-            template_attribute
-        )
+    def test_create_omitting_usage_mask(self):
+        """
+        Test that InvalidField errors are generated when trying to create
+        a symmetric key without required CryptographicUsageMask attribute.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
 
-        args = (payload, )
-        regex = (
-            "The cryptographic length must be specified as an attribute."
-        )
-        self.assertRaisesRegexp(
-            exceptions.InvalidField,
-            regex,
-            e._process_create,
-            *args
-        )
+        attribute_factory = factory.AttributeFactory()
 
-        e._logger.info.assert_any_call(
-            "Processing operation: Create"
-        )
-        e._logger.reset_mock()
-
-        # Test the error for omitting the Cryptographic Usage Mask
         object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
         template_attribute = objects.TemplateAttribute(
             attributes=[
@@ -1693,6 +1659,98 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Create"
         )
         e._logger.reset_mock()
+
+    def test_create_omitting_cryptographic_length(self):
+        """
+        Test that a request to Create Symmetric Key without
+        cryptographic length specified
+        is processed correctly and
+        the used CryptographicLength is the maximal allowed by
+        given CryptographicAlgorithm.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Build Create request
+        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        template_attribute = objects.TemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Symmetric Key',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.AES
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT,
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create.CreateRequestPayload(
+            object_type,
+            template_attribute
+        )
+
+        response_payload = e._process_create(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: Create"
+        )
+
+        uid = response_payload.unique_identifier.value
+        self.assertEqual('1', uid)
+
+        # Retrieve the stored object and verify all attributes were set
+        # appropriately.
+        symmetric_key = e._data_session.query(
+            pie_objects.SymmetricKey
+        ).filter(
+            pie_objects.ManagedObject.unique_identifier == uid
+        ).one()
+
+        self.assertEqual(
+            enums.KeyFormatType.RAW,
+            symmetric_key.key_format_type
+        )
+
+        self.assertEqual(1, len(symmetric_key.names))
+        self.assertIn('Test Symmetric Key', symmetric_key.names)
+
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            symmetric_key.cryptographic_algorithm
+        )
+
+        self.assertEqual(256, len(symmetric_key.value) * 8)
+        self.assertEqual(256, symmetric_key.cryptographic_length)
+
+        self.assertEqual(2, len(symmetric_key.cryptographic_usage_masks))
+        self.assertIn(
+            enums.CryptographicUsageMask.ENCRYPT,
+            symmetric_key.cryptographic_usage_masks
+        )
+        self.assertIn(
+            enums.CryptographicUsageMask.DECRYPT,
+            symmetric_key.cryptographic_usage_masks
+        )
+
+        self.assertEqual(uid, e._id_placeholder)
 
     def test_create_key_pair(self):
         """

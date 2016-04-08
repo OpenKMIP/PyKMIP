@@ -51,7 +51,7 @@ class CryptographyEngine(api.CryptographicEngine):
             enums.CryptographicAlgorithm.RSA: self._create_rsa_key_pair
         }
 
-    def create_symmetric_key(self, algorithm, length):
+    def create_symmetric_key(self, algorithm, length=None):
         """
         Create a symmetric key.
 
@@ -86,7 +86,13 @@ class CryptographyEngine(api.CryptographicEngine):
 
         cryptography_algorithm = self._symmetric_key_algorithms.get(algorithm)
 
-        if length not in cryptography_algorithm.key_sizes:
+        if length is None:
+            # If cryptograohic length is not defined,
+            #   the strongest allowed key size is used.
+            sizes = list(cryptography_algorithm.key_sizes)
+            sizes.sort()
+            length = sizes[-1]
+        elif length not in cryptography_algorithm.key_sizes:
             raise exceptions.InvalidField(
                 "The cryptographic length ({0}) is not valid for "
                 "the cryptographic algorithm ({1}).".format(
@@ -108,7 +114,10 @@ class CryptographyEngine(api.CryptographicEngine):
             raise exceptions.CryptographicFailure(
                 "Invalid bytes for the provided cryptographic algorithm.")
 
-        return {'value': key_bytes, 'format': enums.KeyFormatType.RAW}
+        return {
+            'value': key_bytes,
+            'format': enums.KeyFormatType.RAW,
+            'cryptographic_length': length}
 
     def create_asymmetric_key_pair(self, algorithm, length):
         """
