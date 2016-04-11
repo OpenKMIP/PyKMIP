@@ -36,9 +36,16 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["kmip.tests", "kmip.tests.*"]),
     package_data={'kmip': ['kmipconfig.ini', 'logconfig.ini'],
                   'kmip.demos': ['certs/server.crt', 'certs/server.key']},
+    entry_points={
+        'console_scripts':[
+            'pykmip-server = kmip.services.server.server:main'
+        ]
+    },
     install_requires=[
+        "cryptography",
         "enum34",
         "six",
+        "sqlalchemy"
     ],
     classifiers=[
         "Intended Audience :: Developers",
