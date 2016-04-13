@@ -1,14 +1,17 @@
 ------
 PyKMIP
 ------
-|coverage-status|
+|pypi-version|
+|travis-status|
+|codecov-status|
+|python-versions|
 
 PyKMIP is a Python implementation of the Key Management Interoperability
 Protocol (KMIP). KMIP is a client/server communication protocol for the
 storage and maintenance of key, certificate, and secret objects. The standard
 is governed by the `Organization for the Advancement of Structured Information
-Standards`_ (OASIS). PyKMIP supports a subset of features in version 1.1 of
-the KMIP specification.
+Standards`_ (OASIS). PyKMIP supports a subset of features in versions
+1.0 - 1.2 of the KMIP specification.
 
 For a high-level overview of KMIP, check out the `KMIP Wikipedia page`_. For
 comprehensive documentation from OASIS and information about the KMIP
@@ -112,39 +115,117 @@ information, check out the `Python SSL library documentation`_.
 Server
 ------
 In addition to the KMIP clients, PyKMIP provides a basic software
-implementation of a KMIP server, ``kmip.services.kmip_server.KMIPServer``.
+implementation of a KMIP server, ``kmip.services.server.KmipServer``.
 However, the server is intended for use only in testing and demonstration
 environments. The server is **not** intended to be a substitute for a secure,
 hardware-based key management appliance. The PyKMIP client should be used for
 operational purposes **only** with a hardware-based KMIP server.
 
-The KMIP server provides basic support for the following operations:
+The KMIP server provides support for the following operations:
 
 * ``Create``
+* ``CreateKeyPair``
 * ``Register``
-* ``Locate``
 * ``Get``
 * ``Destroy``
+* ``Query``
+* ``DiscoverVersions``
 
 Configuration
 *************
-The KMIP software server also pulls settings from the PyKMIP configuration
-file. An example server configuration settings block is shown below::
+The PyKMIP software server can be configured via configuration file, by
+default located at ``/etc/pykmip/server.conf``. An example server
+configuration settings block, as found in the configuration file, is shown
+below::
 
   [server]
-  host=127.0.0.1
+  hostname=127.0.0.1
   port=5696
-  keyfile=/path/to/key/file
-  certfile=/path/to/cert/file
-  cert_reqs=CERT_NONE
-  ssl_version=PROTOCOL_SSLv23
-  ca_certs=/path/to/ca/cert/file
-  do_handshake_on_connect=True
-  suppress_ragged_eofs=True
+  certificate_path=/path/to/certificate/file
+  key_path=/path/to/certificate/key/file
+  ca_path=/path/to/ca/certificate/file
+  auth_suite=Basic
 
-When used together, a KMIP client and KMIP server by default use certificate
-files found in ``kmip/demos/certs``. These files should be replaced with
-alternative certificates for standalone deployments.
+The server can also be configured manually. The following example shows how
+to create the ``KmipServer`` in Python code, directly specifying the
+different configuration values::
+
+  server = KmipServer(
+      hostname='127.0.0.1',
+      port=5696,
+      certificate_path='/path/to/certificate/file/',
+      key_path='/path/to/certificate/key/file/',
+      ca_path='/path/to/ca/certificate/file/',
+      auth_suite='Basic',
+      config_path='/etc/pykmip/server.conf',
+      log_path='/var/log/pykmip/server.log'
+  )
+
+**NOTE:** The ``kmip_server.KMIPServer`` implementation of the software
+server is deprecated and will be removed in a future version of PyKMIP.
+
+The different configuration options are defined below:
+
+* ``hostname``
+    A string representing either a hostname in Internet domain notation or an
+    IPv4 address.
+* ``port``
+    An integer representing a port number. Recommended to be ``5696``
+    according to the KMIP specification.
+* ``certificate_path``
+    A string representing a path to a PEM-encoded server certificate file. For
+    more information, see the `Python SSL library documentation`_.
+* ``key_path``
+    A string representing a path to a PEM-encoded server certificate key file.
+    The private key contained in the file must correspond to the certificate
+    pointed to by ``certificate_path``. For more information, see the
+    `Python SSL library documentation`_.
+* ``ca_path``
+    A string representing a path to a PEM-encoded certificate authority
+    certificate file. If using a self-signed certificate, the ``ca_path`` and
+    the ``certificate_path`` should be identical. For more information, see
+    the `Python SSL library documentation`_.
+* ``auth_suite``
+    A string representing the type of authentication suite to use when
+    establishing TLS connections. Acceptable values are ``Basic`` and
+    ``TLS1.2``.
+    **Note:** ``TLS1.2`` can only be used with versions of Python that support
+    TLS 1.2 (e.g,. Python 2.7.9+ or Python 3.4+). If you are running on an
+    older version of Python, you will only be able to use basic TLS 1.0
+    authentication. For more information, see the
+    `Python SSL library documentation`_ and the
+    `Key Management Interoperability Protocol Profiles Version 1.1`_
+    documentation.
+* ``config_path``
+    A string representing a path to a server configuration file, as shown
+    above. Only set via the ``KmipServer`` constructor. Defaults to
+    ``/etc/pykmip/server.conf``.
+* ``log_path``
+    A string representing a path to a log file. The server will set up a
+    rotating file logger on this file. Only set via the ``KmipServer``
+    constructor. Defaults to ``/var/log/pykmip/server.log``.
+
+**NOTE:** When installing PyKMIP and deploying the KMIP software server, you
+must manually set up the server configuration file. It **will not** be placed
+in ``/etc/pykmip`` automatically.
+
+Usage
+*****
+The software server can be run using the ``bin/run_server.py`` startup script.
+If you are currently in the PyKMIP root directory, use the following command::
+
+  $ python bin/run_server.py
+
+If you need more information about running the startup script, pass ``-h``
+to it::
+
+  $ python bin/run_server.py -h
+
+**NOTE:** You may need to run the server as root, depending on the
+permissions of the configuration, log, and certificate file directories.
+
+If PyKMIP is installed and you are able to ``import kmip`` in Python, you can
+copy the startup script and run it from any directory you choose.
 
 Profiles
 ========
@@ -205,7 +286,7 @@ To run the unit test suite against Python 2.7::
   $ tox -e py27
 
 The integration tests require a configuration flag whose value corresponds to
-the name of a client configuration section in the ``kmipconfig.ini``
+the name of a client configuration section in the ``pykmip.conf``
 configuration file. See the Usage_ section for more information.
 
 To run the integration test suite with a specific configuration setup::
@@ -222,6 +303,8 @@ PyKMIP has been tested and runs on the following platform(s):
 * Ubuntu 12.04 LTS
 
 PyKMIP is supported by Python 2.6, 2.7, 3.3, and 3.4.
+
+**NOTE:** Support for Python 2.6 will be deprecated in a future release of PyKMIP.
 
 References
 ==========
@@ -245,7 +328,13 @@ For more information on KMIP version 1.1, see the following documentation:
 .. _Python SSL library documentation: https://docs.python.org/dev/library/ssl.html#socket-creation
 .. _KMIP Wikipedia page: https://en.wikipedia.org/wiki/Key_Management_Interoperability_Protocol
 .. _KMIP Technical Committee home page: https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=kmip
-.. |coverage-status| image:: https://coveralls.io/repos/OpenKMIP/PyKMIP/badge.svg
-  :target: https://coveralls.io/github/OpenKMIP/PyKMIP
 
-
+.. |pypi-version| image:: https://img.shields.io/pypi/v/pykmip.svg
+  :target: https://pypi.python.org/pypi/pykmip
+  :alt: Latest Version
+.. |travis-status| image:: https://travis-ci.org/OpenKMIP/PyKMIP.svg?branch=master
+  :target: https://travis-ci.org/OpenKMIP/PyKMIP
+.. |codecov-status| image:: https://codecov.io/github/OpenKMIP/PyKMIP/coverage.svg?branch=master
+  :target: https://codecov.io/github/OpenKMIP/PyKMIP?branch=master
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/PyKMIP.svg
+  :target: https://github.com/OpenKMIP/PyKMIP
