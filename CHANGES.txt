@@ -1,4 +1,27 @@
-0.4.1
+0.5.0 - April 14, 2016
+* Add KmipServer server implementation
+* Add KmipSession to manage threaded client/server connections
+* Add KmipEngine for processing core server application logic
+* Add KmipEngine support for CRUD operations for managed objects
+* Add SQLAlchemy/SQLite support for KmipEngine data storage
+* Add CryptographyEngine component for cryptographic operations
+* Add pending deprecation warning for Python 2.6 support
+* Add pending deprecation warning for the KMIPServer implementation
+* Add support for building Sphinx documentation
+* Add support for SQLAlchemy tables to all Pie objects
+* Add Python magic methods to Attribute and Name objects
+* Add Attribute class unit tests
+* Add bin script to run the KmipServer
+* Add setup entry points to run the KmipServer
+* Update DiscoverVersions demo with optional versions argument
+* Update all demo scripts to setup their own logging infrastructure
+* Update README with information on the KmipServer implementation
+* Remove expired certificate files from the integration test suite
+* Remove default package log configuration and configuration file
+* Fix bug with Locate payload parsing optional values
+* Fix bug with DateTime string tests and move to UTC representation
+
+0.4.1 - December 2, 2015
 * Add support for the GetAttributeList operation
 * Add integration with Travis CI, Codecov/Coveralls, and Bandit
 * Add client/server failover support using multiple IP addresses
