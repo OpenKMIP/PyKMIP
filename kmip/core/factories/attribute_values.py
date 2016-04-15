@@ -93,7 +93,7 @@ class AttributeValueFactory(object):
         elif name is enums.AttributeType.FRESH:
             return primitives.Boolean(value, enums.Tags.FRESH)
         elif name is enums.AttributeType.LINK:
-            raise NotImplementedError()
+            return self._create_link(value)
         elif name is enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION:
             return self._create_application_specific_information(value)
         elif name is enums.AttributeType.CONTACT_INFORMATION:
@@ -214,3 +214,12 @@ class AttributeValueFactory(object):
                 raise TypeError(msg)
 
             return attributes.ContactInformation(info)
+
+    def _create_link(self, link):
+        if link is not None:
+            link_type = link[0]
+            linked_object_id = link[1]
+
+            return attributes.Link.create(link_type, linked_object_id)
+        else:
+            return attributes.Link()

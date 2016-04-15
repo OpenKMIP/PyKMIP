@@ -1788,6 +1788,17 @@ class TestKmipEngine(testtools.TestCase):
             public_key.cryptographic_usage_masks
         )
 
+        # verify link to private key object
+        self.assertEqual(1, len(public_key.links))
+        link = public_key.links[0]
+        self.assertIsInstance(link, attributes.Link)
+        self.assertEqual(
+            link.link_type,
+            attributes.Link.LinkType(enums.LinkType.PRIVATE_KEY_LINK))
+        self.assertEqual(
+            link.linked_oid,
+            attributes.Link.LinkedObjectID(private_id))
+
         # Retrieve the stored private key and verify all attributes were set
         # appropriately.
         private_key = e._data_session.query(
@@ -1813,6 +1824,17 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         self.assertEqual(private_id, e._id_placeholder)
+
+        # verify link to public key object
+        self.assertEqual(1, len(private_key.links))
+        link = private_key.links[0]
+        self.assertIsInstance(link, attributes.Link)
+        self.assertEqual(
+            link.link_type,
+            attributes.Link.LinkType(enums.LinkType.PUBLIC_KEY_LINK))
+        self.assertEqual(
+            link.linked_oid,
+            attributes.Link.LinkedObjectID(public_id))
 
     def test_create_key_pair_omitting_attributes(self):
         """
@@ -2369,6 +2391,99 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
+
+    def test_only_one_link_of_given_type(self):
+        """
+        Test that crypto-object can hold only one link of given type.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        common_template = objects.CommonTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    attributes.Name.create(
+                        'Test Uniqueness of link',
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                )
+            ]
+        )
+        public_template = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.ENCRYPT
+                    ]
+                )
+            ]
+        )
+        private_template = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [
+                        enums.CryptographicUsageMask.DECRYPT
+                    ]
+                )
+            ]
+        )
+        payload = create_key_pair.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        response_payload = e._process_create_key_pair(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        private_id = response_payload.private_key_uuid.value
+
+        # Retrieve the stored private key and verify all attributes were set
+        # appropriately.
+        private_key = e._data_session.query(
+            pie_objects.PrivateKey
+        ).filter(
+            pie_objects.ManagedObject.unique_identifier == private_id
+        ).one()
+
+        attribute_factory = factory.AttributeFactory()
+        link = attribute_factory.create_attribute(
+            enums.AttributeType.LINK,
+            [
+                enums.LinkType.PUBLIC_KEY_LINK,
+                '4321'
+            ])
+        private_key_server_attributes = {
+            link.attribute_name.value: [
+                link.attribute_value
+            ]
+        }
+
+        args = (private_key, private_key_server_attributes)
+        regex = "Only one LinkType.PUBLIC_KEY_LINK link allowed"
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._set_attributes_on_managed_object,
+            *args
+        )
 
     def test_register(self):
         """
