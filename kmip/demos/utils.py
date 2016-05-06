@@ -222,6 +222,50 @@ def build_cli_parser(operation=None):
                 dest="protocol_versions",
                 help=("Protocol versions supported by client. "
                       "ex. '1.1,1.2 1.3'"))
+    elif operation is Operation.QUERY:
+        parser.add_option(
+                "-q",
+                "--query-functions",
+                action="store",
+                type="str",
+                default=None,
+                dest="query_functions",
+                help=("Request query functions. Query functions include: "
+                      "OPERATIONS, OBJECT, SERVER_INFORMATION, "
+                      "APPLICATION_NAMESPACES, EXTENSION_LIST EXTENSION_MAP"))
+    elif operation is Operation.ADD_ATTRIBUTE:
+        parser.add_option(
+            "-i",
+            "--uuid",
+            action="store",
+            type="str",
+            default=None,
+            dest="uuid",
+            help="UID of a managed object")
+        parser.add_option(
+            "",
+            "--attribute-type",
+            action="store",
+            type="str",
+            default=None,
+            dest="attribute_type",
+            help="Attribute type: 'Name', 'Link', 'State', etc")
+        parser.add_option(
+            "",
+            "--attribute-sub-type",
+            action="store",
+            type="str",
+            default=None,
+            dest="attribute_sub_type",
+            help="Attribute sub type. ex. 'LinkType's of attribute 'Link'")
+        parser.add_option(
+            "",
+            "--attribute-value",
+            action="store",
+            type="str",
+            default=None,
+            dest="attribute_value",
+            help="Attribute value")
 
     return parser
 

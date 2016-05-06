@@ -14,6 +14,7 @@
 # under the License.
 
 from kmip.services.results import ActivateResult
+from kmip.services.results import AddAttributeResult
 from kmip.services.results import CreateResult
 from kmip.services.results import CreateKeyPairResult
 from kmip.services.results import DestroyResult
@@ -47,6 +48,7 @@ from kmip.core.messages.contents import ProtocolVersion
 from kmip.core.messages import messages
 
 from kmip.core.messages.payloads import activate
+from kmip.core.messages.payloads import add_attribute
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
@@ -312,6 +314,14 @@ class KMIPProxy(KMIP):
         results = self._process_batch_items(response)
         return results[0]
 
+    def add_attribute(self, uid, attribute):
+        batch_item = self._build_add_attribute_batch_item(uid, attribute)
+
+        request = self._build_request_message(None, [batch_item])
+        response = self._send_and_receive_message(request)
+        results = self._process_batch_items(response)
+        return results[0]
+
     def revoke(self, uuid, reason, message=None, credential=None):
         return self._revoke(unique_identifier=uuid,
                             revocation_code=reason,
@@ -473,6 +483,13 @@ class KMIPProxy(KMIP):
             operation=operation, request_payload=payload)
         return batch_item
 
+    def _build_add_attribute_batch_item(self, uid=None, attribute=None):
+        operation = Operation(OperationEnum.ADD_ATTRIBUTE)
+        payload = add_attribute.AddAttributeRequestPayload(uid, attribute)
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=payload)
+        return batch_item
+
     def _build_discover_versions_batch_item(self, protocol_versions=None):
         operation = Operation(OperationEnum.DISCOVER_VERSIONS)
 
@@ -497,6 +514,8 @@ class KMIPProxy(KMIP):
     def _get_batch_item_processor(self, operation):
         if operation is None:
             return self._process_response_error
+        elif operation == OperationEnum.ADD_ATTRIBUTE:
+            return self._process_add_attribute_batch_item
         elif operation == OperationEnum.CREATE_KEY_PAIR:
             return self._process_create_key_pair_batch_item
         elif operation == OperationEnum.GET_ATTRIBUTE_LIST:
@@ -510,6 +529,23 @@ class KMIPProxy(KMIP):
         else:
             raise ValueError("no processor for operation: {0}".format(
                 operation))
+
+    def _process_add_attribute_batch_item(self, batch_item):
+        payload = batch_item.response_payload
+
+        uid = None
+        attribute = None
+
+        if payload:
+            uid = payload.uid
+            attribute = payload.attribute
+
+        return AddAttributeResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            uid,
+            attribute)
 
     def _process_get_attribute_list_batch_item(self, batch_item):
         payload = batch_item.response_payload

@@ -33,6 +33,20 @@ class OperationResult(object):
             self.result_message = None
 
 
+class AddAttributeResult(OperationResult):
+
+    def __init__(
+            self,
+            result_status,
+            result_reason=None,
+            result_message=None,
+            uid=None,
+            attribute=None):
+        super(AddAttributeResult, self).__init__(
+            result_status, result_reason, result_message)
+        self.uid = uid
+        self.attribute = attribute
+
 class CreateResult(OperationResult):
 
     def __init__(self,
