@@ -597,7 +597,19 @@ class KmipEngine(object):
                             "Cannot set duplicate name values."
                         )
             elif attribute_name == 'Link':
+                attributes = attribute_value
                 for attr in attribute_value:
+                    # ignore already existing link
+                    if attr in managed_object.links:
+                        self._logger.info(
+                            "For {0}:{1} ignoring already existing"
+                            "link {2}".format(
+                                managed_object.object_type.name,
+                                managed_object.unique_identifier,
+                                repr(attr)))
+                        attributes.remove(attr)
+                        continue
+
                     # Check if new link is compatible with the object type;
                     # check if object already has link of the same type
                     managed_object.validate_link(attr)
@@ -611,7 +623,7 @@ class KmipEngine(object):
                                 attr.linked_oid.value))
 
                 managed_object.links.extend(
-                    [x for x in attribute_value]
+                    [x for x in attributes]
                 )
             else:
                 # TODO (peterhamilton) Remove when all attributes are supported

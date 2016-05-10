@@ -19,6 +19,7 @@ from kmip.core.enums import Operation
 from kmip.core.factories.payloads.request import RequestPayloadFactory
 
 from kmip.core.messages.payloads import activate
+from kmip.core.messages.payloads import add_attribute
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
@@ -99,8 +100,9 @@ class TestRequestPayloadFactory(testtools.TestCase):
             payload, get_attribute_list.GetAttributeListRequestPayload)
 
     def test_create_add_attribute_payload(self):
-        self._test_not_implemented(
-            self.factory.create, Operation.ADD_ATTRIBUTE)
+        payload = self.factory.create(Operation.ADD_ATTRIBUTE)
+        self._test_payload_type(
+            payload, add_attribute.AddAttributeRequestPayload)
 
     def test_create_modify_attribute_payload(self):
         self._test_not_implemented(

@@ -47,6 +47,7 @@ class AddAttributeResult(OperationResult):
         self.uid = uid
         self.attribute = attribute
 
+
 class CreateResult(OperationResult):
 
     def __init__(self,

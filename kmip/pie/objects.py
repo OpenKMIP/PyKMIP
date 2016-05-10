@@ -219,8 +219,10 @@ class CryptographicObject(ManagedObject):
         ]
 
     def validate_link(self, in_link):
-        allowed_link_types = self.valid_link_types()
+        if in_link in self.links:
+            return
 
+        allowed_link_types = self.valid_link_types()
         if in_link.link_type.value not in allowed_link_types:
             raise exceptions.InvalidField(
                 "Attribute {0} not allowed for {1} object".format(
