@@ -60,6 +60,8 @@ class CryptographyEngine(api.CryptographicEngine):
                 algorithm for which the created key will be compliant.
             length(int): The length of the key to be created. This value must
                 be compliant with the constraints of the provided algorithm.
+                Optional. If not specified, the key length is the maximal
+                allowed for a given cryptographic algorithm.
 
         Returns:
             dict: A dictionary containing the key data, with the following
@@ -86,7 +88,13 @@ class CryptographyEngine(api.CryptographicEngine):
 
         cryptography_algorithm = self._symmetric_key_algorithms.get(algorithm)
 
-        if length not in cryptography_algorithm.key_sizes:
+        if length is None:
+            # If cryptograohic length is not defined,
+            #   the strongest allowed key size is used.
+            sizes = list(cryptography_algorithm.key_sizes)
+            sizes.sort()
+            length = sizes[len(sizes) - 1]
+        elif length not in cryptography_algorithm.key_sizes:
             raise exceptions.InvalidField(
                 "The cryptographic length ({0}) is not valid for "
                 "the cryptographic algorithm ({1}).".format(
