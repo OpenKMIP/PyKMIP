@@ -21,6 +21,9 @@ from kmip.core import secrets
 
 from kmip.pie import objects as pobjects
 
+from kmip.core.factories.attributes import AttributeFactory \
+    as CoreAttributeFactory
+
 
 class ObjectFactory:
     """
@@ -155,3 +158,11 @@ class ObjectFactory:
         opaque_data_type = secrets.OpaqueObject.OpaqueDataType(opaque_type)
         opaque_data_value = secrets.OpaqueObject.OpaqueDataValue(value)
         return secrets.OpaqueObject(opaque_data_type, opaque_data_value)
+
+
+class AttributeFactory(CoreAttributeFactory):
+    """
+    PIE proxy to core attribute factory
+    """
+    def __init__(self):
+            CoreAttributeFactory.__init__(self)

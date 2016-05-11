@@ -32,11 +32,13 @@ from kmip.core.factories import secrets
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
+from kmip.core.messages.payloads import add_attribute
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
 
@@ -116,6 +118,7 @@ class KmipEngine(object):
         }
 
         self._attribute_policy = policy.AttributePolicy(self._protocol_version)
+        self._attribute_factory = factory.AttributeFactory()
 
     def _kmip_version_supported(supported):
         def decorator(function):
@@ -396,6 +399,18 @@ class KmipEngine(object):
 
         return response_batch
 
+    def _is_object_exists(self, oid):
+        obj = self._data_session.query(
+            objects.ManagedObject._object_type
+        ).filter(
+            objects.ManagedObject.unique_identifier == oid
+        ).one_or_none()
+
+        if obj is None:
+            return False
+        else:
+            return True
+
     def _get_object_type(self, unique_identifier):
         try:
             object_type = self._data_session.query(
@@ -581,6 +596,35 @@ class KmipEngine(object):
                         raise exceptions.InvalidField(
                             "Cannot set duplicate name values."
                         )
+            elif attribute_name == 'Link':
+                attributes = attribute_value
+                for attr in attribute_value:
+                    # ignore already existing link
+                    if attr in managed_object.links:
+                        self._logger.info(
+                            "For {0}:{1} ignoring already existing"
+                            "link {2}".format(
+                                managed_object.object_type.name,
+                                managed_object.unique_identifier,
+                                repr(attr)))
+                        attributes.remove(attr)
+                        continue
+
+                    # Check if new link is compatible with the object type;
+                    # check if object already has link of the same type
+                    managed_object.validate_link(attr)
+
+                    # Check if linked-oid points to the existing object
+                    linked_object_exists = self._is_object_exists(
+                        attr.linked_oid.value)
+                    if not linked_object_exists:
+                        raise exceptions.InvalidField(
+                            "Trying to link non-existing object {0}".format(
+                                attr.linked_oid.value))
+
+                managed_object.links.extend(
+                    [x for x in attributes]
+                )
             else:
                 # TODO (peterhamilton) Remove when all attributes are supported
                 raise exceptions.InvalidField(
@@ -618,6 +662,80 @@ class KmipEngine(object):
                     "The {0} attribute is unsupported.".format(attribute_name)
                 )
 
+    def _set_links_for_certificate(self, certificate):
+        if not isinstance(certificate, objects.Certificate):
+            raise exceptions.OperationNotSupported(
+                "Link attribute not supported for the {0} object".format(
+                    certificate.object_type.name)
+            )
+
+        # return if crypto-object already contains the link to public key
+        links = list(filter(
+            lambda x: x.link_type.value == enums.LinkType.PUBLIC_KEY_LINK,
+            certificate.links))
+        if len(links) == 1:
+            return
+
+        # get from certificate the blob of public key
+        pub_key_blob = self._cryptography_engine.X509_get_public_key(
+            certificate.value)
+
+        # search public key by key blob
+        m_public_key = self._data_session.query(
+            objects.PublicKey
+        ).filter(
+            objects.PublicKey.value == pub_key_blob
+        ).one_or_none()
+
+        if m_public_key is None:
+            self._logger.info(
+                "No public key to link with Certificate:{0}".format(
+                    certificate.unique_identifier))
+            return
+
+        self._logger.info(
+            "For Certificate:{0} set link to PublicKey:{1}".format(
+                certificate.unique_identifier,
+                m_public_key.unique_identifier))
+
+        # For Private Key object set link to Public Key
+        link_to_pubkey = self._attribute_factory.create_attribute(
+                enums.AttributeType.LINK,
+                [
+                    enums.LinkType.PUBLIC_KEY_LINK,
+                    m_public_key.unique_identifier
+                ])
+        certificate_server_attributes = {
+            link_to_pubkey.attribute_name.value: [
+                link_to_pubkey.attribute_value
+            ]
+        }
+        self._set_attributes_on_managed_object(
+            certificate,
+            certificate_server_attributes
+        )
+
+    def _set_links_for_public_key(self, public_key):
+        if not isinstance(public_key, objects.PublicKey):
+            raise exceptions.OperationNotSupported(
+                "Link attribute not supported for the {0} object".format(
+                    public_key.object_type.name)
+            )
+
+    def _set_links(self, crypto_object):
+        self._logger.debug("Set links for {0}".format(
+            crypto_object.object_type.name))
+        if not isinstance(crypto_object, objects.CryptographicObject):
+            raise exceptions.OperationNotSupported(
+                "Link attribute not supported for the {0} object".format(
+                    crypto_object.object_type.name)
+            )
+
+        if isinstance(crypto_object, objects.Certificate):
+            return self._set_links_for_certificate(crypto_object)
+        elif isinstance(crypto_object, objects.PublicKey):
+            return self._set_links_for_public_key(crypto_object)
+
     def _process_operation(self, operation, payload):
         if operation == enums.Operation.CREATE:
             return self._process_create(payload)
@@ -633,6 +751,14 @@ class KmipEngine(object):
             return self._process_query(payload)
         elif operation == enums.Operation.DISCOVER_VERSIONS:
             return self._process_discover_versions(payload)
+        elif operation == enums.Operation.GET_ATTRIBUTE_LIST:
+            return self._process_get_attribute_list(payload)
+        elif operation == enums.Operation.GET_ATTRIBUTES:
+            return self._process_get_attributes(payload)
+        elif operation == enums.Operation.ADD_ATTRIBUTE:
+            return self._process_add_attribute(payload)
+        elif operation == enums.Operation.MODIFY_ATTRIBUTE:
+            return self._process_modify_attribute(payload)
         else:
             raise exceptions.OperationNotSupported(
                 "{0} operation is not supported by the server.".format(
@@ -881,6 +1007,42 @@ class KmipEngine(object):
         # commit is called. This makes future support for UNDO problematic.
         self._data_session.commit()
 
+        # For Private Key object set link to Public Key
+        link_to_pubkey = self._attribute_factory.create_attribute(
+                enums.AttributeType.LINK,
+                [
+                    enums.LinkType.PUBLIC_KEY_LINK,
+                    public_key.unique_identifier
+                ])
+        private_key_server_attributes = {
+            link_to_pubkey.attribute_name.value: [
+                link_to_pubkey.attribute_value
+            ]
+        }
+        self._set_attributes_on_managed_object(
+            private_key,
+            private_key_server_attributes
+        )
+
+        # For Public Key object set link to Private Key
+        link_to_prvkey = self._attribute_factory.create_attribute(
+                enums.AttributeType.LINK,
+                [
+                    enums.LinkType.PRIVATE_KEY_LINK,
+                    private_key.unique_identifier
+                ])
+        public_key_server_attributes = {
+            link_to_prvkey.attribute_name.value: [
+                link_to_prvkey.attribute_value
+            ]
+        }
+        self._set_attributes_on_managed_object(
+            public_key,
+            public_key_server_attributes
+        )
+
+        self._data_session.commit()
+
         self._logger.info(
             "Created a PublicKey with ID: {0}".format(
                 public_key.unique_identifier
@@ -920,7 +1082,6 @@ class KmipEngine(object):
                     )
                 )
             )
-
         if payload.secret:
             secret = payload.secret
         else:
@@ -948,6 +1109,9 @@ class KmipEngine(object):
         # TODO (peterhamilton) Set additional server-only attributes.
 
         self._data_session.add(managed_object)
+
+        if isinstance(managed_object, objects.CryptographicObject):
+            self._set_links(managed_object)
 
         # NOTE (peterhamilton) SQLAlchemy will *not* assign an ID until
         # commit is called. This makes future support for UNDO problematic.
@@ -1136,3 +1300,63 @@ class KmipEngine(object):
         )
 
         return response_payload
+
+    def _process_get_attribute_list(self, payload):
+        self._logger.info("Processing operation: Get Attribute List")
+
+        unique_identifier = self._id_placeholder
+        if payload.uid:
+            unique_identifier = payload.uid
+
+        object_type = self._get_object_type(unique_identifier)
+
+        managed_object = self._data_session.query(object_type).filter(
+            object_type.unique_identifier == unique_identifier
+        ).one()
+
+        response_payload = get_attribute_list.GetAttributeListResponsePayload(
+            uid=unique_identifier,
+            attribute_names=managed_object.get_attribute_list()
+        )
+
+        return response_payload
+
+    def _process_get_attributes(self, payload):
+        pass
+
+    def _process_add_attribute(self, payload):
+        self._logger.info("Processing operation: Add Attribute")
+
+        unique_identifier = self._id_placeholder
+        if payload.uid:
+            unique_identifier = payload.uid
+
+        attribute = payload.attribute
+
+        object_type = self._get_object_type(unique_identifier)
+
+        managed_object = self._data_session.query(object_type).filter(
+            object_type.unique_identifier == unique_identifier
+        ).one()
+
+        attribute_to_add = {
+            attribute.attribute_name.value: [
+                attribute.attribute_value
+            ]
+        }
+        self._set_attributes_on_managed_object(
+            managed_object,
+            attribute_to_add
+        )
+
+        self._data_session.commit()
+
+        response_payload = add_attribute.AddAttributeResponsePayload(
+            uid=unique_identifier,
+            attribute=attribute
+        )
+
+        return response_payload
+
+    def _process_modify_attribute(self, payload):
+        pass

@@ -20,8 +20,7 @@ import threading
 
 from kmip.core import enums
 from kmip.core import exceptions
-from kmip.core.messages import contents
-from kmip.core.messages import messages
+from kmip.core.messages import contents, messages
 from kmip.core import utils
 
 
@@ -146,6 +145,14 @@ class KmipSession(threading.Thread):
             response.write(response_data)
 
         self._send_response(response_data.buffer)
+
+    def _build_fail_response(self, reason, message):
+        protocol_version = contents.ProtocolVersion.create(1, 1)
+        status = enums.ResultStatus.OPERATION_FAILED
+        return self._engine.build_error_response(protocol_version,
+                                                 status,
+                                                 reason,
+                                                 message)
 
     def _receive_request(self):
         header = self._receive_bytes(8)

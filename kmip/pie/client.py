@@ -342,6 +342,43 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    def add_attribute(self, uid, attribute_type, attribute_value):
+        """
+        Add attribute to managed object
+
+        If the uid is not specified, the appliance will use the ID placeholder
+        by default.
+
+        Args:
+            attribute_value (list): attribute value members
+            uid (string): The unique ID of the managed object with which the
+                retrieved attribute names should be associated. Optional,
+                defaults to None.
+        """
+        # Check input
+        if uid is not None:
+            if not isinstance(uid, six.string_types):
+                raise TypeError("uid must be a string")
+
+        # Verify that operations can be given at this time
+        if not self._is_open:
+            raise exceptions.ClientConnectionNotOpen()
+
+        attribute = self.attribute_factory.create_attribute(
+            attribute_type, attribute_value)
+
+        # Get the list of attribute names for a managed object.
+        result = self.proxy.add_attribute(uid, attribute)
+
+        status = result.result_status.value
+        if status == enums.ResultStatus.SUCCESS:
+            attribute = result.attribute
+            return uid, attribute
+        else:
+            reason = result.result_reason.value
+            message = result.result_message.value
+            raise exceptions.KmipOperationFailure(status, reason, message)
+
     def destroy(self, uid):
         """
         Destroy a managed object stored by a KMIP appliance.

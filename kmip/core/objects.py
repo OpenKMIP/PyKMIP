@@ -145,6 +145,17 @@ class Attribute(Struct):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def __repr__(self):
+        if self.attribute_index is not None:
+            return "Attribute({0}, idx:{1}, value:'{2}')".format(
+                self.attribute_name,
+                self.attribute_index,
+                repr(self.attribute_value))
+        else:
+            return "Attribute({0}, value:'{1}')".format(
+                self.attribute_name,
+                repr(self.attribute_value))
+
 
 # 2.1.2
 class Credential(Struct):
