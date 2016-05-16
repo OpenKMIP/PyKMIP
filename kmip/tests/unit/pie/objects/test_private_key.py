@@ -31,8 +31,11 @@ import binascii
 import testtools
 
 from kmip.core import enums
+from kmip.core.enums import LinkType
+
 from kmip.pie import sqltypes
 from kmip.pie.objects import ManagedObject, PrivateKey
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -767,3 +770,24 @@ class TestPrivateKey(testtools.TestCase):
         session.commit()
         self.assertEquals(expected_names, get_obj.names)
         self.assertEquals(expected_mo_names, get_obj._names)
+
+    def test_valid_link_types(self):
+        """
+        Test valid Link types associated with PrivateKey object.
+        """
+        key = PrivateKey(
+            enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
+            enums.KeyFormatType.PKCS_1)
+        valid_types = key.valid_link_types()
+
+        base = "expected {0}, received {1}"
+        msg = base.format(list, valid_types)
+        self.assertIsInstance(valid_types, list, msg)
+        self.assertEqual(7, len(valid_types))
+        self.assertIn(LinkType.PARENT_LINK, valid_types)
+        self.assertIn(LinkType.CHILD_LINK, valid_types)
+        self.assertIn(LinkType.PREVIOUS_LINK, valid_types)
+        self.assertIn(LinkType.NEXT_LINK, valid_types)
+        self.assertIn(LinkType.PUBLIC_KEY_LINK, valid_types)
+        self.assertIn(LinkType.REPLACEMENT_OBJECT_LINK, valid_types)
+        self.assertIn(LinkType.REPLACED_OBJECT_LINK, valid_types)

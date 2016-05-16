@@ -16,6 +16,10 @@
 
 from testtools import TestCase
 
+from kmip.core import exceptions
+from kmip.core.attributes import Link
+from kmip.core.enums import LinkType
+
 from kmip.pie.objects import CryptographicObject
 
 
@@ -24,25 +28,32 @@ class DummyCryptographicObject(CryptographicObject):
     A dummy CryptographicObject subclass for testing purposes.
     """
 
-    def __init__(self):
+    def __init__(self, object_type=None):
         """
         Create a DummyCryptographicObject
         """
         super(DummyCryptographicObject, self).__init__()
 
+        self._object_type = object_type
+
     def validate(self):
+        super(DummyCryptographicObject, self).validate()
         return
 
     def __repr__(self):
+        super(DummyCryptographicObject, self).__repr__()
         return ''
 
     def __str__(self):
+        super(DummyCryptographicObject, self).__str__()
         return ''
 
     def __eq__(self, other):
+        super(DummyCryptographicObject, self).__eq__(other)
         return True
 
     def __ne__(self, other):
+        super(DummyCryptographicObject, self).__ne__(other)
         return False
 
 
@@ -66,6 +77,75 @@ class TestCryptographicObject(TestCase):
         instantiated.
         """
         DummyCryptographicObject()
+
+    def test_valid_link_types(self):
+        """
+        Test list of valid Link types associated with crytpgraphic object.
+        """
+        dummy = DummyCryptographicObject()
+        valid_types = dummy.valid_link_types()
+
+        base = "expected {0}, received {1}"
+        msg = base.format(list, valid_types)
+        self.assertIsInstance(valid_types, list, msg)
+        self.assertEqual(4, len(valid_types))
+        self.assertIn(LinkType.PARENT_LINK, valid_types)
+        self.assertIn(LinkType.CHILD_LINK, valid_types)
+        self.assertIn(LinkType.PREVIOUS_LINK, valid_types)
+        self.assertIn(LinkType.NEXT_LINK, valid_types)
+
+    def test_validate_valid_link(self):
+        """
+        Test validating of the already existing link
+        """
+        dummy = DummyCryptographicObject()
+        link = Link(
+            link_type=LinkType.PARENT_LINK,
+            linked_oid='1234')
+
+        dummy.validate_link(link)
+
+    def test_validate_same_link(self):
+        """
+        Test validating of the link of the same type
+        and with the same referenced object ID
+        """
+        dummy = DummyCryptographicObject()
+        link = Link(
+            link_type=LinkType.PARENT_LINK,
+            linked_oid='1234')
+        dummy.links.extend([link])
+
+        dummy.validate_link(link)
+
+    def test_validate_another_link_of_same_type(self):
+        """
+        Test validating of second link of the same type
+        and with the different referenced object ID
+        """
+        dummy = DummyCryptographicObject()
+        link = Link(
+            link_type=LinkType.PARENT_LINK,
+            linked_oid='1234')
+        dummy.links.extend([link])
+
+        link_bis = Link(
+            link_type=LinkType.PARENT_LINK,
+            linked_oid='4321')
+
+        self.assertRaises(exceptions.InvalidField, dummy.validate_link,
+                          link_bis)
+
+    def test_validate_link_not_allowed_type(self):
+        """
+        Test validating of the already existing link
+        """
+        dummy = DummyCryptographicObject()
+        link = Link(
+            link_type=LinkType.PUBLIC_KEY_LINK,
+            linked_oid='1234')
+
+        self.assertRaises(exceptions.InvalidField, dummy.validate_link, link)
 
     def test_repr(self):
         """

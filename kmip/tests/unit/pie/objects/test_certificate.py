@@ -16,6 +16,8 @@
 import testtools
 
 from kmip.core import enums
+from kmip.core.enums import LinkType
+
 from kmip.pie import objects
 
 
@@ -289,3 +291,23 @@ class TestCertificate(testtools.TestCase):
         """
         dummy = DummyCertificate(enums.CertificateTypeEnum.X_509, self.bytes_a)
         self.assertFalse(dummy != dummy)
+
+    def test_valid_link_types(self):
+        """
+        Test valid Link types associated with Certificate object.
+        """
+        dummy = DummyCertificate(enums.CertificateTypeEnum.X_509, self.bytes_a)
+        valid_types = dummy.valid_link_types()
+
+        base = "expected {0}, received {1}"
+        msg = base.format(list, valid_types)
+        self.assertIsInstance(valid_types, list, msg)
+        self.assertEqual(8, len(valid_types))
+        self.assertIn(LinkType.PARENT_LINK, valid_types)
+        self.assertIn(LinkType.CHILD_LINK, valid_types)
+        self.assertIn(LinkType.PREVIOUS_LINK, valid_types)
+        self.assertIn(LinkType.NEXT_LINK, valid_types)
+        self.assertIn(LinkType.CERTIFICATE_LINK, valid_types)
+        self.assertIn(LinkType.PUBLIC_KEY_LINK, valid_types)
+        self.assertIn(LinkType.REPLACEMENT_OBJECT_LINK, valid_types)
+        self.assertIn(LinkType.REPLACED_OBJECT_LINK, valid_types)

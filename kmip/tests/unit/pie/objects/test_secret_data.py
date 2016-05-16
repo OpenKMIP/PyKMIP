@@ -17,8 +17,11 @@ import binascii
 import testtools
 
 from kmip.core import enums
+from kmip.core.enums import LinkType
+
 from kmip.pie.objects import ManagedObject, SecretData
 from kmip.pie import sqltypes
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -491,3 +494,21 @@ class TestSecretData(testtools.TestCase):
         session.commit()
         self.assertEquals(expected_names, get_obj.names)
         self.assertEquals(expected_mo_names, get_obj._names)
+
+    def test_valid_link_types(self):
+        """
+        Test valid Link types associated with SecretData object.
+        """
+        obj = SecretData(self.bytes_a, enums.SecretDataType.PASSWORD)
+        valid_types = obj.valid_link_types()
+
+        base = "expected {0}, received {1}"
+        msg = base.format(list, valid_types)
+        self.assertIsInstance(valid_types, list, msg)
+        self.assertEqual(6, len(valid_types))
+        self.assertIn(LinkType.PARENT_LINK, valid_types)
+        self.assertIn(LinkType.CHILD_LINK, valid_types)
+        self.assertIn(LinkType.PREVIOUS_LINK, valid_types)
+        self.assertIn(LinkType.NEXT_LINK, valid_types)
+        self.assertIn(LinkType.DERIVATION_BASE_OBJECT_LINK, valid_types)
+        self.assertIn(LinkType.DERIVED_KEY_LINK, valid_types)
