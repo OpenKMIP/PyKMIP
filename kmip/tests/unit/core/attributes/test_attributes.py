@@ -21,6 +21,7 @@ from kmip.core.attributes import CertificateType
 from kmip.core.attributes import CryptographicParameters
 from kmip.core.attributes import DigestValue
 from kmip.core.attributes import HashingAlgorithm
+from kmip.core.attributes import Link
 from kmip.core.attributes import Name
 from kmip.core.attributes import OperationPolicyName
 from kmip.core.attributes import Tags
@@ -32,8 +33,9 @@ from kmip.core.enums import BlockCipherMode
 from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.enums import KeyRoleType
-from kmip.core.enums import PaddingMethod
+from kmip.core.enums import LinkType
 from kmip.core.enums import NameType
+from kmip.core.enums import PaddingMethod
 
 from kmip.core.utils import BytearrayStream
 
@@ -570,3 +572,227 @@ class TestCryptographicParameters(TestCase):
         bad_obj = Name.create(name_value, name_type)
 
         self.assertNotEqual(NotImplemented, bad_obj)
+
+
+class TestLinkType(TestCase):
+
+    def setUp(self):
+        super(TestLinkType, self).setUp()
+        self.enum_pubkey_link = LinkType.PUBLIC_KEY_LINK
+        self.enum_prvkey_link = LinkType.PRIVATE_KEY_LINK
+
+    def tearDown(self):
+        super(TestLinkType, self).tearDown()
+
+    def test__eq(self):
+        link_type = Link.LinkType(self.enum_pubkey_link)
+        same_link_type = Link.LinkType(self.enum_pubkey_link)
+        other_link_type = Link.LinkType(self.enum_prvkey_link)
+
+        self.assertTrue(link_type == same_link_type)
+        self.assertFalse(same_link_type == other_link_type)
+        self.assertFalse(link_type == 'invalid')
+
+    def test__str(self):
+        link_type = Link.LinkType(self.enum_pubkey_link)
+        str_link = "{0}".format(self.enum_pubkey_link)
+        repr_link = "LinkType(value=<{0}: {1}>)".format(
+                self.enum_pubkey_link,
+                self.enum_pubkey_link.value)
+
+        self.assertEqual(str_link, str(link_type))
+        self.assertEqual(repr_link, repr(link_type))
+
+
+class TestLinkedObjectID(TestCase):
+
+    def setUp(self):
+        super(TestLinkedObjectID, self).setUp()
+        self.linked_oid1 = '12'
+        self.linked_oid2 = '13'
+
+    def tearDown(self):
+        super(TestLinkedObjectID, self).tearDown()
+
+    def test__eq(self):
+        linked_oid = Link.LinkedObjectID(self.linked_oid1)
+        same_linked_oid = Link.LinkedObjectID(self.linked_oid1)
+        other_linked_oid = Link.LinkedObjectID(self.linked_oid2)
+
+        self.assertTrue(linked_oid == same_linked_oid)
+        self.assertFalse(linked_oid == other_linked_oid)
+        self.assertFalse(linked_oid == 'invalid')
+
+    def test__str(self):
+        linked_oid = Link.LinkedObjectID(self.linked_oid1)
+        repr_linked_oid = "LinkedObjectID(value='{0}')".format(
+            self.linked_oid1)
+
+        self.assertEqual(self.linked_oid1, str(linked_oid))
+        self.assertEqual(repr_linked_oid, repr(linked_oid))
+
+
+class TestLink(TestCase):
+    def setUp(self):
+        super(TestLink, self).setUp()
+        self.linked_oid1_int = 12
+        self.linked_oid1 = str(12)
+        self.linked_oid2 = str(13)
+        self.linked_oid_bad_format = 13
+        self.link_type_bad_format = 13
+        self.enum_pubkey_link = LinkType.PUBLIC_KEY_LINK
+        self.enum_prvkey_link = LinkType.PRIVATE_KEY_LINK
+
+        self.link = Link.create(self.enum_prvkey_link, 12)
+
+        # <Link>
+        #     <LinkType type="Enumeration" value="PrivateKeyLink"/>
+        #     <LinkedObjectIdentifier type="TextString" value="12"/>
+        # </Link>
+        self.blob_link = BytearrayStream((
+            b'\x42\x00\x4a\x01\x00\x00\x00\x20'
+            b'\x42\x00\x4b\x05\x00\x00\x00\x04\x00\x00\x01\x03\x00\x00\x00\x00'
+            b'\x42\x00\x4c\x07\x00\x00\x00\x02\x31\x32\x00\x00\x00\x00\x00\x00'
+        ))
+
+    def tearDown(self):
+        super(TestLink, self).tearDown()
+
+    def test_invalid_attribute_type(self):
+        """
+        Test that exception is raised when unknown attribute type is requested
+        """
+        args = (1, 12)
+        self.assertRaises(TypeError, Link.__init__, *args)
+
+    def test_empty_link(self):
+        """
+        Test empty link value
+        """
+        link = Link()
+
+        self.assertIsInstance(link, Link)
+        self.assertTrue(link.link_type is None)
+        self.assertTrue(link.linked_oid is None)
+
+    def test_bad_link_type_format(self):
+        """
+         Test that an error is raised for an incorrectly formatted link type
+        """
+        link_obj = Link()
+        link_obj.link_type = self.link_type_bad_format
+        link_obj.linked_oid = self.linked_oid1
+
+        self.assertRaises(TypeError, link_obj.validate)
+
+    def test_bad_linked_OID_value_format(self):
+        """
+         Test that an error is raised in for an incorrectly formatted
+         value of linked object ID
+        """
+        link_obj = Link()
+        link_obj.link_type = self.enum_pubkey_link
+        link_obj.linked_oid = self.linked_oid_bad_format
+        self.assertRaises(TypeError, link_obj.validate)
+
+        args = ('invalid', self.linked_oid1)
+        self.assertRaises(TypeError, Link.create, *args)
+
+        args = (self.enum_pubkey_link, None)
+        self.assertRaises(TypeError, Link.create, *args)
+
+    def test_link_init(self):
+        """
+          Test the instantiating of Link object using different types of
+          init arguments
+        """
+        link_with_str = Link(self.enum_prvkey_link, self.linked_oid1)
+        self.assertEqual(self.link, link_with_str)
+
+        link_with_int = Link(self.enum_prvkey_link, self.linked_oid1_int)
+        self.assertEqual(self.link, link_with_int)
+
+        args = (self.enum_pubkey_link, self.enum_pubkey_link)
+        self.assertRaises(TypeError, Link, *args)
+
+        args = ("invalid", "invalid")
+        self.assertRaises(TypeError, Link, *args)
+
+    def test_link_create(self):
+        """
+          Test the creation of link to the object of given type
+          and with a given OID
+        """
+        link = Link.create(self.enum_pubkey_link, self.linked_oid1)
+        self.assertIsInstance(link.link_type, Link.LinkType)
+        self.assertIsInstance(link.linked_oid, Link.LinkedObjectID)
+        self.assertEqual(self.linked_oid1, link.linked_oid.value)
+
+        link_bis = Link.create(
+            Link.LinkType(self.enum_pubkey_link),
+            self.linked_oid1_int)
+        self.assertEqual(link, link_bis)
+
+        link_ter = Link.create(
+            Link.LinkType(self.enum_pubkey_link),
+            Link.LinkedObjectID(self.linked_oid1_int)
+        )
+        self.assertEqual(link, link_ter)
+
+    def test__eq(self):
+        link_obj = Link.create(self.enum_pubkey_link, self.linked_oid1)
+        same_link_obj = Link.create(self.enum_pubkey_link, self.linked_oid1)
+        other_type = Link.create(self.enum_prvkey_link, self.linked_oid1)
+        other_linked_oid = Link.create(self.enum_pubkey_link, self.linked_oid2)
+
+        self.assertTrue(link_obj == same_link_obj)
+        self.assertFalse(link_obj == other_type)
+        self.assertFalse(link_obj == other_linked_oid)
+        self.assertFalse(link_obj == 'invalid')
+
+    def test__ne(self):
+        link_obj = Link.create(self.enum_pubkey_link, self.linked_oid1)
+        same_link_obj = Link.create(self.enum_pubkey_link, self.linked_oid1)
+        other_type = Link.create(self.enum_prvkey_link, self.linked_oid1)
+        other_linked_oid = Link.create(self.enum_pubkey_link, self.linked_oid2)
+
+        self.assertFalse(link_obj != same_link_obj)
+        self.assertTrue(link_obj != other_type)
+        self.assertTrue(link_obj != other_linked_oid)
+        self.assertTrue(link_obj != 'invalid')
+
+    def test_link_type__eq(self):
+        link_type = Link.LinkType(self.enum_pubkey_link)
+        self.assertFalse(link_type == 'invalid')
+
+    def test_link_type__ne(self):
+        link_type = Link.LinkType(self.enum_pubkey_link)
+        self.assertTrue(link_type != 'invalid')
+
+    def test_linked_oid__eq(self):
+        linked_oid = Link.LinkedObjectID(12)
+        self.assertFalse(linked_oid == 'invalid')
+
+    def test_linked_oid__ne(self):
+        linked_oid = Link.LinkedObjectID(12)
+        self.assertTrue(linked_oid != 'invalid')
+
+    def test__str(self):
+        link_obj = Link.create(self.enum_pubkey_link, self.linked_oid1)
+        repr_link_obj = (
+            "Link(type=<LinkType.PUBLIC_KEY_LINK: {0}>,value='{1}')"
+            ).format(self.enum_pubkey_link.value, self.linked_oid1)
+
+        self.assertEqual(self.linked_oid1, str(link_obj))
+        self.assertEqual(repr_link_obj, repr(link_obj))
+
+    def test_write(self):
+        ostream = BytearrayStream()
+        self.link.write(ostream)
+
+        self.assertEqual(self.blob_link, ostream)
+
+    def test_read(self):
+        link = Link(None, None)
+        link.read(self.blob_link)
+        self.assertEqual(link, self.link)
