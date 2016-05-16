@@ -152,6 +152,11 @@ class CryptographicObject(ManagedObject):
                                primary_key=True)
     cryptographic_usage_masks = Column('cryptographic_usage_mask',
                                        sql.UsageMaskType)
+
+    _links = relationship('CryptographicObjectLink', back_populates='co',
+                          cascade='all, delete-orphan')
+    links = association_proxy('_links', 'link')
+
     __mapper_args__ = {
         'polymorphic_identity': 'CryptographicObject'
     }
@@ -168,6 +173,7 @@ class CryptographicObject(ManagedObject):
         super(CryptographicObject, self).__init__()
 
         self.cryptographic_usage_masks = list()
+        self.links = list()
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -182,7 +188,6 @@ class CryptographicObject(ManagedObject):
         self._destroy_date = None
         self._fresh = None
         self._lease_time = None
-        self._links = list()
         self._revocation_reason = None
         self._state = None
 

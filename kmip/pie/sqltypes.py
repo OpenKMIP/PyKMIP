@@ -14,6 +14,7 @@
 # under the License.
 
 from kmip.core import enums
+from kmip.core import attributes
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -159,6 +160,60 @@ class ManagedObjectName(Base):
 
     def __ne__(self, other):
         if isinstance(other, ManagedObjectName):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+
+class CryptographicObjectLink(Base):
+
+    __tablename__ = 'cryptographic_object_links'
+    id = Column('id', Integer, primary_key=True)
+    co_uid = Column('co_uid', Integer, ForeignKey('managed_objects.uid'))
+    link_type = Column('link_type', EnumType(enums.LinkType))
+    linked_oid = Column('linked_oid', String)
+    index = Column('link_index', Integer)
+
+    co = relationship('CryptographicObject', back_populates='_links')
+
+    def __init__(self, link=None, index=0):
+        if isinstance(link, attributes.Link):
+            self.link_type = link.link_type.value
+            self.linked_oid = link.linked_oid.value
+        elif link is None:
+            self.link_type = None
+            self.linked_oid = None
+        else:
+            raise TypeError("Invalid type of link data: {0}".format(link))
+
+        self.index = index
+
+    @property
+    def link(self):
+        return attributes.Link.create(self.link_type, self.linked_oid)
+
+    def __repr__(self):
+        return (
+            "<CryptographicObjectLink(type='%s', "
+            "linked-oid='%s', index='%d')>".format(
+                self.link_type,
+                self.linked_oid, self.index))
+
+    def __eq__(self, other):
+        if isinstance(other, CryptographicObjectLink):
+            if self.link_type != other.link_type:
+                return False
+            elif self.linked_oid != other.linked_oid:
+                return False
+            elif self.index != other.index:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, CryptographicObjectLink):
             return not (self == other)
         else:
             return NotImplemented
