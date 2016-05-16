@@ -352,10 +352,30 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a Link attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.LINK,
-                  'value': None}
-        self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+        link = self.factory.create_attribute_value(
+            enums.AttributeType.LINK,
+            [
+                enums.LinkType.PUBLIC_KEY_LINK,
+                attributes.Link.LinkedObjectID(12)
+            ])
+
+        link_empty = self.factory.create_attribute_value(
+            enums.AttributeType.LINK,
+            None)
+
+        self.assertIsInstance(link, attributes.Link)
+        self.assertIsInstance(link.link_type, attributes.Link.LinkType)
+        self.assertIsInstance(link.linked_oid, attributes.Link.LinkedObjectID)
+
+        self.assertEqual(
+            link.link_type,
+            attributes.Link.LinkType(enums.LinkType.PUBLIC_KEY_LINK))
+        self.assertEqual(link.linked_oid, attributes.Link.LinkedObjectID(12))
+        self.assertNotEqual(
+            link.link_type,
+            attributes.Link.LinkType(enums.LinkType.PRIVATE_KEY_LINK))
+
+        self.assertIsInstance(link_empty, attributes.Link)
 
     def test_create_application_specific_information(self):
         """
@@ -386,3 +406,11 @@ class TestAttributeValueFactory(testtools.TestCase):
         custom = self.factory.create_attribute_value(
             enums.AttributeType.CUSTOM_ATTRIBUTE, None)
         self.assertIsInstance(custom, attributes.CustomAttribute)
+
+    def test_invalid_attribute_type(self):
+        """
+        Test that an exception is raised when invalid attribute type used.
+        """
+        args = {'name': 'invalid', 'value': None}
+        self.assertRaises(
+            ValueError, self.factory.create_attribute_value, **args)
