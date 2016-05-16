@@ -116,6 +116,7 @@ class KmipEngine(object):
         }
 
         self._attribute_policy = policy.AttributePolicy(self._protocol_version)
+        self._attribute_factory = factory.AttributeFactory()
 
     def _kmip_version_supported(supported):
         def decorator(function):
@@ -396,6 +397,18 @@ class KmipEngine(object):
 
         return response_batch
 
+    def _is_object_exists(self, oid):
+        obj = self._data_session.query(
+            objects.ManagedObject._object_type
+        ).filter(
+            objects.ManagedObject.unique_identifier == oid
+        ).one_or_none()
+
+        if obj is None:
+            return False
+        else:
+            return True
+
     def _get_object_type(self, unique_identifier):
         try:
             object_type = self._data_session.query(
@@ -581,6 +594,31 @@ class KmipEngine(object):
                         raise exceptions.InvalidField(
                             "Cannot set duplicate name values."
                         )
+            elif attribute_name == 'Link':
+                if not isinstance(managed_object, objects.CryptographicObject):
+                    raise exceptions.OperationNotSupported(
+                        "Link attribute not supported by {0} object".format(
+                            managed_object.object_type.name)
+                    )
+
+                # Return silently if crypto object already has this link
+                if attribute_value in managed_object.links:
+                    return
+
+                # Check if new link is compatible with the object type;
+                # check if object already has link of the same type
+                managed_object.validate_link(attribute_value)
+
+                # Check if linked-oid points to the existing object
+                linked_object_exists = self._is_object_exists(
+                    attribute_value.linked_oid.value)
+                if not linked_object_exists:
+                    raise exceptions.InvalidField(
+                        "Trying to link non-existing object {0}".format(
+                            attribute_value.linked_oid.value))
+
+                managed_object.links.extend([
+                    attribute_value])
             else:
                 # TODO (peterhamilton) Remove when all attributes are supported
                 raise exceptions.InvalidField(
@@ -617,6 +655,69 @@ class KmipEngine(object):
                 raise exceptions.InvalidField(
                     "The {0} attribute is unsupported.".format(attribute_name)
                 )
+
+    def _set_links_for_certificate(self, certificate):
+        if not isinstance(certificate, objects.Certificate):
+            raise exceptions.OperationNotSupported(
+                "Link attribute not supported by {0} object".format(
+                    certificate.object_type.name)
+            )
+
+        # return if crypto-object already contains the link to public key
+        links = list(filter(
+            lambda x: x.link_type.value == enums.LinkType.PUBLIC_KEY_LINK,
+            certificate.links))
+        if len(links) == 1:
+            return
+
+        # get from certificate the blob of public key
+        pub_key_blob = self._cryptography_engine.X509_get_public_key(
+            certificate.value)
+
+        # search public key by key blob
+        m_public_key = self._data_session.query(
+            objects.PublicKey
+        ).filter(
+            objects.PublicKey.value == pub_key_blob
+        ).one_or_none()
+
+        if m_public_key is None:
+            self._logger.info(
+                "No public key to link with Certificate:{0}".format(
+                    certificate.unique_identifier))
+            return
+
+        self._logger.info(
+            "For Certificate:{0} set link to PublicKey:{1}".format(
+                certificate.unique_identifier,
+                m_public_key.unique_identifier))
+
+        # For Private Key object set link to Public Key
+        link_to_pubkey = self._attribute_factory.create_attribute(
+                enums.AttributeType.LINK,
+                [
+                    enums.LinkType.PUBLIC_KEY_LINK,
+                    m_public_key.unique_identifier
+                ])
+        certificate_server_attributes = {
+            link_to_pubkey.attribute_name.value: link_to_pubkey.attribute_value
+        }
+        self._set_attributes_on_managed_object(
+            certificate,
+            certificate_server_attributes
+        )
+
+    def _set_links(self, crypto_object):
+        self._logger.debug("Set links for {0}".format(
+            crypto_object.object_type.name))
+        if not isinstance(crypto_object, objects.CryptographicObject):
+            raise exceptions.OperationNotSupported(
+                "Link attribute not supported by {0} object".format(
+                    crypto_object.object_type.name)
+            )
+
+        if isinstance(crypto_object, objects.Certificate):
+            return self._set_links_for_certificate(crypto_object)
 
     def _process_operation(self, operation, payload):
         if operation == enums.Operation.CREATE:
@@ -881,6 +982,38 @@ class KmipEngine(object):
         # commit is called. This makes future support for UNDO problematic.
         self._data_session.commit()
 
+        # For Private Key object set link to Public Key
+        ln_pubkey = self._attribute_factory.create_attribute(
+                enums.AttributeType.LINK,
+                [
+                    enums.LinkType.PUBLIC_KEY_LINK,
+                    public_key.unique_identifier
+                ])
+        private_key_server_attributes = {
+            ln_pubkey.attribute_name.value: ln_pubkey.attribute_value
+        }
+        self._set_attributes_on_managed_object(
+            private_key,
+            private_key_server_attributes
+        )
+
+        # For Public Key object set link to Private Key
+        ln_prvkey = self._attribute_factory.create_attribute(
+                enums.AttributeType.LINK,
+                [
+                    enums.LinkType.PRIVATE_KEY_LINK,
+                    private_key.unique_identifier
+                ])
+        public_key_server_attributes = {
+            ln_prvkey.attribute_name.value: ln_prvkey.attribute_value
+        }
+        self._set_attributes_on_managed_object(
+            public_key,
+            public_key_server_attributes
+        )
+
+        self._data_session.commit()
+
         self._logger.info(
             "Created a PublicKey with ID: {0}".format(
                 public_key.unique_identifier
@@ -948,6 +1081,9 @@ class KmipEngine(object):
         # TODO (peterhamilton) Set additional server-only attributes.
 
         self._data_session.add(managed_object)
+
+        if isinstance(managed_object, objects.CryptographicObject):
+            self._set_links(managed_object)
 
         # NOTE (peterhamilton) SQLAlchemy will *not* assign an ID until
         # commit is called. This makes future support for UNDO problematic.
