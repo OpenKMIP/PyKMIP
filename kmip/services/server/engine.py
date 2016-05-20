@@ -37,6 +37,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
 
@@ -633,6 +634,8 @@ class KmipEngine(object):
             return self._process_query(payload)
         elif operation == enums.Operation.DISCOVER_VERSIONS:
             return self._process_discover_versions(payload)
+        elif operation == enums.Operation.GET_ATTRIBUTE_LIST:
+            return self._process_get_attribute_list(payload)
         else:
             raise exceptions.OperationNotSupported(
                 "{0} operation is not supported by the server.".format(
@@ -1133,6 +1136,26 @@ class KmipEngine(object):
 
         response_payload = discover_versions.DiscoverVersionsResponsePayload(
             protocol_versions=supported_versions
+        )
+
+        return response_payload
+
+    def _process_get_attribute_list(self, payload):
+        self._logger.info("Processing operation: Get Attribute List")
+
+        unique_identifier = self._id_placeholder
+        if payload.uid:
+            unique_identifier = payload.uid
+
+        object_type = self._get_object_type(unique_identifier)
+
+        managed_object = self._data_session.query(object_type).filter(
+            object_type.unique_identifier == unique_identifier
+        ).one()
+
+        response_payload = get_attribute_list.GetAttributeListResponsePayload(
+            uid=unique_identifier,
+            attribute_names=managed_object.get_attribute_list()
         )
 
         return response_payload

@@ -40,6 +40,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
 
@@ -649,6 +650,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_create_key_pair = mock.MagicMock()
         e._process_register = mock.MagicMock()
         e._process_get = mock.MagicMock()
+        e._process_get_attribute_list = mock.MagicMock()
         e._process_destroy = mock.MagicMock()
         e._process_query = mock.MagicMock()
         e._process_discover_versions = mock.MagicMock()
@@ -657,6 +659,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_operation(enums.Operation.CREATE_KEY_PAIR, None)
         e._process_operation(enums.Operation.REGISTER, None)
         e._process_operation(enums.Operation.GET, None)
+        e._process_operation(enums.Operation.GET_ATTRIBUTE_LIST, None)
         e._process_operation(enums.Operation.DESTROY, None)
         e._process_operation(enums.Operation.QUERY, None)
         e._process_operation(enums.Operation.DISCOVER_VERSIONS, None)
@@ -665,6 +668,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_create_key_pair.assert_called_with(None)
         e._process_register.assert_called_with(None)
         e._process_get.assert_called_with(None)
+        e._process_get_attribute_list.assert_called_with(None)
         e._process_destroy.assert_called_with(None)
         e._process_query.assert_called_with(None)
         e._process_discover_versions.assert_called_with(None)
@@ -3462,3 +3466,54 @@ class TestKmipEngine(testtools.TestCase):
 
         e._data_session.commit()
         e._data_store_session_factory()
+
+    def test_get_attribute_list(self):
+        """
+        Test list of names of default attributes of SymmetricKey object
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        obj_a = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(obj_a)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+
+        # Test that a key can be retrieved with the right key format.
+        payload = get_attribute_list.GetAttributeListRequestPayload(
+            uid=id_a
+        )
+
+        response_payload = e._process_get_attribute_list(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: Get Attribute List"
+        )
+
+        self.assertIsInstance(
+            response_payload,
+            get_attribute_list.GetAttributeListResponsePayload)
+
+        self.assertEqual(response_payload.uid, id_a)
+
+        self.assertEqual(4, len(response_payload.attribute_names))
+        self.assertIn(enums.AttributeType.NAME.value,
+                      response_payload.attribute_names)
+        self.assertIn(enums.AttributeType.OBJECT_TYPE.value,
+                      response_payload.attribute_names)
+        self.assertIn(enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM.value,
+                      response_payload.attribute_names)
+        self.assertIn(enums.AttributeType.CRYPTOGRAPHIC_LENGTH.value,
+                      response_payload.attribute_names)
