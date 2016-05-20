@@ -614,3 +614,28 @@ class TestSymmetricKey(testtools.TestCase):
         session.commit()
         self.assertEquals(expected_names, get_obj.names)
         self.assertEquals(expected_mo_names, get_obj._names)
+
+    def test_get_attribute_list(self):
+        """
+        Test list of names of attributes attached to SymmetricKey object.
+        """
+        usage_mask = [enums.CryptographicUsageMask.ENCRYPT,
+                      enums.CryptographicUsageMask.DECRYPT]
+        key = SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.bytes_128a,
+            masks=usage_mask)
+        attr_names = key.get_attribute_list()
+
+        self.assertEqual(5, len(attr_names))
+        self.assertIn(enums.AttributeType.NAME.value,
+                      attr_names)
+        self.assertIn(enums.AttributeType.OBJECT_TYPE.value,
+                      attr_names)
+        self.assertIn(enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK.value,
+                      attr_names)
+        self.assertIn(enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM.value,
+                      attr_names)
+        self.assertIn(enums.AttributeType.CRYPTOGRAPHIC_LENGTH.value,
+                      attr_names)

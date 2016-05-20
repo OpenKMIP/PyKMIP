@@ -472,3 +472,14 @@ class TestOpaqueObject(testtools.TestCase):
         session.commit()
         self.assertEquals(expected_names, get_obj.names)
         self.assertEquals(expected_mo_names, get_obj._names)
+
+    def test_get_attribute_list(self):
+        """
+        Test list of names of attributes attached to OpaqueData object.
+        """
+        obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE)
+        attr_names = obj.get_attribute_list()
+
+        self.assertEqual(2, len(attr_names))
+        self.assertIn(enums.AttributeType.NAME.value, attr_names)
+        self.assertIn(enums.AttributeType.OBJECT_TYPE.value, attr_names)

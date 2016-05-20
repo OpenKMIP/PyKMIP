@@ -97,6 +97,19 @@ class ManagedObject(sql.Base):
         """
         return self._object_type
 
+    @abstractmethod
+    def get_attribute_list(self):
+        """
+        Returns the list of attribute names attached to Managed Object
+        """
+        attr_names = list()
+        if len(self.names) > 0:
+            attr_names.append(enums.AttributeType.NAME.value)
+        if self._object_type is not None:
+            attr_names.append(enums.AttributeType.OBJECT_TYPE.value)
+
+        return attr_names
+
     @object_type.setter
     def object_type(self, value):
         """
@@ -164,7 +177,6 @@ class CryptographicObject(ManagedObject):
         """
         Create a CryptographicObject.
         """
-
         super(CryptographicObject, self).__init__()
 
         self.cryptographic_usage_masks = list()
@@ -185,6 +197,22 @@ class CryptographicObject(ManagedObject):
         self._links = list()
         self._revocation_reason = None
         self._state = None
+
+    @abstractmethod
+    def get_attribute_list(self):
+        """
+        Returns the list of attribute names attached to Cryptographic Object
+        """
+        attr_names = super(CryptographicObject, self).get_attribute_list()
+        if len(self.cryptographic_usage_masks) > 0:
+            attr_names.append(
+                enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK.value)
+
+        # VTA: Uncomment after (and if) 'Link Attribute' PRs accepted
+        # if len(self.links) > 0:
+        #    attr_names.append(enums.AttributeType.LINK.value)
+
+        return attr_names
 
 
 class Key(CryptographicObject):
@@ -240,6 +268,20 @@ class Key(CryptographicObject):
         # The following attributes are placeholders for attributes that are
         # unsupported by kmip.core
         self._usage_limits = None
+
+    @abstractmethod
+    def get_attribute_list(self):
+        """
+        Returns the list of attribute names attached to Key object
+        """
+        attr_names = super(Key, self).get_attribute_list()
+        if self.cryptographic_algorithm is not None:
+            attr_names.append(
+                enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM.value)
+        if self.cryptographic_length is not None:
+            attr_names.append(
+                enums.AttributeType.CRYPTOGRAPHIC_LENGTH.value)
+        return attr_names
 
 
 class SymmetricKey(Key):
@@ -756,6 +798,21 @@ class Certificate(CryptographicObject):
 
         self.validate()
 
+    @abstractmethod
+    def get_attribute_list(self):
+        """
+        Returns the list of attribute names attached to Certificate object
+        """
+        attr_names = super(Certificate, self).get_attribute_list()
+        if self.certificate_type is not None:
+            attr_names.append(enums.AttributeType.CERTIFICATE_TYPE.value)
+        '''
+        TODO: parse certificate value and supply
+              other CERTIFICATE_* attributes
+        '''
+
+        return attr_names
+
     def validate(self):
         """
         Verify that the contents of the Certificate object are valid.
@@ -841,6 +898,19 @@ class X509Certificate(Certificate):
         self._x509_certificate_issuer = None
 
         self.validate()
+
+    @abstractmethod
+    def get_attribute_list(self):
+        """
+        Returns the list of attribute names attached to X509 Certificate object
+        """
+        attr_names = super(X509Certificate, self).get_attribute_list()
+        '''
+        TODO: parse certificate value and supply
+              X_509_* attributes
+        '''
+
+        return attr_names
 
     def __repr__(self):
         certificate_type = "certificate_type={0}".format(self.certificate_type)

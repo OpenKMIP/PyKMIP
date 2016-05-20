@@ -289,3 +289,22 @@ class TestCertificate(testtools.TestCase):
         """
         dummy = DummyCertificate(enums.CertificateTypeEnum.X_509, self.bytes_a)
         self.assertFalse(dummy != dummy)
+
+    def test_get_attribute_list(self):
+        """
+        Test list of names of attributes attached to Certificate object.
+        """
+        usage_mask = [enums.CryptographicUsageMask.ENCRYPT,
+                      enums.CryptographicUsageMask.VERIFY]
+        certificate = DummyCertificate(
+            enums.CertificateTypeEnum.X_509,
+            self.bytes_a,
+            masks=usage_mask)
+        attr_names = certificate.get_attribute_list()
+
+        self.assertEqual(4, len(attr_names))
+        self.assertIn(enums.AttributeType.NAME.value, attr_names)
+        self.assertIn(enums.AttributeType.OBJECT_TYPE.value, attr_names)
+        self.assertIn(enums.AttributeType.CERTIFICATE_TYPE.value, attr_names)
+        self.assertIn(enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK.value,
+                      attr_names)
