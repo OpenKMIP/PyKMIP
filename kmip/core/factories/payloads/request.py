@@ -16,6 +16,7 @@
 from kmip.core.factories.payloads import PayloadFactory
 
 from kmip.core.messages.payloads import activate
+from kmip.core.messages.payloads import add_attribute
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
@@ -48,6 +49,9 @@ class RequestPayloadFactory(PayloadFactory):
 
     def _create_get_payload(self):
         return get.GetRequestPayload()
+
+    def _create_add_attribute_payload(self):
+        return add_attribute.AddAttributeRequestPayload()
 
     def _create_get_attribute_list_payload(self):
         return get_attribute_list.GetAttributeListRequestPayload()
