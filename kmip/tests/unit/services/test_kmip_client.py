@@ -17,6 +17,7 @@ from testtools import TestCase
 
 from kmip.core.attributes import PrivateKeyUniqueIdentifier
 
+from kmip.core.enums import AttributeType
 from kmip.core.enums import AuthenticationSuite
 from kmip.core.enums import ConformanceClause
 from kmip.core.enums import CredentialType
@@ -37,6 +38,7 @@ from kmip.core.messages.contents import ResultStatus
 from kmip.core.messages.contents import ResultReason
 from kmip.core.messages.contents import ResultMessage
 from kmip.core.messages.contents import ProtocolVersion
+
 from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
 from kmip.core.messages.payloads.discover_versions import \
@@ -46,6 +48,8 @@ from kmip.core.messages.payloads.query import \
     QueryRequestPayload, QueryResponsePayload
 from kmip.core.messages.payloads.rekey_key_pair import \
     RekeyKeyPairRequestPayload, RekeyKeyPairResponsePayload
+from kmip.core.messages.payloads.add_attribute import \
+    AddAttributeRequestPayload, AddAttributeResponsePayload
 
 from kmip.core.misc import Offset
 from kmip.core.misc import QueryFunction
@@ -58,6 +62,7 @@ from kmip.core.objects import PublicKeyTemplateAttribute
 
 from kmip.services.kmip_client import KMIPProxy
 
+from kmip.services.results import AddAttributeResult
 from kmip.services.results import CreateKeyPairResult
 from kmip.services.results import DiscoverVersionsResult
 from kmip.services.results import GetAttributeListResult
@@ -350,6 +355,44 @@ class TestKMIPClient(TestCase):
             get_attribute_list.GetAttributeListRequestPayload)
         self.assertEqual(uid, batch_item.request_payload.uid)
 
+    def _test_build_add_attribute_batch_item(self, uid=None, attribute=None):
+        batch_item = self.client._build_add_attribute_batch_item(
+            uid=uid, attribute=attribute)
+
+        base = "expected {0}, received {1}"
+        msg = base.format(RequestBatchItem, batch_item)
+        self.assertIsInstance(batch_item, RequestBatchItem, msg)
+
+        operation = batch_item.operation
+
+        msg = base.format(Operation, operation)
+        self.assertIsInstance(operation, Operation, msg)
+
+        operation_enum = operation.value
+
+        msg = base.format(OperationEnum.ADD_ATTRIBUTE, operation_enum)
+        self.assertEqual(OperationEnum.ADD_ATTRIBUTE, operation_enum, msg)
+
+        payload = batch_item.request_payload
+
+        msg = base.format(AddAttributeRequestPayload, payload)
+        self.assertIsInstance(payload, AddAttributeRequestPayload, msg)
+
+        msg = base.format(uid, payload.uid)
+        self.assertEqual(uid, payload.uid, msg)
+
+        msg = base.format(attribute, payload.attribute)
+        self.assertEqual(attribute, payload.attribute, msg)
+
+    def test_build_add_attribute_batch_item_with_input(self):
+        attribute = self.attr_factory.create_attribute(
+            AttributeType.CONTACT_INFORMATION,
+            'https://github.com/OpenKMIP/PyKMIP')
+
+        self._test_build_add_attribute_batch_item(
+            uid='3',
+            attribute=attribute)
+
     def test_process_batch_items(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE_KEY_PAIR),
@@ -416,14 +459,19 @@ class TestKMIPClient(TestCase):
         msg = base.format(expected, observed)
         self.assertEqual(expected, observed, msg)
 
-        self.assertRaisesRegexp(ValueError, "no processor for operation",
-                                self.client._get_batch_item_processor,
-                                0xA5A5A5A5)
-
         expected = self.client._process_get_attribute_list_batch_item
         observed = self.client._get_batch_item_processor(
             OperationEnum.GET_ATTRIBUTE_LIST)
         self.assertEqual(expected, observed)
+
+        expected = self.client._process_add_attribute_batch_item
+        observed = self.client._get_batch_item_processor(
+            OperationEnum.ADD_ATTRIBUTE)
+        self.assertEqual(expected, observed)
+
+        self.assertRaisesRegexp(ValueError, "no processor for operation",
+                                self.client._get_batch_item_processor,
+                                0xA5A5A5A5)
 
     def _test_equality(self, expected, observed):
         msg = "expected {0}, observed {1}".format(expected, observed)
@@ -544,6 +592,64 @@ class TestKMIPClient(TestCase):
         self.assertIsInstance(result, GetAttributeListResult)
         self.assertEqual(uid, result.uid)
         self.assertEqual(names, result.names)
+
+    def _test_process_add_attribute_batch_item(
+            self,
+            result_status,
+            result_reason=None,
+            result_message=None,
+            uid=None,
+            attribute=None):
+
+        operation = Operation(OperationEnum.ADD_ATTRIBUTE)
+        response_payload = AddAttributeResponsePayload(
+            uid=uid, attribute=attribute)
+
+        batch_item = ResponseBatchItem(
+            result_status=result_status,
+            result_reason=result_reason,
+            result_message=result_message,
+            operation=operation,
+            response_payload=response_payload)
+
+        result = self.client._process_add_attribute_batch_item(batch_item)
+
+        base = "expected {0}, received {1}"
+        msg = base.format(AddAttributeResult, result)
+        self.assertIsInstance(result, AddAttributeResult, msg)
+
+        msg = base.format(result_status, result.result_status)
+        self.assertEqual(result_status, result.result_status, msg)
+
+        msg = base.format(uid, result.uid)
+        self.assertEqual(uid, result.uid, msg)
+
+        msg = base.format(attribute, result.attribute)
+        self.assertEqual(attribute, result.attribute, msg)
+
+    def test_process_add_attribute_batch_item_with_success(self):
+        result_status = ResultStatus(ResultStatusEnum.SUCCESS)
+        result_message = ResultMessage("message")
+
+        attribute = self.attr_factory.create_attribute(
+            AttributeType.CONTACT_INFORMATION,
+            'https://github.com/OpenKMIP/PyKMIP')
+
+        self._test_process_add_attribute_batch_item(
+            result_status=result_status,
+            result_message=result_message,
+            uid='3',
+            attribute=attribute)
+
+    def test_process_add_attribute_batch_item_with_failure(self):
+        result_status = ResultStatus(ResultStatusEnum.OPERATION_FAILED)
+        result_reason = ResultReason(ResultReasonEnum.INVALID_MESSAGE)
+        result_message = ResultMessage("message")
+
+        self._test_process_add_attribute_batch_item(
+            result_status=result_status,
+            result_reason=result_reason,
+            result_message=result_message)
 
     def test_host_list_import_string(self):
         """
