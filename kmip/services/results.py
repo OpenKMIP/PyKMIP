@@ -13,6 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.core import enums
+
+from kmip.core.messages.contents import ResultStatus
+from kmip.core.messages.contents import ResultReason
+from kmip.core.messages.contents import ResultMessage
+
 
 class OperationResult(object):
 
@@ -31,6 +37,33 @@ class OperationResult(object):
             self.result_message = result_message
         else:
             self.result_message = None
+
+    def validate(self):
+        if not isinstance(self.result_status, ResultStatus):
+            raise TypeError(
+                "Invalid ResultStatus type; "
+                "expected {0}; observed {1}".format(
+                    ResultStatus, type(self.result_status)))
+
+        if self.result_reason is not None:
+            if not isinstance(self.result_reason, ResultReason):
+                raise TypeError(
+                    "Invalid ResultReason type; "
+                    "expected {0}; observed {1}".format(
+                        ResultReason, type(self.result_reason)))
+
+        if self.result_status.value != enums.ResultStatus.SUCCESS:
+            if self.result_reason is None:
+                raise TypeError(
+                    "ResultReason is mandatory for the non "
+                    "SUCCESS ResultStatus")
+
+        if self.result_message is not None:
+            if not isinstance(self.result_message, ResultMessage):
+                raise TypeError(
+                    "Invalid ResultMessage type; "
+                    "expected {0}; observed {1}".format(
+                        ResultMessage, type(self.result_message)))
 
 
 class CreateResult(OperationResult):
@@ -276,3 +309,31 @@ class RevokeResult(OperationResult):
         super(RevokeResult, self).__init__(
             result_status, result_reason, result_message)
         self.unique_identifier = unique_identifier
+
+
+class AddAttributeResult(OperationResult):
+
+    def __init__(
+            self,
+            result_status,
+            result_reason=None,
+            result_message=None,
+            uid=None,
+            attribute=None):
+        super(AddAttributeResult, self).__init__(
+            result_status, result_reason, result_message)
+        self.uid = uid
+        self.attribute = attribute
+
+        self.validate()
+
+    def validate(self):
+        super(AddAttributeResult, self).validate()
+
+        if self.result_status.value == enums.ResultStatus.SUCCESS:
+            if self.uid is None:
+                raise TypeError(
+                    "UID is mandatory for result with SUCCESS status")
+            if self.attribute is None:
+                raise TypeError(
+                    "Attribute is mandatory for result with SUCCESS status")
