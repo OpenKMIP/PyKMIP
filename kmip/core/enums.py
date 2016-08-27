@@ -500,6 +500,15 @@ class KeyRoleType(enum.Enum):
     PVKOTH    = 0x00000015
 
 
+class State(enum.Enum):
+    PRE_ACTIVE            = 0x00000001
+    ACTIVE                = 0x00000002
+    DEACTIVATED           = 0x00000003
+    COMPROMISED           = 0x00000004
+    DESTROYED             = 0x00000005
+    DESTROYED_COMPROMISED = 0x00000006
+
+
 # 9.1.3.2.24
 class QueryFunction(enum.Enum):
     QUERY_OPERATIONS             = 0x00000001
