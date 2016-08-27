@@ -66,7 +66,7 @@ class AttributeValueFactory(object):
         elif name is enums.AttributeType.USAGE_LIMITS:
             raise NotImplementedError()
         elif name is enums.AttributeType.STATE:
-            raise NotImplementedError()
+            return attributes.State(value)
         elif name is enums.AttributeType.INITIAL_DATE:
             return primitives.DateTime(value, enums.Tags.INITIAL_DATE)
         elif name is enums.AttributeType.ACTIVATION_DATE:

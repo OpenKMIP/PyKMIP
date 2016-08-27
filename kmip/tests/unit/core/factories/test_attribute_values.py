@@ -228,10 +228,12 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a State attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.STATE,
-                  'value': None}
-        self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+        state = self.factory.create_attribute_value(
+            enums.AttributeType.STATE,
+            enums.State.ACTIVE
+        )
+        self.assertIsInstance(state, attributes.State)
+        self.assertEqual(enums.State.ACTIVE, state.value)
 
     def test_create_initial_date(self):
         """
