@@ -620,6 +620,12 @@ class CryptographicUsageMask(Integer):
             value, Tags.CRYPTOGRAPHIC_USAGE_MASK)
 
 
+class State(Enumeration):
+
+    def __init__(self, value=None):
+        super(State, self).__init__(enums.State, value, Tags.STATE)
+
+
 # 3.33
 class ObjectGroup(TextString):
 
