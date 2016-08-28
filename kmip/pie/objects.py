@@ -159,6 +159,7 @@ class CryptographicObject(ManagedObject):
                                primary_key=True)
     cryptographic_usage_masks = Column('cryptographic_usage_mask',
                                        sql.UsageMaskType)
+    state = Column('state', sql.EnumType(enums.State))
     __mapper_args__ = {
         'polymorphic_identity': 'CryptographicObject'
     }
@@ -175,6 +176,7 @@ class CryptographicObject(ManagedObject):
         super(CryptographicObject, self).__init__()
 
         self.cryptographic_usage_masks = list()
+        self.state = enums.State.PRE_ACTIVE
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -191,7 +193,6 @@ class CryptographicObject(ManagedObject):
         self._lease_time = None
         self._links = list()
         self._revocation_reason = None
-        self._state = None
 
 
 class Key(CryptographicObject):

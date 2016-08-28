@@ -57,6 +57,26 @@ class CryptographicFailure(KmipError):
         )
 
 
+class IllegalOperation(KmipError):
+    """
+    An error generated when an improper operation is attempted. The operation
+    can be 'illegal' for various reasons, including invalid permissions or
+    literal object/operation mismatch (e.g., a Template item cannot be
+    activated with the Activate operation since it has no state).
+    """
+    def __init__(self, message):
+        """
+        Create an IllegalOperation exception.
+
+        Args:
+            message (string): A string containing information about the error.
+        """
+        super(IllegalOperation, self).__init__(
+            reason=enums.ResultReason.ILLEGAL_OPERATION,
+            message=message
+        )
+
+
 class IndexOutOfBounds(KmipError):
     """
     An error generated when exceeding the attribute instance limit.

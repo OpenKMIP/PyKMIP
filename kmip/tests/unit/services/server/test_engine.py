@@ -37,6 +37,7 @@ from kmip.core.factories import attributes as factory
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
+from kmip.core.messages.payloads import activate
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
@@ -3250,6 +3251,184 @@ class TestKmipEngine(testtools.TestCase):
             exceptions.ItemNotFound,
             "Could not locate object: {0}".format(id_a),
             e._process_get,
+            *args
+        )
+
+    def test_activate(self):
+        """
+        Test that an Activate request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        e._data_session.add(managed_object)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        self.assertEqual(enums.State.PRE_ACTIVE, managed_object.state)
+
+        object_id = str(managed_object.unique_identifier)
+
+        # Test by specifying the ID of the object to activate.
+        payload = activate.ActivateRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(object_id)
+        )
+
+        response_payload = e._process_activate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: Activate"
+        )
+        self.assertEqual(
+            str(object_id),
+            response_payload.unique_identifier.value
+        )
+
+        symmetric_key = e._data_session.query(
+            pie_objects.SymmetricKey
+        ).filter(
+            pie_objects.ManagedObject.unique_identifier == object_id
+        ).one()
+
+        self.assertEqual(enums.State.ACTIVE, symmetric_key.state)
+
+        args = (payload,)
+        regex = "The object state is not pre-active and cannot be activated."
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
+            regex,
+            e._process_activate,
+            *args
+        )
+
+        # Test that the ID placeholder can also be used to specify activation.
+        e._id_placeholder = str(object_id)
+        payload = activate.ActivateRequestPayload()
+        args = (payload,)
+        regex = "The object state is not pre-active and cannot be activated."
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
+            regex,
+            e._process_activate,
+            *args
+        )
+
+    def test_activate_on_static_object(self):
+        """
+        Test that the right error is generated when an activation request is
+        received for an object that cannot be activated.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.OpaqueObject(
+            b'',
+            enums.OpaqueDataType.NONE
+        )
+        e._data_session.add(managed_object)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        object_id = str(managed_object.unique_identifier)
+
+        # Test by specifying the ID of the object to activate.
+        payload = activate.ActivateRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(object_id)
+        )
+
+        args = (payload,)
+        name = enums.ObjectType.OPAQUE_DATA.name
+        regex = "An {0} object has no state and cannot be activated.".format(
+            ''.join(
+                [x.capitalize() for x in name.split('_')]
+            )
+        )
+        self.assertRaisesRegexp(
+            exceptions.IllegalOperation,
+            regex,
+            e._process_activate,
+            *args
+        )
+
+    def test_activate_on_active_object(self):
+        """
+        Test that the right error is generated when an activation request is
+        received for an object that is not pre-active.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        managed_object.state = enums.State.ACTIVE
+        e._data_session.add(managed_object)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        object_id = str(managed_object.unique_identifier)
+
+        # Test by specifying the ID of the object to activate.
+        payload = activate.ActivateRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(object_id)
+        )
+
+        args = (payload,)
+        regex = "The object state is not pre-active and cannot be activated."
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
+            regex,
+            e._process_activate,
+            *args
+        )
+
+    def test_activate_not_allowed_by_policy(self):
+        """
+        Test that an unallowed request is handled correctly by Activate.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._client_identity = 'test'
+
+        obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+        obj_a._owner = 'admin'
+
+        e._data_session.add(obj_a)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+        payload = activate.ActivateRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(id_a)
+        )
+
+        # Test by specifying the ID of the object to activate.
+        args = [payload]
+        self.assertRaisesRegex(
+            exceptions.ItemNotFound,
+            "Could not locate object: {0}".format(id_a),
+            e._process_activate,
             *args
         )
 
