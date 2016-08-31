@@ -433,6 +433,12 @@ class PaddingMethod(enum.Enum):
     PSS         = 0x0000000A
 
 
+class Policy(enum.Enum):
+    ALLOW_ALL    = "Allow All"
+    ALLOW_OWNER  = "Allow Owner"
+    DISALLOW_ALL = "Disallow All"
+
+
 class PutFunction(enum.Enum):
     NEW     = 0x00000001
     REPLACE = 0x00000002
