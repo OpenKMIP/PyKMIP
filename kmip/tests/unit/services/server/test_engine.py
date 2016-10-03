@@ -391,6 +391,41 @@ class TestKmipEngine(testtools.TestCase):
             *args
         )
 
+    def test_process_request_missing_credential(self):
+        """
+        Test that the engine does not immediately error out when retrieving
+        a non-existent credential from the request.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+
+        protocol = contents.ProtocolVersion.create(1, 1)
+        header = messages.RequestHeader(
+            protocol_version=protocol,
+            authentication=None,
+            batch_error_cont_option=contents.BatchErrorContinuationOption(
+                enums.BatchErrorContinuationOption.STOP
+            ),
+            batch_order_option=contents.BatchOrderOption(True),
+            time_stamp=contents.TimeStamp(int(time.time())),
+            batch_count=contents.BatchCount(1)
+        )
+        payload = discover_versions.DiscoverVersionsRequestPayload()
+        batch = list([
+            messages.RequestBatchItem(
+                operation=contents.Operation(
+                    enums.Operation.DISCOVER_VERSIONS
+                ),
+                request_payload=payload
+            )
+        ])
+        request = messages.RequestMessage(
+            request_header=header,
+            batch_items=batch
+        )
+
+        e.process_request(request)
+
     def test_build_error_response(self):
         """
         Test that a bare bones response containing a single error result can

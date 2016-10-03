@@ -249,7 +249,10 @@ class KmipEngine(object):
             )
 
         # Process the authentication credentials
-        auth_credentials = header.authentication.credential
+        if header.authentication:
+            auth_credentials = header.authentication.credential
+        else:
+            auth_credentials = None
         self._verify_credential(auth_credentials, credential)
 
         # Process the batch error continuation option
