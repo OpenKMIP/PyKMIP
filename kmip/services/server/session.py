@@ -18,6 +18,9 @@ import socket
 import struct
 import threading
 
+from cryptography import x509
+from cryptography.hazmat import backends
+
 from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core.messages import contents
@@ -83,6 +86,59 @@ class KmipSession(threading.Thread):
         self._connection.close()
         self._logger.info("Stopping session: {0}".format(self.name))
 
+    def _get_client_identity(self):
+        certificate_data = self._connection.getpeercert(binary_form=True)
+        try:
+            certificate = x509.load_der_x509_certificate(
+                certificate_data,
+                backends.default_backend()
+            )
+        except Exception:
+            # This should never get raised "in theory," as the ssl socket
+            # should fail to connect non-TLS connections before the session
+            # gets created. This is a failsafe in case that protection fails.
+            raise exceptions.PermissionDenied(
+                "Failure loading the client certificate from the session "
+                "connection. Could not retrieve client identity."
+            )
+
+        try:
+            extended_key_usage = certificate.extensions.get_extension_for_oid(
+                x509.oid.ExtensionOID.EXTENDED_KEY_USAGE
+            ).value
+        except x509.ExtensionNotFound:
+            raise exceptions.PermissionDenied(
+                "The extended key usage extension is missing from the client "
+                "certificate. Session client identity unavailable."
+            )
+
+        if x509.oid.ExtendedKeyUsageOID.CLIENT_AUTH in extended_key_usage:
+            client_identities = certificate.subject.get_attributes_for_oid(
+                x509.oid.NameOID.COMMON_NAME
+            )
+            if len(client_identities) > 0:
+                if len(client_identities) > 1:
+                    self._logger.warning(
+                        "Multiple client identities found. Using the first "
+                        "one processed."
+                    )
+                client_identity = client_identities[0].value
+                self._logger.info(
+                    "Session client identity: {0}".format(client_identity)
+                )
+                return client_identity
+            else:
+                raise exceptions.PermissionDenied(
+                    "The client certificate does not define a subject common "
+                    "name. Session client identity unavailable."
+                )
+
+        raise exceptions.PermissionDenied(
+            "The extended key usage extension is not marked for client "
+            "authentication in the client certificate. Session client "
+            "identity unavailable."
+        )
+
     def _handle_message_loop(self):
         request_data = self._receive_request()
         request = messages.RequestMessage()
@@ -90,6 +146,7 @@ class KmipSession(threading.Thread):
         max_size = self._max_response_size
 
         try:
+            client_identity = self._get_client_identity()
             request.read(request_data)
         except Exception as e:
             self._logger.warning("Failure parsing request message.")
@@ -103,7 +160,8 @@ class KmipSession(threading.Thread):
         else:
             try:
                 response, max_response_size = self._engine.process_request(
-                    request
+                    request,
+                    client_identity
                 )
                 if max_response_size:
                     max_size = max_response_size
