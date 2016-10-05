@@ -603,6 +603,8 @@ class KmipEngine(object):
                 for e in enums.CryptographicUsageMask:
                     if e.value & attribute_value.value:
                         value.append(e)
+            elif attribute_name == 'Operation Policy Name':
+                field = 'operation_policy_name'
 
             if field:
                 existing_value = getattr(managed_object, field)
