@@ -52,6 +52,11 @@ class ManagedObject(sql.Base):
     _names = relationship('ManagedObjectName', back_populates='mo',
                           cascade='all, delete-orphan')
     names = association_proxy('_names', 'name')
+    operation_policy_name = Column(
+        'operation_policy_name',
+        String(50),
+        default='default'
+    )
 
     __mapper_args__ = {
         'polymorphic_identity': 'ManagedObject',
@@ -71,6 +76,7 @@ class ManagedObject(sql.Base):
         self.unique_identifier = None
         self.name_index = 0
         self.names = list()
+        self.operation_policy_name = None
         self._object_type = None
 
         # All remaining attributes are not considered part of the public API
@@ -78,7 +84,6 @@ class ManagedObject(sql.Base):
         self._application_specific_informations = list()
         self._contact_information = None
         self._object_groups = list()
-        self._operation_policy_name = None
 
         # The following attributes are placeholders for attributes that are
         # unsupported by kmip.core
