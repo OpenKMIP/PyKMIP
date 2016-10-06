@@ -135,7 +135,7 @@ class ProxyKmipClient(api.KmipClient):
                 self.logger.exception("could not close client connection", e)
                 raise e
 
-    def create(self, algorithm, length):
+    def create(self, algorithm, length, operation_policy_name=None):
         """
         Create a symmetric key on a KMIP appliance.
 
@@ -143,6 +143,8 @@ class ProxyKmipClient(api.KmipClient):
             algorithm (CryptographicAlgorithm): An enumeration defining the
                 algorithm to use to generate the symmetric key.
             length (int): The length in bits for the symmetric key.
+            operation_policy_name (string): The name of the operation policy
+                to use for the new symmetric key. Optional, defaults to None.
 
         Returns:
             string: The uid of the newly created symmetric key.
@@ -164,8 +166,12 @@ class ProxyKmipClient(api.KmipClient):
             raise exceptions.ClientConnectionNotOpen()
 
         # Create the template containing the attributes
-        attributes = self._build_key_attributes(algorithm, length)
-        template = cobjects.TemplateAttribute(attributes=attributes)
+        common_attributes = self._build_common_attributes(
+            operation_policy_name
+        )
+        key_attributes = self._build_key_attributes(algorithm, length)
+        key_attributes.extend(common_attributes)
+        template = cobjects.TemplateAttribute(attributes=key_attributes)
 
         # Create the symmetric key and handle the results
         result = self.proxy.create(enums.ObjectType.SYMMETRIC_KEY, template)
@@ -179,7 +185,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
-    def create_key_pair(self, algorithm, length):
+    def create_key_pair(self, algorithm, length, operation_policy_name=None):
         """
         Create an asymmetric key pair on a KMIP appliance.
 
@@ -187,6 +193,8 @@ class ProxyKmipClient(api.KmipClient):
             algorithm (CryptographicAlgorithm): An enumeration defining the
                 algorithm to use to generate the key pair.
             length (int): The length in bits for the key pair.
+            operation_policy_name (string): The name of the operation policy
+                to use for the new key pair. Optional, defaults to None.
 
         Returns:
             string: The uid of the newly created public key.
@@ -209,8 +217,12 @@ class ProxyKmipClient(api.KmipClient):
             raise exceptions.ClientConnectionNotOpen()
 
         # Create the template containing the attributes
-        attributes = self._build_key_attributes(algorithm, length)
-        template = cobjects.CommonTemplateAttribute(attributes=attributes)
+        common_attributes = self._build_common_attributes(
+            operation_policy_name
+        )
+        key_attributes = self._build_key_attributes(algorithm, length)
+        key_attributes.extend(common_attributes)
+        template = cobjects.CommonTemplateAttribute(attributes=key_attributes)
 
         # Create the asymmetric key pair and handle the results
         result = self.proxy.create_key_pair(common_template_attribute=template)
@@ -250,15 +262,22 @@ class ProxyKmipClient(api.KmipClient):
             raise exceptions.ClientConnectionNotOpen()
 
         # Extract and create attributes
-        attributes = list()
+        object_attributes = list()
+
         if hasattr(managed_object, 'cryptographic_usage_masks'):
             mask_attribute = self.attribute_factory.create_attribute(
                 enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-                managed_object.cryptographic_usage_masks)
+                managed_object.cryptographic_usage_masks
+            )
+            object_attributes.append(mask_attribute)
+        if hasattr(managed_object, 'operation_policy_name'):
+            opn_attribute = self.attribute_factory.create_attribute(
+                enums.AttributeType.OPERATION_POLICY_NAME,
+                managed_object.operation_policy_name
+            )
+            object_attributes.append(opn_attribute)
 
-            attributes.append(mask_attribute)
-
-        template = cobjects.TemplateAttribute(attributes=attributes)
+        template = cobjects.TemplateAttribute(attributes=object_attributes)
         object_type = managed_object.object_type
 
         # Register the managed object and handle the results
@@ -390,6 +409,20 @@ class ProxyKmipClient(api.KmipClient):
              enums.CryptographicUsageMask.DECRYPT])
 
         return [algorithm_attribute, length_attribute, mask_attribute]
+
+    def _build_common_attributes(self, operation_policy_name=None):
+        # Build a list of common attributes.
+        common_attributes = []
+
+        if operation_policy_name:
+            common_attributes.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.OPERATION_POLICY_NAME,
+                    operation_policy_name
+                )
+            )
+
+        return common_attributes
 
     def __enter__(self):
         self.open()
