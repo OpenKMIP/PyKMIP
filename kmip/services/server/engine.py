@@ -42,6 +42,8 @@ from kmip.core.messages.payloads import register
 
 from kmip.core import misc
 
+from kmip.core.policy import policies
+
 from kmip.pie import factory
 from kmip.pie import objects
 from kmip.pie import sqltypes
@@ -116,6 +118,12 @@ class KmipEngine(object):
         }
 
         self._attribute_policy = policy.AttributePolicy(self._protocol_version)
+        self._operation_policies = policies
+
+        self._client_identity = None
+
+    def _get_enum_string(self, e):
+        return ''.join([x.capitalize() for x in e.name.split('_')])
 
     def _kmip_version_supported(supported):
         def decorator(function):
@@ -156,12 +164,16 @@ class KmipEngine(object):
             )
 
     def _verify_credential(self, request_credential, connection_credential):
-        # TODO (peterhamilton) Add authentication support
+        # TODO (peterhamilton) Improve authentication support
         # 1. If present, verify user ID of connection_credential is valid user.
         # 2. If present, verify request_credential is valid credential.
         # 3. If both present, verify that they are compliant with each other.
         # 4. If neither present, set server to only allow Query operations.
-        pass
+
+        # For now, simply use the connection_credential as received. It was
+        # obtained from a valid client certificate, so consider it a trusted
+        # form of client identity.
+        self._client_identity = connection_credential
 
     @_synchronize
     def process_request(self, request, credential=None):
@@ -177,14 +189,15 @@ class KmipEngine(object):
         Args:
             request (RequestMessage): The request message containing the batch
                 items to be processed.
-            credential (Credential): A credential containing any identifying
-                information about the client obtained from the client
-                certificate. Optional, defaults to None.
+            credential (string): Identifying information about the client
+                obtained from the client certificate. Optional, defaults to
+                None.
 
         Returns:
             ResponseMessage: The response containing all of the results from
                 the request batch items.
         """
+        self._client_identity = None
         header = request.request_header
 
         # Process the protocol version
@@ -621,6 +634,55 @@ class KmipEngine(object):
                     "The {0} attribute is unsupported.".format(attribute_name)
                 )
 
+    def _is_allowed_by_operation_policy(
+            self,
+            operation_policy,
+            session_identity,
+            object_owner,
+            object_type,
+            operation
+    ):
+        policy_set = self._operation_policies.get(operation_policy)
+        if not policy_set:
+            self._logger.warning(
+                "The '{0}' policy does not exist.".format(operation_policy)
+            )
+            return False
+
+        object_policy = policy_set.get(object_type)
+        if not object_policy:
+            self._logger.warning(
+                "The '{0}' policy does not apply to {1} objects.".format(
+                    operation_policy,
+                    self._get_enum_string(object_type)
+                )
+            )
+            return False
+
+        operation_object_policy = object_policy.get(operation)
+        if not operation_object_policy:
+            self._logger.warning(
+                "The '{0}' policy does not apply to {1} operations on {2} "
+                "objects.".format(
+                    operation_policy,
+                    self._get_enum_string(operation),
+                    self._get_enum_string(object_type)
+                )
+            )
+            return False
+
+        if operation_object_policy == enums.Policy.ALLOW_ALL:
+            return True
+        elif operation_object_policy == enums.Policy.ALLOW_OWNER:
+            if session_identity == object_owner:
+                return True
+            else:
+                return False
+        elif operation_object_policy == enums.Policy.DISALLOW_ALL:
+            return False
+        else:
+            return False
+
     def _process_operation(self, operation, payload):
         if operation == enums.Operation.CREATE:
             return self._process_create(payload)
@@ -710,6 +772,7 @@ class KmipEngine(object):
         )
 
         # TODO (peterhamilton) Set additional server-only attributes.
+        managed_object._owner = self._client_identity
 
         self._data_session.add(managed_object)
 
@@ -876,6 +939,8 @@ class KmipEngine(object):
         )
 
         # TODO (peterhamilton) Set additional server-only attributes.
+        public_key._owner = self._client_identity
+        private_key._owner = self._client_identity
 
         self._data_session.add(public_key)
         self._data_session.add(private_key)
@@ -949,6 +1014,7 @@ class KmipEngine(object):
         )
 
         # TODO (peterhamilton) Set additional server-only attributes.
+        managed_object._owner = self._client_identity
 
         self._data_session.add(managed_object)
 
@@ -1004,6 +1070,20 @@ class KmipEngine(object):
             object_type.unique_identifier == unique_identifier
         ).one()
 
+        # Determine if the request should be carried out under the object's
+        # operation policy. If not, feign ignorance of the object.
+        is_allowed = self._is_allowed_by_operation_policy(
+            managed_object.operation_policy_name,
+            self._client_identity,
+            managed_object._owner,
+            managed_object._object_type,
+            enums.Operation.GET
+        )
+        if not is_allowed:
+            raise exceptions.ItemNotFound(
+                "Could not locate object: {0}".format(unique_identifier)
+            )
+
         if key_format_type:
             if not hasattr(managed_object, 'key_format_type'):
                 raise exceptions.KeyFormatTypeNotSupported(
@@ -1047,11 +1127,29 @@ class KmipEngine(object):
         else:
             unique_identifier = self._id_placeholder
 
-        self._get_object_type(unique_identifier)
+        object_type = self._get_object_type(unique_identifier)
 
         # TODO (peterhamilton) Process attributes to see if destroy possible
         # 1. Check object state. If invalid, error out.
         # 2. Check object deactivation date. If invalid, error out.
+
+        managed_object = self._data_session.query(object_type).filter(
+            object_type.unique_identifier == unique_identifier
+        ).one()
+
+        # Determine if the request should be carried out under the object's
+        # operation policy. If not, feign ignorance of the object.
+        is_allowed = self._is_allowed_by_operation_policy(
+            managed_object.operation_policy_name,
+            self._client_identity,
+            managed_object._owner,
+            managed_object._object_type,
+            enums.Operation.DESTROY
+        )
+        if not is_allowed:
+            raise exceptions.ItemNotFound(
+                "Could not locate object: {0}".format(unique_identifier)
+            )
 
         self._logger.info(
             "Destroying an object with ID: {0}".format(unique_identifier)
