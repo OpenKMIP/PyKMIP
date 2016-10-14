@@ -1505,6 +1505,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT,
                         enums.CryptographicUsageMask.DECRYPT
                     ]
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.OPERATION_POLICY_NAME,
+                    'test'
                 )
             ]
         )
@@ -1552,6 +1556,7 @@ class TestKmipEngine(testtools.TestCase):
             enums.CryptographicUsageMask.DECRYPT,
             symmetric_key.cryptographic_usage_masks
         )
+        self.assertEqual('test', symmetric_key.operation_policy_name)
 
         self.assertEqual(uid, e._id_placeholder)
 
@@ -1822,6 +1827,7 @@ class TestKmipEngine(testtools.TestCase):
             enums.CryptographicUsageMask.ENCRYPT,
             public_key.cryptographic_usage_masks
         )
+        self.assertEqual('default', public_key.operation_policy_name)
 
         # Retrieve the stored private key and verify all attributes were set
         # appropriately.
@@ -1846,6 +1852,7 @@ class TestKmipEngine(testtools.TestCase):
             enums.CryptographicUsageMask.DECRYPT,
             private_key.cryptographic_usage_masks
         )
+        self.assertEqual('default', private_key.operation_policy_name)
 
         self.assertEqual(private_id, e._id_placeholder)
 
@@ -2442,6 +2449,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT,
                         enums.CryptographicUsageMask.DECRYPT
                     ]
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.OPERATION_POLICY_NAME,
+                    'test'
                 )
             ]
         )
@@ -2507,6 +2518,7 @@ class TestKmipEngine(testtools.TestCase):
             enums.CryptographicUsageMask.DECRYPT,
             symmetric_key.cryptographic_usage_masks
         )
+        self.assertEqual('test', symmetric_key.operation_policy_name)
 
         self.assertEqual(uid, e._id_placeholder)
 
