@@ -328,6 +328,19 @@ class KeyRoleType(enum.Enum):
     PVKPVV    = 0x00000014
     PVKOTH    = 0x00000015
 
+#9.1.3.2.20
+class LinkType(enum.Enum):
+    CERTIFICATE_LINK            = 0x00000101
+    PUBLIC_KEY_LINK             = 0x00000102
+    PRIVATE_KEY_LINK            = 0x00000103
+    DERIVATION_BASE_OBJECT_LINK = 0x00000104
+    DERIVED_KEY_LINK            = 0x00000105
+    REPLACEMENT_OBJECT_LINK     = 0x00000106
+    REPLACED_OBJECT_LINK        = 0x00000107
+    PARENT_LINK                 = 0x00000108
+    CHILD_LINK                  = 0x00000109
+    PREVIOUS_LINK               = 0x0000010A
+    NEXT_LINK                   = 0x0000010B
 
 class KeyValueLocationType(enum.Enum):
     UNINTERPRETED_TEXT_STRING = 0x00000001

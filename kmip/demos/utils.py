@@ -112,7 +112,7 @@ def build_cli_parser(operation=None):
             type="str",
             default=None,
             dest="algorithm",
-            help="Encryption algorithm for the secret (e.g., AES)")
+            help="Key type (e.g., RSA, EC)")
         parser.add_option(
             "-l",
             "--length",
@@ -120,7 +120,7 @@ def build_cli_parser(operation=None):
             type="int",
             default=None,
             dest="length",
-            help="Key length in bits (e.g., 128, 256)")
+            help="Key length in bits (e.g., 2048, 4096, 384, 521)")
         parser.add_option(
             "-n",
             "--name",

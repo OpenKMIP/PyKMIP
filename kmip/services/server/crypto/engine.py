@@ -16,6 +16,7 @@
 import logging
 import os
 
+from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -211,3 +212,11 @@ class CryptographyEngine(api.CryptographicEngine):
         }
 
         return public_key, private_key
+
+    def X509_get_public_key(self, value, encoding=serialization.Encoding.DER):
+            # from certificate get blob of public key
+            cert = x509.load_der_x509_certificate(value, default_backend())
+            pub_key_blob = cert.public_key().public_bytes(
+                encoding=encoding,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo)
+            return pub_key_blob

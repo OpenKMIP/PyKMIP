@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import six
+
 from kmip.core import enums
 
 from kmip.core.enums import CertificateTypeEnum
@@ -631,6 +633,182 @@ class ObjectGroup(TextString):
 
     def __init__(self, value=None):
         super(ObjectGroup, self).__init__(value, Tags.OBJECT_GROUP)
+
+
+# 3.35
+class Link(Struct):
+
+    class LinkType(Enumeration):
+
+        def __init__(self, value=None):
+            super(Link.LinkType, self).__init__(
+                enums.LinkType, value, Tags.LINK_TYPE)
+
+        def __eq__(self, other):
+            if isinstance(other, Link.LinkType):
+                if self.value == other.value:
+                    return True
+                else:
+                    return False
+            else:
+                return NotImplemented
+
+        def __ne__(self, other):
+            if isinstance(other, Link.LinkType):
+                return not self == other
+            else:
+                return NotImplemented
+
+        def __repr__(self):
+            return "{0}(value={1})".format(
+                    type(self).__name__, repr(self.value))
+
+        def __str__(self):
+            return "{0}".format(self.value)
+
+    class LinkedObjectID(TextString):
+
+        def __init__(self, value=None):
+            if isinstance(value, int):
+                value = str(value)
+            super(Link.LinkedObjectID, self).__init__(
+                value,
+                Tags.LINKED_OBJECT_IDENTIFIER)
+
+        def __eq__(self, other):
+            if isinstance(other, Link.LinkedObjectID):
+                if self.value == other.value:
+                    return True
+                else:
+                    return False
+            else:
+                return NotImplemented
+
+        def __ne__(self, other):
+            if isinstance(other, Link.LinkedObjectID):
+                return not self == other
+            else:
+                return NotImplemented
+
+        def __repr__(self):
+            return "{0}(value={1})".format(
+                    type(self).__name__, repr(self.value))
+
+        def __str__(self):
+            return "{0}".format(self.value)
+
+    def __init__(self, link_type=None, linked_oid=None):
+        super(Link, self).__init__(tag=Tags.LINK)
+        self.link_type = link_type
+        self.linked_oid = linked_oid
+        self.validate()
+
+    def read(self, istream):
+        super(Link, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+
+        # Read the type of link and ID of linked object
+        self.link_type = Link.LinkType()
+        self.linked_oid = Link.LinkedObjectID()
+        self.link_type.read(tstream)
+        self.linked_oid.read(tstream)
+
+        self.is_oversized(tstream)
+
+    def write(self, ostream):
+        tstream = BytearrayStream()
+
+        # Write the type of link and ID of linked object
+        self.link_type.write(tstream)
+        self.linked_oid.write(tstream)
+
+        # Write the length and value of the template attribute
+        self.length = tstream.length()
+        super(Link, self).write(ostream)
+        ostream.write(tstream.buffer)
+
+    def validate(self):
+        self.__validate()
+
+    def __validate(self):
+        name = Link.__name__
+        msg = ErrorStrings.BAD_EXP_RECV
+
+        oid = self.linked_oid
+        if oid and not isinstance(oid, Link.LinkedObjectID) and \
+                not isinstance(oid, str):
+            member = 'linked_oid'
+            raise TypeError(msg.format('{0}.{1}'.format(name, member),
+                                       'linked_oid',
+                                       type(Link.LinkedObjectID),
+                                       type(self.linked_oid)))
+        ltype = self.link_type
+        if ltype and not isinstance(ltype, Link.LinkType) and \
+                not isinstance(ltype, str):
+            member = 'link_type'
+            raise TypeError(msg.format('{0}.{1}'.format(name, member),
+                                       'link_type', type(Link.LinkType),
+                                       type(ltype)))
+
+    @classmethod
+    def create(cls, link_type, linked_oid):
+        if isinstance(link_type, Link.LinkType):
+            l_type = link_type
+        elif isinstance(link_type, Enum):
+            l_type = cls.LinkType(link_type)
+        else:
+            name = 'Link'
+            msg = ErrorStrings.BAD_EXP_RECV
+            member = 'link_type'
+            raise TypeError(msg.format('{0}.{1}'.format(name, member),
+                                       'link_type', type(Link.LinkType),
+                                       type(link_type)))
+
+        if isinstance(linked_oid, six.text_type):
+            linked_oid = str(linked_oid)
+
+        if isinstance(linked_oid, Link.LinkedObjectID):
+            object_id = linked_oid
+        elif isinstance(linked_oid, str):
+            object_id = cls.LinkedObjectID(linked_oid)
+        elif isinstance(linked_oid, int):
+            object_id = cls.LinkedObjectID(str(linked_oid))
+        else:
+            name = 'Link'
+            msg = ErrorStrings.BAD_EXP_RECV
+            member = 'linked_oid'
+            raise TypeError(msg.format('{0}.{1}'.format(name, member),
+                                       'linked_oid,',
+                                       type(Link.LinkedObjectID),
+                                       type(linked_oid)))
+
+        return Link(linked_oid=object_id, link_type=l_type)
+
+    def __repr__(self):
+        return "{0}(type={1},value={2})".format(
+                type(self).__name__,
+                repr(self.link_type.value),
+                repr(self.linked_oid.value))
+
+    def __str__(self):
+        return "{0}".format(self.linked_oid.value)
+
+    def __eq__(self, other):
+        if isinstance(other, Link):
+            if self.link_type != other.link_type:
+                return False
+            elif self.linked_oid != other.linked_oid:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, Link):
+            return not self == other
+        else:
+            return NotImplemented
 
 
 # 3.36
