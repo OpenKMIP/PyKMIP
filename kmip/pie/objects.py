@@ -57,6 +57,7 @@ class ManagedObject(sql.Base):
         String(50),
         default='default'
     )
+    _owner = Column('owner', String(50), default=None)
 
     __mapper_args__ = {
         'polymorphic_identity': 'ManagedObject',
@@ -78,6 +79,7 @@ class ManagedObject(sql.Base):
         self.names = list()
         self.operation_policy_name = None
         self._object_type = None
+        self._owner = None
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
