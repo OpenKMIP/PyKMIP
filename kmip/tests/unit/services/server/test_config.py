@@ -53,6 +53,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_hostname = mock.MagicMock()
         c._set_key_path = mock.MagicMock()
         c._set_port = mock.MagicMock()
+        c._set_policy_path = mock.MagicMock()
 
         # Test the right error is generated when setting an unsupported
         # setting.
@@ -87,6 +88,9 @@ class TestKmipServerConfig(testtools.TestCase):
 
         c.set_setting('auth_suite', 'Basic')
         c._set_auth_suite.assert_called_once_with('Basic')
+
+        c.set_setting('policy_path', '/etc/pykmip/policies')
+        c._set_policy_path.assert_called_once_with('/etc/pykmip/policies')
 
     def test_load_settings(self):
         """
@@ -139,6 +143,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_hostname = mock.MagicMock()
         c._set_key_path = mock.MagicMock()
         c._set_port = mock.MagicMock()
+        c._set_policy_path = mock.MagicMock()
 
         # Test that the right calls are made when correctly parsing settings.
         parser = configparser.SafeConfigParser()
@@ -149,6 +154,7 @@ class TestKmipServerConfig(testtools.TestCase):
         parser.set('server', 'key_path', '/test/path/server.key')
         parser.set('server', 'ca_path', '/test/path/ca.crt')
         parser.set('server', 'auth_suite', 'Basic')
+        parser.set('server', 'policy_path', '/test/path/policies')
 
         c._parse_settings(parser)
 
@@ -160,6 +166,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_key_path.assert_called_once_with('/test/path/server.key')
         c._set_ca_path.assert_called_once_with('/test/path/ca.crt')
         c._set_auth_suite.assert_called_once_with('Basic')
+        c._set_policy_path.assert_called_once_with('/test/path/policies')
 
         # Test that a ConfigurationError is generated when the expected
         # section is missing.
@@ -478,3 +485,48 @@ class TestKmipServerConfig(testtools.TestCase):
             *args
         )
         self.assertNotEqual('invalid', c.settings.get('auth_suite'))
+
+    def test_set_policy_path(self):
+        """
+        Test that the policy_path configuration property can be set correctly.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        self.assertNotIn('policy_path', c.settings.keys())
+
+        # Test that the setting is set correctly with a valid value.
+        with mock.patch('os.path.exists') as os_mock:
+            os_mock.return_value = True
+            c._set_policy_path('/test/path/policies')
+
+        self.assertIn('policy_path', c.settings.keys())
+        self.assertEqual(
+            '/test/path/policies',
+            c.settings.get('policy_path')
+        )
+
+        c._set_policy_path(None)
+        self.assertIn('policy_path', c.settings.keys())
+        self.assertEqual(None, c.settings.get('policy_path'))
+
+        # Test that a ConfigurationError is generated when setting the wrong
+        # value.
+        c._logger.reset_mock()
+        args = (0, )
+        self.assertRaises(
+            exceptions.ConfigurationError,
+            c._set_policy_path,
+            *args
+        )
+        self.assertNotEqual(0, c.settings.get('policy_path'))
+
+        args = ('/test/path/policies', )
+        with mock.patch('os.path.exists') as os_mock:
+            os_mock.return_value = False
+            self.assertRaises(
+                exceptions.ConfigurationError,
+                c._set_policy_path,
+                *args
+            )
+            self.assertNotEqual(0, c.settings.get('policy_path'))

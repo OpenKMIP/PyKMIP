@@ -41,7 +41,8 @@ class KmipServerConfig(object):
             'certificate_path',
             'key_path',
             'ca_path',
-            'auth_suite'
+            'auth_suite',
+            'policy_path'
         ]
 
     def set_setting(self, setting, value):
@@ -75,8 +76,10 @@ class KmipServerConfig(object):
             self._set_key_path(value)
         elif setting == 'ca_path':
             self._set_ca_path(value)
-        else:
+        elif setting == 'auth_suite':
             self._set_auth_suite(value)
+        else:
+            self._set_policy_path(value)
 
     def load_settings(self, path):
         """
@@ -141,6 +144,8 @@ class KmipServerConfig(object):
             self._set_ca_path(parser.get('server', 'ca_path'))
         if parser.has_option('server', 'auth_suite'):
             self._set_auth_suite(parser.get('server', 'auth_suite'))
+        if parser.has_option('server', 'policy_path'):
+            self._set_policy_path(parser.get('server', 'policy_path'))
 
     def _set_hostname(self, value):
         if isinstance(value, six.string_types):
@@ -224,3 +229,20 @@ class KmipServerConfig(object):
             )
         else:
             self.settings['auth_suite'] = value
+
+    def _set_policy_path(self, value):
+        if value is None:
+            self.settings['policy_path'] = None
+        elif isinstance(value, six.string_types):
+            if os.path.exists(value):
+                self.settings['policy_path'] = value
+            else:
+                raise exceptions.ConfigurationError(
+                    "The policy path value, if specified, must be a valid "
+                    "string path to a filesystem directory."
+                )
+        else:
+            raise exceptions.ConfigurationError(
+                "The policy path, if specified, must be a valid string path "
+                "to a filesystem directory."
+            )

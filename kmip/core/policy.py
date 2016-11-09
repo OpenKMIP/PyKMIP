@@ -13,7 +13,69 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import json
+import six
+
 from kmip.core import enums
+
+
+def read_policy_from_file(path):
+    with open(path, 'r') as f:
+        try:
+            policy_blob = json.loads(f.read())
+        except Exception as e:
+            raise ValueError(
+                "An error occurred while attempting to parse the JSON "
+                "file. {0}".format(e)
+            )
+
+    policies = dict()
+
+    for name, object_policies in six.iteritems(policy_blob):
+        processed_object_policies = dict()
+
+        for object_type, operation_policies in six.iteritems(object_policies):
+            processed_operation_policies = dict()
+
+            for operation, permission in six.iteritems(operation_policies):
+
+                try:
+                    enum_operation = enums.Operation[operation]
+                except Exception:
+                    raise ValueError(
+                        "'{0}' is not a valid Operation value.".format(
+                            operation
+                        )
+                    )
+                try:
+                    enum_policy = enums.Policy[permission]
+                except Exception:
+                    raise ValueError(
+                        "'{0}' is not a valid Policy value.".format(
+                            permission
+                        )
+                    )
+
+                processed_operation_policies.update([
+                    (enum_operation, enum_policy)
+                ])
+
+            try:
+                enum_type = enums.ObjectType[object_type]
+            except Exception:
+                raise ValueError(
+                    "'{0}' is not a valid ObjectType value.".format(
+                        object_type
+                    )
+                )
+
+            processed_object_policies.update([
+                (enum_type, processed_operation_policies)
+            ])
+
+        policies.update([(name, processed_object_policies)])
+
+    return policies
 
 
 policies = {

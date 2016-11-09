@@ -14,10 +14,12 @@
 # under the License.
 
 import mock
+import shutil
 import sqlalchemy
 
 from sqlalchemy.orm import exc
 
+import tempfile
 import testtools
 import time
 
@@ -73,6 +75,9 @@ class TestKmipEngine(testtools.TestCase):
         self.session_factory = sqlalchemy.orm.sessionmaker(
             bind=self.engine
         )
+
+        self.temp_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.temp_dir)
 
     def tearDown(self):
         super(TestKmipEngine, self).tearDown()
@@ -132,6 +137,175 @@ class TestKmipEngine(testtools.TestCase):
         Test that a KmipEngine can be instantiated without any errors.
         """
         engine.KmipEngine()
+
+    def test_load_operation_policies(self):
+        """
+        Test that the KmipEngine can correctly load operation policies.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+
+        policy_file = tempfile.NamedTemporaryFile(
+            dir=self.temp_dir
+        )
+        with open(policy_file.name, 'w') as f:
+            f.write(
+                '{"test": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}'
+            )
+
+        self.assertEqual(2, len(e._operation_policies))
+
+        e._load_operation_policies(self.temp_dir)
+        e._logger.info.assert_any_call(
+            "Loading user-defined operation policy files from: {0}".format(
+                self.temp_dir
+            )
+        )
+        e._logger.info.assert_any_call(
+            "Loading user_defined operation policies from file: {0}".format(
+                policy_file.name
+            )
+        )
+
+        self.assertEqual(3, len(e._operation_policies))
+        self.assertIn('test', e._operation_policies.keys())
+
+        test_policy = {
+            enums.ObjectType.CERTIFICATE: {
+                enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
+            }
+        }
+
+        self.assertEqual(test_policy, e._operation_policies.get('test'))
+
+    def test_load_operation_policies_with_file_read_error(self):
+        """
+        Test that the KmipEngine can correctly handle load errors.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+
+        policy_file = tempfile.NamedTemporaryFile(
+            dir=self.temp_dir
+        )
+        with open(policy_file.name, 'w') as f:
+            f.write(
+                '{"test": {"INVALID": {"LOCATE": "ALLOW_ALL"}}}'
+            )
+
+        self.assertEqual(2, len(e._operation_policies))
+
+        e._load_operation_policies(self.temp_dir)
+        e._logger.info.assert_any_call(
+            "Loading user-defined operation policy files from: {0}".format(
+                self.temp_dir
+            )
+        )
+        e._logger.info.assert_any_call(
+            "Loading user_defined operation policies from file: {0}".format(
+                policy_file.name
+            )
+        )
+        e._logger.error.assert_called_once_with(
+             "A failure occurred while loading policies."
+        )
+        e._logger.exception.assert_called_once()
+
+        self.assertEqual(2, len(e._operation_policies))
+
+    def test_load_operation_policies_with_reserved(self):
+        """
+        Test that the KmipEngine can correctly load operation policies, even
+        when a policy attempts to overwrite a reserved one.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+
+        policy_file = tempfile.NamedTemporaryFile(
+            dir=self.temp_dir
+        )
+        with open(policy_file.name, 'w') as f:
+            f.write(
+                '{"public": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}'
+            )
+
+        self.assertEqual(2, len(e._operation_policies))
+
+        e._load_operation_policies(self.temp_dir)
+        e._logger.info.assert_any_call(
+            "Loading user-defined operation policy files from: {0}".format(
+                self.temp_dir
+            )
+        )
+        e._logger.info.assert_any_call(
+            "Loading user_defined operation policies from file: {0}".format(
+                policy_file.name
+            )
+        )
+        e._logger.warning.assert_called_once_with(
+            "Loaded policy 'public' overwrites a reserved policy and will "
+            "be thrown out."
+        )
+
+        self.assertEqual(2, len(e._operation_policies))
+
+    def test_load_operation_policies_with_duplicate(self):
+        """
+        Test that the KmipEngine can correctly load operation policies, even
+        when a policy is defined multiple times.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+
+        policy_file_a = tempfile.NamedTemporaryFile(
+            dir=self.temp_dir
+        )
+        with open(policy_file_a.name, 'w') as f:
+            f.write(
+                '{"test": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}'
+            )
+
+        policy_file_b = tempfile.NamedTemporaryFile(
+            dir=self.temp_dir
+        )
+        with open(policy_file_b.name, 'w') as f:
+            f.write(
+                '{"test": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}'
+            )
+
+        self.assertEqual(2, len(e._operation_policies))
+
+        e._load_operation_policies(self.temp_dir)
+        e._logger.info.assert_any_call(
+            "Loading user-defined operation policy files from: {0}".format(
+                self.temp_dir
+            )
+        )
+        e._logger.info.assert_any_call(
+            "Loading user_defined operation policies from file: {0}".format(
+                policy_file_a.name
+            )
+        )
+        e._logger.info.assert_any_call(
+            "Loading user_defined operation policies from file: {0}".format(
+                policy_file_b.name
+            )
+        )
+        e._logger.warning.assert_called_once_with(
+            "Loaded policy 'test' overwrites a preexisting policy and will "
+            "be thrown out."
+        )
+
+        self.assertEqual(3, len(e._operation_policies))
+        self.assertIn('test', e._operation_policies.keys())
+
+        test_policy = {
+            enums.ObjectType.CERTIFICATE: {
+                enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
+            }
+        }
+
+        self.assertEqual(test_policy, e._operation_policies.get('test'))
 
     def test_version_operation_match(self):
         """

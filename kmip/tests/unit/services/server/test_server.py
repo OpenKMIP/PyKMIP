@@ -91,13 +91,17 @@ class TestKmipServer(testtools.TestCase):
         self.assertTrue(s._logger.addHandler.called)
         s._logger.setLevel.assert_called_once_with(logging.INFO)
 
+    @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.auth.TLS12AuthenticationSuite')
     @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
-    def test_setup_configuration(self, logging_mock, auth_mock):
+    def test_setup_configuration(self, logging_mock, auth_mock, engine_mock):
         """
         Test that the server setup configuration works without error.
         """
-        s = server.KmipServer(config_path=None)
+        s = server.KmipServer(
+            config_path=None,
+            policy_path=None
+        )
         s.config = mock.MagicMock()
 
         # Test the right calls are made when reinvoking config setup
@@ -108,7 +112,8 @@ class TestKmipServer(testtools.TestCase):
             '/etc/pykmip/certs/server.crt',
             '/etc/pykmip/certs/server.key',
             '/etc/pykmip/certs/ca.crt',
-            'Basic'
+            'Basic',
+            '/etc/pykmip/policies'
         )
 
         s.config.load_settings.assert_called_with('/etc/pykmip/server.conf')
@@ -127,14 +132,23 @@ class TestKmipServer(testtools.TestCase):
             '/etc/pykmip/certs/ca.crt'
         )
         s.config.set_setting.assert_any_call('auth_suite', 'Basic')
+        s.config.set_setting.assert_any_call(
+            'policy_path',
+            '/etc/pykmip/policies'
+        )
 
         # Test that an attempt is made to instantiate the TLS 1.2 auth suite
-        s = server.KmipServer(auth_suite='TLS1.2', config_path=None)
+        s = server.KmipServer(
+            auth_suite='TLS1.2',
+            config_path=None,
+            policy_path=None
+        )
         self.assertEqual('TLS1.2', s.config.settings.get('auth_suite'))
         self.assertIsNotNone(s.auth_suite)
 
+    @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
-    def test_start(self, logging_mock):
+    def test_start(self, logging_mock, engine_mock):
         """
         Test that starting the KmipServer either runs as expected or generates
         the expected error.
@@ -145,7 +159,8 @@ class TestKmipServer(testtools.TestCase):
         s = server.KmipServer(
             hostname='127.0.0.1',
             port=5696,
-            config_path=None
+            config_path=None,
+            policy_path=None
         )
         s._logger = mock.MagicMock()
 
@@ -205,8 +220,9 @@ class TestKmipServer(testtools.TestCase):
                 )
                 s._logger.exception.assert_called_once_with(test_exception)
 
+    @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
-    def test_stop(self, logging_mock):
+    def test_stop(self, logging_mock, engine_mock):
         """
         Test that the right calls and log messages are triggered while
         cleaning up the server and any remaining sessions.
@@ -214,7 +230,8 @@ class TestKmipServer(testtools.TestCase):
         s = server.KmipServer(
             hostname='127.0.0.1',
             port=5696,
-            config_path=None
+            config_path=None,
+            policy_path=None
         )
         s._logger = mock.MagicMock()
         s._socket = mock.MagicMock()
@@ -321,8 +338,9 @@ class TestKmipServer(testtools.TestCase):
         s._socket.close.assert_called_once_with()
         s._logger.exception(test_exception)
 
+    @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
-    def test_serve(self, logging_mock):
+    def test_serve(self, logging_mock, engine_mock):
         """
         Test that the right calls and log messages are triggered while
         serving connections.
@@ -330,7 +348,8 @@ class TestKmipServer(testtools.TestCase):
         s = server.KmipServer(
             hostname='127.0.0.1',
             port=5696,
-            config_path=None
+            config_path=None,
+            policy_path=None
         )
         s._is_serving = True
         s._logger = mock.MagicMock()
@@ -400,8 +419,9 @@ class TestKmipServer(testtools.TestCase):
         handler(None, None)
         self.assertFalse(s._is_serving)
 
+    @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
-    def test_setup_connection_handler(self, logging_mock):
+    def test_setup_connection_handler(self, logging_mock, engine_mock):
         """
         Test that a KmipSession can be successfully created and spun off from
         the KmipServer.
@@ -409,7 +429,8 @@ class TestKmipServer(testtools.TestCase):
         s = server.KmipServer(
             hostname='127.0.0.1',
             port=5696,
-            config_path=None
+            config_path=None,
+            policy_path=None
         )
         s._logger = mock.MagicMock()
 
@@ -455,8 +476,9 @@ class TestKmipServer(testtools.TestCase):
 
         self.assertEqual(3, s._session_id)
 
+    @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
-    def test_as_context_manager(self, logging_mock):
+    def test_as_context_manager(self, logging_mock, engine_mock):
         """
         Test that the right methods are called when the KmipServer is used
         as a context manager.
@@ -464,7 +486,8 @@ class TestKmipServer(testtools.TestCase):
         s = server.KmipServer(
             hostname='127.0.0.1',
             port=5696,
-            config_path=None
+            config_path=None,
+            policy_path=None
         )
         s._logger = mock.MagicMock()
         s.start = mock.MagicMock()
