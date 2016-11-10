@@ -50,7 +50,9 @@ class KmipServer(object):
             ca_path=None,
             auth_suite=None,
             config_path='/etc/pykmip/server.conf',
-            log_path='/var/log/pykmip/server.log'):
+            log_path='/var/log/pykmip/server.log',
+            policy_path='/etc/pykmip/policies'
+    ):
         """
         Create a KmipServer.
 
@@ -91,6 +93,9 @@ class KmipServer(object):
             log_path (string): The path to the base server log file
                 (e.g., '/var/log/pykmip/server.log'). Optional, defaults to
                 '/var/log/pykmip/server.log'.
+            policy_path (string): The path to the filesystem directory
+                containing PyKMIP server operation policy JSON files.
+                Optional, defaults to '/etc/pykmip/policies'.
         """
         self._logger = logging.getLogger('kmip.server')
         self._setup_logging(log_path)
@@ -103,7 +108,8 @@ class KmipServer(object):
             certificate_path,
             key_path,
             ca_path,
-            auth_suite
+            auth_suite,
+            policy_path
         )
 
         if self.config.settings.get('auth_suite') == 'TLS1.2':
@@ -111,7 +117,9 @@ class KmipServer(object):
         else:
             self.auth_suite = auth.BasicAuthenticationSuite()
 
-        self._engine = engine.KmipEngine()
+        self._engine = engine.KmipEngine(
+            self.config.settings.get('policy_path')
+        )
         self._session_id = 1
         self._is_serving = False
 
@@ -144,7 +152,9 @@ class KmipServer(object):
             certificate_path=None,
             key_path=None,
             ca_path=None,
-            auth_suite=None):
+            auth_suite=None,
+            policy_path=None
+    ):
         if path:
             self.config.load_settings(path)
 
@@ -160,6 +170,8 @@ class KmipServer(object):
             self.config.set_setting('ca_path', ca_path)
         if auth_suite:
             self.config.set_setting('auth_suite', auth_suite)
+        if policy_path:
+            self.config.set_setting('policy_path', policy_path)
 
     def start(self):
         """
@@ -447,6 +459,18 @@ def build_argument_parser():
             "A string representing a path to a log file. Defaults to None."
         ),
     )
+    parser.add_option(
+        "-o",
+        "--policy_path",
+        action="store",
+        type="str",
+        default=None,
+        dest="policy_path",
+        help=(
+            "A string representing a path to the operation policy filesystem "
+            "directory. Optional, defaults to None."
+        ),
+    )
 
     return parser
 
@@ -473,6 +497,8 @@ def main(args=None):
         kwargs['config_path'] = opts.config_path
     if opts.log_path:
         kwargs['log_path'] = opts.log_path
+    if opts.policy_path:
+        kwargs['policy_path'] = opts.policy_path
 
     # Create and start the server.
     s = KmipServer(**kwargs)

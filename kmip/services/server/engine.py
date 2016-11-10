@@ -13,7 +13,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import copy
 import logging
+import os
 import six
 import sqlalchemy
 
@@ -42,7 +44,7 @@ from kmip.core.messages.payloads import register
 
 from kmip.core import misc
 
-from kmip.core.policy import policies
+from kmip.core import policy as operation_policy
 
 from kmip.pie import factory
 from kmip.pie import objects
@@ -77,9 +79,14 @@ class KmipEngine(object):
         * Cryptographic usage mask enforcement per object type
     """
 
-    def __init__(self):
+    def __init__(self, policy_path=None):
         """
         Create a KmipEngine.
+
+        Args:
+            policy_path (string): The path to the filesystem directory
+                containing PyKMIP server operation policy JSON files.
+                Optional, defaults to None.
         """
         self._logger = logging.getLogger('kmip.server.engine')
 
@@ -118,9 +125,68 @@ class KmipEngine(object):
         }
 
         self._attribute_policy = policy.AttributePolicy(self._protocol_version)
-        self._operation_policies = policies
+        self._operation_policies = copy.deepcopy(operation_policy.policies)
+        self._load_operation_policies(policy_path)
 
         self._client_identity = None
+
+    def _load_operation_policies(self, policy_path):
+        if (policy_path is None) or (not os.path.isdir(policy_path)):
+            self._logger.warning(
+                "The specified operation policy directory ({0}) is not "
+                "valid. No user-defined policies will be loaded".format(
+                    policy_path
+                )
+            )
+            return dict()
+        else:
+            self._logger.info(
+                "Loading user-defined operation policy files from: {0}".format(
+                    policy_path
+                )
+            )
+
+        for filename in os.listdir(policy_path):
+            file_path = os.path.join(policy_path, filename)
+            if os.path.isfile(file_path):
+                self._logger.info(
+                    "Loading user_defined operation policies "
+                    "from file: {0}".format(file_path)
+                )
+
+                try:
+                    policies = operation_policy.read_policy_from_file(
+                        file_path
+                    )
+                except ValueError as e:
+                    self._logger.error(
+                        "A failure occurred while loading policies."
+                    )
+                    self._logger.exception(e)
+                    continue
+
+                reserved_policies = ['default', 'public']
+                for policy_name in six.iterkeys(policies):
+                    if policy_name in reserved_policies:
+                        self._logger.warning(
+                            "Loaded policy '{0}' overwrites a reserved "
+                            "policy and will be thrown out.".format(
+                                policy_name
+                            )
+                        )
+                    elif policy_name in six.iterkeys(
+                            self._operation_policies
+                    ):
+                        self._logger.warning(
+                            "Loaded policy '{0}' overwrites a "
+                            "preexisting policy and will be thrown "
+                            "out.".format(policy_name)
+                        )
+                    else:
+                        self._operation_policies.update([(
+                            policy_name,
+                            policies.get(policy_name)
+                        )])
 
     def _get_enum_string(self, e):
         return ''.join([x.capitalize() for x in e.name.split('_')])
