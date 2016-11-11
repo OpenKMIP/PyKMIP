@@ -4,6 +4,7 @@
 
 .cache/
 .coverage
+.idea/
 .tox/
 ChangeLog
 PyKMIP.egg-info/
