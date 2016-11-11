@@ -210,6 +210,8 @@ class KMIPProxy(KMIP):
         self.logger.debug("KMIPProxy suppress_ragged_eofs: {0}".format(
             self.suppress_ragged_eofs))
 
+        last_error = None
+
         for host in self.host_list:
             self.host = host
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -221,11 +223,13 @@ class KMIPProxy(KMIP):
                 self.logger.error("An error occurred while connecting to "
                                   "appliance " + self.host)
                 self.socket.close()
+                last_error = e
             else:
                 return
 
         self.socket = None
-        raise e
+        if last_error:
+            raise last_error
 
     def _create_socket(self, sock):
         self.socket = ssl.wrap_socket(
