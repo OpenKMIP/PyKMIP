@@ -246,8 +246,13 @@ class KMIPProxy(KMIP):
     def close(self):
         # Shutdown and close the socket.
         if self.socket:
-            self.socket.shutdown(socket.SHUT_RDWR)
-            self.socket.close()
+            try:
+                self.socket.shutdown(socket.SHUT_RDWR)
+                self.socket.close()
+            except OSError:
+                # Can be thrown if the socket is not actually connected to
+                # anything. In this case, ignore the error.
+                pass
             self.socket = None
 
     def create(self, object_type, template_attribute, credential=None):
