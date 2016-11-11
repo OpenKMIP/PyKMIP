@@ -97,6 +97,50 @@ class TestKMIPClient(TestCase):
     def tearDown(self):
         super(TestKMIPClient, self).tearDown()
 
+    def test_close(self):
+        """
+        Test that calling close on the client works as expected.
+        """
+        c = KMIPProxy(
+            host="IP_ADDR_1, IP_ADDR_2",
+            port=9090,
+            ca_certs=None
+        )
+        c.socket = mock.MagicMock()
+        c_socket = c.socket
+
+        c.socket.shutdown.assert_not_called()
+        c.socket.close.assert_not_called()
+
+        c.close()
+
+        self.assertEqual(None, c.socket)
+        c_socket.shutdown.assert_called_once_with(socket.SHUT_RDWR)
+        c_socket.close.assert_called_once()
+
+    def test_close_with_shutdown_error(self):
+        """
+        Test that calling close on an unconnected client does not trigger an
+        exception.
+        """
+        c = KMIPProxy(
+            host="IP_ADDR_1, IP_ADDR_2",
+            port=9090,
+            ca_certs=None
+        )
+        c.socket = mock.MagicMock()
+        c_socket = c.socket
+        c.socket.shutdown.side_effect = OSError
+
+        c.socket.shutdown.assert_not_called()
+        c.socket.close.assert_not_called()
+
+        c.close()
+
+        self.assertEqual(None, c.socket)
+        c_socket.shutdown.assert_called_once_with(socket.SHUT_RDWR)
+        c_socket.close.assert_not_called()
+
     # TODO (peter-hamilton) Modify for credential type and/or add new test
     def test_build_credential(self):
         username = 'username'
