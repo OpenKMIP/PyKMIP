@@ -79,6 +79,7 @@ def build_cli_parser():
 
     return parser
 
+
 if __name__ == '__main__':
     parser = build_cli_parser()
 
