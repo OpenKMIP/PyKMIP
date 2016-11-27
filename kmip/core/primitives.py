@@ -839,7 +839,7 @@ class TextString(Base):
         return "{0}(value={1})".format(type(self).__name__, repr(self.value))
 
     def __str__(self):
-        return "{0}".format(repr(self.value))
+        return "{0}".format(str(self.value))
 
     def __eq__(self, other):
         if isinstance(other, TextString):
