@@ -188,6 +188,175 @@ class TestApplicationSpecificInformation(TestCase):
         self._test_write(self.encoding, application_namespace,
                          application_data)
 
+    def test_repr(self):
+        """
+        Test that an ApplicationSpecificInformation object can be represented
+        using repr correctly.
+        """
+        application_specific_info = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace("ssl"),
+            application_data=ApplicationData("www.example.com")
+        )
+        s = repr(application_specific_info)
+
+        self.assertEqual(
+            "ApplicationSpecificInformation("
+            "application_namespace=ApplicationNamespace(value='ssl'), "
+            "application_data=ApplicationData(value='www.example.com'))",
+            s
+        )
+
+    def test_str(self):
+        """
+        Test that an ApplicationSpecificInformation object can be turned into
+        a string correctly.
+        """
+        application_specific_info = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace("ssl"),
+            application_data=ApplicationData("www.example.com")
+        )
+        s = str(application_specific_info)
+
+        self.assertEqual(
+            str({'application_namespace': 'ssl',
+                 'application_data': 'www.example.com'}
+                ),
+            s
+        )
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        ApplicationSpecificInformation objects with the same data.
+        """
+        a = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data')
+        )
+        b = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data')
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_namespace(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ApplicationSpecificInformation objects with different data.
+        """
+        a = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace_1'),
+            application_data=ApplicationData('test_data')
+        )
+        b = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace_2'),
+            application_data=ApplicationData('test_data')
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_data(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ApplicationSpecificInformation objects with different data.
+        """
+        a = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data_1')
+        )
+        b = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data_2')
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing a
+        ApplicationSpecificInformation object to a
+        non-ApplicationSpecificInformation object.
+        """
+        a = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data')
+        )
+        b = "invalid"
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing
+        two ApplicationSpecificInformation objects with the same internal
+        data.
+        """
+        a = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data')
+        )
+        b = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data')
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_namespace(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ApplicationSpecificInformation objects with different data.
+        """
+        a = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace_1'),
+            application_data=ApplicationData('test_data')
+        )
+        b = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace_2'),
+            application_data=ApplicationData('test_data')
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_data(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ApplicationSpecificInformation objects with different data.
+        """
+        a = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data_1')
+        )
+        b = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data_2')
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns True when comparing a
+        ApplicationSpecificInformation object to a
+        non-ApplicationSpecificInformation object.
+        """
+        a = ApplicationSpecificInformation(
+            application_namespace=ApplicationNamespace('test_namespace'),
+            application_data=ApplicationData('test_data')
+        )
+        b = "invalid"
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
     def _test_create(self, application_namespace, application_data):
         application_specific_info = ApplicationSpecificInformation.create(
             application_namespace, application_data)

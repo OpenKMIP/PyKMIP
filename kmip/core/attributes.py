@@ -757,6 +757,40 @@ class ApplicationSpecificInformation(Struct):
         """
         self.__validate()
 
+    def __repr__(self):
+        application_namespace = "application_namespace={0}".format(
+            repr(self.application_namespace)
+        )
+        application_data = "application_data={0}".format(
+            repr(self.application_data)
+        )
+        return "ApplicationSpecificInformation({0}, {1})".format(
+            application_namespace,
+            application_data
+        )
+
+    def __str__(self):
+        return str({
+            "application_namespace": str(self.application_namespace),
+            "application_data": str(self.application_data)
+        })
+
+    def __eq__(self, other):
+        if isinstance(other, ApplicationSpecificInformation):
+            if self.application_namespace != other.application_namespace:
+                return False
+            if self.application_data != other.application_data:
+                return False
+            return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ApplicationSpecificInformation):
+            return not self.__eq__(other)
+        else:
+            return NotImplemented
+
     def __validate(self):
         if not isinstance(self.application_namespace, ApplicationNamespace):
             msg = "invalid application namespace"
