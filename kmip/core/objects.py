@@ -129,6 +129,27 @@ class Attribute(Struct):
         super(Attribute, self).write(ostream)
         ostream.write(tstream.buffer)
 
+    def __repr__(self):
+        attribute_name = "attribute_name={0}".format(repr(self.attribute_name))
+        attribute_index = "attribute_index={0}".format(
+            repr(self.attribute_index)
+        )
+        attribute_value = "attribute_value={0}".format(
+            repr(self.attribute_value)
+        )
+        return "Attribute({0}, {1}, {2})".format(
+            attribute_name,
+            attribute_index,
+            attribute_value
+        )
+
+    def __str__(self):
+        return str({
+            'attribute_name': str(self.attribute_name),
+            'attribute_index': str(self.attribute_index),
+            'attribute_value': str(self.attribute_value)
+        })
+
     def __eq__(self, other):
         if isinstance(other, Attribute):
             if self.attribute_name != other.attribute_name:
@@ -143,7 +164,10 @@ class Attribute(Struct):
             return NotImplemented
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        if isinstance(other, Attribute):
+            return not self.__eq__(other)
+        else:
+            return NotImplemented
 
 
 # 2.1.2
