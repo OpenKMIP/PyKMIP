@@ -51,7 +51,7 @@ class KmipServer(object):
             auth_suite=None,
             config_path='/etc/pykmip/server.conf',
             log_path='/var/log/pykmip/server.log',
-            policy_path='/etc/pykmip/policies'
+            policy_path=None
     ):
         """
         Create a KmipServer.
@@ -95,7 +95,7 @@ class KmipServer(object):
                 '/var/log/pykmip/server.log'.
             policy_path (string): The path to the filesystem directory
                 containing PyKMIP server operation policy JSON files.
-                Optional, defaults to '/etc/pykmip/policies'.
+                Optional, defaults to None.
         """
         self._logger = logging.getLogger('kmip.server')
         self._setup_logging(log_path)
