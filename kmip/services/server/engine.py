@@ -134,9 +134,9 @@ class KmipEngine(object):
     def _load_operation_policies(self, policy_path):
         if (policy_path is None) or (not os.path.isdir(policy_path)):
             self._logger.warning(
-                "The specified operation policy directory ({0}) is not "
-                "valid. No user-defined policies will be loaded".format(
-                    policy_path
+                "The specified operation policy directory{0} is not "
+                "valid. No user-defined policies will be loaded.".format(
+                    " (" + policy_path + ")" if policy_path else ''
                 )
             )
             return dict()
@@ -151,7 +151,7 @@ class KmipEngine(object):
             file_path = os.path.join(policy_path, filename)
             if os.path.isfile(file_path):
                 self._logger.info(
-                    "Loading user_defined operation policies "
+                    "Loading user-defined operation policies "
                     "from file: {0}".format(file_path)
                 )
 

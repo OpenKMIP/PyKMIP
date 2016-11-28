@@ -513,20 +513,10 @@ class TestKmipServerConfig(testtools.TestCase):
         # Test that a ConfigurationError is generated when setting the wrong
         # value.
         c._logger.reset_mock()
-        args = (0, )
+        args = (1, )
         self.assertRaises(
             exceptions.ConfigurationError,
             c._set_policy_path,
             *args
         )
-        self.assertNotEqual(0, c.settings.get('policy_path'))
-
-        args = ('/test/path/policies', )
-        with mock.patch('os.path.exists') as os_mock:
-            os_mock.return_value = False
-            self.assertRaises(
-                exceptions.ConfigurationError,
-                c._set_policy_path,
-                *args
-            )
-            self.assertNotEqual(0, c.settings.get('policy_path'))
+        self.assertNotEqual(1, c.settings.get('policy_path'))

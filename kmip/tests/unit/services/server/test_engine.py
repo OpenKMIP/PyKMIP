@@ -163,7 +163,7 @@ class TestKmipEngine(testtools.TestCase):
             )
         )
         e._logger.info.assert_any_call(
-            "Loading user_defined operation policies from file: {0}".format(
+            "Loading user-defined operation policies from file: {0}".format(
                 policy_file.name
             )
         )
@@ -203,7 +203,7 @@ class TestKmipEngine(testtools.TestCase):
             )
         )
         e._logger.info.assert_any_call(
-            "Loading user_defined operation policies from file: {0}".format(
+            "Loading user-defined operation policies from file: {0}".format(
                 policy_file.name
             )
         )
@@ -239,7 +239,7 @@ class TestKmipEngine(testtools.TestCase):
             )
         )
         e._logger.info.assert_any_call(
-            "Loading user_defined operation policies from file: {0}".format(
+            "Loading user-defined operation policies from file: {0}".format(
                 policy_file.name
             )
         )
@@ -283,12 +283,12 @@ class TestKmipEngine(testtools.TestCase):
             )
         )
         e._logger.info.assert_any_call(
-            "Loading user_defined operation policies from file: {0}".format(
+            "Loading user-defined operation policies from file: {0}".format(
                 policy_file_a.name
             )
         )
         e._logger.info.assert_any_call(
-            "Loading user_defined operation policies from file: {0}".format(
+            "Loading user-defined operation policies from file: {0}".format(
                 policy_file_b.name
             )
         )

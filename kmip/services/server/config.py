@@ -41,7 +41,9 @@ class KmipServerConfig(object):
             'certificate_path',
             'key_path',
             'ca_path',
-            'auth_suite',
+            'auth_suite'
+        ]
+        self._optional_settings = [
             'policy_path'
         ]
 
@@ -61,7 +63,7 @@ class KmipServerConfig(object):
             ConfigurationError: Raised if the setting is not supported or if
                 the setting value is invalid.
         """
-        if setting not in self._expected_settings:
+        if setting not in self._expected_settings + self._optional_settings:
             raise exceptions.ConfigurationError(
                 "Setting '{0}' is not supported.".format(setting)
             )
@@ -116,11 +118,11 @@ class KmipServerConfig(object):
             )
 
         settings = [x[0] for x in parser.items('server')]
-        for setting in settings:
-            if setting not in self._expected_settings:
+        for s in settings:
+            if s not in self._expected_settings + self._optional_settings:
                 raise exceptions.ConfigurationError(
                     "Setting '{0}' is not a supported setting. Please "
-                    "remove it from the configuration file.".format(setting)
+                    "remove it from the configuration file.".format(s)
                 )
         for setting in self._expected_settings:
             if setting not in settings:
@@ -231,16 +233,10 @@ class KmipServerConfig(object):
             self.settings['auth_suite'] = value
 
     def _set_policy_path(self, value):
-        if value is None:
+        if not value:
             self.settings['policy_path'] = None
         elif isinstance(value, six.string_types):
-            if os.path.exists(value):
-                self.settings['policy_path'] = value
-            else:
-                raise exceptions.ConfigurationError(
-                    "The policy path value, if specified, must be a valid "
-                    "string path to a filesystem directory."
-                )
+            self.settings['policy_path'] = value
         else:
             raise exceptions.ConfigurationError(
                 "The policy path, if specified, must be a valid string path "
