@@ -13,73 +13,95 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core.enums import Operation
+from kmip.core import enums
 
 
 class PayloadFactory():
 
     def create(self, operation):
-        # Switch on Operation enum
-        if operation is Operation.CREATE:
+        # Switch on operation enum
+        if operation is enums.Operation.CREATE:
             return self._create_create_payload()
-        elif operation is Operation.CREATE_KEY_PAIR:
+        elif operation is enums.Operation.CREATE_KEY_PAIR:
             return self._create_create_key_pair_payload()
-        elif operation is Operation.REGISTER:
+        elif operation is enums.Operation.REGISTER:
             return self._create_register_payload()
-        elif operation is Operation.REKEY:
+        elif operation is enums.Operation.REKEY:
             return self._create_rekey_payload()
-        elif operation is Operation.DERIVE_KEY:
+        elif operation is enums.Operation.DERIVE_KEY:
             return self._create_derive_key_payload()
-        elif operation is Operation.CERTIFY:
+        elif operation is enums.Operation.CERTIFY:
             return self._create_certify_payload()
-        elif operation is Operation.RECERTIFY:
+        elif operation is enums.Operation.RECERTIFY:
             return self._create_recertify_payload()
-        elif operation is Operation.LOCATE:
+        elif operation is enums.Operation.LOCATE:
             return self._create_locate_payload()
-        elif operation is Operation.CHECK:
+        elif operation is enums.Operation.CHECK:
             return self._create_check_payload()
-        elif operation is Operation.GET:
+        elif operation is enums.Operation.GET:
             return self._create_get_payload()
-        elif operation is Operation.GET_ATTRIBUTES:
+        elif operation is enums.Operation.GET_ATTRIBUTES:
             return self._create_get_attributes_payload()
-        elif operation is Operation.GET_ATTRIBUTE_LIST:
+        elif operation is enums.Operation.GET_ATTRIBUTE_LIST:
             return self._create_get_attribute_list_payload()
-        elif operation is Operation.ADD_ATTRIBUTE:
+        elif operation is enums.Operation.ADD_ATTRIBUTE:
             return self._create_add_attribute_payload()
-        elif operation is Operation.MODIFY_ATTRIBUTE:
+        elif operation is enums.Operation.MODIFY_ATTRIBUTE:
             return self._create_modify_attribute_payload()
-        elif operation is Operation.DELETE_ATTRIBUTE:
+        elif operation is enums.Operation.DELETE_ATTRIBUTE:
             return self._create_delete_attribute_payload()
-        elif operation is Operation.OBTAIN_LEASE:
+        elif operation is enums.Operation.OBTAIN_LEASE:
             return self._create_obtain_lease_payload()
-        elif operation is Operation.GET_USAGE_ALLOCATION:
+        elif operation is enums.Operation.GET_USAGE_ALLOCATION:
             return self._create_get_usage_allocation_payload()
-        elif operation is Operation.ACTIVATE:
+        elif operation is enums.Operation.ACTIVATE:
             return self._create_activate_payload()
-        elif operation is Operation.REVOKE:
+        elif operation is enums.Operation.REVOKE:
             return self._create_revoke_payload()
-        elif operation is Operation.DESTROY:
+        elif operation is enums.Operation.DESTROY:
             return self._create_destroy_payload()
-        elif operation is Operation.ARCHIVE:
+        elif operation is enums.Operation.ARCHIVE:
             return self._create_archive_payload()
-        elif operation is Operation.RECOVER:
+        elif operation is enums.Operation.RECOVER:
             return self._create_recover_payload()
-        elif operation is Operation.VALIDATE:
+        elif operation is enums.Operation.VALIDATE:
             return self._create_validate_payload()
-        elif operation is Operation.QUERY:
+        elif operation is enums.Operation.QUERY:
             return self._create_query_payload()
-        elif operation is Operation.CANCEL:
+        elif operation is enums.Operation.CANCEL:
             return self._create_cancel_payload()
-        elif operation is Operation.POLL:
+        elif operation is enums.Operation.POLL:
             return self._create_poll_payload()
-        elif operation is Operation.NOTIFY:
+        elif operation is enums.Operation.NOTIFY:
             return self._create_notify_payload()
-        elif operation is Operation.PUT:
+        elif operation is enums.Operation.PUT:
             return self._create_put_payload()
-        elif operation is Operation.REKEY_KEY_PAIR:
+        elif operation is enums.Operation.REKEY_KEY_PAIR:
             return self._create_rekey_key_pair_payload()
-        elif operation is Operation.DISCOVER_VERSIONS:
+        elif operation is enums.Operation.DISCOVER_VERSIONS:
             return self._create_discover_versions_payload()
+        elif operation is enums.Operation.ENCRYPT:
+            return self._create_encrypt_payload()
+        elif operation is enums.Operation.DECRYPT:
+            return self._create_decrypt_payload()
+        elif operation is enums.Operation.SIGN:
+            return self._create_sign_payload()
+        elif operation is enums.Operation.SIGNATURE_VERIFY:
+            return self._create_signature_verify_payload()
+        elif operation is enums.Operation.MAC:
+            return self._create_mac_payload()
+        elif operation is enums.Operation.MAC_VERIFY:
+            return self._create_mac_verify_payload()
+        elif operation is enums.Operation.RNG_RETRIEVE:
+            return self._create_rng_retrieve_payload()
+        elif operation is enums.Operation.RNG_SEED:
+            return self._create_rng_seed_payload()
+        elif operation is enums.Operation.HASH:
+            return self._create_hash_payload()
+        elif operation is enums.Operation.CREATE_SPLIT_KEY:
+            return self._create_create_split_key_payload()
+        elif operation is enums.Operation.JOIN_SPLIT_KEY:
+            return self._create_join_split_key_payload()
         else:
             raise ValueError('unsupported operation: {0}'.format(operation))
 
@@ -171,4 +193,37 @@ class PayloadFactory():
         raise NotImplementedError()
 
     def _create_discover_versions_payload(self):
+        raise NotImplementedError()
+
+    def _create_encrypt_payload(self):
+        raise NotImplementedError()
+
+    def _create_decrypt_payload(self):
+        raise NotImplementedError()
+
+    def _create_sign_payload(self):
+        raise NotImplementedError()
+
+    def _create_signature_verify_payload(self):
+        raise NotImplementedError()
+
+    def _create_mac_payload(self):
+        raise NotImplementedError()
+
+    def _create_mac_verify_payload(self):
+        raise NotImplementedError()
+
+    def _create_rng_retrieve_payload(self):
+        raise NotImplementedError()
+
+    def _create_rng_seed_payload(self):
+        raise NotImplementedError()
+
+    def _create_hash_payload(self):
+        raise NotImplementedError()
+
+    def _create_create_split_key_payload(self):
+        raise NotImplementedError()
+
+    def _create_join_split_key_payload(self):
         raise NotImplementedError()
