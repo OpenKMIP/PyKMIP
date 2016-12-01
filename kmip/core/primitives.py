@@ -825,11 +825,10 @@ class TextString(Base):
 
     def __validate(self):
         if self.value is not None:
-            data_type = type(self.value)
-            if data_type is not str:
+            if not isinstance(self.value, six.string_types):
                 msg = ErrorStrings.BAD_EXP_RECV
                 raise TypeError(msg.format('TextString', 'value', str,
-                                           data_type))
+                                           type(self.value)))
 
     def __repr__(self):
         return "{0}(value={1})".format(type(self).__name__, repr(self.value))

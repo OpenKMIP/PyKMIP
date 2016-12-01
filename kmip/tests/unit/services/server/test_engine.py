@@ -43,6 +43,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import get_attributes
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
 
@@ -859,6 +860,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_create_key_pair = mock.MagicMock()
         e._process_register = mock.MagicMock()
         e._process_get = mock.MagicMock()
+        e._process_get_attributes = mock.MagicMock()
         e._process_destroy = mock.MagicMock()
         e._process_query = mock.MagicMock()
         e._process_discover_versions = mock.MagicMock()
@@ -867,6 +869,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_operation(enums.Operation.CREATE_KEY_PAIR, None)
         e._process_operation(enums.Operation.REGISTER, None)
         e._process_operation(enums.Operation.GET, None)
+        e._process_operation(enums.Operation.GET_ATTRIBUTES, None)
         e._process_operation(enums.Operation.DESTROY, None)
         e._process_operation(enums.Operation.QUERY, None)
         e._process_operation(enums.Operation.DISCOVER_VERSIONS, None)
@@ -875,6 +878,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_create_key_pair.assert_called_with(None)
         e._process_register.assert_called_with(None)
         e._process_get.assert_called_with(None)
+        e._process_get_attributes.assert_called_with(None)
         e._process_destroy.assert_called_with(None)
         e._process_query.assert_called_with(None)
         e._process_discover_versions.assert_called_with(None)
@@ -945,7 +949,6 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.warning.assert_called_once_with(
             "Could not identify object type for object: 1"
         )
-        self.assertTrue(e._logger.exception.called)
 
     def test_get_object_type_multiple_objects(self):
         """
@@ -1351,6 +1354,345 @@ class TestKmipEngine(testtools.TestCase):
             e._process_template_attribute,
             *args
         )
+
+    def test_get_attributes_from_managed_object(self):
+        """
+        Test that multiple attributes can be retrieved from a given managed
+        object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        symmetric_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b'',
+            masks=[enums.CryptographicUsageMask.ENCRYPT,
+                   enums.CryptographicUsageMask.DECRYPT]
+        )
+        symmetric_key.names = ['Name 1', 'Name 2']
+
+        e._data_session.add(symmetric_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        result = e._get_attributes_from_managed_object(
+            symmetric_key,
+            ['Unique Identifier',
+             'Name',
+             'Cryptographic Algorithm',
+             'Cryptographic Length',
+             'Cryptographic Usage Mask',
+             'invalid']
+        )
+        attribute_factory = factory.AttributeFactory()
+
+        self.assertEqual(6, len(result))
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.UNIQUE_IDENTIFIER,
+            '1'
+        )
+        self.assertIn(attribute, result)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            enums.CryptographicAlgorithm.AES
+        )
+        self.assertIn(attribute, result)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+            0
+        )
+        self.assertIn(attribute, result)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [enums.CryptographicUsageMask.ENCRYPT,
+             enums.CryptographicUsageMask.DECRYPT]
+        )
+        self.assertIn(attribute, result)
+
+    def test_get_attribute_from_managed_object(self):
+        """
+        Test that an attribute can be retrieved from a given managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        symmetric_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b'',
+            masks=[enums.CryptographicUsageMask.ENCRYPT,
+                   enums.CryptographicUsageMask.DECRYPT]
+        )
+        certificate = pie_objects.X509Certificate(
+            b''
+        )
+        opaque_object = pie_objects.OpaqueObject(
+            b'',
+            enums.OpaqueDataType.NONE
+        )
+
+        e._data_session.add(symmetric_key)
+        e._data_session.add(certificate)
+        e._data_session.add(opaque_object)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Unique Identifier'
+        )
+        self.assertEqual('1', result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Name'
+        )
+        self.assertEqual(
+            [attributes.Name(
+                attributes.Name.NameValue('Symmetric Key'),
+                attributes.Name.NameType(
+                    enums.NameType.UNINTERPRETED_TEXT_STRING
+                )
+            )],
+            result
+        )
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Object Type'
+        )
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Cryptographic Algorithm'
+        )
+        self.assertEqual(enums.CryptographicAlgorithm.AES, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Cryptographic Length'
+        )
+        self.assertEqual(0, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'Cryptographic Parameters'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'Cryptographic Domain Parameters'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'Certificate Type'
+        )
+        self.assertEqual(enums.CertificateTypeEnum.X_509, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'Certificate Length'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'X.509 Certificate Identifier'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'X.509 Certificate Subject'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'X.509 Certificate Issuer'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'Certificate Identifier'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'Certificate Subject'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'Certificate Issuer'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            certificate,
+            'Digital Signature Algorithm'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            opaque_object,
+            'Digest'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Operation Policy Name'
+        )
+        self.assertEqual('default', result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Cryptographic Usage Mask'
+        )
+        self.assertEqual(
+            [enums.CryptographicUsageMask.ENCRYPT,
+             enums.CryptographicUsageMask.DECRYPT],
+            result
+        )
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Lease Time'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Usage Limits'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'State'
+        )
+        self.assertEqual(enums.State.PRE_ACTIVE, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Initial Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Activation Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Process Start Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Protect Stop Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Deactivation Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Destroy Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Compromise Occurrence Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Compromise Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Revocation Reason'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Archive Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Object Group'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Fresh'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Link'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Application Specific Information'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Contact Information'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'Last Change Date'
+        )
+        self.assertEqual(None, result)
+
+        result = e._get_attribute_from_managed_object(
+            symmetric_key,
+            'invalid'
+        )
+        self.assertEqual(None, result)
 
     def test_set_attributes_on_managed_object(self):
         """
@@ -3254,6 +3596,178 @@ class TestKmipEngine(testtools.TestCase):
             *args
         )
 
+    def test_get_attributes(self):
+        """
+        Test that a GetAttributes request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        payload = get_attributes.GetAttributesRequestPayload(
+            unique_identifier='1',
+            attribute_names=['Object Type', 'Cryptographic Algorithm']
+        )
+
+        response_payload = e._process_get_attributes(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: GetAttributes"
+        )
+        self.assertEqual(
+            '1',
+            response_payload.unique_identifier
+        )
+        self.assertEqual(
+            2,
+            len(response_payload.attributes)
+        )
+
+        attribute_factory = factory.AttributeFactory()
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.OBJECT_TYPE,
+            enums.ObjectType.SYMMETRIC_KEY
+        )
+        self.assertIn(attribute, response_payload.attributes)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            enums.CryptographicAlgorithm.AES
+        )
+        self.assertIn(attribute, response_payload.attributes)
+
+    def test_get_attributes_with_no_arguments(self):
+        """
+        Test that a GetAttributes request with no arguments can be processed
+        correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+        e._id_placeholder = '1'
+
+        payload = get_attributes.GetAttributesRequestPayload()
+
+        response_payload = e._process_get_attributes(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: GetAttributes"
+        )
+        self.assertEqual(
+            '1',
+            response_payload.unique_identifier
+        )
+        self.assertEqual(
+            8,
+            len(response_payload.attributes)
+        )
+
+        attribute_factory = factory.AttributeFactory()
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.OBJECT_TYPE,
+            enums.ObjectType.SYMMETRIC_KEY
+        )
+        self.assertIn(attribute, response_payload.attributes)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            enums.CryptographicAlgorithm.AES
+        )
+        self.assertIn(attribute, response_payload.attributes)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+            0
+        )
+        self.assertIn(attribute, response_payload.attributes)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.OPERATION_POLICY_NAME,
+            'default'
+        )
+        self.assertIn(attribute, response_payload.attributes)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            []
+        )
+        self.assertIn(attribute, response_payload.attributes)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.STATE,
+            enums.State.PRE_ACTIVE
+        )
+        self.assertIn(attribute, response_payload.attributes)
+
+        attribute = attribute_factory.create_attribute(
+            enums.AttributeType.UNIQUE_IDENTIFIER,
+            '1'
+        )
+        self.assertIn(attribute, response_payload.attributes)
+
+    def test_get_attributes_not_allowed_by_policy(self):
+        """
+        Test that an unallowed request is handled correctly by GetAttributes.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._client_identity = 'test'
+
+        obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+        obj_a._owner = 'admin'
+
+        e._data_session.add(obj_a)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+        payload = get_attributes.GetAttributesRequestPayload(
+            unique_identifier=id_a
+        )
+
+        # Test by specifying the ID of the object whose attributes should
+        # be retrieved.
+        args = [payload]
+        self.assertRaisesRegex(
+            exceptions.ItemNotFound,
+            "Could not locate object: {0}".format(id_a),
+            e._process_get_attributes,
+            *args
+        )
+
     def test_activate(self):
         """
         Test that an Activate request can be processed correctly.
@@ -3565,7 +4079,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsInstance(result, query.QueryResponsePayload)
         self.assertIsNotNone(result.operations)
-        self.assertEqual(6, len(result.operations))
+        self.assertEqual(7, len(result.operations))
         self.assertEqual(
             enums.Operation.CREATE,
             result.operations[0].value
@@ -3583,12 +4097,16 @@ class TestKmipEngine(testtools.TestCase):
             result.operations[3].value
         )
         self.assertEqual(
-            enums.Operation.DESTROY,
+            enums.Operation.GET_ATTRIBUTES,
             result.operations[4].value
         )
         self.assertEqual(
-            enums.Operation.QUERY,
+            enums.Operation.DESTROY,
             result.operations[5].value
+        )
+        self.assertEqual(
+            enums.Operation.QUERY,
+            result.operations[6].value
         )
         self.assertEqual(list(), result.object_types)
         self.assertIsNotNone(result.vendor_identification)
@@ -3608,7 +4126,7 @@ class TestKmipEngine(testtools.TestCase):
 
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsNotNone(result.operations)
-        self.assertEqual(7, len(result.operations))
+        self.assertEqual(8, len(result.operations))
         self.assertEqual(
             enums.Operation.DISCOVER_VERSIONS,
             result.operations[-1].value
