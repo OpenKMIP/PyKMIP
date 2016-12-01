@@ -41,7 +41,11 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a Name attribute can be created.
         """
-        self.skip('')
+        attr_type = enums.AttributeType.NAME
+        name = self.factory.create_attribute_value(attr_type, "foo")
+        self.assertIsInstance(name, attributes.Name)
+        self.assertEqual("foo", name.name_value.value)
+        self.assertEqual(enums.Tags.NAME, name.tag)
 
     def test_create_object_type(self):
         """

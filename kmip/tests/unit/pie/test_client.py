@@ -261,6 +261,69 @@ class TestProxyKmipClient(testtools.TestCase):
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
+    def test_create_with_name(self):
+        """
+        Test that a symmetric key can be created with proper inputs,
+        specifically testing that the name is correctly
+        sent with the request.
+        """
+        # Create the template to test the create call
+        algorithm = enums.CryptographicAlgorithm.AES
+        length = 256
+        algorithm_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm)
+        length_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length)
+        mask_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [enums.CryptographicUsageMask.ENCRYPT,
+             enums.CryptographicUsageMask.DECRYPT])
+
+        key_name = "symmetrickey"
+        name_attribute = self.attribute_factory.create_attribute(
+                enums.AttributeType.NAME,
+                key_name)
+
+        key_attributes = [
+            algorithm_attribute,
+            length_attribute,
+            mask_attribute,
+            name_attribute
+            ]
+
+        template = obj.TemplateAttribute(attributes=key_attributes)
+
+        key_id = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
+        status = enums.ResultStatus.SUCCESS
+        result = results.CreateResult(
+            contents.ResultStatus(status),
+            uuid=attr.UniqueIdentifier(key_id))
+
+        with ProxyKmipClient() as client:
+            client.proxy.create.return_value = result
+
+            client.create(
+                algorithm,
+                length,
+                name=key_name
+            )
+            client.proxy.create.assert_called_with(
+                enums.ObjectType.SYMMETRIC_KEY, template)
+
+    def test_name_eq(self):
+        """
+        Test that two identical name attributes match
+        """
+
+        attr_type = enums.AttributeType.NAME
+        attr_name = "foo"
+        attr_a = self.attribute_factory.create_attribute(attr_type, attr_name)
+        attr_b = self.attribute_factory.create_attribute(attr_type, attr_name)
+        self.assertTrue(attr_a == attr_b)
+        self.assertFalse(attr_a != attr_b)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
     def test_create_on_invalid_algorithm(self):
         """
         Test that a TypeError exception is raised when trying to create a
@@ -355,7 +418,9 @@ class TestProxyKmipClient(testtools.TestCase):
             public_uid, private_uid = client.create_key_pair(
                 enums.CryptographicAlgorithm.RSA, 2048)
 
-            kwargs = {'common_template_attribute': template}
+            kwargs = {'common_template_attribute': template,
+                      'private_key_template_attribute': None,
+                      'public_key_template_attribute': None}
             client.proxy.create_key_pair.assert_called_with(**kwargs)
             self.assertIsInstance(public_uid, six.string_types)
             self.assertIsInstance(private_uid, six.string_types)
@@ -409,7 +474,68 @@ class TestProxyKmipClient(testtools.TestCase):
                 operation_policy_name='test'
             )
 
-            kwargs = {'common_template_attribute': template}
+            kwargs = {'common_template_attribute': template,
+                      'private_key_template_attribute': None,
+                      'public_key_template_attribute': None}
+            client.proxy.create_key_pair.assert_called_with(**kwargs)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_create_key_pair_with_key_names(self):
+        """
+        Test that an asymmetric key pair can be created with proper inputs,
+        specifically testing that the private / public names are correctly
+        sent with the request
+        """
+        # Create the template to test the create key pair call
+        algorithm = enums.CryptographicAlgorithm.RSA
+        length = 2048
+        algorithm_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm)
+        length_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length)
+        mask_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [enums.CryptographicUsageMask.ENCRYPT,
+             enums.CryptographicUsageMask.DECRYPT])
+
+        private_name_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.NAME, "private")
+        public_name_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.NAME, "public")
+
+        pair_attributes = [
+            algorithm_attribute,
+            length_attribute,
+            mask_attribute]
+
+        template = obj.CommonTemplateAttribute(attributes=pair_attributes)
+        private_template = obj.PrivateKeyTemplateAttribute(
+            names=[private_name_attribute])
+        public_template = obj.PublicKeyTemplateAttribute(
+            names=[public_name_attribute])
+
+        status = enums.ResultStatus.SUCCESS
+        result = results.CreateKeyPairResult(
+            contents.ResultStatus(status),
+            public_key_uuid=attr.PublicKeyUniqueIdentifier(
+                'aaaaaaaa-1111-2222-3333-ffffffffffff'),
+            private_key_uuid=attr.PrivateKeyUniqueIdentifier(
+                'ffffffff-3333-2222-1111-aaaaaaaaaaaa'))
+
+        with ProxyKmipClient() as client:
+            client.proxy.create_key_pair.return_value = result
+
+            public_uid, private_uid = client.create_key_pair(
+                enums.CryptographicAlgorithm.RSA,
+                2048,
+                public_name="public",
+                private_name="private"
+            )
+
+            kwargs = {'common_template_attribute': template,
+                      'private_key_template_attribute': private_template,
+                      'public_key_template_attribute': public_template}
             client.proxy.create_key_pair.assert_called_with(**kwargs)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -793,7 +919,7 @@ class TestProxyKmipClient(testtools.TestCase):
 
         operation_policy_name = 'test'
         common_attributes = client._build_common_attributes(
-            operation_policy_name
+            operation_policy_name=operation_policy_name
         )
 
         self.assertEqual(1, len(common_attributes))

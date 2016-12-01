@@ -70,6 +70,13 @@ class TestNameValue(TestCase):
         self.assertFalse(name_val == other_name_val)
         self.assertFalse(name_val == 'invalid')
 
+    def test__ne(self):
+        name_val = Name.NameValue(self.stringName1)
+        other_name_val = Name.NameValue(self.stringName2)
+
+        self.assertTrue(name_val != other_name_val)
+        self.assertTrue(name_val != 'invalid')
+
     def test__str(self):
         name_val = Name.NameValue(self.stringName1)
         repr_name = "NameValue(value='{0}')".format(self.stringName1)
@@ -109,6 +116,15 @@ class TestNameType(TestCase):
         self.assertTrue(type_uri == same_type)
         self.assertFalse(type_uri == type_txt)
         self.assertFalse(type_uri == 'invalid')
+
+    def test__ne(self):
+        type_uri = Name.NameType(self.enum_uri)
+        same_type = Name.NameType(self.enum_uri)
+        type_txt = Name.NameType(self.enum_txt)
+
+        self.assertFalse(type_uri != same_type)
+        self.assertTrue(type_uri != type_txt)
+        self.assertTrue(type_uri != 'invalid')
 
     def test__str(self):
         type_uri = Name.NameType(self.enum_uri)
@@ -190,6 +206,16 @@ class TestName(TestCase):
         self.assertFalse(name_obj == other_name)
         self.assertFalse(name_obj == other_type)
         self.assertFalse(name_obj == 'invalid')
+
+    def test__ne(self):
+        name_obj = Name.create(self.stringName1, self.enumNameType)
+        same_name = Name.create(self.stringName1, self.enumNameType)
+        other_name = Name.create(self.stringName2, self.enumNameType)
+        other_type = Name.create(self.stringName1, self.enumNameTypeUri)
+
+        self.assertFalse(name_obj != same_name)
+        self.assertNotEqual(name_obj, other_name)
+        self.assertNotEqual(name_obj, other_type)
 
     def test__str(self):
         name_obj = Name.create(self.stringName1, self.enumNameType)
@@ -563,10 +589,3 @@ class TestCryptographicParameters(TestCase):
              'key_role_type': KeyRoleType.BDK})
         self.assertFalse(self.cp == cp_valid)
         self.assertRaises(TypeError, self.cp.validate)
-
-    def test_bad_object(self):
-        name_value = 'puppies'
-        name_type = NameType.UNINTERPRETED_TEXT_STRING
-        bad_obj = Name.create(name_value, name_type)
-
-        self.assertNotEqual(NotImplemented, bad_obj)

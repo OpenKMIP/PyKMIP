@@ -112,10 +112,17 @@ class AttributeValueFactory(object):
 
     def _create_name(self, name):
         if name is not None:
-            name_value = name.name_value
-            name_type = name.name_type
+            if isinstance(name, attributes.Name):
+                return attributes.Name.create(name.name_value, name.name_type)
 
-            return attributes.Name.create(name_value, name_type)
+            elif isinstance(name, str):
+                return attributes.Name.create(
+                            name,
+                            enums.NameType.UNINTERPRETED_TEXT_STRING
+                        )
+            else:
+                raise ValueError('Unrecognized attribute type: '
+                                 '{0}'.format(name))
         else:
             return attributes.Name()
 
