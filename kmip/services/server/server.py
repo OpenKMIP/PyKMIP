@@ -298,12 +298,12 @@ class KmipServer(object):
             except socket.error as e:
                 if e.errno == errno.EINTR:
                     self._logger.warning("Interrupting connection service.")
+                    break
                 else:
                     self._logger.warning(
                         "Error detected while establishing new connection."
                     )
                     self._logger.exception(e)
-                break
             except Exception as e:
                 self._logger.warning(
                     "Error detected while establishing new connection."
