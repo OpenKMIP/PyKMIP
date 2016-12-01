@@ -381,7 +381,7 @@ class TestKmipServer(testtools.TestCase):
         s._is_serving = True
         s._logger.reset_mock()
         s._socket.accept = mock.MagicMock(
-            side_effect=[unexpected_error]
+            side_effect=[unexpected_error, expected_error]
         )
 
         s.serve()
