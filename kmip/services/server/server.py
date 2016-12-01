@@ -367,12 +367,12 @@ def build_argument_parser():
         "--hostname",
         action="store",
         type="str",
-        default="127.0.0.1",
+        default=None,
         dest="hostname",
         help=(
             "The host address the server will be bound to. A string "
             "representing either a hostname in Internet domain notation or "
-            "an IPv4 address. Defaults to '127.0.0.1'."
+            "an IPv4 address. Defaults to None."
         ),
     )
     parser.add_option(
@@ -380,12 +380,12 @@ def build_argument_parser():
         "--port",
         action="store",
         type="int",
-        default=5696,
+        default=None,
         dest="port",
         help=(
             "The port number the server will be bound to. An integer "
             "representing a port number. Recommended to be 5696 according to "
-            "the KMIP specification. Defaults to 5696."
+            "the KMIP specification. Defaults to None."
         ),
     )
     parser.add_option(
@@ -429,11 +429,12 @@ def build_argument_parser():
         "--auth_suite",
         action="store",
         type="str",
-        default="Basic",
+        default=None,
         dest="auth_suite",
         help=(
             "A string representing the type of authentication suite to use "
-            "when establishing TLS connections. Defaults to 'Basic'."
+            "when establishing TLS connections. Options include 'Basic' and "
+            "'TLS1.2'. Defaults to None."
         ),
     )
     parser.add_option(
