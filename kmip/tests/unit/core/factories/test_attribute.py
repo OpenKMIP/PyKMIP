@@ -13,12 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import mock
 import testtools
 
 from kmip.core import enums
 
 from kmip.core.factories import attributes
+
 
 class TestAttributeFactory(testtools.TestCase):
     """
@@ -42,4 +42,3 @@ class TestAttributeFactory(testtools.TestCase):
         attr_b = self.attribute_factory.create_attribute(attr_type, attr_name)
         self.assertTrue(attr_a == attr_b)
         self.assertFalse(attr_a != attr_b)
-
