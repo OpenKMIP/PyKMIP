@@ -154,6 +154,9 @@ class Name(Struct):
 
     @classmethod
     def create(cls, name_value, name_type):
+        '''
+            Returns a Name object, populated with the given value and type
+        '''
         if isinstance(name_value, Name.NameValue):
             value = name_value
         elif isinstance(name_value, str):
@@ -199,6 +202,9 @@ class Name(Struct):
                 return False
         else:
             return NotImplemented
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 # 3.3

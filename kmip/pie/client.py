@@ -135,7 +135,7 @@ class ProxyKmipClient(api.KmipClient):
                 self.logger.exception("could not close client connection", e)
                 raise e
 
-    def create(self, algorithm, length, operation_policy_name=None):
+    def create(self, algorithm, length, operation_policy_name=None, name=None):
         """
         Create a symmetric key on a KMIP appliance.
 
@@ -144,7 +144,8 @@ class ProxyKmipClient(api.KmipClient):
                 algorithm to use to generate the symmetric key.
             length (int): The length in bits for the symmetric key.
             operation_policy_name (string): The name of the operation policy
-                to use for the new symmetric key. Optional, defaults to None.
+                to use for the new symmetric key. Optional, defaults to None
+            name (string): The name to give the key. Optional, defaults to None
 
         Returns:
             string: The uid of the newly created symmetric key.
@@ -171,6 +172,10 @@ class ProxyKmipClient(api.KmipClient):
         )
         key_attributes = self._build_key_attributes(algorithm, length)
         key_attributes.extend(common_attributes)
+
+        if name:
+            key_attributes.extend(self._build_name_attribute(name))
+
         template = cobjects.TemplateAttribute(attributes=key_attributes)
 
         # Create the symmetric key and handle the results
@@ -185,7 +190,12 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
-    def create_key_pair(self, algorithm, length, operation_policy_name=None):
+    def create_key_pair(self,
+                        algorithm,
+                        length,
+                        operation_policy_name=None,
+                        public_name=None,
+                        private_name=None):
         """
         Create an asymmetric key pair on a KMIP appliance.
 
@@ -195,6 +205,10 @@ class ProxyKmipClient(api.KmipClient):
             length (int): The length in bits for the key pair.
             operation_policy_name (string): The name of the operation policy
                 to use for the new key pair. Optional, defaults to None.
+            public_name (string): The name to give the public key.
+                                  Optional, defaults to None.
+            private_name (string): The name to give the public key.
+                                   Optional, defaults to None.
 
         Returns:
             string: The uid of the newly created public key.
@@ -216,7 +230,7 @@ class ProxyKmipClient(api.KmipClient):
         if not self._is_open:
             raise exceptions.ClientConnectionNotOpen()
 
-        # Create the template containing the attributes
+        # Create the common attributes that are shared
         common_attributes = self._build_common_attributes(
             operation_policy_name
         )
@@ -224,8 +238,26 @@ class ProxyKmipClient(api.KmipClient):
         key_attributes.extend(common_attributes)
         template = cobjects.CommonTemplateAttribute(attributes=key_attributes)
 
+        # Create public / private specific attributes
+        public_template = None
+        if public_name:
+            name_attr = self._build_name_attribute(name=public_name)
+            public_template = cobjects.PublicKeyTemplateAttribute(
+                names=name_attr
+            )
+
+        private_template = None
+        if private_name:
+            name_attr = self._build_name_attribute(name=private_name)
+            private_template = cobjects.PrivateKeyTemplateAttribute(
+                names=name_attr
+            )
+
         # Create the asymmetric key pair and handle the results
-        result = self.proxy.create_key_pair(common_template_attribute=template)
+        result = self.proxy.create_key_pair(
+            common_template_attribute=template,
+            private_key_template_attribute=private_template,
+            public_key_template_attribute=public_template)
 
         status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
@@ -411,7 +443,10 @@ class ProxyKmipClient(api.KmipClient):
         return [algorithm_attribute, length_attribute, mask_attribute]
 
     def _build_common_attributes(self, operation_policy_name=None):
-        # Build a list of common attributes.
+        '''
+         Build a list of common attributes that are shared across
+         symmetric as well as asymmetric objects
+        '''
         common_attributes = []
 
         if operation_policy_name:
@@ -423,6 +458,19 @@ class ProxyKmipClient(api.KmipClient):
             )
 
         return common_attributes
+
+    def _build_name_attribute(self, name=None):
+        '''
+        Build a name attribute, returned in a list for ease
+        of use in the caller
+        '''
+        name_list = []
+        if name:
+            name_list.append(self.attribute_factory.create_attribute(
+                enums.AttributeType.NAME,
+                name)
+            )
+        return name_list
 
     def __enter__(self):
         self.open()
