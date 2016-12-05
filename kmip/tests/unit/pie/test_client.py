@@ -310,18 +310,6 @@ class TestProxyKmipClient(testtools.TestCase):
             client.proxy.create.assert_called_with(
                 enums.ObjectType.SYMMETRIC_KEY, template)
 
-    def test_name_eq(self):
-        """
-        Test that two identical name attributes match
-        """
-
-        attr_type = enums.AttributeType.NAME
-        attr_name = "foo"
-        attr_a = self.attribute_factory.create_attribute(attr_type, attr_name)
-        attr_b = self.attribute_factory.create_attribute(attr_type, attr_name)
-        self.assertTrue(attr_a == attr_b)
-        self.assertFalse(attr_a != attr_b)
-
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
     def test_create_on_invalid_algorithm(self):
