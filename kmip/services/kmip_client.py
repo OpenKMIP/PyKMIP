@@ -19,6 +19,7 @@ from kmip.services.results import CreateKeyPairResult
 from kmip.services.results import DestroyResult
 from kmip.services.results import DiscoverVersionsResult
 from kmip.services.results import GetResult
+from kmip.services.results import GetAttributesResult
 from kmip.services.results import GetAttributeListResult
 from kmip.services.results import LocateResult
 from kmip.services.results import OperationResult
@@ -52,6 +53,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import get_attributes
 from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import query
@@ -302,6 +304,32 @@ class KMIPProxy(KMIP):
             key_wrapping_specification=key_wrapping_specification,
             credential=credential)
 
+    def get_attributes(self, uuid=None, attribute_names=None):
+        """
+        Send a GetAttributes request to the server.
+
+        Args:
+            uuid (string): The ID of the managed object with which the
+                retrieved attributes should be associated. Optional, defaults
+                to None.
+            attribute_names (list): A list of AttributeName values indicating
+                what object attributes the client wants from the server.
+                Optional, defaults to None.
+
+        Returns:
+            result (GetAttributesResult): A structure containing the results
+                of the operation.
+        """
+        batch_item = self._build_get_attributes_batch_item(
+            uuid,
+            attribute_names
+        )
+
+        request = self._build_request_message(None, [batch_item])
+        response = self._send_and_receive_message(request)
+        results = self._process_batch_items(response)
+        return results[0]
+
     def get_attribute_list(self, uid=None):
         """
         Send a GetAttributeList request to the server.
@@ -475,6 +503,22 @@ class KMIPProxy(KMIP):
             operation=operation, request_payload=payload)
         return batch_item
 
+    def _build_get_attributes_batch_item(
+            self,
+            uuid=None,
+            attribute_names=None
+    ):
+        operation = Operation(OperationEnum.GET_ATTRIBUTES)
+        payload = get_attributes.GetAttributesRequestPayload(
+            uuid,
+            attribute_names
+        )
+        batch_item = messages.RequestBatchItem(
+            operation=operation,
+            request_payload=payload
+        )
+        return batch_item
+
     def _build_get_attribute_list_batch_item(self, uid=None):
         operation = Operation(OperationEnum.GET_ATTRIBUTE_LIST)
         payload = get_attribute_list.GetAttributeListRequestPayload(uid)
@@ -508,6 +552,8 @@ class KMIPProxy(KMIP):
             return self._process_response_error
         elif operation == OperationEnum.CREATE_KEY_PAIR:
             return self._process_create_key_pair_batch_item
+        elif operation == OperationEnum.GET_ATTRIBUTES:
+            return self._process_get_attributes_batch_item
         elif operation == OperationEnum.GET_ATTRIBUTE_LIST:
             return self._process_get_attribute_list_batch_item
         elif operation == OperationEnum.REKEY_KEY_PAIR:
@@ -519,6 +565,24 @@ class KMIPProxy(KMIP):
         else:
             raise ValueError("no processor for operation: {0}".format(
                 operation))
+
+    def _process_get_attributes_batch_item(self, batch_item):
+        payload = batch_item.response_payload
+
+        uuid = None
+        attributes = None
+
+        if payload:
+            uuid = payload.unique_identifier
+            attributes = payload.attributes
+
+        return GetAttributesResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            uuid,
+            attributes
+        )
 
     def _process_get_attribute_list_batch_item(self, batch_item):
         payload = batch_item.response_payload

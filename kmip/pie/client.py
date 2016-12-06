@@ -360,6 +360,53 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    def get_attributes(self, uid=None, attribute_names=None):
+        """
+        Get the attributes associated with a managed object.
+
+        If the uid is not specified, the appliance will use the ID placeholder
+        by default.
+
+        If the attribute_names list is not specified, the appliance will
+        return all viable attributes for the managed object.
+
+        Args:
+            uid (string): The unique ID of the managed object with which the
+                retrieved attributes should be associated. Optional, defaults
+                to None.
+            attribute_names (list): A list of string attribute names
+                indicating which attributes should be retrieved. Optional,
+                defaults to None.
+        """
+        # Check input
+        if uid is not None:
+            if not isinstance(uid, six.string_types):
+                raise TypeError("uid must be a string")
+        if attribute_names is not None:
+            if not isinstance(attribute_names, list):
+                raise TypeError("attribute_names must be a list of strings")
+            else:
+                for attribute_name in attribute_names:
+                    if not isinstance(attribute_name, six.string_types):
+                        raise TypeError(
+                            "attribute_names must be a list of strings"
+                        )
+
+        # Verify that operations can be given at this time
+        if not self._is_open:
+            raise exceptions.ClientConnectionNotOpen()
+
+        # Get the list of attributes for a managed object
+        result = self.proxy.get_attributes(uid, attribute_names)
+
+        status = result.result_status.value
+        if status == enums.ResultStatus.SUCCESS:
+            return result.uuid, result.attributes
+        else:
+            reason = result.result_reason.value
+            message = result.result_message.value
+            raise exceptions.KmipOperationFailure(status, reason, message)
+
     def get_attribute_list(self, uid=None):
         """
         Get the names of the attributes associated with a managed object.
