@@ -49,9 +49,25 @@ class TestAttributeValueFactory(testtools.TestCase):
 
     def test_create_object_type(self):
         """
-        Test that an ObjectType attribute can be created.
+        Test that an empty ObjectType attribute can be created.
         """
-        self.skip('')
+        object_type = self.factory.create_attribute_value(
+            enums.AttributeType.OBJECT_TYPE,
+            None
+        )
+        self.assertIsInstance(object_type, attributes.ObjectType)
+        self.assertEqual(None, object_type.value)
+
+    def test_create_object_type_with_value(self):
+        """
+        Test that an ObjectType attribute can be created with a custom value.
+        """
+        object_type = self.factory.create_attribute_value(
+            enums.AttributeType.OBJECT_TYPE,
+            enums.ObjectType.SYMMETRIC_KEY
+        )
+        self.assertIsInstance(object_type, attributes.ObjectType)
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.value)
 
     def test_create_cryptographic_algorithm(self):
         """

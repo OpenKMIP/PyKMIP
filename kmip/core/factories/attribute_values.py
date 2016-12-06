@@ -28,7 +28,7 @@ class AttributeValueFactory(object):
         elif name is enums.AttributeType.NAME:
             return self._create_name(value)
         elif name is enums.AttributeType.OBJECT_TYPE:
-            return attributes.ObjectType()
+            return attributes.ObjectType(value)
         elif name is enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM:
             return attributes.CryptographicAlgorithm(value)
         elif name is enums.AttributeType.CRYPTOGRAPHIC_LENGTH:
