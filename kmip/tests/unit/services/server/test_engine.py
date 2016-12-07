@@ -1417,6 +1417,45 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertIn(attribute, result)
 
+    def test_get_attributes_from_managed_object_with_missing_attribute(self):
+        """
+        Test that any exceptions are suppressed when attempting to retrieve
+        non-existent attributes from managed objects.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        symmetric_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b'',
+            masks=[enums.CryptographicUsageMask.ENCRYPT,
+                   enums.CryptographicUsageMask.DECRYPT]
+        )
+        symmetric_key.names = ['Name 1', 'Name 2']
+
+        e._data_session.add(symmetric_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._get_attribute_from_managed_object = mock.Mock()
+        e._get_attribute_from_managed_object.side_effect = Exception
+
+        result = e._get_attributes_from_managed_object(
+            symmetric_key,
+            ['Unique Identifier',
+             'Name',
+             'Cryptographic Algorithm',
+             'Cryptographic Length',
+             'Cryptographic Usage Mask',
+             'invalid']
+        )
+
+        self.assertEqual(0, len(result))
+
     def test_get_attribute_from_managed_object(self):
         """
         Test that an attribute can be retrieved from a given managed object.

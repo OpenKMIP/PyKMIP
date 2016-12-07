@@ -649,10 +649,13 @@ class KmipEngine(object):
                 attribute_name,
                 object_type
             ):
-                attribute_value = self._get_attribute_from_managed_object(
-                    managed_object,
-                    attribute_name
-                )
+                try:
+                    attribute_value = self._get_attribute_from_managed_object(
+                        managed_object,
+                        attribute_name
+                    )
+                except Exception:
+                    attribute_value = None
 
                 if attribute_value is not None:
                     if self._attribute_policy.is_attribute_multivalued(
