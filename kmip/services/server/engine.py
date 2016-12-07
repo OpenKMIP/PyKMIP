@@ -910,6 +910,8 @@ class KmipEngine(object):
             return self._process_get(payload)
         elif operation == enums.Operation.GET_ATTRIBUTES:
             return self._process_get_attributes(payload)
+        elif operation == enums.Operation.ACTIVATE:
+            return self._process_activate(payload)
         elif operation == enums.Operation.DESTROY:
             return self._process_destroy(payload)
         elif operation == enums.Operation.QUERY:
@@ -1499,6 +1501,7 @@ class KmipEngine(object):
                 contents.Operation(enums.Operation.REGISTER),
                 contents.Operation(enums.Operation.GET),
                 contents.Operation(enums.Operation.GET_ATTRIBUTES),
+                contents.Operation(enums.Operation.ACTIVATE),
                 contents.Operation(enums.Operation.DESTROY),
                 contents.Operation(enums.Operation.QUERY)
             ])

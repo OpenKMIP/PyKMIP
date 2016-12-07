@@ -848,7 +848,7 @@ class TestKmipEngine(testtools.TestCase):
         self.assertIsNone(result.response_payload)
         self.assertIsNone(result.message_extension)
 
-    def test_supported_operation(self):
+    def test_process_operation(self):
         """
         Test that the right subroutine is called when invoking operations
         supported by the server.
@@ -861,6 +861,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_register = mock.MagicMock()
         e._process_get = mock.MagicMock()
         e._process_get_attributes = mock.MagicMock()
+        e._process_activate = mock.MagicMock()
         e._process_destroy = mock.MagicMock()
         e._process_query = mock.MagicMock()
         e._process_discover_versions = mock.MagicMock()
@@ -870,6 +871,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_operation(enums.Operation.REGISTER, None)
         e._process_operation(enums.Operation.GET, None)
         e._process_operation(enums.Operation.GET_ATTRIBUTES, None)
+        e._process_operation(enums.Operation.ACTIVATE, None)
         e._process_operation(enums.Operation.DESTROY, None)
         e._process_operation(enums.Operation.QUERY, None)
         e._process_operation(enums.Operation.DISCOVER_VERSIONS, None)
@@ -879,6 +881,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_register.assert_called_with(None)
         e._process_get.assert_called_with(None)
         e._process_get_attributes.assert_called_with(None)
+        e._process_activate.assert_called_with(None)
         e._process_destroy.assert_called_with(None)
         e._process_query.assert_called_with(None)
         e._process_discover_versions.assert_called_with(None)
@@ -4118,7 +4121,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsInstance(result, query.QueryResponsePayload)
         self.assertIsNotNone(result.operations)
-        self.assertEqual(7, len(result.operations))
+        self.assertEqual(8, len(result.operations))
         self.assertEqual(
             enums.Operation.CREATE,
             result.operations[0].value
@@ -4140,12 +4143,16 @@ class TestKmipEngine(testtools.TestCase):
             result.operations[4].value
         )
         self.assertEqual(
-            enums.Operation.DESTROY,
+            enums.Operation.ACTIVATE,
             result.operations[5].value
         )
         self.assertEqual(
-            enums.Operation.QUERY,
+            enums.Operation.DESTROY,
             result.operations[6].value
+        )
+        self.assertEqual(
+            enums.Operation.QUERY,
+            result.operations[7].value
         )
         self.assertEqual(list(), result.object_types)
         self.assertIsNotNone(result.vendor_identification)
@@ -4165,7 +4172,7 @@ class TestKmipEngine(testtools.TestCase):
 
         e._logger.info.assert_called_once_with("Processing operation: Query")
         self.assertIsNotNone(result.operations)
-        self.assertEqual(8, len(result.operations))
+        self.assertEqual(9, len(result.operations))
         self.assertEqual(
             enums.Operation.DISCOVER_VERSIONS,
             result.operations[-1].value
