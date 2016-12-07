@@ -41,6 +41,7 @@ from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
 from kmip.core.messages.payloads.discover_versions import \
     DiscoverVersionsRequestPayload, DiscoverVersionsResponsePayload
+from kmip.core.messages.payloads import get_attributes
 from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads.query import \
     QueryRequestPayload, QueryResponsePayload
@@ -60,6 +61,7 @@ from kmip.services.kmip_client import KMIPProxy
 
 from kmip.services.results import CreateKeyPairResult
 from kmip.services.results import DiscoverVersionsResult
+from kmip.services.results import GetAttributesResult
 from kmip.services.results import GetAttributeListResult
 from kmip.services.results import OperationResult
 from kmip.services.results import QueryResult
@@ -381,6 +383,33 @@ class TestKMIPClient(TestCase):
         protocol_versions = None
         self._test_build_discover_versions_batch_item(protocol_versions)
 
+    def test_build_get_attributes_batch_item(self):
+        uuid = '00000000-1111-2222-3333-444444444444'
+        attribute_names = [
+            'Name',
+            'Object Type'
+        ]
+        batch_item = self.client._build_get_attributes_batch_item(
+            uuid,
+            attribute_names
+        )
+
+        self.assertIsInstance(batch_item, RequestBatchItem)
+        self.assertIsInstance(batch_item.operation, Operation)
+        self.assertEqual(
+            OperationEnum.GET_ATTRIBUTES,
+            batch_item.operation.value
+        )
+        self.assertIsInstance(
+            batch_item.request_payload,
+            get_attributes.GetAttributesRequestPayload
+        )
+        self.assertEqual(uuid, batch_item.request_payload.unique_identifier)
+        self.assertEqual(
+            attribute_names,
+            batch_item.request_payload.attribute_names
+        )
+
     def test_build_get_attribute_list_batch_item(self):
         uid = '00000000-1111-2222-3333-444444444444'
         batch_item = self.client._build_get_attribute_list_batch_item(uid)
@@ -463,6 +492,12 @@ class TestKMIPClient(TestCase):
         self.assertRaisesRegexp(ValueError, "no processor for operation",
                                 self.client._get_batch_item_processor,
                                 0xA5A5A5A5)
+
+        expected = self.client._process_get_attributes_batch_item
+        observed = self.client._get_batch_item_processor(
+            OperationEnum.GET_ATTRIBUTES
+        )
+        self.assertEqual(expected, observed)
 
         expected = self.client._process_get_attribute_list_batch_item
         observed = self.client._get_batch_item_processor(
@@ -574,6 +609,23 @@ class TestKMIPClient(TestCase):
     def test_process_discover_versions_batch_item_no_results(self):
         protocol_versions = None
         self._test_process_discover_versions_batch_item(protocol_versions)
+
+    def test_process_get_attributes_batch_item(self):
+        uuid = '00000000-1111-2222-3333-444444444444'
+        attributes = []
+        payload = get_attributes.GetAttributesResponsePayload(
+            unique_identifier=uuid,
+            attributes=attributes
+        )
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.GET_ATTRIBUTES),
+            response_payload=payload
+        )
+        result = self.client._process_get_attributes_batch_item(batch_item)
+
+        self.assertIsInstance(result, GetAttributesResult)
+        self.assertEqual(uuid, result.uuid)
+        self.assertEqual(attributes, result.attributes)
 
     def test_process_get_attribute_list_batch_item(self):
         uid = '00000000-1111-2222-3333-444444444444'

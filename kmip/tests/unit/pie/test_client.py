@@ -667,6 +667,142 @@ class TestProxyKmipClient(testtools.TestCase):
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
+    def test_get_attributes(self):
+        """
+        Test that a secret's attributes can be retrieved with proper input.
+        """
+        result = results.GetAttributesResult(
+            contents.ResultStatus(enums.ResultStatus.SUCCESS),
+            uuid='aaaaaaaa-1111-2222-3333-ffffffffffff',
+            attributes=[
+                obj.Attribute(
+                    attribute_name=obj.Attribute.AttributeName('Name'),
+                    attribute_index=obj.Attribute.AttributeIndex(0),
+                    attribute_value=attr.Name(
+                        name_value=attr.Name.NameValue('Test Name'),
+                        name_type=attr.Name.NameType(
+                            enums.NameType.UNINTERPRETED_TEXT_STRING
+                        )
+                    )
+                ),
+                obj.Attribute(
+                    attribute_name=obj.Attribute.AttributeName('Object Type'),
+                    attribute_value=attr.ObjectType(
+                        enums.ObjectType.SYMMETRIC_KEY
+                    )
+                )
+            ]
+        )
+
+        with ProxyKmipClient() as client:
+            client.proxy.get_attributes.return_value = result
+
+            result = client.get_attributes(
+                'aaaaaaaa-1111-2222-3333-ffffffffffff',
+                ['Name', 'Object Type']
+            )
+            client.proxy.get_attributes.assert_called_with(
+                'aaaaaaaa-1111-2222-3333-ffffffffffff',
+                ['Name', 'Object Type']
+            )
+            self.assertIsInstance(result[0], six.string_types)
+            self.assertIsInstance(result[1], list)
+            for r in result[1]:
+                self.assertIsInstance(r, obj.Attribute)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_get_attributes_on_invalid_uid(self):
+        """
+        Test that a TypeError exception is raised when trying to retrieve a
+        secret's attributes with an invalid ID.
+        """
+        args = [0]
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "uid must be a string",
+                client.get_attributes,
+                *args
+            )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_get_attributes_on_invalid_attribute_names(self):
+        """
+        Test that a TypeError exception is raised when trying to retrieve a
+        secret's attributes with an invalid attribute name set.
+        """
+        args = [None, 0]
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "attribute_names must be a list of strings",
+                client.get_attributes,
+                *args
+            )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_get_attributes_on_invalid_attribute_name(self):
+        """
+        Test that a TypeError exception is raised when trying to retrieve a
+        secret's attributes with an invalid attribute name.
+        """
+        args = [None, [0]]
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "attribute_names must be a list of strings",
+                client.get_attributes,
+                *args
+            )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_get_attributes_on_closed(self):
+        """
+        Test that a ClientConnectionNotOpen exception is raised when trying
+        to retrieve a secret's attributes on an unopened client connection.
+        """
+        client = ProxyKmipClient()
+        args = [
+            'aaaaaaaa-1111-2222-3333-ffffffffffff',
+            ['Name', 'Object Type']
+        ]
+        self.assertRaises(
+            ClientConnectionNotOpen,
+            client.get_attributes,
+            *args
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_get_attributes_on_operation_failure(self):
+        """
+        Test that a KmipOperationFailure exception is raised when the
+        backend fails to retrieve a secret's attributes.
+        """
+        status = enums.ResultStatus.OPERATION_FAILED
+        reason = enums.ResultReason.GENERAL_FAILURE
+        message = "Test failure message"
+
+        result = results.OperationResult(
+            contents.ResultStatus(status),
+            contents.ResultReason(reason),
+            contents.ResultMessage(message))
+        error_msg = str(KmipOperationFailure(status, reason, message))
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.get_attributes.return_value = result
+        args = ['id', []]
+
+        self.assertRaisesRegexp(
+            KmipOperationFailure, error_msg, client.get_attributes, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
     def test_get_attribute_list(self):
         """
         Test that the attribute names of a managed object can be retrieved
