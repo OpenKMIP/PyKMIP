@@ -32,6 +32,7 @@ support for the following operations:
 * ``Register``
 * ``Locate``
 * ``Get``
+* ``GetAttributes``
 * ``GetAttributeList``
 * ``Activate``
 * ``Revoke``
@@ -47,6 +48,7 @@ following operations:
 * ``CreateKeyPair``
 * ``Register``
 * ``Get``
+* ``GetAttributes``
 * ``GetAttributeList``
 * ``Destroy``
 
@@ -101,7 +103,8 @@ specifying the different configuration values::
       ssl_version='PROTOCOL_SSLv23',
       username='user',
       password='password',
-      config='client')
+      config='client'
+  )
 
 A KMIP client will load the configuration settings found in the ``client``
 settings block by default. Settings specified at runtime, as in the above
@@ -127,6 +130,8 @@ The KMIP server provides support for the following operations:
 * ``CreateKeyPair``
 * ``Register``
 * ``Get``
+* ``GetAttributes``
+* ``Activate``
 * ``Destroy``
 * ``Query``
 * ``DiscoverVersions``
@@ -145,6 +150,7 @@ below::
   key_path=/path/to/certificate/key/file
   ca_path=/path/to/ca/certificate/file
   auth_suite=Basic
+  policy_path=/path/to/policy/file
 
 The server can also be configured manually. The following example shows how
 to create the ``KmipServer`` in Python code, directly specifying the
@@ -158,7 +164,8 @@ different configuration values::
       ca_path='/path/to/ca/certificate/file/',
       auth_suite='Basic',
       config_path='/etc/pykmip/server.conf',
-      log_path='/var/log/pykmip/server.log'
+      log_path='/var/log/pykmip/server.log',
+      policy_path='/etc/pykmip/policies'
   )
 
 **NOTE:** The ``kmip_server.KMIPServer`` implementation of the software
@@ -204,6 +211,9 @@ The different configuration options are defined below:
     A string representing a path to a log file. The server will set up a
     rotating file logger on this file. Only set via the ``KmipServer``
     constructor. Defaults to ``/var/log/pykmip/server.log``.
+* ``policy_path``
+    A string representing a path to the filesystem directory containing
+    PyKMIP server operation policy JSON files.
 
 **NOTE:** When installing PyKMIP and deploying the KMIP software server, you
 must manually set up the server configuration file. It **will not** be placed
@@ -226,6 +236,37 @@ permissions of the configuration, log, and certificate file directories.
 
 If PyKMIP is installed and you are able to ``import kmip`` in Python, you can
 copy the startup script and run it from any directory you choose.
+
+Identity & Ownership
+********************
+The software server determines client identity using the client's TLS
+certificate. Specifically, the common name of the certificate subject is used
+as the client ID. Additionally, the client certificate must have an extended
+key usage extension marked for client authentication. If this extension is
+not included in the client certificate and/or the client does not define a
+subject and common name, the server will fail to establish a client session.
+For more information on certificates and their use in authentication, see
+`RFC 5280`_.
+
+The client identity described above is used to anchor object ownership.
+Object ownership and access is governed by an object's operation policy,
+defined on object creation. By default the KMIP specification defines two
+operation policies, a ``default`` policy covering all objects and a
+``public`` policy applied only to ``Template`` objects.
+
+For example, if user A creates a symmetric key, user B will only be able
+to retrieve that key if the key's operation policy indicates that the
+key is accessible to all users. If the operation policy specifies that
+the key is only available to the owner, only user A will be able to access
+it.
+
+Users can create their own operation policies by placing operation policy
+JSON files in the policy directory pointed to by the ``policy_path``
+configuration option. The server will load all policies from that directory
+upon start up, allowing users to use those policies for their objects. A
+template for the operation policy JSON file can be found under ``examples``.
+Note that the ``default`` and ``public`` policies are reserved and cannot
+be redefined by a user's policy.
 
 Profiles
 ========
@@ -300,9 +341,9 @@ Platforms
 =========
 PyKMIP has been tested and runs on the following platform(s):
 
-* Ubuntu 12.04 LTS
+* Ubuntu: 12.04 LTS, 14.04 LTS, 16.04 LTS
 
-PyKMIP is supported by Python 2.6, 2.7, 3.3, and 3.4.
+PyKMIP is supported by Python 2.6, 2.7, 3.3 - 3.5.
 
 **NOTE:** Support for Python 2.6 will be deprecated in a future release of PyKMIP.
 
@@ -328,6 +369,7 @@ For more information on KMIP version 1.1, see the following documentation:
 .. _Python SSL library documentation: https://docs.python.org/dev/library/ssl.html#socket-creation
 .. _KMIP Wikipedia page: https://en.wikipedia.org/wiki/Key_Management_Interoperability_Protocol
 .. _KMIP Technical Committee home page: https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=kmip
+.. _RFC 5280: https://tools.ietf.org/html/rfc5280
 
 .. |pypi-version| image:: https://img.shields.io/pypi/v/pykmip.svg
   :target: https://pypi.python.org/pypi/pykmip
