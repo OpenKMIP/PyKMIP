@@ -810,11 +810,7 @@ class TextString(Base):
     def write_value(self, ostream):
         # Write string to stream
         for char in self.value:
-            if sys.version < '3':
-                c = char
-            else:
-                c = char.encode()
-            ostream.write(pack(self.BYTE_FORMAT, c))
+            ostream.write(pack(self.BYTE_FORMAT, char.encode()))
 
         # Write padding to stream
         for _ in range(self.padding_length):
