@@ -1146,3 +1146,12 @@ class AttributePolicy(object):
         # TODO (peterhamilton) Handle multivalue swap between certificate types
         rule_set = self._attribute_rule_sets.get(attribute)
         return rule_set.multiple_instances_permitted
+
+    def get_all_attribute_names(self):
+        """
+        Get a list of all supported attribute names.
+
+        Returns:
+            list: A list of string attribute names.
+        """
+        return self._attribute_rule_sets.keys()

@@ -31,19 +31,19 @@ class GetAttributesRequestPayload(primitives.Struct):
     duplicates in the attribute name list.
 
     Attributes:
-        uid: The unique ID of the managed object with which the retrieved
-            attributes should be associated.
+        unique_identifier: The unique ID of the managed object with which the
+            retrieved attributes should be associated.
         attribute_names: A list of strings identifying the names of the
             attributes associated with the managed object.
     """
-    def __init__(self, uid=None, attribute_names=None):
+    def __init__(self, unique_identifier=None, attribute_names=None):
         """
         Construct a GetAttributes request payload.
 
         Args:
-            uid (string): The ID of the managed object with which the
-                retrieved attributes should be associated. Optional, defaults
-                to None.
+            unique_identifier (string): The ID of the managed object with
+                which the retrieved attributes should be associated. Optional,
+                defaults to None.
             attribute_names: A list of strings identifying the names of the
                 attributes associated with the managed object. Optional,
                 defaults to None.
@@ -51,30 +51,30 @@ class GetAttributesRequestPayload(primitives.Struct):
         super(GetAttributesRequestPayload, self).__init__(
             enums.Tags.REQUEST_PAYLOAD)
 
-        self._uid = None
+        self._unique_identifier = None
         self._attribute_names = list()
 
-        self.uid = uid
+        self.unique_identifier = unique_identifier
         self.attribute_names = attribute_names
 
     @property
-    def uid(self):
-        if self._uid:
-            return self._uid.value
+    def unique_identifier(self):
+        if self._unique_identifier:
+            return self._unique_identifier.value
         else:
-            return self._uid
+            return self._unique_identifier
 
-    @uid.setter
-    def uid(self, value):
+    @unique_identifier.setter
+    def unique_identifier(self, value):
         if value is None:
-            self._uid = None
+            self._unique_identifier = None
         elif isinstance(value, six.string_types):
-            self._uid = primitives.TextString(
+            self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
-            raise TypeError("uid must be a string")
+            raise TypeError("unique identifier must be a string")
 
     @property
     def attribute_names(self):
@@ -125,10 +125,12 @@ class GetAttributesRequestPayload(primitives.Struct):
         tstream = utils.BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, tstream):
-            self._uid = primitives.TextString(tag=enums.Tags.UNIQUE_IDENTIFIER)
-            self._uid.read(tstream)
+            self._unique_identifier = primitives.TextString(
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+            self._unique_identifier.read(tstream)
         else:
-            self._uid = None
+            self._unique_identifier = None
 
         names = list()
         while self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, tstream):
@@ -150,8 +152,8 @@ class GetAttributesRequestPayload(primitives.Struct):
         """
         tstream = utils.BytearrayStream()
 
-        if self._uid:
-            self._uid.write(tstream)
+        if self._unique_identifier:
+            self._unique_identifier.write(tstream)
 
         for attribute_name in self._attribute_names:
             attribute_name.write(tstream)
@@ -161,22 +163,24 @@ class GetAttributesRequestPayload(primitives.Struct):
         ostream.write(tstream.buffer)
 
     def __repr__(self):
-        uid = "uid={0}".format(self.uid)
+        unique_identifier = "unique_identifier={0}".format(
+            self.unique_identifier
+        )
         attribute_names = "attribute_names={0}".format(self.attribute_names)
         return "GetAttributesRequestPayload({0}, {1})".format(
-            uid,
+            unique_identifier,
             attribute_names
         )
 
     def __str__(self):
         return str({
-            'uid': self.uid,
+            'unique_identifier': self.unique_identifier,
             'attribute_names': self.attribute_names
         })
 
     def __eq__(self, other):
         if isinstance(other, GetAttributesRequestPayload):
-            if self.uid == other.uid:
+            if self.unique_identifier == other.unique_identifier:
                 if set(self.attribute_names) == set(other.attribute_names):
                     return True
                 else:
@@ -202,49 +206,49 @@ class GetAttributesResponsePayload(primitives.Struct):
     associated with the aforementioned managed object.
 
     Attributes:
-        uid: The unique ID of the managed object with which the retrieved
-            attributes should be associated.
+        unique_identifier: The unique ID of the managed object with which
+            the retrieved attributes should be associated.
         attributes: The list of attributes associated with managed object
-            identified by the uid above.
+            identified by the unique identifier above.
     """
-    def __init__(self, uid=None, attributes=None):
+    def __init__(self, unique_identifier=None, attributes=None):
         """
         Construct a GetAttributes response payload.
 
         Args:
-            uid (string): The ID of the managed object with which the
-                retrieved attributes should be associated. Optional, defaults
-                to None.
+            unique_identifier (string): The ID of the managed object with
+                which the retrieved attributes should be associated. Optional,
+                defaults to None.
             attributes (list): A list of attribute structures associated with
                 the managed object. Optional, defaults to None.
         """
         super(GetAttributesResponsePayload, self).__init__(
             enums.Tags.RESPONSE_PAYLOAD)
 
-        self._uid = None
+        self._unique_identifier = None
         self._attributes = list()
 
-        self.uid = uid
+        self.unique_identifier = unique_identifier
         self.attributes = attributes
 
     @property
-    def uid(self):
-        if self._uid:
-            return self._uid.value
+    def unique_identifier(self):
+        if self._unique_identifier:
+            return self._unique_identifier.value
         else:
-            return self._uid
+            return self._unique_identifier
 
-    @uid.setter
-    def uid(self, value):
+    @unique_identifier.setter
+    def unique_identifier(self, value):
         if value is None:
-            self._uid = None
+            self._unique_identifier = None
         elif isinstance(value, six.string_types):
-            self._uid = primitives.TextString(
+            self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
-            raise TypeError("uid must be a string")
+            raise TypeError("unique identifier must be a string")
 
     @property
     def attributes(self):
@@ -279,12 +283,14 @@ class GetAttributesResponsePayload(primitives.Struct):
         tstream = utils.BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, tstream):
-            uid = primitives.TextString(tag=enums.Tags.UNIQUE_IDENTIFIER)
-            uid.read(tstream)
-            self.uid = uid.value
+            unique_identifier = primitives.TextString(
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+            unique_identifier.read(tstream)
+            self.unique_identifier = unique_identifier.value
         else:
             raise exceptions.InvalidKmipEncoding(
-                "expected GetAttributes response uid not found"
+                "expected GetAttributes response unique identifier not found"
             )
 
         self._attributes = list()
@@ -306,11 +312,11 @@ class GetAttributesResponsePayload(primitives.Struct):
         """
         tstream = utils.BytearrayStream()
 
-        if self._uid:
-            self._uid.write(tstream)
+        if self._unique_identifier:
+            self._unique_identifier.write(tstream)
         else:
             raise exceptions.InvalidField(
-                "The GetAttributes response uid is required."
+                "The GetAttributes response unique identifier is required."
             )
 
         for attribute in self._attributes:
@@ -321,16 +327,24 @@ class GetAttributesResponsePayload(primitives.Struct):
         ostream.write(tstream.buffer)
 
     def __repr__(self):
-        uid = "uid={0}".format(self.uid)
+        unique_identifier = "unique_identifier={0}".format(
+            self.unique_identifier
+        )
         names = "attributes={0}".format(self.attributes)
-        return "GetAttributesResponsePayload({0}, {1})".format(uid, names)
+        return "GetAttributesResponsePayload({0}, {1})".format(
+            unique_identifier,
+            names
+        )
 
     def __str__(self):
-        return str({'uid': self.uid, 'attributes': self.attributes})
+        return str({
+            'unique_identifier': self.unique_identifier,
+            'attributes': self.attributes
+        })
 
     def __eq__(self, other):
         if isinstance(other, GetAttributesResponsePayload):
-            if self.uid != other.uid:
+            if self.unique_identifier != other.unique_identifier:
                 return False
             if len(self._attributes) != len(other._attributes):
                 return False

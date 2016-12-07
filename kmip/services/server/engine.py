@@ -29,6 +29,8 @@ import kmip
 from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import exceptions
+
+from kmip.core.factories import attributes as attribute_factory
 from kmip.core.factories import secrets
 
 from kmip.core.messages import contents
@@ -40,6 +42,7 @@ from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
+from kmip.core.messages.payloads import get_attributes
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
 
@@ -492,7 +495,6 @@ class KmipEngine(object):
                     unique_identifier
                 )
             )
-            self._logger.exception(e)
             raise exceptions.ItemNotFound(
                 "Could not locate object: {0}".format(unique_identifier)
             )
@@ -623,6 +625,148 @@ class KmipEngine(object):
                     attributes.update([(name, attribute.attribute_value)])
 
         return attributes
+
+    def _get_attributes_from_managed_object(self, managed_object, attr_names):
+        """
+        Given a kmip.pie object and a list of attribute names, attempt to get
+        all of the existing attribute values from the object.
+        """
+        attr_factory = attribute_factory.AttributeFactory()
+        retrieved_attributes = list()
+
+        if not attr_names:
+            attr_names = self._attribute_policy.get_all_attribute_names()
+
+        for attribute_name in attr_names:
+            object_type = managed_object._object_type
+
+            if not self._attribute_policy.is_attribute_supported(
+                    attribute_name
+            ):
+                continue
+
+            if self._attribute_policy.is_attribute_applicable_to_object_type(
+                attribute_name,
+                object_type
+            ):
+                attribute_value = self._get_attribute_from_managed_object(
+                    managed_object,
+                    attribute_name
+                )
+
+                if attribute_value is not None:
+                    if self._attribute_policy.is_attribute_multivalued(
+                            attribute_name
+                    ):
+                        for count, value in enumerate(attribute_value):
+                            attribute = attr_factory.create_attribute(
+                                enums.AttributeType(attribute_name),
+                                value,
+                                count
+                            )
+                            retrieved_attributes.append(attribute)
+                    else:
+                        attribute = attr_factory.create_attribute(
+                            enums.AttributeType(attribute_name),
+                            attribute_value
+                        )
+                        retrieved_attributes.append(attribute)
+
+        return retrieved_attributes
+
+    def _get_attribute_from_managed_object(self, managed_object, attr_name):
+        """
+        Get the attribute value from the kmip.pie managed object.
+        """
+        if attr_name == 'Unique Identifier':
+            return str(managed_object.unique_identifier)
+        elif attr_name == 'Name':
+            names = list()
+            for name in managed_object.names:
+                name = attributes.Name(
+                    attributes.Name.NameValue(name),
+                    attributes.Name.NameType(
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+                names.append(name)
+            return names
+        elif attr_name == 'Object Type':
+            return managed_object._object_type
+        elif attr_name == 'Cryptographic Algorithm':
+            return managed_object.cryptographic_algorithm
+        elif attr_name == 'Cryptographic Length':
+            return managed_object.cryptographic_length
+        elif attr_name == 'Cryptographic Parameters':
+            return None
+        elif attr_name == 'Cryptographic Domain Parameters':
+            return None
+        elif attr_name == 'Certificate Type':
+            return managed_object.certificate_type
+        elif attr_name == 'Certificate Length':
+            return None
+        elif attr_name == 'X.509 Certificate Identifier':
+            return None
+        elif attr_name == 'X.509 Certificate Subject':
+            return None
+        elif attr_name == 'X.509 Certificate Issuer':
+            return None
+        elif attr_name == 'Certificate Identifier':
+            return None
+        elif attr_name == 'Certificate Subject':
+            return None
+        elif attr_name == 'Certificate Issuer':
+            return None
+        elif attr_name == 'Digital Signature Algorithm':
+            return None
+        elif attr_name == 'Digest':
+            return None
+        elif attr_name == 'Operation Policy Name':
+            return managed_object.operation_policy_name
+        elif attr_name == 'Cryptographic Usage Mask':
+            return managed_object.cryptographic_usage_masks
+        elif attr_name == 'Lease Time':
+            return None
+        elif attr_name == 'Usage Limits':
+            return None
+        elif attr_name == 'State':
+            return managed_object.state
+        elif attr_name == 'Initial Date':
+            return None
+        elif attr_name == 'Activation Date':
+            return None
+        elif attr_name == 'Process Start Date':
+            return None
+        elif attr_name == 'Protect Stop Date':
+            return None
+        elif attr_name == 'Deactivation Date':
+            return None
+        elif attr_name == 'Destroy Date':
+            return None
+        elif attr_name == 'Compromise Occurrence Date':
+            return None
+        elif attr_name == 'Compromise Date':
+            return None
+        elif attr_name == 'Revocation Reason':
+            return None
+        elif attr_name == 'Archive Date':
+            return None
+        elif attr_name == 'Object Group':
+            return None
+        elif attr_name == 'Fresh':
+            return None
+        elif attr_name == 'Link':
+            return None
+        elif attr_name == 'Application Specific Information':
+            return None
+        elif attr_name == 'Contact Information':
+            return None
+        elif attr_name == 'Last Change Date':
+            return None
+        else:
+            # Since custom attribute names are possible, just return None
+            # for unrecognized attributes. This satisfies the spec.
+            return None
 
     def _set_attributes_on_managed_object(self, managed_object, attributes):
         """
@@ -761,6 +905,8 @@ class KmipEngine(object):
             return self._process_register(payload)
         elif operation == enums.Operation.GET:
             return self._process_get(payload)
+        elif operation == enums.Operation.GET_ATTRIBUTES:
+            return self._process_get_attributes(payload)
         elif operation == enums.Operation.DESTROY:
             return self._process_destroy(payload)
         elif operation == enums.Operation.QUERY:
@@ -1188,6 +1334,47 @@ class KmipEngine(object):
         return response_payload
 
     @_kmip_version_supported('1.0')
+    def _process_get_attributes(self, payload):
+        self._logger.info("Processing operation: GetAttributes")
+
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier
+        else:
+            unique_identifier = self._id_placeholder
+
+        object_type = self._get_object_type(unique_identifier)
+
+        managed_object = self._data_session.query(object_type).filter(
+            object_type.unique_identifier == unique_identifier
+        ).one()
+
+        # Determine if the request should be carried out under the object's
+        # operation policy. If not, feign ignorance of the object.
+        is_allowed = self._is_allowed_by_operation_policy(
+            managed_object.operation_policy_name,
+            self._client_identity,
+            managed_object._owner,
+            managed_object._object_type,
+            enums.Operation.GET_ATTRIBUTES
+        )
+        if not is_allowed:
+            raise exceptions.ItemNotFound(
+                "Could not locate object: {0}".format(unique_identifier)
+            )
+
+        attrs = self._get_attributes_from_managed_object(
+            managed_object,
+            payload.attribute_names
+        )
+
+        response_payload = get_attributes.GetAttributesResponsePayload(
+            unique_identifier=unique_identifier,
+            attributes=attrs
+        )
+
+        return response_payload
+
+    @_kmip_version_supported('1.0')
     def _process_activate(self, payload):
         self._logger.info("Processing operation: Activate")
 
@@ -1308,6 +1495,7 @@ class KmipEngine(object):
                 contents.Operation(enums.Operation.CREATE_KEY_PAIR),
                 contents.Operation(enums.Operation.REGISTER),
                 contents.Operation(enums.Operation.GET),
+                contents.Operation(enums.Operation.GET_ATTRIBUTES),
                 contents.Operation(enums.Operation.DESTROY),
                 contents.Operation(enums.Operation.QUERY)
             ])

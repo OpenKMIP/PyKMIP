@@ -112,3 +112,57 @@ class TestAttributePolicy(testtools.TestCase):
 
         result = rules.is_attribute_multivalued(attribute_b)
         self.assertTrue(result)
+
+    def test_get_all_attribute_names(self):
+        """
+        Test that get_all_attribute_names returns a complete list of the
+        names of all spec-defined attributes.
+        """
+        rules = policy.AttributePolicy(contents.ProtocolVersion.create(1, 0))
+        attribute_names = [
+            'Unique Identifier',
+            'Name',
+            'Object Type',
+            'Cryptographic Algorithm',
+            'Cryptographic Length',
+            'Cryptographic Parameters',
+            'Cryptographic Domain Parameters',
+            'Certificate Type',
+            'Certificate Length',
+            'X.509 Certificate Identifier',
+            'X.509 Certificate Subject',
+            'X.509 Certificate Issuer',
+            'Certificate Identifier',
+            'Certificate Subject',
+            'Certificate Issuer',
+            'Digital Signature Algorithm',
+            'Digest',
+            'Operation Policy Name',
+            'Cryptographic Usage Mask',
+            'Lease Time',
+            'Usage Limits',
+            'State',
+            'Initial Date',
+            'Activation Date',
+            'Process Start Date',
+            'Protect Stop Date',
+            'Deactivation Date',
+            'Destroy Date',
+            'Compromise Occurrence Date',
+            'Compromise Date',
+            'Revocation Reason',
+            'Archive Date',
+            'Object Group',
+            'Fresh',
+            'Link',
+            'Application Specific Information',
+            'Contact Information',
+            'Last Change Date',
+            'Custom Attribute'
+        ]
+
+        result = rules.get_all_attribute_names()
+
+        self.assertEqual(len(attribute_names), len(result))
+        for attribute_name in attribute_names:
+            self.assertIn(attribute_name, result)
