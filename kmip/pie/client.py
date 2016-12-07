@@ -297,17 +297,19 @@ class ProxyKmipClient(api.KmipClient):
         object_attributes = list()
 
         if hasattr(managed_object, 'cryptographic_usage_masks'):
-            mask_attribute = self.attribute_factory.create_attribute(
-                enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-                managed_object.cryptographic_usage_masks
-            )
-            object_attributes.append(mask_attribute)
+            if managed_object.cryptographic_usage_masks is not None:
+                mask_attribute = self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    managed_object.cryptographic_usage_masks
+                )
+                object_attributes.append(mask_attribute)
         if hasattr(managed_object, 'operation_policy_name'):
-            opn_attribute = self.attribute_factory.create_attribute(
-                enums.AttributeType.OPERATION_POLICY_NAME,
-                managed_object.operation_policy_name
-            )
-            object_attributes.append(opn_attribute)
+            if managed_object.operation_policy_name is not None:
+                opn_attribute = self.attribute_factory.create_attribute(
+                    enums.AttributeType.OPERATION_POLICY_NAME,
+                    managed_object.operation_policy_name
+                )
+                object_attributes.append(opn_attribute)
 
         template = cobjects.TemplateAttribute(attributes=object_attributes)
         object_type = managed_object.object_type
