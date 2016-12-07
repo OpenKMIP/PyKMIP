@@ -174,6 +174,15 @@ def build_cli_parser(operation=None):
             dest="format",
             help=("Format in which to retrieve the secret. Supported formats "
                   "include: RAW, PKCS_1, PKCS_8, X_509"))
+    elif operation is Operation.GET_ATTRIBUTES:
+        parser.add_option(
+            "-i",
+            "--uuid",
+            action="store",
+            type="str",
+            default=None,
+            dest="uuid",
+            help="UUID of secret attributes to retrieve from the KMIP server")
     elif operation is Operation.GET_ATTRIBUTE_LIST:
         parser.add_option(
             "-i",
