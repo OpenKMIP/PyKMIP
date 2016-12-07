@@ -959,7 +959,9 @@ class TestProxyKmipClient(testtools.TestCase):
             enums.CryptographicAlgorithm.AES,
             128,
             (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E'
-             b'\x0F'))
+             b'\x0F')
+        )
+        key.operation_policy_name = 'default'
 
         result = results.RegisterResult(
             contents.ResultStatus(enums.ResultStatus.SUCCESS),
