@@ -14,6 +14,10 @@
 # under the License.
 
 from kmip.services.server.repo.repo import ManagedObjectRepo
+from kmip.core.attributes import UniqueIdentifier
+from kmip.core.enums import AttributeType
+from kmip.core.enums import ObjectGroupMember
+from kmip.core.enums import StorageStatusMask
 
 
 class MemRepo(ManagedObjectRepo):
@@ -27,6 +31,7 @@ class MemRepo(ManagedObjectRepo):
         uuid = "{0}".format(self.uuid)
         self.repo[uuid] = (managed_object, attributes)
         self.uuid += 1
+
         return uuid
 
     def get(self, uuid):
@@ -46,6 +51,58 @@ class MemRepo(ManagedObjectRepo):
         del self.repo[uuid]
         return True
 
+    # TODO: Date attributes in locate request
     def locate(self, maximum_items, storage_status_mask,
                object_group_member, attributes):
-        raise NotImplementedError
+        result = list()
+
+        if maximum_items is not None and maximum_items.value == 0:
+            return result
+
+        for idx in self.repo:
+            (managed_object, obj_attributes) = self.repo[idx]
+
+            matched_attrs = 0
+            fresh = False
+            have_archive_date = False
+
+            for attr in obj_attributes:
+                aname = attr.attribute_name
+                avalue = attr.attribute_value
+                for lattr in attributes:
+                    if (aname == lattr.attribute_name and
+                            avalue == lattr.attribute_value):
+                        matched_attrs += 1
+
+                if aname.value == AttributeType.FRESH.value:
+                    fresh = avalue
+
+                if aname.value == AttributeType.ARCHIVE_DATE.value:
+                    have_archive_date = True
+
+            if object_group_member is not None:
+                oval = object_group_member.value
+                if oval == ObjectGroupMember.GROUP_MEMBER_FRESH:
+                    if not fresh:
+                        continue
+                else:
+                    if fresh:
+                        continue
+
+            if storage_status_mask is not None:
+                sval = storage_status_mask.value
+                if sval == StorageStatusMask.ARCHIVAL_STORAGE:
+                    if not have_archive_date:
+                        continue
+                if sval == StorageStatusMask.ONLINE_STORAGE:
+                    if have_archive_date:
+                        continue
+
+            if matched_attrs == len(attributes):
+                result.append(UniqueIdentifier(idx))
+
+            if maximum_items is not None:
+                if maximum_items.value <= len(result):
+                    break
+
+        return result
