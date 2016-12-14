@@ -1,3 +1,21 @@
+0.6.0 - December 14, 2016
+* Add support for Python 3.5
+* Add support for the State and OperationPolicyName attributes
+* Add server support for the Activate and GetAttributes operations
+* Add server support for certificate-based client authentication
+* Add server support for object access control via operation policies
+* Add server support for loading of user-defined operation policies
+* Add client support for the GetAttributes operation
+* Update clients to support operation policy names with objects
+* Update ProxyKmipClient to support names when creating new objects
+* Remove coveralls integration
+* Fix bug with early server termination on missing request credential
+* Fix bug with closing the client while unconnected to a server
+* Fix bug with default values overriding server config file settings
+* Fix bug with early server termination on bad client certificates
+* Fix bug with deprecated usage of the bandit config file
+* Fix bug with ProxyKmipClient registering unset object attributes
+
 0.5.0 - April 14, 2016
 * Add KmipServer server implementation
 * Add KmipSession to manage threaded client/server connections

@@ -13,4 +13,4 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-__version__ = '0.5.0'
+__version__ = '0.6.0'
