@@ -98,7 +98,8 @@ class KmipEngine(object):
 
         self._data_store = sqlalchemy.create_engine(
             'sqlite:////tmp/pykmip.database',
-            echo=False
+            echo=False,
+            connect_args={'check_same_thread': False}
         )
         sqltypes.Base.metadata.create_all(self._data_store)
         self._data_store_session_factory = sqlalchemy.orm.sessionmaker(
