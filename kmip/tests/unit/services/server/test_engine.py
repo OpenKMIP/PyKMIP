@@ -140,6 +140,20 @@ class TestKmipEngine(testtools.TestCase):
         """
         engine.KmipEngine()
 
+    @mock.patch('sqlalchemy.create_engine')
+    def test_init_create_engine(self, create_engine_mock):
+        """
+        Test that the right arguments are used to create the engine's SQLite
+        backend.
+        """
+        engine.KmipEngine()
+        args = ("sqlite:////tmp/pykmip.database",)
+        fargs = {
+            'echo': False,
+            'connect_args': {'check_same_thread': False}
+        }
+        create_engine_mock.assert_called_once_with(*args, **fargs)
+
     def test_load_operation_policies(self):
         """
         Test that the KmipEngine can correctly load operation policies.
