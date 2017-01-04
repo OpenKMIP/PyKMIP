@@ -833,7 +833,7 @@ class TestProxyKmipClient(testtools.TestCase):
             result = client.get_attribute_list(uid)
             client.proxy.get_attribute_list.assert_called_with(uid)
             self.assertIsInstance(result, list)
-            self.assertItemsEqual(attribute_names, result)
+            six.assertCountEqual(self, attribute_names, result)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
