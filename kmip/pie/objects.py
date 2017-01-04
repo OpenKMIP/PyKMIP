@@ -820,7 +820,7 @@ class X509Certificate(Certificate):
                                primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'Certificate'
+        'polymorphic_identity': 'X509Certificate'
     }
     __table_args__ = {
         'sqlite_autoincrement': True
