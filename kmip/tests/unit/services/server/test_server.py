@@ -15,7 +15,12 @@
 
 import errno
 import logging
-import mock
+
+try:
+    import unittest.mock as mock
+except:
+    import mock
+
 import signal
 import socket
 import testtools
@@ -75,9 +80,11 @@ class TestKmipServer(testtools.TestCase):
         # Dynamically mock out the built-in open function. Approach changes
         # across Python versions.
         try:
-            import io  # NOQA
-            module = 'kmip.services.server.server'
-        except:
+            # For Python3+
+            import builtins  # NOQA
+            module = 'builtins'
+        except ImportError:
+            # For Python2+
             module = '__builtin__'
 
         with mock.patch('{0}.open'.format(module), open_mock):
