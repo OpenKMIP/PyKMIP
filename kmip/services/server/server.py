@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import errno
 import logging
 import logging.handlers as handlers
 import optparse
@@ -287,6 +286,13 @@ class KmipServer(object):
         def _signal_handler(signal_number, stack_frame):
             self._is_serving = False
 
+            # Python3.5+ silently ignores SIGINT and retries system calls if
+            # the signal handler does not raise an exception. Explicitly
+            # detect SIGINT and raise a KeyboardInterrupt exception to regain
+            # old functionality.
+            if signal_number == signal.SIGINT:
+                raise KeyboardInterrupt("SIGINT received")
+
         signal.signal(signal.SIGINT, _signal_handler)
         signal.signal(signal.SIGTERM, _signal_handler)
 
@@ -296,14 +302,14 @@ class KmipServer(object):
             try:
                 connection, address = self._socket.accept()
             except socket.error as e:
-                if e.errno == errno.EINTR:
-                    self._logger.warning("Interrupting connection service.")
-                    break
-                else:
-                    self._logger.warning(
-                        "Error detected while establishing new connection."
-                    )
-                    self._logger.exception(e)
+                self._logger.warning(
+                    "Error detected while establishing new connection."
+                )
+                self._logger.exception(e)
+            except KeyboardInterrupt:
+                self._logger.warning("Interrupting connection service.")
+                self._is_serving = False
+                break
             except Exception as e:
                 self._logger.warning(
                     "Error detected while establishing new connection."
