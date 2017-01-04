@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import errno
 import logging
 
 try:
@@ -363,8 +362,7 @@ class TestKmipServer(testtools.TestCase):
         s._socket = mock.MagicMock()
         s._setup_connection_handler = mock.MagicMock()
 
-        expected_error = socket.error()
-        expected_error.errno = errno.EINTR
+        expected_error = KeyboardInterrupt
 
         # Test the expected behavior for a normal server/interrupt sequence
         s._socket.accept = mock.MagicMock(
@@ -418,7 +416,13 @@ class TestKmipServer(testtools.TestCase):
         # Test the signal handler for each expected signal
         s._is_serving = True
         handler = signal.getsignal(signal.SIGINT)
-        handler(None, None)
+        args = (signal.SIGINT, None)
+        self.assertRaisesRegex(
+            KeyboardInterrupt,
+            "SIGINT received",
+            handler,
+            *args
+        )
         self.assertFalse(s._is_serving)
 
         s._is_serving = True
