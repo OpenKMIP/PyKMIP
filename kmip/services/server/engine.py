@@ -43,6 +43,7 @@ from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import get_attributes
+from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
 
@@ -911,6 +912,8 @@ class KmipEngine(object):
             return self._process_get(payload)
         elif operation == enums.Operation.GET_ATTRIBUTES:
             return self._process_get_attributes(payload)
+        elif operation == enums.Operation.GET_ATTRIBUTE_LIST:
+            return self._process_get_attribute_list(payload)
         elif operation == enums.Operation.ACTIVATE:
             return self._process_activate(payload)
         elif operation == enums.Operation.DESTROY:
@@ -1381,6 +1384,51 @@ class KmipEngine(object):
         return response_payload
 
     @_kmip_version_supported('1.0')
+    def _process_get_attribute_list(self, payload):
+        self._logger.info("Processing operation: GetAttributeList")
+
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier
+        else:
+            unique_identifier = self._id_placeholder
+
+        object_type = self._get_object_type(unique_identifier)
+
+        managed_object = self._data_session.query(object_type).filter(
+            object_type.unique_identifier == unique_identifier
+        ).one()
+
+        # Determine if the request should be carried out under the object's
+        # operation policy. If not, feign ignorance of the object.
+        is_allowed = self._is_allowed_by_operation_policy(
+            managed_object.operation_policy_name,
+            self._client_identity,
+            managed_object._owner,
+            managed_object._object_type,
+            enums.Operation.GET_ATTRIBUTES
+        )
+        if not is_allowed:
+            raise exceptions.ItemNotFound(
+                "Could not locate object: {0}".format(unique_identifier)
+            )
+
+        object_attributes = self._get_attributes_from_managed_object(
+            managed_object,
+            list()
+        )
+        attribute_names = list()
+
+        for object_attribute in object_attributes:
+            attribute_names.append(object_attribute.attribute_name.value)
+
+        response_payload = get_attribute_list.GetAttributeListResponsePayload(
+            unique_identifier=unique_identifier,
+            attribute_names=attribute_names
+        )
+
+        return response_payload
+
+    @_kmip_version_supported('1.0')
     def _process_activate(self, payload):
         self._logger.info("Processing operation: Activate")
 
@@ -1502,6 +1550,7 @@ class KmipEngine(object):
                 contents.Operation(enums.Operation.REGISTER),
                 contents.Operation(enums.Operation.GET),
                 contents.Operation(enums.Operation.GET_ATTRIBUTES),
+                contents.Operation(enums.Operation.GET_ATTRIBUTE_LIST),
                 contents.Operation(enums.Operation.ACTIVATE),
                 contents.Operation(enums.Operation.DESTROY),
                 contents.Operation(enums.Operation.QUERY)

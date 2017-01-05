@@ -591,7 +591,7 @@ class KMIPProxy(KMIP):
         names = None
 
         if payload:
-            uid = payload.uid
+            uid = payload.unique_identifier
             names = payload.attribute_names
 
         return GetAttributeListResult(

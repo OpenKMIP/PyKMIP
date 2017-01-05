@@ -16,7 +16,6 @@
 import six
 
 from kmip.core import enums
-from kmip.core import exceptions
 from kmip.core import primitives
 from kmip.core import utils
 
@@ -30,23 +29,44 @@ class GetAttributeListRequestPayload(primitives.Struct):
     See Section 4.13 of the KMIP 1.1 specification for more information.
 
     Attributes:
-        uid: The unique ID of the managed object with which the retrieved
-            attributes should be associated.
+        unique_identifier: The unique ID of the managed object with which the
+            retrieved attributes should be associated.
     """
-    def __init__(self, uid=None):
+
+    def __init__(self, unique_identifier=None):
         """
         Construct a GetAttributeList request payload.
 
         Args:
-            uid (string): The ID of the managed object with which the retrieved
-                attributes should be associated. Optional, defaults to None.
+            unique_identifier (string): The ID of the managed object with
+                which the retrieved attribute names should be associated.
+                Optional, defaults to None.
         """
         super(GetAttributeListRequestPayload, self).__init__(
             enums.Tags.REQUEST_PAYLOAD)
 
-        self.uid = uid
+        self._unique_identifier = None
 
-        self.validate()
+        self.unique_identifier = unique_identifier
+
+    @property
+    def unique_identifier(self):
+        if self._unique_identifier:
+            return self._unique_identifier.value
+        else:
+            return self._unique_identifier
+
+    @unique_identifier.setter
+    def unique_identifier(self, value):
+        if value is None:
+            self._unique_identifier = None
+        elif isinstance(value, six.string_types):
+            self._unique_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+        else:
+            raise TypeError("unique identifier must be a string")
 
     def read(self, istream):
         """
@@ -61,14 +81,14 @@ class GetAttributeListRequestPayload(primitives.Struct):
         tstream = utils.BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, tstream):
-            uid = primitives.TextString(tag=enums.Tags.UNIQUE_IDENTIFIER)
-            uid.read(tstream)
-            self.uid = uid.value
+            self._unique_identifier = primitives.TextString(
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+            self._unique_identifier.read(tstream)
         else:
-            self.uid = None
+            self._unique_identifier = None
 
         self.is_oversized(tstream)
-        self.validate()
 
     def write(self, ostream):
         """
@@ -81,36 +101,23 @@ class GetAttributeListRequestPayload(primitives.Struct):
         """
         tstream = utils.BytearrayStream()
 
-        if self.uid:
-            uid = primitives.TextString(
-                value=self.uid, tag=enums.Tags.UNIQUE_IDENTIFIER)
-            uid.write(tstream)
+        if self._unique_identifier:
+            self._unique_identifier.write(tstream)
 
         self.length = tstream.length()
         super(GetAttributeListRequestPayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
-    def validate(self):
-        """
-        Error check the attributes of the GetAttributeList request payload.
-        """
-        if self.uid is not None:
-            if not isinstance(self.uid, six.string_types):
-                raise TypeError(
-                    "uid must be a string; "
-                    "expected (one of): {0}, observed: {1}".format(
-                        six.string_types, type(self.uid)))
-
     def __repr__(self):
-        uid = "uid={0}".format(self.uid)
+        uid = "unique_identifier={0}".format(self.unique_identifier)
         return "GetAttributeListRequestPayload({0})".format(uid)
 
     def __str__(self):
-        return str({'uid': self.uid})
+        return str({'unique_identifier': self.unique_identifier})
 
     def __eq__(self, other):
         if isinstance(other, GetAttributeListRequestPayload):
-            if self.uid == other.uid:
+            if self.unique_identifier == other.unique_identifier:
                 return True
             else:
                 return False
@@ -128,45 +135,100 @@ class GetAttributeListResponsePayload(primitives.Struct):
     """
     A response payload for the GetAttributeList operation.
 
-    The payload will contain the ID of the managed object with which the
-    attributes are associated. It will also contain a list of attribute names
+    The payload contains the ID of the managed object with which the
+    attributes are associated, along with a list of attribute names
     identifying the types of attributes associated with the aforementioned
-    managed object. See Section 4.13 of the KMIP 1.1 specification for more
-    information.
+    managed object.
 
     Attributes:
-        uid: The unique ID of the managed object with which the retrieved
-            attributes should be associated.
-        attribute_names: The list of attribute names of the attributes
-            associated with managed object identified by the uid above.
+        unique_identifier: The unique ID of the managed object with which the
+            retrieved attributes should be associated.
+        attribute_names: A list of strings identifying the names of the
+            attributes associated with the managed object.
     """
-    def __init__(self, uid=None, attribute_names=None):
+
+    def __init__(self, unique_identifier=None, attribute_names=None):
         """
         Construct a GetAttributeList response payload.
 
         Args:
-            uid (string): The ID of the managed object with which the retrieved
-                attributes should be associated. Optional, defaults to None.
-            attribute_names (list): A list of strings identifying the names of
-                the attributes associated with the managed object. Optional,
+            unique_identifier (string): The ID of the managed object with
+                which the retrieved attribute names should be associated.
+                Optional, defaults to None.
+            attribute_names: A list of strings identifying the names of the
+                attributes associated with the managed object. Optional,
                 defaults to None.
         """
+
         super(GetAttributeListResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD)
+            enums.Tags.RESPONSE_PAYLOAD
+        )
 
-        self.uid = uid
+        self._unique_identifier = None
+        self._attribute_names = list()
 
-        if attribute_names:
-            self.attribute_names = attribute_names
+        self.unique_identifier = unique_identifier
+        self.attribute_names = attribute_names
+
+    @property
+    def unique_identifier(self):
+        if self._unique_identifier:
+            return self._unique_identifier.value
         else:
-            self.attribute_names = list()
+            return self._unique_identifier
 
-        self.validate()
+    @unique_identifier.setter
+    def unique_identifier(self, value):
+        if value is None:
+            self._unique_identifier = None
+        elif isinstance(value, six.string_types):
+            self._unique_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+        else:
+            raise TypeError("unique identifier must be a string")
+
+    @property
+    def attribute_names(self):
+        if self._attribute_names:
+            names = list()
+            for attribute_name in self._attribute_names:
+                names.append(attribute_name.value)
+            return names
+        else:
+            return self._attribute_names
+
+    @attribute_names.setter
+    def attribute_names(self, value):
+        if value is None:
+            self._attribute_names = list()
+        elif isinstance(value, list):
+            names = list()
+            for i in range(len(value)):
+                name = value[i]
+                if not isinstance(name, six.string_types):
+                    raise TypeError(
+                        "attribute_names must be a list of strings; "
+                        "item {0} has type {1}".format(i + 1, type(name))
+                    )
+                if name not in names:
+                    names.append(name)
+            self._attribute_names = list()
+            for name in names:
+                self._attribute_names.append(
+                    primitives.TextString(
+                        value=name,
+                        tag=enums.Tags.ATTRIBUTE_NAME
+                    )
+                )
+        else:
+            raise TypeError("attribute_names must be a list of strings")
 
     def read(self, istream):
         """
-        Read the data encoding the GetAttributeList response payload and decode
-        it into its constituent parts.
+        Read the data encoding the GetAttributeList response payload and
+        decode it into its constituent parts.
 
         Args:
             istream (stream): A data stream containing encoded object data,
@@ -176,22 +238,21 @@ class GetAttributeListResponsePayload(primitives.Struct):
         tstream = utils.BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, tstream):
-            uid = primitives.TextString(tag=enums.Tags.UNIQUE_IDENTIFIER)
-            uid.read(tstream)
-            self.uid = uid.value
+            self._unique_identifier = primitives.TextString(
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+            self._unique_identifier.read(tstream)
         else:
-            raise exceptions.InvalidKmipEncoding(
-                "expected uid encoding not found")
+            self._unique_identifier = None
 
         names = list()
-        while(self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, tstream)):
+        while self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, tstream):
             name = primitives.TextString(tag=enums.Tags.ATTRIBUTE_NAME)
             name.read(tstream)
-            names.append(name.value)
-        self.attribute_names = names
+            names.append(name)
+        self._attribute_names = names
 
         self.is_oversized(tstream)
-        self.validate()
 
     def write(self, ostream):
         """
@@ -204,59 +265,39 @@ class GetAttributeListResponsePayload(primitives.Struct):
         """
         tstream = utils.BytearrayStream()
 
-        uid = primitives.TextString(
-            value=self.uid, tag=enums.Tags.UNIQUE_IDENTIFIER)
-        uid.write(tstream)
+        if self._unique_identifier:
+            self._unique_identifier.write(tstream)
 
-        for name in self.attribute_names:
-            name = primitives.TextString(
-                value=name, tag=enums.Tags.ATTRIBUTE_NAME)
-            name.write(tstream)
+        for attribute_name in self._attribute_names:
+            attribute_name.write(tstream)
 
         self.length = tstream.length()
         super(GetAttributeListResponsePayload, self).write(ostream)
         ostream.write(tstream.buffer)
 
-    def validate(self):
-        """
-        Error check the attributes of the GetAttributeList response payload.
-        """
-        if self.uid is not None:
-            if not isinstance(self.uid, six.string_types):
-                raise TypeError(
-                    "uid must be a string; "
-                    "expected (one of): {0}, observed: {1}".format(
-                        six.string_types, type(self.uid)))
-
-        if self.attribute_names:
-            if not isinstance(self.attribute_names, list):
-                raise TypeError("attribute names must be a list")
-            for i in range(len(self.attribute_names)):
-                name = self.attribute_names[i]
-                if not isinstance(name, six.string_types):
-                    raise TypeError(
-                        "attribute name ({0} of {1}) must be a string".format(
-                            i + 1, len(self.attribute_names)))
-
     def __repr__(self):
-        uid = "uid={0}".format(self.uid)
-        names = "attribute_names={0}".format(self.attribute_names)
-        return "GetAttributeListResponsePayload({0}, {1})".format(uid, names)
+        unique_identifier = "unique_identifier={0}".format(
+            self.unique_identifier
+        )
+        attribute_names = "attribute_names={0}".format(self.attribute_names)
+        return "GetAttributeListResponsePayload({0}, {1})".format(
+            unique_identifier,
+            attribute_names
+        )
 
     def __str__(self):
-        return str({'uid': self.uid, 'attribute_names': self.attribute_names})
+        return str({
+            'unique_identifier': self.unique_identifier,
+            'attribute_names': self.attribute_names
+        })
 
     def __eq__(self, other):
         if isinstance(other, GetAttributeListResponsePayload):
-            if self.uid != other.uid:
-                return False
-            elif ((isinstance(self.attribute_names, list) and
-                   isinstance(other.attribute_names, list)) and
-                  len(self.attribute_names) == len(other.attribute_names)):
-                for name in self.attribute_names:
-                    if name not in other.attribute_names:
-                        return False
-                return True
+            if self.unique_identifier == other.unique_identifier:
+                if set(self.attribute_names) == set(other.attribute_names):
+                    return True
+                else:
+                    return False
             else:
                 return False
         else:

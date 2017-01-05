@@ -13,10 +13,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import copy
 import testtools
 
-from kmip.core import exceptions
+from kmip.core import enums
+from kmip.core import primitives
 from kmip.core import utils
 
 from kmip.core.messages.payloads import get_attribute_list
@@ -32,16 +32,17 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
 
         # Encodings taken from Sections 3.1.4 of the KMIP 1.1 testing
         # documentation.
-        self.encoding_with_uid = utils.BytearrayStream((
+        self.full_encoding = utils.BytearrayStream(
             b'\x42\x00\x79\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
             b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
             b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'))
+            b'\x32\x39\x35\x39\x00\x00\x00\x00'
+        )
+        self.empty_encoding = utils.BytearrayStream(
+            b'\x42\x00\x79\x01\x00\x00\x00\x00'
+        )
 
-        self.encoding_without_uid = utils.BytearrayStream((
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'))
-
-        self.uid = 'b4faee10-aa2a-4446-8ad4-0881f3422959'
+        self.unique_identifier = 'b4faee10-aa2a-4446-8ad4-0881f3422959'
 
     def tearDown(self):
         super(TestGetAttributeListRequestPayload, self).tearDown()
@@ -58,17 +59,44 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that a GetAttributeList request payload can be constructed with a
         valid value.
         """
-        get_attribute_list.GetAttributeListRequestPayload(self.uid)
+        get_attribute_list.GetAttributeListRequestPayload(
+            'test-unique-identifier',
+        )
 
-    def test_validate_with_invalid_uid(self):
+    def test_unique_identifier(self):
         """
-        Test that a TypeError exception is raised when an invalid ID is used
-        to construct a GetAttributeList request payload.
+        Test that the unique_identifier attribute of a GetAttributeList
+        request payload can be properly set and retrieved.
         """
-        kwargs = {'uid': 0}
+        payload = get_attribute_list.GetAttributeListRequestPayload()
+
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload._unique_identifier)
+
+        payload.unique_identifier = 'test-unique-identifier'
+
+        self.assertEqual('test-unique-identifier', payload.unique_identifier)
+        self.assertEqual(
+            primitives.TextString(
+                value='test-unique-identifier',
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            ),
+            payload._unique_identifier
+        )
+
+    def test_unique_identifier_with_invalid_value(self):
+        """
+        Test that a TypeError is raised when an invalid ID is used to set
+        the unique_identifier attribute of a GetAttributeList request payload.
+        """
+        payload = get_attribute_list.GetAttributeListRequestPayload()
+        args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegexp(
-            TypeError, "uid must be a string",
-            get_attribute_list.GetAttributeListRequestPayload, **kwargs)
+            TypeError,
+            "unique identifier must be a string",
+            setattr,
+            *args
+        )
 
     def test_read(self):
         """
@@ -76,49 +104,90 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         stream.
         """
         payload = get_attribute_list.GetAttributeListRequestPayload()
-        payload.read(self.encoding_with_uid)
-        self.assertEqual(self.uid, payload.uid)
 
-    def test_read_with_no_uid(self):
+        self.assertEqual(None, payload._unique_identifier)
+
+        payload.read(self.full_encoding)
+
+        self.assertEqual(self.unique_identifier, payload.unique_identifier)
+        self.assertEqual(
+            primitives.TextString(
+                value=self.unique_identifier,
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            ),
+            payload._unique_identifier
+        )
+
+    def test_read_with_no_content(self):
         """
-        Test that a GetAttributeList request payload with no ID can be read
-        from a data stream.
+        Test that a GetAttributeList response payload with no ID or attribute
+        names can be read from a data stream.
         """
         payload = get_attribute_list.GetAttributeListRequestPayload()
-        payload.read(self.encoding_without_uid)
-        self.assertEqual(None, payload.uid)
+
+        self.assertEqual(None, payload._unique_identifier)
+
+        payload.read(self.empty_encoding)
+
+        self.assertEqual(None, payload.unique_identifier)
+        self.assertEqual(None, payload._unique_identifier)
 
     def test_write(self):
         """
         Test that a GetAttributeList request payload can be written to a data
         stream.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload(self.uid)
+        payload = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
         stream = utils.BytearrayStream()
         payload.write(stream)
 
-        self.assertEqual(len(self.encoding_with_uid), len(stream))
-        self.assertEqual(self.encoding_with_uid, stream)
+        self.assertEqual(len(self.full_encoding), len(stream))
+        self.assertEqual(str(self.full_encoding), str(stream))
 
-    def test_write_with_no_uid(self):
+    def test_write_with_no_content(self):
         """
-        Test that a GetAttributeList request payload with no ID can be written
-        to a data stream.
+        Test that a GetAttributeList request payload with no ID or attribute
+        names can be written to a data stream.
         """
         payload = get_attribute_list.GetAttributeListRequestPayload()
         stream = utils.BytearrayStream()
         payload.write(stream)
 
-        self.assertEqual(len(self.encoding_without_uid), len(stream))
-        self.assertEqual(self.encoding_without_uid, stream)
+        self.assertEqual(len(self.empty_encoding), len(stream))
+        self.assertEqual(str(self.empty_encoding), str(stream))
 
     def test_repr(self):
         """
         Test that repr can be applied to a GetAttributeList request payload.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload(self.uid)
-        args = "uid={0}".format(payload.uid)
-        expected = "GetAttributeListRequestPayload({0})".format(args)
+        payload = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
+        unique_identifier = "unique_identifier={0}".format(
+            payload.unique_identifier
+        )
+        expected = "GetAttributeListRequestPayload({0})".format(
+            unique_identifier
+        )
+        observed = repr(payload)
+        self.assertEqual(expected, observed)
+
+    def test_repr_with_no_content(self):
+        """
+        Test that repr can be applied to a GetAttributeList request payload
+        with no ID or attribute names.
+        """
+        payload = get_attribute_list.GetAttributeListRequestPayload(
+            None
+        )
+        unique_identifier = "unique_identifier={0}".format(
+            payload.unique_identifier
+        )
+        expected = "GetAttributeListRequestPayload({0})".format(
+            unique_identifier
+        )
         observed = repr(payload)
         self.assertEqual(expected, observed)
 
@@ -126,8 +195,26 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         """
         Test that str can be applied to a GetAttributeList request payload.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload(self.uid)
-        expected = str({'uid': payload.uid})
+        payload = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
+        expected = str({
+            'unique_identifier': self.unique_identifier
+        })
+        observed = str(payload)
+        self.assertEqual(expected, observed)
+
+    def test_str_with_no_content(self):
+        """
+        Test that str can be applied to a GetAttributeList request payload
+        with no ID or attribute names.
+        """
+        payload = get_attribute_list.GetAttributeListRequestPayload(
+            None
+        )
+        expected = str({
+            'unique_identifier': None
+        })
         observed = str(payload)
         self.assertEqual(expected, observed)
 
@@ -136,19 +223,27 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         GetAttributeList request payloads with the same data.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(self.uid)
-        b = get_attribute_list.GetAttributeListRequestPayload(self.uid)
+        a = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
+        b = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-    def test_equal_on_not_equal_uid(self):
+    def test_equal_on_not_equal_unique_identifier(self):
         """
         Test that the equality operator returns False when comparing two
-        GetAttributeList request payloads with different data.
+        GetAttributeList request payloads with different IDs.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(self.uid)
-        b = get_attribute_list.GetAttributeListRequestPayload('invalid')
+        a = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
+        b = get_attribute_list.GetAttributeListRequestPayload(
+            'invalid'
+        )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -159,7 +254,9 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         GetAttributeList request payload to a non-GetAttributeList request
         payload.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(self.uid)
+        a = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
         b = "invalid"
 
         self.assertFalse(a == b)
@@ -170,19 +267,27 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing
         two GetAttributeList request payloads with the same internal data.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(self.uid)
-        b = get_attribute_list.GetAttributeListRequestPayload(self.uid)
+        a = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
+        b = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-    def test_not_equal_on_not_equal_uid(self):
+    def test_not_equal_on_not_equal_unique_identifier(self):
         """
         Test that the inequality operator returns True when comparing two
-        GetAttributeList request payloads with different data.
+        GetAttributeList request payloads with different IDs.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(self.uid)
-        b = get_attribute_list.GetAttributeListRequestPayload('invalid')
+        a = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
+        b = get_attribute_list.GetAttributeListRequestPayload(
+            'invalid'
+        )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -193,7 +298,9 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         GetAttributeList request payload to a non-GetAttributeList request
         payload.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(self.uid)
+        a = get_attribute_list.GetAttributeListRequestPayload(
+            self.unique_identifier
+        )
         b = "invalid"
 
         self.assertTrue(a != b)
@@ -202,8 +309,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
 
 class TestGetAttributeListResponsePayload(testtools.TestCase):
     """
-    Test encodings obtained from Sections 12.1 and 12.2 of the KMIP 1.1 Test
-    Cases documentation.
+    Test suite for the GetAttributeList response payload.
     """
 
     def setUp(self):
@@ -211,7 +317,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
 
         # Encodings taken from Sections 3.1.4 of the KMIP 1.1 testing
         # documentation.
-        self.encoding_with_uid_with_names = utils.BytearrayStream((
+        self.full_encoding = utils.BytearrayStream(
             b'\x42\x00\x7C\x01\x00\x00\x01\x60\x42\x00\x94\x07\x00\x00\x00\x24'
             b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
             b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
@@ -234,9 +340,10 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
             b'\x42\x00\x0A\x07\x00\x00\x00\x13\x43\x6F\x6E\x74\x61\x63\x74\x20'
             b'\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x00\x00\x00\x00\x00'
             b'\x42\x00\x0A\x07\x00\x00\x00\x10\x4C\x61\x73\x74\x20\x43\x68\x61'
-            b'\x6E\x67\x65\x20\x44\x61\x74\x65'))
-        self.encoding_without_uid_with_names = utils.BytearrayStream((
-            b'\x42\x00\x7C\x01\x00\x00\x01\x60\x42\x00\x0A\x07\x00\x00\x00\x14'
+            b'\x6E\x67\x65\x20\x44\x61\x74\x65'
+        )
+        self.encoding_sans_unique_identifier = utils.BytearrayStream(
+            b'\x42\x00\x7C\x01\x00\x00\x01\x30\x42\x00\x0A\x07\x00\x00\x00\x14'
             b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65'
             b'\x6E\x67\x74\x68\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x17'
             b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C'
@@ -255,15 +362,20 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
             b'\x42\x00\x0A\x07\x00\x00\x00\x13\x43\x6F\x6E\x74\x61\x63\x74\x20'
             b'\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x00\x00\x00\x00\x00'
             b'\x42\x00\x0A\x07\x00\x00\x00\x10\x4C\x61\x73\x74\x20\x43\x68\x61'
-            b'\x6E\x67\x65\x20\x44\x61\x74\x65'))
-        self.encoding_with_uid_without_names = utils.BytearrayStream((
+            b'\x6E\x67\x65\x20\x44\x61\x74\x65'
+        )
+        self.encoding_sans_attribute_names = utils.BytearrayStream(
             b'\x42\x00\x7C\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
             b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
             b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'))
+            b'\x32\x39\x35\x39\x00\x00\x00\x00'
+        )
+        self.empty_encoding = utils.BytearrayStream(
+            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
+        )
 
-        self.uid = 'b4faee10-aa2a-4446-8ad4-0881f3422959'
-        self.attribute_names = list((
+        self.unique_identifier = 'b4faee10-aa2a-4446-8ad4-0881f3422959'
+        self.attribute_names = [
             'Cryptographic Length',
             'Cryptographic Algorithm',
             'State',
@@ -275,59 +387,167 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
             'Cryptographic Usage Mask',
             'Object Type',
             'Contact Information',
-            'Last Change Date'))
+            'Last Change Date'
+        ]
 
     def tearDown(self):
         super(TestGetAttributeListResponsePayload, self).tearDown()
 
     def test_init(self):
         """
-        Test that a GetAttributeList response payload can be constructed.
+        Test that a GetAttributeList response payload can be constructed with
+        no arguments.
         """
         get_attribute_list.GetAttributeListResponsePayload()
 
     def test_init_with_args(self):
         """
-        Test that a GetAttributeList response payload can be constructed with
-        valid values.
+        Test that a GetAttributeList response payload can be constructed with a
+        valid value.
         """
         get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            'test-unique-identifier',
+            ['test-attribute-name-1', 'test-attribute-name-2']
+        )
 
-    def test_validate_with_invalid_uid(self):
+    def test_unique_identifier(self):
         """
-        Test that a TypeError exception is raised when an invalid ID is used
-        to construct a GetAttributeList response payload.
+        Test that the unique_identifier attribute of a GetAttributeList
+        response payload can be properly set and retrieved.
         """
-        kwargs = {'uid': 0, 'attribute_names': self.attribute_names}
+        payload = get_attribute_list.GetAttributeListResponsePayload()
+
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload._unique_identifier)
+
+        payload.unique_identifier = 'test-unique-identifier'
+
+        self.assertEqual('test-unique-identifier', payload.unique_identifier)
+        self.assertEqual(
+            primitives.TextString(
+                value='test-unique-identifier',
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            ),
+            payload._unique_identifier
+        )
+
+    def test_unique_identifier_with_invalid_value(self):
+        """
+        Test that a TypeError is raised when an invalid ID is used to set
+        the unique_identifier attribute of a GetAttributeList response
+        payload.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload()
+        args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegexp(
-            TypeError, "uid must be a string",
-            get_attribute_list.GetAttributeListResponsePayload, **kwargs)
+            TypeError,
+            "unique identifier must be a string",
+            setattr,
+            *args
+        )
 
-    def test_validate_with_invalid_attribute_names(self):
+    def test_attribute_names(self):
         """
-        Test that a TypeError exception is raised when an invalid attribute
-        name list is used to construct a GetAttributeList response payload.
+        Test that the attribute_names attribute of a GetAttributeList response
+        payload can be properly set and retrieved.
         """
-        kwargs = {'uid': self.uid, 'attribute_names': 'invalid'}
+        payload = get_attribute_list.GetAttributeListResponsePayload()
+
+        self.assertEqual(list(), payload.attribute_names)
+        self.assertEqual(list(), payload._attribute_names)
+
+        payload.attribute_names = [
+            'test-attribute-name-1',
+            'test-attribute-name-2'
+        ]
+
+        self.assertEqual(2, len(payload.attribute_names))
+        self.assertEqual(2, len(payload._attribute_names))
+        self.assertIn('test-attribute-name-1', payload.attribute_names)
+        self.assertIn('test-attribute-name-2', payload.attribute_names)
+        self.assertIn(
+            primitives.TextString(
+                value='test-attribute-name-1',
+                tag=enums.Tags.ATTRIBUTE_NAME
+            ),
+            payload._attribute_names
+        )
+        self.assertIn(
+            primitives.TextString(
+                value='test-attribute-name-2',
+                tag=enums.Tags.ATTRIBUTE_NAME
+            ),
+            payload._attribute_names
+        )
+
+    def test_attribute_names_with_invalid_value(self):
+        """
+        Test that a TypeError is raised when an invalid list is used to set
+        the attribute_names attribute of a GetAttributeList response payload.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload()
+        args = (payload, 'attribute_names', 0)
         self.assertRaisesRegexp(
-            TypeError, "attribute names must be a list",
-            get_attribute_list.GetAttributeListResponsePayload, **kwargs)
+            TypeError,
+            "attribute_names must be a list of strings",
+            setattr,
+            *args
+        )
 
-    def test_validate_with_invalid_attribute_name(self):
+    def test_attribute_names_with_invalid_attribute_name(self):
         """
-        Test that a TypeError exception is raised when an invalid attribute
-        name is used to construct a GetAttributeList response payload object.
+        Test that a TypeError is raised when an invalid attribute name is
+        included in the list used to set the attribute_names attribute of a
+        GetAttributeList response payload.
         """
-        kwargs = {'uid': self.uid, 'attribute_names': [0]}
-        self.assertRaises(
-            TypeError, get_attribute_list.GetAttributeListResponsePayload,
-            **kwargs)
+        payload = get_attribute_list.GetAttributeListResponsePayload()
+        args = (
+            payload,
+            'attribute_names',
+            ['test-attribute-name-1', 0]
+        )
+        self.assertRaisesRegexp(
+            TypeError,
+            "attribute_names must be a list of strings; "
+            "item 2 has type {0}".format(type(0)),
+            setattr,
+            *args
+        )
 
-        kwargs = {'uid': self.uid, 'attribute_names': ['', 0, '']}
-        self.assertRaises(
-            TypeError, get_attribute_list.GetAttributeListResponsePayload,
-            **kwargs)
+    def test_attribute_names_with_duplicates(self):
+        """
+        Test that duplicate attribute names are silently removed when setting
+        the attribute_names attribute of a GetAttributeList response payload.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload()
+
+        self.assertEqual(list(), payload.attribute_names)
+        self.assertEqual(list(), payload._attribute_names)
+
+        payload.attribute_names = [
+            'test-attribute-name-1',
+            'test-attribute-name-1',
+            'test-attribute-name-2'
+        ]
+
+        self.assertEqual(2, len(payload.attribute_names))
+        self.assertEqual(2, len(payload._attribute_names))
+        self.assertIn('test-attribute-name-1', payload.attribute_names)
+        self.assertIn('test-attribute-name-2', payload.attribute_names)
+        self.assertIn(
+            primitives.TextString(
+                value='test-attribute-name-1',
+                tag=enums.Tags.ATTRIBUTE_NAME
+            ),
+            payload._attribute_names
+        )
+        self.assertIn(
+            primitives.TextString(
+                value='test-attribute-name-2',
+                tag=enums.Tags.ATTRIBUTE_NAME
+            ),
+            payload._attribute_names
+        )
 
     def test_read(self):
         """
@@ -335,31 +555,99 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         stream.
         """
         payload = get_attribute_list.GetAttributeListResponsePayload()
-        payload.read(self.encoding_with_uid_with_names)
 
-        self.assertEqual(self.uid, payload.uid)
-        self.assertEqual(self.attribute_names, payload.attribute_names)
+        self.assertEqual(None, payload._unique_identifier)
+        self.assertEqual(list(), payload._attribute_names)
 
-    def test_read_with_no_uid(self):
+        payload.read(self.full_encoding)
+
+        self.assertEqual(self.unique_identifier, payload.unique_identifier)
+        self.assertEqual(
+            primitives.TextString(
+                value=self.unique_identifier,
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            ),
+            payload._unique_identifier
+        )
+        self.assertEqual(
+            set(self.attribute_names),
+            set(payload.attribute_names)
+        )
+        for attribute_name in self.attribute_names:
+            self.assertIn(
+                primitives.TextString(
+                    value=attribute_name,
+                    tag=enums.Tags.ATTRIBUTE_NAME
+                ),
+                payload._attribute_names
+            )
+
+    def test_read_with_no_unique_identifier(self):
         """
-        Test that an InvalidKmipEncoding error gets raised when attempting to
-        read a GetAttributeList response encoding with no ID data.
+        Test that a GetAttributeList response payload with no ID can be read
+        from a data stream.
         """
         payload = get_attribute_list.GetAttributeListResponsePayload()
-        self.assertRaisesRegexp(
-            exceptions.InvalidKmipEncoding, "expected uid encoding not found",
-            payload.read, self.encoding_without_uid_with_names)
+
+        self.assertEqual(None, payload._unique_identifier)
+        self.assertEqual(list(), payload._attribute_names)
+
+        payload.read(self.encoding_sans_unique_identifier)
+
+        self.assertEqual(None, payload.unique_identifier)
+        self.assertEqual(None, payload._unique_identifier)
+        self.assertEqual(
+            set(self.attribute_names),
+            set(payload.attribute_names)
+        )
+        for attribute_name in self.attribute_names:
+            self.assertIn(
+                primitives.TextString(
+                    value=attribute_name,
+                    tag=enums.Tags.ATTRIBUTE_NAME
+                ),
+                payload._attribute_names
+            )
 
     def test_read_with_no_attribute_names(self):
         """
-        Test that a GetAttributeList response payload without attribute name
-        data can be read from a data stream.
+        Test that a GetAttributeList response payload with no attribute names
+        can be read from a data stream.
         """
         payload = get_attribute_list.GetAttributeListResponsePayload()
-        payload.read(self.encoding_with_uid_without_names)
 
-        self.assertEqual(self.uid, payload.uid)
+        self.assertEqual(None, payload._unique_identifier)
+        self.assertEqual(list(), payload._attribute_names)
+
+        payload.read(self.encoding_sans_attribute_names)
+
+        self.assertEqual(self.unique_identifier, payload.unique_identifier)
+        self.assertEqual(
+            primitives.TextString(
+                value=self.unique_identifier,
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            ),
+            payload._unique_identifier
+        )
         self.assertEqual(list(), payload.attribute_names)
+        self.assertEqual(list(), payload._attribute_names)
+
+    def test_read_with_no_content(self):
+        """
+        Test that a GetAttributeList response payload with no ID or attribute
+        names can be read from a data stream.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload()
+
+        self.assertEqual(None, payload._unique_identifier)
+        self.assertEqual(list(), payload._attribute_names)
+
+        payload.read(self.empty_encoding)
+
+        self.assertEqual(None, payload.unique_identifier)
+        self.assertEqual(None, payload._unique_identifier)
+        self.assertEqual(list(), payload.attribute_names)
+        self.assertEqual(list(), payload._attribute_names)
 
     def test_write(self):
         """
@@ -367,35 +655,147 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         stream.
         """
         payload = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
         stream = utils.BytearrayStream()
         payload.write(stream)
 
-        self.assertEqual(len(self.encoding_with_uid_with_names), len(stream))
-        self.assertEqual(self.encoding_with_uid_with_names, stream)
+        self.assertEqual(len(self.full_encoding), len(stream))
+        self.assertEqual(str(self.full_encoding), str(stream))
 
-    def test_write_with_no_attribute_names(self):
+    def test_write_with_no_unique_identifier(self):
         """
-        Test that a GetAttributeList response payload with no attribute name
-        data can be written to a data stream.
+        Test that a GetAttributeList response payload with no ID can be
+        written to a data stream.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(self.uid)
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            None,
+            self.attribute_names
+        )
         stream = utils.BytearrayStream()
         payload.write(stream)
 
         self.assertEqual(
-            len(self.encoding_with_uid_without_names), len(stream))
-        self.assertEqual(self.encoding_with_uid_without_names, stream)
+            len(self.encoding_sans_unique_identifier),
+            len(stream)
+        )
+        self.assertEqual(
+            str(self.encoding_sans_unique_identifier),
+            str(stream)
+        )
+
+    def test_write_with_no_attribute_names(self):
+        """
+        Test that a GetAttributeList response payload with no attribute names
+        can be written to a data stream.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            self.unique_identifier,
+            None
+        )
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(len(self.encoding_sans_attribute_names), len(stream))
+        self.assertEqual(str(self.encoding_sans_attribute_names), str(stream))
+
+    def test_write_with_no_content(self):
+        """
+        Test that a GetAttributeList response payload with no ID or attribute
+        names can be written to a data stream.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload()
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(len(self.empty_encoding), len(stream))
+        self.assertEqual(str(self.empty_encoding), str(stream))
 
     def test_repr(self):
         """
         Test that repr can be applied to a GetAttributeList response payload.
         """
         payload = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
-        args = "uid={0}, attribute_names={1}".format(
-            payload.uid, payload.attribute_names)
-        expected = "GetAttributeListResponsePayload({0})".format(args)
+            self.unique_identifier,
+            self.attribute_names
+        )
+        unique_identifier = "unique_identifier={0}".format(
+            payload.unique_identifier
+        )
+        attribute_names = "attribute_names={0}".format(
+            payload.attribute_names
+        )
+        expected = "GetAttributeListResponsePayload({0}, {1})".format(
+            unique_identifier,
+            attribute_names
+        )
+        observed = repr(payload)
+        self.assertEqual(expected, observed)
+
+    def test_repr_with_no_unique_identifier(self):
+        """
+        Test that repr can be applied to a GetAttributeList response payload
+        with no ID.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            None,
+            self.attribute_names
+        )
+        unique_identifier = "unique_identifier={0}".format(
+            payload.unique_identifier
+        )
+        attribute_names = "attribute_names={0}".format(
+            payload.attribute_names
+        )
+        expected = "GetAttributeListResponsePayload({0}, {1})".format(
+            unique_identifier,
+            attribute_names
+        )
+        observed = repr(payload)
+        self.assertEqual(expected, observed)
+
+    def test_repr_with_no_attribute_names(self):
+        """
+        Test that repr can be applied to a GetAttributeList response payload
+        with no attribute names.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            self.unique_identifier,
+            None
+        )
+        unique_identifier = "unique_identifier={0}".format(
+            payload.unique_identifier
+        )
+        attribute_names = "attribute_names={0}".format(
+            payload.attribute_names
+        )
+        expected = "GetAttributeListResponsePayload({0}, {1})".format(
+            unique_identifier,
+            attribute_names
+        )
+        observed = repr(payload)
+        self.assertEqual(expected, observed)
+
+    def test_repr_with_no_content(self):
+        """
+        Test that repr can be applied to a GetAttributeList response payload
+        with no ID or attribute names.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            None,
+            None
+        )
+        unique_identifier = "unique_identifier={0}".format(
+            payload.unique_identifier
+        )
+        attribute_names = "attribute_names={0}".format(
+            payload.attribute_names
+        )
+        expected = "GetAttributeListResponsePayload({0}, {1})".format(
+            unique_identifier,
+            attribute_names
+        )
         observed = repr(payload)
         self.assertEqual(expected, observed)
 
@@ -403,9 +803,62 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         """
         Test that str can be applied to a GetAttributeList response payload.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(self.uid)
-        expected = str({'uid': payload.uid,
-                        'attribute_names': payload.attribute_names})
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            self.unique_identifier,
+            self.attribute_names
+        )
+        expected = str({
+            'unique_identifier': self.unique_identifier,
+            'attribute_names': self.attribute_names
+        })
+        observed = str(payload)
+        self.assertEqual(expected, observed)
+
+    def test_str_with_no_id(self):
+        """
+        Test that str can be applied to a GetAttributeList response payload
+        with no ID.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            None,
+            self.attribute_names
+        )
+        expected = str({
+            'unique_identifier': None,
+            'attribute_names': self.attribute_names
+        })
+        observed = str(payload)
+        self.assertEqual(expected, observed)
+
+    def test_str_with_no_attribute_names(self):
+        """
+        Test that str can be applied to a GetAttributeList response payload
+        with no attribute names.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            self.unique_identifier,
+            None
+        )
+        expected = str({
+            'unique_identifier': self.unique_identifier,
+            'attribute_names': list()
+        })
+        observed = str(payload)
+        self.assertEqual(expected, observed)
+
+    def test_str_with_no_content(self):
+        """
+        Test that str can be applied to a GetAttributeList response payload
+        with no ID or attribute names.
+        """
+        payload = get_attribute_list.GetAttributeListResponsePayload(
+            None,
+            None
+        )
+        expected = str({
+            'unique_identifier': None,
+            'attribute_names': list()
+        })
         observed = str(payload)
         self.assertEqual(expected, observed)
 
@@ -415,22 +868,49 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         GetAttributeList response payloads with the same data.
         """
         a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
         b = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-    def test_equal_on_not_equal_uid(self):
+    def test_equal_with_mixed_attribute_names(self):
         """
-        Test that the equality operator returns False when comparing two
-        GetAttributeList response payloads with different data.
+        Test that the equality operator returns True when comparing two
+        GetAttributeList response payload with the same attribute_name sets
+        but with different attribute name orderings.
         """
         a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
+        self.attribute_names.reverse()
         b = get_attribute_list.GetAttributeListResponsePayload(
-            'invalid', self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_unique_identifier(self):
+        """
+        Test that the equality operator returns False when comparing two
+        GetAttributeList response payloads with different IDs.
+        """
+        a = get_attribute_list.GetAttributeListResponsePayload(
+            self.unique_identifier,
+            self.attribute_names
+        )
+        b = get_attribute_list.GetAttributeListResponsePayload(
+            'invalid',
+            self.attribute_names
+        )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -438,27 +918,16 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
     def test_equal_on_not_equal_attribute_names(self):
         """
         Test that the equality operator returns False when comparing two
-        GetAttributeList response payloads with different data.
+        GetAttributeList response payloads with different attribute names.
         """
         a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
         b = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, list())
-
-        self.assertFalse(a == b)
-        self.assertFalse(b == a)
-
-    def test_equal_on_not_equal_attribute_name(self):
-        """
-        Test that the equality operator returns False when comparing two
-        GetAttributeList response payloads with different data.
-        """
-        alt_names = copy.deepcopy(self.attribute_names)
-        alt_names[0] = 'invalid'
-        a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
-        b = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, alt_names)
+            self.unique_identifier,
+            None
+        )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -470,8 +939,10 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         payload.
         """
         a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
-        b = 'invalid'
+            self.unique_identifier,
+            self.attribute_names
+        )
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -482,62 +953,61 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         two GetAttributeList response payloads with the same internal data.
         """
         a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
         b = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-    def test_not_equal_on_not_equal_uid(self):
+    def test_not_equal_on_not_equal_unique_identifier(self):
         """
         Test that the inequality operator returns True when comparing two
-        GetAttributeList request payloads with different data.
+        GetAttributeList response payloads with different IDs.
         """
         a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
         b = get_attribute_list.GetAttributeListResponsePayload(
-            'invalid', self.attribute_names)
+            'invalid',
+            self.attribute_names
+        )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
     def test_not_equal_on_not_equal_attribute_names(self):
         """
-        Test that the inequality operator returns False when comparing two
-        GetAttributeList response payloads with different data.
+        Test that the inequality operator returns True when comparing two
+        GetAttributeList response payloads with different attribute names.
         """
         a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
         b = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, list())
-
-        self.assertTrue(a != b)
-        self.assertTrue(b != a)
-
-    def test_not_equal_on_not_equal_attribute_name(self):
-        """
-        Test that the inequality operator returns False when comparing two
-        GetAttributeList response payloads with different data.
-        """
-        alt_names = copy.deepcopy(self.attribute_names)
-        alt_names[0] = 'Operation Policy Name'
-        a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
-        b = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, alt_names)
+            self.unique_identifier,
+            None
+        )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
     def test_not_equal_on_type_mismatch(self):
         """
-        Test that the inequality operator returns True when comparing a
+        Test that the equality operator returns True when comparing a
         GetAttributeList response payload to a non-GetAttributeList response
         payload.
         """
         a = get_attribute_list.GetAttributeListResponsePayload(
-            self.uid, self.attribute_names)
+            self.unique_identifier,
+            self.attribute_names
+        )
         b = "invalid"
 
         self.assertTrue(a != b)
