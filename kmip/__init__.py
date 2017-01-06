@@ -15,8 +15,6 @@
 
 import os
 import re
-import sys
-import warnings
 
 # Dynamically set __version__
 version_path = os.path.join(os.path.dirname(
@@ -27,12 +25,3 @@ with open(version_path, 'r') as version_file:
 
 
 __all__ = ['core', 'demos', 'services']
-
-
-if sys.version_info[:2] == (2, 6):
-    warnings.simplefilter("always")
-    warnings.warn(
-        ("Please use a newer version of Python (2.7.9+ preferred). PyKMIP "
-         "support for Python 2.6 will be deprecated in the future."),
-        PendingDeprecationWarning)
-    warnings.simplefilter("default")
