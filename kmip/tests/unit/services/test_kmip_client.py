@@ -421,7 +421,7 @@ class TestKMIPClient(TestCase):
         self.assertIsInstance(
             batch_item.request_payload,
             get_attribute_list.GetAttributeListRequestPayload)
-        self.assertEqual(uid, batch_item.request_payload.uid)
+        self.assertEqual(uid, batch_item.request_payload.unique_identifier)
 
     def test_process_batch_items(self):
         batch_item = ResponseBatchItem(
@@ -631,7 +631,7 @@ class TestKMIPClient(TestCase):
         uid = '00000000-1111-2222-3333-444444444444'
         names = ['Cryptographic Algorithm', 'Cryptographic Length']
         payload = get_attribute_list.GetAttributeListResponsePayload(
-            uid=uid, attribute_names=names)
+            unique_identifier=uid, attribute_names=names)
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.GET_ATTRIBUTE_LIST),
             response_payload=payload)
