@@ -737,7 +737,7 @@ class KmipEngine(object):
         elif attr_name == 'State':
             return managed_object.state
         elif attr_name == 'Initial Date':
-            return None
+            return managed_object.initial_date
         elif attr_name == 'Activation Date':
             return None
         elif attr_name == 'Process Start Date':
@@ -997,6 +997,7 @@ class KmipEngine(object):
 
         # TODO (peterhamilton) Set additional server-only attributes.
         managed_object._owner = self._client_identity
+        managed_object.initial_date = int(time.time())
 
         self._data_session.add(managed_object)
 
@@ -1164,7 +1165,9 @@ class KmipEngine(object):
 
         # TODO (peterhamilton) Set additional server-only attributes.
         public_key._owner = self._client_identity
+        public_key.initial_date = int(time.time())
         private_key._owner = self._client_identity
+        private_key.initial_date = public_key.initial_date
 
         self._data_session.add(public_key)
         self._data_session.add(private_key)
@@ -1239,6 +1242,7 @@ class KmipEngine(object):
 
         # TODO (peterhamilton) Set additional server-only attributes.
         managed_object._owner = self._client_identity
+        managed_object.initial_date = int(time.time())
 
         self._data_session.add(managed_object)
 
