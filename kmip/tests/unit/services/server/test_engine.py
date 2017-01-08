@@ -1674,7 +1674,8 @@ class TestKmipEngine(testtools.TestCase):
             symmetric_key,
             'Initial Date'
         )
-        self.assertEqual(None, result)
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, six.integer_types)
 
         result = e._get_attribute_from_managed_object(
             symmetric_key,
@@ -2395,6 +2396,8 @@ class TestKmipEngine(testtools.TestCase):
             symmetric_key.cryptographic_usage_masks
         )
         self.assertEqual('test', symmetric_key.operation_policy_name)
+        self.assertIsNotNone(symmetric_key.initial_date)
+        self.assertNotEqual(0, symmetric_key.initial_date)
 
         self.assertEqual(uid, e._id_placeholder)
 
@@ -2670,6 +2673,8 @@ class TestKmipEngine(testtools.TestCase):
             public_key.cryptographic_usage_masks
         )
         self.assertEqual('default', public_key.operation_policy_name)
+        self.assertIsNotNone(public_key.initial_date)
+        self.assertNotEqual(0, public_key.initial_date)
 
         # Retrieve the stored private key and verify all attributes were set
         # appropriately.
@@ -2695,6 +2700,8 @@ class TestKmipEngine(testtools.TestCase):
             private_key.cryptographic_usage_masks
         )
         self.assertEqual('default', private_key.operation_policy_name)
+        self.assertIsNotNone(private_key.initial_date)
+        self.assertNotEqual(0, private_key.initial_date)
 
         self.assertEqual(private_id, e._id_placeholder)
 
@@ -3369,6 +3376,8 @@ class TestKmipEngine(testtools.TestCase):
             symmetric_key.cryptographic_usage_masks
         )
         self.assertEqual('test', symmetric_key.operation_policy_name)
+        self.assertIsNotNone(symmetric_key.initial_date)
+        self.assertNotEqual(0, symmetric_key.initial_date)
 
         self.assertEqual(uid, e._id_placeholder)
 
@@ -3789,7 +3798,7 @@ class TestKmipEngine(testtools.TestCase):
             response_payload.unique_identifier
         )
         self.assertEqual(
-            8,
+            9,
             len(response_payload.attributes)
         )
 
@@ -3906,7 +3915,7 @@ class TestKmipEngine(testtools.TestCase):
             response_payload.unique_identifier
         )
         self.assertEqual(
-            8,
+            9,
             len(response_payload.attribute_names)
         )
         self.assertIn(
@@ -3939,6 +3948,10 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertIn(
             "Unique Identifier",
+            response_payload.attribute_names
+        )
+        self.assertIn(
+            "Initial Date",
             response_payload.attribute_names
         )
 
@@ -3978,7 +3991,7 @@ class TestKmipEngine(testtools.TestCase):
             response_payload.unique_identifier
         )
         self.assertEqual(
-            8,
+            9,
             len(response_payload.attribute_names)
         )
         self.assertIn(
@@ -4011,6 +4024,10 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertIn(
             "Unique Identifier",
+            response_payload.attribute_names
+        )
+        self.assertIn(
+            "Initial Date",
             response_payload.attribute_names
         )
 

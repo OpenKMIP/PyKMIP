@@ -57,6 +57,7 @@ class ManagedObject(sql.Base):
         String(50),
         default='default'
     )
+    initial_date = Column(Integer, default=0)
     _owner = Column('owner', String(50), default=None)
 
     __mapper_args__ = {
@@ -78,6 +79,7 @@ class ManagedObject(sql.Base):
         self.name_index = 0
         self.names = list()
         self.operation_policy_name = None
+        self.initial_date = 0
         self._object_type = None
         self._owner = None
 
@@ -90,7 +92,6 @@ class ManagedObject(sql.Base):
         # The following attributes are placeholders for attributes that are
         # unsupported by kmip.core
         self._archive_date = None
-        self._initial_date = None
         self._last_change_date = None
 
     @property
