@@ -2307,6 +2307,37 @@ class TestKmipEngine(testtools.TestCase):
             )
         )
 
+    def test_get_object_with_access_controls(self):
+        """
+        Test that an unallowed object access request is handled correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._client_identity = 'test'
+
+        obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+        obj_a._owner = 'admin'
+
+        e._data_session.add(obj_a)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+
+        # Test by specifying the ID of the object to retrieve and the
+        # operation context.
+        args = [id_a, enums.Operation.GET]
+        six.assertRaisesRegex(
+            self,
+            exceptions.ItemNotFound,
+            "Could not locate object: {0}".format(id_a),
+            e._get_object_with_access_controls,
+            *args
+        )
+
     def test_create(self):
         """
         Test that a Create request can be processed correctly.
