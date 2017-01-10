@@ -98,10 +98,10 @@ if __name__ == '__main__':
     value = Name(name_value=name_value, name_type=name_type)
     name = Attribute(attribute_name=name, attribute_value=value)
 
-    name = Attribute.AttributeName('Cryptographic Usage Mask')
+    usage_mask = Attribute.AttributeName('Cryptographic Usage Mask')
     value = CryptographicUsageMask(
         UsageMaskEnum.ENCRYPT.value | UsageMaskEnum.DECRYPT.value)
-    usage_mask = Attribute(attribute_name=name, attribute_value=value)
+    usage_mask = Attribute(attribute_name=usage_mask, attribute_value=value)
 
     attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
     length_obj = attribute_factory.create_attribute(attribute_type,
