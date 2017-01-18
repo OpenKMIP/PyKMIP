@@ -1061,7 +1061,7 @@ class TestProxyKmipClient(testtools.TestCase):
                 mock.MagicMock(spec_set=KMIPProxy))
     def test_mac(self):
         """
-        Test that a secret can be retrieved with proper input.
+        Test the MAC client with proper input.
         """
         uuid = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
         algorithm = enums.CryptographicAlgorithm.HMAC_SHA256
