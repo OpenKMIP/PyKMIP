@@ -146,3 +146,123 @@ class TestCryptographyEngine(testtools.TestCase):
             engine.create_asymmetric_key_pair,
             *args
         )
+
+    def test_mac(self):
+        """
+        Test that MAC operation can be done with valid arguments.
+        """
+        key1 = (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+                b'\x00\x00\x00\x00')
+        key2 = (b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+                b'\x00\x00\x00\x00')
+        key3 = key1
+        data = (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B'
+                b'\x0C\x0D\x0E\x0F')
+
+        engine = crypto.CryptographyEngine()
+
+        # test cmac
+        mac_data1 = engine.mac(
+            enums.CryptographicAlgorithm.AES,
+            key1,
+            data
+        )
+        mac_data2 = engine.mac(
+            enums.CryptographicAlgorithm.AES,
+            key2,
+            data
+        )
+        mac_data3 = engine.mac(
+            enums.CryptographicAlgorithm.AES,
+            key3,
+            data
+        )
+        self.assertNotEqual(mac_data1, mac_data2)
+        self.assertEqual(mac_data1, mac_data3)
+
+        # test hmac
+        mac_data1 = engine.mac(
+            enums.CryptographicAlgorithm.HMAC_SHA256,
+            key1,
+            data
+        )
+        mac_data2 = engine.mac(
+            enums.CryptographicAlgorithm.HMAC_SHA256,
+            key2,
+            data
+        )
+        mac_data3 = engine.mac(
+            enums.CryptographicAlgorithm.HMAC_SHA256,
+            key3,
+            data
+        )
+        self.assertNotEqual(mac_data1, mac_data2)
+        self.assertEqual(mac_data1, mac_data3)
+
+    def test_mac_with_invalid_algorithm(self):
+        """
+        Test that an InvalidField error is raised when doing the MAC
+        with an invalid algorithm.
+        """
+        engine = crypto.CryptographyEngine()
+
+        key = (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+               b'\x00\x00\x00\x00')
+        data = (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B'
+                b'\x0C\x0D\x0E\x0F')
+        args = ['invalid', key, data]
+        self.assertRaises(
+            exceptions.InvalidField,
+            engine.mac,
+            *args
+        )
+
+    def test_mac_with_cryptographic_failure(self):
+        pass
+        """
+        Test that an CryptographicFailure error is raised when the MAC
+        process fails.
+        """
+
+        # Create dummy algorithm that always fails on instantiation.
+        class DummySymmetricKeyAlgorithm(object):
+            key_sizes = [0]
+
+            def __init__(self, key_bytes):
+                raise Exception()
+
+        class DummyHashAlgorithm(object):
+
+            def __init__(self):
+                raise Exception()
+
+        key = (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+               b'\x00\x00\x00\x00')
+        data = (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B'
+                b'\x0C\x0D\x0E\x0F')
+
+        engine = crypto.CryptographyEngine()
+
+        engine._symmetric_key_algorithms.update([(
+            enums.CryptographicAlgorithm.AES,
+            DummySymmetricKeyAlgorithm
+        )])
+
+        args = [enums.CryptographicAlgorithm.AES, key, data]
+        self.assertRaises(
+            exceptions.CryptographicFailure,
+            engine.mac,
+            *args
+        )
+
+        engine._hash_algorithms.update([(
+            enums.CryptographicAlgorithm.HMAC_SHA256,
+            DummyHashAlgorithm
+        )])
+
+        args = [enums.CryptographicAlgorithm.HMAC_SHA256, key, data]
+        self.assertRaises(
+            exceptions.CryptographicFailure,
+            engine.mac,
+            *args
+        )

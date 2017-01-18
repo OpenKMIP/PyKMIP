@@ -30,6 +30,8 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import exceptions
 
+from kmip.core.objects import MACData
+
 from kmip.core.factories import attributes as attribute_factory
 from kmip.core.factories import secrets
 
@@ -45,6 +47,7 @@ from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import get_attributes
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
+from kmip.core.messages.payloads import mac
 
 from kmip.core import misc
 
@@ -918,6 +921,8 @@ class KmipEngine(object):
             return self._process_query(payload)
         elif operation == enums.Operation.DISCOVER_VERSIONS:
             return self._process_discover_versions(payload)
+        elif operation == enums.Operation.MAC:
+            return self._process_mac(payload)
         else:
             raise exceptions.OperationNotSupported(
                 "{0} operation is not supported by the server.".format(
@@ -1550,6 +1555,64 @@ class KmipEngine(object):
 
         response_payload = discover_versions.DiscoverVersionsResponsePayload(
             protocol_versions=supported_versions
+        )
+
+        return response_payload
+
+    @_kmip_version_supported('1.2')
+    def _process_mac(self, payload):
+        self._logger.info("Processing operation: MAC")
+
+        unique_identifier = self._id_placeholder
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier.value
+
+        object_type = self._get_object_type(unique_identifier)
+
+        managed_object = self._data_session.query(object_type).filter(
+            object_type.unique_identifier == unique_identifier
+        ).one()
+
+        algorithm = None
+        if (payload.cryptographic_parameters and
+                payload.cryptographic_parameters.cryptographic_algorithm):
+            algorithm = \
+                payload.cryptographic_parameters.cryptographic_algorithm.value
+        elif (isinstance(managed_object, objects.Key) and
+              managed_object.cryptographic_algorithm):
+            algorithm = managed_object.cryptographic_algorithm
+        else:
+            raise exceptions.InvalidField(
+                "The cryptographic algorithm must be specified "
+                "for the MAC operation"
+            )
+
+        key = None
+        if managed_object.value:
+            key = managed_object.value
+        else:
+            raise exceptions.InvalidField(
+                "A secret key value must be specified "
+                "for the MAC operation"
+            )
+
+        data = None
+        if payload.data:
+            data = payload.data.value
+        else:
+            raise exceptions.InvalidField(
+                "No data to be MACed"
+            )
+
+        result = self._cryptography_engine.mac(
+            algorithm,
+            key,
+            data
+        )
+
+        response_payload = mac.MACResponsePayload(
+            unique_identifier=attributes.UniqueIdentifier(unique_identifier),
+            mac_data=MACData(result)
         )
 
         return response_payload
