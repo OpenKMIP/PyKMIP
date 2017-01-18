@@ -90,3 +90,17 @@ class KmipClient:
             uid (string): The unique ID of the managed object to destroy.
         """
         pass
+
+    @abc.abstractmethod
+    def mac(self, uid, algorithm, data):
+        """
+        Get the message authentication code for data.
+
+        Args:
+            uid (string): The unique ID of the managed object that is the key
+                to use for the MAC operation.
+            algorithm (CryptographicAlgorithm): An enumeration defining the
+                algorithm to use to generate the MAC.
+            data (string): The data to be MACed.
+        """
+        pass

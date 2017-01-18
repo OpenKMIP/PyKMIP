@@ -263,6 +263,7 @@ class CryptographicParameters(Struct):
                 enums.BlockCipherMode, value, Tags.BLOCK_CIPHER_MODE)
 
     class PaddingMethod(Enumeration):
+
         def __init__(self, value=None):
             super(CryptographicParameters.PaddingMethod, self).__init__(
                 enums.PaddingMethod, value, Tags.PADDING_METHOD)
@@ -273,17 +274,28 @@ class CryptographicParameters(Struct):
             super(CryptographicParameters.KeyRoleType, self).__init__(
                 enums.KeyRoleType, value, Tags.KEY_ROLE_TYPE)
 
+    class DigitalSignatureAlgorithm(Enumeration):
+
+        def __init__(self, value=None):
+            super(CryptographicParameters.DigitalSignatureAlgorithm,
+                  self).__init__(enums.DigitalSignatureAlgorithm,
+                                 value, Tags.DIGITAL_SIGNATURE_ALGORITHM)
+
     def __init__(self,
                  block_cipher_mode=None,
                  padding_method=None,
                  hashing_algorithm=None,
-                 key_role_type=None):
+                 key_role_type=None,
+                 digital_signature_algorithm=None,
+                 cryptographic_algorithm=None):
         super(CryptographicParameters, self).__init__(
             tag=Tags.CRYPTOGRAPHIC_PARAMETERS)
         self.block_cipher_mode = block_cipher_mode
         self.padding_method = padding_method
         self.hashing_algorithm = hashing_algorithm
         self.key_role_type = key_role_type
+        self.digital_signature_algorithm = digital_signature_algorithm
+        self.cryptographic_algorithm = cryptographic_algorithm
 
     def read(self, istream):
         super(CryptographicParameters, self).read(istream)
@@ -305,6 +317,15 @@ class CryptographicParameters(Struct):
             self.key_role_type = CryptographicParameters.KeyRoleType()
             self.key_role_type.read(tstream)
 
+        if self.is_tag_next(Tags.DIGITAL_SIGNATURE_ALGORITHM, tstream):
+            self.digital_signature_algorithm = \
+                CryptographicParameters.DigitalSignatureAlgorithm()
+            self.digital_signature_algorithm.read(tstream)
+
+        if self.is_tag_next(Tags.CRYPTOGRAPHIC_ALGORITHM, tstream):
+            self.cryptographic_algorithm = CryptographicAlgorithm()
+            self.cryptographic_algorithm.read(tstream)
+
         self.is_oversized(tstream)
         self.validate()
 
@@ -320,6 +341,10 @@ class CryptographicParameters(Struct):
             self.hashing_algorithm.write(tstream)
         if self.key_role_type is not None:
             self.key_role_type.write(tstream)
+        if self.digital_signature_algorithm is not None:
+            self.digital_signature_algorithm.write(tstream)
+        if self.cryptographic_algorithm is not None:
+            self.cryptographic_algorithm.write(tstream)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
@@ -354,6 +379,21 @@ class CryptographicParameters(Struct):
                 msg += "; expected {0}, received {1}".format(
                     self.KeyRoleType, self.key_role_type)
                 raise TypeError(msg)
+        if self.digital_signature_algorithm is not None:
+            if not isinstance(self.digital_signature_algorithm,
+                              self.DigitalSignatureAlgorithm):
+                msg = "Invalid digital signature algorithm"
+                msg += "; expected {0}, received {1}".format(
+                    self.DigitalSignatureAlgorithm,
+                    self.digital_signature_algorithm)
+                raise TypeError(msg)
+        if self.cryptographic_algorithm is not None:
+            if not isinstance(self.cryptographic_algorithm,
+                              CryptographicAlgorithm):
+                msg = "Invalid cryptograhic algorithm"
+                msg += "; expected {0}, received {1}".format(
+                    CryptographicAlgorithm, self.cryptographic_algorithm)
+                raise TypeError(msg)
 
     def __eq__(self, other):
         if isinstance(other, CryptographicParameters):
@@ -362,6 +402,11 @@ class CryptographicParameters(Struct):
             elif self.key_role_type != other.key_role_type:
                 return False
             elif self.hashing_algorithm != other.hashing_algorithm:
+                return False
+            elif self.digital_signature_algorithm \
+                    != other.digital_signature_algorithm:
+                return False
+            elif self.cryptographic_algorithm != other.cryptographic_algorithm:
                 return False
             elif self.padding_method != other.padding_method:
                 return False

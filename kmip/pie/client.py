@@ -21,6 +21,9 @@ from kmip.core import objects as cobjects
 
 from kmip.core.factories import attributes
 
+from kmip.core.attributes import CryptographicParameters, \
+    CryptographicAlgorithm
+
 from kmip.pie import api
 from kmip.pie import exceptions
 from kmip.pie import factory
@@ -471,6 +474,58 @@ class ProxyKmipClient(api.KmipClient):
         status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
             return
+        else:
+            reason = result.result_reason.value
+            message = result.result_message.value
+            raise exceptions.KmipOperationFailure(status, reason, message)
+
+    def mac(self, uid, algorithm, data):
+        """
+        Get the message authentication code for data.
+
+        Args:
+            uid (string): The unique ID of the managed object that is the key
+                to use for the MAC operation.
+            algorithm (CryptographicAlgorithm): An enumeration defining the
+                algorithm to use to generate the MAC.
+            data (string): The data to be MACed.
+
+
+        Returns:
+            string: The unique ID of the managed object that is the key
+                to use for the MAC operation.
+            string: The data MACed
+
+        Raises:
+            ClientConnectionNotOpen: if the client connection is unusable
+            KmipOperationFailure: if the operation result is a failure
+            TypeError: if the input arguments are invalid
+        """
+        # Check inputs
+        if not isinstance(uid, six.string_types):
+            raise TypeError("uid must be a string")
+        if not isinstance(algorithm, enums.CryptographicAlgorithm):
+            raise TypeError(
+                "algorithm must be a CryptographicAlgorithm enumeration")
+        if not isinstance(data, six.binary_type):
+            raise TypeError(
+                "data must be bytes")
+
+        # Verify that operations can be given at this time
+        if not self._is_open:
+            raise exceptions.ClientConnectionNotOpen()
+
+        parameters_attribute = CryptographicParameters(
+            cryptographic_algorithm=CryptographicAlgorithm(algorithm))
+
+        # Create the symmetric key and handle the results
+        result = self.proxy.mac(uid, parameters_attribute, data)
+
+        status = result.result_status.value
+        if status == enums.ResultStatus.SUCCESS:
+            uid = result.uuid.value
+            mac_data = result.mac_data.value
+            return uid, mac_data
         else:
             reason = result.result_reason.value
             message = result.result_message.value

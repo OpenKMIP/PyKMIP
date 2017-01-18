@@ -140,6 +140,8 @@ class AttributeValueFactory(object):
         padding_method = None
         hashing_algorithm = None
         key_role_type = None
+        digital_signature_algorithm = None
+        cryptographic_algorithm = None
 
         if params is not None:
 
@@ -162,11 +164,23 @@ class AttributeValueFactory(object):
                 hashing_algorithm = attributes.HashingAlgorithm(
                     params.get("hashing_algorithm"))
 
+            if 'digital_signature_algorithm' in params:
+                digital_signature_algorithm = \
+                    attributes.CryptographicParameters. \
+                    DigitalSignatureAlgorithm(
+                        params.get("digital_signature_algorithm"))
+
+            if 'cryptographic_algorithm' in params:
+                cryptographic_algorithm = attributes.CryptographicAlgorithm(
+                    params.get("cryptographic_algorithm"))
+
         return attributes.CryptographicParameters(
             block_cipher_mode=bcm,
             padding_method=padding_method,
             hashing_algorithm=hashing_algorithm,
-            key_role_type=key_role_type)
+            key_role_type=key_role_type,
+            digital_signature_algorithm=digital_signature_algorithm,
+            cryptographic_algorithm=cryptographic_algorithm)
 
     def _create_cryptographic_usage_mask(self, flags):
         mask = None
