@@ -66,3 +66,18 @@ class CryptographicEngine(object):
             dict: A dictionary containing the private key data, identical in
                 structure to the public key dictionary.
         """
+
+    @abstractmethod
+    def mac(self, algorithm, key, data):
+        """
+        Generate message authentication code.
+
+        Args:
+            algorithm(CryptographicAlgorithm): An enumeration specifying the
+                algorithm for which the MAC operation will use.
+            key(bytes): secret key used in the MAC operation
+            data(bytes): The data to be MACed.
+
+        Returns:
+            bytes: The MAC data
+        """
