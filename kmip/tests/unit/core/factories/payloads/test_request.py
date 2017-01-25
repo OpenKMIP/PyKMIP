@@ -31,6 +31,7 @@ from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import revoke
+from kmip.core.messages.payloads import mac
 
 
 class TestRequestPayloadFactory(testtools.TestCase):
@@ -228,7 +229,8 @@ class TestRequestPayloadFactory(testtools.TestCase):
         )
 
     def test_create_mac_payload(self):
-        self._test_not_implemented(self.factory.create, enums.Operation.MAC)
+        payload = self.factory.create(enums.Operation.MAC)
+        self._test_payload_type(payload, mac.MACRequestPayload)
 
     def test_create_mac_verify_payload(self):
         self._test_not_implemented(

@@ -17,7 +17,7 @@ import logging
 import os
 
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import serialization, hashes, hmac, cmac
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.ciphers import algorithms
 
@@ -49,6 +49,14 @@ class CryptographyEngine(api.CryptographicEngine):
         }
         self._asymetric_key_algorithms = {
             enums.CryptographicAlgorithm.RSA: self._create_rsa_key_pair
+        }
+        self._hash_algorithms = {
+            enums.CryptographicAlgorithm.HMAC_SHA1: hashes.SHA1,
+            enums.CryptographicAlgorithm.HMAC_SHA224: hashes.SHA224,
+            enums.CryptographicAlgorithm.HMAC_SHA256: hashes.SHA256,
+            enums.CryptographicAlgorithm.HMAC_SHA384: hashes.SHA384,
+            enums.CryptographicAlgorithm.HMAC_SHA512: hashes.SHA512,
+            enums.CryptographicAlgorithm.HMAC_MD5: hashes.MD5
         }
 
     def create_symmetric_key(self, algorithm, length):
@@ -147,6 +155,71 @@ class CryptographyEngine(api.CryptographicEngine):
 
         engine_method = self._asymetric_key_algorithms.get(algorithm)
         return engine_method(length)
+
+    def mac(self, algorithm, key, data):
+        """
+        Generate message authentication code.
+
+        Args:
+            algorithm(CryptographicAlgorithm): An enumeration specifying the
+                algorithm for which the MAC operation will use.
+            key(bytes): secret key used in the MAC operation
+            data(bytes): The data to be MACed.
+
+        Returns:
+            bytes: The MACed data
+
+        Raises:
+            InvalidField: Raised when the algorithm is unsupported or the
+                length is incompatible with the algorithm.
+            CryptographicFailure: Raised when the key generation process
+                fails.
+
+        Example:
+            >>> engine = CryptographyEngine()
+            >>> mac_data = engine.mac(
+            ...     CryptographicAlgorithm.HMAC-SHA256, b'\x01\x02\x03\x04')
+        """
+
+        mac_data = None
+
+        if algorithm in self._hash_algorithms.keys():
+            self.logger.info(
+                "Generating hash-based Message authentication codes using {0}".
+                format(algorithm.name)
+            )
+            hash_algorithm = self._hash_algorithms.get(algorithm)
+            try:
+                h = hmac.HMAC(key, hash_algorithm(), backend=default_backend())
+                h.update(data)
+                mac_data = h.finalize()
+            except Exception as e:
+                self.logger.exception(e)
+                raise exceptions.CryptographicFailure(
+                    "An error occurred while doing HMAC operation. "
+                    "See the server log for more information."
+                )
+        elif algorithm in self._symmetric_key_algorithms.keys():
+            self.logger.info(
+                "Generating cipher-based Message authentication codes using "
+                "{0}".format(algorithm.name)
+            )
+            cipher_algorithm = self._symmetric_key_algorithms.get(algorithm)
+            try:
+                c = cmac.CMAC(cipher_algorithm(key), backend=default_backend())
+                c.update(data)
+                mac_data = c.finalize()
+            except Exception as e:
+                raise exceptions.CryptographicFailure(
+                    "An error occurred while doing CMAC operation. "
+                    "See the server log for more information."
+                )
+        else:
+            raise exceptions.InvalidField(
+                "The cryptographic algorithm ({0}) is not a supported "
+                "for MAC operation.".format(algorithm)
+            )
+        return mac_data
 
     def _create_rsa_key_pair(self, length, public_exponent=65537):
         """

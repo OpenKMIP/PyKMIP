@@ -1056,3 +1056,25 @@ class TestProxyKmipClient(testtools.TestCase):
         self.assertIsInstance(opn.attribute_value, attr.OperationPolicyName)
         self.assertEqual(opn.attribute_name.value, 'Operation Policy Name')
         self.assertEqual(opn.attribute_value.value, 'test')
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_mac(self):
+        """
+        Test the MAC client with proper input.
+        """
+        uuid = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
+        algorithm = enums.CryptographicAlgorithm.HMAC_SHA256
+        data = (b'\x00\x01\x02\x03\x04')
+
+        result = results.MACResult(
+            contents.ResultStatus(enums.ResultStatus.SUCCESS),
+            uuid=attr.UniqueIdentifier(uuid),
+            mac_data=obj.MACData(data))
+
+        with ProxyKmipClient() as client:
+            client.proxy.mac.return_value = result
+
+            uid, mac_data = client.mac(uuid, algorithm, data)
+            self.assertEqual(uid, uuid)
+            self.assertEqual(mac_data, data)

@@ -89,7 +89,11 @@ class TestAttributeValueFactory(testtools.TestCase):
             'block_cipher_mode': enums.BlockCipherMode.NIST_KEY_WRAP,
             'padding_method': enums.PaddingMethod.ANSI_X9_23,
             'key_role_type': enums.KeyRoleType.KEK,
-            'hashing_algorithm': enums.HashingAlgorithm.SHA_512}
+            'hashing_algorithm': enums.HashingAlgorithm.SHA_512,
+            'digital_signature_algorithm':
+                enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA512,
+            'cryptographic_algorithm':
+                enums.CryptographicAlgorithm.HMAC_SHA512}
         params = self.factory.create_attribute_value(
             enums.AttributeType.CRYPTOGRAPHIC_PARAMETERS, value)
 
@@ -110,6 +114,14 @@ class TestAttributeValueFactory(testtools.TestCase):
         self.assertEqual(
             attributes.HashingAlgorithm(enums.HashingAlgorithm.SHA_512),
             params.hashing_algorithm)
+        self.assertEqual(
+            attributes.CryptographicParameters.DigitalSignatureAlgorithm(
+                enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA512),
+            params.digital_signature_algorithm)
+        self.assertEqual(
+            attributes.CryptographicAlgorithm(
+                enums.CryptographicAlgorithm.HMAC_SHA512),
+            params.cryptographic_algorithm)
 
     def test_create_cryptographic_domain_parameters(self):
         """

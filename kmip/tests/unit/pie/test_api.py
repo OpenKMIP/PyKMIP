@@ -44,6 +44,9 @@ class DummyKmipClient(api.KmipClient):
     def destroy(self, uid):
         super(DummyKmipClient, self).destroy(uid)
 
+    def mac(self, uid, algorithm, data):
+        super(DummyKmipClient, self).mac(uid, algorithm, data)
+
 
 class TestKmipClient(testtools.TestCase):
     """
@@ -106,3 +109,10 @@ class TestKmipClient(testtools.TestCase):
         """
         dummy = DummyKmipClient()
         dummy.destroy('uid')
+
+    def test_mac(self):
+        """
+        Test that the mac method can be called without error.
+        """
+        dummy = DummyKmipClient()
+        dummy.mac('uid', 'algorithm', 'data')
