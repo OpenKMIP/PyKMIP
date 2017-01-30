@@ -343,9 +343,7 @@ PyKMIP has been tested and runs on the following platform(s):
 
 * Ubuntu: 12.04 LTS, 14.04 LTS, 16.04 LTS
 
-PyKMIP is supported by Python 2.6, 2.7, 3.3 - 3.6.
-
-**NOTE:** Support for Python 2.6 will be deprecated in a future release of PyKMIP.
+PyKMIP is supported by Python 2.7 and 3.3 - 3.6.
 
 References
 ==========
