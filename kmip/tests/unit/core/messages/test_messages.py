@@ -14,6 +14,7 @@
 # under the License.
 
 from testtools import TestCase
+import binascii
 
 from kmip.core.factories.keys import KeyFactory
 from kmip.core.factories.secrets import SecretFactory
@@ -47,6 +48,7 @@ from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import destroy
+from kmip.core.messages.payloads import mac
 
 from kmip.core.misc import KeyFormatType
 from kmip.core.primitives import TextString
@@ -155,6 +157,18 @@ class TestRequestMessage(TestCase):
             b'\x42\x00\x0b\x01\x00\x00\x00\x20\x42\x00\x55\x07\x00\x00\x00\x04'
             b'\x4b\x65\x79\x31\x00\x00\x00\x00\x42\x00\x54\x05\x00\x00\x00\x04'
             b'\x00\x00\x00\x01\x00\x00\x00\x00')
+        self.mac = (
+            b'\x42\x00\x78\x01\x00\x00\x00\xa0\x42\x00\x77\x01\x00\x00\x00\x38'
+            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x02\x00\x00\x00\x00\x42\x00\x0d\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x58'
+            b'\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x23\x00\x00\x00\x00'
+            b'\x42\x00\x79\x01\x00\x00\x00\x40\x42\x00\x94\x07\x00\x00\x00\x01'
+            b'\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\x2b\x01\x00\x00\x00\x10'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x0b\x00\x00\x00\x00'
+            b'\x42\x00\xc2\x08\x00\x00\x00\x10\x00\x01\x02\x03\x04\x05\x06\x07'
+            b'\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f')
 
     def tearDown(self):
         super(TestRequestMessage, self).tearDown()
@@ -966,6 +980,164 @@ class TestRequestMessage(TestCase):
                                           'Key1',
                                           attribute_value.name_value.value))
 
+    def test_mac_request_read(self):
+        self.stream = BytearrayStream(self.mac)
+
+        request_message = messages.RequestMessage()
+        request_message.read(self.stream)
+
+        request_header = request_message.request_header
+        msg = "Bad request header type: expected {0}, received{0}"
+        self.assertIsInstance(request_header, messages.RequestHeader,
+                              msg.format(messages.RequestHeader,
+                                         type(request_header)))
+
+        protocol_version = request_header.protocol_version
+        msg = "Bad protocol version type: expected {0}, received {1}"
+        self.assertIsInstance(protocol_version, contents.ProtocolVersion,
+                              msg.format(contents.ProtocolVersion,
+                                         type(protocol_version)))
+
+        protocol_version_major = protocol_version.protocol_version_major
+        msg = "Bad protocol version major type: expected {0}, received {1}"
+        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        rcv_type = type(protocol_version_major)
+        self.assertIsInstance(protocol_version_major, exp_type,
+                              msg.format(exp_type, rcv_type))
+        msg = "Bad protocol version major value: expected {0}, received {1}"
+        self.assertEqual(1, protocol_version_major.value,
+                         msg.format(1, protocol_version_major.value))
+
+        protocol_version_minor = protocol_version.protocol_version_minor
+        msg = "Bad protocol version minor type: expected {0}, received {1}"
+        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        rcv_type = type(protocol_version_minor)
+        self.assertIsInstance(protocol_version_minor, exp_type,
+                              msg.format(exp_type, rcv_type))
+        msg = "Bad protocol version minor value: expected {0}, received {1}"
+        self.assertEqual(2, protocol_version_minor.value,
+                         msg.format(2, protocol_version_minor.value))
+
+        batch_count = request_header.batch_count
+        msg = "Bad batch count type: expected {0}, received {1}"
+        self.assertIsInstance(batch_count, contents.BatchCount,
+                              msg.format(contents.BatchCount,
+                                         type(batch_count)))
+        msg = "Bad batch count value: expected {0}, received {1}"
+        self.assertEqual(1, batch_count.value,
+                         msg.format(1, batch_count.value))
+
+        batch_items = request_message.batch_items
+        msg = "Bad batch items type: expected {0}, received {1}"
+        self.assertIsInstance(batch_items, list,
+                              msg.format(list, type(batch_items)))
+        self.assertEquals(1, len(batch_items),
+                          self.msg.format('batch items', 'length',
+                                          1, len(batch_items)))
+
+        batch_item = batch_items[0]
+        msg = "Bad batch item type: expected {0}, received {1}"
+        self.assertIsInstance(batch_item, messages.RequestBatchItem,
+                              msg.format(messages.RequestBatchItem,
+                                         type(batch_item)))
+
+        operation = batch_item.operation
+        msg = "Bad operation type: expected {0}, received {1}"
+        self.assertIsInstance(operation, contents.Operation,
+                              msg.format(contents.Operation,
+                                         type(operation)))
+        msg = "Bad operation value: expected {0}, received {1}"
+        self.assertEqual(enums.Operation.MAC, operation.value,
+                         msg.format(enums.Operation.MAC,
+                                    operation.value))
+
+        request_payload = batch_item.request_payload
+        msg = "Bad request payload type: expected {0}, received {1}"
+        self.assertIsInstance(request_payload,
+                              mac.MACRequestPayload,
+                              msg.format(mac.MACRequestPayload,
+                                         type(request_payload)))
+
+        unique_identifier = request_payload.unique_identifier
+        msg = "Bad unique identifier type: expected {0}, received {1}"
+        self.assertIsInstance(unique_identifier, attr.UniqueIdentifier,
+                              msg.format(attr.UniqueIdentifier,
+                                         type(unique_identifier)))
+        msg = "Bad unique identifier value: expected {0}, received {1}"
+        self.assertEqual('1', unique_identifier.value,
+                         msg.format('1', unique_identifier.value))
+
+        parameters_attribute = request_payload.cryptographic_parameters
+        msg = "Bad cryptographic parameters type: expected {0}, received {1}"
+        self.assertIsInstance(parameters_attribute,
+                              attr.CryptographicParameters,
+                              msg.format(attr.CryptographicParameters,
+                                         type(parameters_attribute)))
+
+        cryptographic_algorithm = parameters_attribute.cryptographic_algorithm
+        msg = "Bad cryptographic algorithm type: expected {0}, received {1}"
+        self.assertIsInstance(cryptographic_algorithm,
+                              attr.CryptographicAlgorithm,
+                              msg.format(attr.CryptographicAlgorithm,
+                                         type(cryptographic_algorithm)))
+        msg = "Bad cryptographic algorithm value: expected {0}, received {1}"
+        self.assertEquals(cryptographic_algorithm.value,
+                          enums.CryptographicAlgorithm.HMAC_SHA512,
+                          msg.format(cryptographic_algorithm.value,
+                                     enums.CryptographicAlgorithm.HMAC_SHA512))
+
+        data = request_payload.data
+        msg = "Bad data type: expected {0}, received {1}"
+        self.assertIsInstance(data, objects.Data, msg.format(objects.Data,
+                              type(data)))
+        exp_value = (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B'
+                     b'\x0C\x0D\x0E\x0F')
+        msg = "Bad data value: expected {0}, received {1}"
+        self.assertEqual(
+            exp_value, data.value,
+            msg.format(binascii.hexlify(exp_value),
+                       binascii.hexlify(data.value))
+        )
+
+    def test_mac_request_write(self):
+        prot_ver = contents.ProtocolVersion.create(1, 2)
+
+        batch_count = contents.BatchCount(1)
+        req_header = messages.RequestHeader(protocol_version=prot_ver,
+                                            batch_count=batch_count)
+
+        operation = contents.Operation(enums.Operation.MAC)
+
+        uuid = attr.UniqueIdentifier('1')
+        data = objects.Data(
+            value=(b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B'
+                   b'\x0C\x0D\x0E\x0F')
+        )
+        parameters_attribute = attr.CryptographicParameters(
+            cryptographic_algorithm=attr.
+            CryptographicAlgorithm(enums.CryptographicAlgorithm.HMAC_SHA512)
+        )
+        request_payload = mac.MACRequestPayload(
+            unique_identifier=uuid,
+            cryptographic_parameters=parameters_attribute,
+            data=data
+        )
+        batch_item = messages.RequestBatchItem(operation=operation,
+                                               request_payload=request_payload)
+        request_message = messages.RequestMessage(request_header=req_header,
+                                                  batch_items=[batch_item])
+        request_message.write(self.stream)
+
+        result = self.stream.read()
+        len_exp = len(self.mac)
+        len_rcv = len(result)
+        self.assertEqual(len_exp, len_rcv,
+                         self.msg.format('request message', 'write',
+                                         len_exp, len_rcv))
+
+        msg = "Bad request message write: encoding mismatch"
+        self.assertEqual(self.mac, result, msg)
+
 
 class TestResponseMessage(TestCase):
 
@@ -1050,6 +1222,22 @@ class TestResponseMessage(TestCase):
             b'\x34\x39\x61\x31\x63\x61\x38\x38\x2d\x36\x62\x65\x61\x2d\x34\x66'
             b'\x62\x32\x2d\x62\x34\x35\x30\x2d\x37\x65\x35\x38\x38\x30\x32\x63'
             b'\x33\x30\x33\x38\x00\x00\x00\x00')
+        self.mac = (
+            b'\x42\x00\x7b\x01\x00\x00\x00\xd8\x42\x00\x7a\x01\x00\x00\x00\x48'
+            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x02\x00\x00\x00\x00\x42\x00\x92\x09\x00\x00\x00\x08'
+            b'\x00\x00\x00\x00\x58\x8a\x3f\x23\x42\x00\x0d\x02\x00\x00\x00\x04'
+            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x80'
+            b'\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x23\x00\x00\x00\x00'
+            b'\x42\x00\x7f\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\x7c\x01\x00\x00\x00\x58\x42\x00\x94\x07\x00\x00\x00\x01'
+            b'\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\xc6\x08\x00\x00\x00\x40'
+            b'\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb\x32\x9f'
+            b'\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2\x2a\x5b'
+            b'\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe\xc8\x23'
+            b'\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51\xff\x7c'
+        )
         self.invalid_message_response = (
             b'\x42\x00\x7b\x01\x00\x00\x00\xb0\x42\x00\x7a\x01\x00\x00\x00\x48'
             b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04'
@@ -1774,6 +1962,175 @@ class TestResponseMessage(TestCase):
                                          len_exp, len_rcv))
         msg = "Bad response message write: encoding mismatch"
         self.assertEqual(self.locate, result, msg)
+
+    def test_mac_response_read(self):
+        self.stream = BytearrayStream(self.mac)
+
+        response_message = messages.ResponseMessage()
+        response_message.read(self.stream)
+
+        response_header = response_message.response_header
+        self.assertIsInstance(response_header, messages.ResponseHeader,
+                              self.msg.format('response header', 'type',
+                                              messages.ResponseHeader,
+                                              type(response_header)))
+        protocol_version = response_header.protocol_version
+        self.assertIsInstance(protocol_version, contents.ProtocolVersion,
+                              self.msg.format('response header', 'value',
+                                              contents.ProtocolVersion,
+                                              type(protocol_version)))
+
+        protocol_version_major = protocol_version.protocol_version_major
+        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        rcv_type = type(protocol_version_major)
+        self.assertIsInstance(protocol_version_major, exp_type,
+                              self.msg.format('protocol version major', 'type',
+                                              exp_type, rcv_type))
+        self.assertEqual(1, protocol_version_major.value,
+                         self.msg.format('protocol version major', 'value',
+                                         1, protocol_version_major.value))
+
+        protocol_version_minor = protocol_version.protocol_version_minor
+        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        rcv_type = type(protocol_version_minor)
+        self.assertIsInstance(protocol_version_minor, exp_type,
+                              self.msg.format('protocol version minor', 'type',
+                                              exp_type, rcv_type))
+        self.assertEqual(2, protocol_version_minor.value,
+                         self.msg.format('protocol version minor', 'value',
+                                         2, protocol_version_minor.value))
+
+        time_stamp = response_header.time_stamp
+        value = 0x588a3f23
+        self.assertIsInstance(time_stamp, contents.TimeStamp,
+                              self.msg.format('time stamp', 'value',
+                                              contents.TimeStamp,
+                                              type(time_stamp)))
+        self.assertEqual(time_stamp.value, value,
+                         self.msg.format('time stamp', 'value',
+                                         time_stamp.value, value))
+
+        batch_count = response_header.batch_count
+        self.assertIsInstance(batch_count, contents.BatchCount,
+                              self.msg.format('batch count', 'type',
+                                              contents.BatchCount,
+                                              type(batch_count)))
+        self.assertEqual(1, batch_count.value,
+                         self.msg.format('batch count', 'value', 1,
+                                         batch_count.value))
+
+        batch_items = response_message.batch_items
+        self.assertIsInstance(batch_items, list,
+                              self.msg.format('batch items', 'type',
+                                              list, type(batch_items)))
+
+        for batch_item in batch_items:
+            self.assertIsInstance(batch_item, messages.ResponseBatchItem,
+                                  self.msg.format('batch item', 'type',
+                                                  messages.ResponseBatchItem,
+                                                  type(batch_item)))
+
+            operation = batch_item.operation
+            self.assertIsInstance(operation, contents.Operation,
+                                  self.msg.format('operation', 'type',
+                                                  contents.Operation,
+                                                  type(operation)))
+            self.assertEqual(enums.Operation.MAC, operation.value,
+                             self.msg.format('operation', 'value',
+                                             enums.Operation.MAC,
+                                             operation.value))
+
+            result_status = batch_item.result_status
+            self.assertIsInstance(result_status, contents.ResultStatus,
+                                  self.msg.format('result status', 'type',
+                                                  contents.ResultStatus,
+                                                  type(result_status)))
+            self.assertEqual(enums.ResultStatus.SUCCESS, result_status.value,
+                             self.msg.format('result status', 'value',
+                                             enums.ResultStatus.SUCCESS,
+                                             result_status.value))
+
+            response_payload = batch_item.response_payload
+            exp_type = mac.MACResponsePayload
+            rcv_type = type(response_payload)
+            self.assertIsInstance(response_payload, exp_type,
+                                  self.msg.format('response payload', 'type',
+                                                  exp_type, rcv_type))
+
+            unique_identifier = response_payload.unique_identifier
+            value = '1'
+            self.assertIsInstance(unique_identifier, attr.UniqueIdentifier,
+                                  self.msg.format('unique identifier', 'type',
+                                                  attr.UniqueIdentifier,
+                                                  type(unique_identifier)))
+            self.assertEqual(value, unique_identifier.value,
+                             self.msg.format('unique identifier', 'value',
+                                             unique_identifier.value, value))
+
+            mac_data = response_payload.mac_data
+            value = \
+                (b'\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb'
+                 b'\x32\x9f'
+                 b'\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2'
+                 b'\x2a\x5b'
+                 b'\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe'
+                 b'\xc8\x23'
+                 b'\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51'
+                 b'\xff\x7c')
+            self.assertIsInstance(mac_data, objects.MACData,
+                                  self.msg.format('secret', 'type',
+                                                  objects.MACData,
+                                                  type(mac_data)))
+            self.assertEqual(value, mac_data.value,
+                             self.msg.format('mac data', 'value',
+                                             binascii.hexlify(mac_data.value),
+                                             binascii.hexlify(value)))
+
+    def test_mac_response_write(self):
+        prot_ver = contents.ProtocolVersion.create(1, 2)
+
+        # Fri Apr 27 10:12:23 CEST 2012
+        time_stamp = contents.TimeStamp(0x588a3f23)
+
+        batch_count = contents.BatchCount(1)
+        response_header = messages.ResponseHeader(protocol_version=prot_ver,
+                                                  time_stamp=time_stamp,
+                                                  batch_count=batch_count)
+        operation = contents.Operation(enums.Operation.MAC)
+        result_status = contents.ResultStatus(enums.ResultStatus.SUCCESS)
+
+        uuid = '1'
+        uniq_id = attr.UniqueIdentifier(uuid)
+
+        value = \
+            (b'\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb'
+             b'\x32\x9f'
+             b'\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2'
+             b'\x2a\x5b'
+             b'\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe'
+             b'\xc8\x23'
+             b'\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51'
+             b'\xff\x7c')
+        mac_data = objects.MACData(value)
+
+        resp_pl = mac.MACResponsePayload(unique_identifier=uniq_id,
+                                         mac_data=mac_data)
+        batch_item = messages.ResponseBatchItem(operation=operation,
+                                                result_status=result_status,
+                                                response_payload=resp_pl)
+        rm = messages.ResponseMessage(response_header=response_header,
+                                      batch_items=[batch_item])
+        rm.write(self.stream)
+
+        result = self.stream.read()
+        len_exp = len(self.mac)
+        len_rcv = len(result)
+        self.assertEqual(len_exp, len_rcv,
+                         self.msg.format('get response message', 'write',
+                                         len_exp, len_rcv))
+
+        msg = "Bad response message write: encoding mismatch"
+        self.assertEqual(self.mac, result, msg)
 
     def test_message_invalid_response_write(self):
         # Batch item of 'INVALID MESSAGE' response

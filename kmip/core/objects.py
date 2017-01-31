@@ -1216,6 +1216,20 @@ class ExtensionInformation(Struct):
             extension_type=extension_type)
 
 
+# 2.1.10
+class Data(ByteString):
+
+    def __init__(self, value=None):
+        super(Data, self).__init__(value, Tags.DATA)
+
+
+# 2.1.13
+class MACData(ByteString):
+
+    def __init__(self, value=None):
+        super(MACData, self).__init__(value, Tags.MAC_DATA)
+
+
 # 3.31, 9.1.3.2.19
 class RevocationReasonCode(Enumeration):
 
