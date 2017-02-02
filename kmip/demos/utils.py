@@ -214,15 +214,32 @@ def build_cli_parser(operation=None):
                   "SECRET_DATA"))
     elif operation is Operation.DISCOVER_VERSIONS:
         parser.add_option(
-                "-v",
-                "--protocol-versions",
-                action="store",
-                type="str",
-                default=None,
-                dest="protocol_versions",
-                help=("Protocol versions supported by client. "
-                      "ex. '1.1,1.2 1.3'"))
-
+            "-v",
+            "--protocol-versions",
+            action="store",
+            type="str",
+            default=None,
+            dest="protocol_versions",
+            help=("Protocol versions supported by client. "
+                  "ex. '1.1,1.2 1.3'"))
+    elif operation is Operation.MAC:
+        parser.add_option(
+            "-i",
+            "--uuid",
+            action="store",
+            type="str",
+            default=None,
+            dest="uuid",
+            help="The unique ID of the managed object that is the key"
+                 "to use for the MAC operation")
+        parser.add_option(
+            "-a",
+            "--algorithm",
+            action="store",
+            type="str",
+            default=None,
+            dest="algorithm",
+            help="Encryption algorithm for the secret (e.g., AES)")
     return parser
 
 

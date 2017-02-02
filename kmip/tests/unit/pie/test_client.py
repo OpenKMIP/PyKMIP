@@ -1056,3 +1056,105 @@ class TestProxyKmipClient(testtools.TestCase):
         self.assertIsInstance(opn.attribute_value, attr.OperationPolicyName)
         self.assertEqual(opn.attribute_name.value, 'Operation Policy Name')
         self.assertEqual(opn.attribute_value.value, 'test')
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_mac(self):
+        """
+        Test the MAC client with proper input.
+        """
+        uuid = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
+        algorithm = enums.CryptographicAlgorithm.HMAC_SHA256
+        data = (b'\x00\x01\x02\x03\x04')
+
+        result = results.MACResult(
+            contents.ResultStatus(enums.ResultStatus.SUCCESS),
+            uuid=attr.UniqueIdentifier(uuid),
+            mac_data=obj.MACData(data))
+
+        with ProxyKmipClient() as client:
+            client.proxy.mac.return_value = result
+
+            uid, mac_data = client.mac(uuid, algorithm, data)
+            self.assertEqual(uid, uuid)
+            self.assertEqual(mac_data, data)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_mac_on_invalid_inputs(self):
+        """
+        Test that a TypeError exception is raised when wrong type
+        of arguments are given to mac operation.
+        """
+        uuid = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
+        uuid_invalid = int(123)
+
+        algorithm = enums.CryptographicAlgorithm.HMAC_SHA256
+        algorithm_invalid = enums.CryptographicUsageMask.MAC_GENERATE
+
+        data = (b'\x00\x01\x02\x03\x04')
+        data_invalid = int(123)
+
+        result = results.MACResult(
+            contents.ResultStatus(enums.ResultStatus.SUCCESS),
+            uuid=attr.UniqueIdentifier(uuid),
+            mac_data=obj.MACData(data))
+
+        args = [uuid_invalid, algorithm, data]
+        with ProxyKmipClient() as client:
+            client.proxy.mac.return_value = result
+            self.assertRaises(TypeError, client.mac, *args)
+
+        args = [uuid, algorithm_invalid, data]
+        with ProxyKmipClient() as client:
+            client.proxy.mac.return_value = result
+            self.assertRaises(TypeError, client.mac, *args)
+
+        args = [uuid, algorithm, data_invalid]
+        with ProxyKmipClient() as client:
+            client.proxy.mac.return_value = result
+            self.assertRaises(TypeError, client.mac, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_mac_on_operation_failure(self):
+        """
+        Test that a KmipOperationFailure exception is raised when the
+        backend fails to generate MAC.
+        """
+        uuid = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
+        algorithm = enums.CryptographicAlgorithm.HMAC_SHA256
+        data = (b'\x00\x01\x02\x03\x04')
+
+        status = enums.ResultStatus.OPERATION_FAILED
+        reason = enums.ResultReason.GENERAL_FAILURE
+        message = "Test failure message"
+
+        result = results.OperationResult(
+            contents.ResultStatus(status),
+            contents.ResultReason(reason),
+            contents.ResultMessage(message))
+        error_msg = str(KmipOperationFailure(status, reason, message))
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.mac.return_value = result
+        args = [uuid, algorithm, data]
+
+        self.assertRaisesRegexp(
+            KmipOperationFailure, error_msg, client.mac, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_mac_on_closed(self):
+        """
+        Test that a ClientConnectionNotOpen exception is raised when trying
+        to do mac on an unopened client connection.
+        """
+        client = ProxyKmipClient()
+        uuid = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
+        algorithm = enums.CryptographicAlgorithm.HMAC_SHA256
+        data = (b'\x00\x01\x02\x03\x04')
+        args = [uuid, algorithm, data]
+        self.assertRaises(
+            ClientConnectionNotOpen, client.mac, *args)

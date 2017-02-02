@@ -295,3 +295,20 @@ class RevokeResult(OperationResult):
         super(RevokeResult, self).__init__(
             result_status, result_reason, result_message)
         self.unique_identifier = unique_identifier
+
+
+class MACResult(OperationResult):
+
+    def __init__(self,
+                 result_status,
+                 result_reason=None,
+                 result_message=None,
+                 uuid=None,
+                 mac_data=None):
+        super(MACResult, self).__init__(
+            result_status,
+            result_reason,
+            result_message
+        )
+        self.uuid = uuid
+        self.mac_data = mac_data
