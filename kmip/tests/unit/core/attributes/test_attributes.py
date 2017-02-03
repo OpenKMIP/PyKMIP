@@ -32,6 +32,8 @@ from kmip.core.enums import BlockCipherMode
 from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.enums import KeyRoleType
+from kmip.core.enums import DigitalSignatureAlgorithm
+from kmip.core.enums import CryptographicAlgorithm
 from kmip.core.enums import PaddingMethod
 from kmip.core.enums import NameType
 
@@ -483,6 +485,7 @@ class TestApplicationData(TestCase):
 
 
 class TestCryptographicParameters(TestCase):
+
     """
     A test suite for the CryptographicParameters class
     """
@@ -498,25 +501,33 @@ class TestCryptographicParameters(TestCase):
             {'block_cipher_mode': BlockCipherMode.CBC,
              'padding_method': PaddingMethod.PKCS5,
              'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
-             'key_role_type': KeyRoleType.BDK})
+             'key_role_type': KeyRoleType.BDK,
+             'digital_signature_algorithm':
+                DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+             'cryptographic_algorithm': CryptographicAlgorithm.HMAC_SHA512})
 
         self.cp_none = self.factory.create_attribute_value(
             AttributeType.CRYPTOGRAPHIC_PARAMETERS, {})
 
         # Symmetric key object with Cryptographic Parameters
-        # Byte stream edited to add Key Role Type parameter
+        # Byte stream edited to add:
+        #      Key Role Type parameter
+        #      Digital Signature Algorithm parameter
+        #      Cryptographic Algorithm parameter
         # Based on the KMIP Spec 1.1 Test Cases document
         # 11.1 page 255 on the pdf version
         self.key_req_with_crypt_params = BytearrayStream((
-            b'\x42\x00\x2B\x01\x00\x00\x00\x40'
+            b'\x42\x00\x2B\x01\x00\x00\x00\x60'
             b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
             b'\x42\x00\x5F\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
             b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
             b'\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
         ))
 
     def teardown(self):
-        super(TestDigestValue, self).tearDown()
+        super(TestCryptographicParameters, self).tearDown()
 
     def test_write_crypto_params(self):
         ostream = BytearrayStream()
@@ -546,6 +557,17 @@ class TestCryptographicParameters(TestCase):
         self.assertEqual(HashingAlgorithmEnum.SHA_1.value,
                          self.cp.hashing_algorithm.value.value)
 
+        self.assertEqual(Tags.DIGITAL_SIGNATURE_ALGORITHM.value,
+                         self.cp.digital_signature_algorithm.tag.value)
+        self.assertEqual(DigitalSignatureAlgorithm.
+                         SHA256_WITH_RSA_ENCRYPTION.value,
+                         self.cp.digital_signature_algorithm.value.value)
+
+        self.assertEqual(Tags.CRYPTOGRAPHIC_ALGORITHM.value,
+                         self.cp.cryptographic_algorithm.tag.value)
+        self.assertEqual(CryptographicAlgorithm.HMAC_SHA512.value,
+                         self.cp.cryptographic_algorithm.value.value)
+
     def test_bad_cipher_mode(self):
         self.cp.block_cipher_mode = self.bad_enum_code
         cp_valid = self.factory.create_attribute_value(
@@ -553,7 +575,10 @@ class TestCryptographicParameters(TestCase):
             {'block_cipher_mode': BlockCipherMode.CBC,
              'padding_method': PaddingMethod.PKCS5,
              'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
-             'key_role_type': KeyRoleType.BDK})
+             'key_role_type': KeyRoleType.BDK,
+             'digital_signature_algorithm':
+                DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+             'cryptographic_algorithm': CryptographicAlgorithm.HMAC_SHA512})
         self.assertFalse(self.cp == cp_valid)
         self.assertRaises(TypeError, self.cp.validate)
 
@@ -564,7 +589,10 @@ class TestCryptographicParameters(TestCase):
             {'block_cipher_mode': BlockCipherMode.CBC,
              'padding_method': PaddingMethod.PKCS5,
              'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
-             'key_role_type': KeyRoleType.BDK})
+             'key_role_type': KeyRoleType.BDK,
+             'digital_signature_algorithm':
+                DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+             'cryptographic_algorithm': CryptographicAlgorithm.HMAC_SHA512})
         self.assertFalse(self.cp == cp_valid)
         self.assertRaises(TypeError, self.cp.validate)
 
@@ -575,7 +603,10 @@ class TestCryptographicParameters(TestCase):
             {'block_cipher_mode': BlockCipherMode.CBC,
              'padding_method': PaddingMethod.PKCS5,
              'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
-             'key_role_type': KeyRoleType.BDK})
+             'key_role_type': KeyRoleType.BDK,
+             'digital_signature_algorithm':
+                DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+             'cryptographic_algorithm': CryptographicAlgorithm.HMAC_SHA512})
         self.assertFalse(self.cp == cp_valid)
         self.assertRaises(TypeError, self.cp.validate)
 
@@ -586,6 +617,37 @@ class TestCryptographicParameters(TestCase):
             {'block_cipher_mode': BlockCipherMode.CBC,
              'padding_method': PaddingMethod.PKCS5,
              'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
-             'key_role_type': KeyRoleType.BDK})
+             'key_role_type': KeyRoleType.BDK,
+             'digital_signature_algorithm':
+                DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+             'cryptographic_algorithm': CryptographicAlgorithm.HMAC_SHA512})
+        self.assertFalse(self.cp == cp_valid)
+        self.assertRaises(TypeError, self.cp.validate)
+
+    def test_bad_digital_signature_algorithm(self):
+        self.cp.digital_signature_algorithm = self.bad_enum_code
+        cp_valid = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            {'block_cipher_mode': BlockCipherMode.CBC,
+             'padding_method': PaddingMethod.PKCS5,
+             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
+             'key_role_type': KeyRoleType.BDK,
+             'digital_signature_algorithm':
+                DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+             'cryptographic_algorithm': CryptographicAlgorithm.HMAC_SHA512})
+        self.assertFalse(self.cp == cp_valid)
+        self.assertRaises(TypeError, self.cp.validate)
+
+    def test_bad_cryptographic_algorithm(self):
+        self.cp.cryptographic_algorithm = self.bad_enum_code
+        cp_valid = self.factory.create_attribute_value(
+            AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            {'block_cipher_mode': BlockCipherMode.CBC,
+             'padding_method': PaddingMethod.PKCS5,
+             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
+             'key_role_type': KeyRoleType.BDK,
+             'digital_signature_algorithm':
+                DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+             'cryptographic_algorithm': CryptographicAlgorithm.HMAC_SHA512})
         self.assertFalse(self.cp == cp_valid)
         self.assertRaises(TypeError, self.cp.validate)

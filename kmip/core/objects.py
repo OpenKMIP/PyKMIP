@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import binascii
 from six.moves import xrange
 
 from kmip.core import attributes
@@ -996,6 +997,26 @@ class ExtensionName(TextString):
                 Optional, defaults to the empty string.
         """
         super(ExtensionName, self).__init__(value, Tags.EXTENSION_NAME)
+
+
+# 2.1.10
+class Data(ByteString):
+
+    def __init__(self, value=None):
+        super(Data, self).__init__(value, Tags.DATA)
+
+    def __str__(self):
+        return str(binascii.hexlify(self.value))
+
+
+# 2.1.13
+class MACData(ByteString):
+
+    def __init__(self, value=None):
+        super(MACData, self).__init__(value, Tags.MAC_DATA)
+
+    def __str__(self):
+        return str(binascii.hexlify(self.value))
 
 
 class ExtensionTag(Integer):

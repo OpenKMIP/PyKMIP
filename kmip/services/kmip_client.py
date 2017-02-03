@@ -27,6 +27,7 @@ from kmip.services.results import QueryResult
 from kmip.services.results import RegisterResult
 from kmip.services.results import RekeyKeyPairResult
 from kmip.services.results import RevokeResult
+from kmip.services.results import MACResult
 
 from kmip.core import attributes as attr
 
@@ -60,6 +61,7 @@ from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import revoke
+from kmip.core.messages.payloads import mac
 
 from kmip.services.server.kmip_protocol import KMIPProtocol
 
@@ -427,6 +429,14 @@ class KMIPProxy(KMIP):
             response = self._send_and_receive_message(request)
             results = self._process_batch_items(response)
             return results[0]
+
+    def mac(self, unique_identifier=None, cryptographic_parameters=None,
+            data=None, credential=None):
+        return self._mac(
+            unique_identifier=unique_identifier,
+            cryptographic_parameters=cryptographic_parameters,
+            data=data,
+            credential=credential)
 
     def _create(self,
                 object_type=None,
@@ -919,6 +929,43 @@ class KMIPProxy(KMIP):
                               uuids)
         return result
 
+    def _mac(self,
+             unique_identifier=None,
+             cryptographic_parameters=None,
+             data=None,
+             credential=None):
+        operation = Operation(OperationEnum.MAC)
+
+        req_pl = mac.MACRequestPayload(
+            unique_identifier=attr.UniqueIdentifier(unique_identifier),
+            cryptographic_parameters=cryptographic_parameters,
+            data=objects.Data(data))
+        batch_item = messages.RequestBatchItem(operation=operation,
+                                               request_payload=req_pl)
+
+        message = self._build_request_message(credential, [batch_item])
+        self._send_message(message)
+        message = messages.ResponseMessage()
+        data = self._receive_message()
+        message.read(data)
+        batch_items = message.batch_items
+        batch_item = batch_items[0]
+        payload = batch_item.response_payload
+
+        if payload is None:
+            payload_unique_identifier = None
+            payload_mac_data = None
+        else:
+            payload_unique_identifier = payload.unique_identifier
+            payload_mac_data = payload.mac_data
+
+        result = MACResult(batch_item.result_status,
+                           batch_item.result_reason,
+                           batch_item.result_message,
+                           payload_unique_identifier,
+                           payload_mac_data)
+        return result
+
     # TODO (peter-hamilton) Augment to handle device credentials
     def _build_credential(self):
         if (self.username is None) and (self.password is None):
@@ -937,7 +984,7 @@ class KMIPProxy(KMIP):
         return credential
 
     def _build_request_message(self, credential, batch_items):
-        protocol_version = ProtocolVersion.create(1, 1)
+        protocol_version = ProtocolVersion.create(1, 2)
 
         if credential is None:
             credential = self._build_credential()

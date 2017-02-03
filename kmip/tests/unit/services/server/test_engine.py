@@ -46,6 +46,7 @@ from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import get_attributes
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
+from kmip.core.messages.payloads import mac
 
 from kmip.pie import objects as pie_objects
 from kmip.pie import sqltypes
@@ -4243,6 +4244,149 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: DiscoverVersions"
         )
         self.assertEqual([], result.protocol_versions)
+
+    def test_mac(self):
+        """
+        Test that a MAC request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        key = (b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+               b'\x00\x00\x00\x00\x00')
+        data = (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A'
+                b'\x0B\x0C\x0D\x0E\x0F')
+        algorithm_a = enums.CryptographicAlgorithm.AES
+        algorithm_b = enums.CryptographicAlgorithm.HMAC_SHA512
+        obj = pie_objects.SymmetricKey(algorithm_a, 128, key)
+
+        e._data_session.add(obj)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        uuid = str(obj.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            cryptographic_algorithm=attributes.
+            CryptographicAlgorithm(algorithm_b)
+        )
+
+        # Verify when cryptographic_parameters is specified in request
+        payload = mac.MACRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(uuid),
+            cryptographic_parameters=cryptographic_parameters,
+            data=objects.Data(data)
+        )
+
+        response_payload = e._process_mac(payload)
+
+        e._logger.info.assert_any_call(
+            "Processing operation: MAC"
+        )
+        e._cryptography_engine.logger.info.assert_any_call(
+            "Generating hash-based Message authentication codes using {0}".
+            format(algorithm_b.name)
+        )
+        e._cryptography_engine.logger.reset_mock()
+        self.assertEqual(str(uuid), response_payload.unique_identifier.value)
+        self.assertIsInstance(response_payload.mac_data, objects.MACData)
+
+        # Verify when cryptographic_parameters is not specified in request
+        payload = mac.MACRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(uuid),
+            cryptographic_parameters=None,
+            data=objects.Data(data)
+        )
+
+        response_payload = e._process_mac(payload)
+
+        e._cryptography_engine.logger.info.assert_any_call(
+            "Generating cipher-based Message authentication codes using {0}".
+            format(algorithm_a.name)
+        )
+        self.assertEqual(str(uuid), response_payload.unique_identifier.value)
+        self.assertIsInstance(response_payload.mac_data, objects.MACData)
+
+    def test_mac_with_missing_fields(self):
+        """
+        Test that the right errors are generated when required fields
+        are missing.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        key = (b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+               b'\x00\x00\x00\x00')
+        data = (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B'
+                b'\x0C\x0D\x0E\x0F')
+        algorithm = enums.CryptographicAlgorithm.AES
+        obj_no_key = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+        obj_no_algorithm = pie_objects.OpaqueObject(
+            key, enums.OpaqueDataType.NONE)
+
+        e._data_session.add(obj_no_key)
+        e._data_session.add(obj_no_algorithm)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        uuid_no_key = str(obj_no_key.unique_identifier)
+        uuid_no_algorithm = str(obj_no_algorithm.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            cryptographic_algorithm=attributes.
+            CryptographicAlgorithm(algorithm))
+
+        payload_no_key = mac.MACRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(uuid_no_key),
+            cryptographic_parameters=cryptographic_parameters,
+            data=objects.Data(data)
+        )
+
+        args = (payload_no_key, )
+        regex = "A secret key value must be specified"
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_mac,
+            *args
+        )
+
+        payload_no_algorithm = mac.MACRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(uuid_no_algorithm),
+            cryptographic_parameters=None,
+            data=objects.Data(data)
+        )
+
+        args = (payload_no_algorithm, )
+        regex = "The cryptographic algorithm must be specified"
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_mac,
+            *args
+        )
+
+        payload_no_data = mac.MACRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(uuid_no_algorithm),
+            cryptographic_parameters=cryptographic_parameters,
+            data=None
+        )
+
+        args = (payload_no_data, )
+        regex = "No data to be MACed"
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            regex,
+            e._process_mac,
+            *args
+        )
 
     def test_create_get_destroy(self):
         """
