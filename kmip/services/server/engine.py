@@ -49,6 +49,7 @@ from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import mac
+from kmip.core.messages.payloads import locate
 
 from kmip.core import misc
 
@@ -931,6 +932,28 @@ class KmipEngine(object):
 
         return managed_object
 
+    def _list_objects_with_access_controls(
+            self,
+            operation
+    ):
+        managed_objects = None
+        managed_objects_allowed = list()
+
+        managed_objects = self._data_session.query(objects.ManagedObject).all()
+
+        for managed_object in managed_objects:
+            is_allowed = self._is_allowed_by_operation_policy(
+                managed_object.operation_policy_name,
+                self._client_identity,
+                managed_object._owner,
+                managed_object.object_type,
+                operation
+            )
+            if is_allowed is True:
+                managed_objects_allowed.append(managed_object)
+
+        return managed_objects_allowed
+
     def _process_operation(self, operation, payload):
         if operation == enums.Operation.CREATE:
             return self._process_create(payload)
@@ -938,6 +961,8 @@ class KmipEngine(object):
             return self._process_create_key_pair(payload)
         elif operation == enums.Operation.REGISTER:
             return self._process_register(payload)
+        elif operation == enums.Operation.LOCATE:
+            return self._process_locate(payload)
         elif operation == enums.Operation.GET:
             return self._process_get(payload)
         elif operation == enums.Operation.GET_ATTRIBUTES:
@@ -1296,6 +1321,27 @@ class KmipEngine(object):
         )
 
         self._id_placeholder = str(managed_object.unique_identifier)
+
+        return response_payload
+
+    @_kmip_version_supported('1.0')
+    def _process_locate(self, payload):
+        # TODO Currently the Locate operation will just return all the
+        # existing managed objects with the restriction of operation
+        # policy only. Need to implement other filtering logics in the
+        # SPEC (e.g., attribute, storage status mask and etc..)
+        self._logger.info("Processing operation: Locate")
+
+        managed_objects = self._list_objects_with_access_controls(
+                                enums.Operation.LOCATE)
+
+        unique_identifiers = [attributes.UniqueIdentifier(
+                            str(managed_object.unique_identifier))
+                            for managed_object in managed_objects]
+
+        response_payload = locate.LocateResponsePayload(
+            unique_identifiers=unique_identifiers
+        )
 
         return response_payload
 
