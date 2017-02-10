@@ -391,7 +391,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
-    def get(self, uid):
+    def get(self, uid=None):
         """
         Get a managed object from a KMIP appliance.
 
@@ -407,8 +407,9 @@ class ProxyKmipClient(api.KmipClient):
             TypeError: if the input argument is invalid
         """
         # Check input
-        if not isinstance(uid, six.string_types):
-            raise TypeError("uid must be a string")
+        if uid is not None:
+            if not isinstance(uid, six.string_types):
+                raise TypeError("uid must be a string")
 
         # Verify that operations can be given at this time
         if not self._is_open:
@@ -541,7 +542,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
-    def destroy(self, uid):
+    def destroy(self, uid=None):
         """
         Destroy a managed object stored by a KMIP appliance.
 
@@ -557,8 +558,9 @@ class ProxyKmipClient(api.KmipClient):
             TypeError: if the input argument is invalid
         """
         # Check input
-        if not isinstance(uid, six.string_types):
-            raise TypeError("uid must be a string")
+        if uid is not None:
+            if not isinstance(uid, six.string_types):
+                raise TypeError("uid must be a string")
 
         # Verify that operations can be given at this time
         if not self._is_open:
