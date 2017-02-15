@@ -49,6 +49,7 @@ from kmip.core.messages.payloads import get_attributes
 from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import mac
+from kmip.core.messages.payloads import locate
 
 from kmip.pie import objects as pie_objects
 from kmip.pie import sqltypes
@@ -3459,6 +3460,91 @@ class TestKmipEngine(testtools.TestCase):
             regex,
             e._process_register,
             *args
+        )
+
+    def test_locate(self):
+        """
+        Test that a Locate request can be processed correctly.
+        """
+        # TODO Need add more extensive tests after locate operaton is
+        # fully supported
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+        obj_b = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
+
+        # locate should return nothing at beginning
+        payload = locate.LocateRequestPayload()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: Locate"
+        )
+        self.assertEqual(
+           len(response_payload.unique_identifiers),
+           0
+        )
+
+        # Add the first obj and test the locate
+        e._data_session.add(obj_a)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+
+        payload = locate.LocateRequestPayload()
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: Locate"
+        )
+
+        self.assertEqual(
+           len(response_payload.unique_identifiers),
+           1
+        )
+        self.assertEqual(
+            id_a,
+            response_payload.unique_identifiers[0].value
+        )
+
+        # Add the second obj and test the locate
+        e._data_session.add(obj_b)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_b = str(obj_b.unique_identifier)
+
+        payload = locate.LocateRequestPayload()
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: Locate"
+        )
+
+        self.assertEqual(
+           len(response_payload.unique_identifiers),
+           2
+        )
+        self.assertIn(
+            id_a,
+            [uid.value for uid in response_payload.unique_identifiers]
+        )
+        self.assertIn(
+            id_b,
+            [uid.value for uid in response_payload.unique_identifiers]
         )
 
     def test_get(self):
