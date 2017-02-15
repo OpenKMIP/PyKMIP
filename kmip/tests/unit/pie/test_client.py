@@ -1158,3 +1158,220 @@ class TestProxyKmipClient(testtools.TestCase):
         args = [uuid, algorithm, data]
         self.assertRaises(
             ClientConnectionNotOpen, client.mac, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_locate(self):
+        """
+        Test the locate client with proper input.
+        """
+        maximum_items = 10
+        storage_status_mask = 1
+        object_group_member = enums.ObjectGroupMember.GROUP_MEMBER_FRESH
+        attributes = [
+            obj.Attribute(
+                attribute_name=obj.Attribute.AttributeName('Name'),
+                attribute_index=obj.Attribute.AttributeIndex(0),
+                attribute_value=attr.Name(
+                    name_value=attr.Name.NameValue('Test Name'),
+                    name_type=attr.Name.NameType(
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ),
+            obj.Attribute(
+                attribute_name=obj.Attribute.AttributeName('Object Type'),
+                attribute_value=attr.ObjectType(
+                    enums.ObjectType.SYMMETRIC_KEY
+                )
+            )
+        ]
+
+        uuid0 = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
+        uuid1 = 'bbbbbbbb-4444-5555-6666-gggggggggggg'
+        unique_identifiers = [attr.UniqueIdentifier(uuid0),
+                              attr.UniqueIdentifier(uuid1)]
+
+        result = results.LocateResult(
+            contents.ResultStatus(enums.ResultStatus.SUCCESS),
+            uuids=unique_identifiers)
+
+        with ProxyKmipClient() as client:
+            client.proxy.locate.return_value = result
+
+            uuids = client.locate(
+                maximum_items, storage_status_mask,
+                object_group_member, attributes)
+            self.assertIn(uuid0, uuids)
+            self.assertIn(uuid1, uuids)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_locate_on_invalid_inputs(self):
+        """
+        Test that a TypeError exception is raised when wrong type
+        of arguments are given to locate operation.
+        """
+        maximum_items = 10
+        maximum_items_invalid = "10"
+
+        storage_status_mask = 1
+        storage_status_mask_invalid = '1'
+
+        object_group_member = enums.ObjectGroupMember.GROUP_MEMBER_FRESH
+        object_group_member_invalid = \
+            enums.CryptographicUsageMask.MAC_GENERATE
+
+        attributes = [
+            obj.Attribute(
+                attribute_name=obj.Attribute.AttributeName('Name'),
+                attribute_index=obj.Attribute.AttributeIndex(0),
+                attribute_value=attr.Name(
+                    name_value=attr.Name.NameValue('Test Name'),
+                    name_type=attr.Name.NameType(
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ),
+            obj.Attribute(
+                attribute_name=obj.Attribute.AttributeName('Object Type'),
+                attribute_value=attr.ObjectType(
+                    enums.ObjectType.SYMMETRIC_KEY
+                )
+            )
+        ]
+        attributes_invalid0 = 123
+        attributes_invalid1 = [
+            obj.Attribute(
+                attribute_name=obj.Attribute.AttributeName('Name'),
+                attribute_index=obj.Attribute.AttributeIndex(0),
+                attribute_value=attr.Name(
+                    name_value=attr.Name.NameValue('Test Name'),
+                    name_type=attr.Name.NameType(
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ),
+            123
+        ]
+
+        uuid0 = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
+        uuid1 = 'bbbbbbbb-4444-5555-6666-gggggggggggg'
+        unique_identifiers = [attr.UniqueIdentifier(uuid0),
+                              attr.UniqueIdentifier(uuid1)]
+
+        result = results.LocateResult(
+            contents.ResultStatus(enums.ResultStatus.SUCCESS),
+            uuids=unique_identifiers)
+
+        args = [maximum_items_invalid, storage_status_mask,
+                object_group_member, attributes]
+        with ProxyKmipClient() as client:
+            client.proxy.locate.return_value = result
+            self.assertRaises(TypeError, client.locate, *args)
+
+        args = [maximum_items, storage_status_mask_invalid,
+                object_group_member, attributes]
+        with ProxyKmipClient() as client:
+            client.proxy.locate.return_value = result
+            self.assertRaises(TypeError, client.locate, *args)
+
+        args = [maximum_items, storage_status_mask,
+                object_group_member_invalid, attributes]
+        with ProxyKmipClient() as client:
+            client.proxy.locate.return_value = result
+            self.assertRaises(TypeError, client.locate, *args)
+
+        args = [maximum_items, storage_status_mask,
+                object_group_member, attributes_invalid0]
+        with ProxyKmipClient() as client:
+            client.proxy.locate.return_value = result
+            self.assertRaises(TypeError, client.locate, *args)
+
+        args = [maximum_items, storage_status_mask,
+                object_group_member, attributes_invalid1]
+        with ProxyKmipClient() as client:
+            client.proxy.locate.return_value = result
+            self.assertRaises(TypeError, client.locate, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_locate_on_operation_failure(self):
+        """
+        Test that a KmipOperationFailure exception is raised when the
+        backend fails to locate.
+        """
+        maximum_items = 10
+        storage_status_mask = 1
+        object_group_member = enums.ObjectGroupMember.GROUP_MEMBER_FRESH
+        attributes = [
+            obj.Attribute(
+                attribute_name=obj.Attribute.AttributeName('Name'),
+                attribute_index=obj.Attribute.AttributeIndex(0),
+                attribute_value=attr.Name(
+                    name_value=attr.Name.NameValue('Test Name'),
+                    name_type=attr.Name.NameType(
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ),
+            obj.Attribute(
+                attribute_name=obj.Attribute.AttributeName('Object Type'),
+                attribute_value=attr.ObjectType(
+                    enums.ObjectType.SYMMETRIC_KEY
+                )
+            )
+        ]
+
+        status = enums.ResultStatus.OPERATION_FAILED
+        reason = enums.ResultReason.GENERAL_FAILURE
+        message = "Test failure message"
+
+        result = results.OperationResult(
+            contents.ResultStatus(status),
+            contents.ResultReason(reason),
+            contents.ResultMessage(message))
+        error_msg = str(KmipOperationFailure(status, reason, message))
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.locate.return_value = result
+        args = [maximum_items, storage_status_mask,
+                object_group_member, attributes]
+
+        self.assertRaisesRegexp(
+            KmipOperationFailure, error_msg, client.locate, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_locate_on_closed(self):
+        """
+        Test that a ClientConnectionNotOpen exception is raised when trying
+        to do locate on an unopened client connection.
+        """
+        client = ProxyKmipClient()
+        maximum_items = 10
+        storage_status_mask = 1
+        object_group_member = enums.ObjectGroupMember.GROUP_MEMBER_FRESH
+        attributes = [
+            obj.Attribute(
+                attribute_name=obj.Attribute.AttributeName('Name'),
+                attribute_index=obj.Attribute.AttributeIndex(0),
+                attribute_value=attr.Name(
+                    name_value=attr.Name.NameValue('Test Name'),
+                    name_type=attr.Name.NameType(
+                        enums.NameType.UNINTERPRETED_TEXT_STRING
+                    )
+                )
+            ),
+            obj.Attribute(
+                attribute_name=obj.Attribute.AttributeName('Object Type'),
+                attribute_value=attr.ObjectType(
+                    enums.ObjectType.SYMMETRIC_KEY
+                )
+            )
+        ]
+        args = [maximum_items, storage_status_mask,
+                object_group_member, attributes]
+        self.assertRaises(
+           ClientConnectionNotOpen, client.locate, *args)
