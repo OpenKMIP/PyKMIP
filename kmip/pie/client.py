@@ -330,6 +330,67 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    def locate(self, maximum_items=None, storage_status_mask=None,
+               object_group_member=None, attributes=None):
+        """
+        Search for managed objects, depending on the attributes specified in
+        the request.
+
+        Args:
+            maximum_items (integer): Maximum number of object identifiers the
+                server MAY return.
+            storage_status_mask (integer): A bit mask that indicates whether
+                on-line or archived objects are to be searched.
+            object_group_member (ObjectGroupMember): An enumeration that
+                indicates the object group member type.
+            attributes (list): Attributes the are REQUIRED to match those in a
+                candidate object.
+
+        Returns:
+            list: The Unique Identifiers of the located objects
+
+        Raises:
+            ClientConnectionNotOpen: if the client connection is unusable
+            KmipOperationFailure: if the operation result is a failure
+            TypeError: if the input arguments are invalid
+        """
+        # Check inputs
+        if maximum_items is not None:
+            if not isinstance(maximum_items, six.integer_types):
+                raise TypeError("maximum_items must be an integer")
+        if storage_status_mask is not None:
+            if not isinstance(storage_status_mask, six.integer_types):
+                raise TypeError("storage_status_mask must be an integer")
+        if object_group_member is not None:
+            if not isinstance(object_group_member, enums.ObjectGroupMember):
+                raise TypeError(
+                    "object_group_member must be a ObjectGroupMember"
+                    "enumeration")
+        if attributes is not None:
+            if not isinstance(attributes, list) or \
+                all(isinstance(item, cobjects.Attribute)
+                    for item in attributes) is False:
+                raise TypeError(
+                    "attributes must be a list of attributes")
+
+        # Verify that operations can be given at this time
+        if not self._is_open:
+            raise exceptions.ClientConnectionNotOpen()
+
+        # Search for managed objects and handle the results
+        result = self.proxy.locate(
+                    maximum_items, storage_status_mask,
+                    object_group_member, attributes)
+
+        status = result.result_status.value
+        if status == enums.ResultStatus.SUCCESS:
+            uids = [uuid.value for uuid in result.uuids]
+            return uids
+        else:
+            reason = result.result_reason.value
+            message = result.result_message.value
+            raise exceptions.KmipOperationFailure(status, reason, message)
+
     def get(self, uid):
         """
         Get a managed object from a KMIP appliance.
@@ -518,7 +579,7 @@ class ProxyKmipClient(api.KmipClient):
         parameters_attribute = CryptographicParameters(
             cryptographic_algorithm=CryptographicAlgorithm(algorithm))
 
-        # Create the symmetric key and handle the results
+        # Get the message authentication code and handle the results
         result = self.proxy.mac(uid, parameters_attribute, data)
 
         status = result.result_status.value
