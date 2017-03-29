@@ -506,6 +506,40 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    def activate(self, uid):
+        """
+        Activate a managed object stored by a KMIP appliance.
+
+        Args:
+            uid (string): The unique ID of the managed object to activate.
+
+        Returns:
+            None
+
+        Raises:
+            ClientConnectionNotOpen: if the client connection is unusable
+            KmipOperationFailure: if the operation result is a failure
+            TypeError: if the input argument is invalid
+        """
+        # Check input
+        if not isinstance(uid, six.string_types):
+            raise TypeError("uid must be a string")
+
+        # Verify that operations can be given at this time
+        if not self._is_open:
+            raise exceptions.ClientConnectionNotOpen()
+
+        # Activate the managed object and handle the results
+        result = self.proxy.activate(uid)
+
+        status = result.result_status.value
+        if status == enums.ResultStatus.SUCCESS:
+            return
+        else:
+            reason = result.result_reason.value
+            message = result.result_message.value
+            raise exceptions.KmipOperationFailure(status, reason, message)
+
     def destroy(self, uid):
         """
         Destroy a managed object stored by a KMIP appliance.
