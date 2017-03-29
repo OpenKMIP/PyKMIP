@@ -886,6 +886,71 @@ class TestProxyKmipClient(testtools.TestCase):
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
+    def test_activate(self):
+        """
+        Test that the client can activate a secret.
+        """
+        status = enums.ResultStatus.SUCCESS
+        result = results.OperationResult(contents.ResultStatus(status))
+
+        with ProxyKmipClient() as client:
+            client.proxy.activate.return_value = result
+            result = client.activate(
+                'aaaaaaaa-1111-2222-3333-ffffffffffff')
+            client.proxy.activate.assert_called_with(
+                'aaaaaaaa-1111-2222-3333-ffffffffffff')
+            self.assertEqual(None, result)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_activate_on_invalid_uid(self):
+        """
+        Test that a TypeError exception is raised when trying to activate a
+        secret with an invalid ID.
+        """
+        args = [0]
+        with ProxyKmipClient() as client:
+            self.assertRaises(TypeError, client.activate, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_activate_on_closed(self):
+        """
+        Test that a ClientConnectionNotOpen exception is raised when trying
+        to activate a secret on an unopened client connection.
+        """
+        client = ProxyKmipClient()
+        args = ['aaaaaaaa-1111-2222-3333-ffffffffffff']
+        self.assertRaises(
+            ClientConnectionNotOpen, client.activate, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_activate_on_operation_failure(self):
+        """
+        Test that a KmipOperationFailure exception is raised when the
+        backend fails to activate a secret.
+        """
+        status = enums.ResultStatus.OPERATION_FAILED
+        reason = enums.ResultReason.GENERAL_FAILURE
+        message = "Test failure message"
+
+        result = results.OperationResult(
+            contents.ResultStatus(status),
+            contents.ResultReason(reason),
+            contents.ResultMessage(message))
+        error_msg = str(KmipOperationFailure(status, reason, message))
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.activate.return_value = result
+        args = ['id']
+
+        self.assertRaisesRegexp(
+            KmipOperationFailure, error_msg, client.activate, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
     def test_destroy(self):
         """
         Test that the client can destroy a secret.
