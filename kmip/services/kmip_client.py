@@ -430,12 +430,12 @@ class KMIPProxy(KMIP):
             results = self._process_batch_items(response)
             return results[0]
 
-    def mac(self, unique_identifier=None, cryptographic_parameters=None,
-            data=None, credential=None):
+    def mac(self, data, unique_identifier=None,
+            cryptographic_parameters=None, credential=None):
         return self._mac(
+            data=data,
             unique_identifier=unique_identifier,
             cryptographic_parameters=cryptographic_parameters,
-            data=data,
             credential=credential)
 
     def _create(self,
@@ -930,9 +930,9 @@ class KMIPProxy(KMIP):
         return result
 
     def _mac(self,
+             data,
              unique_identifier=None,
              cryptographic_parameters=None,
-             data=None,
              credential=None):
         operation = Operation(OperationEnum.MAC)
 

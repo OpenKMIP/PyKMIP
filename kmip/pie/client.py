@@ -575,17 +575,16 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
-    def mac(self, uid, algorithm, data):
+    def mac(self, data, uid=None, algorithm=None):
         """
         Get the message authentication code for data.
 
         Args:
+            data (string): The data to be MACed.
             uid (string): The unique ID of the managed object that is the key
                 to use for the MAC operation.
             algorithm (CryptographicAlgorithm): An enumeration defining the
                 algorithm to use to generate the MAC.
-            data (string): The data to be MACed.
-
 
         Returns:
             string: The unique ID of the managed object that is the key
@@ -598,14 +597,15 @@ class ProxyKmipClient(api.KmipClient):
             TypeError: if the input arguments are invalid
         """
         # Check inputs
-        if not isinstance(uid, six.string_types):
-            raise TypeError("uid must be a string")
-        if not isinstance(algorithm, enums.CryptographicAlgorithm):
-            raise TypeError(
-                "algorithm must be a CryptographicAlgorithm enumeration")
         if not isinstance(data, six.binary_type):
-            raise TypeError(
-                "data must be bytes")
+            raise TypeError("data must be bytes")
+        if uid is not None:
+            if not isinstance(uid, six.string_types):
+                raise TypeError("uid must be a string")
+        if algorithm is not None:
+            if not isinstance(algorithm, enums.CryptographicAlgorithm):
+                raise TypeError(
+                    "algorithm must be a CryptographicAlgorithm enumeration")
 
         # Verify that operations can be given at this time
         if not self._is_open:
@@ -615,7 +615,7 @@ class ProxyKmipClient(api.KmipClient):
             cryptographic_algorithm=CryptographicAlgorithm(algorithm))
 
         # Get the message authentication code and handle the results
-        result = self.proxy.mac(uid, parameters_attribute, data)
+        result = self.proxy.mac(data, uid, parameters_attribute)
 
         status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
