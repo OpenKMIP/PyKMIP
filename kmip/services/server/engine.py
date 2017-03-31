@@ -39,6 +39,7 @@ from kmip.core.messages import contents
 from kmip.core.messages import messages
 
 from kmip.core.messages.payloads import activate
+from kmip.core.messages.payloads import revoke
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
@@ -971,6 +972,8 @@ class KmipEngine(object):
             return self._process_get_attribute_list(payload)
         elif operation == enums.Operation.ACTIVATE:
             return self._process_activate(payload)
+        elif operation == enums.Operation.REVOKE:
+            return self._process_revoke(payload)
         elif operation == enums.Operation.DESTROY:
             return self._process_destroy(payload)
         elif operation == enums.Operation.QUERY:
@@ -1495,6 +1498,61 @@ class KmipEngine(object):
         self._data_session.commit()
 
         response_payload = activate.ActivateResponsePayload(
+            unique_identifier=attributes.UniqueIdentifier(unique_identifier)
+        )
+
+        return response_payload
+
+    @_kmip_version_supported('1.0')
+    def _process_revoke(self, payload):
+        self._logger.info("Processing operation: Revoke")
+
+        revocation_code = None
+        if payload.revocation_reason and \
+           payload.revocation_reason.revocation_code:
+            revocation_code = payload.revocation_reason.revocation_code
+        else:
+            raise exceptions.InvalidField(
+                "revocation reason code must be specified"
+            )
+
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier.value
+        else:
+            unique_identifier = self._id_placeholder
+
+        managed_object = self._get_object_with_access_controls(
+            unique_identifier,
+            enums.Operation.REVOKE
+        )
+        object_type = managed_object._object_type
+        if not hasattr(managed_object, 'state'):
+            raise exceptions.IllegalOperation(
+                "An {0} object has no state and cannot be revoked.".format(
+                    ''.join(
+                        [x.capitalize() for x in object_type.name.split('_')]
+                    )
+                )
+            )
+
+        # TODO: need to set Compromise Date attribute or Deactivation Date
+        # attribute
+        if revocation_code.value is enums.RevocationReasonCode.KEY_COMPROMISE:
+            if managed_object.state == enums.State.DESTROYED:
+                managed_object.state = enums.State.DESTROYED_COMPROMISED
+            else:
+                managed_object.state = enums.State.COMPROMISED
+        else:
+            if managed_object.state != enums.State.ACTIVE:
+                raise exceptions.IllegalOperation(
+                    "The object is not active and cannot be revoked with "
+                    "reason other than KEY_COMPROMISE"
+                )
+            else:
+                managed_object.state = enums.State.DEACTIVATED
+        self._data_session.commit()
+
+        response_payload = revoke.RevokeResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(unique_identifier)
         )
 
