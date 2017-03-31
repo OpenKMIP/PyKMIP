@@ -50,6 +50,12 @@ class DummyKmipClient(api.KmipClient):
     def activate(self, uid):
         super(DummyKmipClient, self).activate(uid)
 
+    def revoke(self, revocation_reason, uid, revocation_message,
+               compromise_occurrence_date):
+        super(DummyKmipClient, self).revoke(
+                revocation_reason, uid, revocation_message,
+                compromise_occurrence_date)
+
     def destroy(self, uid):
         super(DummyKmipClient, self).destroy(uid)
 
@@ -126,6 +132,13 @@ class TestKmipClient(testtools.TestCase):
         """
         dummy = DummyKmipClient()
         dummy.activate('uid')
+
+    def test_revoke(self):
+        """
+        Test that the revoke method can be called without error.
+        """
+        dummy = DummyKmipClient()
+        dummy.revoke('reason', 'uid', 'message', 'date')
 
     def test_destroy(self):
         """
