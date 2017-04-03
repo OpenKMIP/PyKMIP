@@ -1509,19 +1509,27 @@ class KmipEngine(object):
         else:
             unique_identifier = self._id_placeholder
 
-        self._get_object_with_access_controls(
+        managed_object = self._get_object_with_access_controls(
             unique_identifier,
             enums.Operation.DESTROY
         )
 
-        # TODO (peterhamilton) Process attributes to see if destroy possible
-        # 1. Check object state. If invalid, error out.
-        # 2. Check object deactivation date. If invalid, error out.
+        # TODO If in "ACTIVE" state, we need to check its "Deactivation date"
+        # to see whether it can be destroyed or not
+        if hasattr(managed_object, 'state'):
+            if managed_object.state == enums.State.ACTIVE:
+                raise exceptions.PermissionDenied(
+                    "Object is active and cannot be destroyed."
+                )
+
+        # 'OpaqueObject' object has no attribute 'state'
+        if hasattr(managed_object, 'state') and \
+           managed_object.state == enums.State.COMPROMISED:
+            managed_object.state = enums.State.DESTROYED_COMPROMISED
 
         self._logger.info(
             "Destroying an object with ID: {0}".format(unique_identifier)
         )
-
         self._data_session.query(objects.ManagedObject).filter(
             objects.ManagedObject.unique_identifier == unique_identifier
         ).delete()
