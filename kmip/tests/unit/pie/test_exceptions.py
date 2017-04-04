@@ -93,8 +93,8 @@ class TestKmipOperationFailure(TestCase):
 
     def test_message(self):
         """
-        Test that a KmipOperationFailure exception message can be set
-        properly.
+        Test that a KmipOperationFailure exception message and attributes can
+        be set properly.
         """
         status = ResultStatus.OPERATION_FAILED
         reason = ResultReason.GENERAL_FAILURE
@@ -104,3 +104,6 @@ class TestKmipOperationFailure(TestCase):
             status.name, reason.name, "Test error message.")
 
         self.assertEqual(msg, str(exc))
+        self.assertEqual(status, exc.status)
+        self.assertEqual(reason, exc.reason)
+        self.assertEqual("Test error message.", exc.message)
