@@ -39,7 +39,8 @@ class KmipOperationFailure(Exception):
     """
     def __init__(self, status, reason, message):
         """
-        Construct the error message for the KMIP operation failure.
+        Construct the error message and attributes for the KMIP operation
+        failure.
 
         Args:
             status: a ResultStatus enumeration
@@ -48,3 +49,6 @@ class KmipOperationFailure(Exception):
         """
         msg = "{0}: {1} - {2}".format(status.name, reason.name, message)
         super(KmipOperationFailure, self).__init__(msg)
+        self.status = status
+        self.reason = reason
+        self.message = message
