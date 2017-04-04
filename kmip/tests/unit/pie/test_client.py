@@ -312,6 +312,55 @@ class TestProxyKmipClient(testtools.TestCase):
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
+    def test_create_with_cryptographic_usage_mask(self):
+        """
+        Test that a symmetric key can be created with proper inputs,
+        specifically testing that the cryptographic usage mask is correctly
+        sent with the request.
+        """
+        # Create the template to test the create call
+        algorithm = enums.CryptographicAlgorithm.AES
+        length = 256
+        algorithm_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm)
+        length_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length)
+        masks = [enums.CryptographicUsageMask.ENCRYPT,
+                 enums.CryptographicUsageMask.DECRYPT]
+        masks_given = [enums.CryptographicUsageMask.MAC_GENERATE,
+                       enums.CryptographicUsageMask.MAC_VERIFY]
+        masks.extend(masks_given)
+        mask_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            masks)
+
+        key_attributes = [
+            algorithm_attribute,
+            length_attribute,
+            mask_attribute,
+            ]
+
+        template = obj.TemplateAttribute(attributes=key_attributes)
+
+        key_id = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
+        status = enums.ResultStatus.SUCCESS
+        result = results.CreateResult(
+            contents.ResultStatus(status),
+            uuid=attr.UniqueIdentifier(key_id))
+
+        with ProxyKmipClient() as client:
+            client.proxy.create.return_value = result
+
+            client.create(
+                algorithm,
+                length,
+                cryptographic_usage_mask=masks_given
+            )
+            client.proxy.create.assert_called_with(
+                enums.ObjectType.SYMMETRIC_KEY, template)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
     def test_create_on_invalid_algorithm(self):
         """
         Test that a TypeError exception is raised when trying to create a
@@ -331,6 +380,23 @@ class TestProxyKmipClient(testtools.TestCase):
         args = [enums.CryptographicAlgorithm.AES, 'invalid']
         with ProxyKmipClient() as client:
             self.assertRaises(TypeError, client.create, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_create_on_invalid_cryptographic_usage_mask(self):
+        """
+        Test that a TypeError exception is raised when trying to create a
+        symmetric key with invalid cryptographic_usage_mask.
+        """
+        args = [enums.CryptographicAlgorithm.AES, 256]
+        kwargs = {'cryptographic_usage_mask':
+                  enums.CryptographicUsageMask.ENCRYPT}
+        with ProxyKmipClient() as client:
+            self.assertRaises(TypeError, client.create, *args, **kwargs)
+        kwargs = {'cryptographic_usage_mask':
+                  [enums.CryptographicUsageMask.ENCRYPT, 1]}
+        with ProxyKmipClient() as client:
+            self.assertRaises(TypeError, client.create, *args, **kwargs)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
