@@ -793,16 +793,14 @@ class TestKMIPClient(TestCase):
         self.client._send_message.side_effect = verify_request
         self.client._receive_message.return_value = BytearrayStream(response)
 
-        result = self.client.mac(uuid, cryptographic_parameters,
-                                 data)
+        result = self.client.mac(data, uuid, cryptographic_parameters)
         self.assertEqual(result.uuid.value, uuid)
         self.assertEqual(result.mac_data.value, mdata)
 
         self.client._receive_message.return_value = \
             BytearrayStream(response_no_payload)
 
-        result = self.client.mac(uuid, cryptographic_parameters,
-                                 data)
+        result = self.client.mac(data, uuid, cryptographic_parameters)
         self.assertEqual(result.uuid, None)
         self.assertEqual(result.mac_data, None)
 

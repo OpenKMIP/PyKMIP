@@ -1140,7 +1140,7 @@ class TestProxyKmipClient(testtools.TestCase):
         with ProxyKmipClient() as client:
             client.proxy.mac.return_value = result
 
-            uid, mac_data = client.mac(uuid, algorithm, data)
+            uid, mac_data = client.mac(data, uuid, algorithm)
             self.assertEqual(uid, uuid)
             self.assertEqual(mac_data, data)
 
@@ -1165,17 +1165,17 @@ class TestProxyKmipClient(testtools.TestCase):
             uuid=attr.UniqueIdentifier(uuid),
             mac_data=obj.MACData(data))
 
-        args = [uuid_invalid, algorithm, data]
+        args = [data, uuid_invalid, algorithm]
         with ProxyKmipClient() as client:
             client.proxy.mac.return_value = result
             self.assertRaises(TypeError, client.mac, *args)
 
-        args = [uuid, algorithm_invalid, data]
+        args = [data, uuid, algorithm_invalid]
         with ProxyKmipClient() as client:
             client.proxy.mac.return_value = result
             self.assertRaises(TypeError, client.mac, *args)
 
-        args = [uuid, algorithm, data_invalid]
+        args = [data_invalid, uuid, algorithm]
         with ProxyKmipClient() as client:
             client.proxy.mac.return_value = result
             self.assertRaises(TypeError, client.mac, *args)
@@ -1204,7 +1204,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client = ProxyKmipClient()
         client.open()
         client.proxy.mac.return_value = result
-        args = [uuid, algorithm, data]
+        args = [data, uuid, algorithm]
 
         self.assertRaisesRegexp(
             KmipOperationFailure, error_msg, client.mac, *args)
@@ -1220,7 +1220,7 @@ class TestProxyKmipClient(testtools.TestCase):
         uuid = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
         algorithm = enums.CryptographicAlgorithm.HMAC_SHA256
         data = (b'\x00\x01\x02\x03\x04')
-        args = [uuid, algorithm, data]
+        args = [data, uuid, algorithm]
         self.assertRaises(
             ClientConnectionNotOpen, client.mac, *args)
 

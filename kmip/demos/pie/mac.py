@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # Build the client and connect to the server
     with client.ProxyKmipClient(config=config) as client:
         try:
-            uid, mac_data = client.mac(uid, algorithm, data)
+            uid, mac_data = client.mac(data, uid, algorithm)
             logger.info("Successfully done MAC using key with ID: "
                         "{0}".format(uid))
             logger.info("MACed data: {0}".format(

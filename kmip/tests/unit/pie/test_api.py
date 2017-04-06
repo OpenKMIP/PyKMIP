@@ -115,4 +115,4 @@ class TestKmipClient(testtools.TestCase):
         Test that the mac method can be called without error.
         """
         dummy = DummyKmipClient()
-        dummy.mac('uid', 'algorithm', 'data')
+        dummy.mac('data', 'uid', 'algorithm')
