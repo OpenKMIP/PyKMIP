@@ -1552,6 +1552,7 @@ class KmipEngine(object):
                 contents.Operation(enums.Operation.CREATE),
                 contents.Operation(enums.Operation.CREATE_KEY_PAIR),
                 contents.Operation(enums.Operation.REGISTER),
+                contents.Operation(enums.Operation.LOCATE),
                 contents.Operation(enums.Operation.GET),
                 contents.Operation(enums.Operation.GET_ATTRIBUTES),
                 contents.Operation(enums.Operation.GET_ATTRIBUTE_LIST),
@@ -1560,9 +1561,13 @@ class KmipEngine(object):
                 contents.Operation(enums.Operation.QUERY)
             ])
 
-            if self._protocol_version == contents.ProtocolVersion.create(1, 1):
+            if self._protocol_version >= contents.ProtocolVersion.create(1, 1):
                 operations.extend([
                     contents.Operation(enums.Operation.DISCOVER_VERSIONS)
+                ])
+            if self._protocol_version >= contents.ProtocolVersion.create(1, 2):
+                operations.extend([
+                    contents.Operation(enums.Operation.MAC)
                 ])
 
         if enums.QueryFunction.QUERY_OBJECTS in queries:
