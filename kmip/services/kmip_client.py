@@ -357,7 +357,7 @@ class KMIPProxy(KMIP):
                             revocation_message=message,
                             credential=credential)
 
-    def destroy(self, uuid, credential=None):
+    def destroy(self, uuid=None, credential=None):
         return self._destroy(unique_identifier=uuid,
                              credential=credential)
 
