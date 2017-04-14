@@ -35,17 +35,26 @@ class DummyKmipClient(api.KmipClient):
     def register(self, managed_object, *args, **kwargs):
         super(DummyKmipClient, self).register(managed_object)
 
+    def locate(self, maximum_items, storage_status_mask, object_group_member,
+               attributes):
+        super(DummyKmipClient, self).locate(
+            maximum_items, storage_status_mask, object_group_member,
+            attributes)
+
     def get(self, uid, *args, **kwargs):
         super(DummyKmipClient, self).get(uid)
 
     def get_attribute_list(self, uid, *args, **kwargs):
         super(DummyKmipClient, self).get_attribute_list(uid)
 
+    def activate(self, uid):
+        super(DummyKmipClient, self).activate(uid)
+
     def destroy(self, uid):
         super(DummyKmipClient, self).destroy(uid)
 
-    def mac(self, uid, algorithm, data):
-        super(DummyKmipClient, self).mac(uid, algorithm, data)
+    def mac(self, data, uid, algorithm):
+        super(DummyKmipClient, self).mac(data, uid, algorithm)
 
 
 class TestKmipClient(testtools.TestCase):
@@ -89,6 +98,14 @@ class TestKmipClient(testtools.TestCase):
         dummy = DummyKmipClient()
         dummy.register('secret')
 
+    def test_locate(self):
+        """
+        Test that the locate method can be called without error.
+        """
+        dummy = DummyKmipClient()
+        dummy.locate('maximum_items', 'storage_status_mask',
+                     'object_group_member', 'attributes')
+
     def test_get(self):
         """
         Test that the get method can be called without error.
@@ -102,6 +119,13 @@ class TestKmipClient(testtools.TestCase):
         """
         dummy = DummyKmipClient()
         dummy.get_attribute_list('uid')
+
+    def test_activate(self):
+        """
+        Test that the activate method can be called without error.
+        """
+        dummy = DummyKmipClient()
+        dummy.activate('uid')
 
     def test_destroy(self):
         """

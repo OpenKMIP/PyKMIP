@@ -61,6 +61,25 @@ class KmipClient:
         pass
 
     @abc.abstractmethod
+    def locate(self, maximum_items, storage_status_mask, object_group_member,
+               attributes):
+        """
+        Search for managed objects with a KMIP appliance.
+
+        Args:
+            maximum_items (integer): Maximum number of object identifiers the
+                server MAY return.
+            storage_status_mask (integer): A bit mask that indicates whether
+                on-line or archived objects are to be searched.
+            object_group_member (ObjectGroupMember): An enumeration that
+                indicates the object group member type.
+            attributes (list): Attributes the are REQUIRED to match those in a
+                candidate object.
+
+        """
+        pass
+
+    @abc.abstractmethod
     def get(self, uid):
         """
         Get a managed object from a KMIP appliance.
@@ -82,6 +101,16 @@ class KmipClient:
         pass
 
     @abc.abstractmethod
+    def activate(self, uid):
+        """
+        Activate a managed object stored by a KMIP appliance.
+
+        Args:
+            uid (string): The unique ID of the managed object to activate.
+        """
+        pass
+
+    @abc.abstractmethod
     def destroy(self, uid):
         """
         Destroy a managed object stored by a KMIP appliance.
@@ -92,15 +121,15 @@ class KmipClient:
         pass
 
     @abc.abstractmethod
-    def mac(self, uid, algorithm, data):
+    def mac(self, data, uid, algorithm):
         """
         Get the message authentication code for data.
 
         Args:
+            data (string): The data to be MACed.
             uid (string): The unique ID of the managed object that is the key
                 to use for the MAC operation.
             algorithm (CryptographicAlgorithm): An enumeration defining the
                 algorithm to use to generate the MAC.
-            data (string): The data to be MACed.
         """
         pass
