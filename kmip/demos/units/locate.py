@@ -17,6 +17,8 @@ from kmip.core.enums import CredentialType
 from kmip.core.enums import NameType
 from kmip.core.enums import Operation
 from kmip.core.enums import ResultStatus
+from kmip.core.enums import ObjectGroupMember
+from kmip.core.enums import StorageStatusMask
 
 from kmip.core.attributes import Name
 
@@ -44,6 +46,9 @@ if __name__ == '__main__':
     password = opts.password
     config = opts.config
     name = opts.name
+    storage_status_mask = opts.storage_status_mask
+    object_group_member = opts.object_group_member
+    maximum_items = opts.maximum_items
 
     # Exit early if the UUID is not specified
     if name is None:
@@ -63,10 +68,6 @@ if __name__ == '__main__':
                             'Password': password}
         credential = credential_factory.create_credential(credential_type,
                                                           credential_value)
-    # Build the client and connect to the server
-    client = KMIPProxy(config=config)
-    client.open()
-
     # Build name attribute
     # TODO (peter-hamilton) Push this into the AttributeFactory
     attribute_name = Attribute.AttributeName('Name')
@@ -74,10 +75,37 @@ if __name__ == '__main__':
     name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
     value = Name.create(name_value=name_value, name_type=name_type)
     name_obj = Attribute(attribute_name=attribute_name, attribute_value=value)
+
     attributes = [name_obj]
 
+    ssmask = None
+    if storage_status_mask is not None:
+        if storage_status_mask == 'online':
+            ssmask = StorageStatusMask.ONLINE_STORAGE
+        elif storage_status_mask == 'archival':
+            ssmask = StorageStatusMask.ARCHIVAL_STORAGE
+        else:
+            logging.debug('Invalid storage-status-mask value')
+            sys.exit()
+
+    if object_group_member is not None:
+        if object_group_member == 'fresh':
+            object_group_member = ObjectGroupMember.GROUP_MEMBER_FRESH
+        elif object_group_member == 'default':
+            object_group_member = ObjectGroupMember.GROUP_MEMBER_DEFAULT
+        else:
+            logging.debug('Invalid object-group-member value')
+            sys.exit()
+
+    # Build the client and connect to the server
+    client = KMIPProxy(config=config)
+    client.open()
+
     # Locate UUID of specified SYMMETRIC_KEY object
-    result = client.locate(attributes=attributes,
+    result = client.locate(maximum_items=maximum_items,
+                           storage_status_mask=ssmask,
+                           object_group_member=object_group_member,
+                           attributes=attributes,
                            credential=credential)
     client.close()
 

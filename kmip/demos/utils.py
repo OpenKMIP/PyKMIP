@@ -192,6 +192,30 @@ def build_cli_parser(operation=None):
             default=None,
             dest="name",
             help="Name of secret to retrieve from the KMIP server")
+        parser.add_option(
+            "",
+            "--storage-status-mask",
+            action="store",
+            type="str",
+            default=None,
+            dest="storage_status_mask",
+            help="Storage status mask: 'online' or 'archival'")
+        parser.add_option(
+            "",
+            "--object-group-member",
+            action="store",
+            type="str",
+            default=None,
+            dest="object_group_member",
+            help="Object group member: 'fresh' or 'default'")
+        parser.add_option(
+            "",
+            "--maximum-items",
+            action="store",
+            type="int",
+            default=None,
+            dest="maximum_items",
+            help="Maximum items to return")
     elif operation is Operation.REGISTER:
         parser.add_option(
             "-f",
