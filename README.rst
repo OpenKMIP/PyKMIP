@@ -136,6 +136,14 @@ The KMIP server provides support for the following operations:
 * ``Query``
 * ``DiscoverVersions``
 
+The provided software server is for testing and demonstration purposes. It does
+provide the ability to store managed objects. The current implementation stores
+the managed objects in memory, and in the future there is likely to be support
+for persistent storage via a database. If persistent storage is added in the
+future then the current plan is not to implement database migration scripts.
+This in part because the server is for testing and demonstration purposes and
+in part because there is no demand for such a feature.
+
 Configuration
 *************
 The PyKMIP software server can be configured via configuration file, by
