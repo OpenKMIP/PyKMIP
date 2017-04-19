@@ -4797,7 +4797,9 @@ class TestKmipEngine(testtools.TestCase):
                 b'\x0B\x0C\x0D\x0E\x0F')
         algorithm_a = enums.CryptographicAlgorithm.AES
         algorithm_b = enums.CryptographicAlgorithm.HMAC_SHA512
-        obj = pie_objects.SymmetricKey(algorithm_a, 128, key)
+        obj = pie_objects.SymmetricKey(
+            algorithm_a, 128, key, [enums.CryptographicUsageMask.MAC_GENERATE])
+        obj.state = enums.State.ACTIVE
 
         e._data_session.add(obj)
         e._data_session.commit()
@@ -4887,7 +4889,7 @@ class TestKmipEngine(testtools.TestCase):
         args = (payload_no_key, )
         regex = "A secret key value must be specified"
         self.assertRaisesRegexp(
-            exceptions.InvalidField,
+            exceptions.PermissionDenied,
             regex,
             e._process_mac,
             *args
@@ -4902,7 +4904,7 @@ class TestKmipEngine(testtools.TestCase):
         args = (payload_no_algorithm, )
         regex = "The cryptographic algorithm must be specified"
         self.assertRaisesRegexp(
-            exceptions.InvalidField,
+            exceptions.PermissionDenied,
             regex,
             e._process_mac,
             *args
@@ -4917,7 +4919,106 @@ class TestKmipEngine(testtools.TestCase):
         args = (payload_no_data, )
         regex = "No data to be MACed"
         self.assertRaisesRegexp(
-            exceptions.InvalidField,
+            exceptions.PermissionDenied,
+            regex,
+            e._process_mac,
+            *args
+        )
+
+    def test_mac_not_active_state(self):
+        """
+        Test that the right error is generated when an MAC request is
+        received for an object that is not in 'active' state.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        key = (b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+               b'\x00\x00\x00\x00\x00')
+        data = (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A'
+                b'\x0B\x0C\x0D\x0E\x0F')
+        algorithm_a = enums.CryptographicAlgorithm.AES
+        algorithm_b = enums.CryptographicAlgorithm.HMAC_SHA512
+        obj = pie_objects.SymmetricKey(
+            algorithm_a, 128, key, [enums.CryptographicUsageMask.MAC_GENERATE])
+        obj.state = enums.State.PRE_ACTIVE
+
+        e._data_session.add(obj)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        uuid = str(obj.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            cryptographic_algorithm=attributes.
+            CryptographicAlgorithm(algorithm_b)
+        )
+
+        # Verify when cryptographic_parameters is specified in request
+        payload = mac.MACRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(uuid),
+            cryptographic_parameters=cryptographic_parameters,
+            data=objects.Data(data)
+        )
+
+        args = (payload,)
+        regex = "Object is not in a state that can be used for MACing."
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
+            regex,
+            e._process_mac,
+            *args
+        )
+
+    def test_mac_crypto_usage_mask_not_set(self):
+        """
+        Test that the right error is generated when an MAC request is
+        received for an object without proper crypto usage mask set.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        key = (b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+               b'\x00\x00\x00\x00\x00')
+        data = (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A'
+                b'\x0B\x0C\x0D\x0E\x0F')
+        algorithm_a = enums.CryptographicAlgorithm.AES
+        algorithm_b = enums.CryptographicAlgorithm.HMAC_SHA512
+        obj = pie_objects.SymmetricKey(
+            algorithm_a, 128, key, [enums.CryptographicUsageMask.MAC_VERIFY])
+        obj.state = enums.State.ACTIVE
+
+        e._data_session.add(obj)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        uuid = str(obj.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            cryptographic_algorithm=attributes.
+            CryptographicAlgorithm(algorithm_b)
+        )
+
+        # Verify when cryptographic_parameters is specified in request
+        payload = mac.MACRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(uuid),
+            cryptographic_parameters=cryptographic_parameters,
+            data=objects.Data(data)
+        )
+
+        args = (payload,)
+        regex = "MAC Generate must be set in the object's cryptographic " \
+                "usage mask"
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
             regex,
             e._process_mac,
             *args
