@@ -105,15 +105,6 @@ class PayloadFactory():
         else:
             raise ValueError('unsupported operation: {0}'.format(operation))
 
-    def _create_create_payload(self):
-        raise NotImplementedError()
-
-    def _create_create_key_pair_payload(self):
-        raise NotImplementedError()
-
-    def _create_register_payload(self):
-        raise NotImplementedError()
-
     def _create_rekey_payload(self):
         raise NotImplementedError()
 
@@ -126,19 +117,7 @@ class PayloadFactory():
     def _create_recertify_payload(self):
         raise NotImplementedError()
 
-    def _create_locate_payload(self):
-        raise NotImplementedError()
-
     def _create_check_payload(self):
-        raise NotImplementedError()
-
-    def _create_get_payload(self):
-        raise NotImplementedError()
-
-    def _create_get_attributes_payload(self):
-        raise NotImplementedError()
-
-    def _create_get_attribute_list_payload(self):
         raise NotImplementedError()
 
     def _create_add_attribute_payload(self):
@@ -156,15 +135,6 @@ class PayloadFactory():
     def _create_get_usage_allocation_payload(self):
         raise NotImplementedError()
 
-    def _create_activate_payload(self):
-        raise NotImplementedError()
-
-    def _create_revoke_payload(self):
-        raise NotImplementedError()
-
-    def _create_destroy_payload(self):
-        raise NotImplementedError()
-
     def _create_archive_payload(self):
         raise NotImplementedError()
 
@@ -172,9 +142,6 @@ class PayloadFactory():
         raise NotImplementedError()
 
     def _create_validate_payload(self):
-        raise NotImplementedError()
-
-    def _create_query_payload(self):
         raise NotImplementedError()
 
     def _create_cancel_payload(self):
@@ -187,12 +154,6 @@ class PayloadFactory():
         raise NotImplementedError()
 
     def _create_put_payload(self):
-        raise NotImplementedError()
-
-    def _create_rekey_key_pair_payload(self):
-        raise NotImplementedError()
-
-    def _create_discover_versions_payload(self):
         raise NotImplementedError()
 
     def _create_encrypt_payload(self):
