@@ -4397,7 +4397,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = revoke.RevokeRequestPayload(
             unique_identifier=attributes.UniqueIdentifier(object_id),
             revocation_reason=reason_unspecified,
-            compromise_date=date)
+            compromise_occurrence_date=date)
 
         response_payload = e._process_revoke(payload)
         e._data_session.commit()
@@ -4424,7 +4424,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = revoke.RevokeRequestPayload(
             unique_identifier=attributes.UniqueIdentifier(object_id),
             revocation_reason=reason_compromise,
-            compromise_date=date)
+            compromise_occurrence_date=date)
 
         e._logger.reset_mock()
 
@@ -4458,7 +4458,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = revoke.RevokeRequestPayload(
             unique_identifier=attributes.UniqueIdentifier(object_id),
             revocation_reason=reason_compromise,
-            compromise_date=date)
+            compromise_occurrence_date=date)
         response_payload = e._process_revoke(payload)
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
@@ -4488,7 +4488,7 @@ class TestKmipEngine(testtools.TestCase):
         e._id_placeholder = str(object_id)
         payload = revoke.RevokeRequestPayload(
             revocation_reason=reason_unspecified,
-            compromise_date=date)
+            compromise_occurrence_date=date)
 
         response_payload = e._process_revoke(payload)
         e._data_session.commit()
@@ -4543,7 +4543,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = revoke.RevokeRequestPayload(
             unique_identifier=attributes.UniqueIdentifier(object_id),
             revocation_reason=reason_unspecified,
-            compromise_date=date)
+            compromise_occurrence_date=date)
 
         args = (payload, )
         regex = "The object is not active and cannot be revoked with " \
@@ -4584,7 +4584,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = revoke.RevokeRequestPayload(
             unique_identifier=attributes.UniqueIdentifier(object_id),
             revocation_reason=reason_unspecified,
-            compromise_date=date)
+            compromise_occurrence_date=date)
 
         args = (payload,)
         name = enums.ObjectType.OPAQUE_DATA.name
@@ -4628,7 +4628,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = revoke.RevokeRequestPayload(
             unique_identifier=attributes.UniqueIdentifier(id_a),
             revocation_reason=reason_unspecified,
-            compromise_date=date)
+            compromise_occurrence_date=date)
 
         args = [payload]
         self.assertRaisesRegex(

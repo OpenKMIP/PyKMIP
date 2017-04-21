@@ -40,7 +40,7 @@ class RevokeRequestPayload(Struct):
     def __init__(self,
                  unique_identifier=None,
                  revocation_reason=None,
-                 compromise_date=None):
+                 compromise_occurrence_date=None):
         """
         Construct a RevokeRequestPayload object.
         Args:
@@ -48,13 +48,13 @@ class RevokeRequestPayload(Struct):
                 cryptographic object.
             revocation_reason (RevocationReason): The reason why the object was
                 revoked.
-            compromise_date (DateTime): the date of compromise if the object
-                was compromised.
+            compromise_occurrence_date (DateTime): the datetime when the object
+                was first believed to be compromised.
         """
         super(RevokeRequestPayload, self).__init__(
             tag=enums.Tags.REQUEST_PAYLOAD)
         self.unique_identifier = unique_identifier
-        self.compromise_date = compromise_date
+        self.compromise_occurrence_date = compromise_occurrence_date
         self.revocation_reason = revocation_reason
         if self.revocation_reason is None:
             self.revocation_reason = objects.RevocationReason()
@@ -78,9 +78,9 @@ class RevokeRequestPayload(Struct):
         self.revocation_reason.read(tstream)
 
         if self.is_tag_next(enums.Tags.COMPROMISE_OCCURRENCE_DATE, tstream):
-            self.compromise_date = primitives.DateTime(
+            self.compromise_occurrence_date = primitives.DateTime(
                 tag=enums.Tags.COMPROMISE_OCCURRENCE_DATE)
-            self.compromise_date.read(tstream)
+            self.compromise_occurrence_date.read(tstream)
 
         self.is_oversized(tstream)
         self.validate()
@@ -100,8 +100,8 @@ class RevokeRequestPayload(Struct):
 
         self.revocation_reason.write(tstream)
 
-        if self.compromise_date is not None:
-            self.compromise_date.write(tstream)
+        if self.compromise_occurrence_date is not None:
+            self.compromise_occurrence_date.write(tstream)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
@@ -117,8 +117,9 @@ class RevokeRequestPayload(Struct):
                               attributes.UniqueIdentifier):
                 msg = "invalid unique identifier"
                 raise TypeError(msg)
-        if self.compromise_date is not None:
-            if not isinstance(self.compromise_date, primitives.DateTime):
+        if self.compromise_occurrence_date is not None:
+            if not isinstance(self.compromise_occurrence_date,
+                              primitives.DateTime):
                 msg = "invalid compromise time"
                 raise TypeError(msg)
         if not isinstance(self.revocation_reason, objects.RevocationReason):

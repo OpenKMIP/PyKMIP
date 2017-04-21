@@ -570,7 +570,7 @@ class ProxyKmipClient(api.KmipClient):
                 Optional, defaults to None.
             compromise_occurrence_date (int): An integer, the number of seconds
                 since the epoch, which will be converted to the Datetime when
-                the managed object was firstly believed to be compromised.
+                the managed object was first believed to be compromised.
                 Optional, defaults to None.
 
         Returns:
