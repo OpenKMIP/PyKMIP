@@ -4426,6 +4426,8 @@ class TestKmipEngine(testtools.TestCase):
             revocation_reason=reason_compromise,
             compromise_date=date)
 
+        e._logger.reset_mock()
+
         response_payload = e._process_revoke(payload)
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
@@ -4451,6 +4453,8 @@ class TestKmipEngine(testtools.TestCase):
         symmetric_key.state = enums.State.DESTROYED
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
+        e._logger.reset_mock()
+
         payload = revoke.RevokeRequestPayload(
             unique_identifier=attributes.UniqueIdentifier(object_id),
             revocation_reason=reason_compromise,
@@ -4479,6 +4483,8 @@ class TestKmipEngine(testtools.TestCase):
         symmetric_key.state = enums.State.ACTIVE
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
+        e._logger.reset_mock()
+
         e._id_placeholder = str(object_id)
         payload = revoke.RevokeRequestPayload(
             revocation_reason=reason_unspecified,
