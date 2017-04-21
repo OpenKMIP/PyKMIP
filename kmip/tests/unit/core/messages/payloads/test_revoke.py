@@ -121,7 +121,7 @@ class TestRevokeRequestPayload(TestCase):
         payload = revoke.RevokeRequestPayload(
             unique_identifier=self.uuid,
             revocation_reason=reason,
-            compromise_date=date)
+            compromise_occurrence_date=date)
         payload.write(stream)
 
         length_expected = len(self.encoding_a)

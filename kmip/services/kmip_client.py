@@ -822,7 +822,7 @@ class KMIPProxy(KMIP):
         payload = revoke.RevokeRequestPayload(
             unique_identifier=uuid,
             revocation_reason=reason,
-            compromise_date=compromise_occurrence_date)
+            compromise_occurrence_date=compromise_occurrence_date)
 
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=payload)
