@@ -351,11 +351,14 @@ class KMIPProxy(KMIP):
         results = self._process_batch_items(response)
         return results[0]
 
-    def revoke(self, uuid, reason, message=None, credential=None):
-        return self._revoke(unique_identifier=uuid,
-                            revocation_code=reason,
-                            revocation_message=message,
-                            credential=credential)
+    def revoke(self, revocation_reason, uuid=None, revocation_message=None,
+               compromise_occurrence_date=None, credential=None):
+        return self._revoke(
+            unique_identifier=uuid,
+            revocation_reason=revocation_reason,
+            revocation_message=revocation_message,
+            compromise_occurrence_date=compromise_occurrence_date,
+            credential=credential)
 
     def destroy(self, uuid=None, credential=None):
         return self._destroy(unique_identifier=uuid,
@@ -805,11 +808,12 @@ class KMIPProxy(KMIP):
                                payload_unique_identifier)
         return result
 
-    def _revoke(self, unique_identifier=None, revocation_code=None,
-                revocation_message=None, credential=None):
+    def _revoke(self, unique_identifier=None, revocation_reason=None,
+                revocation_message=None, compromise_occurrence_date=None,
+                credential=None):
         operation = Operation(OperationEnum.REVOKE)
 
-        reason = objects.RevocationReason(code=revocation_code,
+        reason = objects.RevocationReason(code=revocation_reason,
                                           message=revocation_message)
         uuid = None
         if unique_identifier is not None:
@@ -818,7 +822,7 @@ class KMIPProxy(KMIP):
         payload = revoke.RevokeRequestPayload(
             unique_identifier=uuid,
             revocation_reason=reason,
-            compromise_date=None)  # TODO(tim-kelsey): sort out date handling
+            compromise_date=compromise_occurrence_date)
 
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=payload)

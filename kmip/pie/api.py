@@ -111,6 +111,25 @@ class KmipClient:
         pass
 
     @abc.abstractmethod
+    def revoke(self, revocation_reason, uid, revocation_message,
+               compromise_occurrence_date):
+        """
+        Revoke a managed object stored by a KMIP appliance.
+
+        Args:
+            revocation_reason (RevocationReasonCode): An enumeration indicating
+                the revocation reason.
+            uid (string): The unique ID of the managed object to revoke.
+                Optional, defaults to None.
+            revocation_message (string): A message regarding the revocation.
+                Optional, defaults to None.
+            compromise_occurrence_date (int): A integer which will be converted
+                to the Datetime when the managed object was firstly believed to
+                be compromised. Optional, defaults to None.
+        """
+        pass
+
+    @abc.abstractmethod
     def destroy(self, uid):
         """
         Destroy a managed object stored by a KMIP appliance.
