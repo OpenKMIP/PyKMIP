@@ -583,10 +583,9 @@ class ProxyKmipClient(api.KmipClient):
             if not isinstance(compromise_occurrence_date, six.integer_types):
                 raise TypeError(
                     "compromise_occurrence_date must be an integer")
-
-        compromise_occurrence_date = primitives.DateTime(
-            compromise_occurrence_date,
-            enums.Tags.COMPROMISE_OCCURRENCE_DATE)
+            compromise_occurrence_date = primitives.DateTime(
+                compromise_occurrence_date,
+                enums.Tags.COMPROMISE_OCCURRENCE_DATE)
 
         # Verify that operations can be given at this time
         if not self._is_open:
