@@ -22,8 +22,7 @@ from kmip.core import objects as cobjects
 
 from kmip.core.factories import attributes
 
-from kmip.core.attributes import CryptographicParameters, \
-    CryptographicAlgorithm
+from kmip.core.attributes import CryptographicParameters
 
 from kmip.pie import api
 from kmip.pie import exceptions
@@ -687,7 +686,8 @@ class ProxyKmipClient(api.KmipClient):
             raise exceptions.ClientConnectionNotOpen()
 
         parameters_attribute = CryptographicParameters(
-            cryptographic_algorithm=CryptographicAlgorithm(algorithm))
+            cryptographic_algorithm=algorithm
+        )
 
         # Get the message authentication code and handle the results
         result = self.proxy.mac(data, uid, parameters_attribute)

@@ -16,8 +16,7 @@
 from testtools import TestCase
 
 from kmip.core.attributes import PrivateKeyUniqueIdentifier
-from kmip.core.attributes import CryptographicParameters, \
-                                 CryptographicAlgorithm
+from kmip.core.attributes import CryptographicParameters
 
 
 from kmip.core.enums import AuthenticationSuite
@@ -786,8 +785,7 @@ class TestKMIPClient(TestCase):
         uuid = '1'
 
         cryptographic_parameters = CryptographicParameters(
-            cryptographic_algorithm=CryptographicAlgorithm(
-                CryptographicAlgorithmEnum.HMAC_SHA512)
+            cryptographic_algorithm=CryptographicAlgorithmEnum.HMAC_SHA512
         )
 
         self.client._send_message.side_effect = verify_request

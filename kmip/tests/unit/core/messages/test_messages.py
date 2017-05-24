@@ -1077,13 +1077,13 @@ class TestRequestMessage(TestCase):
         cryptographic_algorithm = parameters_attribute.cryptographic_algorithm
         msg = "Bad cryptographic algorithm type: expected {0}, received {1}"
         self.assertIsInstance(cryptographic_algorithm,
-                              attr.CryptographicAlgorithm,
-                              msg.format(attr.CryptographicAlgorithm,
+                              enums.CryptographicAlgorithm,
+                              msg.format(enums.CryptographicAlgorithm,
                                          type(cryptographic_algorithm)))
         msg = "Bad cryptographic algorithm value: expected {0}, received {1}"
-        self.assertEquals(cryptographic_algorithm.value,
+        self.assertEquals(cryptographic_algorithm,
                           enums.CryptographicAlgorithm.HMAC_SHA512,
-                          msg.format(cryptographic_algorithm.value,
+                          msg.format(cryptographic_algorithm,
                                      enums.CryptographicAlgorithm.HMAC_SHA512))
 
         data = request_payload.data
@@ -1114,8 +1114,7 @@ class TestRequestMessage(TestCase):
                    b'\x0C\x0D\x0E\x0F')
         )
         parameters_attribute = attr.CryptographicParameters(
-            cryptographic_algorithm=attr.
-            CryptographicAlgorithm(enums.CryptographicAlgorithm.HMAC_SHA512)
+            cryptographic_algorithm=enums.CryptographicAlgorithm.HMAC_SHA512
         )
         request_payload = mac.MACRequestPayload(
             unique_identifier=uuid,
