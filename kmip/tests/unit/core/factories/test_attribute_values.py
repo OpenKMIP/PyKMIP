@@ -93,35 +93,55 @@ class TestAttributeValueFactory(testtools.TestCase):
             'digital_signature_algorithm':
                 enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA512,
             'cryptographic_algorithm':
-                enums.CryptographicAlgorithm.HMAC_SHA512}
-        params = self.factory.create_attribute_value(
-            enums.AttributeType.CRYPTOGRAPHIC_PARAMETERS, value)
+                enums.CryptographicAlgorithm.HMAC_SHA512,
+            'random_iv': True,
+            'iv_length': 96,
+            'tag_length': None,
+            'fixed_field_length': 32,
+            'invocation_field_length': 64,
+            'counter_length': None,
+            'initial_counter_value': 1
+        }
+        cryptographic_parameters = self.factory.create_attribute_value(
+            enums.AttributeType.CRYPTOGRAPHIC_PARAMETERS,
+            value
+        )
 
-        # TODO (peter-hamilton): Update assertEquals after structure changes
-        self.assertIsInstance(params, attributes.CryptographicParameters)
+        self.assertIsInstance(
+            cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
         self.assertEqual(
-            attributes.CryptographicParameters.BlockCipherMode(
-                enums.BlockCipherMode.NIST_KEY_WRAP),
-            params.block_cipher_mode)
+            enums.BlockCipherMode.NIST_KEY_WRAP,
+            cryptographic_parameters.block_cipher_mode
+        )
         self.assertEqual(
-            attributes.CryptographicParameters.PaddingMethod(
-                enums.PaddingMethod.ANSI_X9_23),
-            params.padding_method)
+            enums.PaddingMethod.ANSI_X9_23,
+            cryptographic_parameters.padding_method
+        )
         self.assertEqual(
-            attributes.CryptographicParameters.KeyRoleType(
-                enums.KeyRoleType.KEK),
-            params.key_role_type)
+            enums.KeyRoleType.KEK,
+            cryptographic_parameters.key_role_type
+        )
         self.assertEqual(
-            attributes.HashingAlgorithm(enums.HashingAlgorithm.SHA_512),
-            params.hashing_algorithm)
+            enums.HashingAlgorithm.SHA_512,
+            cryptographic_parameters.hashing_algorithm
+        )
         self.assertEqual(
-            attributes.CryptographicParameters.DigitalSignatureAlgorithm(
-                enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA512),
-            params.digital_signature_algorithm)
+            enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA512,
+            cryptographic_parameters.digital_signature_algorithm
+        )
         self.assertEqual(
-            attributes.CryptographicAlgorithm(
-                enums.CryptographicAlgorithm.HMAC_SHA512),
-            params.cryptographic_algorithm)
+            enums.CryptographicAlgorithm.HMAC_SHA512,
+            cryptographic_parameters.cryptographic_algorithm
+        )
+        self.assertEqual(True, cryptographic_parameters.random_iv)
+        self.assertEqual(96, cryptographic_parameters.iv_length)
+        self.assertEqual(None, cryptographic_parameters.tag_length)
+        self.assertEqual(32, cryptographic_parameters.fixed_field_length)
+        self.assertEqual(64, cryptographic_parameters.invocation_field_length)
+        self.assertEqual(None, cryptographic_parameters.counter_length)
+        self.assertEqual(1, cryptographic_parameters.initial_counter_value)
 
     def test_create_cryptographic_domain_parameters(self):
         """

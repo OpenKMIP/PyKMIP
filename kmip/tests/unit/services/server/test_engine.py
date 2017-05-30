@@ -5157,8 +5157,7 @@ class TestKmipEngine(testtools.TestCase):
         uuid = str(obj.unique_identifier)
 
         cryptographic_parameters = attributes.CryptographicParameters(
-            cryptographic_algorithm=attributes.
-            CryptographicAlgorithm(algorithm_b)
+            cryptographic_algorithm=algorithm_b
         )
 
         # Verify when cryptographic_parameters is specified in request
@@ -5226,8 +5225,8 @@ class TestKmipEngine(testtools.TestCase):
         uuid_no_algorithm = str(obj_no_algorithm.unique_identifier)
 
         cryptographic_parameters = attributes.CryptographicParameters(
-            cryptographic_algorithm=attributes.
-            CryptographicAlgorithm(algorithm))
+            cryptographic_algorithm=algorithm
+        )
 
         payload_no_key = mac.MACRequestPayload(
             unique_identifier=attributes.UniqueIdentifier(uuid_no_key),
@@ -5303,8 +5302,7 @@ class TestKmipEngine(testtools.TestCase):
         uuid = str(obj.unique_identifier)
 
         cryptographic_parameters = attributes.CryptographicParameters(
-            cryptographic_algorithm=attributes.
-            CryptographicAlgorithm(algorithm_b)
+            cryptographic_algorithm=algorithm_b
         )
 
         # Verify when cryptographic_parameters is specified in request
@@ -5352,8 +5350,7 @@ class TestKmipEngine(testtools.TestCase):
         uuid = str(obj.unique_identifier)
 
         cryptographic_parameters = attributes.CryptographicParameters(
-            cryptographic_algorithm=attributes.
-            CryptographicAlgorithm(algorithm_b)
+            cryptographic_algorithm=algorithm_b
         )
 
         # Verify when cryptographic_parameters is specified in request

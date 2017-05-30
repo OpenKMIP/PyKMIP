@@ -1700,7 +1700,7 @@ class KmipEngine(object):
         if (payload.cryptographic_parameters and
                 payload.cryptographic_parameters.cryptographic_algorithm):
             algorithm = \
-                payload.cryptographic_parameters.cryptographic_algorithm.value
+                payload.cryptographic_parameters.cryptographic_algorithm
         elif (isinstance(managed_object, objects.Key) and
               managed_object.cryptographic_algorithm):
             algorithm = managed_object.cryptographic_algorithm

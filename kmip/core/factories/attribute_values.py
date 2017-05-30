@@ -136,52 +136,39 @@ class AttributeValueFactory(object):
         return attributes.CryptographicLength(length)
 
     def _create_cryptographic_parameters(self, params):
-        bcm = None
-        padding_method = None
-        hashing_algorithm = None
-        key_role_type = None
-        digital_signature_algorithm = None
-        cryptographic_algorithm = None
-        # TODO: Need to implement other fields of CryptographicParameters (3.6)
+        if params is None:
+            params = {}
 
-        if params is not None:
-
-            if 'block_cipher_mode' in params:
-                bcm = attributes.CryptographicParameters.BlockCipherMode(
-                    params.get('block_cipher_mode'))
-
-            padding_method = None
-            if 'padding_method' in params:
-                padding_method = attributes.CryptographicParameters. \
-                    PaddingMethod(params.get('padding_method'))
-
-            key_role_type = None
-            if 'key_role_type' in params:
-                key_role_type = attributes.CryptographicParameters.KeyRoleType(
-                    params.get('key_role_type'))
-
-            hashing_algorithm = None
-            if 'hashing_algorithm' in params:
-                hashing_algorithm = attributes.HashingAlgorithm(
-                    params.get("hashing_algorithm"))
-
-            if 'digital_signature_algorithm' in params:
-                digital_signature_algorithm = \
-                    attributes.CryptographicParameters. \
-                    DigitalSignatureAlgorithm(
-                        params.get("digital_signature_algorithm"))
-
-            if 'cryptographic_algorithm' in params:
-                cryptographic_algorithm = attributes.CryptographicAlgorithm(
-                    params.get("cryptographic_algorithm"))
-
-        return attributes.CryptographicParameters(
-            block_cipher_mode=bcm,
-            padding_method=padding_method,
-            hashing_algorithm=hashing_algorithm,
-            key_role_type=key_role_type,
-            digital_signature_algorithm=digital_signature_algorithm,
-            cryptographic_algorithm=cryptographic_algorithm)
+        if isinstance(params, dict):
+            return attributes.CryptographicParameters(
+                block_cipher_mode=params.get('block_cipher_mode', None),
+                padding_method=params.get('padding_method', None),
+                hashing_algorithm=params.get('hashing_algorithm', None),
+                key_role_type=params.get('key_role_type', None),
+                digital_signature_algorithm=params.get(
+                    'digital_signature_algorithm',
+                    None
+                ),
+                cryptographic_algorithm=params.get(
+                    'cryptographic_algorithm',
+                    None
+                ),
+                random_iv=params.get('random_iv', None),
+                iv_length=params.get('iv_length', None),
+                tag_length=params.get('tag_length', None),
+                fixed_field_length=params.get('fixed_field_length', None),
+                invocation_field_length=params.get(
+                    'invocation_field_length',
+                    None
+                ),
+                counter_length=params.get('counter_length', None),
+                initial_counter_value=params.get(
+                    'initial_counter_value',
+                    None
+                )
+            )
+        else:
+            raise TypeError("cryptographic parameters must be a dict")
 
     def _create_cryptographic_usage_mask(self, flags):
         mask = None

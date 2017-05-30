@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import six
+
 from kmip.core import enums
 
 from kmip.core.enums import CertificateTypeEnum
@@ -24,6 +26,7 @@ from kmip.core.errors import ErrorStrings
 
 from kmip.core.misc import KeyFormatType
 
+from kmip.core.primitives import Boolean
 from kmip.core.primitives import ByteString
 from kmip.core.primitives import Enumeration
 from kmip.core.primitives import Integer
@@ -255,163 +258,468 @@ class HashingAlgorithm(Enumeration):
 
 
 class CryptographicParameters(Struct):
+    """
+    A set of values for cryptographic operations.
 
-    class BlockCipherMode(Enumeration):
+    A structure containing optional fields describing certain cryptographic
+    parameters to be used when performing cryptographic operations with the
+    associated KMIP object.
+    """
 
-        def __init__(self, value=None):
-            super(CryptographicParameters.BlockCipherMode, self).__init__(
-                enums.BlockCipherMode, value, Tags.BLOCK_CIPHER_MODE)
-
-    class PaddingMethod(Enumeration):
-
-        def __init__(self, value=None):
-            super(CryptographicParameters.PaddingMethod, self).__init__(
-                enums.PaddingMethod, value, Tags.PADDING_METHOD)
-
-    class KeyRoleType(Enumeration):
-
-        def __init__(self, value=None):
-            super(CryptographicParameters.KeyRoleType, self).__init__(
-                enums.KeyRoleType, value, Tags.KEY_ROLE_TYPE)
-
-    class DigitalSignatureAlgorithm(Enumeration):
-
-        def __init__(self, value=None):
-            super(CryptographicParameters.DigitalSignatureAlgorithm,
-                  self).__init__(enums.DigitalSignatureAlgorithm,
-                                 value, Tags.DIGITAL_SIGNATURE_ALGORITHM)
-
-    # TODO: Need to implement other fields of CryptographicParameters (3.6)
     def __init__(self,
                  block_cipher_mode=None,
                  padding_method=None,
                  hashing_algorithm=None,
                  key_role_type=None,
                  digital_signature_algorithm=None,
-                 cryptographic_algorithm=None):
+                 cryptographic_algorithm=None,
+                 random_iv=None,
+                 iv_length=None,
+                 tag_length=None,
+                 fixed_field_length=None,
+                 invocation_field_length=None,
+                 counter_length=None,
+                 initial_counter_value=None):
         super(CryptographicParameters, self).__init__(
             tag=Tags.CRYPTOGRAPHIC_PARAMETERS)
+
+        self._block_cipher_mode = None
+        self._padding_method = None
+        self._hashing_algorithm = None
+        self._key_role_type = None
+        self._digital_signature_algorithm = None
+        self._cryptographic_algorithm = None
+        self._random_iv = None
+        self._iv_length = None
+        self._tag_length = None
+        self._fixed_field_length = None
+        self._invocation_field_length = None
+        self._counter_length = None
+        self._initial_counter_value = None
+
         self.block_cipher_mode = block_cipher_mode
         self.padding_method = padding_method
         self.hashing_algorithm = hashing_algorithm
         self.key_role_type = key_role_type
         self.digital_signature_algorithm = digital_signature_algorithm
         self.cryptographic_algorithm = cryptographic_algorithm
+        self.random_iv = random_iv
+        self.iv_length = iv_length
+        self.tag_length = tag_length
+        self.fixed_field_length = fixed_field_length
+        self.invocation_field_length = invocation_field_length
+        self.counter_length = counter_length
+        self.initial_counter_value = initial_counter_value
+
+    @property
+    def block_cipher_mode(self):
+        if self._block_cipher_mode:
+            return self._block_cipher_mode.value
+        else:
+            return None
+
+    @block_cipher_mode.setter
+    def block_cipher_mode(self, value):
+        if value is None:
+            self._block_cipher_mode = None
+        elif isinstance(value, enums.BlockCipherMode):
+            self._block_cipher_mode = Enumeration(
+                enums.BlockCipherMode,
+                value=value,
+                tag=Tags.BLOCK_CIPHER_MODE
+            )
+        else:
+            raise TypeError(
+                "block cipher mode must be a BlockCipherMode enumeration"
+            )
+
+    @property
+    def padding_method(self):
+        if self._padding_method:
+            return self._padding_method.value
+        else:
+            return None
+
+    @padding_method.setter
+    def padding_method(self, value):
+        if value is None:
+            self._padding_method = None
+        elif isinstance(value, enums.PaddingMethod):
+            self._padding_method = Enumeration(
+                enums.PaddingMethod,
+                value=value,
+                tag=Tags.PADDING_METHOD
+            )
+        else:
+            raise TypeError(
+                "padding method must be a PaddingMethod enumeration"
+            )
+
+    @property
+    def hashing_algorithm(self):
+        if self._hashing_algorithm:
+            return self._hashing_algorithm.value
+        else:
+            return None
+
+    @hashing_algorithm.setter
+    def hashing_algorithm(self, value):
+        if value is None:
+            self._hashing_algorithm = None
+        elif isinstance(value, enums.HashingAlgorithm):
+            self._hashing_algorithm = Enumeration(
+                enums.HashingAlgorithm,
+                value=value,
+                tag=Tags.HASHING_ALGORITHM
+            )
+        else:
+            raise TypeError(
+                "hashing algorithm must be a HashingAlgorithm enumeration"
+            )
+
+    @property
+    def key_role_type(self):
+        if self._key_role_type:
+            return self._key_role_type.value
+        else:
+            return None
+
+    @key_role_type.setter
+    def key_role_type(self, value):
+        if value is None:
+            self._key_role_type = None
+        elif isinstance(value, enums.KeyRoleType):
+            self._key_role_type = Enumeration(
+                enums.KeyRoleType,
+                value=value,
+                tag=Tags.KEY_ROLE_TYPE
+            )
+        else:
+            raise TypeError(
+                "key role type must be a KeyRoleType enumeration"
+            )
+
+    @property
+    def digital_signature_algorithm(self):
+        if self._digital_signature_algorithm:
+            return self._digital_signature_algorithm.value
+        else:
+            return None
+
+    @digital_signature_algorithm.setter
+    def digital_signature_algorithm(self, value):
+        if value is None:
+            self._digital_signature_algorithm = None
+        elif isinstance(value, enums.DigitalSignatureAlgorithm):
+            self._digital_signature_algorithm = Enumeration(
+                enums.DigitalSignatureAlgorithm,
+                value=value,
+                tag=Tags.DIGITAL_SIGNATURE_ALGORITHM
+            )
+        else:
+            raise TypeError(
+                "digital signature algorithm must be a "
+                "DigitalSignatureAlgorithm enumeration"
+            )
+
+    @property
+    def cryptographic_algorithm(self):
+        if self._cryptographic_algorithm:
+            return self._cryptographic_algorithm.value
+        else:
+            return None
+
+    @cryptographic_algorithm.setter
+    def cryptographic_algorithm(self, value):
+        if value is None:
+            self._cryptographic_algorithm = None
+        elif isinstance(value, enums.CryptographicAlgorithm):
+            self._cryptographic_algorithm = Enumeration(
+                enums.CryptographicAlgorithm,
+                value=value,
+                tag=Tags.CRYPTOGRAPHIC_ALGORITHM
+            )
+        else:
+            raise TypeError(
+                "cryptographic algorithm must be a CryptographicAlgorithm "
+                "enumeration"
+            )
+
+    @property
+    def random_iv(self):
+        if self._random_iv:
+            return self._random_iv.value
+        else:
+            return None
+
+    @random_iv.setter
+    def random_iv(self, value):
+        if value is None:
+            self._random_iv = None
+        elif isinstance(value, bool):
+            self._random_iv = Boolean(
+                value=value,
+                tag=Tags.RANDOM_IV
+            )
+        else:
+            raise TypeError("random iv must be a boolean")
+
+    @property
+    def iv_length(self):
+        if self._iv_length:
+            return self._iv_length.value
+        else:
+            return None
+
+    @iv_length.setter
+    def iv_length(self, value):
+        if value is None:
+            self._iv_length = None
+        elif isinstance(value, six.integer_types):
+            self._iv_length = Integer(
+                value=value,
+                tag=Tags.IV_LENGTH
+            )
+        else:
+            raise TypeError("iv length must be an integer")
+
+    @property
+    def tag_length(self):
+        if self._tag_length:
+            return self._tag_length.value
+        else:
+            return None
+
+    @tag_length.setter
+    def tag_length(self, value):
+        if value is None:
+            self._tag_length = None
+        elif isinstance(value, six.integer_types):
+            self._tag_length = Integer(
+                value=value,
+                tag=Tags.TAG_LENGTH
+            )
+        else:
+            raise TypeError("tag length must be an integer")
+
+    @property
+    def fixed_field_length(self):
+        if self._fixed_field_length:
+            return self._fixed_field_length.value
+        else:
+            return None
+
+    @fixed_field_length.setter
+    def fixed_field_length(self, value):
+        if value is None:
+            self._fixed_field_length = None
+        elif isinstance(value, six.integer_types):
+            self._fixed_field_length = Integer(
+                value=value,
+                tag=Tags.FIXED_FIELD_LENGTH
+            )
+        else:
+            raise TypeError("fixed field length must be an integer")
+
+    @property
+    def invocation_field_length(self):
+        if self._invocation_field_length:
+            return self._invocation_field_length.value
+        else:
+            return None
+
+    @invocation_field_length.setter
+    def invocation_field_length(self, value):
+        if value is None:
+            self._invocation_field_length = None
+        elif isinstance(value, six.integer_types):
+            self._invocation_field_length = Integer(
+                value=value,
+                tag=Tags.INVOCATION_FIELD_LENGTH
+            )
+        else:
+            raise TypeError("invocation field length must be an integer")
+
+    @property
+    def counter_length(self):
+        if self._counter_length:
+            return self._counter_length.value
+        else:
+            return None
+
+    @counter_length.setter
+    def counter_length(self, value):
+        if value is None:
+            self._counter_length = None
+        elif isinstance(value, six.integer_types):
+            self._counter_length = Integer(
+                value=value,
+                tag=Tags.COUNTER_LENGTH
+            )
+        else:
+            raise TypeError("counter length must be an integer")
+
+    @property
+    def initial_counter_value(self):
+        if self._initial_counter_value:
+            return self._initial_counter_value.value
+        else:
+            return None
+
+    @initial_counter_value.setter
+    def initial_counter_value(self, value):
+        if value is None:
+            self._initial_counter_value = None
+        elif isinstance(value, six.integer_types):
+            self._initial_counter_value = Integer(
+                value=value,
+                tag=Tags.INITIAL_COUNTER_VALUE
+            )
+        else:
+            raise TypeError("initial counter value must be an integer")
 
     def read(self, istream):
         super(CryptographicParameters, self).read(istream)
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.BLOCK_CIPHER_MODE, tstream):
-            self.block_cipher_mode = CryptographicParameters.BlockCipherMode()
-            self.block_cipher_mode.read(tstream)
+            self._block_cipher_mode = Enumeration(
+                enums.BlockCipherMode,
+                tag=Tags.BLOCK_CIPHER_MODE
+            )
+            self._block_cipher_mode.read(tstream)
 
         if self.is_tag_next(Tags.PADDING_METHOD, tstream):
-            self.padding_method = CryptographicParameters.PaddingMethod()
-            self.padding_method.read(tstream)
+            self._padding_method = Enumeration(
+                enums.PaddingMethod,
+                tag=Tags.PADDING_METHOD
+            )
+            self._padding_method.read(tstream)
 
         if self.is_tag_next(Tags.HASHING_ALGORITHM, tstream):
-            self.hashing_algorithm = HashingAlgorithm()
-            self.hashing_algorithm.read(tstream)
+            self._hashing_algorithm = Enumeration(
+                enums.HashingAlgorithm,
+                tag=Tags.HASHING_ALGORITHM
+            )
+            self._hashing_algorithm.read(tstream)
 
         if self.is_tag_next(Tags.KEY_ROLE_TYPE, tstream):
-            self.key_role_type = CryptographicParameters.KeyRoleType()
-            self.key_role_type.read(tstream)
+            self._key_role_type = Enumeration(
+                enums.KeyRoleType,
+                tag=Tags.KEY_ROLE_TYPE
+            )
+            self._key_role_type.read(tstream)
 
         if self.is_tag_next(Tags.DIGITAL_SIGNATURE_ALGORITHM, tstream):
-            self.digital_signature_algorithm = \
-                CryptographicParameters.DigitalSignatureAlgorithm()
-            self.digital_signature_algorithm.read(tstream)
+            self._digital_signature_algorithm = Enumeration(
+                enums.DigitalSignatureAlgorithm,
+                tag=Tags.DIGITAL_SIGNATURE_ALGORITHM
+            )
+            self._digital_signature_algorithm.read(tstream)
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_ALGORITHM, tstream):
-            self.cryptographic_algorithm = CryptographicAlgorithm()
-            self.cryptographic_algorithm.read(tstream)
+            self._cryptographic_algorithm = Enumeration(
+                enums.CryptographicAlgorithm,
+                tag=Tags.CRYPTOGRAPHIC_ALGORITHM
+            )
+            self._cryptographic_algorithm.read(tstream)
+
+        if self.is_tag_next(Tags.RANDOM_IV, tstream):
+            self._random_iv = Boolean(tag=Tags.RANDOM_IV)
+            self._random_iv.read(tstream)
+
+        if self.is_tag_next(Tags.IV_LENGTH, tstream):
+            self._iv_length = Integer(tag=Tags.IV_LENGTH)
+            self._iv_length.read(tstream)
+
+        if self.is_tag_next(Tags.TAG_LENGTH, tstream):
+            self._tag_length = Integer(tag=Tags.TAG_LENGTH)
+            self._tag_length.read(tstream)
+
+        if self.is_tag_next(Tags.FIXED_FIELD_LENGTH, tstream):
+            self._fixed_field_length = Integer(tag=Tags.FIXED_FIELD_LENGTH)
+            self._fixed_field_length.read(tstream)
+
+        if self.is_tag_next(Tags.INVOCATION_FIELD_LENGTH, tstream):
+            self._invocation_field_length = Integer(
+                tag=Tags.INVOCATION_FIELD_LENGTH
+            )
+            self._invocation_field_length.read(tstream)
+
+        if self.is_tag_next(Tags.COUNTER_LENGTH, tstream):
+            self._counter_length = Integer(tag=Tags.COUNTER_LENGTH)
+            self._counter_length.read(tstream)
+
+        if self.is_tag_next(Tags.INITIAL_COUNTER_VALUE, tstream):
+            self._initial_counter_value = Integer(
+                tag=Tags.INITIAL_COUNTER_VALUE
+            )
+            self._initial_counter_value.read(tstream)
 
         self.is_oversized(tstream)
-        self.validate()
 
     def write(self, ostream):
         tstream = BytearrayStream()
 
-        # Write the contents of the request payload
-        if self.block_cipher_mode is not None:
-            self.block_cipher_mode.write(tstream)
-        if self.padding_method is not None:
-            self.padding_method.write(tstream)
-        if self.hashing_algorithm is not None:
-            self.hashing_algorithm.write(tstream)
-        if self.key_role_type is not None:
-            self.key_role_type.write(tstream)
-        if self.digital_signature_algorithm is not None:
-            self.digital_signature_algorithm.write(tstream)
-        if self.cryptographic_algorithm is not None:
-            self.cryptographic_algorithm.write(tstream)
+        if self._block_cipher_mode:
+            self._block_cipher_mode.write(tstream)
+        if self._padding_method:
+            self._padding_method.write(tstream)
+        if self._hashing_algorithm:
+            self._hashing_algorithm.write(tstream)
+        if self._key_role_type:
+            self._key_role_type.write(tstream)
+        if self._digital_signature_algorithm:
+            self._digital_signature_algorithm.write(tstream)
+        if self._cryptographic_algorithm:
+            self._cryptographic_algorithm.write(tstream)
+        if self._random_iv:
+            self._random_iv.write(tstream)
+        if self._iv_length:
+            self._iv_length.write(tstream)
+        if self._tag_length:
+            self._tag_length.write(tstream)
+        if self._fixed_field_length:
+            self._fixed_field_length.write(tstream)
+        if self._invocation_field_length:
+            self._invocation_field_length.write(tstream)
+        if self._counter_length:
+            self._counter_length.write(tstream)
+        if self._initial_counter_value:
+            self._initial_counter_value.write(tstream)
 
-        # Write the length and value of the request payload
         self.length = tstream.length()
         super(CryptographicParameters, self).write(ostream)
         ostream.write(tstream.buffer)
-
-    def validate(self):
-        self.__validate()
-
-    def __validate(self):
-        if self.block_cipher_mode is not None:
-            if not isinstance(self.block_cipher_mode, self.BlockCipherMode):
-                msg = "Invalid block cipher mode"
-                msg += "; expected {0}, received {1}".format(
-                    self.BlockCipherMode, self.block_cipher_mode)
-                raise TypeError(msg)
-        if self.padding_method is not None:
-            if not isinstance(self.padding_method, self.PaddingMethod):
-                msg = "Invalid padding method"
-                msg += "; expected {0}, received {1}".format(
-                    self.PaddingMethod, self.padding_method)
-                raise TypeError(msg)
-        if self.hashing_algorithm is not None:
-            if not isinstance(self.hashing_algorithm, HashingAlgorithm):
-                msg = "Invalid hashing algorithm"
-                msg += "; expected {0}, received {1}".format(
-                    HashingAlgorithm, self.hashing_algorithm)
-                raise TypeError(msg)
-        if self.key_role_type is not None:
-            if not isinstance(self.key_role_type, self.KeyRoleType):
-                msg = "Invalid key role type"
-                msg += "; expected {0}, received {1}".format(
-                    self.KeyRoleType, self.key_role_type)
-                raise TypeError(msg)
-        if self.digital_signature_algorithm is not None:
-            if not isinstance(
-                self.digital_signature_algorithm,
-                CryptographicParameters.DigitalSignatureAlgorithm
-            ):
-                msg = "Invalid digital signature algorithm"
-                msg += "; expected {0}, received {1}".format(
-                    CryptographicParameters.DigitalSignatureAlgorithm,
-                    self.digital_signature_algorithm)
-                raise TypeError(msg)
-        if self.cryptographic_algorithm is not None:
-            if not isinstance(self.cryptographic_algorithm,
-                              CryptographicAlgorithm):
-                msg = "Invalid cryptograhic algorithm"
-                msg += "; expected {0}, received {1}".format(
-                    CryptographicAlgorithm, self.cryptographic_algorithm)
-                raise TypeError(msg)
 
     def __eq__(self, other):
         if isinstance(other, CryptographicParameters):
             if self.block_cipher_mode != other.block_cipher_mode:
                 return False
-            elif self.key_role_type != other.key_role_type:
+            elif self.padding_method != other.padding_method:
                 return False
             elif self.hashing_algorithm != other.hashing_algorithm:
+                return False
+            elif self.key_role_type != other.key_role_type:
                 return False
             elif self.digital_signature_algorithm \
                     != other.digital_signature_algorithm:
                 return False
             elif self.cryptographic_algorithm != other.cryptographic_algorithm:
                 return False
-            elif self.padding_method != other.padding_method:
+            elif self.random_iv != other.random_iv:
+                return False
+            elif self.iv_length != other.iv_length:
+                return False
+            elif self.tag_length != other.tag_length:
+                return False
+            elif self.fixed_field_length != other.fixed_field_length:
+                return False
+            elif self.invocation_field_length != other.invocation_field_length:
+                return False
+            elif self.counter_length != other.counter_length:
+                return False
+            elif self.initial_counter_value != other.initial_counter_value:
                 return False
             else:
                 return True
@@ -421,6 +729,47 @@ class CryptographicParameters(Struct):
             return not self == other
         else:
             return NotImplemented
+
+    def __repr__(self):
+        args = ", ".join([
+            "block_cipher_mode={0}".format(self.block_cipher_mode),
+            "padding_method={0}".format(self.padding_method),
+            "hashing_algorithm={0}".format(self.hashing_algorithm),
+            "key_role_type={0}".format(self.key_role_type),
+            "digital_signature_algorithm={0}".format(
+                self.digital_signature_algorithm
+            ),
+            "cryptographic_algorithm={0}".format(
+                self.cryptographic_algorithm
+            ),
+            "random_iv={0}".format(self.random_iv),
+            "iv_length={0}".format(self.iv_length),
+            "tag_length={0}".format(self.tag_length),
+            "fixed_field_length={0}".format(self.fixed_field_length),
+            "invocation_field_length={0}".format(
+                self.invocation_field_length
+            ),
+            "counter_length={0}".format(self.counter_length),
+            "initial_counter_value={0}".format(self.initial_counter_value)
+        ])
+        return "CryptographicParameters({0})".format(args)
+
+    def __str__(self):
+        return str({
+            'block_cipher_mode': self.block_cipher_mode,
+            'padding_method': self.padding_method,
+            'hashing_algorithm': self.hashing_algorithm,
+            'key_role_type': self.key_role_type,
+            'digital_signature_algorithm': self.digital_signature_algorithm,
+            'cryptographic_algorithm': self.cryptographic_algorithm,
+            'random_iv': self.random_iv,
+            'iv_length': self.iv_length,
+            'tag_length': self.tag_length,
+            'fixed_field_length': self.fixed_field_length,
+            'invocation_field_length': self.invocation_field_length,
+            'counter_length': self.counter_length,
+            'initial_counter_value': self.initial_counter_value
+        })
 
 
 class CertificateType(Enumeration):
