@@ -20,6 +20,7 @@ from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
+from kmip.core.messages.payloads import encrypt
 from kmip.core.messages.payloads import get
 from kmip.core.messages.payloads import get_attribute_list
 from kmip.core.messages.payloads import get_attributes
@@ -74,3 +75,6 @@ class ResponsePayloadFactory(PayloadFactory):
 
     def _create_mac_payload(self):
         return mac.MACResponsePayload()
+
+    def _create_encrypt_payload(self):
+        return encrypt.EncryptResponsePayload()
