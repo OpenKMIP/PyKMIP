@@ -87,7 +87,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         value = {
             'block_cipher_mode': enums.BlockCipherMode.NIST_KEY_WRAP,
-            'padding_method': enums.PaddingMethod.ANSI_X9_23,
+            'padding_method': enums.PaddingMethod.ANSI_X923,
             'key_role_type': enums.KeyRoleType.KEK,
             'hashing_algorithm': enums.HashingAlgorithm.SHA_512,
             'digital_signature_algorithm':
@@ -116,7 +116,7 @@ class TestAttributeValueFactory(testtools.TestCase):
             cryptographic_parameters.block_cipher_mode
         )
         self.assertEqual(
-            enums.PaddingMethod.ANSI_X9_23,
+            enums.PaddingMethod.ANSI_X923,
             cryptographic_parameters.padding_method
         )
         self.assertEqual(
