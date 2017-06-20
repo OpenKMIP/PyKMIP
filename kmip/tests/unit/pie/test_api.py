@@ -59,6 +59,18 @@ class DummyKmipClient(api.KmipClient):
     def destroy(self, uid):
         super(DummyKmipClient, self).destroy(uid)
 
+    def encrypt(self,
+                data,
+                uid=None,
+                cryptographic_parameters=None,
+                iv_counter_nonce=None):
+        super(DummyKmipClient, self).encrypt(
+            data,
+            uid,
+            cryptographic_parameters,
+            iv_counter_nonce
+        )
+
     def mac(self, data, uid, algorithm):
         super(DummyKmipClient, self).mac(data, uid, algorithm)
 
@@ -146,6 +158,14 @@ class TestKmipClient(testtools.TestCase):
         """
         dummy = DummyKmipClient()
         dummy.destroy('uid')
+
+    def test_encrypt(self):
+        """
+        Test that the encrypt method can be called without error.
+        :return:
+        """
+        dummy = DummyKmipClient()
+        dummy.encrypt('data', 'uid', 'crypto_params', 'iv')
 
     def test_mac(self):
         """
