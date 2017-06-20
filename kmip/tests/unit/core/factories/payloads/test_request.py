@@ -21,6 +21,7 @@ from kmip.core.factories.payloads.request import RequestPayloadFactory
 from kmip.core.messages.payloads import activate
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
+from kmip.core.messages.payloads import decrypt
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import encrypt
@@ -213,10 +214,8 @@ class TestRequestPayloadFactory(testtools.TestCase):
         self._test_payload_type(payload, encrypt.EncryptRequestPayload)
 
     def test_create_decrypt_payload(self):
-        self._test_not_implemented(
-            self.factory.create,
-            enums.Operation.DECRYPT
-        )
+        payload = self.factory.create(enums.Operation.DECRYPT)
+        self._test_payload_type(payload, decrypt.DecryptRequestPayload)
 
     def test_create_sign_payload(self):
         self._test_not_implemented(self.factory.create, enums.Operation.SIGN)
