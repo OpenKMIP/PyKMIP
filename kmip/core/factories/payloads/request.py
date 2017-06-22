@@ -19,6 +19,7 @@ from kmip.core.messages.payloads import activate
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import decrypt
+from kmip.core.messages.payloads import derive_key
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import encrypt
@@ -43,6 +44,9 @@ class RequestPayloadFactory(PayloadFactory):
 
     def _create_register_payload(self):
         return register.RegisterRequestPayload()
+
+    def _create_derive_key_payload(self):
+        return derive_key.DeriveKeyRequestPayload()
 
     def _create_rekey_key_pair_payload(self):
         return rekey_key_pair.RekeyKeyPairRequestPayload()
