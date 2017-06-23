@@ -19,6 +19,7 @@ from kmip.core.attributes import ApplicationData
 from kmip.core.attributes import ApplicationNamespace
 from kmip.core.attributes import CertificateType
 from kmip.core.attributes import CryptographicParameters
+from kmip.core.attributes import DerivationParameters
 from kmip.core.attributes import DigestValue
 from kmip.core.attributes import HashingAlgorithm
 from kmip.core.attributes import Name
@@ -1594,5 +1595,806 @@ class TestCryptographicParameters(TestCase):
             'initial_counter_value': 1
         })
         observed = str(cryptographic_parameters)
+
+        self.assertEqual(expected, observed)
+
+
+class TestDerivationParameters(TestCase):
+    """
+    Test suite for the DerivationParameters struct.
+    """
+
+    def setUp(self):
+        super(TestDerivationParameters, self).setUp()
+
+        # Encoding obtained in part from the KMIP 1.1 testing document,
+        # Section 11.1. The rest of the encoding for KMIP 1.2+ features was
+        # built by hand; later KMIP testing documents do not include the
+        # encoding, so a manual construction is necessary.
+        #
+        # This encoding matches the following set of values:
+        # Cryptographic Parameters
+        #     Block Cipher Mode - CBC
+        #     Padding Method - PKCS5
+        #     Hashing Algorithm - SHA-1
+        #     Key Role Type - KEK
+        #     Digital Signature Algorithm - SHA-256 with RSA
+        #     Cryptographic Algorithm - AES
+        #     Random IV - True
+        #     IV Length - 96
+        #     Tag Length - 128
+        #     Fixed Field Length - 32
+        #     Invocation Field Length - 64
+        #     Counter Length - 0
+        #     Initial Counter Value - 1
+        # Initialization Vector - 0x39487432492834A3
+        # Derivation Data - 0xFAD98B6ACA6D87DD
+        # Salt - 0x8F99212AA15435CD
+        # Iteration Count - 10000
+
+        self.full_encoding = BytearrayStream(
+            b'\x42\x00\x32\x01\x00\x00\x01\x18'
+            b'\x42\x00\x2B\x01\x00\x00\x00\xD0'
+            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x5F\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b'\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
+            b'\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\xC5\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b'\x42\x00\xCD\x02\x00\x00\x00\x04\x00\x00\x00\x60\x00\x00\x00\x00'
+            b'\x42\x00\xCE\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+            b'\x42\x00\xCF\x02\x00\x00\x00\x04\x00\x00\x00\x20\x00\x00\x00\x00'
+            b'\x42\x00\xD2\x02\x00\x00\x00\x04\x00\x00\x00\x40\x00\x00\x00\x00'
+            b'\x42\x00\xD0\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xD1\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x3A\x08\x00\x00\x00\x08\x39\x48\x74\x32\x49\x28\x34\xA3'
+            b'\x42\x00\x30\x08\x00\x00\x00\x08\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+            b'\x42\x00\x84\x08\x00\x00\x00\x08\x8F\x99\x21\x2A\xA1\x54\x35\xCD'
+            b'\x42\x00\x3C\x02\x00\x00\x00\x04\x00\x00\x27\x10\x00\x00\x00\x00'
+        )
+
+        # Adapted from the full encoding above. This encoding matches the
+        # following set of values:
+        # Initialization Vector - 0x39487432492834A3
+        # Derivation Data - 0xFAD98B6ACA6D87DD
+
+        self.partial_encoding = BytearrayStream(
+            b'\x42\x00\x32\x01\x00\x00\x00\x20'
+            b'\x42\x00\x3A\x08\x00\x00\x00\x08\x39\x48\x74\x32\x49\x28\x34\xA3'
+            b'\x42\x00\x30\x08\x00\x00\x00\x08\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+        )
+
+        self.empty_encoding = BytearrayStream(
+            b'\x42\x00\x32\x01\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestDerivationParameters, self).tearDown()
+
+    def test_init(self):
+        """
+        Test that a DerivationParameters struct can be constructed with
+        no arguments.
+        """
+        derivation_parameters = DerivationParameters()
+
+        self.assertEqual(None, derivation_parameters.cryptographic_parameters)
+        self.assertEqual(None, derivation_parameters.initialization_vector)
+        self.assertEqual(None, derivation_parameters.derivation_data)
+        self.assertEqual(None, derivation_parameters.salt)
+        self.assertEqual(None, derivation_parameters.iteration_count)
+
+    def test_init_with_args(self):
+        """
+        Test that a DerivationParameters struct can be constructed with
+        valid values.
+        """
+        cryptographic_parameters = CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.CTR,
+            padding_method=enums.PaddingMethod.NONE,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            key_role_type=enums.KeyRoleType.BDK,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
+            SHA1_WITH_RSA_ENCRYPTION,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.TRIPLE_DES,
+            random_iv=False,
+            iv_length=128,
+            tag_length=256,
+            fixed_field_length=48,
+            invocation_field_length=60,
+            counter_length=20,
+            initial_counter_value=2
+        )
+        derivation_parameters = DerivationParameters(
+            cryptographic_parameters=cryptographic_parameters,
+            initialization_vector=b'\x39\x48\x74\x32\x49\x28\x34\xA3',
+            derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD',
+            salt=b'\x8F\x99\x21\x2A\xA1\x54\x35\xCD',
+            iteration_count=10000
+        )
+
+        self.assertIsInstance(
+            derivation_parameters.cryptographic_parameters,
+            CryptographicParameters
+        )
+        parameters = derivation_parameters.cryptographic_parameters
+        self.assertEqual(
+            enums.BlockCipherMode.CTR,
+            parameters.block_cipher_mode
+        )
+        self.assertEqual(
+            enums.PaddingMethod.NONE,
+            parameters.padding_method
+        )
+        self.assertEqual(
+            enums.HashingAlgorithm.SHA_256,
+            parameters.hashing_algorithm
+        )
+        self.assertEqual(
+            enums.KeyRoleType.BDK,
+            parameters.key_role_type
+        )
+        self.assertEqual(
+            enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION,
+            parameters.digital_signature_algorithm
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.TRIPLE_DES,
+            parameters.cryptographic_algorithm
+        )
+        self.assertEqual(False, parameters.random_iv)
+        self.assertEqual(128, parameters.iv_length)
+        self.assertEqual(256, parameters.tag_length)
+        self.assertEqual(48, parameters.fixed_field_length)
+        self.assertEqual(60, parameters.invocation_field_length)
+        self.assertEqual(20, parameters.counter_length)
+        self.assertEqual(2, parameters.initial_counter_value)
+
+        self.assertEqual(
+            (
+                b'\x39\x48\x74\x32\x49\x28\x34\xA3'
+            ),
+            derivation_parameters.initialization_vector
+        )
+        self.assertEqual(
+            (
+                b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+            ),
+            derivation_parameters.derivation_data
+        )
+        self.assertEqual(
+            (
+                b'\x8F\x99\x21\x2A\xA1\x54\x35\xCD'
+            ),
+            derivation_parameters.salt
+        )
+        self.assertEqual(10000, derivation_parameters.iteration_count)
+
+    def test_invalid_cryptographic_parameters(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the cryptographic parameters of a DerivationParameters struct.
+        """
+        kwargs = {'cryptographic_parameters': 'invalid'}
+        self.assertRaisesRegexp(
+            TypeError,
+            "cryptographic parameters must be a CryptographicParameters "
+            "struct",
+            DerivationParameters,
+            **kwargs
+        )
+
+        derivation_parameters = DerivationParameters()
+        args = (derivation_parameters, 'cryptographic_parameters', 'invalid')
+        self.assertRaisesRegexp(
+            TypeError,
+            "cryptographic parameters must be a CryptographicParameters "
+            "struct",
+            setattr,
+            *args
+        )
+
+    def test_invalid_initialization_vector(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the initialization vector of a DerivationParameters struct.
+        """
+        derivation_parameters = DerivationParameters()
+        args = (derivation_parameters, 'initialization_vector', 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "initialization vector must be bytes",
+            setattr,
+            *args
+        )
+
+    def test_invalid_derivation_data(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the derivation data of a DerivationParameters struct.
+        """
+        derivation_parameters = DerivationParameters()
+        args = (derivation_parameters, 'derivation_data', 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "derivation data must be bytes",
+            setattr,
+            *args
+        )
+
+    def test_invalid_salt(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the salt of a DerivationParameters struct.
+        """
+        derivation_parameters = DerivationParameters()
+        args = (derivation_parameters, 'salt', 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "salt must be bytes",
+            setattr,
+            *args
+        )
+
+    def test_invalid_iteration_count(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the iteration count of a DerivationParameters struct.
+        """
+        derivation_parameters = DerivationParameters()
+        args = (derivation_parameters, 'iteration_count', 'invalid')
+        self.assertRaisesRegexp(
+            TypeError,
+            "iteration count must be an integer",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that a DerivationParameters struct can be read from a data
+        stream.
+        """
+        derivation_parameters = DerivationParameters()
+
+        self.assertEqual(None, derivation_parameters.cryptographic_parameters)
+        self.assertEqual(None, derivation_parameters.initialization_vector)
+        self.assertEqual(None, derivation_parameters.derivation_data)
+        self.assertEqual(None, derivation_parameters.salt)
+        self.assertEqual(None, derivation_parameters.iteration_count)
+
+        derivation_parameters.read(self.full_encoding)
+
+        self.assertIsInstance(
+            derivation_parameters.cryptographic_parameters,
+            CryptographicParameters
+        )
+        cryptographic_parameters = \
+            derivation_parameters.cryptographic_parameters
+        self.assertEqual(
+            enums.BlockCipherMode.CBC,
+            cryptographic_parameters.block_cipher_mode
+        )
+        self.assertEqual(
+            enums.PaddingMethod.PKCS5,
+            cryptographic_parameters.padding_method
+        )
+        self.assertEqual(
+            enums.HashingAlgorithm.SHA_1,
+            cryptographic_parameters.hashing_algorithm
+        )
+        self.assertEqual(
+            enums.KeyRoleType.KEK,
+            cryptographic_parameters.key_role_type
+        )
+        self.assertEqual(
+            enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+            cryptographic_parameters.digital_signature_algorithm
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            cryptographic_parameters.cryptographic_algorithm
+        )
+        self.assertEqual(True, cryptographic_parameters.random_iv)
+        self.assertEqual(96, cryptographic_parameters.iv_length)
+        self.assertEqual(128, cryptographic_parameters.tag_length)
+        self.assertEqual(32, cryptographic_parameters.fixed_field_length)
+        self.assertEqual(64, cryptographic_parameters.invocation_field_length)
+        self.assertEqual(0, cryptographic_parameters.counter_length)
+        self.assertEqual(1, cryptographic_parameters.initial_counter_value)
+
+        self.assertEqual(
+            (
+                b'\x39\x48\x74\x32\x49\x28\x34\xA3'
+            ),
+            derivation_parameters.initialization_vector
+        )
+        self.assertEqual(
+            (
+                b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+            ),
+            derivation_parameters.derivation_data
+        )
+        self.assertEqual(
+            (
+                b'\x8F\x99\x21\x2A\xA1\x54\x35\xCD'
+            ),
+            derivation_parameters.salt
+        )
+        self.assertEqual(10000, derivation_parameters.iteration_count)
+
+    def test_read_partial(self):
+        """
+        Test that a DerivationParameters struct can be read from a partial
+        data stream.
+        """
+        derivation_parameters = DerivationParameters()
+
+        self.assertEqual(None, derivation_parameters.cryptographic_parameters)
+        self.assertEqual(None, derivation_parameters.initialization_vector)
+        self.assertEqual(None, derivation_parameters.derivation_data)
+        self.assertEqual(None, derivation_parameters.salt)
+        self.assertEqual(None, derivation_parameters.iteration_count)
+
+        derivation_parameters.read(self.partial_encoding)
+
+        self.assertEqual(None, derivation_parameters.cryptographic_parameters)
+        self.assertEqual(
+            (
+                b'\x39\x48\x74\x32\x49\x28\x34\xA3'
+            ),
+            derivation_parameters.initialization_vector
+        )
+        self.assertEqual(
+            (
+                b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+            ),
+            derivation_parameters.derivation_data
+        )
+        self.assertEqual(None, derivation_parameters.salt)
+        self.assertEqual(None, derivation_parameters.iteration_count)
+
+    def test_read_empty(self):
+        """
+        Test that a DerivationParameters struct can be read from an empty
+        data stream.
+        """
+        derivation_parameters = DerivationParameters()
+
+        self.assertEqual(None, derivation_parameters.cryptographic_parameters)
+        self.assertEqual(None, derivation_parameters.initialization_vector)
+        self.assertEqual(None, derivation_parameters.derivation_data)
+        self.assertEqual(None, derivation_parameters.salt)
+        self.assertEqual(None, derivation_parameters.iteration_count)
+
+        derivation_parameters.read(self.empty_encoding)
+
+        self.assertEqual(None, derivation_parameters.cryptographic_parameters)
+        self.assertEqual(None, derivation_parameters.initialization_vector)
+        self.assertEqual(None, derivation_parameters.derivation_data)
+        self.assertEqual(None, derivation_parameters.salt)
+        self.assertEqual(None, derivation_parameters.iteration_count)
+
+    def test_write(self):
+        """
+        Test that a DerivationParameters struct can be written to a data
+        stream.
+        """
+        cryptographic_parameters = CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.CBC,
+            padding_method=enums.PaddingMethod.PKCS5,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_1,
+            key_role_type=enums.KeyRoleType.KEK,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
+            SHA256_WITH_RSA_ENCRYPTION,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            random_iv=True,
+            iv_length=96,
+            tag_length=128,
+            fixed_field_length=32,
+            invocation_field_length=64,
+            counter_length=0,
+            initial_counter_value=1
+        )
+        derivation_parameters = DerivationParameters(
+            cryptographic_parameters=cryptographic_parameters,
+            initialization_vector=b'\x39\x48\x74\x32\x49\x28\x34\xA3',
+            derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD',
+            salt=b'\x8F\x99\x21\x2A\xA1\x54\x35\xCD',
+            iteration_count=10000
+        )
+        stream = BytearrayStream()
+        derivation_parameters.write(stream)
+
+        self.assertEqual(len(self.full_encoding), len(stream))
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_write_partial(self):
+        """
+        Test that a partially defined DerivationParameters struct can be
+        written to a data stream.
+        """
+        derivation_parameters = DerivationParameters(
+            initialization_vector=b'\x39\x48\x74\x32\x49\x28\x34\xA3',
+            derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD',
+        )
+        stream = BytearrayStream()
+        derivation_parameters.write(stream)
+
+        self.assertEqual(len(self.partial_encoding), len(stream))
+        self.assertEqual(str(self.partial_encoding), str(stream))
+
+    def test_write_empty(self):
+        """
+        Test that an empty DerivationParameters struct can be written to a
+        data stream.
+        """
+        derivation_parameters = DerivationParameters()
+        stream = BytearrayStream()
+        derivation_parameters.write(stream)
+
+        self.assertEqual(len(self.empty_encoding), len(stream))
+        self.assertEqual(str(self.empty_encoding), str(stream))
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        DerivationParameters structs with the same data.
+        """
+        a = DerivationParameters()
+        b = DerivationParameters()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = DerivationParameters(
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.CBC,
+                padding_method=enums.PaddingMethod.PKCS5,
+                hashing_algorithm=enums.HashingAlgorithm.SHA_1,
+                key_role_type=enums.KeyRoleType.KEK,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
+                SHA256_WITH_RSA_ENCRYPTION,
+                cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+                random_iv=True,
+                iv_length=96,
+                tag_length=128,
+                fixed_field_length=32,
+                invocation_field_length=64,
+                counter_length=0,
+                initial_counter_value=1
+            ),
+            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
+            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
+            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
+            iteration_count=1000
+        )
+        b = DerivationParameters(
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.CBC,
+                padding_method=enums.PaddingMethod.PKCS5,
+                hashing_algorithm=enums.HashingAlgorithm.SHA_1,
+                key_role_type=enums.KeyRoleType.KEK,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
+                SHA256_WITH_RSA_ENCRYPTION,
+                cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+                random_iv=True,
+                iv_length=96,
+                tag_length=128,
+                fixed_field_length=32,
+                invocation_field_length=64,
+                counter_length=0,
+                initial_counter_value=1
+            ),
+            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
+            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
+            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
+            iteration_count=1000
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_cryptographic_parameters(self):
+        """
+        Test that the equality operator returns False when comparing two
+        DerivationParameters structs with different cryptographic parameters.
+        """
+        a = DerivationParameters(
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.CBC
+            )
+        )
+        b = DerivationParameters(
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.GCM
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_initialization_vector(self):
+        """
+        Test that the equality operator returns False when comparing two
+        DerivationParameters structs with different initialization vectors.
+        """
+        a = DerivationParameters(initialization_vector=b'\x01')
+        b = DerivationParameters(initialization_vector=b'\x02')
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_derivation_data(self):
+        """
+        Test that the equality operator returns False when comparing two
+        DerivationParameters structs with different derivation data.
+        """
+        a = DerivationParameters(derivation_data=b'\x01')
+        b = DerivationParameters(derivation_data=b'\x02')
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_salt(self):
+        """
+        Test that the equality operator returns False when comparing two
+        DerivationParameters structs with different salts.
+        """
+        a = DerivationParameters(salt=b'\x01')
+        b = DerivationParameters(salt=b'\x02')
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_iteration_count(self):
+        """
+        Test that the equality operator returns False when comparing two
+        DerivationParameters structs with different iteration counts.
+        """
+        a = DerivationParameters(iteration_count=1)
+        b = DerivationParameters(iteration_count=2)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing two
+        DerivationParameters structs with different types.
+        """
+        a = DerivationParameters()
+        b = 'invalid'
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        DerivationParameters structs with the same data.
+        """
+        a = DerivationParameters()
+        b = DerivationParameters()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = DerivationParameters(
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.CBC,
+                padding_method=enums.PaddingMethod.PKCS5,
+                hashing_algorithm=enums.HashingAlgorithm.SHA_1,
+                key_role_type=enums.KeyRoleType.KEK,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
+                SHA256_WITH_RSA_ENCRYPTION,
+                cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+                random_iv=True,
+                iv_length=96,
+                tag_length=128,
+                fixed_field_length=32,
+                invocation_field_length=64,
+                counter_length=0,
+                initial_counter_value=1
+            ),
+            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
+            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
+            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
+            iteration_count=1000
+        )
+        b = DerivationParameters(
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.CBC,
+                padding_method=enums.PaddingMethod.PKCS5,
+                hashing_algorithm=enums.HashingAlgorithm.SHA_1,
+                key_role_type=enums.KeyRoleType.KEK,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
+                SHA256_WITH_RSA_ENCRYPTION,
+                cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+                random_iv=True,
+                iv_length=96,
+                tag_length=128,
+                fixed_field_length=32,
+                invocation_field_length=64,
+                counter_length=0,
+                initial_counter_value=1
+            ),
+            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
+            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
+            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
+            iteration_count=1000
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_cryptographic_parameters(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        DerivationParameters structs with different cryptographic parameters.
+        """
+        a = DerivationParameters(
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.CBC
+            )
+        )
+        b = DerivationParameters(
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.GCM
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_initialization_vectors(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        DerivationParameters structs with different initialization vectors.
+        """
+        a = DerivationParameters(initialization_vector=b'\x01')
+        b = DerivationParameters(initialization_vector=b'\x02')
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_derivation_data(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        DerivationParameters structs with different derivation data.
+        """
+        a = DerivationParameters(derivation_data=b'\x01')
+        b = DerivationParameters(derivation_data=b'\x02')
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_salt(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        DerivationParameters structs with different salts.
+        """
+        a = DerivationParameters(salt=b'\x01')
+        b = DerivationParameters(salt=b'\x02')
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_iteration_counts(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        DerivationParameters structs with different iteration counts.
+        """
+        a = DerivationParameters(iteration_count=1)
+        b = DerivationParameters(iteration_count=2)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        DerivationParameters structs with different types.
+        """
+        a = DerivationParameters()
+        b = 'invalid'
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to a DerivationParameters struct.
+        """
+        derivation_parameters = DerivationParameters(
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.CBC,
+                padding_method=enums.PaddingMethod.PKCS5,
+                hashing_algorithm=enums.HashingAlgorithm.SHA_1,
+                key_role_type=enums.KeyRoleType.KEK,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
+                SHA256_WITH_RSA_ENCRYPTION,
+                cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+                random_iv=True,
+                iv_length=96,
+                tag_length=128,
+                fixed_field_length=32,
+                invocation_field_length=64,
+                counter_length=0,
+                initial_counter_value=1
+            ),
+            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
+            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
+            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
+            iteration_count=10000
+        )
+
+        expected = (
+            "DerivationParameters("
+            "cryptographic_parameters=CryptographicParameters("
+            "block_cipher_mode=BlockCipherMode.CBC, "
+            "padding_method=PaddingMethod.PKCS5, "
+            "hashing_algorithm=HashingAlgorithm.SHA_1, "
+            "key_role_type=KeyRoleType.KEK, "
+            "digital_signature_algorithm="
+            "DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION, "
+            "cryptographic_algorithm=CryptographicAlgorithm.AES, "
+            "random_iv=True, "
+            "iv_length=96, "
+            "tag_length=128, "
+            "fixed_field_length=32, "
+            "invocation_field_length=64, "
+            "counter_length=0, "
+            "initial_counter_value=1), "
+            "initialization_vector=" + str(
+                b'\x01\x02\x03\x04\x05\x06\x07\x08'
+            ) + ", "
+            "derivation_data=" + str(
+                b'\x11\x22\x33\x44\x55\x66\x77\x88'
+            ) + ", "
+            "salt=" + str(b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0') + ", "
+            "iteration_count=10000)"
+        )
+        observed = repr(derivation_parameters)
+
+        self.assertEqual(expected, observed)
+
+    def test_str(self):
+        """
+        Test that str can be applied to a DerivationParameters struct.
+        """
+        cryptographic_parameters = CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.CBC,
+            padding_method=enums.PaddingMethod.PKCS5,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_1,
+            key_role_type=enums.KeyRoleType.KEK,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
+            SHA256_WITH_RSA_ENCRYPTION,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            random_iv=True,
+            iv_length=96,
+            tag_length=128,
+            fixed_field_length=32,
+            invocation_field_length=64,
+            counter_length=0,
+            initial_counter_value=1
+        )
+        derivation_parameters = DerivationParameters(
+            cryptographic_parameters=cryptographic_parameters,
+            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
+            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
+            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
+            iteration_count=10000
+        )
+
+        expected = str({
+            'cryptographic_parameters': cryptographic_parameters,
+            'initialization_vector': b'\x01\x02\x03\x04\x05\x06\x07\x08',
+            'derivation_data': b'\x11\x22\x33\x44\x55\x66\x77\x88',
+            'salt': b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
+            'iteration_count': 10000
+        })
+        observed = str(derivation_parameters)
 
         self.assertEqual(expected, observed)

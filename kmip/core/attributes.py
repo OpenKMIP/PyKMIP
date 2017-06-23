@@ -1250,3 +1250,256 @@ class CustomAttribute(TextString):
 
     def __init__(self, value=None):
         super(CustomAttribute, self).__init__(value, Tags.ATTRIBUTE_VALUE)
+
+
+class DerivationParameters(Struct):
+    """
+    A set of values needed for key or secret derivation.
+
+    A structure containing optional fields describing certain cryptographic
+    parameters to be used when performing key or secret derivation operations.
+    """
+
+    def __init__(self,
+                 cryptographic_parameters=None,
+                 initialization_vector=None,
+                 derivation_data=None,
+                 salt=None,
+                 iteration_count=None):
+        """
+        Construct a DerivationParameters struct.
+
+        Args:
+            cryptographic_parameters (CryptographicParameters): A
+                CryptographicParameters struct containing the settings for
+                the derivation process. Optional, defaults to None. If not
+                included, the CryptographicParameters associated with the
+                managed object will be used instead.
+            initialization_vector (bytes): The IV value to be used with the
+                pseudo-random derivation function (PRF). Optional depending
+                on the PRF, defaults to None.
+            derivation_data (bytes): A data component to be used instead of
+                or with a derivation key to derive the new cryptographic
+                object. Optional, defaults to None.
+            salt (bytes): A salt value required by the PBKDF2 algorithm.
+                Optional, defaults to None.
+            iteration_count (bytes): An iteration count value required by
+                the PBKDF2 algorithm. Optional, defaults to None.
+        """
+        super(DerivationParameters, self).__init__(
+            tag=Tags.DERIVATION_PARAMETERS
+        )
+
+        self._cryptographic_parameters = None
+        self._initialization_vector = None
+        self._derivation_data = None
+        self._salt = None
+        self._iteration_count = None
+
+        self.cryptographic_parameters = cryptographic_parameters
+        self.initialization_vector = initialization_vector
+        self.derivation_data = derivation_data
+        self.salt = salt
+        self.iteration_count = iteration_count
+
+    @property
+    def cryptographic_parameters(self):
+        return self._cryptographic_parameters
+
+    @cryptographic_parameters.setter
+    def cryptographic_parameters(self, value):
+        if value is None:
+            self._cryptographic_parameters = None
+        elif isinstance(value, CryptographicParameters):
+            self._cryptographic_parameters = value
+        else:
+            raise TypeError(
+                "cryptographic parameters must be a CryptographicParameters "
+                "struct"
+            )
+
+    @property
+    def initialization_vector(self):
+        if self._initialization_vector:
+            return self._initialization_vector.value
+        else:
+            return None
+
+    @initialization_vector.setter
+    def initialization_vector(self, value):
+        if value is None:
+            self._initialization_vector = None
+        elif isinstance(value, six.binary_type):
+            self._initialization_vector = ByteString(
+                value=value,
+                tag=enums.Tags.INITIALIZATION_VECTOR
+            )
+        else:
+            raise TypeError("initialization vector must be bytes")
+
+    @property
+    def derivation_data(self):
+        if self._derivation_data:
+            return self._derivation_data.value
+        else:
+            return None
+
+    @derivation_data.setter
+    def derivation_data(self, value):
+        if value is None:
+            self._derivation_data = None
+        elif isinstance(value, six.binary_type):
+            self._derivation_data = ByteString(
+                value=value,
+                tag=enums.Tags.DERIVATION_DATA
+            )
+        else:
+            raise TypeError("derivation data must be bytes")
+
+    @property
+    def salt(self):
+        if self._salt:
+            return self._salt.value
+        else:
+            return None
+
+    @salt.setter
+    def salt(self, value):
+        if value is None:
+            self._salt = None
+        elif isinstance(value, six.binary_type):
+            self._salt = ByteString(
+                value=value,
+                tag=enums.Tags.SALT
+            )
+        else:
+            raise TypeError("salt must be bytes")
+
+    @property
+    def iteration_count(self):
+        if self._iteration_count:
+            return self._iteration_count.value
+        else:
+            return None
+
+    @iteration_count.setter
+    def iteration_count(self, value):
+        if value is None:
+            self._iteration_count = None
+        elif isinstance(value, six.integer_types):
+            self._iteration_count = Integer(
+                value=value,
+                tag=Tags.ITERATION_COUNT
+            )
+        else:
+            raise TypeError("iteration count must be an integer")
+
+    def read(self, input_stream):
+        """
+        Read the data encoding the DerivationParameters struct and decode it
+        into its constituent parts.
+
+        Args:
+            input_stream (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+        """
+        super(DerivationParameters, self).read(input_stream)
+        local_stream = BytearrayStream(input_stream.read(self.length))
+
+        if self.is_tag_next(
+                enums.Tags.CRYPTOGRAPHIC_PARAMETERS,
+                local_stream
+        ):
+            self._cryptographic_parameters = CryptographicParameters()
+            self._cryptographic_parameters.read(local_stream)
+
+        if self.is_tag_next(enums.Tags.INITIALIZATION_VECTOR, local_stream):
+            self._initialization_vector = ByteString(
+                tag=enums.Tags.INITIALIZATION_VECTOR
+            )
+            self._initialization_vector.read(local_stream)
+
+        if self.is_tag_next(enums.Tags.DERIVATION_DATA, local_stream):
+            self._derivation_data = ByteString(tag=enums.Tags.DERIVATION_DATA)
+            self._derivation_data.read(local_stream)
+
+        if self.is_tag_next(enums.Tags.SALT, local_stream):
+            self._salt = ByteString(tag=enums.Tags.SALT)
+            self._salt.read(local_stream)
+
+        if self.is_tag_next(Tags.ITERATION_COUNT, local_stream):
+            self._iteration_count = Integer(tag=Tags.ITERATION_COUNT)
+            self._iteration_count.read(local_stream)
+
+        self.is_oversized(local_stream)
+
+    def write(self, output_stream):
+        """
+        Write the data encoding the DerivationParameters struct to a stream.
+
+        Args:
+            output_stream (stream): A data stream in which to encode object
+                data, supporting a write method; usually a BytearrayStream
+                object.
+        """
+        local_stream = BytearrayStream()
+
+        if self._cryptographic_parameters:
+            self._cryptographic_parameters.write(local_stream)
+        if self._initialization_vector:
+            self._initialization_vector.write(local_stream)
+        if self._derivation_data:
+            self._derivation_data.write(local_stream)
+        if self._salt:
+            self._salt.write(local_stream)
+        if self._iteration_count:
+            self._iteration_count.write(local_stream)
+
+        self.length = local_stream.length()
+        super(DerivationParameters, self).write(output_stream)
+        output_stream.write(local_stream.buffer)
+
+    def __eq__(self, other):
+        if isinstance(other, DerivationParameters):
+            if self.cryptographic_parameters != other.cryptographic_parameters:
+                return False
+            elif self.initialization_vector != other.initialization_vector:
+                return False
+            elif self.derivation_data != other.derivation_data:
+                return False
+            elif self.salt != other.salt:
+                return False
+            elif self.iteration_count != other.iteration_count:
+                return False
+            else:
+                return True
+
+    def __ne__(self, other):
+        if isinstance(other, DerivationParameters):
+            return not self == other
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        args = ", ".join([
+            "cryptographic_parameters={0}".format(
+                repr(self.cryptographic_parameters)
+            ),
+            "initialization_vector={0}".format(self.initialization_vector),
+            "derivation_data={0}".format(self.derivation_data),
+            "salt={0}".format(self.salt),
+            "iteration_count={0}".format(
+                self.iteration_count
+            )
+        ])
+        return "DerivationParameters({0})".format(args)
+
+    def __str__(self):
+        return str({
+            'cryptographic_parameters': self.cryptographic_parameters,
+            'initialization_vector': self.initialization_vector,
+            'derivation_data': self.derivation_data,
+            'salt': self.salt,
+            'iteration_count': self.iteration_count
+        })
