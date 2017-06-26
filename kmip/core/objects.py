@@ -947,6 +947,12 @@ class TemplateAttribute(Struct):
         else:
             return NotImplemented
 
+    def __ne__(self, other):
+        if isinstance(other, TemplateAttribute):
+            return not (self == other)
+        else:
+            return NotImplemented
+
 
 class CommonTemplateAttribute(TemplateAttribute):
 

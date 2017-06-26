@@ -23,6 +23,7 @@ from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
 from kmip.core.messages.payloads import decrypt
 from kmip.core.messages.payloads import destroy
+from kmip.core.messages.payloads import derive_key
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import encrypt
 from kmip.core.messages.payloads import get
@@ -71,10 +72,8 @@ class TestResponsePayloadFactory(testtools.TestCase):
         self._test_not_implemented(self.factory.create, enums.Operation.REKEY)
 
     def test_create_derive_key_payload(self):
-        self._test_not_implemented(
-            self.factory.create,
-            enums.Operation.DERIVE_KEY
-        )
+        payload = self.factory.create(enums.Operation.DERIVE_KEY)
+        self._test_payload_type(payload, derive_key.DeriveKeyResponsePayload)
 
     def test_create_certify_payload(self):
         self._test_not_implemented(
