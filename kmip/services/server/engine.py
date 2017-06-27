@@ -42,6 +42,7 @@ from kmip.core.messages.payloads import activate
 from kmip.core.messages.payloads import revoke
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
+from kmip.core.messages.payloads import decrypt
 from kmip.core.messages.payloads import derive_key
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
@@ -986,6 +987,8 @@ class KmipEngine(object):
             return self._process_discover_versions(payload)
         elif operation == enums.Operation.ENCRYPT:
             return self._process_encrypt(payload)
+        elif operation == enums.Operation.DECRYPT:
+            return self._process_decrypt(payload)
         elif operation == enums.Operation.MAC:
             return self._process_mac(payload)
         else:
@@ -1936,6 +1939,7 @@ class KmipEngine(object):
             if self._protocol_version >= contents.ProtocolVersion.create(1, 2):
                 operations.extend([
                     contents.Operation(enums.Operation.ENCRYPT),
+                    contents.Operation(enums.Operation.DECRYPT),
                     contents.Operation(enums.Operation.MAC)
                 ])
 
@@ -2042,6 +2046,68 @@ class KmipEngine(object):
             unique_identifier,
             result.get('cipher_text'),
             result.get('iv_nonce')
+        )
+        return response_payload
+
+    @_kmip_version_supported('1.2')
+    def _process_decrypt(self, payload):
+        self._logger.info("Processing operation: Decrypt")
+
+        unique_identifier = self._id_placeholder
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier
+
+        # The KMIP spec does not indicate that the Decrypt operation should
+        # have it's own operation policy entry. Rather, the cryptographic
+        # usage mask should be used to determine if the object can be used
+        # to decrypt data (see below).
+        managed_object = self._get_object_with_access_controls(
+            unique_identifier,
+            enums.Operation.GET
+        )
+
+        cryptographic_parameters = payload.cryptographic_parameters
+        if cryptographic_parameters is None:
+            # TODO (peter-hamilton): Pull the cryptographic parameters from
+            # the attributes associated with the decryption key.
+            raise exceptions.InvalidField(
+                "The cryptographic parameters must be specified."
+            )
+
+        # TODO (peter-hamilton): Check the usage limitations for the key to
+        # confirm that it can be used for this operation.
+
+        if managed_object._object_type != enums.ObjectType.SYMMETRIC_KEY:
+            raise exceptions.PermissionDenied(
+                "The requested decryption key is not a symmetric key. "
+                "Only symmetric decryption is currently supported."
+            )
+
+        if managed_object.state != enums.State.ACTIVE:
+            raise exceptions.PermissionDenied(
+                "The decryption key must be in the Active state to be used "
+                "for decryption."
+            )
+
+        if enums.CryptographicUsageMask.DECRYPT not in \
+           managed_object.cryptographic_usage_masks:
+                raise exceptions.PermissionDenied(
+                    "The Decrypt bit must be set in the decryption key's "
+                    "cryptographic usage mask."
+                )
+
+        result = self._cryptography_engine.decrypt(
+            cryptographic_parameters.cryptographic_algorithm,
+            managed_object.value,
+            payload.data,
+            cipher_mode=cryptographic_parameters.block_cipher_mode,
+            padding_method=cryptographic_parameters.padding_method,
+            iv_nonce=payload.iv_counter_nonce
+        )
+
+        response_payload = decrypt.DecryptResponsePayload(
+            unique_identifier,
+            result
         )
         return response_payload
 

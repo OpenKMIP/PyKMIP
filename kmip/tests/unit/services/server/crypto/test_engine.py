@@ -945,7 +945,8 @@ def test_decrypt(encrypt_parameters):
                 encrypt_parameters.get('algorithm')
             ),
             encrypt_parameters.get('plain_text'),
-            None
+            None,
+            undo_padding=True
         )
 
     assert encrypt_parameters.get('plain_text') == result
