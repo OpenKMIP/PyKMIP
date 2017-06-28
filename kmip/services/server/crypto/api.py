@@ -121,3 +121,36 @@ class CryptographicEngine(object):
                     was needed by the encryption scheme and if it was
                     automatically generated for the encryption
         """
+
+    @abstractmethod
+    def decrypt(self,
+                decryption_algorithm,
+                decryption_key,
+                cipher_text,
+                cipher_mode=None,
+                padding_method=None,
+                iv_nonce=None):
+        """
+        Decrypt data using symmetric decryption.
+
+        Args:
+            decryption_algorithm (CryptographicAlgorithm): An enumeration
+                specifying the symmetric decryption algorithm to use for
+                decryption.
+            decryption_key (bytes): The bytes of the symmetric key to use for
+                decryption.
+            cipher_text (bytes): The bytes to be decrypted.
+            cipher_mode (BlockCipherMode): An enumeration specifying the
+                block cipher mode to use with the decryption algorithm.
+                Required in the general case. Optional if the decryption
+                algorithm is RC4 (aka ARC4). If optional, defaults to None.
+            padding_method (PaddingMethod): An enumeration specifying the
+                padding method to use on the data after decryption. Required
+                if the cipher mode is for block ciphers (e.g., CBC, ECB).
+                Optional otherwise, defaults to None.
+            iv_nonce (bytes): The IV/nonce value to use to initialize the mode
+                of the decryption algorithm. Optional, defaults to None.
+
+        Returns:
+            bytes: the bytes of the decrypted data
+        """

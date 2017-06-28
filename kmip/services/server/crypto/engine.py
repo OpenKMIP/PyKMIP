@@ -402,7 +402,8 @@ class CryptographyEngine(api.CryptographicEngine):
     def _handle_symmetric_padding(self,
                                   algorithm,
                                   plain_text,
-                                  padding_method):
+                                  padding_method,
+                                  undo_padding=False):
         # KMIP 1.3 test TC-STREAM-ENC-2-13.xml demonstrates a case
         # where an encrypt call for 3DES-ECB does not use padding if
         # the plaintext fits the blocksize of the algorithm. This does
@@ -414,7 +415,10 @@ class CryptographyEngine(api.CryptographicEngine):
             padding_method = self._symmetric_padding_methods.get(
                 padding_method
             )
-            padder = padding_method(algorithm.block_size).padder()
+            if undo_padding:
+                padder = padding_method(algorithm.block_size).unpadder()
+            else:
+                padder = padding_method(algorithm.block_size).padder()
             plain_text = padder.update(plain_text)
             plain_text += padder.finalize()
         else:
@@ -428,6 +432,128 @@ class CryptographyEngine(api.CryptographicEngine):
                         padding_method
                     )
                 )
+        return plain_text
+
+    def decrypt(self,
+                decryption_algorithm,
+                decryption_key,
+                cipher_text,
+                cipher_mode=None,
+                padding_method=None,
+                iv_nonce=None):
+        """
+        Decrypt data using symmetric decryption.
+
+        Args:
+            decryption_algorithm (CryptographicAlgorithm): An enumeration
+                specifying the symmetric decryption algorithm to use for
+                decryption.
+            decryption_key (bytes): The bytes of the symmetric key to use for
+                decryption.
+            cipher_text (bytes): The bytes to be decrypted.
+            cipher_mode (BlockCipherMode): An enumeration specifying the
+                block cipher mode to use with the decryption algorithm.
+                Required in the general case. Optional if the decryption
+                algorithm is RC4 (aka ARC4). If optional, defaults to None.
+            padding_method (PaddingMethod): An enumeration specifying the
+                padding method to use on the data after decryption. Required
+                if the cipher mode is for block ciphers (e.g., CBC, ECB).
+                Optional otherwise, defaults to None.
+            iv_nonce (bytes): The IV/nonce value to use to initialize the mode
+                of the decryption algorithm. Optional, defaults to None.
+
+        Returns:
+            bytes: the bytes of the decrypted data
+
+        Raises:
+            InvalidField: Raised when the algorithm is unsupported or the
+                length is incompatible with the algorithm.
+            CryptographicFailure: Raised when the key generation process
+                fails.
+
+        Example:
+            >>> engine = CryptographyEngine()
+            >>> result = engine.decrypt(
+            ...     decryption_algorithm=CryptographicAlgorithm.AES,
+            ...     decryption_key=(
+            ...         b'\xF3\x96\xE7\x1C\xCF\xCD\xEC\x1F'
+            ...         b'\xFC\xE2\x8E\xA6\xF8\x74\x28\xB0'
+            ...     ),
+            ...     cipher_text=(
+            ...         b'\x18\x5B\xB9\x79\x1B\x4C\xD1\x8F'
+            ...         b'\x9A\xA0\x65\x02\x62\xA3\x3D\x63'
+            ...     ),
+            ...     cipher_mode=BlockCipherMode.CBC,
+            ...     padding_method=PaddingMethod.ANSI_X923,
+            ...     iv_nonce=(
+            ...         b'\x38\x71\x41\x05\xC4\x86\x03\xD9'
+            ...         b'\x3D\xEF\xDF\xB8\x6B\x65\x9A\xA2'
+            ...     )
+            ... )
+            >>> result
+            b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f'
+        """
+
+        # Set up the algorithm
+        if decryption_algorithm is None:
+            raise exceptions.InvalidField("Decryption algorithm is required.")
+        algorithm = self._symmetric_key_algorithms.get(
+            decryption_algorithm,
+            None
+        )
+        if algorithm is None:
+            raise exceptions.InvalidField(
+                "Decryption algorithm '{0}' is not a supported symmetric "
+                "decryption algorithm.".format(decryption_algorithm)
+            )
+        try:
+            algorithm = algorithm(decryption_key)
+        except Exception as e:
+            self.logger.exception(e)
+            raise exceptions.CryptographicFailure(
+                "Invalid key bytes for the specified decryption algorithm."
+            )
+
+        # Set up the cipher mode if needed
+        if decryption_algorithm == enums.CryptographicAlgorithm.RC4:
+            mode = None
+        else:
+            if cipher_mode is None:
+                raise exceptions.InvalidField("Cipher mode is required.")
+            mode = self._modes.get(cipher_mode, None)
+            if mode is None:
+                raise exceptions.InvalidField(
+                    "Cipher mode '{0}' is not a supported mode.".format(
+                        cipher_mode
+                    )
+                )
+            if hasattr(mode, 'initialization_vector') or \
+                    hasattr(mode, 'nonce'):
+                if iv_nonce is None:
+                    raise exceptions.InvalidField(
+                        "IV/nonce is required."
+                    )
+                mode = mode(iv_nonce)
+            else:
+                mode = mode()
+
+        # Decrypt the plain text
+        cipher = ciphers.Cipher(algorithm, mode, backend=default_backend())
+        decryptor = cipher.decryptor()
+        plain_text = decryptor.update(cipher_text) + decryptor.finalize()
+
+        # Unpad the plain text if needed (separate methods for testing
+        # purposes)
+        if cipher_mode in [
+                enums.BlockCipherMode.CBC,
+                enums.BlockCipherMode.ECB
+        ]:
+            plain_text = self._handle_symmetric_padding(
+                self._symmetric_key_algorithms.get(decryption_algorithm),
+                plain_text,
+                padding_method
+            )
+
         return plain_text
 
     def _create_rsa_key_pair(self, length, public_exponent=65537):

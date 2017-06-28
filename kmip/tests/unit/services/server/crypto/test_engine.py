@@ -379,6 +379,101 @@ class TestCryptographyEngine(testtools.TestCase):
 
         self.assertNotIn('iv_nonce', result.keys())
 
+    def test_decrypt_invalid_algorithm(self):
+        """
+        Test that the right errors are raised when invalid decryption
+        algorithms are used.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (None, b'', b'')
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "Decryption algorithm is required.",
+            engine.decrypt,
+            *args
+        )
+
+        args = ('invalid', b'', b'')
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "Decryption algorithm 'invalid' is not a supported symmetric "
+            "decryption algorithm.",
+            engine.decrypt,
+            *args
+        )
+
+    def test_decrypt_invalid_algorithm_key(self):
+        """
+        Test that the right error is raised when an invalid key is used with
+        a decryption algorithm.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (enums.CryptographicAlgorithm.AES, b'', b'')
+        self.assertRaisesRegexp(
+            exceptions.CryptographicFailure,
+            "Invalid key bytes for the specified decryption algorithm.",
+            engine.decrypt,
+            *args
+        )
+
+    def test_decrypt_invalid_cipher_mode(self):
+        """
+        Test that the right errors are raised when invalid cipher modes are
+        used.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            enums.CryptographicAlgorithm.AES,
+            b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F',
+            b'\x0F\x0E\x0D\x0C\x0B\x0A\x09\x08'
+            b'\x07\x06\x05\x04\x03\x02\x01\x00'
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "Cipher mode is required.",
+            engine.decrypt,
+            *args
+        )
+
+        kwargs = {'cipher_mode': 'invalid'}
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "Cipher mode 'invalid' is not a supported mode.",
+            engine.decrypt,
+            *args,
+            **kwargs
+        )
+
+    def test_decrypt_missing_iv_nonce(self):
+        """
+        Test that the right error is raised when an IV/nonce is not provided
+        for the decryption algorithm.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            enums.CryptographicAlgorithm.AES,
+            b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F',
+            b'\x0F\x0E\x0D\x0C\x0B\x0A\x09\x08'
+            b'\x07\x06\x05\x04\x03\x02\x01\x00'
+        )
+        kwargs = {
+            'cipher_mode': enums.BlockCipherMode.CBC,
+            'padding_method': enums.PaddingMethod.PKCS5
+        }
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "IV/nonce is required.",
+            engine.decrypt,
+            *args,
+            **kwargs
+        )
+
     def test_handle_symmetric_padding_invalid(self):
         """
         Test that the right errors are raised when invalid padding methods
@@ -611,20 +706,51 @@ def test_encrypt(encrypt_parameters):
     assert encrypt_parameters.get('cipher_text') == result.get('cipher_text')
 
 
+def test_decrypt(encrypt_parameters):
+    """
+    Test that various decryption algorithms and block cipher modes can be
+    used to correctly decrypt data.
+    """
+    engine = crypto.CryptographyEngine()
+
+    engine._handle_symmetric_padding = mock.MagicMock(
+        return_value=encrypt_parameters.get('plain_text')
+    )
+
+    result = engine.decrypt(
+        encrypt_parameters.get('algorithm'),
+        encrypt_parameters.get('key'),
+        encrypt_parameters.get('cipher_text'),
+        cipher_mode=encrypt_parameters.get('cipher_mode'),
+        iv_nonce=encrypt_parameters.get('iv_nonce')
+    )
+
+    if engine._handle_symmetric_padding.called:
+        engine._handle_symmetric_padding.assert_called_once_with(
+            engine._symmetric_key_algorithms.get(
+                encrypt_parameters.get('algorithm')
+            ),
+            encrypt_parameters.get('plain_text'),
+            None
+        )
+
+    assert encrypt_parameters.get('plain_text') == result
+
+
 @pytest.fixture(
     scope='function',
     params=[
         {'algorithm': algorithms.AES,
          'plain_text': b'\x48\x65\x6C\x6C\x6F',
          'padding_method': enums.PaddingMethod.PKCS5,
-         'result': (
+         'padded_text': (
              b'\x48\x65\x6C\x6C\x6F\x0B\x0B\x0B'
              b'\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B'
          )},
         {'algorithm': algorithms.TripleDES,
          'plain_text': b'\x48\x65\x6C\x6C\x6F',
          'padding_method': enums.PaddingMethod.ANSI_X923,
-         'result': b'\x48\x65\x6C\x6C\x6F\x00\x00\x03'}
+         'padded_text': b'\x48\x65\x6C\x6C\x6F\x00\x00\x03'}
     ]
 )
 def symmetric_padding_parameters(request):
@@ -644,4 +770,21 @@ def test_handle_symmetric_padding(symmetric_padding_parameters):
         symmetric_padding_parameters.get('padding_method')
     )
 
-    assert result == symmetric_padding_parameters.get('result')
+    assert result == symmetric_padding_parameters.get('padded_text')
+
+
+def test_handle_symmetric_padding_undo(symmetric_padding_parameters):
+    """
+    Test that data of various lengths can be unpadded correctly using
+    different padding schemes.
+    """
+    engine = crypto.CryptographyEngine()
+
+    result = engine._handle_symmetric_padding(
+        symmetric_padding_parameters.get('algorithm'),
+        symmetric_padding_parameters.get('padded_text'),
+        symmetric_padding_parameters.get('padding_method'),
+        undo_padding=True
+    )
+
+    assert result == symmetric_padding_parameters.get('plain_text')
