@@ -51,6 +51,7 @@ from kmip.core.messages import messages
 from kmip.core.messages.payloads import activate
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
+from kmip.core.messages.payloads import decrypt
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import encrypt
@@ -499,6 +500,75 @@ class KMIPProxy(KMIP):
             result['unique_identifier'] = payload.unique_identifier
             result['data'] = payload.data
             result['iv_counter_nonce'] = payload.iv_counter_nonce
+
+        result['result_status'] = batch_item.result_status
+        result['result_reason'] = batch_item.result_reason
+        result['result_message'] = batch_item.result_message
+
+        return result
+
+    def decrypt(self,
+                data,
+                unique_identifier=None,
+                cryptographic_parameters=None,
+                iv_counter_nonce=None,
+                credential=None):
+        """
+        Decrypt data using the specified decryption key and parameters.
+
+        Args:
+            data (bytes): The bytes to decrypt. Required.
+            unique_identifier (string): The unique ID of the decryption key
+                to use. Optional, defaults to None.
+            cryptographic_parameters (CryptographicParameters): A structure
+                containing various cryptographic settings to be used for the
+                decryption. Optional, defaults to None.
+            iv_counter_nonce (bytes): The bytes to use for the IV/counter/
+                nonce, if needed by the decryption algorithm and/or cipher
+                mode. Optional, defaults to None.
+            credential (Credential): A credential object containing a set of
+                authorization parameters for the operation. Optional, defaults
+                to None.
+
+        Returns:
+            dict: The results of the decrypt operation, containing the
+                following key/value pairs:
+
+                Key                 | Value
+                --------------------|-----------------------------------------
+                'unique_identifier' | (string) The unique ID of the decryption
+                                    | key used to decrypt the data.
+                'data'              | (bytes) The decrypted data.
+                'result_status'     | (ResultStatus) An enumeration indicating
+                                    | the status of the operation result.
+                'result_reason'     | (ResultReason) An enumeration providing
+                                    | context for the result status.
+                'result_message'    | (string) A message providing additional
+                                    | context for the operation result.
+        """
+        operation = Operation(OperationEnum.DECRYPT)
+
+        request_payload = decrypt.DecryptRequestPayload(
+            unique_identifier=unique_identifier,
+            data=data,
+            cryptographic_parameters=cryptographic_parameters,
+            iv_counter_nonce=iv_counter_nonce
+        )
+        batch_item = messages.RequestBatchItem(
+            operation=operation,
+            request_payload=request_payload
+        )
+
+        request = self._build_request_message(credential, [batch_item])
+        response = self._send_and_receive_message(request)
+        batch_item = response.batch_items[0]
+        payload = batch_item.response_payload
+
+        result = {}
+
+        if payload:
+            result['unique_identifier'] = payload.unique_identifier
+            result['data'] = payload.data
 
         result['result_status'] = batch_item.result_status
         result['result_reason'] = batch_item.result_reason
