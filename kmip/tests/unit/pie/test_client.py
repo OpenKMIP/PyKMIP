@@ -1320,6 +1320,175 @@ class TestProxyKmipClient(testtools.TestCase):
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
+    def test_encrypt(self):
+        """
+        Test that the client can encrypt data.
+        """
+        result = {
+            'data': (
+                b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
+                b'\x05\xB1\x56\xE2\x74\x03\x97\x93'
+                b'\x58\xDE\xB9\xE7\x15\x46\x16\xD9'
+                b'\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B'
+            ),
+            'iv_counter_nonce': None,
+            'result_status': enums.ResultStatus.SUCCESS
+        }
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.encrypt.return_value = result
+
+        encrypted_data, iv_counter_nonce = client.encrypt(
+            (
+                b'\x37\x36\x35\x34\x33\x32\x31\x20'
+                b'\x4E\x6F\x77\x20\x69\x73\x20\x74'
+                b'\x68\x65\x20\x74\x69\x6D\x65\x20'
+                b'\x66\x6F\x72\x20\x00'
+            ),
+            uid='1',
+            cryptographic_parameters={
+                'block_cipher_mode': enums.BlockCipherMode.CBC,
+                'padding_method': enums.PaddingMethod.PKCS5,
+                'cryptographic_algorithm':
+                    enums.CryptographicAlgorithm.BLOWFISH
+            },
+            iv_counter_nonce=b'\xFE\xDC\xBA\x98\x76\x54\x32\x10'
+        )
+
+        self.assertEqual(result.get('data'), encrypted_data)
+        self.assertEqual(result.get('iv_counter_nonce'), iv_counter_nonce)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_encrypt_on_invalid_inputs(self):
+        """
+        Test that TypeError exception are raised when trying to encrypt with
+        invalid parameters.
+        """
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.encrypt.return_value = {}
+        args = [None]
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': {},
+            'iv_counter_nonce': b'\x00\x00\x00\x00'
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "data must be bytes",
+            client.encrypt,
+            *args,
+            **kwargs
+        )
+
+        args = [b'\x01\x02\x03\x04']
+        kwargs = {
+            'uid': 1,
+            'cryptographic_parameters': {},
+            'iv_counter_nonce': b'\x00\x00\x00\x00'
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "uid must be a string",
+            client.encrypt,
+            *args,
+            **kwargs
+        )
+
+        args = [b'\x01\x02\x03\x04']
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': 'invalid',
+            'iv_counter_nonce': b'\x00\x00\x00\x00'
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "cryptographic_parameters must be a dict",
+            client.encrypt,
+            *args,
+            **kwargs
+        )
+
+        args = [b'\x01\x02\x03\x04']
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': {},
+            'iv_counter_nonce': {}
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "iv_counter_nonce must be bytes",
+            client.encrypt,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_encrypt_on_closed(self):
+        """
+        Test that a ClientConnectionNotOpen exception is raised when trying
+        to encrypt data on an unopened client connection.
+        """
+        client = ProxyKmipClient()
+        args = [b'\x01\x02\x03\x04']
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': {},
+            'iv_counter_nonce': b'\x00\x00\x00\x00'
+        }
+
+        self.assertRaises(
+            ClientConnectionNotOpen,
+            client.encrypt,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_encrypt_on_operation_failure(self):
+        """
+        Test that a KmipOperationFailure exception is raised when the
+        backend fails to encrypt data.
+        """
+        status = enums.ResultStatus.OPERATION_FAILED
+        reason = enums.ResultReason.GENERAL_FAILURE
+        message = "Test failure message"
+
+        result = {
+            'result_status': status,
+            'result_reason': reason,
+            'result_message': message
+        }
+        error_message = str(KmipOperationFailure(status, reason, message))
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.encrypt.return_value = result
+        args = [b'\x01\x02\x03\x04']
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': {},
+            'iv_counter_nonce': b'\x00\x00\x00\x00'
+        }
+
+        self.assertRaisesRegexp(
+            KmipOperationFailure,
+            error_message,
+            client.encrypt,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
     def test_mac(self):
         """
         Test the MAC client with proper input.
