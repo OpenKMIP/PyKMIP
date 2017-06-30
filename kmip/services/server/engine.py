@@ -1332,14 +1332,35 @@ class KmipEngine(object):
 
     @_kmip_version_supported('1.0')
     def _process_locate(self, payload):
-        # TODO Currently the Locate operation will just return all the
-        # existing managed objects with the restriction of operation
-        # policy only. Need to implement other filtering logics in the
-        # SPEC (e.g., attribute, storage status mask and etc..)
+        # TODO: Need to complete the filtering logic based on all given
+        # objects in payload.
         self._logger.info("Processing operation: Locate")
 
         managed_objects = self._list_objects_with_access_controls(
                                 enums.Operation.LOCATE)
+
+        if payload.attributes:
+
+            managed_objects_filtered = []
+
+            # Filter the objects based on given attributes.
+            # TODO: Currently will only filter for 'Name'.
+            #       Needs to add other attributes.
+            for managed_object in managed_objects:
+                for attribute in payload.attributes:
+                    attribute_name = attribute.attribute_name.value
+                    attribute_value = attribute.attribute_value
+                    attr = self._get_attribute_from_managed_object(
+                            managed_object, attribute_name)
+                    if attribute_name == 'Name':
+                        names = attr
+                        if attribute_value not in names:
+                                break
+                    # TODO: filtering on other attributes
+                else:
+                    managed_objects_filtered.append(managed_object)
+
+            managed_objects = managed_objects_filtered
 
         unique_identifiers = [attributes.UniqueIdentifier(
                             str(managed_object.unique_identifier))
