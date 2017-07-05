@@ -887,38 +887,47 @@ class TestKmipEngine(testtools.TestCase):
         e._process_create = mock.MagicMock()
         e._process_create_key_pair = mock.MagicMock()
         e._process_register = mock.MagicMock()
+        e._process_locate = mock.MagicMock()
         e._process_get = mock.MagicMock()
         e._process_get_attributes = mock.MagicMock()
         e._process_get_attribute_list = mock.MagicMock()
         e._process_activate = mock.MagicMock()
+        e._process_revoke = mock.MagicMock()
         e._process_destroy = mock.MagicMock()
         e._process_query = mock.MagicMock()
         e._process_discover_versions = mock.MagicMock()
         e._process_encrypt = mock.MagicMock()
+        e._process_mac = mock.MagicMock()
 
         e._process_operation(enums.Operation.CREATE, None)
         e._process_operation(enums.Operation.CREATE_KEY_PAIR, None)
         e._process_operation(enums.Operation.REGISTER, None)
+        e._process_operation(enums.Operation.LOCATE, None)
         e._process_operation(enums.Operation.GET, None)
         e._process_operation(enums.Operation.GET_ATTRIBUTES, None)
         e._process_operation(enums.Operation.GET_ATTRIBUTE_LIST, None)
         e._process_operation(enums.Operation.ACTIVATE, None)
+        e._process_operation(enums.Operation.REVOKE, None)
         e._process_operation(enums.Operation.DESTROY, None)
         e._process_operation(enums.Operation.QUERY, None)
         e._process_operation(enums.Operation.DISCOVER_VERSIONS, None)
         e._process_operation(enums.Operation.ENCRYPT, None)
+        e._process_operation(enums.Operation.MAC, None)
 
         e._process_create.assert_called_with(None)
         e._process_create_key_pair.assert_called_with(None)
         e._process_register.assert_called_with(None)
+        e._process_locate.assert_called_with(None)
         e._process_get.assert_called_with(None)
         e._process_get_attributes.assert_called_with(None)
         e._process_get_attribute_list.assert_called_with(None)
         e._process_activate.assert_called_with(None)
+        e._process_revoke.assert_called_with(None)
         e._process_destroy.assert_called_with(None)
         e._process_query.assert_called_with(None)
         e._process_discover_versions.assert_called_with(None)
         e._process_encrypt.assert_called_with(None)
+        e._process_mac.assert_called_with(None)
 
     def test_unsupported_operation(self):
         """
@@ -4513,6 +4522,47 @@ class TestKmipEngine(testtools.TestCase):
         ).one()
 
         self.assertEqual(enums.State.DEACTIVATED, symmetric_key.state)
+
+    def test_revoke_missing_revocation_reason(self):
+        """
+        Test that the right error is generated when a revocation request is
+        received with a missing revocation reason.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        e._data_session.add(managed_object)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        self.assertEqual(enums.State.PRE_ACTIVE, managed_object.state)
+
+        object_id = str(managed_object.unique_identifier)
+
+        date = primitives.DateTime(
+            tag=enums.Tags.COMPROMISE_OCCURRENCE_DATE, value=6)
+
+        payload = revoke.RevokeRequestPayload(
+            unique_identifier=attributes.UniqueIdentifier(object_id),
+            revocation_reason=None,
+            compromise_occurrence_date=date)
+        payload.revocation_reason = None
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "revocation reason code must be specified",
+            e._process_revoke,
+            *args
+        )
 
     def test_revoke_on_not_active_object(self):
         """
