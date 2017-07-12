@@ -1008,10 +1008,9 @@ def test_handle_symmetric_padding_undo(symmetric_padding_parameters):
 #
 # https://www.ietf.org/rfc/rfc6070.txt
 #
-# HMAC test vectors were obtained from IETF RFC 2202 and RFC 4231:
+# HMAC test vectors were obtained from IETF RFC 5869:
 #
-# https://tools.ietf.org/html/rfc2202
-# https://tools.ietf.org/html/rfc4231
+# https://tools.ietf.org/html/rfc5869
 #
 # HASH test vectors for SHA1/SHA224/SHA256/SHA384/SHA512
 # were obtained from the NIST CAVP test suite. Test vectors for MD5 were

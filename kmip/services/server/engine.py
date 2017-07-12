@@ -42,6 +42,7 @@ from kmip.core.messages.payloads import activate
 from kmip.core.messages.payloads import revoke
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
+from kmip.core.messages.payloads import derive_key
 from kmip.core.messages.payloads import destroy
 from kmip.core.messages.payloads import discover_versions
 from kmip.core.messages.payloads import encrypt
@@ -963,6 +964,8 @@ class KmipEngine(object):
             return self._process_create_key_pair(payload)
         elif operation == enums.Operation.REGISTER:
             return self._process_register(payload)
+        elif operation == enums.Operation.DERIVE_KEY:
+            return self._process_derive_key(payload)
         elif operation == enums.Operation.LOCATE:
             return self._process_locate(payload)
         elif operation == enums.Operation.GET:
@@ -1328,6 +1331,188 @@ class KmipEngine(object):
 
         self._id_placeholder = str(managed_object.unique_identifier)
 
+        return response_payload
+
+    @_kmip_version_supported('1.0')
+    def _process_derive_key(self, payload):
+        self._logger.info("Processing operation: DeriveKey")
+
+        object_attributes = {}
+        if payload.template_attribute:
+            object_attributes = self._process_template_attribute(
+                payload.template_attribute
+            )
+
+        if payload.object_type not in [
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.ObjectType.SECRET_DATA
+        ]:
+            raise exceptions.InvalidField(
+                "Key derivation can only generate a SymmetricKey or "
+                "SecretData object."
+            )
+
+        # Retrieve existing managed objects to be used in the key derivation
+        # process. If any are unaccessible or not suitable for key derivation,
+        # raise an error.
+        existing_objects = []
+        for unique_identifier in payload.unique_identifiers:
+            managed_object = self._get_object_with_access_controls(
+                unique_identifier,
+                enums.Operation.GET
+            )
+            if managed_object._object_type not in [
+                enums.ObjectType.SECRET_DATA,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY
+            ]:
+                raise exceptions.InvalidField(
+                    "Object {0} is not a suitable type for key "
+                    "derivation. Please specify a key or secret data.".format(
+                        unique_identifier
+                    )
+                )
+            elif enums.CryptographicUsageMask.DERIVE_KEY not in \
+                    managed_object.cryptographic_usage_masks:
+                raise exceptions.InvalidField(
+                    "The DeriveKey bit must be set in the cryptographic usage "
+                    "mask for object {0} for it to be used in key "
+                    "derivation.".format(unique_identifier)
+                )
+            else:
+                existing_objects.append(managed_object)
+
+        if len(existing_objects) > 1:
+            self._logger.info(
+                "{0} derivation objects specified with the DeriveKey "
+                "request.".format(len(existing_objects))
+            )
+
+        # Select the derivation object to use as the keying material
+        keying_object = existing_objects[0]
+        self._logger.info(
+            "Object {0} will be used as the keying material for the "
+            "derivation process.".format(keying_object.unique_identifier)
+        )
+
+        derivation_parameters = payload.derivation_parameters
+
+        derivation_data = None
+        if derivation_parameters.derivation_data is None:
+            if len(existing_objects) > 1:
+                for alternate in existing_objects[1:]:
+                    if alternate._object_type == enums.ObjectType.SECRET_DATA:
+                        self._logger.info(
+                            "Object {0} will be used as the derivation data "
+                            "for the derivation process.".format(
+                                alternate.unique_identifier
+                            )
+                        )
+                        derivation_data = alternate.value
+                        break
+        else:
+            derivation_data = derivation_parameters.derivation_data
+
+        iv = b''
+        if derivation_parameters.initialization_vector is not None:
+            iv = derivation_parameters.initialization_vector
+
+        # Get the derivation length from the template attribute. It is
+        # required so if it cannot be found, raise an error.
+        derivation_length = None
+        attribute = object_attributes.get('Cryptographic Length')
+        if attribute:
+            derivation_length = attribute.value
+            if (derivation_length % 8) == 0:
+                derivation_length //= 8
+            else:
+                raise exceptions.InvalidField(
+                    "The cryptographic length must correspond to a valid "
+                    "number of bytes (i.e., it must be a multiple of 8)."
+                )
+        else:
+            raise exceptions.InvalidField(
+                "The cryptographic length must be provided in the template "
+                "attribute."
+            )
+
+        cryptographic_algorithm = None
+        if payload.object_type == enums.ObjectType.SYMMETRIC_KEY:
+            attribute = object_attributes.get('Cryptographic Algorithm')
+            if attribute:
+                cryptographic_algorithm = attribute.value
+            else:
+                raise exceptions.InvalidField(
+                    "The cryptographic algorithm must be provided in the "
+                    "template attribute when deriving a symmetric key."
+                )
+
+        # TODO (peterhamilton): Pull cryptographic parameters from the keying
+        # object if none are provided with the payload
+        crypto_parameters = derivation_parameters.cryptographic_parameters
+        derived_data = self._cryptography_engine.derive_key(
+            derivation_method=payload.derivation_method,
+            derivation_length=derivation_length,
+            derivation_data=derivation_data,
+            key_material=keying_object.value,
+            hash_algorithm=crypto_parameters.hashing_algorithm,
+            salt=derivation_parameters.salt,
+            iteration_count=derivation_parameters.iteration_count,
+            encryption_algorithm=crypto_parameters.cryptographic_algorithm,
+            cipher_mode=crypto_parameters.block_cipher_mode,
+            padding_method=crypto_parameters.padding_method,
+            iv_nonce=iv
+        )
+
+        if derivation_length > len(derived_data):
+            raise exceptions.CryptographicFailure(
+                "The specified length exceeds the output of the derivation "
+                "method."
+            )
+
+        if payload.object_type == enums.ObjectType.SYMMETRIC_KEY:
+            managed_object = objects.SymmetricKey(
+                algorithm=cryptographic_algorithm,
+                length=(derivation_length * 8),
+                value=derived_data,
+            )
+        else:
+            managed_object = objects.SecretData(
+                value=derived_data,
+                data_type=enums.SecretDataType.SEED,
+            )
+
+        managed_object.names = []
+
+        if payload.object_type == enums.ObjectType.SECRET_DATA:
+            del object_attributes['Cryptographic Length']
+        self._set_attributes_on_managed_object(
+            managed_object,
+            object_attributes
+        )
+
+        # TODO (peterhamilton) Set additional server-only attributes.
+        managed_object._owner = self._client_identity
+        managed_object.initial_date = int(time.time())
+
+        self._data_session.add(managed_object)
+        self._data_session.commit()
+
+        self._logger.info(
+            "Created a {0} with ID: {1}".format(
+                ''.join(
+                    [x.capitalize() for x in
+                     payload.object_type.name.split('_')]
+                ),
+                managed_object.unique_identifier
+            )
+        )
+        self._id_placeholder = str(managed_object.unique_identifier)
+
+        response_payload = derive_key.DeriveKeyResponsePayload(
+            unique_identifier=str(managed_object.unique_identifier)
+        )
         return response_payload
 
     @_kmip_version_supported('1.0')
@@ -1734,6 +1919,7 @@ class KmipEngine(object):
                 contents.Operation(enums.Operation.CREATE),
                 contents.Operation(enums.Operation.CREATE_KEY_PAIR),
                 contents.Operation(enums.Operation.REGISTER),
+                contents.Operation(enums.Operation.DERIVE_KEY),
                 contents.Operation(enums.Operation.LOCATE),
                 contents.Operation(enums.Operation.GET),
                 contents.Operation(enums.Operation.GET_ATTRIBUTES),
