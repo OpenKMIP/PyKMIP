@@ -1061,84 +1061,299 @@ class KeyWrappingData(Struct):
         pass
 
 
-# 2.1.6
-class KeyWrappingSpecification(Struct):
-
-    class AttributeName(TextString):
-
-        def __init__(self, value=None):
-            super(KeyWrappingSpecification.AttributeName, self).__init__(
-                value, Tags.ATTRIBUTE_NAME)
+class KeyWrappingSpecification(primitives.Struct):
+    """
+    A set of values needed for key wrapping functionality.
+    """
 
     def __init__(self,
                  wrapping_method=None,
                  encryption_key_information=None,
                  mac_signature_key_information=None,
-                 attribute_name=None,
+                 attribute_names=None,
                  encoding_option=None):
+        """
+        Construct a KeyWrappingSpecification struct.
+
+        Args:
+            wrapping_method (WrappingMethod): An enumeration value that
+                specifies the method to use to wrap the key value. Optional,
+                defaults to None. Required for encoding and decoding.
+            encryption_key_information (EncryptionKeyInformation): A struct
+                containing the unique identifier of the encryption key and
+                associated cryptographic parameters. Optional, defaults to
+                None.
+            mac_signature_key_information (MACSignatureKeyInformation): A
+                struct containing the unique identifier of the MAC/signature
+                key and associated cryptographic parameters. Optional,
+                defaults to None.
+            attribute_names (list): A list of strings representing the names
+                of attributes that should be wrapped with the key material.
+                Optional, defaults to None.
+            encoding_option (EncodingOption): An enumeration value that
+                specifies the encoding of the key value before it is wrapped.
+                Optional, defaults to None.
+        """
         super(KeyWrappingSpecification, self).__init__(
-            tag=Tags.KEY_WRAPPING_SPECIFICATION)
+            tag=Tags.KEY_WRAPPING_SPECIFICATION
+        )
+
+        self._wrapping_method = None
+        self._encryption_key_information = None
+        self._mac_signature_key_information = None
+        self._attribute_names = None
+        self._encoding_option = None
+
         self.wrapping_method = wrapping_method
         self.encryption_key_information = encryption_key_information
         self.mac_signature_key_information = mac_signature_key_information
-        self.attribute_name = attribute_name
+        self.attribute_names = attribute_names
         self.encoding_option = encoding_option
 
-    def read(self, istream):
-        super(KeyWrappingSpecification, self).read(istream)
-        tstream = BytearrayStream(istream.read(self.length))
+    @property
+    def wrapping_method(self):
+        if self._wrapping_method:
+            return self._wrapping_method.value
+        else:
+            return None
 
-        self.wrapping_method = WrappingMethod()
-        self.wrapping_method.read(tstream)
+    @wrapping_method.setter
+    def wrapping_method(self, value):
+        if value is None:
+            self._wrapping_method = None
+        elif isinstance(value, enums.WrappingMethod):
+            self._wrapping_method = Enumeration(
+                enums.WrappingMethod,
+                value=value,
+                tag=Tags.WRAPPING_METHOD
+            )
+        else:
+            raise TypeError(
+                "Wrapping method must be a WrappingMethod enumeration."
+            )
 
-        if self.is_tag_next(Tags.ENCRYPTION_KEY_INFORMATION, tstream):
-            self.encryption_key_information = EncryptionKeyInformation()
-            self.encryption_key_information.read(tstream)
+    @property
+    def encryption_key_information(self):
+        return self._encryption_key_information
 
-        if self.is_tag_next(Tags.MAC_SIGNATURE_KEY_INFORMATION, tstream):
-            self.mac_signature_key_information = MACSignatureKeyInformation()
-            self.mac_signature_key_information.read(tstream)
+    @encryption_key_information.setter
+    def encryption_key_information(self, value):
+        if value is None:
+            self._encryption_key_information = None
+        elif isinstance(value, EncryptionKeyInformation):
+            self._encryption_key_information = value
+        else:
+            raise TypeError(
+                "Encryption key information must be an "
+                "EncryptionKeyInformation struct."
+            )
 
-        if self.is_tag_next(Tags.ATTRIBUTE_NAME, tstream):
-            self.attribute_name = KeyWrappingSpecification.AttributeName()
-            self.attribute_name.read(tstream)
+    @property
+    def mac_signature_key_information(self):
+        return self._mac_signature_key_information
 
-        if self.is_tag_next(Tags.ENCODING_OPTION, tstream):
-            self.encoding_option = EncodingOption()
-            self.encoding_option.read(tstream)
+    @mac_signature_key_information.setter
+    def mac_signature_key_information(self, value):
+        if value is None:
+            self._mac_signature_key_information = None
+        elif isinstance(value, MACSignatureKeyInformation):
+            self._mac_signature_key_information = value
+        else:
+            raise TypeError(
+                "MAC/signature key information must be an "
+                "MACSignatureKeyInformation struct."
+            )
 
-        self.is_oversized(tstream)
-        self.validate()
+    @property
+    def attribute_names(self):
+        if self._attribute_names:
+            attribute_names = []
+            for i in self._attribute_names:
+                attribute_names.append(i.value)
+            return attribute_names
+        else:
+            return None
 
-    def write(self, ostream):
-        tstream = BytearrayStream()
+    @attribute_names.setter
+    def attribute_names(self, value):
+        if value is None:
+            self._attribute_names = None
+        elif isinstance(value, list):
+            attribute_names = []
+            for i in value:
+                if isinstance(i, six.string_types):
+                    attribute_names.append(
+                        primitives.TextString(
+                            value=i,
+                            tag=enums.Tags.ATTRIBUTE_NAME
+                        )
+                    )
+                else:
+                    raise TypeError(
+                        "Attribute names must be a list of strings."
+                    )
+            self._attribute_names = attribute_names
+        else:
+            raise TypeError("Attribute names must be a list of strings.")
 
-        # Write the contents of the key wrapping data
-        self.wrapping_method.write(tstream)
+    @property
+    def encoding_option(self):
+        if self._encoding_option:
+            return self._encoding_option.value
+        else:
+            return None
 
-        if self.encryption_key_information is not None:
-            self.encryption_key_information.write(tstream)
-        if self.mac_signature_key_information is not None:
-            self.mac_signature_key_information.write(tstream)
-        if self.attribute_name is not None:
-            self.attribute_name.write(tstream)
-        if self.encoding_option is not None:
-            self.encoding_option.write(tstream)
+    @encoding_option.setter
+    def encoding_option(self, value):
+        if value is None:
+            self._encoding_option = None
+        elif isinstance(value, enums.EncodingOption):
+            self._encoding_option = Enumeration(
+                enums.EncodingOption,
+                value=value,
+                tag=Tags.ENCODING_OPTION
+            )
+        else:
+            raise TypeError(
+                "Encoding option must be an EncodingOption enumeration."
+            )
 
-        # Write the length and value of the key wrapping data
-        self.length = tstream.length()
-        super(KeyWrappingSpecification, self).write(ostream)
-        ostream.write(tstream.buffer)
+    def read(self, input_stream):
+        """
+        Read the data encoding the KeyWrappingSpecification struct and decode
+        it into its constituent parts.
 
-    def validate(self):
-        self.__validate()
+        Args:
+            input_stream (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+        """
+        super(KeyWrappingSpecification, self).read(input_stream)
+        local_stream = BytearrayStream(input_stream.read(self.length))
 
-    def __validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+        if self.is_tag_next(enums.Tags.WRAPPING_METHOD, local_stream):
+            self._wrapping_method = primitives.Enumeration(
+                enum=enums.WrappingMethod,
+                tag=enums.Tags.WRAPPING_METHOD
+            )
+            self._wrapping_method.read(local_stream)
+        else:
+            raise ValueError(
+                "Invalid struct missing the wrapping method attribute."
+            )
+
+        if self.is_tag_next(
+                enums.Tags.ENCRYPTION_KEY_INFORMATION,
+                local_stream
+        ):
+            self._encryption_key_information = EncryptionKeyInformation()
+            self._encryption_key_information.read(local_stream)
+        if self.is_tag_next(
+                enums.Tags.MAC_SIGNATURE_KEY_INFORMATION,
+                local_stream
+        ):
+            self._mac_signature_key_information = MACSignatureKeyInformation()
+            self._mac_signature_key_information.read(local_stream)
+
+        attribute_names = []
+        while self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, local_stream):
+            attribute_name = primitives.TextString(
+                tag=enums.Tags.ATTRIBUTE_NAME
+            )
+            attribute_name.read(local_stream)
+            attribute_names.append(attribute_name)
+        self._attribute_names = attribute_names
+
+        if self.is_tag_next(enums.Tags.ENCODING_OPTION, local_stream):
+            self._encoding_option = primitives.Enumeration(
+                enum=enums.EncodingOption,
+                tag=enums.Tags.ENCODING_OPTION
+            )
+            self._encoding_option.read(local_stream)
+
+        self.is_oversized(local_stream)
+
+    def write(self, output_stream):
+        """
+        Write the data encoding the KeyWrappingSpecification struct to a
+        stream.
+
+        Args:
+            output_stream (stream): A data stream in which to encode object
+                data, supporting a write method; usually a BytearrayStream
+                object.
+        """
+        local_stream = BytearrayStream()
+
+        if self._wrapping_method:
+            self._wrapping_method.write(local_stream)
+        else:
+            raise ValueError(
+                "Invalid struct missing the wrapping method attribute."
+            )
+
+        if self._encryption_key_information:
+            self._encryption_key_information.write(local_stream)
+        if self._mac_signature_key_information:
+            self._mac_signature_key_information.write(local_stream)
+        if self._attribute_names:
+            for unique_identifier in self._attribute_names:
+                unique_identifier.write(local_stream)
+        if self._encoding_option:
+            self._encoding_option.write(local_stream)
+
+        self.length = local_stream.length()
+        super(KeyWrappingSpecification, self).write(output_stream)
+        output_stream.write(local_stream.buffer)
+
+    def __eq__(self, other):
+        if isinstance(other, KeyWrappingSpecification):
+            if self.wrapping_method != other.wrapping_method:
+                return False
+            elif self.encryption_key_information != \
+                    other.encryption_key_information:
+                return False
+            elif self.mac_signature_key_information != \
+                    other.mac_signature_key_information:
+                return False
+            elif self.attribute_names != other.attribute_names:
+                return False
+            elif self.encoding_option != other.encoding_option:
+                return False
+            else:
+                return True
+
+    def __ne__(self, other):
+        if isinstance(other, KeyWrappingSpecification):
+            return not self == other
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        args = ", ".join([
+            "wrapping_method={0}".format(self.wrapping_method),
+            "encryption_key_information={0}".format(
+                repr(self.encryption_key_information)
+            ),
+            "mac_signature_key_information={0}".format(
+                repr(self.mac_signature_key_information)
+            ),
+            "attribute_names={0}".format(self.attribute_names),
+            "encoding_option={0}".format(self.encoding_option)
+        ])
+        return "KeyWrappingSpecification({0})".format(args)
+
+    def __str__(self):
+        return str({
+            'wrapping_method': self.wrapping_method,
+            'encryption_key_information': self.encryption_key_information,
+            'mac_signature_key_information':
+                self.mac_signature_key_information,
+            'attribute_names': self.attribute_names,
+            'encoding_option': self.encoding_option
+        })
 
 
-# 2.1.8
 class TemplateAttribute(Struct):
 
     def __init__(self,
