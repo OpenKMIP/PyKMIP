@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import six
 from six.moves import xrange
 
 from kmip.core import attributes
@@ -30,6 +31,7 @@ from kmip.core.enums import RevocationReasonCode as RevocationReasonCodeEnum
 from kmip.core.errors import ErrorStrings
 from kmip.core.misc import KeyFormatType
 
+from kmip.core import primitives
 from kmip.core.primitives import Struct
 from kmip.core.primitives import TextString
 from kmip.core.primitives import ByteString
@@ -657,21 +659,160 @@ class KeyInformation(Struct):
         pass
 
 
-class EncryptionKeyInformation(KeyInformation):
+class EncryptionKeyInformation(Struct):
+    """
+    A set of values detailing how an encrypted value was encrypted.
+    """
 
     def __init__(self,
                  unique_identifier=None,
-                 cryptographic_parameters=None,
-                 tag=Tags.ENCRYPTION_KEY_INFORMATION):
+                 cryptographic_parameters=None):
+        """
+        Construct an EncryptionKeyInformation struct.
+
+        Args:
+            unique_identifier (string): The ID of the managed object (e.g.,
+                a symmetric key) used for encryption. Required for encoding
+                and decoding.
+            cryptographic_parameters (CryptographicParameters): A
+                CryptographicParameters struct containing the settings for
+                the encryption process. Optional, defaults to None. If not
+                included, the CryptographicParameters associated with the
+                managed object will be used instead.
+        """
         super(EncryptionKeyInformation, self).__init__(
-            unique_identifier, cryptographic_parameters, tag)
+            tag=Tags.ENCRYPTION_KEY_INFORMATION
+        )
 
-    def validate(self):
-        self.__validate()
+        self._unique_identifier = None
+        self._cryptographic_parameters = None
 
-    def __validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+        self.unique_identifier = unique_identifier
+        self.cryptographic_parameters = cryptographic_parameters
+
+    @property
+    def unique_identifier(self):
+        if self._unique_identifier:
+            return self._unique_identifier.value
+        else:
+            return None
+
+    @unique_identifier.setter
+    def unique_identifier(self, value):
+        if value is None:
+            self._unique_identifier = None
+        elif isinstance(value, six.string_types):
+            self._unique_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+        else:
+            raise TypeError("Unique identifier must be a string.")
+
+    @property
+    def cryptographic_parameters(self):
+        return self._cryptographic_parameters
+
+    @cryptographic_parameters.setter
+    def cryptographic_parameters(self, value):
+        if value is None:
+            self._cryptographic_parameters = None
+        elif isinstance(value, CryptographicParameters):
+            self._cryptographic_parameters = value
+        else:
+            raise TypeError(
+                "Cryptographic parameters must be a CryptographicParameters "
+                "struct."
+            )
+
+    def read(self, input_stream):
+        """
+        Read the data encoding the EncryptionKeyInformation struct and decode
+        it into its constituent parts.
+
+        Args:
+            input_stream (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+        """
+        super(EncryptionKeyInformation, self).read(input_stream)
+        local_stream = BytearrayStream(input_stream.read(self.length))
+
+        if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
+            self._unique_identifier = primitives.TextString(
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+            self._unique_identifier.read(local_stream)
+        else:
+            raise ValueError(
+                "Invalid struct missing the unique identifier attribute."
+            )
+
+        if self.is_tag_next(
+                enums.Tags.CRYPTOGRAPHIC_PARAMETERS,
+                local_stream
+        ):
+            self._cryptographic_parameters = CryptographicParameters()
+            self._cryptographic_parameters.read(local_stream)
+
+        self.is_oversized(local_stream)
+
+    def write(self, output_stream):
+        """
+        Write the data encoding the EncryptionKeyInformation struct to a
+        stream.
+
+        Args:
+            output_stream (stream): A data stream in which to encode object
+                data, supporting a write method; usually a BytearrayStream
+                object.
+        """
+        local_stream = BytearrayStream()
+
+        if self._unique_identifier:
+            self._unique_identifier.write(local_stream)
+        else:
+            raise ValueError(
+                "Invalid struct missing the unique identifier attribute."
+            )
+
+        if self._cryptographic_parameters:
+            self._cryptographic_parameters.write(local_stream)
+
+        self.length = local_stream.length()
+        super(EncryptionKeyInformation, self).write(output_stream)
+        output_stream.write(local_stream.buffer)
+
+    def __eq__(self, other):
+        if isinstance(other, EncryptionKeyInformation):
+            if self.unique_identifier != other.unique_identifier:
+                return False
+            elif self.cryptographic_parameters != \
+                    other.cryptographic_parameters:
+                return False
+            else:
+                return True
+
+    def __ne__(self, other):
+        if isinstance(other, EncryptionKeyInformation):
+            return not self == other
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        args = ", ".join([
+            "unique_identifier='{0}'".format(self.unique_identifier),
+            "cryptographic_parameters={0}".format(
+                repr(self.cryptographic_parameters)
+            )
+        ])
+        return "EncryptionKeyInformation({0})".format(args)
+
+    def __str__(self):
+        return str({
+            'unique_identifier': self.unique_identifier,
+            'cryptographic_parameters': self.cryptographic_parameters
+        })
 
 
 class MACSignatureKeyInformation(KeyInformation):
