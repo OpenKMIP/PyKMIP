@@ -92,9 +92,9 @@ if __name__ == '__main__':
     if result.result_status.value == ResultStatus.SUCCESS:
         logger.info('retrieved object type: {0}'.format(
             result.object_type.value))
-        logger.info('retrieved UUID: {0}'.format(result.uuid.value))
+        logger.info('retrieved UUID: {0}'.format(result.uuid))
 
-        utils.log_secret(logger, result.object_type.value, result.secret)
+        utils.log_secret(logger, result.object_type, result.secret)
     else:
         logger.info('get() result reason: {0}'.format(
             result.result_reason.value))

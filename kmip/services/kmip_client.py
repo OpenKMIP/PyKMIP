@@ -769,25 +769,19 @@ class KMIPProxy(KMIP):
              credential=None):
         operation = Operation(OperationEnum.GET)
 
-        uuid = None
-        kft = None
-        kct = None
         kws = None
 
-        if unique_identifier is not None:
-            uuid = attr.UniqueIdentifier(unique_identifier)
         if key_format_type is not None:
-            kft = get.GetRequestPayload.KeyFormatType(key_format_type.value)
-        if key_compression_type is not None:
-            kct = key_compression_type
-            kct = get.GetRequestPayload.KeyCompressionType(kct)
+            key_format_type = key_format_type.value
         if key_wrapping_specification is not None:
             kws = objects.KeyWrappingSpecification(key_wrapping_specification)
 
-        req_pl = get.GetRequestPayload(unique_identifier=uuid,
-                                       key_format_type=kft,
-                                       key_compression_type=kct,
-                                       key_wrapping_specification=kws)
+        req_pl = get.GetRequestPayload(
+            unique_identifier=unique_identifier,
+            key_format_type=key_format_type,
+            key_compression_type=key_compression_type,
+            key_wrapping_specification=kws
+        )
 
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=req_pl)

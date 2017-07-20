@@ -3679,9 +3679,7 @@ class TestKmipEngine(testtools.TestCase):
         id_b = str(obj_b.unique_identifier)
 
         # Test by specifying the ID of the object to get.
-        payload = get.GetRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(id_a)
-        )
+        payload = get.GetRequestPayload(unique_identifier=id_a)
 
         response_payload = e._process_get(payload)
         e._data_session.commit()
@@ -3692,9 +3690,9 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(
             enums.ObjectType.OPAQUE_DATA,
-            response_payload.object_type.value
+            response_payload.object_type
         )
-        self.assertEqual(str(id_a), response_payload.unique_identifier.value)
+        self.assertEqual(str(id_a), response_payload.unique_identifier)
         self.assertIsInstance(response_payload.secret, secrets.OpaqueObject)
         self.assertEqual(
             enums.OpaqueDataType.NONE,
@@ -3722,9 +3720,9 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(
             enums.ObjectType.OPAQUE_DATA,
-            response_payload.object_type.value
+            response_payload.object_type
         )
-        self.assertEqual(str(id_b), response_payload.unique_identifier.value)
+        self.assertEqual(str(id_b), response_payload.unique_identifier)
         self.assertIsInstance(response_payload.secret, secrets.OpaqueObject)
         self.assertEqual(
             enums.OpaqueDataType.NONE,
@@ -3749,11 +3747,8 @@ class TestKmipEngine(testtools.TestCase):
         e._logger = mock.MagicMock()
 
         # Test that specifying the key compression type generates an error.
-        payload = get.GetRequestPayload(
-            key_compression_type=get.GetRequestPayload.KeyCompressionType(
-                enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED
-            )
-        )
+        k = enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED
+        payload = get.GetRequestPayload(key_compression_type=k)
 
         args = (payload, )
         regex = "Key compression is not supported."
@@ -3813,10 +3808,8 @@ class TestKmipEngine(testtools.TestCase):
 
         # Test that a key can be retrieved with the right key format.
         payload = get.GetRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(id_a),
-            key_format_type=get.GetRequestPayload.KeyFormatType(
-                enums.KeyFormatType.RAW
-            )
+            unique_identifier=id_a,
+            key_format_type=enums.KeyFormatType.RAW
         )
 
         response_payload = e._process_get(payload)
@@ -3850,10 +3843,8 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         payload = get.GetRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(id_a),
-            key_format_type=get.GetRequestPayload.KeyFormatType(
-                enums.KeyFormatType.OPAQUE
-            )
+            unique_identifier=id_a,
+            key_format_type=enums.KeyFormatType.OPAQUE
         )
 
         args = (payload, )
@@ -3883,10 +3874,8 @@ class TestKmipEngine(testtools.TestCase):
         id_b = str(obj_b.unique_identifier)
 
         payload = get.GetRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(id_b),
-            key_format_type=get.GetRequestPayload.KeyFormatType(
-                enums.KeyFormatType.RAW
-            )
+            unique_identifier=id_b,
+            key_format_type=enums.KeyFormatType.RAW
         )
 
         args = (payload, )
@@ -3921,9 +3910,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session = e._data_store_session_factory()
 
         id_a = str(obj_a.unique_identifier)
-        payload = get.GetRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(id_a)
-        )
+        payload = get.GetRequestPayload(unique_identifier=id_a)
 
         # Test by specifying the ID of the object to get.
         args = [payload]
@@ -5931,9 +5918,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Retrieve the created key using Get and verify all fields set
-        payload = get.GetRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(uid)
-        )
+        payload = get.GetRequestPayload(unique_identifier=uid)
 
         response_payload = e._process_get(payload)
         e._data_session.commit()
@@ -5944,9 +5929,9 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(
             enums.ObjectType.SYMMETRIC_KEY,
-            response_payload.object_type.value
+            response_payload.object_type
         )
-        self.assertEqual(str(uid), response_payload.unique_identifier.value)
+        self.assertEqual(str(uid), response_payload.unique_identifier)
         self.assertIsInstance(response_payload.secret, secrets.SymmetricKey)
 
         key_block = response_payload.secret.key_block
@@ -6070,9 +6055,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Retrieve the created public key using Get and verify all fields set
-        payload = get.GetRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(public_id)
-        )
+        payload = get.GetRequestPayload(unique_identifier=public_id)
 
         response_payload = e._process_get(payload)
         e._data_session.commit()
@@ -6083,12 +6066,9 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(
             enums.ObjectType.PUBLIC_KEY,
-            response_payload.object_type.value
+            response_payload.object_type
         )
-        self.assertEqual(
-            str(public_id),
-            response_payload.unique_identifier.value
-        )
+        self.assertEqual(str(public_id), response_payload.unique_identifier)
         self.assertIsInstance(response_payload.secret, secrets.PublicKey)
 
         key_block = response_payload.secret.key_block
@@ -6108,9 +6088,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Retrieve the created private key using Get and verify all fields set
-        payload = get.GetRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(private_id)
-        )
+        payload = get.GetRequestPayload(unique_identifier=private_id)
 
         response_payload = e._process_get(payload)
         e._data_session.commit()
@@ -6121,12 +6099,9 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(
             enums.ObjectType.PRIVATE_KEY,
-            response_payload.object_type.value
+            response_payload.object_type
         )
-        self.assertEqual(
-            str(private_id),
-            response_payload.unique_identifier.value
-        )
+        self.assertEqual(str(private_id), response_payload.unique_identifier)
         self.assertIsInstance(response_payload.secret, secrets.PrivateKey)
 
         key_block = response_payload.secret.key_block
@@ -6295,9 +6270,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Retrieve the registered key using Get and verify all fields set
-        payload = get.GetRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(uid)
-        )
+        payload = get.GetRequestPayload(unique_identifier=uid)
 
         response_payload = e._process_get(payload)
         e._data_session.commit()
@@ -6308,9 +6281,9 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(
             enums.ObjectType.SYMMETRIC_KEY,
-            response_payload.object_type.value
+            response_payload.object_type
         )
-        self.assertEqual(str(uid), response_payload.unique_identifier.value)
+        self.assertEqual(str(uid), response_payload.unique_identifier)
         self.assertIsInstance(response_payload.secret, secrets.SymmetricKey)
         self.assertEqual(
             key_bytes,
