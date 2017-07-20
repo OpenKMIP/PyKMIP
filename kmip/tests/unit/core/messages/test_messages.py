@@ -480,16 +480,16 @@ class TestRequestMessage(TestCase):
                               msg.format(get.GetRequestPayload,
                                          type(request_payload)))
 
-        unique_identifier = request_payload.unique_identifier
-        msg = "Bad unique identifier type: expected {0}, received {1}"
-        self.assertIsInstance(unique_identifier, attr.UniqueIdentifier,
-                              msg.format(attr.UniqueIdentifier,
-                                         type(unique_identifier)))
-        msg = "Bad unique identifier value: expected {0}, received {1}"
-        self.assertEqual('49a1ca88-6bea-4fb2-b450-7e58802c3038',
-                         unique_identifier.value,
-                         msg.format('49a1ca88-6bea-4fb2-b450-7e58802c3038',
-                                    unique_identifier.value))
+        # unique_identifier = request_payload.unique_identifier
+        # msg = "Bad unique identifier type: expected {0}, received {1}"
+        # self.assertIsInstance(unique_identifier, attr.UniqueIdentifier,
+        #                       msg.format(attr.UniqueIdentifier,
+        #                                  type(unique_identifier)))
+        # msg = "Bad unique identifier value: expected {0}, received {1}"
+        self.assertEqual(
+            '49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            request_payload.unique_identifier
+        )
 
     def test_get_request_write(self):
         prot_ver = contents.ProtocolVersion.create(1, 1)
@@ -500,8 +500,10 @@ class TestRequestMessage(TestCase):
 
         operation = contents.Operation(enums.Operation.GET)
 
-        uuid = attr.UniqueIdentifier('49a1ca88-6bea-4fb2-b450-7e58802c3038')
-        request_payload = get.GetRequestPayload(unique_identifier=uuid)
+#        uuid = attr.UniqueIdentifier('49a1ca88-6bea-4fb2-b450-7e58802c3038')
+        request_payload = get.GetRequestPayload(
+            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+        )
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=request_payload)
         request_message = messages.RequestMessage(request_header=req_header,
@@ -1498,25 +1500,14 @@ class TestResponseMessage(TestCase):
                                   self.msg.format('response payload', 'type',
                                                   exp_type, rcv_type))
 
-            object_type = response_payload.object_type
-            self.assertIsInstance(object_type, attr.ObjectType,
-                                  self.msg.format('object type', 'type',
-                                                  attr.ObjectType,
-                                                  type(object_type)))
-            self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.value,
-                             self.msg.format('object type', 'value',
-                                             enums.ObjectType.SYMMETRIC_KEY,
-                                             object_type.value))
-
-            unique_identifier = response_payload.unique_identifier
-            value = '49a1ca88-6bea-4fb2-b450-7e58802c3038'
-            self.assertIsInstance(unique_identifier, attr.UniqueIdentifier,
-                                  self.msg.format('unique identifier', 'type',
-                                                  attr.UniqueIdentifier,
-                                                  type(unique_identifier)))
-            self.assertEqual(value, unique_identifier.value,
-                             self.msg.format('unique identifier', 'value',
-                                             unique_identifier.value, value))
+            self.assertEqual(
+                enums.ObjectType.SYMMETRIC_KEY,
+                response_payload.object_type
+            )
+            self.assertEqual(
+                '49a1ca88-6bea-4fb2-b450-7e58802c3038',
+                response_payload.unique_identifier
+            )
 
             secret = response_payload.secret
             self.assertIsInstance(secret, SymmetricKey,
@@ -1619,8 +1610,8 @@ class TestResponseMessage(TestCase):
 
         secret = SymmetricKey(key_block)
 
-        resp_pl = get.GetResponsePayload(object_type=object_type,
-                                         unique_identifier=uniq_id,
+        resp_pl = get.GetResponsePayload(object_type=object_type.value,
+                                         unique_identifier=uniq_id.value,
                                          secret=secret)
         batch_item = messages.ResponseBatchItem(operation=operation,
                                                 result_status=result_status,

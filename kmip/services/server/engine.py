@@ -1378,11 +1378,11 @@ class KmipEngine(object):
 
         unique_identifier = self._id_placeholder
         if payload.unique_identifier:
-            unique_identifier = payload.unique_identifier.value
+            unique_identifier = payload.unique_identifier
 
         key_format_type = None
         if payload.key_format_type:
-            key_format_type = payload.key_format_type.value
+            key_format_type = payload.key_format_type
 
         if payload.key_compression_type:
             raise exceptions.KeyCompressionTypeNotSupported(
@@ -1429,8 +1429,8 @@ class KmipEngine(object):
         core_secret = self._build_core_object(managed_object)
 
         response_payload = get.GetResponsePayload(
-            object_type=attributes.ObjectType(managed_object._object_type),
-            unique_identifier=attributes.UniqueIdentifier(unique_identifier),
+            object_type=managed_object._object_type,
+            unique_identifier=unique_identifier,
             secret=core_secret
         )
 
