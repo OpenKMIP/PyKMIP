@@ -22,7 +22,7 @@ from cryptography.hazmat.primitives import padding as symmetric_padding
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric import padding as \
     asymmetric_padding
-from cryptography.hazmat.primitives import ciphers
+from cryptography.hazmat.primitives import ciphers, keywrap
 from cryptography.hazmat.primitives.ciphers import algorithms, modes
 from cryptography.hazmat.primitives.kdf import hkdf
 from cryptography.hazmat.primitives.kdf import kbkdf
@@ -736,13 +736,6 @@ class CryptographyEngine(api.CryptographicEngine):
                     info=derivation_data,
                     backend=default_backend()
                 )
-#                df = hmac.HMAC(
-#                    key_material,
-#                    algorithm=hashing_algorithm(),
-#                    backend=default_backend()
-#                )
-#                df.update(derivation_data)
-#                derived_data = df.finalize()
                 derived_data = df.derive(key_material)
                 return derived_data
             elif derivation_method == enums.DerivationMethod.HASH:
@@ -808,3 +801,69 @@ class CryptographyEngine(api.CryptographicEngine):
                     "Derivation method '{0}' is not a supported key "
                     "derivation method.".format(derivation_method)
                 )
+
+    def wrap_key(self,
+                 key_material,
+                 wrapping_method,
+                 encryption_algorithm,
+                 encryption_key):
+        """
+        Args:
+            key_material (bytes): The bytes of the key to wrap. Required.
+            wrapping_method (WrappingMethod): A WrappingMethod enumeration
+                specifying what wrapping technique to use to wrap the key
+                material. Required.
+            encryption_algorithm (CryptographicAlgorithm): A
+                CryptographicAlgorithm enumeration specifying the encryption
+                algorithm to use to encrypt the key material. Required.
+            encryption_key (bytes): The bytes of the encryption key to use
+                to encrypt the key material. Required.
+
+        Returns:
+            bytes: the bytes of the wrapped key
+
+        Raises:
+            CryptographicFailure: Raised when an error occurs during key
+                wrapping.
+            InvalidField: Raised when an unsupported wrapping or encryption
+                algorithm is specified.
+
+        Example:
+            >>> engine = CryptographyEngine()
+            >>> result = engine.wrap_key(
+            ...     key_material=(
+            ...         b'\x00\x11\x22\x33\x44\x55\x66\x77'
+            ...         b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ...     )
+            ...     wrapping_method=enums.WrappingMethod.ENCRYPT,
+            ...     encryption_algorithm=enums.CryptographicAlgorithm.AES,
+            ...     encryption_key=(
+            ...         b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ...         b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ...     )
+            ... )
+            >>> result
+            b'\x1f\xa6\x8b\n\x81\x12\xb4G\xae\xf3K\xd8\xfbZ{\x82\x9d>\x86#q
+            \xd2\xcf\xe5'
+        """
+        if wrapping_method == enums.WrappingMethod.ENCRYPT:
+            if encryption_algorithm == enums.CryptographicAlgorithm.AES:
+                try:
+                    wrapped_key = keywrap.aes_key_wrap(
+                        encryption_key,
+                        key_material,
+                        default_backend()
+                    )
+                    return wrapped_key
+                except Exception as e:
+                    raise exceptions.CryptographicFailure(str(e))
+            else:
+                raise exceptions.InvalidField(
+                    "Encryption algorithm '{0}' is not a supported key "
+                    "wrapping algorithm.".format(encryption_algorithm)
+                )
+        else:
+            raise exceptions.InvalidField(
+                "Wrapping method '{0}' is not a supported key wrapping "
+                "method.".format(wrapping_method)
+            )

@@ -670,6 +670,57 @@ class TestCryptographyEngine(testtools.TestCase):
             **kwargs
         )
 
+    def test_wrap_key_invalid_wrapping_method(self):
+        """
+        Test that the right error is raised when an invalid wrapping method
+        is specified for key wrapping.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (b'', 'invalid', enums.CryptographicAlgorithm.AES, b'')
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "Wrapping method 'invalid' is not a supported key wrapping "
+            "method.",
+            engine.wrap_key,
+            *args
+        )
+
+    def test_wrap_key_invalid_encryption_algorithm(self):
+        """
+        Test that the right error is raised when an invalid encryption
+        algorithm is specified for encryption-based key wrapping.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (b'', enums.WrappingMethod.ENCRYPT, 'invalid', b'')
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "Encryption algorithm 'invalid' is not a supported key wrapping "
+            "algorithm.",
+            engine.wrap_key,
+            *args
+        )
+
+    def test_wrap_key_cryptographic_error(self):
+        """
+        Test that the right error is raised when an error occurs during the
+        key wrapping process.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            b'',
+            enums.WrappingMethod.ENCRYPT,
+            enums.CryptographicAlgorithm.AES,
+            b''
+        )
+        self.assertRaises(
+            exceptions.CryptographicFailure,
+            engine.wrap_key,
+            *args
+        )
+
 
 # TODO(peter-hamilton): Replace this with actual fixture files from NIST CAPV.
 # Most of these test vectors were obtained from the pyca/cryptography test
@@ -1581,3 +1632,138 @@ def test_derive_key(derivation_parameters):
     )
 
     assert derivation_parameters.get('derived_data') == result
+
+
+# AES Key Wrap test vectors were obtained from IETF RFC 3394:
+#
+# https://www.ietf.org/rfc/rfc3394.txt
+@pytest.fixture(
+    scope='function',
+    params=[
+        {'key_material': (
+             b'\x00\x11\x22\x33\x44\x55\x66\x77'
+             b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+         ),
+         'wrapping_method': enums.WrappingMethod.ENCRYPT,
+         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'encryption_key': (
+             b'\x00\x01\x02\x03\x04\x05\x06\x07'
+             b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+         ),
+         'wrapped_data': (
+             b'\x1F\xA6\x8B\x0A\x81\x12\xB4\x47'
+             b'\xAE\xF3\x4B\xD8\xFB\x5A\x7B\x82'
+             b'\x9D\x3E\x86\x23\x71\xD2\xCF\xE5'
+         )},
+        {'key_material': (
+             b'\x00\x11\x22\x33\x44\x55\x66\x77'
+             b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+         ),
+         'wrapping_method': enums.WrappingMethod.ENCRYPT,
+         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'encryption_key': (
+             b'\x00\x01\x02\x03\x04\x05\x06\x07'
+             b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+             b'\x10\x11\x12\x13\x14\x15\x16\x17'
+         ),
+         'wrapped_data': (
+             b'\x96\x77\x8B\x25\xAE\x6C\xA4\x35'
+             b'\xF9\x2B\x5B\x97\xC0\x50\xAE\xD2'
+             b'\x46\x8A\xB8\xA1\x7A\xD8\x4E\x5D'
+         )},
+        {'key_material': (
+             b'\x00\x11\x22\x33\x44\x55\x66\x77'
+             b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+         ),
+         'wrapping_method': enums.WrappingMethod.ENCRYPT,
+         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'encryption_key': (
+             b'\x00\x01\x02\x03\x04\x05\x06\x07'
+             b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+             b'\x10\x11\x12\x13\x14\x15\x16\x17'
+             b'\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F'
+         ),
+         'wrapped_data': (
+             b'\x64\xE8\xC3\xF9\xCE\x0F\x5B\xA2'
+             b'\x63\xE9\x77\x79\x05\x81\x8A\x2A'
+             b'\x93\xC8\x19\x1E\x7D\x6E\x8A\xE7'
+         )},
+        {'key_material': (
+             b'\x00\x11\x22\x33\x44\x55\x66\x77'
+             b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+             b'\x00\x01\x02\x03\x04\x05\x06\x07'
+         ),
+         'wrapping_method': enums.WrappingMethod.ENCRYPT,
+         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'encryption_key': (
+             b'\x00\x01\x02\x03\x04\x05\x06\x07'
+             b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+             b'\x10\x11\x12\x13\x14\x15\x16\x17'
+         ),
+         'wrapped_data': (
+             b'\x03\x1D\x33\x26\x4E\x15\xD3\x32'
+             b'\x68\xF2\x4E\xC2\x60\x74\x3E\xDC'
+             b'\xE1\xC6\xC7\xDD\xEE\x72\x5A\x93'
+             b'\x6B\xA8\x14\x91\x5C\x67\x62\xD2'
+         )},
+        {'key_material': (
+             b'\x00\x11\x22\x33\x44\x55\x66\x77'
+             b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+             b'\x00\x01\x02\x03\x04\x05\x06\x07'
+         ),
+         'wrapping_method': enums.WrappingMethod.ENCRYPT,
+         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'encryption_key': (
+             b'\x00\x01\x02\x03\x04\x05\x06\x07'
+             b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+             b'\x10\x11\x12\x13\x14\x15\x16\x17'
+             b'\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F'
+         ),
+         'wrapped_data': (
+             b'\xA8\xF9\xBC\x16\x12\xC6\x8B\x3F'
+             b'\xF6\xE6\xF4\xFB\xE3\x0E\x71\xE4'
+             b'\x76\x9C\x8B\x80\xA3\x2C\xB8\x95'
+             b'\x8C\xD5\xD1\x7D\x6B\x25\x4D\xA1'
+         )},
+        {'key_material': (
+             b'\x00\x11\x22\x33\x44\x55\x66\x77'
+             b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+             b'\x00\x01\x02\x03\x04\x05\x06\x07'
+             b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+         ),
+         'wrapping_method': enums.WrappingMethod.ENCRYPT,
+         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'encryption_key': (
+             b'\x00\x01\x02\x03\x04\x05\x06\x07'
+             b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+             b'\x10\x11\x12\x13\x14\x15\x16\x17'
+             b'\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F'
+         ),
+         'wrapped_data': (
+             b'\x28\xC9\xF4\x04\xC4\xB8\x10\xF4'
+             b'\xCB\xCC\xB3\x5C\xFB\x87\xF8\x26'
+             b'\x3F\x57\x86\xE2\xD8\x0E\xD3\x26'
+             b'\xCB\xC7\xF0\xE7\x1A\x99\xF4\x3B'
+             b'\xFB\x98\x8B\x9B\x7A\x02\xDD\x21'
+         )}
+    ]
+)
+def wrapping_parameters(request):
+    return request.param
+
+
+def test_wrap_key(wrapping_parameters):
+    """
+    Test that various wrapping methods and settings can be used to correctly
+    wrap key data.
+    """
+    engine = crypto.CryptographyEngine()
+
+    result = engine.wrap_key(
+        wrapping_parameters.get('key_material'),
+        wrapping_parameters.get('wrapping_method'),
+        wrapping_parameters.get('encryption_algorithm'),
+        wrapping_parameters.get('encryption_key')
+    )
+
+    assert wrapping_parameters.get('wrapped_data') == result
