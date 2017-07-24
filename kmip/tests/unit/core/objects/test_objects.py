@@ -1206,6 +1206,950 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         self.assertEqual(expected, observed)
 
 
+class TestKeyWrappingData(testtools.TestCase):
+    """
+    Test suite for the KeyWrappingData struct.
+    """
+
+    def setUp(self):
+        super(TestKeyWrappingData, self).setUp()
+
+        # Encoding obtained in part from the KMIP 1.1 testing document,
+        # Sections 14.1. The rest was built by hand.
+        #
+        # This encoding matches the following set of values:
+        #
+        # Wrapping Method - ENCRYPT
+        # Encryption Key Information
+        #     Unique Identifier - 100182d5-72b8-47aa-8383-4d97d512e98a
+        #     Cryptographic Parameters
+        #         Block Cipher Mode - NIST_KEY_WRAP
+        # MAC/Signature Key Information
+        #     Unique Identifier - 100182d5-72b8-47aa-8383-4d97d512e98a
+        #     Cryptographic Parameters
+        #         Block Cipher Mode - NIST_KEY_WRAP
+        # MAC/Signature - 0x0123456789ABCDEF
+        # IV/Counter/Nonce - 0x01
+        # Encoding Option - NO_ENCODING
+
+        self.full_encoding = BytearrayStream(
+            b'\x42\x00\x46\x01\x00\x00\x00\xE0'
+            b'\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x36\x01\x00\x00\x00\x48'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
+            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
+            b'\x65\x39\x38\x61\x00\x00\x00\x00'
+            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
+            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
+            b'\x42\x00\x4E\x01\x00\x00\x00\x48'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
+            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
+            b'\x65\x39\x38\x61\x00\x00\x00\x00'
+            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
+            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
+            b'\x42\x00\x4D\x08\x00\x00\x00\x08\x01\x23\x45\x67\x89\xAB\xCD\xEF'
+            b'\x42\x00\x3D\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        )
+
+        # Encoding obtained from the KMIP 1.1 testing document, Section 14.1.
+        # This encoding matches the following set of values:
+        #
+        # Wrapping Method - ENCRYPT
+        # Encryption Key Information
+        #     Unique Identifier - 100182d5-72b8-47aa-8383-4d97d512e98a
+        #     Cryptographic Parameters
+        #         Block Cipher Mode - NIST_KEY_WRAP
+        # Encoding Option - NO_ENCODING
+
+        self.partial_encoding = BytearrayStream(
+            b'\x42\x00\x46\x01\x00\x00\x00\x70'
+            b'\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x36\x01\x00\x00\x00\x48'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
+            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
+            b'\x65\x39\x38\x61\x00\x00\x00\x00'
+            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
+            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
+            b'\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        )
+
+        self.empty_encoding = BytearrayStream(
+            b'\x42\x00\x46\x01\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestKeyWrappingData, self).tearDown()
+
+    def test_init(self):
+        """
+        Test that a KeyWrappingData struct can be constructed with no
+        arguments.
+        """
+        key_wrapping_data = objects.KeyWrappingData()
+
+        self.assertEqual(None, key_wrapping_data.wrapping_method)
+        self.assertEqual(None, key_wrapping_data.encryption_key_information)
+        self.assertEqual(None, key_wrapping_data.mac_signature_key_information)
+        self.assertEqual(None, key_wrapping_data.mac_signature)
+        self.assertEqual(None, key_wrapping_data.iv_counter_nonce)
+        self.assertEqual(None, key_wrapping_data.encoding_option)
+
+    def test_init_with_args(self):
+        """
+        Test that a KeyWrappingData struct can be constructed with valid
+        values.
+        """
+        key_wrapping_data = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="12345678-9012-3456-7890-123456789012",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CTR
+                )
+            ),
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="00000000-1111-2222-3333-444444444444",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature=b'\x01',
+            iv_counter_nonce=b'\x02',
+            encoding_option=enums.EncodingOption.TTLV_ENCODING
+        )
+
+        self.assertEqual(
+            enums.WrappingMethod.ENCRYPT,
+            key_wrapping_data.wrapping_method
+        )
+        self.assertIsInstance(
+            key_wrapping_data.encryption_key_information,
+            objects.EncryptionKeyInformation
+        )
+        e = key_wrapping_data.encryption_key_information
+        self.assertEqual(
+            "12345678-9012-3456-7890-123456789012",
+            e.unique_identifier
+        )
+        self.assertIsInstance(
+            e.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.BlockCipherMode.CTR,
+            e.cryptographic_parameters.block_cipher_mode
+        )
+        self.assertIsInstance(
+            key_wrapping_data.mac_signature_key_information,
+            objects.MACSignatureKeyInformation
+        )
+        m = key_wrapping_data.mac_signature_key_information
+        self.assertEqual(
+            "00000000-1111-2222-3333-444444444444",
+            m.unique_identifier
+        )
+        self.assertIsInstance(
+            m.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.BlockCipherMode.NIST_KEY_WRAP,
+            m.cryptographic_parameters.block_cipher_mode
+        )
+        self.assertEqual(b'\x01', key_wrapping_data.mac_signature)
+        self.assertEqual(b'\x02', key_wrapping_data.iv_counter_nonce)
+        self.assertEqual(
+            enums.EncodingOption.TTLV_ENCODING,
+            key_wrapping_data.encoding_option
+        )
+
+    def test_invalid_wrapping_method(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the wrapping method of a KeyWrappingData struct.
+        """
+        kwargs = {'wrapping_method': 'invalid'}
+        self.assertRaisesRegexp(
+            TypeError,
+            "Wrapping method must be a WrappingMethod enumeration.",
+            objects.KeyWrappingData,
+            **kwargs
+        )
+
+        args = (objects.KeyWrappingData(), 'wrapping_method', 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "Wrapping method must be a WrappingMethod enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_encryption_key_information(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the encryption key information of a KeyWrappingData struct.
+        """
+        kwargs = {'encryption_key_information': 'invalid'}
+        self.assertRaisesRegexp(
+            TypeError,
+            "Encryption key information must be an EncryptionKeyInformation "
+            "struct.",
+            objects.KeyWrappingData,
+            **kwargs
+        )
+
+        args = (
+            objects.KeyWrappingData(),
+            'encryption_key_information',
+            'invalid'
+        )
+        self.assertRaisesRegexp(
+            TypeError,
+            "Encryption key information must be an EncryptionKeyInformation "
+            "struct.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_mac_signature_key_information(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the MAC/signature key information of a KeyWrappingData struct.
+        """
+        kwargs = {'mac_signature_key_information': 'invalid'}
+        self.assertRaisesRegexp(
+            TypeError,
+            "MAC/signature key information must be an "
+            "MACSignatureKeyInformation struct.",
+            objects.KeyWrappingData,
+            **kwargs
+        )
+
+        args = (
+            objects.KeyWrappingData(),
+            'mac_signature_key_information',
+            'invalid'
+        )
+        self.assertRaisesRegexp(
+            TypeError,
+            "MAC/signature key information must be an "
+            "MACSignatureKeyInformation struct.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_mac_signature(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the MAC/signature of a KeyWrappingData struct.
+        """
+        kwargs = {'mac_signature': 0}
+        self.assertRaisesRegexp(
+            TypeError,
+            "MAC/signature must be bytes.",
+            objects.KeyWrappingData,
+            **kwargs
+        )
+
+        args = (
+            objects.KeyWrappingData(),
+            'mac_signature',
+            0
+        )
+        self.assertRaisesRegexp(
+            TypeError,
+            "MAC/signature must be bytes.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_iv_counter_nonce(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the IV/counter/nonce of a KeyWrappingData struct.
+        """
+        kwargs = {'iv_counter_nonce': 0}
+        self.assertRaisesRegexp(
+            TypeError,
+            "IV/counter/nonce must be bytes.",
+            objects.KeyWrappingData,
+            **kwargs
+        )
+
+        args = (
+            objects.KeyWrappingData(),
+            'iv_counter_nonce',
+            0
+        )
+        self.assertRaisesRegexp(
+            TypeError,
+            "IV/counter/nonce must be bytes.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_encoding_option(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the encoding option of a KeyWrappingData struct.
+        """
+        kwargs = {'encoding_option': 'invalid'}
+        self.assertRaisesRegexp(
+            TypeError,
+            "Encoding option must be an EncodingOption enumeration.",
+            objects.KeyWrappingData,
+            **kwargs
+        )
+
+        args = (
+            objects.KeyWrappingData(),
+            'encoding_option',
+            'invalid'
+        )
+        self.assertRaisesRegexp(
+            TypeError,
+            "Encoding option must be an EncodingOption enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that a KeyWrappingData struct can be read from a data stream.
+        """
+        key_wrapping_data = objects.KeyWrappingData()
+
+        self.assertEqual(None, key_wrapping_data.wrapping_method)
+        self.assertEqual(None, key_wrapping_data.encryption_key_information)
+        self.assertEqual(None, key_wrapping_data.mac_signature_key_information)
+        self.assertEqual(None, key_wrapping_data.mac_signature)
+        self.assertEqual(None, key_wrapping_data.iv_counter_nonce)
+        self.assertEqual(None, key_wrapping_data.encoding_option)
+
+        key_wrapping_data.read(self.full_encoding)
+
+        self.assertEqual(
+            enums.WrappingMethod.ENCRYPT,
+            key_wrapping_data.wrapping_method
+        )
+        self.assertIsInstance(
+            key_wrapping_data.encryption_key_information,
+            objects.EncryptionKeyInformation
+        )
+        e = key_wrapping_data.encryption_key_information
+        self.assertEqual(
+            "100182d5-72b8-47aa-8383-4d97d512e98a",
+            e.unique_identifier
+        )
+        self.assertIsInstance(
+            e.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.BlockCipherMode.NIST_KEY_WRAP,
+            e.cryptographic_parameters.block_cipher_mode
+        )
+        self.assertIsInstance(
+            key_wrapping_data.mac_signature_key_information,
+            objects.MACSignatureKeyInformation
+        )
+        m = key_wrapping_data.mac_signature_key_information
+        self.assertEqual(
+            "100182d5-72b8-47aa-8383-4d97d512e98a",
+            m.unique_identifier
+        )
+        self.assertIsInstance(
+            m.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.BlockCipherMode.NIST_KEY_WRAP,
+            m.cryptographic_parameters.block_cipher_mode
+        )
+        self.assertEqual(
+            b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
+            key_wrapping_data.mac_signature
+        )
+        self.assertEqual(
+            b'\x01',
+            key_wrapping_data.iv_counter_nonce
+        )
+        self.assertEqual(
+            enums.EncodingOption.NO_ENCODING,
+            key_wrapping_data.encoding_option
+        )
+
+    def test_read_partial(self):
+        """
+        Test that a KeyWrappingData struct can be read from a partial data
+        stream.
+        """
+        key_wrapping_data = objects.KeyWrappingData()
+
+        self.assertEqual(None, key_wrapping_data.wrapping_method)
+        self.assertEqual(None, key_wrapping_data.encryption_key_information)
+        self.assertEqual(None, key_wrapping_data.mac_signature_key_information)
+        self.assertEqual(None, key_wrapping_data.mac_signature)
+        self.assertEqual(None, key_wrapping_data.iv_counter_nonce)
+        self.assertEqual(None, key_wrapping_data.encoding_option)
+
+        key_wrapping_data.read(self.partial_encoding)
+
+        self.assertEqual(
+            enums.WrappingMethod.ENCRYPT,
+            key_wrapping_data.wrapping_method
+        )
+        self.assertIsInstance(
+            key_wrapping_data.encryption_key_information,
+            objects.EncryptionKeyInformation
+        )
+        e = key_wrapping_data.encryption_key_information
+        self.assertEqual(
+            "100182d5-72b8-47aa-8383-4d97d512e98a",
+            e.unique_identifier
+        )
+        self.assertIsInstance(
+            e.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.BlockCipherMode.NIST_KEY_WRAP,
+            e.cryptographic_parameters.block_cipher_mode
+        )
+        self.assertIsNone(key_wrapping_data.mac_signature_key_information)
+        self.assertIsNone(key_wrapping_data.mac_signature)
+        self.assertIsNone(key_wrapping_data.iv_counter_nonce)
+        self.assertEqual(
+            enums.EncodingOption.NO_ENCODING,
+            key_wrapping_data.encoding_option
+        )
+
+    def test_read_invalid(self):
+        """
+        Test that a ValueError gets raised when a required KeyWrappingData
+        field is missing from the struct encoding.
+        """
+        key_wrapping_data = objects.KeyWrappingData()
+        args = (self.empty_encoding,)
+        self.assertRaisesRegexp(
+            ValueError,
+            "Invalid struct missing the wrapping method attribute.",
+            key_wrapping_data.read,
+            *args
+        )
+
+    def test_write(self):
+        """
+        Test that a KeyWrappingData struct can be written to a data stream.
+        """
+        key_wrapping_data = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
+            iv_counter_nonce=b'\x01',
+            encoding_option=enums.EncodingOption.NO_ENCODING
+        )
+        stream = BytearrayStream()
+        key_wrapping_data.write(stream)
+
+        self.assertEqual(len(self.full_encoding), len(stream))
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_write_partial(self):
+        """
+        Test that a partially defined KeyWrappingData struct can be written to
+        a data stream.
+        """
+        key_wrapping_data = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            encoding_option=enums.EncodingOption.NO_ENCODING
+        )
+        stream = BytearrayStream()
+        key_wrapping_data.write(stream)
+
+        self.assertEqual(len(self.partial_encoding), len(stream))
+        self.assertEqual(str(self.partial_encoding), str(stream))
+
+    def test_write_invalid(self):
+        """
+        Test that a ValueError gets raised when a required KeyWrappingData
+        field is missing when encoding the struct.
+        """
+        key_wrapping_data = objects.KeyWrappingData()
+        stream = utils.BytearrayStream()
+        args = (stream,)
+        self.assertRaisesRegexp(
+            ValueError,
+            "Invalid struct missing the wrapping method attribute.",
+            key_wrapping_data.write,
+            *args
+        )
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        KeyWrappingData structs with the same data.
+        """
+        a = objects.KeyWrappingData()
+        b = objects.KeyWrappingData()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature=b'\x01\x01\x01\x01\x01\x01\x01\x01',
+            iv_counter_nonce=b'\x01',
+            encoding_option=enums.EncodingOption.NO_ENCODING
+        )
+        b = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature=b'\x01\x01\x01\x01\x01\x01\x01\x01',
+            iv_counter_nonce=b'\x01',
+            encoding_option=enums.EncodingOption.NO_ENCODING
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_wrapping_method(self):
+        """
+        Test that the equality operator returns False when comparing two
+        KeyWrappingData structs with different wrapping methods.
+        """
+        a = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT
+        )
+        b = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.MAC_SIGN
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_encryption_key_information(self):
+        """
+        Test that the equality operator returns False when comparing two
+        KeyWrappingData structs with different encryption key information.
+        """
+        a = objects.KeyWrappingData(
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CBC
+                )
+            )
+        )
+        b = objects.KeyWrappingData(
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_mac_signature_key_information(self):
+        """
+        Test that the equality operator returns False when comparing two
+        KeyWrappingData structs with different MAC/signature key information.
+        """
+        a = objects.KeyWrappingData(
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            )
+        )
+        b = objects.KeyWrappingData(
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CBC
+                )
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_mac_signatures(self):
+        """
+        Test that the equality operator returns False when comparing two
+        KeyWrappingData structs with different MAC/signatures.
+        """
+        a = objects.KeyWrappingData(mac_signature=b'\x01')
+        b = objects.KeyWrappingData(mac_signature=b'\x10')
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_iv_counter_nonce(self):
+        """
+        Test that the equality operator returns False when comparing two
+        KeyWrappingData structs with different IV/counter/nonces.
+        """
+        a = objects.KeyWrappingData(iv_counter_nonce=b'\x01')
+        b = objects.KeyWrappingData(iv_counter_nonce=b'\x10')
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_encoding_option(self):
+        """
+        Test that the equality operator returns False when comparing two
+        KeyWrappingData structs with different encoding options.
+        """
+        a = objects.KeyWrappingData(
+            encoding_option=enums.EncodingOption.NO_ENCODING
+        )
+        b = objects.KeyWrappingData(
+            encoding_option=enums.EncodingOption.TTLV_ENCODING
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing two
+        KeyWrappingData structs with different types.
+        """
+        a = objects.KeyWrappingData()
+        b = 'invalid'
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        KeyWrappingData structs with the same data.
+        """
+        a = objects.KeyWrappingData()
+        b = objects.KeyWrappingData()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature=b'\x01\x01\x01\x01\x01\x01\x01\x01',
+            iv_counter_nonce=b'\x01',
+            encoding_option=enums.EncodingOption.NO_ENCODING
+        )
+        b = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature=b'\x01\x01\x01\x01\x01\x01\x01\x01',
+            iv_counter_nonce=b'\x01',
+            encoding_option=enums.EncodingOption.NO_ENCODING
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_wrapping_method(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        KeyWrappingData structs with different wrapping methods.
+        """
+        a = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT
+        )
+        b = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.MAC_SIGN
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_encryption_key_information(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        KeyWrappingData structs with different encryption key information.
+        """
+        a = objects.KeyWrappingData(
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CBC
+                )
+            )
+        )
+        b = objects.KeyWrappingData(
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_mac_signature_key_information(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        KeyWrappingData structs with different MAC/signature key information.
+        """
+        a = objects.KeyWrappingData(
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            )
+        )
+        b = objects.KeyWrappingData(
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CBC
+                )
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_mac_signatures(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        KeyWrappingData structs with different MAC/signatures.
+        """
+        a = objects.KeyWrappingData(mac_signature=b'\x01')
+        b = objects.KeyWrappingData(mac_signature=b'\x10')
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_iv_counter_nonce(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        KeyWrappingData structs with different IV/counter/nonces.
+        """
+        a = objects.KeyWrappingData(iv_counter_nonce=b'\x01')
+        b = objects.KeyWrappingData(iv_counter_nonce=b'\x10')
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_encoding_option(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        KeyWrappingData structs with different encoding options.
+        """
+        a = objects.KeyWrappingData(
+            encoding_option=enums.EncodingOption.NO_ENCODING
+        )
+        b = objects.KeyWrappingData(
+            encoding_option=enums.EncodingOption.TTLV_ENCODING
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        KeyWrappingData structs with different types.
+        """
+        a = objects.KeyWrappingData()
+        b = 'invalid'
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to an KeyWrappingData struct.
+        """
+        key_wrapping_data = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CBC
+                )
+            ),
+            mac_signature=b'\x01\x01\x02\x02\x03\x03\x04\x04',
+            iv_counter_nonce=b'\xFF',
+            encoding_option=enums.EncodingOption.TTLV_ENCODING
+        )
+
+        expected = (
+            "KeyWrappingData("
+            "wrapping_method=WrappingMethod.ENCRYPT, "
+            "encryption_key_information=EncryptionKeyInformation("
+            "unique_identifier='100182d5-72b8-ffff-8383-4d97d512e98a', "
+            "cryptographic_parameters=CryptographicParameters("
+            "block_cipher_mode=BlockCipherMode.NIST_KEY_WRAP, "
+            "padding_method=None, "
+            "hashing_algorithm=None, "
+            "key_role_type=None, "
+            "digital_signature_algorithm=None, "
+            "cryptographic_algorithm=None, "
+            "random_iv=None, "
+            "iv_length=None, "
+            "tag_length=None, "
+            "fixed_field_length=None, "
+            "invocation_field_length=None, "
+            "counter_length=None, "
+            "initial_counter_value=None)), "
+            "mac_signature_key_information=MACSignatureKeyInformation("
+            "unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a', "
+            "cryptographic_parameters=CryptographicParameters("
+            "block_cipher_mode=BlockCipherMode.CBC, "
+            "padding_method=None, "
+            "hashing_algorithm=None, "
+            "key_role_type=None, "
+            "digital_signature_algorithm=None, "
+            "cryptographic_algorithm=None, "
+            "random_iv=None, "
+            "iv_length=None, "
+            "tag_length=None, "
+            "fixed_field_length=None, "
+            "invocation_field_length=None, "
+            "counter_length=None, "
+            "initial_counter_value=None)), "
+            "mac_signature={0}, "
+            "iv_counter_nonce={1}, "
+            "encoding_option=EncodingOption.TTLV_ENCODING)".format(
+                b'\x01\x01\x02\x02\x03\x03\x04\x04',
+                b'\xFF'
+            )
+        )
+        observed = repr(key_wrapping_data)
+
+        self.assertEqual(expected, observed)
+
+    def test_str(self):
+        """
+        Test that str can be applied to a KeyWrappingData struct.
+        """
+        key_wrapping_data = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            mac_signature_key_information=objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CBC
+                )
+            ),
+            mac_signature=b'\x01\x01\x02\x02\x03\x03\x04\x04',
+            iv_counter_nonce=b'\xFF',
+            encoding_option=enums.EncodingOption.TTLV_ENCODING
+        )
+
+        expected = str({
+            'wrapping_method': enums.WrappingMethod.ENCRYPT,
+            'encryption_key_information': objects.EncryptionKeyInformation(
+                unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                )
+            ),
+            'mac_signature_key_information':
+                objects.MACSignatureKeyInformation(
+                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CBC
+                )
+            ),
+            'mac_signature': b'\x01\x01\x02\x02\x03\x03\x04\x04',
+            'iv_counter_nonce': b'\xFF',
+            'encoding_option': enums.EncodingOption.TTLV_ENCODING
+        })
+        observed = str(key_wrapping_data)
+
+        self.assertEqual(expected, observed)
+
+
 class TestKeyWrappingSpecification(testtools.TestCase):
     """
     Test suite for the KeyWrappingSpecification struct.
