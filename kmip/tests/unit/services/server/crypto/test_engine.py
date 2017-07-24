@@ -677,7 +677,7 @@ class TestCryptographyEngine(testtools.TestCase):
         """
         engine = crypto.CryptographyEngine()
 
-        args = (b'', 'invalid', enums.CryptographicAlgorithm.AES, b'')
+        args = (b'', 'invalid', enums.BlockCipherMode.NIST_KEY_WRAP, b'')
         self.assertRaisesRegexp(
             exceptions.InvalidField,
             "Wrapping method 'invalid' is not a supported key wrapping "
@@ -712,7 +712,7 @@ class TestCryptographyEngine(testtools.TestCase):
         args = (
             b'',
             enums.WrappingMethod.ENCRYPT,
-            enums.CryptographicAlgorithm.AES,
+            enums.BlockCipherMode.NIST_KEY_WRAP,
             b''
         )
         self.assertRaises(
@@ -1645,7 +1645,7 @@ def test_derive_key(derivation_parameters):
              b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
          ),
          'wrapping_method': enums.WrappingMethod.ENCRYPT,
-         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'key_wrap_algorithm': enums.BlockCipherMode.NIST_KEY_WRAP,
          'encryption_key': (
              b'\x00\x01\x02\x03\x04\x05\x06\x07'
              b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
@@ -1660,7 +1660,7 @@ def test_derive_key(derivation_parameters):
              b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
          ),
          'wrapping_method': enums.WrappingMethod.ENCRYPT,
-         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'key_wrap_algorithm': enums.BlockCipherMode.NIST_KEY_WRAP,
          'encryption_key': (
              b'\x00\x01\x02\x03\x04\x05\x06\x07'
              b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
@@ -1676,7 +1676,7 @@ def test_derive_key(derivation_parameters):
              b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
          ),
          'wrapping_method': enums.WrappingMethod.ENCRYPT,
-         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'key_wrap_algorithm': enums.BlockCipherMode.NIST_KEY_WRAP,
          'encryption_key': (
              b'\x00\x01\x02\x03\x04\x05\x06\x07'
              b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
@@ -1694,7 +1694,7 @@ def test_derive_key(derivation_parameters):
              b'\x00\x01\x02\x03\x04\x05\x06\x07'
          ),
          'wrapping_method': enums.WrappingMethod.ENCRYPT,
-         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'key_wrap_algorithm': enums.BlockCipherMode.NIST_KEY_WRAP,
          'encryption_key': (
              b'\x00\x01\x02\x03\x04\x05\x06\x07'
              b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
@@ -1712,7 +1712,7 @@ def test_derive_key(derivation_parameters):
              b'\x00\x01\x02\x03\x04\x05\x06\x07'
          ),
          'wrapping_method': enums.WrappingMethod.ENCRYPT,
-         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'key_wrap_algorithm': enums.BlockCipherMode.NIST_KEY_WRAP,
          'encryption_key': (
              b'\x00\x01\x02\x03\x04\x05\x06\x07'
              b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
@@ -1732,7 +1732,7 @@ def test_derive_key(derivation_parameters):
              b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
          ),
          'wrapping_method': enums.WrappingMethod.ENCRYPT,
-         'encryption_algorithm': enums.CryptographicAlgorithm.AES,
+         'key_wrap_algorithm': enums.BlockCipherMode.NIST_KEY_WRAP,
          'encryption_key': (
              b'\x00\x01\x02\x03\x04\x05\x06\x07'
              b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
@@ -1762,7 +1762,7 @@ def test_wrap_key(wrapping_parameters):
     result = engine.wrap_key(
         wrapping_parameters.get('key_material'),
         wrapping_parameters.get('wrapping_method'),
-        wrapping_parameters.get('encryption_algorithm'),
+        wrapping_parameters.get('key_wrap_algorithm'),
         wrapping_parameters.get('encryption_key')
     )
 

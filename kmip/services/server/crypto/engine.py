@@ -805,7 +805,7 @@ class CryptographyEngine(api.CryptographicEngine):
     def wrap_key(self,
                  key_material,
                  wrapping_method,
-                 encryption_algorithm,
+                 key_wrap_algorithm,
                  encryption_key):
         """
         Args:
@@ -813,9 +813,9 @@ class CryptographyEngine(api.CryptographicEngine):
             wrapping_method (WrappingMethod): A WrappingMethod enumeration
                 specifying what wrapping technique to use to wrap the key
                 material. Required.
-            encryption_algorithm (CryptographicAlgorithm): A
-                CryptographicAlgorithm enumeration specifying the encryption
-                algorithm to use to encrypt the key material. Required.
+            key_wrap_algorithm (BlockCipherMode): A BlockCipherMode
+                enumeration specifying the key wrapping algorithm to use to
+                wrap the key material. Required.
             encryption_key (bytes): The bytes of the encryption key to use
                 to encrypt the key material. Required.
 
@@ -836,7 +836,7 @@ class CryptographyEngine(api.CryptographicEngine):
             ...         b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
             ...     )
             ...     wrapping_method=enums.WrappingMethod.ENCRYPT,
-            ...     encryption_algorithm=enums.CryptographicAlgorithm.AES,
+            ...     key_wrap_algorithm=enums.BlockCipherMode.NIST_KEY_WRAP,
             ...     encryption_key=(
             ...         b'\x00\x01\x02\x03\x04\x05\x06\x07'
             ...         b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
@@ -847,7 +847,7 @@ class CryptographyEngine(api.CryptographicEngine):
             \xd2\xcf\xe5'
         """
         if wrapping_method == enums.WrappingMethod.ENCRYPT:
-            if encryption_algorithm == enums.CryptographicAlgorithm.AES:
+            if key_wrap_algorithm == enums.BlockCipherMode.NIST_KEY_WRAP:
                 try:
                     wrapped_key = keywrap.aes_key_wrap(
                         encryption_key,
@@ -860,7 +860,7 @@ class CryptographyEngine(api.CryptographicEngine):
             else:
                 raise exceptions.InvalidField(
                     "Encryption algorithm '{0}' is not a supported key "
-                    "wrapping algorithm.".format(encryption_algorithm)
+                    "wrapping algorithm.".format(key_wrap_algorithm)
                 )
         else:
             raise exceptions.InvalidField(
