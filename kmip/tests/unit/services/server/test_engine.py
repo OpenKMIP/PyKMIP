@@ -3735,10 +3735,10 @@ class TestKmipEngine(testtools.TestCase):
 
         e._data_session.commit()
 
-    def test_get_with_unsupported_features(self):
+    def test_get_unsupported_key_compression(self):
         """
-        Test that the right errors are generated when unsupported features
-        are used in a Get request.
+        Test that the right error is generated when key compression is
+        provided in a Get request.
         """
         e = engine.KmipEngine()
         e._data_store = self.engine
@@ -3755,27 +3755,6 @@ class TestKmipEngine(testtools.TestCase):
         six.assertRaisesRegex(
             self,
             exceptions.KeyCompressionTypeNotSupported,
-            regex,
-            e._process_get,
-            *args
-        )
-        e._logger.info.assert_any_call(
-            "Processing operation: Get"
-        )
-
-        e._logger.reset_mock()
-
-        # Test that specifying the key wrapping specification generates an
-        # error.
-        payload = get.GetRequestPayload(
-            key_wrapping_specification=objects.KeyWrappingSpecification()
-        )
-
-        args = (payload, )
-        regex = "Key wrapping is not supported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.PermissionDenied,
             regex,
             e._process_get,
             *args
@@ -3918,6 +3897,667 @@ class TestKmipEngine(testtools.TestCase):
             self,
             exceptions.ItemNotFound,
             "Could not locate object: {0}".format(id_a),
+            e._process_get,
+            *args
+        )
+
+    def test_get_wrapped_key(self):
+        """
+        Test that a Get request for a wrapped key can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        wrapping_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ),
+            [enums.CryptographicUsageMask.WRAP_KEY]
+        )
+        wrapping_key.state = enums.State.ACTIVE
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(wrapping_key)
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        wrapping_key_uuid = str(wrapping_key.unique_identifier)
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+        )
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.ENCRYPT,
+                encryption_key_information=objects.EncryptionKeyInformation(
+                    unique_identifier=wrapping_key_uuid,
+                    cryptographic_parameters=cryptographic_parameters
+                ),
+                encoding_option=enums.EncodingOption.NO_ENCODING
+            )
+        )
+
+        response_payload = e._process_get(payload)
+
+        e._logger.info.assert_any_call("Processing operation: Get")
+        e._logger.info.assert_any_call(
+            "Wrapping SymmetricKey 2 with SymmetricKey 1."
+        )
+        self.assertEqual(
+            enums.ObjectType.SYMMETRIC_KEY,
+            response_payload.object_type
+        )
+        self.assertEqual(
+            unwrapped_key_uuid,
+            response_payload.unique_identifier
+        )
+        self.assertIsInstance(
+            response_payload.secret,
+            secrets.SymmetricKey
+        )
+        self.assertEqual(
+            (
+                b'\x1F\xA6\x8B\x0A\x81\x12\xB4\x47'
+                b'\xAE\xF3\x4B\xD8\xFB\x5A\x7B\x82'
+                b'\x9D\x3E\x86\x23\x71\xD2\xCF\xE5'
+            ),
+            response_payload.secret.key_block.key_value.key_material.value
+        )
+        self.assertIsInstance(
+            response_payload.secret.key_block.key_wrapping_data,
+            objects.KeyWrappingData
+        )
+        k = response_payload.secret.key_block.key_wrapping_data
+        self.assertEqual(
+            enums.WrappingMethod.ENCRYPT,
+            k.wrapping_method
+        )
+        self.assertIsInstance(
+            k.encryption_key_information,
+            objects.EncryptionKeyInformation
+        )
+        self.assertEqual(
+            '1',
+            k.encryption_key_information.unique_identifier
+        )
+        self.assertIsInstance(
+            k.encryption_key_information.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        c = k.encryption_key_information.cryptographic_parameters
+        self.assertEqual(
+            enums.BlockCipherMode.NIST_KEY_WRAP,
+            c.block_cipher_mode
+        )
+        self.assertEqual(
+            enums.EncodingOption.NO_ENCODING,
+            k.encoding_option
+        )
+
+    def test_get_wrapped_key_unsupported_mac_sig(self):
+        """
+        Test that the right error is thrown when key wrapping is requested
+        via MAC/signing in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        wrapping_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ),
+            [enums.CryptographicUsageMask.WRAP_KEY]
+        )
+        wrapping_key.state = enums.State.ACTIVE
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(wrapping_key)
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        wrapping_key_uuid = str(wrapping_key.unique_identifier)
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+        cryptographic_parameters = attributes.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+        )
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.MAC_SIGN,
+                mac_signature_key_information=objects.
+                MACSignatureKeyInformation(
+                    unique_identifier=wrapping_key_uuid,
+                    cryptographic_parameters=cryptographic_parameters
+                ),
+                encoding_option=enums.EncodingOption.NO_ENCODING
+            )
+        )
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.OperationNotSupported,
+            "Wrapping method '{0}' is not supported.".format(
+                enums.WrappingMethod.MAC_SIGN
+            ),
+            e._process_get,
+            *args
+        )
+
+    def test_get_wrapped_key_unsupported_mac_sign_key_info(self):
+        """
+        Test that the right error is thrown when key wrapping is requested
+        with MAC/signing key information in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        wrapping_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ),
+            [enums.CryptographicUsageMask.WRAP_KEY]
+        )
+        wrapping_key.state = enums.State.ACTIVE
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(wrapping_key)
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        wrapping_key_uuid = str(wrapping_key.unique_identifier)
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+        cryptographic_parameters = attributes.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+        )
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.ENCRYPT,
+                mac_signature_key_information=objects.
+                MACSignatureKeyInformation(
+                    unique_identifier=wrapping_key_uuid,
+                    cryptographic_parameters=cryptographic_parameters
+                ),
+                encoding_option=enums.EncodingOption.NO_ENCODING
+            )
+        )
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
+            "Key wrapping with MAC/signing key information is not supported.",
+            e._process_get,
+            *args
+        )
+
+    def test_get_wrapped_key_missing_key_information(self):
+        """
+        Test that the right error is thrown when key wrapping is requested
+        with no settings in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.ENCRYPT,
+                encoding_option=enums.EncodingOption.NO_ENCODING
+            )
+        )
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
+            "Either the encryption key information or the MAC/signature key "
+            "information must be specified for key wrapping to be performed.",
+            e._process_get,
+            *args
+        )
+
+    def test_get_wrapped_key_nonexistent_wrapping_key(self):
+        """
+        Test that the right error is thrown when key wrapping is requested
+        with a nonexistent wrapping key in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+        )
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.ENCRYPT,
+                encryption_key_information=objects.EncryptionKeyInformation(
+                    unique_identifier='invalid',
+                    cryptographic_parameters=cryptographic_parameters
+                ),
+                encoding_option=enums.EncodingOption.NO_ENCODING
+            )
+        )
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.ItemNotFound,
+            "Wrapping key does not exist.",
+            e._process_get,
+            *args
+        )
+
+    def test_get_wrapped_key_non_wrapping_key(self):
+        """
+        Test that the right error is thrown when key wrapping is requested
+        with a non-wrapping key in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        wrapping_key = pie_objects.SecretData(
+            (
+                b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ),
+            enums.SecretDataType.SEED,
+            masks=[enums.CryptographicUsageMask.WRAP_KEY]
+        )
+        wrapping_key.state = enums.State.ACTIVE
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(wrapping_key)
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        wrapping_key_uuid = str(wrapping_key.unique_identifier)
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+        )
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.ENCRYPT,
+                encryption_key_information=objects.EncryptionKeyInformation(
+                    unique_identifier=wrapping_key_uuid,
+                    cryptographic_parameters=cryptographic_parameters
+                ),
+                encoding_option=enums.EncodingOption.NO_ENCODING
+            )
+        )
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.IllegalOperation,
+            "The wrapping encryption key specified by the encryption key "
+            "information is not a key.",
+            e._process_get,
+            *args
+        )
+
+    def test_get_wrapped_key_inactive_wrapping_key(self):
+        """
+        Test that the right error is thrown when key wrapping is requested
+        with an inactive wrapping key in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        wrapping_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ),
+            [enums.CryptographicUsageMask.WRAP_KEY]
+        )
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(wrapping_key)
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        wrapping_key_uuid = str(wrapping_key.unique_identifier)
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+        )
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.ENCRYPT,
+                encryption_key_information=objects.EncryptionKeyInformation(
+                    unique_identifier=wrapping_key_uuid,
+                    cryptographic_parameters=cryptographic_parameters
+                ),
+                encoding_option=enums.EncodingOption.NO_ENCODING
+            )
+        )
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
+            "Encryption key 1 must be activated to be used for key "
+            "wrapping.",
+            e._process_get,
+            *args
+        )
+
+    def test_get_wrapped_key_invalid_wrapping_key(self):
+        """
+        Test that the right error is thrown when key wrapping is requested
+        with a wrapping key not designated for key wrapping in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        wrapping_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+        wrapping_key.state = enums.State.ACTIVE
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(wrapping_key)
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        wrapping_key_uuid = str(wrapping_key.unique_identifier)
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+        )
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.ENCRYPT,
+                encryption_key_information=objects.EncryptionKeyInformation(
+                    unique_identifier=wrapping_key_uuid,
+                    cryptographic_parameters=cryptographic_parameters
+                ),
+                encoding_option=enums.EncodingOption.NO_ENCODING
+            )
+        )
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.PermissionDenied,
+            "The WrapKey bit must be set in the cryptographic usage mask of "
+            "encryption key 1 for it to be used for key wrapping.",
+            e._process_get,
+            *args
+        )
+
+    def test_get_wrapped_key_unsupported_attribute_wrapping(self):
+        """
+        Test that the right error is thrown when key wrapping is requested
+        with attribute names in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        wrapping_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ),
+            [enums.CryptographicUsageMask.WRAP_KEY]
+        )
+        wrapping_key.state = enums.State.ACTIVE
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(wrapping_key)
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        wrapping_key_uuid = str(wrapping_key.unique_identifier)
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+        )
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.ENCRYPT,
+                encryption_key_information=objects.EncryptionKeyInformation(
+                    unique_identifier=wrapping_key_uuid,
+                    cryptographic_parameters=cryptographic_parameters
+                ),
+                attribute_names=['Cryptographic Algorithm'],
+                encoding_option=enums.EncodingOption.NO_ENCODING
+            )
+        )
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.IllegalOperation,
+            "Wrapping object attributes is not supported.",
+            e._process_get,
+            *args
+        )
+
+    def test_get_wrapped_key_invalid_encoding(self):
+        """
+        Test that the right error is thrown when key wrapping is requested
+        with an unsupported encoding option in a Get request.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._cryptography_engine.logger = mock.MagicMock()
+
+        wrapping_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ),
+            [enums.CryptographicUsageMask.WRAP_KEY]
+        )
+        wrapping_key.state = enums.State.ACTIVE
+
+        unwrapped_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (
+                b'\x00\x11\x22\x33\x44\x55\x66\x77'
+                b'\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF'
+            ),
+            [enums.CryptographicUsageMask.ENCRYPT]
+        )
+
+        e._data_session.add(wrapping_key)
+        e._data_session.add(unwrapped_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        wrapping_key_uuid = str(wrapping_key.unique_identifier)
+        unwrapped_key_uuid = str(unwrapped_key.unique_identifier)
+
+        cryptographic_parameters = attributes.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+        )
+        payload = get.GetRequestPayload(
+            unique_identifier=unwrapped_key_uuid,
+            key_wrapping_specification=objects.KeyWrappingSpecification(
+                wrapping_method=enums.WrappingMethod.ENCRYPT,
+                encryption_key_information=objects.EncryptionKeyInformation(
+                    unique_identifier=wrapping_key_uuid,
+                    cryptographic_parameters=cryptographic_parameters
+                ),
+                encoding_option=enums.EncodingOption.TTLV_ENCODING
+            )
+        )
+
+        args = (payload, )
+        self.assertRaisesRegexp(
+            exceptions.EncodingOptionError,
+            "Encoding option '{0}' is not supported.".format(
+                enums.EncodingOption.TTLV_ENCODING
+            ),
             e._process_get,
             *args
         )
