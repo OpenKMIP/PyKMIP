@@ -57,6 +57,28 @@ class CryptographicFailure(KmipError):
         )
 
 
+class EncodingOptionError(KmipError):
+    """
+    An encoding error generated during key wrapping.
+
+    This error is generated during key wrapping when a requested encoding
+    option is not supported or is incompatible with other settings in the
+    key wrapping request (e.g., attributes are requested with the key but
+    the encoding does not support wrapping attributes with the key value).
+    """
+    def __init__(self, message):
+        """
+        Create an EncodingOptionError.
+
+        Args:
+            message (string): A string containing information about the error.
+        """
+        super(EncodingOptionError, self).__init__(
+            reason=enums.ResultReason.ENCODING_OPTION_ERROR,
+            message=message
+        )
+
+
 class IllegalOperation(KmipError):
     """
     An error generated when an improper operation is attempted. The operation
