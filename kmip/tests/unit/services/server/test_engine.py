@@ -83,7 +83,8 @@ class TestKmipEngine(testtools.TestCase):
         )
         sqltypes.Base.metadata.create_all(self.engine)
         self.session_factory = sqlalchemy.orm.sessionmaker(
-            bind=self.engine
+            bind=self.engine,
+            expire_on_commit=False
         )
 
         self.temp_dir = tempfile.mkdtemp()
