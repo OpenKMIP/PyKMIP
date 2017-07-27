@@ -159,6 +159,25 @@ class KmipClient:
         pass
 
     @abc.abstractmethod
+    def decrypt(self, data, uid=None, cryptographic_parameters=None,
+                iv_counter_nonce=None):
+        """
+        Decrypt data using the specified decryption key and parameters.
+
+        Args:
+            data (bytes): The bytes to decrypt. Required.
+            uid (string): The unique ID of the decryption key to use.
+                Optional, defaults to None.
+            cryptographic_parameters (dict): A dictionary containing various
+                cryptographic settings to be used for the decryption.
+                Optional, defaults to None.
+            iv_counter_nonce (bytes): The bytes to use for the IV/counter/
+                nonce, if needed by the decryption algorithm and/or cipher
+                mode. Optional, defaults to None.
+        """
+        pass
+
+    @abc.abstractmethod
     def mac(self, data, uid, algorithm):
         """
         Get the message authentication code for data.

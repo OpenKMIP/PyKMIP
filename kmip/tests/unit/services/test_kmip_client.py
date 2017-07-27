@@ -44,6 +44,7 @@ from kmip.core.messages.contents import ResultMessage
 from kmip.core.messages.contents import ProtocolVersion
 from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
+from kmip.core.messages.payloads import decrypt
 from kmip.core.messages.payloads.discover_versions import \
     DiscoverVersionsRequestPayload, DiscoverVersionsResponsePayload
 from kmip.core.messages.payloads import encrypt
@@ -776,6 +777,68 @@ class TestKMIPClient(TestCase):
             result.get('data')
         )
         self.assertEqual(None, result.get('iv_counter_nonce'))
+        self.assertEqual(
+            ResultStatusEnum.SUCCESS,
+            result.get('result_status').value
+        )
+        self.assertEqual(None, result.get('result_reason'))
+        self.assertEqual(None, result.get('result_message'))
+
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._build_request_message'
+    )
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
+    )
+    def test_decrypt(self, send_mock, build_mock):
+        """
+        Test that the client can decrypt data.
+        """
+        payload = decrypt.DecryptResponsePayload(
+            unique_identifier='1',
+            data=(
+                b'\x37\x36\x35\x34\x33\x32\x31\x20'
+                b'\x4E\x6F\x77\x20\x69\x73\x20\x74'
+                b'\x68\x65\x20\x74\x69\x6D\x65\x20'
+                b'\x66\x6F\x72\x20\x00'
+            )
+        )
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.DECRYPT),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=payload
+        )
+        response = ResponseMessage(batch_items=[batch_item])
+
+        build_mock.return_value = None
+        send_mock.return_value = response
+
+        result = self.client.decrypt(
+            (
+                b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
+                b'\x05\xB1\x56\xE2\x74\x03\x97\x93'
+                b'\x58\xDE\xB9\xE7\x15\x46\x16\xD9'
+                b'\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B'
+            ),
+            unique_identifier='1',
+            cryptographic_parameters=CryptographicParameters(
+                block_cipher_mode=enums.BlockCipherMode.CBC,
+                padding_method=enums.PaddingMethod.PKCS5,
+                cryptographic_algorithm=enums.CryptographicAlgorithm.BLOWFISH
+            ),
+            iv_counter_nonce=b'\xFE\xDC\xBA\x98\x76\x54\x32\x10'
+        )
+
+        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual(
+            (
+                b'\x37\x36\x35\x34\x33\x32\x31\x20'
+                b'\x4E\x6F\x77\x20\x69\x73\x20\x74'
+                b'\x68\x65\x20\x74\x69\x6D\x65\x20'
+                b'\x66\x6F\x72\x20\x00'
+            ),
+            result.get('data')
+        )
         self.assertEqual(
             ResultStatusEnum.SUCCESS,
             result.get('result_status').value

@@ -71,6 +71,18 @@ class DummyKmipClient(api.KmipClient):
             iv_counter_nonce
         )
 
+    def decrypt(self,
+                data,
+                uid=None,
+                cryptographic_parameters=None,
+                iv_counter_nonce=None):
+        super(DummyKmipClient, self).decrypt(
+            data,
+            uid,
+            cryptographic_parameters,
+            iv_counter_nonce
+        )
+
     def mac(self, data, uid, algorithm):
         super(DummyKmipClient, self).mac(data, uid, algorithm)
 
@@ -162,10 +174,16 @@ class TestKmipClient(testtools.TestCase):
     def test_encrypt(self):
         """
         Test that the encrypt method can be called without error.
-        :return:
         """
         dummy = DummyKmipClient()
         dummy.encrypt('data', 'uid', 'crypto_params', 'iv')
+
+    def test_decrypt(self):
+        """
+        Test that the decrypt method can be called without error.
+        """
+        dummy = DummyKmipClient()
+        dummy.decrypt('data', 'uid', 'crypto_params', 'iv')
 
     def test_mac(self):
         """
