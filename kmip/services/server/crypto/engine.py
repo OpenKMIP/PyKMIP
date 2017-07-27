@@ -554,7 +554,8 @@ class CryptographyEngine(api.CryptographicEngine):
             plain_text = self._handle_symmetric_padding(
                 self._symmetric_key_algorithms.get(decryption_algorithm),
                 plain_text,
-                padding_method
+                padding_method,
+                undo_padding=True
             )
 
         return plain_text
