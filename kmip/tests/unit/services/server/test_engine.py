@@ -39,7 +39,7 @@ from kmip.core.factories import attributes as factory
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
-from kmip.core.messages.payloads import activate
+from kmip.core.messages import payloads
 from kmip.core.messages.payloads import revoke
 from kmip.core.messages.payloads import create
 from kmip.core.messages.payloads import create_key_pair
@@ -5580,10 +5580,7 @@ class TestKmipEngine(testtools.TestCase):
 
         object_id = str(managed_object.unique_identifier)
 
-        # Test by specifying the ID of the object to activate.
-        payload = activate.ActivateRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(object_id)
-        )
+        payload = payloads.ActivateRequestPayload(unique_identifier=object_id)
 
         response_payload = e._process_activate(payload)
         e._data_session.commit()
@@ -5592,10 +5589,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.info.assert_any_call(
             "Processing operation: Activate"
         )
-        self.assertEqual(
-            str(object_id),
-            response_payload.unique_identifier.value
-        )
+        self.assertEqual(str(object_id), response_payload.unique_identifier)
 
         symmetric_key = e._data_session.query(
             pie_objects.SymmetricKey
@@ -5616,7 +5610,7 @@ class TestKmipEngine(testtools.TestCase):
 
         # Test that the ID placeholder can also be used to specify activation.
         e._id_placeholder = str(object_id)
-        payload = activate.ActivateRequestPayload()
+        payload = payloads.ActivateRequestPayload()
         args = (payload,)
         regex = "The object state is not pre-active and cannot be activated."
         self.assertRaisesRegexp(
@@ -5647,10 +5641,7 @@ class TestKmipEngine(testtools.TestCase):
 
         object_id = str(managed_object.unique_identifier)
 
-        # Test by specifying the ID of the object to activate.
-        payload = activate.ActivateRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(object_id)
-        )
+        payload = payloads.ActivateRequestPayload(unique_identifier=object_id)
 
         args = (payload,)
         name = enums.ObjectType.OPAQUE_DATA.name
@@ -5689,10 +5680,7 @@ class TestKmipEngine(testtools.TestCase):
 
         object_id = str(managed_object.unique_identifier)
 
-        # Test by specifying the ID of the object to activate.
-        payload = activate.ActivateRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(object_id)
-        )
+        payload = payloads.ActivateRequestPayload(unique_identifier=object_id)
 
         args = (payload,)
         regex = "The object state is not pre-active and cannot be activated."
@@ -5722,11 +5710,8 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session = e._data_store_session_factory()
 
         id_a = str(obj_a.unique_identifier)
-        payload = activate.ActivateRequestPayload(
-            unique_identifier=attributes.UniqueIdentifier(id_a)
-        )
+        payload = payloads.ActivateRequestPayload(unique_identifier=id_a)
 
-        # Test by specifying the ID of the object to activate.
         args = [payload]
         self.assertRaisesRegex(
             exceptions.ItemNotFound,
@@ -7991,9 +7976,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Activate the symmetric key
-        payload = activate.ActivateRequestPayload(
-            attributes.UniqueIdentifier(uuid)
-        )
+        payload = payloads.ActivateRequestPayload(uuid)
 
         response_payload = e._process_activate(payload)
         e._data_session.commit()
@@ -8003,7 +7986,7 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Activate"
         )
 
-        activated_uuid = response_payload.unique_identifier.value
+        activated_uuid = response_payload.unique_identifier
         self.assertEqual(uuid, activated_uuid)
 
         # Encrypt some data using the symmetric key

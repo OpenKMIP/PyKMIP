@@ -13,151 +13,226 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core import attributes
+import six
+
 from kmip.core import enums
-
-from kmip.core.primitives import Struct
-
-from kmip.core.utils import BytearrayStream
+from kmip.core import primitives
+from kmip.core import utils
 
 
-class ActivateRequestPayload(Struct):
+class ActivateRequestPayload(primitives.Struct):
     """
     A request payload for the Activate operation.
 
-    The payload contains a UUID of a cryptographic object that that server
-    should activate. See Section 4.19 of the KMIP 1.1 specification for more
-    information.
-
     Attributes:
-        unique_identifier: The UUID of a managed cryptographic object
+        unique_identifier: The unique ID of the managed object to activate
+            on the server.
     """
     def __init__(self,
                  unique_identifier=None):
         """
-        Construct a ActivateRequestPayload object.
+        Construct an Activate request payload struct.
+
         Args:
-            unique_identifier (UniqueIdentifier): The UUID of a managed
-                cryptographic object.
+            unique_identifier (string): The ID of the managed object (e.g., a
+                symmetric key) to activate. Optional, defaults to None.
         """
         super(ActivateRequestPayload, self).__init__(
             tag=enums.Tags.REQUEST_PAYLOAD)
-        self.unique_identifier = unique_identifier
-        self.validate()
 
-    def read(self, istream):
+        self._unique_identifier = None
+
+        self.unique_identifier = unique_identifier
+
+    @property
+    def unique_identifier(self):
+        if self._unique_identifier:
+            return self._unique_identifier.value
+        else:
+            return None
+
+    @unique_identifier.setter
+    def unique_identifier(self, value):
+        if value is None:
+            self._unique_identifier = None
+        elif isinstance(value, six.string_types):
+            self._unique_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+        else:
+            raise TypeError("Unique identifier must be a string.")
+
+    def read(self, input_stream):
         """
-        Read the data encoding the ActivateRequestPayload object and decode it
+        Read the data encoding the Activate request payload and decode it
         into its constituent parts.
         Args:
-            istream (Stream): A data stream containing encoded object data,
-                supporting a read method; usually a BytearrayStream object.
+            input_stream (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
         """
-        super(ActivateRequestPayload, self).read(istream)
-        tstream = BytearrayStream(istream.read(self.length))
+        super(ActivateRequestPayload, self).read(input_stream)
+        local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
-        self.unique_identifier = attributes.UniqueIdentifier()
-        self.unique_identifier.read(tstream)
+        if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
+            self._unique_identifier = primitives.TextString(
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+            self._unique_identifier.read(local_stream)
 
-        self.is_oversized(tstream)
-        self.validate()
+        self.is_oversized(local_stream)
 
-    def write(self, ostream):
+    def write(self, output_stream):
         """
-        Write the data encoding the ActivateRequestPayload object to a stream.
+        Write the data encoding the Activate request payload to a stream.
+
         Args:
-            ostream (Stream): A data stream in which to encode object data,
-                supporting a write method; usually a BytearrayStream object.
+            output_stream (stream): A data stream in which to encode object
+                data, supporting a write method; usually a BytearrayStream
+                object.
         """
-        tstream = BytearrayStream()
+        local_stream = utils.BytearrayStream()
 
-        # Write the contents of the request payload
-        if self.unique_identifier is not None:
-            self.unique_identifier.write(tstream)
+        if self._unique_identifier is not None:
+            self._unique_identifier.write(local_stream)
 
-        # Write the length and value of the request payload
-        self.length = tstream.length()
-        super(ActivateRequestPayload, self).write(ostream)
-        ostream.write(tstream.buffer)
+        self.length = local_stream.length()
+        super(ActivateRequestPayload, self).write(output_stream)
+        output_stream.write(local_stream.buffer)
 
-    def validate(self):
-        """
-        Error check the attributes of the ActivateRequestPayload object.
-        """
-        if self.unique_identifier is not None:
-            if not isinstance(self.unique_identifier,
-                              attributes.UniqueIdentifier):
-                msg = "invalid unique identifier"
-                raise TypeError(msg)
+    def __eq__(self, other):
+        if isinstance(other, ActivateRequestPayload):
+            if self.unique_identifier != other.unique_identifier:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ActivateRequestPayload):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        arg = "unique_identifier='{0}'".format(self.unique_identifier)
+        return "ActivateRequestPayload({0})".format(arg)
+
+    def __str__(self):
+        return str({'unique_identifier': self.unique_identifier})
 
 
-class ActivateResponsePayload(Struct):
+class ActivateResponsePayload(primitives.Struct):
     """
     A response payload for the Activate operation.
 
-    The payload contains the server response to the initial Activate request.
-    See Section 4.19 of the KMIP 1.1 specification for more information.
-
     Attributes:
-        unique_identifier: The UUID of a managed cryptographic object.
+        unique_identifier: The unique ID of the managed object that was
+            activated on the server.
     """
     def __init__(self,
                  unique_identifier=None):
         """
-        Construct a ActivateResponsePayload object.
+        Construct an Activate response payload struct.
 
         Args:
-            unique_identifier (UniqueIdentifier): The UUID of a managed
-                cryptographic object.
+            unique_identifier (string): The ID of the managed object (e.g., a
+                symmetric key) that was activated. Optional, defaults to None.
+                Required for read/write.
         """
         super(ActivateResponsePayload, self).__init__(
             tag=enums.Tags.RESPONSE_PAYLOAD)
-        if unique_identifier is None:
-            self.unique_identifier = attributes.UniqueIdentifier()
-        else:
-            self.unique_identifier = unique_identifier
-        self.validate()
 
-    def read(self, istream):
+        self._unique_identifier = None
+
+        self.unique_identifier = unique_identifier
+
+    @property
+    def unique_identifier(self):
+        if self._unique_identifier:
+            return self._unique_identifier.value
+        else:
+            return None
+
+    @unique_identifier.setter
+    def unique_identifier(self, value):
+        if value is None:
+            self._unique_identifier = None
+        elif isinstance(value, six.string_types):
+            self._unique_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+        else:
+            raise TypeError("Unique identifier must be a string.")
+
+    def read(self, input_stream):
         """
-        Read the data encoding the ActivateResponsePayload object and decode it
+        Read the data encoding the Activate response payload and decode it
         into its constituent parts.
 
         Args:
-            istream (Stream): A data stream containing encoded object data,
-                supporting a read method; usually a BytearrayStream object.
+            input_stream (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
         """
-        super(ActivateResponsePayload, self).read(istream)
-        tstream = BytearrayStream(istream.read(self.length))
+        super(ActivateResponsePayload, self).read(input_stream)
+        local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
-        self.unique_identifier = attributes.UniqueIdentifier()
-        self.unique_identifier.read(tstream)
+        if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
+            self._unique_identifier = primitives.TextString(
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+            self._unique_identifier.read(local_stream)
+        else:
+            raise ValueError(
+                "Parsed payload encoding is missing the unique identifier "
+                "field."
+            )
 
-        self.is_oversized(tstream)
-        self.validate()
+        self.is_oversized(local_stream)
 
-    def write(self, ostream):
+    def write(self, output_stream):
         """
-        Write the data encoding the ActivateResponsePayload object to a stream.
+        Write the data encoding the Activate response payload to a stream.
 
         Args:
-            ostream (Stream): A data stream in which to encode object data,
-                supporting a write method; usually a BytearrayStream object.
+            output_stream (stream): A data stream in which to encode object
+                data, supporting a write method; usually a BytearrayStream
+                object.
         """
-        tstream = BytearrayStream()
+        local_stream = utils.BytearrayStream()
 
-        # Write the contents of the response payload
-        self.unique_identifier.write(tstream)
+        if self.unique_identifier:
+            self._unique_identifier.write(local_stream)
+        else:
+            raise ValueError(
+                "Payload is missing the unique identifier field."
+            )
+        self.length = local_stream.length()
+        super(ActivateResponsePayload, self).write(output_stream)
+        output_stream.write(local_stream.buffer)
 
-        # Write the length and value of the request payload
-        self.length = tstream.length()
-        super(ActivateResponsePayload, self).write(ostream)
-        ostream.write(tstream.buffer)
+    def __eq__(self, other):
+        if isinstance(other, ActivateResponsePayload):
+            if self.unique_identifier != other.unique_identifier:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
 
-    def validate(self):
-        """
-        Error check the attributes of the ActivateRequestPayload object.
-        """
-        if not isinstance(self.unique_identifier, attributes.UniqueIdentifier):
-            msg = "invalid unique identifier"
-            raise TypeError(msg)
+    def __ne__(self, other):
+        if isinstance(other, ActivateResponsePayload):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        arg = "unique_identifier='{0}'".format(self.unique_identifier)
+        return "ActivateResponsePayload({0})".format(arg)
+
+    def __str__(self):
+        return str({'unique_identifier': self.unique_identifier})
