@@ -18,25 +18,7 @@ import testtools
 from kmip.core import enums
 from kmip.core.factories.payloads.request import RequestPayloadFactory
 
-from kmip.core.messages.payloads import activate
-from kmip.core.messages.payloads import create
-from kmip.core.messages.payloads import create_key_pair
-from kmip.core.messages.payloads import decrypt
-from kmip.core.messages.payloads import destroy
-from kmip.core.messages.payloads import derive_key
-from kmip.core.messages.payloads import discover_versions
-from kmip.core.messages.payloads import encrypt
-from kmip.core.messages.payloads import get
-from kmip.core.messages.payloads import get_attribute_list
-from kmip.core.messages.payloads import get_attributes
-from kmip.core.messages.payloads import locate
-from kmip.core.messages.payloads import query
-from kmip.core.messages.payloads import rekey_key_pair
-from kmip.core.messages.payloads import register
-from kmip.core.messages.payloads import revoke
-from kmip.core.messages.payloads import sign
-from kmip.core.messages.payloads import signature_verify
-from kmip.core.messages.payloads import mac
+from kmip.core.messages import payloads
 
 
 class TestRequestPayloadFactory(testtools.TestCase):
@@ -57,25 +39,25 @@ class TestRequestPayloadFactory(testtools.TestCase):
 
     def test_create_create_payload(self):
         payload = self.factory.create(enums.Operation.CREATE)
-        self._test_payload_type(payload, create.CreateRequestPayload)
+        self._test_payload_type(payload, payloads.CreateRequestPayload)
 
     def test_create_create_key_pair_payload(self):
         payload = self.factory.create(enums.Operation.CREATE_KEY_PAIR)
         self._test_payload_type(
             payload,
-            create_key_pair.CreateKeyPairRequestPayload
+            payloads.CreateKeyPairRequestPayload
         )
 
     def test_create_register_payload(self):
         payload = self.factory.create(enums.Operation.REGISTER)
-        self._test_payload_type(payload, register.RegisterRequestPayload)
+        self._test_payload_type(payload, payloads.RegisterRequestPayload)
 
     def test_create_rekey_payload(self):
         self._test_not_implemented(self.factory.create, enums.Operation.REKEY)
 
     def test_create_derive_key_payload(self):
         payload = self.factory.create(enums.Operation.DERIVE_KEY)
-        self._test_payload_type(payload, derive_key.DeriveKeyRequestPayload)
+        self._test_payload_type(payload, payloads.DeriveKeyRequestPayload)
 
     def test_create_certify_payload(self):
         self._test_not_implemented(
@@ -91,27 +73,27 @@ class TestRequestPayloadFactory(testtools.TestCase):
 
     def test_create_locate_payload(self):
         payload = self.factory.create(enums.Operation.LOCATE)
-        self._test_payload_type(payload, locate.LocateRequestPayload)
+        self._test_payload_type(payload, payloads.LocateRequestPayload)
 
     def test_create_check_payload(self):
         self._test_not_implemented(self.factory.create, enums.Operation.CHECK)
 
     def test_create_get_payload(self):
         payload = self.factory.create(enums.Operation.GET)
-        self._test_payload_type(payload, get.GetRequestPayload)
+        self._test_payload_type(payload, payloads.GetRequestPayload)
 
     def test_create_get_attributes_payload(self):
         payload = self.factory.create(enums.Operation.GET_ATTRIBUTES)
         self._test_payload_type(
             payload,
-            get_attributes.GetAttributesRequestPayload
+            payloads.GetAttributesRequestPayload
         )
 
     def test_create_get_attributes_list_payload(self):
         payload = self.factory.create(enums.Operation.GET_ATTRIBUTE_LIST)
         self._test_payload_type(
             payload,
-            get_attribute_list.GetAttributeListRequestPayload
+            payloads.GetAttributeListRequestPayload
         )
 
     def test_create_add_attribute_payload(self):
@@ -146,15 +128,15 @@ class TestRequestPayloadFactory(testtools.TestCase):
 
     def test_create_activate_payload(self):
         payload = self.factory.create(enums.Operation.ACTIVATE)
-        self._test_payload_type(payload, activate.ActivateRequestPayload)
+        self._test_payload_type(payload, payloads.ActivateRequestPayload)
 
     def test_create_revoke_payload(self):
         payload = self.factory.create(enums.Operation.REVOKE)
-        self._test_payload_type(payload, revoke.RevokeRequestPayload)
+        self._test_payload_type(payload, payloads.RevokeRequestPayload)
 
     def test_create_destroy_payload(self):
         payload = self.factory.create(enums.Operation.DESTROY)
-        self._test_payload_type(payload, destroy.DestroyRequestPayload)
+        self._test_payload_type(payload, payloads.DestroyRequestPayload)
 
     def test_create_archive_payload(self):
         self._test_not_implemented(
@@ -176,7 +158,7 @@ class TestRequestPayloadFactory(testtools.TestCase):
 
     def test_create_query_payload(self):
         payload = self.factory.create(enums.Operation.QUERY)
-        self._test_payload_type(payload, query.QueryRequestPayload)
+        self._test_payload_type(payload, payloads.QueryRequestPayload)
 
     def test_create_cancel_payload(self):
         self._test_not_implemented(
@@ -200,38 +182,38 @@ class TestRequestPayloadFactory(testtools.TestCase):
         payload = self.factory.create(enums.Operation.REKEY_KEY_PAIR)
         self._test_payload_type(
             payload,
-            rekey_key_pair.RekeyKeyPairRequestPayload
+            payloads.RekeyKeyPairRequestPayload
         )
 
     def test_create_discover_versions_payload(self):
         payload = self.factory.create(enums.Operation.DISCOVER_VERSIONS)
         self._test_payload_type(
             payload,
-            discover_versions.DiscoverVersionsRequestPayload
+            payloads.DiscoverVersionsRequestPayload
         )
 
     def test_create_encrypt_payload(self):
         payload = self.factory.create(enums.Operation.ENCRYPT)
-        self._test_payload_type(payload, encrypt.EncryptRequestPayload)
+        self._test_payload_type(payload, payloads.EncryptRequestPayload)
 
     def test_create_decrypt_payload(self):
         payload = self.factory.create(enums.Operation.DECRYPT)
-        self._test_payload_type(payload, decrypt.DecryptRequestPayload)
+        self._test_payload_type(payload, payloads.DecryptRequestPayload)
 
     def test_create_sign_payload(self):
         payload = self.factory.create(enums.Operation.SIGN)
-        self._test_payload_type(payload, sign.SignRequestPayload)
+        self._test_payload_type(payload, payloads.SignRequestPayload)
 
     def test_create_signature_verify_payload(self):
         payload = self.factory.create(enums.Operation.SIGNATURE_VERIFY)
         self._test_payload_type(
             payload,
-            signature_verify.SignatureVerifyRequestPayload
+            payloads.SignatureVerifyRequestPayload
         )
 
     def test_create_mac_payload(self):
         payload = self.factory.create(enums.Operation.MAC)
-        self._test_payload_type(payload, mac.MACRequestPayload)
+        self._test_payload_type(payload, payloads.MACRequestPayload)
 
     def test_create_mac_verify_payload(self):
         self._test_not_implemented(

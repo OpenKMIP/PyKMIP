@@ -19,7 +19,7 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import utils
 
-from kmip.core.messages.payloads import decrypt
+from kmip.core.messages import payloads
 
 
 class TestDecryptRequestPayload(testtools.TestCase):
@@ -98,7 +98,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a Decrypt request payload can be constructed with no
         arguments.
         """
-        payload = decrypt.DecryptRequestPayload()
+        payload = payloads.DecryptRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.cryptographic_parameters)
@@ -110,7 +110,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a Decrypt request payload can be constructed with valid
         values
         """
-        payload = decrypt.DecryptRequestPayload(
+        payload = payloads.DecryptRequestPayload(
             unique_identifier='00000000-1111-2222-3333-444444444444',
             cryptographic_parameters=attributes.CryptographicParameters(),
             data=b'\x01\x02\x03',
@@ -133,7 +133,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a Decrypt request payload.
         """
-        payload = decrypt.DecryptRequestPayload()
+        payload = payloads.DecryptRequestPayload()
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -147,7 +147,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the cryptographic parameters of a Decrypt request payload.
         """
-        payload = decrypt.DecryptRequestPayload()
+        payload = payloads.DecryptRequestPayload()
         args = (payload, 'cryptographic_parameters', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
@@ -162,7 +162,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the data of a Decrypt request payload.
         """
-        payload = decrypt.DecryptRequestPayload()
+        payload = payloads.DecryptRequestPayload()
         args = (payload, 'data', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -176,7 +176,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the IV/counter/nonce of a Decrypt request payload.
         """
-        payload = decrypt.DecryptRequestPayload()
+        payload = payloads.DecryptRequestPayload()
         args = (payload, 'iv_counter_nonce', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -189,7 +189,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         """
         Test that a Decrypt request payload can be read from a data stream.
         """
-        payload = decrypt.DecryptRequestPayload()
+        payload = payloads.DecryptRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.cryptographic_parameters)
@@ -251,7 +251,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a Decrypt request payload can be read from a partial data
         stream containing the minimum required attributes.
         """
-        payload = decrypt.DecryptRequestPayload()
+        payload = payloads.DecryptRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.cryptographic_parameters)
@@ -270,7 +270,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when a required Decrypt request
         payload attribute is missing from the payload encoding.
         """
-        payload = decrypt.DecryptRequestPayload()
+        payload = payloads.DecryptRequestPayload()
         args = (self.empty_encoding, )
         self.assertRaisesRegexp(
             ValueError,
@@ -283,7 +283,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         """
         Test that a Decrypt request payload can be written to a data stream.
         """
-        payload = decrypt.DecryptRequestPayload(
+        payload = payloads.DecryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -315,7 +315,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a partially defined Decrypt request payload can be written
         to a data stream.
         """
-        payload = decrypt.DecryptRequestPayload(
+        payload = payloads.DecryptRequestPayload(
             data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
         )
         stream = utils.BytearrayStream()
@@ -329,7 +329,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when a required Decrypt request
         payload attribute is missing when encoding the payload.
         """
-        payload = decrypt.DecryptRequestPayload()
+        payload = payloads.DecryptRequestPayload()
         stream = utils.BytearrayStream()
         args = (stream, )
         self.assertRaisesRegexp(
@@ -344,13 +344,13 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         Decrypt request payloads with the same data.
         """
-        a = decrypt.DecryptRequestPayload()
-        b = decrypt.DecryptRequestPayload()
+        a = payloads.DecryptRequestPayload()
+        b = payloads.DecryptRequestPayload()
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-        a = decrypt.DecryptRequestPayload(
+        a = payloads.DecryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -371,7 +371,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
         )
-        b = decrypt.DecryptRequestPayload(
+        b = payloads.DecryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -401,10 +401,10 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Decrypt request payloads with different unique identifiers.
         """
-        a = decrypt.DecryptRequestPayload(
+        a = payloads.DecryptRequestPayload(
             unique_identifier='a'
         )
-        b = decrypt.DecryptRequestPayload(
+        b = payloads.DecryptRequestPayload(
             unique_identifier='b'
         )
 
@@ -416,12 +416,12 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Decrypt request payloads with different cryptographic parameters.
         """
-        a = decrypt.DecryptRequestPayload(
+        a = payloads.DecryptRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
             )
         )
-        b = decrypt.DecryptRequestPayload(
+        b = payloads.DecryptRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
                 hashing_algorithm=enums.HashingAlgorithm.MD5
             )
@@ -435,8 +435,8 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Decrypt request payloads with different data.
         """
-        a = decrypt.DecryptRequestPayload(data=b'\x11')
-        b = decrypt.DecryptRequestPayload(data=b'\xFF')
+        a = payloads.DecryptRequestPayload(data=b'\x11')
+        b = payloads.DecryptRequestPayload(data=b'\xFF')
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -446,8 +446,8 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Decrypt request payloads with different IV/counter/nonce values.
         """
-        a = decrypt.DecryptRequestPayload(iv_counter_nonce=b'\x22')
-        b = decrypt.DecryptRequestPayload(iv_counter_nonce=b'\xAA')
+        a = payloads.DecryptRequestPayload(iv_counter_nonce=b'\x22')
+        b = payloads.DecryptRequestPayload(iv_counter_nonce=b'\xAA')
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -457,7 +457,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Decrypt request payloads with different types.
         """
-        a = decrypt.DecryptRequestPayload()
+        a = payloads.DecryptRequestPayload()
         b = 'invalid'
 
         self.assertFalse(a == b)
@@ -468,13 +468,13 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing two
         Decrypt request payloads with the same data.
         """
-        a = decrypt.DecryptRequestPayload()
-        b = decrypt.DecryptRequestPayload()
+        a = payloads.DecryptRequestPayload()
+        b = payloads.DecryptRequestPayload()
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-        a = decrypt.DecryptRequestPayload(
+        a = payloads.DecryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -495,7 +495,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
         )
-        b = decrypt.DecryptRequestPayload(
+        b = payloads.DecryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -525,10 +525,10 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Decrypt request payloads with different unique identifiers.
         """
-        a = decrypt.DecryptRequestPayload(
+        a = payloads.DecryptRequestPayload(
             unique_identifier='a'
         )
-        b = decrypt.DecryptRequestPayload(
+        b = payloads.DecryptRequestPayload(
             unique_identifier='b'
         )
 
@@ -540,12 +540,12 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Decrypt request payloads with different cryptographic parameters.
         """
-        a = decrypt.DecryptRequestPayload(
+        a = payloads.DecryptRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
             )
         )
-        b = decrypt.DecryptRequestPayload(
+        b = payloads.DecryptRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
                 hashing_algorithm=enums.HashingAlgorithm.MD5
             )
@@ -559,8 +559,8 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Decrypt request payloads with different data.
         """
-        a = decrypt.DecryptRequestPayload(data=b'\x11')
-        b = decrypt.DecryptRequestPayload(data=b'\xFF')
+        a = payloads.DecryptRequestPayload(data=b'\x11')
+        b = payloads.DecryptRequestPayload(data=b'\xFF')
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -570,8 +570,8 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Decrypt request payloads with different IV/counter/nonce values.
         """
-        a = decrypt.DecryptRequestPayload(iv_counter_nonce=b'\x22')
-        b = decrypt.DecryptRequestPayload(iv_counter_nonce=b'\xAA')
+        a = payloads.DecryptRequestPayload(iv_counter_nonce=b'\x22')
+        b = payloads.DecryptRequestPayload(iv_counter_nonce=b'\xAA')
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -581,7 +581,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Decrypt request payloads with different types.
         """
-        a = decrypt.DecryptRequestPayload()
+        a = payloads.DecryptRequestPayload()
         b = 'invalid'
 
         self.assertTrue(a != b)
@@ -591,7 +591,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         """
         Test that repr can be applied to an Decrypt request payload.
         """
-        payload = decrypt.DecryptRequestPayload(
+        payload = payloads.DecryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -657,7 +657,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
             counter_length=0,
             initial_counter_value=1
         )
-        payload = decrypt.DecryptRequestPayload(
+        payload = payloads.DecryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=cryptographic_parameters,
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
@@ -724,7 +724,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that an Decrypt response payload can be constructed with no
         arguments.
         """
-        payload = decrypt.DecryptResponsePayload()
+        payload = payloads.DecryptResponsePayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.data)
@@ -734,7 +734,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that a Decrypt response payload can be constructed with valid
         values
         """
-        payload = decrypt.DecryptResponsePayload(
+        payload = payloads.DecryptResponsePayload(
             unique_identifier='00000000-1111-2222-3333-444444444444',
             data=b'\x01\x02\x03'
         )
@@ -750,7 +750,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a Decrypt response payload.
         """
-        payload = decrypt.DecryptResponsePayload()
+        payload = payloads.DecryptResponsePayload()
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -764,7 +764,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the data of a Decrypt response payload.
         """
-        payload = decrypt.DecryptResponsePayload()
+        payload = payloads.DecryptResponsePayload()
         args = (payload, 'data', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -777,7 +777,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         """
         Test that a Decrypt response payload can be read from a data stream.
         """
-        payload = decrypt.DecryptResponsePayload()
+        payload = payloads.DecryptResponsePayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.data)
@@ -795,7 +795,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when required Decrypt response
         payload attributes are missing from the payload encoding.
         """
-        payload = decrypt.DecryptResponsePayload()
+        payload = payloads.DecryptResponsePayload()
         args = (self.empty_encoding, )
         self.assertRaisesRegexp(
             ValueError,
@@ -804,7 +804,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
             *args
         )
 
-        payload = decrypt.DecryptResponsePayload()
+        payload = payloads.DecryptResponsePayload()
         args = (self.incomplete_encoding, )
         self.assertRaisesRegexp(
             ValueError,
@@ -817,7 +817,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         """
         Test that a Decrypt response payload can be written to a data stream.
         """
-        payload = decrypt.DecryptResponsePayload(
+        payload = payloads.DecryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF'
         )
@@ -832,7 +832,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when required Decrypt response
         payload attributes are missing when encoding the payload.
         """
-        payload = decrypt.DecryptResponsePayload()
+        payload = payloads.DecryptResponsePayload()
         self.assertIsNone(payload.unique_identifier)
         stream = utils.BytearrayStream()
         args = (stream, )
@@ -843,7 +843,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
             *args
         )
 
-        payload = decrypt.DecryptResponsePayload(
+        payload = payloads.DecryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959'
         )
         stream = utils.BytearrayStream()
@@ -860,17 +860,17 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         Decrypt response payloads with the same data.
         """
-        a = decrypt.DecryptResponsePayload()
-        b = decrypt.DecryptResponsePayload()
+        a = payloads.DecryptResponsePayload()
+        b = payloads.DecryptResponsePayload()
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-        a = decrypt.DecryptResponsePayload(
+        a = payloads.DecryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF'
         )
-        b = decrypt.DecryptResponsePayload(
+        b = payloads.DecryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF'
         )
@@ -883,10 +883,10 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Decrypt response payloads with different unique identifiers.
         """
-        a = decrypt.DecryptResponsePayload(
+        a = payloads.DecryptResponsePayload(
             unique_identifier='a'
         )
-        b = decrypt.DecryptResponsePayload(
+        b = payloads.DecryptResponsePayload(
             unique_identifier='b'
         )
 
@@ -898,8 +898,8 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Decrypt response payloads with different data.
         """
-        a = decrypt.DecryptResponsePayload(data=b'\x11')
-        b = decrypt.DecryptResponsePayload(data=b'\xFF')
+        a = payloads.DecryptResponsePayload(data=b'\x11')
+        b = payloads.DecryptResponsePayload(data=b'\xFF')
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -909,7 +909,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Decrypt response payloads with different types.
         """
-        a = decrypt.DecryptResponsePayload()
+        a = payloads.DecryptResponsePayload()
         b = 'invalid'
 
         self.assertFalse(a == b)
@@ -920,17 +920,17 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing two
         Decrypt response payloads with the same data.
         """
-        a = decrypt.DecryptResponsePayload()
-        b = decrypt.DecryptResponsePayload()
+        a = payloads.DecryptResponsePayload()
+        b = payloads.DecryptResponsePayload()
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-        a = decrypt.DecryptResponsePayload(
+        a = payloads.DecryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF'
         )
-        b = decrypt.DecryptResponsePayload(
+        b = payloads.DecryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF'
         )
@@ -943,10 +943,10 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Decrypt response payloads with different unique identifiers.
         """
-        a = decrypt.DecryptResponsePayload(
+        a = payloads.DecryptResponsePayload(
             unique_identifier='a'
         )
-        b = decrypt.DecryptResponsePayload(
+        b = payloads.DecryptResponsePayload(
             unique_identifier='b'
         )
 
@@ -958,8 +958,8 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Decrypt response payloads with different data.
         """
-        a = decrypt.DecryptResponsePayload(data=b'\x11')
-        b = decrypt.DecryptResponsePayload(data=b'\xFF')
+        a = payloads.DecryptResponsePayload(data=b'\x11')
+        b = payloads.DecryptResponsePayload(data=b'\xFF')
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -969,7 +969,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Decrypt response payloads with different types.
         """
-        a = decrypt.DecryptResponsePayload()
+        a = payloads.DecryptResponsePayload()
         b = 'invalid'
 
         self.assertTrue(a != b)
@@ -979,7 +979,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         """
         Test that repr can be applied to a Decrypt response payload.
         """
-        payload = decrypt.DecryptResponsePayload(
+        payload = payloads.DecryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF'
         )
@@ -996,7 +996,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         """
         Test that str can be applied to a Decrypt response payload
         """
-        payload = decrypt.DecryptResponsePayload(
+        payload = payloads.DecryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF'
         )

@@ -38,24 +38,7 @@ from kmip.core.factories import secrets
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 
-from kmip.core.messages.payloads import activate
-from kmip.core.messages.payloads import revoke
-from kmip.core.messages.payloads import create
-from kmip.core.messages.payloads import create_key_pair
-from kmip.core.messages.payloads import decrypt
-from kmip.core.messages.payloads import derive_key
-from kmip.core.messages.payloads import destroy
-from kmip.core.messages.payloads import discover_versions
-from kmip.core.messages.payloads import encrypt
-from kmip.core.messages.payloads import get
-from kmip.core.messages.payloads import get_attributes
-from kmip.core.messages.payloads import get_attribute_list
-from kmip.core.messages.payloads import query
-from kmip.core.messages.payloads import register
-from kmip.core.messages.payloads import mac
-from kmip.core.messages.payloads import locate
-from kmip.core.messages.payloads import sign
-from kmip.core.messages.payloads import signature_verify
+from kmip.core.messages import payloads
 
 from kmip.core import misc
 
@@ -1086,7 +1069,7 @@ class KmipEngine(object):
             )
         )
 
-        response_payload = create.CreateResponsePayload(
+        response_payload = payloads.CreateResponsePayload(
             object_type=payload.object_type,
             unique_identifier=attributes.UniqueIdentifier(
                 str(managed_object.unique_identifier)
@@ -1262,7 +1245,7 @@ class KmipEngine(object):
             )
         )
 
-        response_payload = create_key_pair.CreateKeyPairResponsePayload(
+        response_payload = payloads.CreateKeyPairResponsePayload(
             private_key_uuid=attributes.PrivateKeyUniqueIdentifier(
                 str(private_key.unique_identifier)
             ),
@@ -1332,7 +1315,7 @@ class KmipEngine(object):
             )
         )
 
-        response_payload = register.RegisterResponsePayload(
+        response_payload = payloads.RegisterResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(
                 str(managed_object.unique_identifier)
             )
@@ -1521,7 +1504,7 @@ class KmipEngine(object):
         )
         self._id_placeholder = str(managed_object.unique_identifier)
 
-        response_payload = derive_key.DeriveKeyResponsePayload(
+        response_payload = payloads.DeriveKeyResponsePayload(
             unique_identifier=str(managed_object.unique_identifier)
         )
         return response_payload
@@ -1562,7 +1545,7 @@ class KmipEngine(object):
                             str(managed_object.unique_identifier))
                             for managed_object in managed_objects]
 
-        response_payload = locate.LocateResponsePayload(
+        response_payload = payloads.LocateResponsePayload(
             unique_identifiers=unique_identifiers
         )
 
@@ -1716,7 +1699,7 @@ class KmipEngine(object):
         else:
             core_secret = self._build_core_object(managed_object)
 
-        response_payload = get.GetResponsePayload(
+        response_payload = payloads.GetResponsePayload(
             object_type=managed_object._object_type,
             unique_identifier=unique_identifier,
             secret=core_secret
@@ -1742,7 +1725,7 @@ class KmipEngine(object):
             payload.attribute_names
         )
 
-        response_payload = get_attributes.GetAttributesResponsePayload(
+        response_payload = payloads.GetAttributesResponsePayload(
             unique_identifier=unique_identifier,
             attributes=attrs
         )
@@ -1771,7 +1754,7 @@ class KmipEngine(object):
         for object_attribute in object_attributes:
             attribute_names.append(object_attribute.attribute_name.value)
 
-        response_payload = get_attribute_list.GetAttributeListResponsePayload(
+        response_payload = payloads.GetAttributeListResponsePayload(
             unique_identifier=unique_identifier,
             attribute_names=attribute_names
         )
@@ -1809,7 +1792,7 @@ class KmipEngine(object):
         managed_object.state = enums.State.ACTIVE
         self._data_session.commit()
 
-        response_payload = activate.ActivateResponsePayload(
+        response_payload = payloads.ActivateResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(unique_identifier)
         )
 
@@ -1864,7 +1847,7 @@ class KmipEngine(object):
                 managed_object.state = enums.State.DEACTIVATED
         self._data_session.commit()
 
-        response_payload = revoke.RevokeResponsePayload(
+        response_payload = payloads.RevokeResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(unique_identifier)
         )
 
@@ -1904,7 +1887,7 @@ class KmipEngine(object):
             objects.ManagedObject.unique_identifier == unique_identifier
         ).delete()
 
-        response_payload = destroy.DestroyResponsePayload(
+        response_payload = payloads.DestroyResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(unique_identifier)
         )
 
@@ -1968,7 +1951,7 @@ class KmipEngine(object):
         if enums.QueryFunction.QUERY_EXTENSION_MAP in queries:
             extensions = list()
 
-        response_payload = query.QueryResponsePayload(
+        response_payload = payloads.QueryResponsePayload(
             operations=operations,
             object_types=objects,
             vendor_identification=vendor_identification,
@@ -1991,7 +1974,7 @@ class KmipEngine(object):
         else:
             supported_versions = self._protocol_versions
 
-        response_payload = discover_versions.DiscoverVersionsResponsePayload(
+        response_payload = payloads.DiscoverVersionsResponsePayload(
             protocol_versions=supported_versions
         )
 
@@ -2053,7 +2036,7 @@ class KmipEngine(object):
             iv_nonce=payload.iv_counter_nonce
         )
 
-        response_payload = encrypt.EncryptResponsePayload(
+        response_payload = payloads.EncryptResponsePayload(
             unique_identifier,
             result.get('cipher_text'),
             result.get('iv_nonce')
@@ -2116,7 +2099,7 @@ class KmipEngine(object):
             iv_nonce=payload.iv_counter_nonce
         )
 
-        response_payload = decrypt.DecryptResponsePayload(
+        response_payload = payloads.DecryptResponsePayload(
             unique_identifier,
             result
         )
@@ -2184,7 +2167,7 @@ class KmipEngine(object):
         else:
             validity = enums.ValidityIndicator.INVALID
 
-        response_payload = signature_verify.SignatureVerifyResponsePayload(
+        response_payload = payloads.SignatureVerifyResponsePayload(
             unique_identifier=unique_identifier,
             validity_indicator=validity
         )
@@ -2256,7 +2239,7 @@ class KmipEngine(object):
             data
         )
 
-        response_payload = mac.MACResponsePayload(
+        response_payload = payloads.MACResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(unique_identifier),
             mac_data=MACData(result)
         )
@@ -2312,7 +2295,7 @@ class KmipEngine(object):
             data=payload.data
         )
 
-        response_payload = sign.SignResponsePayload(
+        response_payload = payloads.SignResponsePayload(
             unique_identifier=unique_identifier,
             signature_data=result
         )

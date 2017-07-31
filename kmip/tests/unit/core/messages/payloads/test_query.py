@@ -26,7 +26,7 @@ from kmip.core.enums import Operation as OperationEnum
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
 
 from kmip.core.messages.contents import Operation
-from kmip.core.messages.payloads import query
+from kmip.core.messages import payloads
 
 from kmip.core.misc import QueryFunction
 from kmip.core.misc import VendorIdentification
@@ -82,16 +82,16 @@ class TestQueryRequestPayload(TestCase):
         Test that a QueryRequestPayload object can be constructed with no
         specified value.
         """
-        query.QueryRequestPayload()
+        payloads.QueryRequestPayload()
 
     def test_init_with_args(self):
         """
         Test that a QueryRequestPayload object can be constructed with valid
         values.
         """
-        query.QueryRequestPayload(self.query_functions_a)
-        query.QueryRequestPayload(self.query_functions_b)
-        query.QueryRequestPayload(self.query_functions_c)
+        payloads.QueryRequestPayload(self.query_functions_a)
+        payloads.QueryRequestPayload(self.query_functions_b)
+        payloads.QueryRequestPayload(self.query_functions_c)
 
     def test_validate_with_invalid_query_functions_list(self):
         """
@@ -101,7 +101,7 @@ class TestQueryRequestPayload(TestCase):
         kwargs = {'query_functions': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid query functions list",
-            query.QueryRequestPayload, **kwargs)
+            payloads.QueryRequestPayload, **kwargs)
 
     def test_validate_with_invalid_query_functions_item(self):
         """
@@ -111,10 +111,10 @@ class TestQueryRequestPayload(TestCase):
         kwargs = {'query_functions': ['invalid']}
         self.assertRaisesRegexp(
             TypeError, "invalid query function",
-            query.QueryRequestPayload, **kwargs)
+            payloads.QueryRequestPayload, **kwargs)
 
     def _test_read(self, stream, query_functions):
-        payload = query.QueryRequestPayload()
+        payload = payloads.QueryRequestPayload()
         payload.read(stream)
         expected = len(query_functions)
         observed = len(payload.query_functions)
@@ -155,7 +155,7 @@ class TestQueryRequestPayload(TestCase):
 
     def _test_write(self, encoding, query_functions):
         stream = utils.BytearrayStream()
-        payload = query.QueryRequestPayload(query_functions)
+        payload = payloads.QueryRequestPayload(query_functions)
         payload.write(stream)
 
         length_expected = len(encoding)
@@ -307,14 +307,14 @@ class TestQueryResponsePayload(TestCase):
         Test that a QueryResponsePayload object can be constructed with no
         specified value.
         """
-        query.QueryResponsePayload()
+        payloads.QueryResponsePayload()
 
     def test_init_with_args(self):
         """
         Test that a QueryResponsePayload object can be constructed with valid
         values.
         """
-        query.QueryResponsePayload(
+        payloads.QueryResponsePayload(
             operations=self.operations,
             object_types=self.object_types,
             vendor_identification=self.vendor_identification,
@@ -330,7 +330,7 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'operations': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid operations list",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def test_validate_with_invalid_operations_item(self):
         """
@@ -340,7 +340,7 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'operations': ['invalid']}
         self.assertRaisesRegexp(
             TypeError, "invalid operation",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def test_validate_with_invalid_object_types_list(self):
         """
@@ -350,7 +350,7 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'object_types': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid object types list",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def test_validate_with_invalid_object_types_item(self):
         """
@@ -360,7 +360,7 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'object_types': ['invalid']}
         self.assertRaisesRegexp(
             TypeError, "invalid object type",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def test_validate_with_invalid_vendor_identification(self):
         """
@@ -371,7 +371,7 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'vendor_identification': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid vendor identification",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def test_validate_with_invalid_server_information(self):
         """
@@ -382,7 +382,7 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'server_information': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid server information",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def test_validate_with_invalid_application_namespaces_list(self):
         """
@@ -393,7 +393,7 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'application_namespaces': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid application namespaces list",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def test_validate_with_invalid_application_namespaces_item(self):
         """
@@ -404,7 +404,7 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'application_namespaces': ['invalid']}
         self.assertRaisesRegexp(
             TypeError, "invalid application namespace",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def test_validate_with_invalid_extension_information_list(self):
         """
@@ -415,7 +415,7 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'extension_information': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid extension information list",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def test_validate_with_invalid_extension_information_item(self):
         """
@@ -426,12 +426,12 @@ class TestQueryResponsePayload(TestCase):
         kwargs = {'extension_information': ['invalid']}
         self.assertRaisesRegexp(
             TypeError, "invalid extension information",
-            query.QueryResponsePayload, **kwargs)
+            payloads.QueryResponsePayload, **kwargs)
 
     def _test_read(self, stream, operations, object_types,
                    vendor_identification, server_information,
                    application_namespaces, extension_information):
-        payload = query.QueryResponsePayload()
+        payload = payloads.QueryResponsePayload()
         payload.read(stream)
 
         # Test decoding of all operations.
@@ -541,7 +541,7 @@ class TestQueryResponsePayload(TestCase):
                     vendor_identification, server_information,
                     application_namespaces, extension_information):
         stream = utils.BytearrayStream()
-        payload = query.QueryResponsePayload(
+        payload = payloads.QueryResponsePayload(
             operations, object_types, vendor_identification,
             server_information, application_namespaces, extension_information)
         payload.write(stream)

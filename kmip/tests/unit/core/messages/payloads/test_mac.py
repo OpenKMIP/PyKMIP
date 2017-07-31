@@ -20,7 +20,7 @@ from kmip.core import utils
 from kmip.core import enums
 from kmip.core import exceptions
 
-from kmip.core.messages.payloads import mac
+from kmip.core.messages import payloads
 
 
 class TestMACRequestPayload(TestCase):
@@ -55,14 +55,14 @@ class TestMACRequestPayload(TestCase):
         super(TestMACRequestPayload, self).tearDown()
 
     def test_init_with_none(self):
-        mac.MACRequestPayload()
+        payloads.MACRequestPayload()
 
     def test_init_valid(self):
         """
         Test that the payload can be properly constructed and the attributes
         cab be properly set and retrieved.
         """
-        payload = mac.MACRequestPayload(
+        payload = payloads.MACRequestPayload(
             self.unique_identifier,
             self.cryptographic_parameters,
             self.data)
@@ -77,7 +77,7 @@ class TestMACRequestPayload(TestCase):
                   'data': None}
         self.assertRaisesRegexp(
             TypeError, "unique identifier must be UniqueIdentifier type",
-            mac.MACRequestPayload, **kwargs)
+            payloads.MACRequestPayload, **kwargs)
 
     def test_init_with_invalid_cryptographic_parameters(self):
         kwargs = {'unique_identifier': None,
@@ -86,7 +86,7 @@ class TestMACRequestPayload(TestCase):
         self.assertRaisesRegexp(
             TypeError,
             "cryptographic parameters must be CryptographicParameters type",
-            mac.MACRequestPayload, **kwargs)
+            payloads.MACRequestPayload, **kwargs)
 
     def test_init_with_invalid_data(self):
         kwargs = {'unique_identifier': None,
@@ -94,11 +94,11 @@ class TestMACRequestPayload(TestCase):
                   'data': 'invalid'}
         self.assertRaises(
             TypeError, "data must be Data type",
-            mac.MACRequestPayload, **kwargs)
+            payloads.MACRequestPayload, **kwargs)
 
     def test_read_valid(self):
         stream = self.encoding_full
-        payload = mac.MACRequestPayload()
+        payload = payloads.MACRequestPayload()
         payload.read(stream)
 
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
@@ -111,7 +111,7 @@ class TestMACRequestPayload(TestCase):
         Test that an InvalidKmipEncoding error gets raised when attempting to
         read a mac request encoding with no data.
         """
-        payload = mac.MACRequestPayload()
+        payload = payloads.MACRequestPayload()
         args = (self.encoding_no_data,)
         self.assertRaisesRegexp(
             exceptions.InvalidKmipEncoding,
@@ -124,7 +124,7 @@ class TestMACRequestPayload(TestCase):
         expected = self.encoding_full
 
         stream = utils.BytearrayStream()
-        payload = mac.MACRequestPayload(
+        payload = payloads.MACRequestPayload(
             self.unique_identifier,
             self.cryptographic_parameters,
             self.data)
@@ -138,7 +138,7 @@ class TestMACRequestPayload(TestCase):
         write a mac request with no data.
         """
         stream = utils.BytearrayStream()
-        payload = mac.MACRequestPayload(
+        payload = payloads.MACRequestPayload(
             self.unique_identifier,
             self.cryptographic_parameters,
             None)
@@ -189,14 +189,14 @@ class TestMACResponsePayload(TestCase):
         super(TestMACResponsePayload, self).tearDown()
 
     def test_init_with_none(self):
-        mac.MACResponsePayload()
+        payloads.MACResponsePayload()
 
     def test_init_valid(self):
         """
         Test that the payload can be properly constructed and the attributes
         can be properly set and retrieved.
         """
-        payload = mac.MACResponsePayload(
+        payload = payloads.MACResponsePayload(
             self.unique_identifier,
             self.mac_data)
         self.assertEqual(payload.unique_identifier, self.unique_identifier)
@@ -207,18 +207,18 @@ class TestMACResponsePayload(TestCase):
                   'mac_data': None}
         self.assertRaisesRegexp(
             TypeError, "unique identifier must be UniqueIdentifier type",
-            mac.MACResponsePayload, **kwargs)
+            payloads.MACResponsePayload, **kwargs)
 
     def test_init_with_invalid_mac_data(self):
         kwargs = {'unique_identifier': None,
                   'mac_data': 'invalid'}
         self.assertRaises(
             TypeError, "data must be MACData type",
-            mac.MACResponsePayload, **kwargs)
+            payloads.MACResponsePayload, **kwargs)
 
     def test_read_valid(self):
         stream = self.encoding_full
-        payload = mac.MACResponsePayload()
+        payload = payloads.MACResponsePayload()
         payload.read(stream)
 
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
@@ -229,7 +229,7 @@ class TestMACResponsePayload(TestCase):
         Test that an InvalidKmipEncoding error gets raised when attempting to
         read a mac response encoding with no unique identifier.
         """
-        payload = mac.MACResponsePayload()
+        payload = payloads.MACResponsePayload()
         args = (self.encoding_no_unique_identifier,)
         self.assertRaisesRegexp(
             exceptions.InvalidKmipEncoding,
@@ -243,7 +243,7 @@ class TestMACResponsePayload(TestCase):
         Test that an InvalidKmipEncoding error gets raised when attempting to
         read a mac response encoding with no mac data.
         """
-        payload = mac.MACResponsePayload()
+        payload = payloads.MACResponsePayload()
         args = (self.encoding_no_mac_data,)
         self.assertRaisesRegexp(
             exceptions.InvalidKmipEncoding,
@@ -256,7 +256,7 @@ class TestMACResponsePayload(TestCase):
         expected = self.encoding_full
 
         stream = utils.BytearrayStream()
-        payload = mac.MACResponsePayload(
+        payload = payloads.MACResponsePayload(
             self.unique_identifier,
             self.mac_data)
         payload.write(stream)
@@ -269,7 +269,7 @@ class TestMACResponsePayload(TestCase):
         write a mac response with no unique identifier.
         """
         stream = utils.BytearrayStream()
-        payload = mac.MACResponsePayload(
+        payload = payloads.MACResponsePayload(
             None,
             self.mac_data)
         args = (stream,)
@@ -286,7 +286,7 @@ class TestMACResponsePayload(TestCase):
         write a mac response with no mac data.
         """
         stream = utils.BytearrayStream()
-        payload = mac.MACResponsePayload(
+        payload = payloads.MACResponsePayload(
             self.unique_identifier,
             None)
         args = (stream,)

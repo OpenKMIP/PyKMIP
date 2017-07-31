@@ -14,83 +14,64 @@
 # under the License.
 
 from kmip.core.factories.payloads import PayloadFactory
-
-from kmip.core.messages.payloads import activate
-from kmip.core.messages.payloads import create
-from kmip.core.messages.payloads import create_key_pair
-from kmip.core.messages.payloads import decrypt
-from kmip.core.messages.payloads import derive_key
-from kmip.core.messages.payloads import destroy
-from kmip.core.messages.payloads import discover_versions
-from kmip.core.messages.payloads import encrypt
-from kmip.core.messages.payloads import get
-from kmip.core.messages.payloads import get_attribute_list
-from kmip.core.messages.payloads import get_attributes
-from kmip.core.messages.payloads import locate
-from kmip.core.messages.payloads import query
-from kmip.core.messages.payloads import rekey_key_pair
-from kmip.core.messages.payloads import register
-from kmip.core.messages.payloads import revoke
-from kmip.core.messages.payloads import sign
-from kmip.core.messages.payloads import signature_verify
-from kmip.core.messages.payloads import mac
+from kmip.core.messages import payloads
 
 
 class RequestPayloadFactory(PayloadFactory):
 
     def _create_create_payload(self):
-        return create.CreateRequestPayload()
+        return payloads.CreateRequestPayload()
 
     def _create_create_key_pair_payload(self):
-        return create_key_pair.CreateKeyPairRequestPayload()
+        return payloads.CreateKeyPairRequestPayload()
 
     def _create_register_payload(self):
-        return register.RegisterRequestPayload()
+        return payloads.RegisterRequestPayload()
 
     def _create_derive_key_payload(self):
-        return derive_key.DeriveKeyRequestPayload()
+        return payloads.DeriveKeyRequestPayload()
 
     def _create_rekey_key_pair_payload(self):
-        return rekey_key_pair.RekeyKeyPairRequestPayload()
+        return payloads.RekeyKeyPairRequestPayload()
 
     def _create_locate_payload(self):
-        return locate.LocateRequestPayload()
+        return payloads.LocateRequestPayload()
 
     def _create_get_payload(self):
-        return get.GetRequestPayload()
+        return payloads.GetRequestPayload()
 
     def _create_get_attribute_list_payload(self):
-        return get_attribute_list.GetAttributeListRequestPayload()
+        return payloads.GetAttributeListRequestPayload()
 
     def _create_get_attributes_payload(self):
-        return get_attributes.GetAttributesRequestPayload()
+        return payloads.GetAttributesRequestPayload()
 
     def _create_destroy_payload(self):
-        return destroy.DestroyRequestPayload()
+        return payloads.DestroyRequestPayload()
 
     def _create_query_payload(self):
-        return query.QueryRequestPayload()
+        return payloads.QueryRequestPayload()
 
     def _create_discover_versions_payload(self):
-        return discover_versions.DiscoverVersionsRequestPayload()
+        return payloads.DiscoverVersionsRequestPayload()
 
     def _create_activate_payload(self):
-        return activate.ActivateRequestPayload()
+        return payloads.ActivateRequestPayload()
 
     def _create_revoke_payload(self):
-        return revoke.RevokeRequestPayload()
+        return payloads.RevokeRequestPayload()
 
     def _create_mac_payload(self):
-        return mac.MACRequestPayload()
+        return payloads.MACRequestPayload()
 
     def _create_encrypt_payload(self):
-        return encrypt.EncryptRequestPayload()
+        return payloads.EncryptRequestPayload()
 
     def _create_decrypt_payload(self):
-        return decrypt.DecryptRequestPayload()
+        return payloads.DecryptRequestPayload()
 
     def _create_sign_payload(self):
-        return sign.SignRequestPayload()
+        return payloads.SignRequestPayload()
 
     def _create_signature_verify_payload(self):
-        return signature_verify.SignatureVerifyRequestPayload()
+        return payloads.SignatureVerifyRequestPayload()
