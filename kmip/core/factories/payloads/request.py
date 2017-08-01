@@ -31,6 +31,7 @@ from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import revoke
+from kmip.core.messages.payloads import sign
 from kmip.core.messages.payloads import mac
 
 
@@ -86,3 +87,6 @@ class RequestPayloadFactory(PayloadFactory):
 
     def _create_decrypt_payload(self):
         return decrypt.DecryptRequestPayload()
+
+    def _create_sign_payload(self):
+        return sign.SignRequestPayload()
