@@ -13,14 +13,18 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import binascii
 import mock
 import pytest
 import testtools
 
 from cryptography.hazmat import backends
-from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.ciphers import algorithms
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import serialization
 
 from kmip.core import enums
 from kmip.core import exceptions
@@ -901,6 +905,113 @@ class TestCryptographyEngine(testtools.TestCase):
         self.assertRaises(
             exceptions.CryptographicFailure,
             engine.wrap_key,
+            *args
+        )
+
+    def test_sign_no_alg(self):
+        """
+        Test that an InvalidField exception is raised when sign is
+        called without sufficient crypto parameters.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (None, None, None, None, None, None)
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            'For signing, either a digital signature algorithm or a hash'
+            ' algorithm and a cryptographic algorithm must be specified.',
+            engine.sign,
+            *args
+        )
+
+    def test_sign_non_RSA(self):
+        """
+        Test that an InvalidField exception is raised when sign is
+        called with a crypto algorithm other than RSA.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            None,
+            enums.CryptographicAlgorithm.TRIPLE_DES,
+            enums.HashingAlgorithm.MD5,
+            None,
+            None,
+            None
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            'For signing, an RSA key must be used.',
+            engine.sign,
+            *args
+        )
+
+    def test_sign_invalid_padding(self):
+        """
+        Test that an InvalidField exception is raised when sign is
+        called with an unsupported padding algorithm.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            None,
+            enums.CryptographicAlgorithm.RSA,
+            enums.HashingAlgorithm.MD5,
+            enums.PaddingMethod.OAEP,
+            DER_RSA_KEY,
+            None
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "Padding method 'PaddingMethod.OAEP' is not a supported"
+            " signature padding method.",
+            engine.sign,
+            *args
+        )
+
+    def test_sign_no_padding(self):
+        """
+        Test that an InvalidField exception is raised when sign is
+        called without a padding algorithm.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            None,
+            enums.CryptographicAlgorithm.RSA,
+            enums.HashingAlgorithm.MD5,
+            None,
+            DER_RSA_KEY,
+            None
+        )
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            'For signing, a padding method must be specified.',
+            engine.sign,
+            *args
+        )
+
+    def test_sign_invalid_key_bytes(self):
+        """
+        Test that an InvalidField exception is raised when
+        sign is called with invalid key bytes.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            None,
+            enums.CryptographicAlgorithm.RSA,
+            enums.HashingAlgorithm.MD5,
+            enums.PaddingMethod.PKCS1v15,
+            'thisisnotavalidkey',
+            None
+        )
+
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            'Unable to deserialize key '
+            'bytes, unknown format.',
+            engine.sign,
             *args
         )
 
@@ -2140,3 +2251,157 @@ def test_wrap_key(wrapping_parameters):
     )
 
     assert wrapping_parameters.get('wrapped_data') == result
+
+# Test vectors obtained from pyca/cryptography
+# https://cryptography.io/en/latest/
+
+
+DER_RSA_KEY = ('3082025e02010002818100aebac1b9a174315d27cc3c201e215789'
+               '4372d6450d4cf80ce0ebcf5169519b9e8550036f4abe0fe4f94fbf'
+               '9cca606f39743365499611ba3f25a9a47158ba05214b655f4258a4'
+               'c29516becaa583f2d26650696ad6fc03d5b47d3aba9c5479fdb047'
+               '7d29513399cb19283ccdc28dbb23b7c7eee4b35dc940daca0055dc'
+               'd28f503b02030100010281810092890942d6c68d47a4c2c181e602'
+               'ec58af7a357c7fa5173a25bf5d84d7209bb41bf5788bf350e61f8f'
+               '7e7421d80f7bf7e11de14a0f531ab12eb2d0b84642eb5d181170c2'
+               'c58aabbd6754842fafee57fef2f545d09fdc664902e55baced5a3c'
+               '6d26f3465859d33a33a555537daf2263aaef28354c8b53513145a7'
+               'e228824dabb1024100d3aa237e8942b93d56a681254c27be1f4a49'
+               '6ca4a87fc0604b0cff8f980e742d2bbb91b88a247b6ebbed01458c'
+               '4afdb68c0f8c6d4a37e028c5fcb3a6a39ca64f024100d354168c61'
+               '9c836e8597fef50193a6f42607952a1c87ebae91db5043b8855072'
+               'b4e92af5dcedb2148773dfbd217bafc8dc9da8ae8e757e7248c1e5'
+               '13a144685502410090fda214c2b7b726825dca679f3436333ef2ee'
+               'fe180272e84360e30b1d11019a13b4080d0e6c1135787bd07c30af'
+               '09feeb10979421dc06ac477b6420c940bc570240164de8b7565213'
+               '9925a67e3553be46bfbc07ced98bfb5887ab434f7c664c43ca6787'
+               'b88e0c8c55e04ecf8f0cc22cf0c7ad69427571f9baa7cb4013b277'
+               'b1e5a5024100cae150f5fa559b2e2c39444e0f5c651034092ac97b'
+               'ac10d528dd15dfda254cb06bef41e39881f7e7496910b4655659dc'
+               '842d30b9ae2759f3c2cd41c79a3684ec')
+
+PEM_RSA_KEY = ('2d2d2d2d2d424547494e205253412050524956415445204b45592d'
+               '2d2d2d2d0a4d4949435867494241414b4267514375757347356f58'
+               '51785853664d504341654956654a51334c575251314d2b417a6736'
+               '383952615647626e6f56514132394b0a76672f6b2b552b2f6e4d70'
+               '67627a6c304d32564a6c6847365079577070484659756755685332'
+               '5666516c696b777055577673716c672f4c535a6c4270617462380a'
+               '41395730665471366e4652352f62424866536c524d356e4c475367'
+               '387a634b4e75794f33782b376b7331334a514e724b41465863306f'
+               '39514f774944415141420a416f4742414a4b4a43554c57786f3148'
+               '704d4c426765594337466976656a5638663655584f69572f585954'
+               '58494a7530472f5634692f4e5135682b50666e51680a3241393739'
+               '2b456434556f50557871784c724c5175455a433631305945584443'
+               '785971727657645568432b76376c662b38765646304a2f635a6b6b'
+               '43355675730a37566f386253627a526c685a307a6f7a7056565466'
+               '613869593672764b44564d69314e524d55576e3469694354617578'
+               '416b454130366f6a666f6c43755431570a706f456c5443652b4830'
+               '704a624b536f6638426753777a2f6a35674f644330727535473469'
+               '695237627276744155574d537632326a412b4d62556f3334436a46'
+               '0a2f4c4f6d6f35796d54774a42414e4e55466f78686e494e75685a'
+               '662b395147547076516d42355571484966727270486255454f3468'
+               '564279744f6b7139647a740a7368534863392b3949587576794e79'
+               '64714b364f64583579534d486c4536464561465543515143512f61'
+               '4955777265334a6f4a64796d65664e44597a50764c750a2f686743'
+               '63756844594f4d4c485245426d684f304341304f62424531654876'
+               '516644437643663772454a655549647747724564375a43444a514c'
+               '7858416b41570a54656933566c49546d53576d666a5654766b612f'
+               '7641664f3259763757496572513039385a6b7844796d6548754934'
+               '4d6a46586754732b50444d4973384d65740a61554a3163666d3670'
+               '38744145374a337365576c416b454179754651396670566d793473'
+               '4f55524f4431786c4544514a4b736c37724244564b4e305633396f'
+               '6c0a544c42723730486a6d49483335306c70454c526c566c6e6368'
+               '4330777561346e576650437a5548486d6a614537413d3d0a2d2d2d'
+               '2d2d454e44205253412050524956415445204b45592d2d2d2d2d0a')
+
+RSA_private_key = serialization.load_der_private_key(
+    binascii.unhexlify(DER_RSA_KEY),
+    password=None,
+    backend=default_backend()
+)
+
+RSA_public_key = RSA_private_key.public_key()
+
+SIGN_TEST_DATA = (b'\x01\x02\x03\x04\x05\x06\x07\x08'
+                  b'\x09\x10\x11\x12\x13\x14\x15\x16')
+
+
+@pytest.fixture(
+    scope='function',
+    params=[
+        {'digital_signature_algorithm':
+            enums.DigitalSignatureAlgorithm.MD5_WITH_RSA_ENCRYPTION,
+         'crypto_alg': None,
+         'hash_algorithm': None,
+         'padding': enums.PaddingMethod.PSS,
+         'key': DER_RSA_KEY,
+         'verify_args': (padding.PSS(
+                             mgf=padding.MGF1(hashes.MD5()),
+                             salt_length=padding.PSS.MAX_LENGTH
+                         ),
+                         hashes.MD5())},
+        {'digital_signature_algorithm':
+            enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION,
+         'crypto_alg': None,
+         'hash_algorithm': None,
+         'padding': enums.PaddingMethod.PKCS1v15,
+         'key': PEM_RSA_KEY,
+         'verify_args': (padding.PKCS1v15(), hashes.SHA1())},
+        {'digital_signature_algorithm':
+            enums.DigitalSignatureAlgorithm.SHA224_WITH_RSA_ENCRYPTION,
+         'crypto_alg': None,
+         'hash_algorithm': None,
+         'padding': enums.PaddingMethod.PSS,
+         'key': DER_RSA_KEY,
+         'verify_args': (padding.PSS(
+                             mgf=padding.MGF1(hashes.SHA224()),
+                             salt_length=padding.PSS.MAX_LENGTH
+                         ),
+                         hashes.SHA224())},
+        {'digital_signature_algorithm':
+            enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+         'crypto_alg': None,
+         'hash_algorithm': None,
+         'padding': enums.PaddingMethod.PKCS1v15,
+         'key': PEM_RSA_KEY,
+         'verify_args': (padding.PKCS1v15(), hashes.SHA256())},
+        {'digital_signature_algorithm':
+            enums.DigitalSignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION,
+         'crypto_alg': None,
+         'hash_algorithm': None,
+         'padding': enums.PaddingMethod.PSS,
+         'key': DER_RSA_KEY,
+         'verify_args': (padding.PSS(
+                             mgf=padding.MGF1(hashes.SHA384()),
+                             salt_length=padding.PSS.MAX_LENGTH
+                         ),
+                         hashes.SHA384())},
+        {'digital_signature_algorithm': None,
+         'crypto_alg': enums.CryptographicAlgorithm.RSA,
+         'hash_algorithm': enums.HashingAlgorithm.SHA_512,
+         'padding': enums.PaddingMethod.PKCS1v15,
+         'key': PEM_RSA_KEY,
+         'verify_args': (padding.PKCS1v15(), hashes.SHA512())}
+    ]
+)
+def signing_parameters(request):
+    return request.param
+
+
+def test_sign(signing_parameters):
+    engine = crypto.CryptographyEngine()
+    result = engine.sign(
+         signing_parameters.get('digital_signature_algorithm'),
+         signing_parameters.get('crypto_alg'),
+         signing_parameters.get('hash_algorithm'),
+         signing_parameters.get('padding'),
+         signing_parameters.get('key'),
+         SIGN_TEST_DATA
+    )
+
+    RSA_public_key.verify(
+        result,
+        SIGN_TEST_DATA,
+        signing_parameters.get('verify_args')[0],
+        signing_parameters.get('verify_args')[1]
+    )

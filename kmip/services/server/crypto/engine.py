@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import binascii
 import logging
 import os
 
@@ -89,7 +90,8 @@ class CryptographyEngine(api.CryptographicEngine):
         }
         self._asymmetric_padding_methods = {
              enums.PaddingMethod.OAEP:     asymmetric_padding.OAEP,
-             enums.PaddingMethod.PKCS1v15: asymmetric_padding.PKCS1v15
+             enums.PaddingMethod.PKCS1v15: asymmetric_padding.PKCS1v15,
+             enums.PaddingMethod.PSS:      asymmetric_padding.PSS
         }
         self._symmetric_padding_methods = {
             enums.PaddingMethod.ANSI_X923: symmetric_padding.ANSIX923,
@@ -104,6 +106,21 @@ class CryptographyEngine(api.CryptographicEngine):
             enums.BlockCipherMode.CFB,
             enums.BlockCipherMode.GCM
         ]
+
+        self._digital_signature_algorithms = {
+            enums.DigitalSignatureAlgorithm.MD5_WITH_RSA_ENCRYPTION:
+                (hashes.MD5, enums.CryptographicAlgorithm.RSA),
+            enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION:
+                (hashes.SHA1, enums.CryptographicAlgorithm.RSA),
+            enums.DigitalSignatureAlgorithm.SHA224_WITH_RSA_ENCRYPTION:
+                (hashes.SHA224, enums.CryptographicAlgorithm.RSA),
+            enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION:
+                (hashes.SHA256, enums.CryptographicAlgorithm.RSA),
+            enums.DigitalSignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION:
+                (hashes.SHA384, enums.CryptographicAlgorithm.RSA),
+            enums.DigitalSignatureAlgorithm.SHA512_WITH_RSA_ENCRYPTION:
+                (hashes.SHA512, enums.CryptographicAlgorithm.RSA)
+        }
 
     def create_symmetric_key(self, algorithm, length):
         """
@@ -1170,3 +1187,125 @@ class CryptographyEngine(api.CryptographicEngine):
                 "Wrapping method '{0}' is not a supported key wrapping "
                 "method.".format(wrapping_method)
             )
+
+    def _create_RSA_private_key(self,
+                                bytes):
+        """
+        Instantiates an RSA key from bytes.
+
+        Args:
+            bytes (byte string): Bytes of RSA private key.
+        Returns:
+            private_key
+                (cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey):
+                RSA private key created from key bytes.
+        """
+
+        try:
+            private_key = serialization.load_pem_private_key(
+                binascii.unhexlify(bytes),
+                password=None,
+                backend=default_backend()
+            )
+            return private_key
+        except:
+            private_key = serialization.load_der_private_key(
+                binascii.unhexlify(bytes),
+                password=None,
+                backend=default_backend()
+            )
+            return private_key
+
+    def sign(self,
+             digital_signature_algorithm,
+             crypto_alg,
+             hash_algorithm,
+             padding,
+             signing_key,
+             data):
+        """
+        Args:
+            digital_signature_algorithm (DigitalSignatureAlgorithm): An
+                enumeration specifying the asymmetric cryptographic algorithm
+                and hashing algorithm to use for the signature operation. Can
+                be None if cryptographic_algorithm and hash_algorithm are set.
+            crypto_alg (CryptographicAlgorithm): An enumeration
+                specifying the asymmetric cryptographic algorithm to use for
+                the signature operation. Can be None if
+                digital_signature_algorithm is set.
+            hash_algorithm (HashingAlgorithm): An enumeration specifying the
+                hash algorithm to use for the signature operation. Can be None
+                if digital_signature_algorithm is set.
+            padding (PaddingMethod): An enumeration specifying the asymmetric
+                padding method to use for the signature operation.
+            signing_key (bytes): The bytes of the private key to use for the
+                signature operation.
+            data (bytes): The data to be signed.
+
+        Returns:
+            signature (bytes): the bytes of the signature data
+
+        Raises:
+            CryptographicFailure: Raised when an error occurs during signature
+                creation.
+            InvalidField: Raised when an unsupported hashing or cryptographic
+                algorithm is specified.
+        """
+
+        if digital_signature_algorithm:
+            (hash_alg, crypto_alg) = self._digital_signature_algorithms.get(
+                                         digital_signature_algorithm,
+                                         (None, None)
+            )
+
+        elif crypto_alg and hash_algorithm:
+            hash_alg = self._encryption_hash_algorithms.get(
+                hash_algorithm, None
+            )
+        else:
+            raise exceptions.InvalidField(
+                'For signing, either a digital signature algorithm or a hash'
+                ' algorithm and a cryptographic algorithm must be specified.'
+            )
+
+        if crypto_alg == enums.CryptographicAlgorithm.RSA:
+            try:
+                key = self._create_RSA_private_key(signing_key)
+            except:
+                raise exceptions.InvalidField('Unable to deserialize key '
+                                              'bytes, unknown format.')
+        else:
+            raise exceptions.InvalidField(
+                'For signing, an RSA key must be used.'
+            )
+
+        if padding:
+            padding_method = self._asymmetric_padding_methods.get(
+                padding, None
+            )
+        else:
+            raise exceptions.InvalidField(
+                'For signing, a padding method must be specified.'
+            )
+
+        if padding == enums.PaddingMethod.PSS:
+            signature = key.sign(
+                data,
+                asymmetric_padding.PSS(
+                    mgf=asymmetric_padding.MGF1(hash_alg()),
+                    salt_length=asymmetric_padding.PSS.MAX_LENGTH
+                ),
+                hash_alg()
+            )
+        elif padding == enums.PaddingMethod.PKCS1v15:
+            signature = key.sign(
+                data,
+                padding_method(),
+                hash_alg()
+            )
+        else:
+            raise exceptions.InvalidField(
+                "Padding method '{0}' is not a supported signature "
+                "padding method.".format(padding)
+            )
+        return signature

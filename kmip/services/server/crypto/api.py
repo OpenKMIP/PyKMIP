@@ -154,3 +154,33 @@ class CryptographicEngine(object):
         Returns:
             bytes: the bytes of the decrypted data
         """
+
+    @abstractmethod
+    def sign(self,
+             digital_signature_algorithm,
+             cryptographic_algorithm,
+             hash_algorithm,
+             signing_key,
+             data):
+        """
+        Generate a signature for the provided data.
+
+        Args:
+            digital_signature_algorithm (DigitalSignatureAlgorithm): An
+                enumeration specifying the asymmetric cryptographic algorithm
+                and hashing algorithm to use for the signature operation. Can
+                be None if cryptographic_algorithm and hash_algorithm are set.
+            cryptographic_algorithm (CryptographicAlgorithm): An enumeration
+                specifying the asymmetric cryptographic algorithm to use for
+                the signature operation. Can be None if
+                digital_signature_algorithm is set.
+            hash_algorithm (HashingAlgorithm): An enumeration specifying the
+                hash algorithm to use for the signature operation. Can be None
+                if digital_signature_algorithm is set.
+            signing_key (bytes): The bytes of the private key to use for the
+                signature operation.
+            data (bytes): The data to be signed.
+
+        Returns:
+            bytes: the bytes of the signature data
+        """
