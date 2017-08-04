@@ -1318,6 +1318,297 @@ class TestProxyKmipClient(testtools.TestCase):
         self.assertEqual(opn.attribute_name.value, 'Operation Policy Name')
         self.assertEqual(opn.attribute_value.value, 'test')
 
+    @mock.patch(
+        'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)
+    )
+    def test_derive_key(self):
+        """
+        Test that the client can derive a key.
+        """
+        result = {
+            'unique_identifier': '1',
+            'result_status': enums.ResultStatus.SUCCESS
+        }
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.derive_key.return_value = result
+
+        derived_id = client.derive_key(
+            enums.ObjectType.SYMMETRIC_KEY,
+            ['2', '3'],
+            enums.DerivationMethod.ENCRYPT,
+            {
+                'cryptographic_parameters': {
+                    'cryptographic_algorithm':
+                        enums.CryptographicAlgorithm.AES,
+                    'block_cipher_mode': enums.BlockCipherMode.CBC,
+                    'padding_method': enums.PaddingMethod.PKCS1v15
+                },
+                'initialization_vector': b'\x01\x02\x03\x04',
+                'derivation_data': b'\xFF\xFE\xFE\xFC'
+            },
+            cryptographic_length=128,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES
+        )
+
+        self.assertEqual('1', derived_id)
+
+    @mock.patch(
+        'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)
+    )
+    def test_derive_key_invalid_object_type(self):
+        """
+        Test that the right error is raised when attempting to derive a key
+        with an invalid object type.
+        """
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.derive_key.return_value = {}
+        args = [
+            'invalid',
+            ['2', '3'],
+            enums.DerivationMethod.ENCRYPT,
+            {
+                'cryptographic_parameters': {
+                    'cryptographic_algorithm':
+                        enums.CryptographicAlgorithm.AES,
+                    'block_cipher_mode': enums.BlockCipherMode.CBC,
+                    'padding_method': enums.PaddingMethod.PKCS1v15
+                },
+                'initialization_vector': b'\x01\x02\x03\x04',
+                'derivation_data': b'\xFF\xFE\xFE\xFC'
+            }
+        ]
+        kwargs = {
+            'cryptographic_length': 128,
+            'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Object type must be an ObjectType enumeration.",
+            client.derive_key,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch(
+        'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)
+    )
+    def test_derive_key_invalid_unique_identifiers(self):
+        """
+        Test that the right error is raised when attempting to derive a key
+        with an invalid list of unique identifiers.
+        """
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.derive_key.return_value = {}
+        args = [
+            enums.ObjectType.SYMMETRIC_KEY,
+            'invalid',
+            enums.DerivationMethod.ENCRYPT,
+            {
+                'cryptographic_parameters': {
+                    'cryptographic_algorithm':
+                        enums.CryptographicAlgorithm.AES,
+                    'block_cipher_mode': enums.BlockCipherMode.CBC,
+                    'padding_method': enums.PaddingMethod.PKCS1v15
+                },
+                'initialization_vector': b'\x01\x02\x03\x04',
+                'derivation_data': b'\xFF\xFE\xFE\xFC'
+            }
+        ]
+        kwargs = {
+            'cryptographic_length': 128,
+            'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Unique identifiers must be a list of strings.",
+            client.derive_key,
+            *args,
+            **kwargs
+        )
+
+        args = [
+            enums.ObjectType.SYMMETRIC_KEY,
+            [2, 3],
+            enums.DerivationMethod.ENCRYPT,
+            {
+                'cryptographic_parameters': {
+                    'cryptographic_algorithm':
+                        enums.CryptographicAlgorithm.AES,
+                    'block_cipher_mode': enums.BlockCipherMode.CBC,
+                    'padding_method': enums.PaddingMethod.PKCS1v15
+                },
+                'initialization_vector': b'\x01\x02\x03\x04',
+                'derivation_data': b'\xFF\xFE\xFE\xFC'
+            }
+        ]
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Unique identifiers must be a list of strings.",
+            client.derive_key,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch(
+        'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)
+    )
+    def test_derive_key_invalid_derivation_method(self):
+        """
+        Test that the right error is raised when attempting to derive a key
+        with an invalid derivation method.
+        """
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.derive_key.return_value = {}
+        args = [
+            enums.ObjectType.SYMMETRIC_KEY,
+            ['2', '3'],
+            'invalid',
+            {
+                'cryptographic_parameters': {
+                    'cryptographic_algorithm':
+                        enums.CryptographicAlgorithm.AES,
+                    'block_cipher_mode': enums.BlockCipherMode.CBC,
+                    'padding_method': enums.PaddingMethod.PKCS1v15
+                },
+                'initialization_vector': b'\x01\x02\x03\x04',
+                'derivation_data': b'\xFF\xFE\xFE\xFC'
+            }
+        ]
+        kwargs = {
+            'cryptographic_length': 128,
+            'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Derivation method must be a DerivationMethod enumeration.",
+            client.derive_key,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch(
+        'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)
+    )
+    def test_derive_key_invalid_derivation_parameters(self):
+        """
+        Test that the right error is raised when attempting to derive a key
+        with an invalid derivation parameters.
+        """
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.derive_key.return_value = {}
+        args = [
+            enums.ObjectType.SYMMETRIC_KEY,
+            ['2', '3'],
+            enums.DerivationMethod.ENCRYPT,
+            'invalid'
+        ]
+        kwargs = {
+            'cryptographic_length': 128,
+            'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Derivation parameters must be a dictionary.",
+            client.derive_key,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_derive_key_on_closed(self):
+        """
+        Test that a ClientConnectionNotOpen exception is raised when trying
+        to derive a key on an unopened client connection.
+        """
+        client = ProxyKmipClient()
+        args = [
+            enums.ObjectType.SYMMETRIC_KEY,
+            ['2', '3'],
+            enums.DerivationMethod.ENCRYPT,
+            {
+                'cryptographic_parameters': {
+                    'cryptographic_algorithm':
+                        enums.CryptographicAlgorithm.AES,
+                    'block_cipher_mode': enums.BlockCipherMode.CBC,
+                    'padding_method': enums.PaddingMethod.PKCS1v15
+                },
+                'initialization_vector': b'\x01\x02\x03\x04',
+                'derivation_data': b'\xFF\xFE\xFE\xFC'
+            }
+        ]
+        kwargs = {
+            'cryptographic_length': 128,
+            'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
+        }
+
+        self.assertRaises(
+            ClientConnectionNotOpen,
+            client.derive_key,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_derive_key_on_operation_failure(self):
+        """
+        Test that a KmipOperationFailure exception is raised when the
+        backend fails to derive a key.
+        """
+        status = enums.ResultStatus.OPERATION_FAILED
+        reason = enums.ResultReason.GENERAL_FAILURE
+        message = "Test failure message"
+
+        result = {
+            'result_status': status,
+            'result_reason': reason,
+            'result_message': message
+        }
+        error_message = str(KmipOperationFailure(status, reason, message))
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.derive_key.return_value = result
+        args = [
+            enums.ObjectType.SYMMETRIC_KEY,
+            ['2', '3'],
+            enums.DerivationMethod.ENCRYPT,
+            {
+                'cryptographic_parameters': {
+                    'cryptographic_algorithm':
+                        enums.CryptographicAlgorithm.AES,
+                    'block_cipher_mode': enums.BlockCipherMode.CBC,
+                    'padding_method': enums.PaddingMethod.PKCS1v15
+                },
+                'initialization_vector': b'\x01\x02\x03\x04',
+                'derivation_data': b'\xFF\xFE\xFE\xFC'
+            }
+        ]
+        kwargs = {
+            'cryptographic_length': 128,
+            'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
+        }
+
+        self.assertRaisesRegexp(
+            KmipOperationFailure,
+            error_message,
+            client.derive_key,
+            *args,
+            **kwargs
+        )
+
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
     def test_encrypt(self):
@@ -1972,3 +2263,18 @@ class TestProxyKmipClient(testtools.TestCase):
                 object_group_member, attributes]
         self.assertRaises(
            ClientConnectionNotOpen, client.locate, *args)
+
+    def test_build_cryptographic_parameters_invalid(self):
+        """
+        Test that the right error is raised when attempting to build
+        cryptographic parameters with an invalid value.
+        """
+        client = ProxyKmipClient()
+        args = ['invalid']
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Cryptographic parameters must be a dictionary.",
+            client._build_cryptographic_parameters,
+            *args
+        )

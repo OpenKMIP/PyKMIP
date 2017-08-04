@@ -23,6 +23,7 @@ from kmip.core import objects as cobjects
 from kmip.core.factories import attributes
 
 from kmip.core.attributes import CryptographicParameters
+from kmip.core.attributes import DerivationParameters
 
 from kmip.pie import api
 from kmip.pie import exceptions
@@ -341,6 +342,138 @@ class ProxyKmipClient(api.KmipClient):
             reason = result.result_reason.value
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
+
+    def derive_key(self,
+                   object_type,
+                   unique_identifiers,
+                   derivation_method,
+                   derivation_parameters,
+                   **kwargs):
+        """
+        Derive a new key or secret data from existing managed objects.
+
+        Args:
+            object_type (ObjectType): An ObjectType enumeration specifying
+                what type of object to derive. Only SymmetricKeys and
+                SecretData can be specified. Required.
+            unique_identifiers (list): A list of strings specifying the
+                unique IDs of the existing managed objects to use for
+                derivation. Multiple objects can be specified to fit the
+                requirements of the given derivation method. Required.
+            derivation_method (DerivationMethod): A DerivationMethod
+                enumeration specifying how key derivation should be done.
+                Required.
+            derivation_parameters (dict): A dictionary containing various
+                settings for the key derivation process. See Note below.
+                Required.
+            **kwargs (various): A placeholder for object attributes that
+                should be set on the newly derived object. Currently
+                supported attributes include:
+                    cryptographic_algorithm (enums.CryptographicAlgorithm)
+                    cryptographic_length (int)
+
+        Returns:
+            string: The unique ID of the newly derived object.
+
+        Raises:
+            ClientConnectionNotOpen: if the client connection is unusable
+            KmipOperationFailure: if the operation result is a failure
+            TypeError: if the input arguments are invalid
+
+        Notes:
+            The derivation_parameters argument is a dictionary that can
+            contain the following key/value pairs:
+
+            Key                        | Value
+            ---------------------------|---------------------------------------
+            'cryptographic_parameters' | A dictionary containing additional
+                                       | cryptographic settings. See the
+                                       | decrypt method for more information.
+            'initialization_vector'    | Bytes to be used to initialize the key
+                                       | derivation function, if needed.
+            'derivation_data'          | Bytes to be used as the basis for the
+                                       | key derivation process (e.g., the
+                                       | bytes to be encrypted, hashed, etc).
+            'salt'                     | Bytes to used as a salt value for the
+                                       | key derivation function, if needed.
+                                       | Usually used with PBKDF2.
+            'iteration_count'          | An integer defining how many
+                                       | iterations should be used with the key
+                                       | derivation function, if needed.
+                                       | Usually used with PBKDF2.
+        """
+        # Check input
+        if not isinstance(object_type, enums.ObjectType):
+            raise TypeError("Object type must be an ObjectType enumeration.")
+        if not isinstance(unique_identifiers, list):
+            raise TypeError("Unique identifiers must be a list of strings.")
+        else:
+            for unique_identifier in unique_identifiers:
+                if not isinstance(unique_identifier, six.string_types):
+                    raise TypeError(
+                        "Unique identifiers must be a list of strings."
+                    )
+        if not isinstance(derivation_method, enums.DerivationMethod):
+            raise TypeError(
+                "Derivation method must be a DerivationMethod enumeration."
+            )
+        if not isinstance(derivation_parameters, dict):
+            raise TypeError("Derivation parameters must be a dictionary.")
+
+        # Verify that operations can be given at this time.
+        if not self._is_open:
+            raise exceptions.ClientConnectionNotOpen()
+
+        derivation_parameters = DerivationParameters(
+            cryptographic_parameters=self._build_cryptographic_parameters(
+                derivation_parameters.get('cryptographic_parameters')
+            ),
+            initialization_vector=derivation_parameters.get(
+                'initialization_vector'
+            ),
+            derivation_data=derivation_parameters.get('derivation_data'),
+            salt=derivation_parameters.get('salt'),
+            iteration_count=derivation_parameters.get('iteration_count')
+        )
+
+        # Handle object attributes
+        attributes = []
+        if kwargs.get('cryptographic_length'):
+            attributes.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    kwargs.get('cryptographic_length')
+                )
+            )
+        if kwargs.get('cryptographic_algorithm'):
+            attributes.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    kwargs.get('cryptographic_algorithm')
+                )
+            )
+        template_attribute = cobjects.TemplateAttribute(
+            attributes=attributes
+        )
+
+        # Derive the new key/data and handle the results
+        result = self.proxy.derive_key(
+            object_type,
+            unique_identifiers,
+            derivation_method,
+            derivation_parameters,
+            template_attribute
+        )
+
+        status = result.get('result_status')
+        if status == enums.ResultStatus.SUCCESS:
+            return result.get('unique_identifier')
+        else:
+            raise exceptions.KmipOperationFailure(
+                status,
+                result.get('result_reason'),
+                result.get('result_message')
+            )
 
     def locate(self, maximum_items=None, storage_status_mask=None,
                object_group_member=None, attributes=None):
@@ -737,34 +870,8 @@ class ProxyKmipClient(api.KmipClient):
         if not self._is_open:
             raise exceptions.ClientConnectionNotOpen()
 
-        cryptographic_parameters = CryptographicParameters(
-            block_cipher_mode=cryptographic_parameters.get(
-                'block_cipher_mode'
-            ),
-            padding_method=cryptographic_parameters.get('padding_method'),
-            hashing_algorithm=cryptographic_parameters.get(
-                'hashing_algorithm'
-            ),
-            key_role_type=cryptographic_parameters.get('key_role_type'),
-            digital_signature_algorithm=cryptographic_parameters.get(
-                'digital_signature_algorithm'
-            ),
-            cryptographic_algorithm=cryptographic_parameters.get(
-                'cryptographic_algorithm'
-            ),
-            random_iv=cryptographic_parameters.get('random_iv'),
-            iv_length=cryptographic_parameters.get('iv_length'),
-            tag_length=cryptographic_parameters.get('tag_length'),
-            fixed_field_length=cryptographic_parameters.get(
-                'fixed_field_length'
-            ),
-            invocation_field_length=cryptographic_parameters.get(
-                'invocation_field_length'
-            ),
-            counter_length=cryptographic_parameters.get('counter_length'),
-            initial_counter_value=cryptographic_parameters.get(
-                'initial_counter_value'
-            )
+        cryptographic_parameters = self._build_cryptographic_parameters(
+            cryptographic_parameters
         )
 
         # Encrypt the provided data and handle the results
@@ -871,34 +978,8 @@ class ProxyKmipClient(api.KmipClient):
         if not self._is_open:
             raise exceptions.ClientConnectionNotOpen()
 
-        cryptographic_parameters = CryptographicParameters(
-            block_cipher_mode=cryptographic_parameters.get(
-                'block_cipher_mode'
-            ),
-            padding_method=cryptographic_parameters.get('padding_method'),
-            hashing_algorithm=cryptographic_parameters.get(
-                'hashing_algorithm'
-            ),
-            key_role_type=cryptographic_parameters.get('key_role_type'),
-            digital_signature_algorithm=cryptographic_parameters.get(
-                'digital_signature_algorithm'
-            ),
-            cryptographic_algorithm=cryptographic_parameters.get(
-                'cryptographic_algorithm'
-            ),
-            random_iv=cryptographic_parameters.get('random_iv'),
-            iv_length=cryptographic_parameters.get('iv_length'),
-            tag_length=cryptographic_parameters.get('tag_length'),
-            fixed_field_length=cryptographic_parameters.get(
-                'fixed_field_length'
-            ),
-            invocation_field_length=cryptographic_parameters.get(
-                'invocation_field_length'
-            ),
-            counter_length=cryptographic_parameters.get('counter_length'),
-            initial_counter_value=cryptographic_parameters.get(
-                'initial_counter_value'
-            )
+        cryptographic_parameters = self._build_cryptographic_parameters(
+            cryptographic_parameters
         )
 
         # Decrypt the provided data and handle the results
@@ -955,8 +1036,8 @@ class ProxyKmipClient(api.KmipClient):
         if not self._is_open:
             raise exceptions.ClientConnectionNotOpen()
 
-        parameters_attribute = CryptographicParameters(
-            cryptographic_algorithm=algorithm
+        parameters_attribute = self._build_cryptographic_parameters(
+            {'cryptographic_algorithm': algorithm}
         )
 
         # Get the message authentication code and handle the results
@@ -992,6 +1073,42 @@ class ProxyKmipClient(api.KmipClient):
             mask_value)
 
         return [algorithm_attribute, length_attribute, mask_attribute]
+
+    def _build_cryptographic_parameters(self, value):
+        """
+        Build a CryptographicParameters struct from a dictionary.
+
+        Args:
+            value (dict): A dictionary containing the key/value pairs for a
+                CryptographicParameters struct.
+
+        Returns:
+            CryptographicParameters: a CryptographicParameters struct
+
+        Raises:
+            TypeError: if the input argument is invalid
+        """
+        if not isinstance(value, dict):
+            raise TypeError("Cryptographic parameters must be a dictionary.")
+
+        cryptographic_parameters = CryptographicParameters(
+            block_cipher_mode=value.get('block_cipher_mode'),
+            padding_method=value.get('padding_method'),
+            hashing_algorithm=value.get('hashing_algorithm'),
+            key_role_type=value.get('key_role_type'),
+            digital_signature_algorithm=value.get(
+                'digital_signature_algorithm'
+            ),
+            cryptographic_algorithm=value.get('cryptographic_algorithm'),
+            random_iv=value.get('random_iv'),
+            iv_length=value.get('iv_length'),
+            tag_length=value.get('tag_length'),
+            fixed_field_length=value.get('fixed_field_length'),
+            invocation_field_length=value.get('invocation_field_length'),
+            counter_length=value.get('counter_length'),
+            initial_counter_value=value.get('initial_counter_value')
+        )
+        return cryptographic_parameters
 
     def _build_common_attributes(self, operation_policy_name=None):
         '''

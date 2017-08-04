@@ -15,9 +15,9 @@
 
 from testtools import TestCase
 
-from kmip.core.attributes import PrivateKeyUniqueIdentifier
 from kmip.core.attributes import CryptographicParameters
-
+from kmip.core.attributes import DerivationParameters
+from kmip.core.attributes import PrivateKeyUniqueIdentifier
 
 from kmip.core import enums
 from kmip.core.enums import AuthenticationSuite
@@ -45,6 +45,7 @@ from kmip.core.messages.contents import ProtocolVersion
 from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
 from kmip.core.messages.payloads import decrypt
+from kmip.core.messages.payloads import derive_key
 from kmip.core.messages.payloads.discover_versions import \
     DiscoverVersionsRequestPayload, DiscoverVersionsResponsePayload
 from kmip.core.messages.payloads import encrypt
@@ -60,6 +61,7 @@ from kmip.core.misc import QueryFunction
 from kmip.core.misc import ServerInformation
 from kmip.core.misc import VendorIdentification
 
+from kmip.core.objects import TemplateAttribute
 from kmip.core.objects import CommonTemplateAttribute
 from kmip.core.objects import PrivateKeyTemplateAttribute
 from kmip.core.objects import PublicKeyTemplateAttribute
@@ -720,6 +722,64 @@ class TestKMIPClient(TestCase):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client._create_socket(sock)
         self.assertEqual(ssl.SSLSocket, type(self.client.socket))
+
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._build_request_message'
+    )
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
+    )
+    def test_derive_key(self, send_mock, build_mock):
+        """
+        Test that the client can derive a key.
+        """
+        payload = derive_key.DeriveKeyResponsePayload(
+            unique_identifier='1',
+        )
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.DERIVE_KEY),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=payload
+        )
+        response = ResponseMessage(batch_items=[batch_item])
+
+        build_mock.return_value = None
+        send_mock.return_value = response
+
+        result = self.client.derive_key(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            unique_identifiers=['2', '3'],
+            derivation_method=enums.DerivationMethod.ENCRYPT,
+            derivation_parameters=DerivationParameters(
+                cryptographic_parameters=CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CBC,
+                    padding_method=enums.PaddingMethod.PKCS1v15,
+                    cryptographic_algorithm=enums.CryptographicAlgorithm.AES
+                ),
+                initialization_vector=b'\x01\x02\x03\x04',
+                derivation_data=b'\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8'
+            ),
+            template_attribute=TemplateAttribute(
+                attributes=[
+                    self.attr_factory.create_attribute(
+                        'Cryptographic Length',
+                        128
+                    ),
+                    self.attr_factory.create_attribute(
+                        'Cryptographic Algorithm',
+                        enums.CryptographicAlgorithm.AES
+                    )
+                ]
+            ),
+        )
+
+        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual(
+            ResultStatusEnum.SUCCESS,
+            result.get('result_status')
+        )
+        self.assertEqual(None, result.get('result_reason'))
+        self.assertEqual(None, result.get('result_message'))
 
     @mock.patch(
         'kmip.services.kmip_client.KMIPProxy._build_request_message'
