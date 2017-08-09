@@ -404,3 +404,239 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 exceptions.KmipOperationFailure, self.client.get, uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.destroy, uid)
+
+    def test_derive_key_using_pbkdf2(self):
+        """
+        Test that the ProxyKmipClient can derive a new key using PBKDF2.
+        """
+        password_id = self.client.register(
+            objects.SecretData(
+                b'password',
+                enums.SecretDataType.PASSWORD,
+                masks=[enums.CryptographicUsageMask.DERIVE_KEY]
+            )
+        )
+        key_id = self.client.derive_key(
+            enums.ObjectType.SYMMETRIC_KEY,
+            [password_id],
+            enums.DerivationMethod.PBKDF2,
+            {
+                'cryptographic_parameters': {
+                    'hashing_algorithm': enums.HashingAlgorithm.SHA_1
+                },
+                'salt': b'salt',
+                'iteration_count': 4096
+            },
+            cryptographic_length=160,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES
+        )
+
+        key = self.client.get(key_id)
+        self.assertEqual(
+            (
+                b'\x4b\x00\x79\x01\xb7\x65\x48\x9a'
+                b'\xbe\xad\x49\xd9\x26\xf7\x21\xd0'
+                b'\x65\xa4\x29\xc1'
+            ),
+            key.value
+        )
+
+        attribute_list = self.client.get_attribute_list(key_id)
+        self.assertIn('Cryptographic Algorithm', attribute_list)
+        self.assertIn('Cryptographic Length', attribute_list)
+
+        result_id, attribute_list = self.client.get_attributes(
+            uid=key_id,
+            attribute_names=['Cryptographic Algorithm', 'Cryptographic Length']
+        )
+        self.assertEqual(key_id, result_id)
+        self.assertEqual(2, len(attribute_list))
+
+        attribute = attribute_list[0]
+        self.assertEqual(
+            'Cryptographic Algorithm',
+            attribute.attribute_name.value
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            attribute.attribute_value.value
+        )
+
+        attribute = attribute_list[1]
+        self.assertEqual(
+            'Cryptographic Length',
+            attribute.attribute_name.value
+        )
+        self.assertEqual(160, attribute.attribute_value.value)
+
+    def test_derive_key_using_encryption(self):
+        """
+        Test that the ProxyKmipClient can derive a new key using encryption.
+        """
+        key_id = self.client.register(
+            objects.SymmetricKey(
+                enums.CryptographicAlgorithm.BLOWFISH,
+                128,
+                (
+                    b'\x01\x23\x45\x67\x89\xAB\xCD\xEF'
+                    b'\xF0\xE1\xD2\xC3\xB4\xA5\x96\x87'
+                ),
+                masks=[enums.CryptographicUsageMask.DERIVE_KEY]
+            )
+        )
+        secret_id = self.client.derive_key(
+            enums.ObjectType.SECRET_DATA,
+            [key_id],
+            enums.DerivationMethod.ENCRYPT,
+            {
+                'cryptographic_parameters': {
+                    'block_cipher_mode': enums.BlockCipherMode.CBC,
+                    'padding_method': enums.PaddingMethod.PKCS5,
+                    'cryptographic_algorithm':
+                        enums.CryptographicAlgorithm.BLOWFISH
+                },
+                'initialization_vector': b'\xFE\xDC\xBA\x98\x76\x54\x32\x10',
+                'derivation_data': (
+                    b'\x37\x36\x35\x34\x33\x32\x31\x20'
+                    b'\x4E\x6F\x77\x20\x69\x73\x20\x74'
+                    b'\x68\x65\x20\x74\x69\x6D\x65\x20'
+                    b'\x66\x6F\x72\x20\x00'
+                )
+            },
+            cryptographic_length=256
+        )
+
+        secret = self.client.get(secret_id)
+        self.assertEqual(
+            (
+                b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
+                b'\x05\xB1\x56\xE2\x74\x03\x97\x93'
+                b'\x58\xDE\xB9\xE7\x15\x46\x16\xD9'
+                b'\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B'
+            ),
+            secret.value
+        )
+
+    def test_derive_key_using_nist_800_108c(self):
+        """
+        Test that the ProxyKmipClient can derive a new key using
+        NIST 800 108-C.
+        """
+        base_id = self.client.register(
+            objects.SymmetricKey(
+                enums.CryptographicAlgorithm.AES,
+                512,
+                (
+                    b'\xdd\x5d\xbd\x45\x59\x3e\xe2\xac'
+                    b'\x13\x97\x48\xe7\x64\x5b\x45\x0f'
+                    b'\x22\x3d\x2f\xf2\x97\xb7\x3f\xd7'
+                    b'\x1c\xbc\xeb\xe7\x1d\x41\x65\x3c'
+                    b'\x95\x0b\x88\x50\x0d\xe5\x32\x2d'
+                    b'\x99\xef\x18\xdf\xdd\x30\x42\x82'
+                    b'\x94\xc4\xb3\x09\x4f\x4c\x95\x43'
+                    b'\x34\xe5\x93\xbd\x98\x2e\xc6\x14'
+                ),
+                masks=[enums.CryptographicUsageMask.DERIVE_KEY]
+            )
+        )
+        key_id = self.client.derive_key(
+            enums.ObjectType.SYMMETRIC_KEY,
+            [base_id],
+            enums.DerivationMethod.NIST800_108_C,
+            {
+                'cryptographic_parameters': {
+                    'hashing_algorithm': enums.HashingAlgorithm.SHA_512
+                },
+                'derivation_data': (
+                    b'\xb5\x0b\x0c\x96\x3c\x6b\x30\x34'
+                    b'\xb8\xcf\x19\xcd\x3f\x5c\x4e\xbe'
+                    b'\x4f\x49\x85\xaf\x0c\x03\xe5\x75'
+                    b'\xdb\x62\xe6\xfd\xf1\xec\xfe\x4f'
+                    b'\x28\xb9\x5d\x7c\xe1\x6d\xf8\x58'
+                    b'\x43\x24\x6e\x15\x57\xce\x95\xbb'
+                    b'\x26\xcc\x9a\x21\x97\x4b\xbd\x2e'
+                    b'\xb6\x9e\x83\x55'
+                )
+            },
+            cryptographic_length=128,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES
+        )
+
+        key = self.client.get(key_id)
+        self.assertEqual(
+            (
+                b'\xe5\x99\x3b\xf9\xbd\x2a\xa1\xc4'
+                b'\x57\x46\x04\x2e\x12\x59\x81\x55'
+            ),
+            key.value
+        )
+
+        attribute_list = self.client.get_attribute_list(key_id)
+        self.assertIn('Cryptographic Algorithm', attribute_list)
+        self.assertIn('Cryptographic Length', attribute_list)
+
+        result_id, attribute_list = self.client.get_attributes(
+            uid=key_id,
+            attribute_names=['Cryptographic Algorithm', 'Cryptographic Length']
+        )
+        self.assertEqual(key_id, result_id)
+        self.assertEqual(2, len(attribute_list))
+
+        attribute = attribute_list[0]
+        self.assertEqual(
+            'Cryptographic Algorithm',
+            attribute.attribute_name.value
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            attribute.attribute_value.value
+        )
+
+        attribute = attribute_list[1]
+        self.assertEqual(
+            'Cryptographic Length',
+            attribute.attribute_name.value
+        )
+        self.assertEqual(128, attribute.attribute_value.value)
+
+    def test_derive_key_using_hmac(self):
+        """
+        Test that the ProxyKmipClient can derive a new key using HMAC.
+        """
+        base_id = self.client.register(
+            objects.SecretData(
+                (
+                    b'\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c'
+                    b'\x0c\x0c\x0c\x0c\x0c\x0c\x0c\x0c'
+                    b'\x0c\x0c\x0c\x0c\x0c\x0c'
+                ),
+                enums.SecretDataType.SEED,
+                masks=[enums.CryptographicUsageMask.DERIVE_KEY]
+            )
+        )
+        secret_id = self.client.derive_key(
+            enums.ObjectType.SECRET_DATA,
+            [base_id],
+            enums.DerivationMethod.HMAC,
+            {
+                'cryptographic_parameters': {
+                    'hashing_algorithm': enums.HashingAlgorithm.SHA_1
+                },
+                'derivation_data': b'',
+                'salt': b''
+            },
+            cryptographic_length=336
+        )
+
+        secret = self.client.get(secret_id)
+        self.assertEqual(
+            (
+                b'\x2c\x91\x11\x72\x04\xd7\x45\xf3'
+                b'\x50\x0d\x63\x6a\x62\xf6\x4f\x0a'
+                b'\xb3\xba\xe5\x48\xaa\x53\xd4\x23'
+                b'\xb0\xd1\xf2\x7e\xbb\xa6\xf5\xe5'
+                b'\x67\x3a\x08\x1d\x70\xcc\xe7\xac'
+                b'\xfc\x48'
+            ),
+            secret.value
+        )
