@@ -345,9 +345,9 @@ class TestIntegration(TestCase):
         result = self.client.get(uuid=result.uuid.value, credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.value, ObjectType,
+        self._check_object_type(result.object_type, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
+        self._check_uuid(result.uuid, str)
 
         # Check the secret type
         secret = result.secret
@@ -356,9 +356,9 @@ class TestIntegration(TestCase):
         self.assertIsInstance(secret, expected)
 
         self.logger.debug('Destroying key: ' + key_name + '\n With UUID: ' +
-                          result.uuid.value)
+                          result.uuid)
 
-        result = self.client.destroy(result.uuid.value)
+        result = self.client.destroy(result.uuid)
         self._check_result_status(result, ResultStatus,
                                   ResultStatus.SUCCESS)
         self._check_uuid(result.uuid.value, str)
@@ -434,9 +434,9 @@ class TestIntegration(TestCase):
         result = self.client.get(uuid=uuid, credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.value, ObjectType,
+        self._check_object_type(result.object_type, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
+        self._check_uuid(result.uuid, str)
 
         # Check the secret type
         secret = result.secret
@@ -455,9 +455,9 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, observed)
 
         self.logger.debug('Destroying key: ' + key_name + '\nWith UUID: ' +
-                          result.uuid.value)
+                          result.uuid)
 
-        result = self.client.destroy(result.uuid.value)
+        result = self.client.destroy(result.uuid)
         self._check_result_status(result, ResultStatus,
                                   ResultStatus.SUCCESS)
         self._check_uuid(result.uuid.value, str)
@@ -500,16 +500,16 @@ class TestIntegration(TestCase):
 
         self._check_result_status(priv_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_object_type(priv_key_result.object_type.value, ObjectType,
+        self._check_object_type(priv_key_result.object_type, ObjectType,
                                 ObjectType.PRIVATE_KEY)
 
-        self._check_uuid(priv_key_result.uuid.value, str)
+        self._check_uuid(priv_key_result.uuid, str)
         self._check_result_status(pub_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_object_type(pub_key_result.object_type.value, ObjectType,
+        self._check_object_type(pub_key_result.object_type, ObjectType,
                                 ObjectType.PUBLIC_KEY)
 
-        self._check_uuid(pub_key_result.uuid.value, str)
+        self._check_uuid(pub_key_result.uuid, str)
 
         # Check the secret type
         priv_secret = priv_key_result.secret
@@ -664,10 +664,10 @@ class TestIntegration(TestCase):
         self._check_result_status(priv_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_object_type(priv_key_result.object_type.value, ObjectType,
+        self._check_object_type(priv_key_result.object_type, ObjectType,
                                 ObjectType.PRIVATE_KEY)
 
-        self._check_uuid(priv_key_result.uuid.value, str)
+        self._check_uuid(priv_key_result.uuid, str)
 
         # Check the secret type
         priv_secret = priv_key_result.secret
@@ -687,9 +687,9 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, priv_observed)
 
         self.logger.debug('Destroying key: ' + key_name + " Private" +
-                          '\nWith " "UUID: ' + priv_key_result.uuid.value)
+                          '\nWith " "UUID: ' + priv_key_result.uuid)
 
-        priv_result = self.client.destroy(priv_key_result.uuid.value)
+        priv_result = self.client.destroy(priv_key_result.uuid)
 
         self._check_result_status(priv_result, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -771,9 +771,9 @@ class TestIntegration(TestCase):
         self._check_result_status(pub_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_object_type(pub_key_result.object_type.value, ObjectType,
+        self._check_object_type(pub_key_result.object_type, ObjectType,
                                 ObjectType.PUBLIC_KEY)
-        self._check_uuid(pub_key_result.uuid.value, str)
+        self._check_uuid(pub_key_result.uuid, str)
 
         # Check the secret type
         pub_secret = pub_key_result.secret
@@ -789,8 +789,8 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, pub_observed)
 
         self.logger.debug('Destroying key: ' + key_name + " Public" +
-                          '\nWith " "UUID: ' + pub_key_result.uuid.value)
-        pub_result = self.client.destroy(pub_key_result.uuid.value)
+                          '\nWith " "UUID: ' + pub_key_result.uuid)
+        pub_result = self.client.destroy(pub_key_result.uuid)
 
         self._check_result_status(pub_result, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -911,10 +911,10 @@ class TestIntegration(TestCase):
         self._check_result_status(cert_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_object_type(cert_result.object_type.value, ObjectType,
+        self._check_object_type(cert_result.object_type, ObjectType,
                                 ObjectType.CERTIFICATE)
 
-        self._check_uuid(cert_result.uuid.value, str)
+        self._check_uuid(cert_result.uuid, str)
 
         # Check the secret type
         cert_secret = cert_result.secret
@@ -930,9 +930,9 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, cert_material)
 
         self.logger.debug('Destroying cert: ' + cert_name +
-                          '\nWith " "UUID: ' + cert_result.uuid.value)
+                          '\nWith " "UUID: ' + cert_result.uuid)
 
-        cert_result = self.client.destroy(cert_result.uuid.value)
+        cert_result = self.client.destroy(cert_result.uuid)
 
         self._check_result_status(cert_result, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -1018,10 +1018,10 @@ class TestIntegration(TestCase):
         self._check_result_status(pass_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_object_type(pass_result.object_type.value, ObjectType,
+        self._check_object_type(pass_result.object_type, ObjectType,
                                 ObjectType.SECRET_DATA)
 
-        self._check_uuid(pass_result.uuid.value, str)
+        self._check_uuid(pass_result.uuid, str)
 
         # Check the secret type
         pass_secret = pass_result.secret
@@ -1038,9 +1038,9 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, pass_material)
 
         self.logger.debug('Destroying cert: ' + pass_name +
-                          '\nWith " "UUID: ' + pass_result.uuid.value)
+                          '\nWith " "UUID: ' + pass_result.uuid)
 
-        pass_result = self.client.destroy(pass_result.uuid.value)
+        pass_result = self.client.destroy(pass_result.uuid)
 
         self._check_result_status(pass_result, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -1114,10 +1114,10 @@ class TestIntegration(TestCase):
                                   ResultStatus.SUCCESS)
 
         self._check_object_type(
-            opaque_obj_result.object_type.value, ObjectType,
+            opaque_obj_result.object_type, ObjectType,
             ObjectType.OPAQUE_DATA)
 
-        self._check_uuid(opaque_obj_result.uuid.value, str)
+        self._check_uuid(opaque_obj_result.uuid, str)
 
         # Check the secret type
         opaque_obj_secret = opaque_obj_result.secret
@@ -1132,9 +1132,9 @@ class TestIntegration(TestCase):
         self.assertEqual(expected, opaque_obj_material)
 
         self.logger.debug('Destroying opaque object: ' + opaque_obj_name +
-                          '\nWith " "UUID: ' + opaque_obj_result.uuid.value)
+                          '\nWith " "UUID: ' + opaque_obj_result.uuid)
 
-        opaque_obj_result = self.client.destroy(opaque_obj_result.uuid.value)
+        opaque_obj_result = self.client.destroy(opaque_obj_result.uuid)
 
         self._check_result_status(opaque_obj_result, ResultStatus,
                                   ResultStatus.SUCCESS)
