@@ -1473,6 +1473,8 @@ class KmipEngine(object):
                 "The specified length exceeds the output of the derivation "
                 "method."
             )
+        if len(derived_data) > derivation_length:
+            derived_data = derived_data[:derivation_length]
 
         if payload.object_type == enums.ObjectType.SYMMETRIC_KEY:
             managed_object = objects.SymmetricKey(
