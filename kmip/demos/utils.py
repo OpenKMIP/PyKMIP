@@ -240,6 +240,36 @@ def build_cli_parser(operation=None):
             default=None,
             dest="algorithm",
             help="Encryption algorithm for the secret (e.g., AES)")
+    elif operation is Operation.ENCRYPT:
+        parser.add_option(
+            "-m",
+            "--message",
+            action="store",
+            type="str",
+            default="This is a secret message.",
+            dest="message",
+            help="The message to encrypt."
+        )
+    elif operation is Operation.DECRYPT:
+        parser.add_option(
+            "-i",
+            "--uuid",
+            action="store",
+            type="str",
+            default=None,
+            dest="uuid",
+            help="The unique ID of the decryption key to use to decrypt the "
+                 "cipher text."
+        )
+        parser.add_option(
+            "-m",
+            "--message",
+            action="store",
+            type="str",
+            default=None,
+            dest="message",
+            help="The cipher text to decrypt."
+        )
     return parser
 
 
