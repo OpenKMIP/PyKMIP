@@ -33,6 +33,7 @@ from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import revoke
 from kmip.core.messages.payloads import mac
 from kmip.core.messages.payloads import sign
+from kmip.core.messages.payloads import signature_verify
 
 
 class ResponsePayloadFactory(PayloadFactory):
@@ -90,3 +91,6 @@ class ResponsePayloadFactory(PayloadFactory):
 
     def _create_sign_payload(self):
         return sign.SignResponsePayload()
+
+    def _create_signature_verify_payload(self):
+        return signature_verify.SignatureVerifyResponsePayload()

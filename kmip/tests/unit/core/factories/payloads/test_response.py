@@ -35,6 +35,7 @@ from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import revoke
 from kmip.core.messages.payloads import sign
+from kmip.core.messages.payloads import signature_verify
 from kmip.core.messages.payloads import mac
 
 
@@ -220,9 +221,10 @@ class TestResponsePayloadFactory(testtools.TestCase):
         self._test_payload_type(payload, sign.SignResponsePayload)
 
     def test_create_signature_verify_payload(self):
-        self._test_not_implemented(
-            self.factory.create,
-            enums.Operation.SIGNATURE_VERIFY
+        payload = self.factory.create(enums.Operation.SIGNATURE_VERIFY)
+        self._test_payload_type(
+            payload,
+            signature_verify.SignatureVerifyResponsePayload
         )
 
     def test_create_mac_payload(self):
