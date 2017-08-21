@@ -839,7 +839,7 @@ class TestKMIPClient(TestCase):
         self.assertEqual(None, result.get('iv_counter_nonce'))
         self.assertEqual(
             ResultStatusEnum.SUCCESS,
-            result.get('result_status').value
+            result.get('result_status')
         )
         self.assertEqual(None, result.get('result_reason'))
         self.assertEqual(None, result.get('result_message'))
@@ -901,7 +901,7 @@ class TestKMIPClient(TestCase):
         )
         self.assertEqual(
             ResultStatusEnum.SUCCESS,
-            result.get('result_status').value
+            result.get('result_status')
         )
         self.assertEqual(None, result.get('result_reason'))
         self.assertEqual(None, result.get('result_message'))

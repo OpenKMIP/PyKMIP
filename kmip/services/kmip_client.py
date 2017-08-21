@@ -584,9 +584,15 @@ class KMIPProxy(KMIP):
             result['data'] = payload.data
             result['iv_counter_nonce'] = payload.iv_counter_nonce
 
-        result['result_status'] = batch_item.result_status
-        result['result_reason'] = batch_item.result_reason
-        result['result_message'] = batch_item.result_message
+        result['result_status'] = batch_item.result_status.value
+        try:
+            result['result_reason'] = batch_item.result_reason.value
+        except:
+            result['result_reason'] = batch_item.result_reason
+        try:
+            result['result_message'] = batch_item.result_message.value
+        except:
+            result['result_message'] = batch_item.result_message
 
         return result
 
@@ -653,9 +659,15 @@ class KMIPProxy(KMIP):
             result['unique_identifier'] = payload.unique_identifier
             result['data'] = payload.data
 
-        result['result_status'] = batch_item.result_status
-        result['result_reason'] = batch_item.result_reason
-        result['result_message'] = batch_item.result_message
+        result['result_status'] = batch_item.result_status.value
+        try:
+            result['result_reason'] = batch_item.result_reason.value
+        except:
+            result['result_reason'] = batch_item.result_reason
+        try:
+            result['result_message'] = batch_item.result_message.value
+        except:
+            result['result_message'] = batch_item.result_message
 
         return result
 
