@@ -1015,6 +1015,249 @@ class TestCryptographyEngine(testtools.TestCase):
             *args
         )
 
+    def test_verify_signature_mismatching_signing_algorithms(self):
+        """
+        Test that the right error is raised when both the signing algorithm
+        and the digital signature algorithm are provided and do not match.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            b'',
+            b'',
+            b'',
+            enums.PaddingMethod.PSS
+        )
+        kwargs = {
+            'signing_algorithm': enums.CryptographicAlgorithm.ECDSA,
+            'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
+            'digital_signature_algorithm':
+                enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION
+        }
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "The signing algorithm does not match the digital signature "
+            "algorithm.",
+            engine.verify_signature,
+            *args,
+            **kwargs
+        )
+
+    def test_verify_signature_mismatching_hashing_algorithms(self):
+        """
+        Test that the right error is raised when both the hashing algorithm
+        and the digital signature algorithm are provided and do not match.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            b'',
+            b'',
+            b'',
+            enums.PaddingMethod.PSS
+        )
+        kwargs = {
+            'signing_algorithm': enums.CryptographicAlgorithm.RSA,
+            'hashing_algorithm': enums.HashingAlgorithm.SHA_256,
+            'digital_signature_algorithm':
+                enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION
+        }
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "The hashing algorithm does not match the digital signature "
+            "algorithm.",
+            engine.verify_signature,
+            *args,
+            **kwargs
+        )
+
+    def test_verify_signature_pss_missing_hashing_algorithm(self):
+        """
+        Test that the right error is raised when PSS padding is used and no
+        hashing algorithm is provided.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            b'',
+            b'',
+            b'',
+            enums.PaddingMethod.PSS
+        )
+        kwargs = {
+            'signing_algorithm': enums.CryptographicAlgorithm.RSA,
+            'hashing_algorithm': None,
+            'digital_signature_algorithm': None
+        }
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "A hashing algorithm must be specified for PSS padding.",
+            engine.verify_signature,
+            *args,
+            **kwargs
+        )
+
+    def test_verify_signature_invalid_padding_method(self):
+        """
+        Test that the right error is raised when an invalid padding method is
+        used.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            b'',
+            b'',
+            b'',
+            'invalid'
+        )
+        kwargs = {
+            'signing_algorithm': enums.CryptographicAlgorithm.RSA,
+            'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
+            'digital_signature_algorithm': None
+        }
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "The padding method 'invalid' is not supported for signature "
+            "verification.",
+            engine.verify_signature,
+            *args,
+            **kwargs
+        )
+
+    def test_verify_signature_invalid_signing_key(self):
+        """
+        Test that the right error is raised when an invalid signing key is
+        used.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            'invalid',
+            b'',
+            b'',
+            enums.PaddingMethod.PSS
+        )
+        kwargs = {
+            'signing_algorithm': enums.CryptographicAlgorithm.RSA,
+            'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
+            'digital_signature_algorithm': None
+        }
+        self.assertRaisesRegexp(
+            exceptions.CryptographicFailure,
+            "The signing key bytes could not be loaded.",
+            engine.verify_signature,
+            *args,
+            **kwargs
+        )
+
+    def test_verify_signature_invalid_signature(self):
+        """
+        Test that verifying an invalid signature returns the right value.
+        """
+        engine = crypto.CryptographyEngine()
+
+        backend = backends.default_backend()
+        public_key_numbers = rsa.RSAPublicNumbers(
+            int('010001', 16),
+            int(
+                'ac13d9fdae7b7335b69cd98567e9647d99bf373a9e05ce3435d66465f328'
+                'b7f7334b792aee7efa044ebc4c7a30b21a5d7a89cdb3a30dfcd9fee9995e'
+                '09415edc0bf9e5b4c3f74ff53fb4d29441bf1b7ed6cbdd4a47f9252269e1'
+                '646f6c1aee0514e93f6cb9df71d06c060a2104b47b7260ac37c106861dc7'
+                '8ca5a25faa9cb2e3',
+                16)
+        )
+        public_key = public_key_numbers.public_key(backend)
+        public_bytes = public_key.public_bytes(
+            serialization.Encoding.PEM,
+            serialization.PublicFormat.PKCS1
+        )
+
+        args = (
+            public_bytes,
+            b'',
+            b'',
+            enums.PaddingMethod.PSS
+        )
+        kwargs = {
+            'signing_algorithm': enums.CryptographicAlgorithm.RSA,
+            'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
+            'digital_signature_algorithm': None
+        }
+        self.assertFalse(
+            engine.verify_signature(*args, **kwargs)
+        )
+
+    def test_verify_signature_unexpected_verification_error(self):
+        """
+        Test that the right error is raised when an unexpected error occurs
+        during signature verification.
+        """
+        engine = crypto.CryptographyEngine()
+
+        backend = backends.default_backend()
+        public_key_numbers = rsa.RSAPublicNumbers(
+            int('010001', 16),
+            int(
+                'ac13d9fdae7b7335b69cd98567e9647d99bf373a9e05ce3435d66465f328'
+                'b7f7334b792aee7efa044ebc4c7a30b21a5d7a89cdb3a30dfcd9fee9995e'
+                '09415edc0bf9e5b4c3f74ff53fb4d29441bf1b7ed6cbdd4a47f9252269e1'
+                '646f6c1aee0514e93f6cb9df71d06c060a2104b47b7260ac37c106861dc7'
+                '8ca5a25faa9cb2e3',
+                16)
+        )
+        public_key = public_key_numbers.public_key(backend)
+        public_bytes = public_key.public_bytes(
+            serialization.Encoding.PEM,
+            serialization.PublicFormat.PKCS1
+        )
+
+        args = (
+            public_bytes,
+            b'',
+            b'',
+            enums.PaddingMethod.PKCS1v15
+        )
+        kwargs = {
+            'signing_algorithm': enums.CryptographicAlgorithm.RSA,
+            'hashing_algorithm': None,
+            'digital_signature_algorithm': None
+        }
+        self.assertRaisesRegexp(
+            exceptions.CryptographicFailure,
+            "The signature verification process failed.",
+            engine.verify_signature,
+            *args,
+            **kwargs
+        )
+
+    def test_verify_signature_invalid_signing_algorithm(self):
+        """
+        Test that the right error is raised when an invalid signing algorithm
+        is used.
+        """
+        engine = crypto.CryptographyEngine()
+
+        args = (
+            b'',
+            b'',
+            b'',
+            enums.PaddingMethod.PSS
+        )
+        kwargs = {
+            'signing_algorithm': 'invalid',
+            'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
+            'digital_signature_algorithm': None
+        }
+        self.assertRaisesRegexp(
+            exceptions.InvalidField,
+            "The signing algorithm 'invalid' is not supported for signature "
+            "verification.",
+            engine.verify_signature,
+            *args,
+            **kwargs
+        )
+
 
 # TODO(peter-hamilton): Replace this with actual fixture files from NIST CAPV.
 # Most of these test vectors were obtained from the pyca/cryptography test
@@ -2252,6 +2495,7 @@ def test_wrap_key(wrapping_parameters):
 
     assert wrapping_parameters.get('wrapped_data') == result
 
+
 # Test vectors obtained from pyca/cryptography
 # https://cryptography.io/en/latest/
 
@@ -2405,3 +2649,170 @@ def test_sign(signing_parameters):
         signing_parameters.get('verify_args')[0],
         signing_parameters.get('verify_args')[1]
     )
+
+
+# RSA signing test vectors were obtained from pyca/cryptography:
+#
+# https://github.com/pyca/cryptography/blob/master/vectors/
+# cryptography_vectors/asymmetric/RSA/pkcs1v15sign-vectors.txt
+@pytest.fixture(
+    scope='function',
+    params=[
+        {'signing_algorithm': enums.CryptographicAlgorithm.RSA,
+         'padding_method': enums.PaddingMethod.PKCS1v15,
+         'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
+         'digital_signature_algorithm': None,
+         'encoding': serialization.Encoding.DER,
+         'public_key': {
+             'n': int(
+                 'a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7'
+                 'ad991d8c51056ffedb162b4c0f283a12a88a394dff526ab7291cbb307ce'
+                 'abfce0b1dfd5cd9508096d5b2b8b6df5d671ef6377c0921cb23c270a70e'
+                 '2598e6ff89d19f105acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f20d'
+                 '0ce8cffb2249bd9a2137',
+                 16
+             ),
+             'e': int('010001', 16)
+         },
+         'message': (
+             b'\xcd\xc8\x7d\xa2\x23\xd7\x86\xdf'
+             b'\x3b\x45\xe0\xbb\xbc\x72\x13\x26'
+             b'\xd1\xee\x2a\xf8\x06\xcc\x31\x54'
+             b'\x75\xcc\x6f\x0d\x9c\x66\xe1\xb6'
+             b'\x23\x71\xd4\x5c\xe2\x39\x2e\x1a'
+             b'\xc9\x28\x44\xc3\x10\x10\x2f\x15'
+             b'\x6a\x0d\x8d\x52\xc1\xf4\xc4\x0b'
+             b'\xa3\xaa\x65\x09\x57\x86\xcb\x76'
+             b'\x97\x57\xa6\x56\x3b\xa9\x58\xfe'
+             b'\xd0\xbc\xc9\x84\xe8\xb5\x17\xa3'
+             b'\xd5\xf5\x15\xb2\x3b\x8a\x41\xe7'
+             b'\x4a\xa8\x67\x69\x3f\x90\xdf\xb0'
+             b'\x61\xa6\xe8\x6d\xfa\xae\xe6\x44'
+             b'\x72\xc0\x0e\x5f\x20\x94\x57\x29'
+             b'\xcb\xeb\xe7\x7f\x06\xce\x78\xe0'
+             b'\x8f\x40\x98\xfb\xa4\x1f\x9d\x61'
+             b'\x93\xc0\x31\x7e\x8b\x60\xd4\xb6'
+             b'\x08\x4a\xcb\x42\xd2\x9e\x38\x08'
+             b'\xa3\xbc\x37\x2d\x85\xe3\x31\x17'
+             b'\x0f\xcb\xf7\xcc\x72\xd0\xb7\x1c'
+             b'\x29\x66\x48\xb3\xa4\xd1\x0f\x41'
+             b'\x62\x95\xd0\x80\x7a\xa6\x25\xca'
+             b'\xb2\x74\x4f\xd9\xea\x8f\xd2\x23'
+             b'\xc4\x25\x37\x02\x98\x28\xbd\x16'
+             b'\xbe\x02\x54\x6f\x13\x0f\xd2\xe3'
+             b'\x3b\x93\x6d\x26\x76\xe0\x8a\xed'
+             b'\x1b\x73\x31\x8b\x75\x0a\x01\x67'
+             b'\xd0'
+         ),
+         'signature': (
+             b'\x6b\xc3\xa0\x66\x56\x84\x29\x30'
+             b'\xa2\x47\xe3\x0d\x58\x64\xb4\xd8'
+             b'\x19\x23\x6b\xa7\xc6\x89\x65\x86'
+             b'\x2a\xd7\xdb\xc4\xe2\x4a\xf2\x8e'
+             b'\x86\xbb\x53\x1f\x03\x35\x8b\xe5'
+             b'\xfb\x74\x77\x7c\x60\x86\xf8\x50'
+             b'\xca\xef\x89\x3f\x0d\x6f\xcc\x2d'
+             b'\x0c\x91\xec\x01\x36\x93\xb4\xea'
+             b'\x00\xb8\x0c\xd4\x9a\xac\x4e\xcb'
+             b'\x5f\x89\x11\xaf\xe5\x39\xad\xa4'
+             b'\xa8\xf3\x82\x3d\x1d\x13\xe4\x72'
+             b'\xd1\x49\x05\x47\xc6\x59\xc7\x61'
+             b'\x7f\x3d\x24\x08\x7d\xdb\x6f\x2b'
+             b'\x72\x09\x61\x67\xfc\x09\x7c\xab'
+             b'\x18\xe9\xa4\x58\xfc\xb6\x34\xcd'
+             b'\xce\x8e\xe3\x58\x94\xc4\x84\xd7'
+         )},
+        {'signing_algorithm': None,
+         'padding_method': enums.PaddingMethod.PSS,
+         'hashing_algorithm': None,
+         'digital_signature_algorithm':
+             enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION,
+         'encoding': serialization.Encoding.PEM,
+         'public_key': {
+             'n': int(
+                 'ac13d9fdae7b7335b69cd98567e9647d99bf373a9e05ce3435d66465f32'
+                 '8b7f7334b792aee7efa044ebc4c7a30b21a5d7a89cdb3a30dfcd9fee999'
+                 '5e09415edc0bf9e5b4c3f74ff53fb4d29441bf1b7ed6cbdd4a47f925226'
+                 '9e1646f6c1aee0514e93f6cb9df71d06c060a2104b47b7260ac37c10686'
+                 '1dc78ca5a25faa9cb2e3',
+                 16
+             ),
+             'e': int('010001', 16)
+         },
+         'message': (
+             b'\xe1\xc0\xf9\x8d\x53\xf8\xf8\xb1'
+             b'\x41\x90\x57\xd5\xb9\xb1\x0b\x07'
+             b'\xfe\xea\xec\x32\xc0\x46\x3a\x4d'
+             b'\x68\x38\x2f\x53\x1b\xa1\xd6\xcf'
+             b'\xe4\xed\x38\xa2\x69\x4a\x34\xb9'
+             b'\xc8\x05\xad\xf0\x72\xff\xbc\xeb'
+             b'\xe2\x1d\x8d\x4b\x5c\x0e\x8c\x33'
+             b'\x45\x2d\xd8\xf9\xc9\xbf\x45\xd1'
+             b'\xe6\x33\x75\x11\x33\x58\x82\x29'
+             b'\xd2\x93\xc6\x49\x6b\x7c\x98\x3c'
+             b'\x2c\x72\xbd\x21\xd3\x39\x27\x2d'
+             b'\x78\x28\xb0\xd0\x9d\x01\x0b\xba'
+             b'\xd3\x18\xd9\x98\xf7\x04\x79\x67'
+             b'\x33\x8a\xce\xfd\x01\xe8\x74\xac'
+             b'\xe5\xf8\x6d\x2a\x60\xf3\xb3\xca'
+             b'\xe1\x3f\xc5\xc6\x65\x08\xcf\xb7'
+             b'\x23\x78\xfd\xd6\xc8\xde\x24\x97'
+             b'\x65\x10\x3c\xe8\xfe\x7c\xd3\x3a'
+             b'\xd0\xef\x16\x86\xfe\xb2\x5e\x6a'
+             b'\x35\xfb\x64\xe0\x96\xa4'
+         ),
+         'signature': (
+             b'\x01\xf6\xe5\xff\x04\x22\x1a\xdc'
+             b'\x6c\x2f\x22\xa7\x61\x05\x3b\xc4'
+             b'\x73\x27\x65\xdd\xdc\x3f\x76\x56'
+             b'\xd0\xd1\x22\xad\x3b\x8a\x4e\x4f'
+             b'\x8f\xe5\x5b\xd0\xc0\x9e\xb1\x07'
+             b'\x80\xa1\x39\xcd\xa9\x32\x34\xef'
+             b'\x98\x8f\xe2\x50\x20\x1e\xb2\xfe'
+             b'\xbd\x08\xb6\xee\x85\xd7\x0d\x16'
+             b'\x05\xa5\xba\x56\x85\x21\x52\x99'
+             b'\xf0\x74\xc8\x0b\xaf\xf8\x1e\x2c'
+             b'\xa3\x10\x7d\xa9\x17\x5c\x2f\x5a'
+             b'\x7c\x6b\x60\xea\xa2\x8a\x75\x8c'
+             b'\xa9\x34\xf2\xff\x16\x98\x8f\xe8'
+             b'\x5f\xf8\x41\x57\xd9\x51\x44\x8a'
+             b'\x85\xec\x1e\xd1\x71\xf9\xef\x8b'
+             b'\xb8\xa1\x0c\xfa\x14\x7b\x7e\xf8'
+         )}
+    ]
+)
+def signature_parameters(request):
+    return request.param
+
+
+def test_verify_signature(signature_parameters):
+    """
+    Test that various signature verification methods and settings can be used
+    to correctly verify signatures.
+    """
+    engine = crypto.CryptographyEngine()
+
+    backend = backends.default_backend()
+    public_key_numbers = rsa.RSAPublicNumbers(
+        signature_parameters.get('public_key').get('e'),
+        signature_parameters.get('public_key').get('n')
+    )
+    public_key = public_key_numbers.public_key(backend)
+    public_bytes = public_key.public_bytes(
+        signature_parameters.get('encoding'),
+        serialization.PublicFormat.PKCS1
+    )
+
+    result = engine.verify_signature(
+        signing_key=public_bytes,
+        message=signature_parameters.get('message'),
+        signature=signature_parameters.get('signature'),
+        padding_method=signature_parameters.get('padding_method'),
+        signing_algorithm=signature_parameters.get('signing_algorithm'),
+        hashing_algorithm=signature_parameters.get('hashing_algorithm'),
+        digital_signature_algorithm=signature_parameters.get(
+            'digital_signature_algorithm'
+        )
+    )
+
+    assert result
