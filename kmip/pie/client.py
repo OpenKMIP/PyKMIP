@@ -1000,6 +1000,75 @@ class ProxyKmipClient(api.KmipClient):
                 result.get('result_message')
             )
 
+    def signature_verify(self, message, signature, uid=None,
+                         cryptographic_parameters=None):
+        """
+        Verify a message signature using the specified signing key.
+
+        Args:
+            message (bytes): The bytes of the signed message. Required.
+            signature (bytes): The bytes of the message signature. Required.
+            uid (string): The unique ID of the signing key to use.
+                Optional, defaults to None.
+            cryptographic_parameters (dict): A dictionary containing various
+                cryptographic settings to be used for signature verification
+                (e.g., cryptographic algorithm, hashing algorithm, and/or
+                digital signature algorithm). Optional, defaults to None.
+
+        Returns:
+            ValidityIndicator: An enumeration indicating whether or not the
+                signature was valid.
+
+        Raises:
+            ClientConnectionNotOpen: if the client connection is unusable
+            KmipOperationFailure: if the operation result is a failure
+            TypeError: if the input arguments are invalid
+
+        Notes:
+            The cryptographic_parameters argument is a dictionary that can
+            contain various key/value pairs. For a list of allowed pairs,
+            see the documentation for encrypt/decrypt.
+        """
+        # Check input
+        if not isinstance(message, six.binary_type):
+            raise TypeError("Message must be bytes.")
+        if not isinstance(signature, six.binary_type):
+            raise TypeError("Signature must be bytes.")
+        if uid is not None:
+            if not isinstance(uid, six.string_types):
+                raise TypeError("Unique identifier must be a string.")
+        if cryptographic_parameters is not None:
+            if not isinstance(cryptographic_parameters, dict):
+                raise TypeError(
+                    "Cryptographic parameters must be a dictionary."
+                )
+
+        # Verify that operations can be given at this time
+        if not self._is_open:
+            raise exceptions.ClientConnectionNotOpen()
+
+        cryptographic_parameters = self._build_cryptographic_parameters(
+            cryptographic_parameters
+        )
+
+        # Decrypt the provided data and handle the results
+        result = self.proxy.signature_verify(
+            message,
+            signature,
+            uid,
+            cryptographic_parameters
+        )
+
+        status = result.get('result_status')
+        if status == enums.ResultStatus.SUCCESS:
+            return result.get('validity_indicator')
+        else:
+            raise exceptions.KmipOperationFailure(
+                status,
+                result.get('result_reason'),
+                result.get('result_message')
+            )
+
     def mac(self, data, uid=None, algorithm=None):
         """
         Get the message authentication code for data.

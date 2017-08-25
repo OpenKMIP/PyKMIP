@@ -64,6 +64,7 @@ from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import revoke
+from kmip.core.messages.payloads import signature_verify
 from kmip.core.messages.payloads import mac
 
 from kmip.services.server.kmip_protocol import KMIPProtocol
@@ -658,6 +659,81 @@ class KMIPProxy(KMIP):
         if payload:
             result['unique_identifier'] = payload.unique_identifier
             result['data'] = payload.data
+
+        result['result_status'] = batch_item.result_status.value
+        try:
+            result['result_reason'] = batch_item.result_reason.value
+        except:
+            result['result_reason'] = batch_item.result_reason
+        try:
+            result['result_message'] = batch_item.result_message.value
+        except:
+            result['result_message'] = batch_item.result_message
+
+        return result
+
+    def signature_verify(self,
+                         message,
+                         signature,
+                         unique_identifier=None,
+                         cryptographic_parameters=None,
+                         credential=None):
+        """
+        Verify a message signature using the specified signing key.
+
+        Args:
+            message (bytes): The bytes of the signed message. Required.
+            signature (bytes): The bytes of the message signature. Required.
+            unique_identifier (string): The unique ID of the signing key to
+                use. Optional, defaults to None.
+            cryptographic_parameters (CryptographicParameters): A structure
+                containing various cryptographic settings to be used for
+                signature verification. Optional, defaults to None.
+            credential (Credential): A credential object containing a set of
+                authorization parameters for the operation. Optional, defaults
+                to None.
+
+        Returns:
+            dict: The results of the signature verify operation, containing the
+                following key/value pairs:
+
+                Key                  | Value
+                ---------------------|-----------------------------------------
+                'unique_identifier'  | (string) The unique ID of the signing
+                                     | key used to verify the signature.
+                'validity_indicator' | (ValidityIndicator) An enumeration
+                                     | indicating the result of signature
+                                     | verification.
+                'result_status'      | (ResultStatus) An enumeration indicating
+                                     | the status of the operation result.
+                'result_reason'      | (ResultReason) An enumeration providing
+                                     | context for the result status.
+                'result_message'     | (string) A message providing additional
+                                     | context for the operation result.
+        """
+        operation = Operation(OperationEnum.SIGNATURE_VERIFY)
+
+        request_payload = signature_verify.SignatureVerifyRequestPayload(
+            unique_identifier=unique_identifier,
+            cryptographic_parameters=cryptographic_parameters,
+            data=message,
+            signature_data=signature
+        )
+        batch_item = messages.RequestBatchItem(
+            operation=operation,
+            request_payload=request_payload
+        )
+
+        request = self._build_request_message(credential, [batch_item])
+        response = self._send_and_receive_message(request)
+        batch_item = response.batch_items[0]
+        payload = batch_item.response_payload
+
+        result = {}
+
+        if payload:
+            result['unique_identifier'] = payload.unique_identifier
+            result['validity_indicator'] = payload.validity_indicator
 
         result['result_status'] = batch_item.result_status.value
         try:
