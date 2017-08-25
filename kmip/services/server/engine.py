@@ -55,6 +55,7 @@ from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import mac
 from kmip.core.messages.payloads import locate
 from kmip.core.messages.payloads import sign
+from kmip.core.messages.payloads import signature_verify
 
 from kmip.core import misc
 
@@ -990,6 +991,8 @@ class KmipEngine(object):
             return self._process_encrypt(payload)
         elif operation == enums.Operation.DECRYPT:
             return self._process_decrypt(payload)
+        elif operation == enums.Operation.SIGNATURE_VERIFY:
+            return self._process_signature_verify(payload)
         elif operation == enums.Operation.MAC:
             return self._process_mac(payload)
         elif operation == enums.Operation.SIGN:
@@ -1946,6 +1949,7 @@ class KmipEngine(object):
                     contents.Operation(enums.Operation.ENCRYPT),
                     contents.Operation(enums.Operation.DECRYPT),
                     contents.Operation(enums.Operation.SIGN),
+                    contents.Operation(enums.Operation.SIGNATURE_VERIFY),
                     contents.Operation(enums.Operation.MAC)
                 ])
 
@@ -2114,6 +2118,74 @@ class KmipEngine(object):
         response_payload = decrypt.DecryptResponsePayload(
             unique_identifier,
             result
+        )
+        return response_payload
+
+    @_kmip_version_supported('1.2')
+    def _process_signature_verify(self, payload):
+        self._logger.info("Processing operation: Signature Verify")
+
+        unique_identifier = self._id_placeholder
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier
+
+        # The KMIP spec does not indicate that the SignatureVerify operation
+        # should have it's own operation policy entry. Rather, the
+        # cryptographic usage mask should be used to determine if the object
+        # can be used to verify signatures (see below).
+        managed_object = self._get_object_with_access_controls(
+            unique_identifier,
+            enums.Operation.GET
+        )
+
+        parameters = payload.cryptographic_parameters
+        if parameters is None:
+            # TODO (peter-hamilton): Pull the cryptographic parameters from
+            # the attributes associated with the signing key.
+            raise exceptions.InvalidField(
+                "The cryptographic parameters must be specified."
+            )
+
+        # TODO (peter-hamilton): Check the usage limitations for the key to
+        # confirm that it can be used for this operation.
+
+        if managed_object._object_type != enums.ObjectType.PUBLIC_KEY:
+            raise exceptions.PermissionDenied(
+                "The requested signing key is not a public key. A public key "
+                "must be specified."
+            )
+
+        if managed_object.state != enums.State.ACTIVE:
+            raise exceptions.PermissionDenied(
+                "The signing key must be in the Active state to be used for "
+                "signature verification."
+            )
+
+        masks = managed_object.cryptographic_usage_masks
+        if enums.CryptographicUsageMask.VERIFY not in masks:
+            raise exceptions.PermissionDenied(
+                "The Verify bit must be set in the signing key's "
+                "cryptographic usage mask."
+            )
+
+        result = self._cryptography_engine.verify_signature(
+            signing_key=managed_object.value,
+            message=payload.data,
+            signature=payload.signature_data,
+            padding_method=parameters.padding_method,
+            signing_algorithm=parameters.cryptographic_algorithm,
+            hashing_algorithm=parameters.hashing_algorithm,
+            digital_signature_algorithm=parameters.digital_signature_algorithm
+        )
+
+        if result:
+            validity = enums.ValidityIndicator.VALID
+        else:
+            validity = enums.ValidityIndicator.INVALID
+
+        response_payload = signature_verify.SignatureVerifyResponsePayload(
+            unique_identifier=unique_identifier,
+            validity_indicator=validity
         )
         return response_payload
 
