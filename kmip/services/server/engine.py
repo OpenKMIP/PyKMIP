@@ -54,6 +54,7 @@ from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import mac
 from kmip.core.messages.payloads import locate
+from kmip.core.messages.payloads import sign
 
 from kmip.core import misc
 
@@ -991,6 +992,8 @@ class KmipEngine(object):
             return self._process_decrypt(payload)
         elif operation == enums.Operation.MAC:
             return self._process_mac(payload)
+        elif operation == enums.Operation.SIGN:
+            return self._process_sign(payload)
         else:
             raise exceptions.OperationNotSupported(
                 "{0} operation is not supported by the server.".format(
@@ -1942,6 +1945,7 @@ class KmipEngine(object):
                 operations.extend([
                     contents.Operation(enums.Operation.ENCRYPT),
                     contents.Operation(enums.Operation.DECRYPT),
+                    contents.Operation(enums.Operation.SIGN),
                     contents.Operation(enums.Operation.MAC)
                 ])
 
@@ -2182,6 +2186,62 @@ class KmipEngine(object):
         response_payload = mac.MACResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(unique_identifier),
             mac_data=MACData(result)
+        )
+
+        return response_payload
+
+    @_kmip_version_supported('1.2')
+    def _process_sign(self, payload):
+        self._logger.info("Processing operation: Sign")
+
+        unique_identifier = self._id_placeholder
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier
+
+        managed_object = self._get_object_with_access_controls(
+            unique_identifier,
+            enums.Operation.GET
+        )
+
+        parameters = payload.cryptographic_parameters
+        if parameters is None:
+            # TODO (dane-fichter): Pull the cryptographic parameters from
+            # the managed object with lowest attribute index.
+            raise exceptions.InvalidField(
+                "The cryptographic parameters must be specified."
+            )
+
+        if managed_object._object_type != enums.ObjectType.PRIVATE_KEY:
+            raise exceptions.PermissionDenied(
+                "The requested signing key is not a private key. A private "
+                "key must be specified."
+            )
+
+        if managed_object.state != enums.State.ACTIVE:
+            raise exceptions.PermissionDenied(
+                "The signing key must be in the Active state to be used for "
+                "signing."
+            )
+
+        masks = managed_object.cryptographic_usage_masks
+        if enums.CryptographicUsageMask.SIGN not in masks:
+            raise exceptions.PermissionDenied(
+                "The Sign bit must be set in the signing key's "
+                "cryptographic usage mask."
+            )
+
+        result = self._cryptography_engine.sign(
+            digital_signature_algorithm=parameters.digital_signature_algorithm,
+            crypto_alg=parameters.cryptographic_algorithm,
+            hash_algorithm=parameters.hashing_algorithm,
+            padding=parameters.padding_method,
+            signing_key=managed_object.value,
+            data=payload.data
+        )
+
+        response_payload = sign.SignResponsePayload(
+            unique_identifier=unique_identifier,
+            signature_data=result
         )
 
         return response_payload
