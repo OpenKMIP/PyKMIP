@@ -17,6 +17,7 @@ import binascii
 import logging
 import os
 
+from cryptography import exceptions as errors
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes, hmac, cmac
 from cryptography.hazmat.primitives import padding as symmetric_padding
@@ -1309,3 +1310,133 @@ class CryptographyEngine(api.CryptographicEngine):
                 "padding method.".format(padding)
             )
         return signature
+
+    def verify_signature(self,
+                         signing_key,
+                         message,
+                         signature,
+                         padding_method,
+                         signing_algorithm=None,
+                         hashing_algorithm=None,
+                         digital_signature_algorithm=None):
+        """
+        Verify a message signature.
+
+        Args:
+            signing_key (bytes): The bytes of the signing key to use for
+                signature verification. Required.
+            message (bytes): The bytes of the message that corresponds with
+                the signature. Required.
+            signature (bytes): The bytes of the signature to be verified.
+                Required.
+            padding_method (PaddingMethod): An enumeration specifying the
+                padding method to use during signature verification. Required.
+            signing_algorithm (CryptographicAlgorithm): An enumeration
+            specifying the cryptographic algorithm to use for signature
+            verification. Only RSA is supported. Optional, must match the
+                algorithm specified by the digital signature algorithm if both
+                are provided. Defaults to None.
+            hashing_algorithm (HashingAlgorithm): An enumeration specifying
+                the hashing algorithm to use with the cryptographic algortihm,
+                if needed. Optional, must match the algorithm specified by the
+                digital signature algorithm if both are provided. Defaults to
+                None.
+            digital_signature_algorithm (DigitalSignatureAlgorithm): An
+                enumeration specifying both the cryptographic and hashing
+                algorithms to use for signature verification. Optional, must
+                match the cryptographic and hashing algorithms if both are
+                provided. Defaults to None.
+
+        Returns:
+            boolean: the result of signature verification, True for valid
+                signatures, False for invalid signatures
+
+        Raises:
+            InvalidField: Raised when various settings or values are invalid.
+            CryptographicFailure: Raised when the signing key bytes cannot be
+                loaded, or when the signature verification process fails
+                unexpectedly.
+        """
+        backend = default_backend()
+
+        hash_algorithm = None
+        dsa_hash_algorithm = None
+        dsa_signing_algorithm = None
+
+        if hashing_algorithm:
+            hash_algorithm = self._encryption_hash_algorithms.get(
+                hashing_algorithm
+            )
+        if digital_signature_algorithm:
+            algorithm_pair = self._digital_signature_algorithms.get(
+                digital_signature_algorithm
+            )
+            if algorithm_pair:
+                dsa_hash_algorithm = algorithm_pair[0]
+                dsa_signing_algorithm = algorithm_pair[1]
+
+        if dsa_hash_algorithm and dsa_signing_algorithm:
+            if hash_algorithm and (hash_algorithm != dsa_hash_algorithm):
+                raise exceptions.InvalidField(
+                    "The hashing algorithm does not match the digital "
+                    "signature algorithm."
+                )
+            if (signing_algorithm and
+                    (signing_algorithm != dsa_signing_algorithm)):
+                raise exceptions.InvalidField(
+                    "The signing algorithm does not match the digital "
+                    "signature algorithm."
+                )
+
+            signing_algorithm = dsa_signing_algorithm
+            hash_algorithm = dsa_hash_algorithm
+
+        if signing_algorithm == enums.CryptographicAlgorithm.RSA:
+            if padding_method == enums.PaddingMethod.PSS:
+                if hash_algorithm:
+                    padding = asymmetric_padding.PSS(
+                        mgf=asymmetric_padding.MGF1(hash_algorithm()),
+                        salt_length=asymmetric_padding.PSS.MAX_LENGTH
+                    )
+                else:
+                    raise exceptions.InvalidField(
+                        "A hashing algorithm must be specified for PSS "
+                        "padding."
+                    )
+            elif padding_method == enums.PaddingMethod.PKCS1v15:
+                padding = asymmetric_padding.PKCS1v15()
+            else:
+                raise exceptions.InvalidField(
+                    "The padding method '{0}' is not supported for signature "
+                    "verification.".format(padding_method)
+                )
+
+            try:
+                public_key = backend.load_der_public_key(signing_key)
+            except Exception:
+                try:
+                    public_key = backend.load_pem_public_key(signing_key)
+                except Exception:
+                    raise exceptions.CryptographicFailure(
+                        "The signing key bytes could not be loaded."
+                    )
+
+            try:
+                public_key.verify(
+                    signature,
+                    message,
+                    padding,
+                    hash_algorithm()
+                )
+                return True
+            except errors.InvalidSignature:
+                return False
+            except Exception:
+                raise exceptions.CryptographicFailure(
+                    "The signature verification process failed."
+                )
+        else:
+            raise exceptions.InvalidField(
+                "The signing algorithm '{0}' is not supported for "
+                "signature verification.".format(signing_algorithm)
+            )
