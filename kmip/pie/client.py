@@ -33,6 +33,14 @@ from kmip.pie import objects as pobjects
 from kmip.services.kmip_client import KMIPProxy
 
 
+def is_connected(function):
+    def wrapper(self, *args, **kwargs):
+        if not self._is_open:
+            raise exceptions.ClientConnectionNotOpen()
+        return function(self, *args, **kwargs)
+    return wrapper
+
+
 class ProxyKmipClient(api.KmipClient):
     """
     A simplified KMIP client for conducting KMIP operations.
@@ -139,6 +147,7 @@ class ProxyKmipClient(api.KmipClient):
                 self.logger.exception("could not close client connection", e)
                 raise e
 
+    @is_connected
     def create(self, algorithm, length, operation_policy_name=None, name=None,
                cryptographic_usage_mask=None):
         """
@@ -177,10 +186,6 @@ class ProxyKmipClient(api.KmipClient):
                     "cryptographic_usage_mask must be a list of "
                     "CryptographicUsageMask enumerations")
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         # Create the template containing the attributes
         common_attributes = self._build_common_attributes(
             operation_policy_name
@@ -206,6 +211,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def create_key_pair(self,
                         algorithm,
                         length,
@@ -241,10 +247,6 @@ class ProxyKmipClient(api.KmipClient):
                 "algorithm must be a CryptographicAlgorithm enumeration")
         elif not isinstance(length, six.integer_types) or length <= 0:
             raise TypeError("length must be a positive integer")
-
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
 
         # Create the common attributes that are shared
         common_attributes = self._build_common_attributes(
@@ -285,6 +287,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def register(self, managed_object):
         """
         Register a managed object with a KMIP appliance.
@@ -304,10 +307,6 @@ class ProxyKmipClient(api.KmipClient):
         # Check input
         if not isinstance(managed_object, pobjects.ManagedObject):
             raise TypeError("managed object must be a Pie ManagedObject")
-
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
 
         # Extract and create attributes
         object_attributes = list()
@@ -343,6 +342,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def derive_key(self,
                    object_type,
                    unique_identifiers,
@@ -420,10 +420,6 @@ class ProxyKmipClient(api.KmipClient):
         if not isinstance(derivation_parameters, dict):
             raise TypeError("Derivation parameters must be a dictionary.")
 
-        # Verify that operations can be given at this time.
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         derivation_parameters = DerivationParameters(
             cryptographic_parameters=self._build_cryptographic_parameters(
                 derivation_parameters.get('cryptographic_parameters')
@@ -475,6 +471,7 @@ class ProxyKmipClient(api.KmipClient):
                 result.get('result_message')
             )
 
+    @is_connected
     def locate(self, maximum_items=None, storage_status_mask=None,
                object_group_member=None, attributes=None):
         """
@@ -518,10 +515,6 @@ class ProxyKmipClient(api.KmipClient):
                 raise TypeError(
                     "attributes must be a list of attributes")
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         # Search for managed objects and handle the results
         result = self.proxy.locate(
                     maximum_items, storage_status_mask,
@@ -536,6 +529,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def get(self, uid=None):
         """
         Get a managed object from a KMIP appliance.
@@ -556,10 +550,6 @@ class ProxyKmipClient(api.KmipClient):
             if not isinstance(uid, six.string_types):
                 raise TypeError("uid must be a string")
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         # Get the managed object and handle the results
         result = self.proxy.get(uid)
 
@@ -572,6 +562,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def get_attributes(self, uid=None, attribute_names=None):
         """
         Get the attributes associated with a managed object.
@@ -604,10 +595,6 @@ class ProxyKmipClient(api.KmipClient):
                             "attribute_names must be a list of strings"
                         )
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         # Get the list of attributes for a managed object
         result = self.proxy.get_attributes(uid, attribute_names)
 
@@ -619,6 +606,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def get_attribute_list(self, uid=None):
         """
         Get the names of the attributes associated with a managed object.
@@ -636,10 +624,6 @@ class ProxyKmipClient(api.KmipClient):
             if not isinstance(uid, six.string_types):
                 raise TypeError("uid must be a string")
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         # Get the list of attribute names for a managed object.
         result = self.proxy.get_attribute_list(uid)
 
@@ -652,6 +636,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def activate(self, uid=None):
         """
         Activate a managed object stored by a KMIP appliance.
@@ -673,10 +658,6 @@ class ProxyKmipClient(api.KmipClient):
             if not isinstance(uid, six.string_types):
                 raise TypeError("uid must be a string")
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         # Activate the managed object and handle the results
         result = self.proxy.activate(uid)
 
@@ -688,6 +669,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def revoke(self, revocation_reason, uid=None, revocation_message=None,
                compromise_occurrence_date=None):
         """
@@ -731,10 +713,6 @@ class ProxyKmipClient(api.KmipClient):
                 compromise_occurrence_date,
                 enums.Tags.COMPROMISE_OCCURRENCE_DATE)
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         # revoke the managed object and handle the results
         result = self.proxy.revoke(revocation_reason, uid, revocation_message,
                                    compromise_occurrence_date)
@@ -747,6 +725,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def destroy(self, uid=None):
         """
         Destroy a managed object stored by a KMIP appliance.
@@ -767,10 +746,6 @@ class ProxyKmipClient(api.KmipClient):
             if not isinstance(uid, six.string_types):
                 raise TypeError("uid must be a string")
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         # Destroy the managed object and handle the results
         result = self.proxy.destroy(uid)
 
@@ -782,6 +757,7 @@ class ProxyKmipClient(api.KmipClient):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
+    @is_connected
     def encrypt(self, data, uid=None, cryptographic_parameters=None,
                 iv_counter_nonce=None):
         """
@@ -866,10 +842,6 @@ class ProxyKmipClient(api.KmipClient):
             if not isinstance(iv_counter_nonce, six.binary_type):
                 raise TypeError("iv_counter_nonce must be bytes")
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         cryptographic_parameters = self._build_cryptographic_parameters(
             cryptographic_parameters
         )
@@ -892,6 +864,7 @@ class ProxyKmipClient(api.KmipClient):
                 result.get('result_message')
             )
 
+    @is_connected
     def decrypt(self, data, uid=None, cryptographic_parameters=None,
                 iv_counter_nonce=None):
         """
@@ -974,10 +947,6 @@ class ProxyKmipClient(api.KmipClient):
             if not isinstance(iv_counter_nonce, six.binary_type):
                 raise TypeError("iv_counter_nonce must be bytes")
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         cryptographic_parameters = self._build_cryptographic_parameters(
             cryptographic_parameters
         )
@@ -1000,6 +969,7 @@ class ProxyKmipClient(api.KmipClient):
                 result.get('result_message')
             )
 
+    @is_connected
     def signature_verify(self, message, signature, uid=None,
                          cryptographic_parameters=None):
         """
@@ -1043,10 +1013,6 @@ class ProxyKmipClient(api.KmipClient):
                     "Cryptographic parameters must be a dictionary."
                 )
 
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         cryptographic_parameters = self._build_cryptographic_parameters(
             cryptographic_parameters
         )
@@ -1069,6 +1035,7 @@ class ProxyKmipClient(api.KmipClient):
                 result.get('result_message')
             )
 
+    @is_connected
     def sign(self, data, uid=None, cryptographic_parameters=None):
         """
         Create a digital signature for data using the specified signing key.
@@ -1102,10 +1069,6 @@ class ProxyKmipClient(api.KmipClient):
                     "Cryptographic parameters must be a dictionary."
                 )
 
-        # Verify that operations can be served at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
-
         cryptographic_parameters = self._build_cryptographic_parameters(
             cryptographic_parameters
         )
@@ -1127,6 +1090,7 @@ class ProxyKmipClient(api.KmipClient):
                 result.get('result_message')
             )
 
+    @is_connected
     def mac(self, data, uid=None, algorithm=None):
         """
         Get the message authentication code for data.
@@ -1158,10 +1122,6 @@ class ProxyKmipClient(api.KmipClient):
             if not isinstance(algorithm, enums.CryptographicAlgorithm):
                 raise TypeError(
                     "algorithm must be a CryptographicAlgorithm enumeration")
-
-        # Verify that operations can be given at this time
-        if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
 
         parameters_attribute = self._build_cryptographic_parameters(
             {'cryptographic_algorithm': algorithm}
