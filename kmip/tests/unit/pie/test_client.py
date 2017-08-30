@@ -1947,6 +1947,181 @@ class TestProxyKmipClient(testtools.TestCase):
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
+    def test_signature_verify(self):
+        """
+        Test that the client can verify a signature.
+        """
+        result = {
+            'unique_identifier': '1',
+            'validity_indicator': enums.ValidityIndicator.VALID,
+            'result_status': enums.ResultStatus.SUCCESS
+        }
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.signature_verify.return_value = result
+
+        validity = client.signature_verify(
+            (
+                b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
+                b'\x05\xB1\x56\xE2\x74\x03\x97\x93'
+                b'\x58\xDE\xB9\xE7\x15\x46\x16\xD9'
+                b'\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B'
+            ),
+            (
+                b'\x00\x00\x00\x00\x00\x00\x00\x00'
+            ),
+            uid='1',
+            cryptographic_parameters={
+                'block_cipher_mode': enums.BlockCipherMode.CBC,
+                'padding_method': enums.PaddingMethod.PKCS5,
+                'cryptographic_algorithm':
+                    enums.CryptographicAlgorithm.BLOWFISH
+            }
+        )
+
+        self.assertEqual(enums.ValidityIndicator.VALID, validity)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_signature_verify_on_invalid_inputs(self):
+        """
+        Test that TypeError exception are raised when trying to verify
+        signatures with invalid parameters.
+        """
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.signature_verify.return_value = {}
+        args = [
+            [],
+            b''
+        ]
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': {}
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Message must be bytes.",
+            client.signature_verify,
+            *args,
+            **kwargs
+        )
+
+        args = [
+            b'\x01\x02\x03\x04',
+            []
+        ]
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': {}
+        }
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Signature must be bytes.",
+            client.signature_verify,
+            *args,
+            **kwargs
+        )
+
+        args = [
+            b'\x01\x02\x03\x04',
+            b'\xFF\xFF\xFF\xFF'
+        ]
+        kwargs = {
+            'uid': 0,
+            'cryptographic_parameters': {}
+        }
+        self.assertRaisesRegexp(
+            TypeError,
+            "Unique identifier must be a string.",
+            client.signature_verify,
+            *args,
+            **kwargs
+        )
+
+        args = [
+            b'\x01\x02\x03\x04',
+            b'\xFF\xFF\xFF\xFF'
+        ]
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': 'invalid'
+        }
+        self.assertRaisesRegexp(
+            TypeError,
+            "Cryptographic parameters must be a dictionary.",
+            client.signature_verify,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_signature_verify_on_closed(self):
+        """
+        Test that a ClientConnectionNotOpen exception is raised when trying
+        to verify a signature on an unopened client connection.
+        """
+        client = ProxyKmipClient()
+        args = [
+            b'\x01\x02\x03\x04',
+            b'\xFF\xFF\xFF\xFF'
+        ]
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': {}
+        }
+
+        self.assertRaises(
+            ClientConnectionNotOpen,
+            client.signature_verify,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_signature_verify_on_operation_failure(self):
+        """
+        Test that a KmipOperationFailure exception is raised when the
+        backend fails to verify a signature.
+        """
+        status = enums.ResultStatus.OPERATION_FAILED
+        reason = enums.ResultReason.GENERAL_FAILURE
+        message = "Test failure message"
+
+        result = {
+            'result_status': status,
+            'result_reason': reason,
+            'result_message': message
+        }
+        error_message = str(KmipOperationFailure(status, reason, message))
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.signature_verify.return_value = result
+        args = [
+            b'\x01\x02\x03\x04',
+            b'\xFF\xFF\xFF\xFF'
+        ]
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': {}
+        }
+
+        self.assertRaisesRegexp(
+            KmipOperationFailure,
+            error_message,
+            client.signature_verify,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
     def test_mac(self):
         """
         Test the MAC client with proper input.

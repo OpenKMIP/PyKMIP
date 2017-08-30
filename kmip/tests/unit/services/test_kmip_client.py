@@ -55,6 +55,7 @@ from kmip.core.messages.payloads.query import \
     QueryRequestPayload, QueryResponsePayload
 from kmip.core.messages.payloads.rekey_key_pair import \
     RekeyKeyPairRequestPayload, RekeyKeyPairResponsePayload
+from kmip.core.messages.payloads import signature_verify
 
 from kmip.core.misc import Offset
 from kmip.core.misc import QueryFunction
@@ -898,6 +899,60 @@ class TestKMIPClient(TestCase):
                 b'\x66\x6F\x72\x20\x00'
             ),
             result.get('data')
+        )
+        self.assertEqual(
+            ResultStatusEnum.SUCCESS,
+            result.get('result_status')
+        )
+        self.assertEqual(None, result.get('result_reason'))
+        self.assertEqual(None, result.get('result_message'))
+
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._build_request_message'
+    )
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
+    )
+    def test_signature_verify(self, send_mock, build_mock):
+        """
+        Test that the client can verify a signature.
+        """
+        payload = signature_verify.SignatureVerifyResponsePayload(
+            unique_identifier='1',
+            validity_indicator=enums.ValidityIndicator.INVALID
+        )
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.SIGNATURE_VERIFY),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=payload
+        )
+        response = ResponseMessage(batch_items=[batch_item])
+
+        build_mock.return_value = None
+        send_mock.return_value = response
+
+        result = self.client.signature_verify(
+            (
+                b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
+                b'\x05\xB1\x56\xE2\x74\x03\x97\x93'
+                b'\x58\xDE\xB9\xE7\x15\x46\x16\xD9'
+                b'\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B'
+            ),
+            (
+                b'\x11\x11\x11\x11\x11\x11\x11\x11'
+            ),
+            unique_identifier='1',
+            cryptographic_parameters=CryptographicParameters(
+                padding_method=enums.PaddingMethod.PKCS1v15,
+                cryptographic_algorithm=enums.CryptographicAlgorithm.RSA,
+                hashing_algorithm=enums.HashingAlgorithm.SHA_224
+            )
+        )
+
+        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual(
+            enums.ValidityIndicator.INVALID,
+            result.get('validity_indicator')
         )
         self.assertEqual(
             ResultStatusEnum.SUCCESS,
