@@ -655,7 +655,7 @@ class TestSignResponsePayload(testtools.TestCase):
     def test_equal_on_not_equal_unique_identifier(self):
         """
         Test that the equality operator returns False when comparing two
-        sign reponse payloads with different unique_identifier.
+        sign response payloads with different unique_identifier.
         """
         a = sign.SignResponsePayload(unique_identifier='a',
                                      signature_data=b'\x01')
