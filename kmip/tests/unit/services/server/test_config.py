@@ -54,6 +54,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_key_path = mock.MagicMock()
         c._set_port = mock.MagicMock()
         c._set_policy_path = mock.MagicMock()
+        c._set_enable_tls_client_auth = mock.MagicMock()
 
         # Test the right error is generated when setting an unsupported
         # setting.
@@ -91,6 +92,9 @@ class TestKmipServerConfig(testtools.TestCase):
 
         c.set_setting('policy_path', '/etc/pykmip/policies')
         c._set_policy_path.assert_called_once_with('/etc/pykmip/policies')
+
+        c.set_setting('enable_tls_client_auth', False)
+        c._set_enable_tls_client_auth.assert_called_once_with(False)
 
     def test_load_settings(self):
         """
@@ -144,6 +148,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_key_path = mock.MagicMock()
         c._set_port = mock.MagicMock()
         c._set_policy_path = mock.MagicMock()
+        c._set_enable_tls_client_auth = mock.MagicMock()
 
         # Test that the right calls are made when correctly parsing settings.
         parser = configparser.SafeConfigParser()
@@ -155,6 +160,7 @@ class TestKmipServerConfig(testtools.TestCase):
         parser.set('server', 'ca_path', '/test/path/ca.crt')
         parser.set('server', 'auth_suite', 'Basic')
         parser.set('server', 'policy_path', '/test/path/policies')
+        parser.set('server', 'enable_tls_client_auth', 'False')
 
         c._parse_settings(parser)
 
@@ -167,6 +173,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_ca_path.assert_called_once_with('/test/path/ca.crt')
         c._set_auth_suite.assert_called_once_with('Basic')
         c._set_policy_path.assert_called_once_with('/test/path/policies')
+        c._set_enable_tls_client_auth.assert_called_once_with(False)
 
         # Test that a ConfigurationError is generated when the expected
         # section is missing.
@@ -520,3 +527,47 @@ class TestKmipServerConfig(testtools.TestCase):
             *args
         )
         self.assertNotEqual(1, c.settings.get('policy_path'))
+
+    def test_set_enable_tls_client_auth(self):
+        """
+        Test that the enable_tls_client_auth configuration property can be set
+        correctly.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        self.assertIn('enable_tls_client_auth', c.settings.keys())
+        self.assertEqual(
+            True,
+            c.settings.get('enable_tls_client_auth')
+        )
+
+        # Test that the setting is set correctly with a valid value
+        c._set_enable_tls_client_auth(False)
+        self.assertEqual(
+            False,
+            c.settings.get('enable_tls_client_auth')
+        )
+
+        c._set_enable_tls_client_auth(None)
+        self.assertEqual(
+            True,
+            c.settings.get('enable_tls_client_auth')
+        )
+
+        c._set_enable_tls_client_auth(True)
+        self.assertEqual(
+            True,
+            c.settings.get('enable_tls_client_auth')
+        )
+
+        # Test that a ConfigurationError is generated when setting the wrong
+        # value.
+        args = ('invalid',)
+        self.assertRaisesRegexp(
+            exceptions.ConfigurationError,
+            "The flag enabling the TLS certificate client auth flag check "
+            "must be a boolean.",
+            c._set_enable_tls_client_auth,
+            *args
+        )

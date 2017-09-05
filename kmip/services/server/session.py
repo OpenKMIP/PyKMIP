@@ -33,7 +33,11 @@ class KmipSession(threading.Thread):
     A session thread representing a single KMIP client/server interaction.
     """
 
-    def __init__(self, engine, connection, name=None):
+    def __init__(self,
+                 engine,
+                 connection,
+                 name=None,
+                 enable_tls_client_auth=True):
         """
         Create a KmipSession.
 
@@ -44,6 +48,10 @@ class KmipSession(threading.Thread):
                 representing a new KMIP connection. Required.
             name (str): The name of the KmipSession. Optional, defaults to
                 None.
+            enable_tls_client_auth (bool): A flag that enables a strict check
+                for the client auth flag in the extended key usage extension
+                in client certificates when establishing the client/server TLS
+                connection. Optional, defaults to True.
         """
         super(KmipSession, self).__init__(
             group=None,
@@ -59,6 +67,8 @@ class KmipSession(threading.Thread):
 
         self._engine = engine
         self._connection = connection
+
+        self._enable_tls_client_auth = enable_tls_client_auth
 
         self._max_buffer_size = 4096
         self._max_request_size = 1048576
@@ -89,7 +99,7 @@ class KmipSession(threading.Thread):
     def _get_client_identity(self):
         certificate_data = self._connection.getpeercert(binary_form=True)
         try:
-            certificate = x509.load_der_x509_certificate(
+            cert = x509.load_der_x509_certificate(
                 certificate_data,
                 backends.default_backend()
             )
@@ -102,42 +112,44 @@ class KmipSession(threading.Thread):
                 "connection. Could not retrieve client identity."
             )
 
-        try:
-            extended_key_usage = certificate.extensions.get_extension_for_oid(
-                x509.oid.ExtensionOID.EXTENDED_KEY_USAGE
-            ).value
-        except x509.ExtensionNotFound:
-            raise exceptions.PermissionDenied(
-                "The extended key usage extension is missing from the client "
-                "certificate. Session client identity unavailable."
-            )
-
-        if x509.oid.ExtendedKeyUsageOID.CLIENT_AUTH in extended_key_usage:
-            client_identities = certificate.subject.get_attributes_for_oid(
-                x509.oid.NameOID.COMMON_NAME
-            )
-            if len(client_identities) > 0:
-                if len(client_identities) > 1:
-                    self._logger.warning(
-                        "Multiple client identities found. Using the first "
-                        "one processed."
-                    )
-                client_identity = client_identities[0].value
-                self._logger.info(
-                    "Session client identity: {0}".format(client_identity)
-                )
-                return client_identity
-            else:
+        if self._enable_tls_client_auth:
+            try:
+                extended_key_usage = cert.extensions.get_extension_for_oid(
+                    x509.oid.ExtensionOID.EXTENDED_KEY_USAGE
+                ).value
+            except x509.ExtensionNotFound:
                 raise exceptions.PermissionDenied(
-                    "The client certificate does not define a subject common "
-                    "name. Session client identity unavailable."
+                    "The extended key usage extension is missing from the "
+                    "client certificate. Session client identity unavailable."
                 )
 
-        raise exceptions.PermissionDenied(
-            "The extended key usage extension is not marked for client "
-            "authentication in the client certificate. Session client "
-            "identity unavailable."
+            if x509.oid.ExtendedKeyUsageOID.CLIENT_AUTH not in \
+                    extended_key_usage:
+                raise exceptions.PermissionDenied(
+                    "The extended key usage extension is not marked for "
+                    "client authentication in the client certificate. Session "
+                    "client identity unavailable."
+                )
+
+        client_identities = cert.subject.get_attributes_for_oid(
+            x509.oid.NameOID.COMMON_NAME
         )
+        if len(client_identities) > 0:
+            if len(client_identities) > 1:
+                self._logger.warning(
+                    "Multiple client identities found. Using the first "
+                    "one processed."
+                )
+            client_identity = client_identities[0].value
+            self._logger.info(
+                "Session client identity: {0}".format(client_identity)
+            )
+            return client_identity
+        else:
+            raise exceptions.PermissionDenied(
+                "The client certificate does not define a subject common "
+                "name. Session client identity unavailable."
+            )
 
     def _handle_message_loop(self):
         request_data = self._receive_request()

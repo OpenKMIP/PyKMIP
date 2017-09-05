@@ -34,6 +34,7 @@ class KmipServerConfig(object):
         self._logger = logging.getLogger('kmip.server.config')
 
         self.settings = dict()
+        self.settings['enable_tls_client_auth'] = True
 
         self._expected_settings = [
             'hostname',
@@ -44,7 +45,8 @@ class KmipServerConfig(object):
             'auth_suite'
         ]
         self._optional_settings = [
-            'policy_path'
+            'policy_path',
+            'enable_tls_client_auth'
         ]
 
     def set_setting(self, setting, value):
@@ -80,8 +82,10 @@ class KmipServerConfig(object):
             self._set_ca_path(value)
         elif setting == 'auth_suite':
             self._set_auth_suite(value)
-        else:
+        elif setting == 'policy_path':
             self._set_policy_path(value)
+        else:
+            self._set_enable_tls_client_auth(value)
 
     def load_settings(self, path):
         """
@@ -148,6 +152,10 @@ class KmipServerConfig(object):
             self._set_auth_suite(parser.get('server', 'auth_suite'))
         if parser.has_option('server', 'policy_path'):
             self._set_policy_path(parser.get('server', 'policy_path'))
+        if parser.has_option('server', 'enable_tls_client_auth'):
+            self._set_enable_tls_client_auth(
+                parser.getboolean('server', 'enable_tls_client_auth')
+            )
 
     def _set_hostname(self, value):
         if isinstance(value, six.string_types):
@@ -241,4 +249,15 @@ class KmipServerConfig(object):
             raise exceptions.ConfigurationError(
                 "The policy path, if specified, must be a valid string path "
                 "to a filesystem directory."
+            )
+
+    def _set_enable_tls_client_auth(self, value):
+        if value is None:
+            self.settings['enable_tls_client_auth'] = True
+        elif isinstance(value, bool):
+            self.settings['enable_tls_client_auth'] = value
+        else:
+            raise exceptions.ConfigurationError(
+                "The flag enabling the TLS certificate client auth flag check "
+                "must be a boolean."
             )

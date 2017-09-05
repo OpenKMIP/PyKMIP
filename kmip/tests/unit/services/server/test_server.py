@@ -119,7 +119,8 @@ class TestKmipServer(testtools.TestCase):
             '/etc/pykmip/certs/server.key',
             '/etc/pykmip/certs/ca.crt',
             'Basic',
-            '/etc/pykmip/policies'
+            '/etc/pykmip/policies',
+            False
         )
 
         s.config.load_settings.assert_called_with('/etc/pykmip/server.conf')
@@ -141,6 +142,10 @@ class TestKmipServer(testtools.TestCase):
         s.config.set_setting.assert_any_call(
             'policy_path',
             '/etc/pykmip/policies'
+        )
+        s.config.set_setting.assert_any_call(
+            'enable_tls_client_auth',
+            False
         )
 
         # Test that an attempt is made to instantiate the TLS 1.2 auth suite
