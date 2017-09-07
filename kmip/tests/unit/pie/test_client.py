@@ -1984,6 +1984,85 @@ class TestProxyKmipClient(testtools.TestCase):
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
+    def test_sign(self):
+        """
+        Test that the client can sign data.
+        """
+        mock_signature = b'aaaaaaaaaaaaaaaaaaaaaaaaaa'
+        result = {
+            'result_status': enums.ResultStatus.SUCCESS,
+            'unique_identifier': '1',
+            'signature': mock_signature
+        }
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.sign.return_value = result
+
+        actual_signature = client.sign(
+            b'\x01\x02\x03\x04\x05\x06\x07\x08',
+            uid='1',
+            cryptographic_parameters={
+                 'padding_method': enums.PaddingMethod.PSS,
+                 'cryptographic_algorithm':
+                 enums.CryptographicAlgorithm.RSA
+            }
+        )
+
+        self.assertEqual(mock_signature, actual_signature)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_sign_on_invalid_inputs(self):
+        """
+        Test that TypeError exceptions are raised when trying to sign
+        data with invalid parameters.
+        """
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.sign.return_value = {}
+        args = [1234]
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': {}
+        }
+        self.assertRaisesRegexp(
+            TypeError,
+            "Data to be signed must be bytes.",
+            client.sign,
+            *args,
+            **kwargs
+        )
+
+        args = [
+            b'\x01\x02\x03\x04'
+        ]
+        kwargs = {
+            'uid': 0,
+            'cryptographic_parameters': {}
+        }
+        self.assertRaisesRegexp(
+            TypeError,
+            "Unique identifier must be a string.",
+            client.sign,
+            *args,
+            **kwargs
+        )
+
+        kwargs = {
+            'uid': '1',
+            'cryptographic_parameters': 'invalid'
+        }
+        self.assertRaisesRegexp(
+            TypeError,
+            "Cryptographic parameters must be a dictionary.",
+            client.sign,
+            *args,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
     def test_signature_verify_on_invalid_inputs(self):
         """
         Test that TypeError exception are raised when trying to verify

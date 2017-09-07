@@ -55,6 +55,7 @@ from kmip.core.messages.payloads.query import \
     QueryRequestPayload, QueryResponsePayload
 from kmip.core.messages.payloads.rekey_key_pair import \
     RekeyKeyPairRequestPayload, RekeyKeyPairResponsePayload
+from kmip.core.messages.payloads import sign
 from kmip.core.messages.payloads import signature_verify
 
 from kmip.core.misc import Offset
@@ -953,6 +954,52 @@ class TestKMIPClient(TestCase):
         self.assertEqual(
             enums.ValidityIndicator.INVALID,
             result.get('validity_indicator')
+        )
+        self.assertEqual(
+            ResultStatusEnum.SUCCESS,
+            result.get('result_status')
+        )
+        self.assertEqual(None, result.get('result_reason'))
+        self.assertEqual(None, result.get('result_message'))
+
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._build_request_message'
+    )
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
+    )
+    def test_sign(self, send_mock, build_mock):
+        """
+        Test that the client can sign data
+        """
+        payload = sign.SignResponsePayload(
+            unique_identifier='1',
+            signature_data=b'aaaaaaaaaaaaaaaa'
+        )
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.SIGN),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=payload
+        )
+        response = ResponseMessage(batch_items=[batch_item])
+
+        build_mock.return_value = None
+        send_mock.return_value = response
+
+        result = self.client.sign(
+            b'\x11\x11\x11\x11\x11\x11\x11\x11',
+            unique_identifier='1',
+            cryptographic_parameters=CryptographicParameters(
+                padding_method=enums.PaddingMethod.PKCS1v15,
+                cryptographic_algorithm=enums.CryptographicAlgorithm.RSA,
+                hashing_algorithm=enums.HashingAlgorithm.SHA_224
+            )
+        )
+
+        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual(
+            b'aaaaaaaaaaaaaaaa',
+            result.get('signature')
         )
         self.assertEqual(
             ResultStatusEnum.SUCCESS,
