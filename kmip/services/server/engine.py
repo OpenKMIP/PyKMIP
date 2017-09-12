@@ -1936,6 +1936,7 @@ class KmipEngine(object):
                 contents.Operation(enums.Operation.GET_ATTRIBUTES),
                 contents.Operation(enums.Operation.GET_ATTRIBUTE_LIST),
                 contents.Operation(enums.Operation.ACTIVATE),
+                contents.Operation(enums.Operation.REVOKE),
                 contents.Operation(enums.Operation.DESTROY),
                 contents.Operation(enums.Operation.QUERY)
             ])
