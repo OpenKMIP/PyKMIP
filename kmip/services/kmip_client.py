@@ -64,6 +64,7 @@ from kmip.core.messages.payloads import query
 from kmip.core.messages.payloads import rekey_key_pair
 from kmip.core.messages.payloads import register
 from kmip.core.messages.payloads import revoke
+from kmip.core.messages.payloads import sign
 from kmip.core.messages.payloads import signature_verify
 from kmip.core.messages.payloads import mac
 
@@ -735,6 +736,72 @@ class KMIPProxy(KMIP):
             result['unique_identifier'] = payload.unique_identifier
             result['validity_indicator'] = payload.validity_indicator
 
+        result['result_status'] = batch_item.result_status.value
+        try:
+            result['result_reason'] = batch_item.result_reason.value
+        except:
+            result['result_reason'] = batch_item.result_reason
+        try:
+            result['result_message'] = batch_item.result_message.value
+        except:
+            result['result_message'] = batch_item.result_message
+
+        return result
+
+    def sign(self, data, unique_identifier=None,
+             cryptographic_parameters=None, credential=None):
+        """
+        Sign specified data using a specified signing key.
+
+        Args:
+            data (bytes): Data to be signed. Required.
+            unique_identifier (string): The unique ID of the signing
+                key to be used. Optional, defaults to None.
+            cryptographic_parameters (CryptographicParameters): A structure
+                containing various cryptographic settings to be used for
+                creating the signature. Optional, defaults to None.
+            credential (Credential): A credential object containing a set of
+                authorization parameters for the operation. Optional, defaults
+                to None.
+        Returns:
+            dict: The results of the sign operation, containing the
+                following key/value pairs:
+
+            Key                  | Value
+            ---------------------|-----------------------------------------
+            'unique_identifier'  | (string) The unique ID of the signing
+                                 | key used to create the signature
+            'signature'          | (bytes) The bytes of the signature
+            'result_status'      | (ResultStatus) An enumeration indicating
+                                 | the status of the operation result
+            'result_reason'      | (ResultReason) An enumeration providing
+                                 | context for the result status.
+            'result_message'     | (string) A message providing additional
+                                 | context for the operation result.
+        """
+        operation = Operation(OperationEnum.SIGN)
+
+        request_payload = sign.SignRequestPayload(
+            unique_identifier=unique_identifier,
+            cryptographic_parameters=cryptographic_parameters,
+            data=data
+        )
+
+        batch_item = messages.RequestBatchItem(
+            operation=operation,
+            request_payload=request_payload
+        )
+
+        request = self._build_request_message(credential, [batch_item])
+        response = self._send_and_receive_message(request)
+        batch_item = response.batch_items[0]
+        payload = batch_item.response_payload
+
+        result = {}
+
+        if payload:
+            result['unique_identifier'] = payload.unique_identifier
+            result['signature'] = payload.signature_data
         result['result_status'] = batch_item.result_status.value
         try:
             result['result_reason'] = batch_item.result_reason.value

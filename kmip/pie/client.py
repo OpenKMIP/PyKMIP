@@ -1069,6 +1069,64 @@ class ProxyKmipClient(api.KmipClient):
                 result.get('result_message')
             )
 
+    def sign(self, data, uid=None, cryptographic_parameters=None):
+        """
+        Create a digital signature for data using the specified signing key.
+
+        Args:
+            data (bytes): The bytes of the data to be signed. Required.
+            uid (string): The unique ID of the signing key to use.
+                Optional, defaults to None.
+            cryptographic_parameters (dict): A dictionary containing various
+                cryptographic settings to be used for creating the signature
+                (e.g., cryptographic algorithm, hashing algorithm, and/or
+                digital signature algorithm). Optional, defaults to None.
+
+        Returns:
+            signature (bytes): Bytes representing the signature of the data
+
+        Raises:
+            ClientConnectionNotOpen: if the client connection is unusable
+            KmipOperationFailure: if the operation result is a failure
+            TypeError: if the input arguments are invalid
+        """
+        # Check input
+        if not isinstance(data, six.binary_type):
+            raise TypeError("Data to be signed must be bytes.")
+        if uid is not None:
+            if not isinstance(uid, six.string_types):
+                raise TypeError("Unique identifier must be a string.")
+        if cryptographic_parameters is not None:
+            if not isinstance(cryptographic_parameters, dict):
+                raise TypeError(
+                    "Cryptographic parameters must be a dictionary."
+                )
+
+        # Verify that operations can be served at this time
+        if not self._is_open:
+            raise exceptions.ClientConnectionNotOpen()
+
+        cryptographic_parameters = self._build_cryptographic_parameters(
+            cryptographic_parameters
+        )
+
+        # Sign the provided data and handle results
+        result = self.proxy.sign(
+            data,
+            uid,
+            cryptographic_parameters
+        )
+
+        status = result.get('result_status')
+        if status == enums.ResultStatus.SUCCESS:
+            return result.get('signature')
+        else:
+            raise exceptions.KmipOperationFailure(
+                status,
+                result.get('result_reason'),
+                result.get('result_message')
+            )
+
     def mac(self, data, uid=None, algorithm=None):
         """
         Get the message authentication code for data.
