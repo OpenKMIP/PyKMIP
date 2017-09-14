@@ -50,7 +50,8 @@ class KmipServer(object):
             auth_suite=None,
             config_path='/etc/pykmip/server.conf',
             log_path='/var/log/pykmip/server.log',
-            policy_path=None
+            policy_path=None,
+            enable_tls_client_auth=None
     ):
         """
         Create a KmipServer.
@@ -95,6 +96,10 @@ class KmipServer(object):
             policy_path (string): The path to the filesystem directory
                 containing PyKMIP server operation policy JSON files.
                 Optional, defaults to None.
+            enable_tls_client_auth (boolean): A boolean indicating if the TLS
+                certificate client auth flag should be required for client
+                certificates when establishing a new client session. Optional,
+                defaults to None.
         """
         self._logger = logging.getLogger('kmip.server')
         self._setup_logging(log_path)
@@ -108,7 +113,8 @@ class KmipServer(object):
             key_path,
             ca_path,
             auth_suite,
-            policy_path
+            policy_path,
+            enable_tls_client_auth
         )
 
         if self.config.settings.get('auth_suite') == 'TLS1.2':
@@ -152,7 +158,8 @@ class KmipServer(object):
             key_path=None,
             ca_path=None,
             auth_suite=None,
-            policy_path=None
+            policy_path=None,
+            enable_tls_client_auth=None
     ):
         if path:
             self.config.load_settings(path)
@@ -171,6 +178,11 @@ class KmipServer(object):
             self.config.set_setting('auth_suite', auth_suite)
         if policy_path:
             self.config.set_setting('policy_path', policy_path)
+        if enable_tls_client_auth is not None:
+            self.config.set_setting(
+                'enable_tls_client_auth',
+                enable_tls_client_auth
+            )
 
     def start(self):
         """
@@ -343,7 +355,10 @@ class KmipServer(object):
             s = session.KmipSession(
                 self._engine,
                 connection,
-                name=session_name
+                name=session_name,
+                enable_tls_client_auth=self.config.settings.get(
+                    'enable_tls_client_auth'
+                )
             )
             s.daemon = True
             s.start()
@@ -478,6 +493,18 @@ def build_argument_parser():
             "directory. Optional, defaults to None."
         ),
     )
+    parser.add_option(
+        "-i",
+        "--ignore_tls_client_auth",
+        action="store_true",
+        default=False,
+        dest="ignore_tls_client_auth",
+        help=(
+            "A boolean indicating whether or not the TLS certificate client "
+            "auth flag should be ignored when establishing client sessions. "
+            "Optional, defaults to None."
+        )
+    )
 
     return parser
 
@@ -506,6 +533,8 @@ def main(args=None):
         kwargs['log_path'] = opts.log_path
     if opts.policy_path:
         kwargs['policy_path'] = opts.policy_path
+    if opts.ignore_tls_client_auth:
+        kwargs['enable_tls_client_auth'] = False
 
     # Create and start the server.
     s = KmipServer(**kwargs)
