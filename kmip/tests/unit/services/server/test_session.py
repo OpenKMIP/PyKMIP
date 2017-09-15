@@ -365,6 +365,15 @@ class TestKmipSession(testtools.TestCase):
         )
         kmip_session._logger = mock.MagicMock()
         kmip_session._connection = mock.MagicMock()
+        kmip_session._connection.shared_ciphers = mock.MagicMock(
+            return_value=[
+                ('AES128-SHA256', 'TLSv1/SSLv3', 128),
+                ('AES256-SHA256', 'TLSv1/SSLv3', 256)
+            ]
+        )
+        kmip_session._connection.cipher = mock.MagicMock(
+            return_value=('AES128-SHA256', 'TLSv1/SSLv3', 128)
+        )
         kmip_session._receive_request = mock.MagicMock(return_value=data)
         kmip_session._send_response = mock.MagicMock()
 
@@ -372,6 +381,20 @@ class TestKmipSession(testtools.TestCase):
 
         kmip_session._receive_request.assert_called_once_with()
         kmip_session._logger.info.assert_not_called()
+        kmip_session._logger.debug.assert_any_call(
+            "Possible session ciphers: 2"
+        )
+        kmip_session._logger.debug.assert_any_call(
+            ('AES128-SHA256', 'TLSv1/SSLv3', 128)
+        )
+        kmip_session._logger.debug.assert_any_call(
+            ('AES256-SHA256', 'TLSv1/SSLv3', 256)
+        )
+        kmip_session._logger.debug.assert_any_call(
+            "Session cipher selected: {0}".format(
+                ('AES128-SHA256', 'TLSv1/SSLv3', 128)
+            )
+        )
         kmip_session._logger.warning.assert_not_called()
         kmip_session._logger.exception.assert_not_called()
         self.assertTrue(kmip_session._send_response.called)
@@ -425,7 +448,7 @@ class TestKmipSession(testtools.TestCase):
         kmip_session._handle_message_loop()
 
         kmip_session._receive_request.assert_called_once_with()
-        kmip_session._logger.info.assert_not_called()
+#        kmip_session._logger.info.assert_not_called()
         self.assertTrue(kmip_session._logger.warning.called)
         kmip_session._logger.exception.assert_not_called()
         self.assertTrue(kmip_session._send_response.called)
@@ -456,7 +479,7 @@ class TestKmipSession(testtools.TestCase):
         kmip_session._handle_message_loop()
 
         kmip_session._receive_request.assert_called_once_with()
-        kmip_session._logger.info.assert_not_called()
+#        kmip_session._logger.info.assert_not_called()
         kmip_session._logger.warning.assert_called_once_with(
             "An unexpected error occurred while processing request."
         )

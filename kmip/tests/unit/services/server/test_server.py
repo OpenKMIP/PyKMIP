@@ -95,7 +95,7 @@ class TestKmipServer(testtools.TestCase):
         open_mock.assert_called_once_with('/test/path/server.log', 'w')
 
         self.assertTrue(s._logger.addHandler.called)
-        s._logger.setLevel.assert_called_once_with(logging.INFO)
+        s._logger.setLevel.assert_called_once_with(logging.DEBUG)
 
     @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.auth.TLS12AuthenticationSuite')
@@ -120,7 +120,8 @@ class TestKmipServer(testtools.TestCase):
             '/etc/pykmip/certs/ca.crt',
             'Basic',
             '/etc/pykmip/policies',
-            False
+            False,
+            'TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA'
         )
 
         s.config.load_settings.assert_called_with('/etc/pykmip/server.conf')
@@ -147,6 +148,13 @@ class TestKmipServer(testtools.TestCase):
             'enable_tls_client_auth',
             False
         )
+        s.config.set_setting.assert_any_call(
+            'tls_cipher_suites',
+            [
+                'TLS_RSA_WITH_AES_128_CBC_SHA',
+                'TLS_RSA_WITH_AES_256_CBC_SHA'
+            ]
+        )
 
         # Test that an attempt is made to instantiate the TLS 1.2 auth suite
         s = server.KmipServer(
@@ -170,8 +178,10 @@ class TestKmipServer(testtools.TestCase):
         s = server.KmipServer(
             hostname='127.0.0.1',
             port=5696,
+            auth_suite='Basic',
             config_path=None,
-            policy_path=None
+            policy_path=None,
+            tls_cipher_suites='TLS_RSA_WITH_AES_128_CBC_SHA'
         )
         s._logger = mock.MagicMock()
 
@@ -188,6 +198,13 @@ class TestKmipServer(testtools.TestCase):
                 s._logger.info.assert_any_call(
                     "Starting server socket handler."
                 )
+                s._logger.debug.assert_any_call("Configured cipher suites: 1")
+                s._logger.debug.assert_any_call("TLS_RSA_WITH_AES_128_CBC_SHA")
+                s._logger.debug.assert_any_call(
+                    "Authentication suite ciphers to use: 1"
+                )
+                s._logger.debug.assert_any_call("AES128-SHA")
+
                 socket_mock.assert_called_once_with(
                     socket.AF_INET,
                     socket.SOCK_STREAM

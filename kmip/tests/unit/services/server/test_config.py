@@ -38,7 +38,16 @@ class TestKmipServerConfig(testtools.TestCase):
         """
         Test that a KmipServerConfig object can be created without error.
         """
-        config.KmipServerConfig()
+        c = config.KmipServerConfig()
+
+        self.assertIn('enable_tls_client_auth', c.settings.keys())
+        self.assertEqual(
+            True,
+            c.settings.get('enable_tls_client_auth')
+        )
+
+        self.assertIn('tls_cipher_suites', c.settings.keys())
+        self.assertEqual([], c.settings.get('tls_cipher_suites'))
 
     def test_set_setting(self):
         """
@@ -55,6 +64,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_port = mock.MagicMock()
         c._set_policy_path = mock.MagicMock()
         c._set_enable_tls_client_auth = mock.MagicMock()
+        c._set_tls_cipher_suites = mock.MagicMock()
 
         # Test the right error is generated when setting an unsupported
         # setting.
@@ -95,6 +105,9 @@ class TestKmipServerConfig(testtools.TestCase):
 
         c.set_setting('enable_tls_client_auth', False)
         c._set_enable_tls_client_auth.assert_called_once_with(False)
+
+        c.set_setting('tls_cipher_suites', [])
+        c._set_tls_cipher_suites.assert_called_once_with([])
 
     def test_load_settings(self):
         """
@@ -149,6 +162,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_port = mock.MagicMock()
         c._set_policy_path = mock.MagicMock()
         c._set_enable_tls_client_auth = mock.MagicMock()
+        c._set_tls_cipher_suites = mock.MagicMock()
 
         # Test that the right calls are made when correctly parsing settings.
         parser = configparser.SafeConfigParser()
@@ -161,6 +175,11 @@ class TestKmipServerConfig(testtools.TestCase):
         parser.set('server', 'auth_suite', 'Basic')
         parser.set('server', 'policy_path', '/test/path/policies')
         parser.set('server', 'enable_tls_client_auth', 'False')
+        parser.set(
+            'server',
+            'tls_cipher_suites',
+            "\n    TLS_RSA_WITH_AES_256_CBC_SHA256"
+        )
 
         c._parse_settings(parser)
 
@@ -174,6 +193,9 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_auth_suite.assert_called_once_with('Basic')
         c._set_policy_path.assert_called_once_with('/test/path/policies')
         c._set_enable_tls_client_auth.assert_called_once_with(False)
+        c._set_tls_cipher_suites.assert_called_once_with(
+            "\n    TLS_RSA_WITH_AES_256_CBC_SHA256"
+        )
 
         # Test that a ConfigurationError is generated when the expected
         # section is missing.
@@ -536,12 +558,6 @@ class TestKmipServerConfig(testtools.TestCase):
         c = config.KmipServerConfig()
         c._logger = mock.MagicMock()
 
-        self.assertIn('enable_tls_client_auth', c.settings.keys())
-        self.assertEqual(
-            True,
-            c.settings.get('enable_tls_client_auth')
-        )
-
         # Test that the setting is set correctly with a valid value
         c._set_enable_tls_client_auth(False)
         self.assertEqual(
@@ -569,5 +585,104 @@ class TestKmipServerConfig(testtools.TestCase):
             "The flag enabling the TLS certificate client auth flag check "
             "must be a boolean.",
             c._set_enable_tls_client_auth,
+            *args
+        )
+
+    def test_set_tls_cipher_suites(self):
+        """
+        Test that the tls_cipher_suites configuration property can be set
+        correctly with a value expected from the config file.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        c._set_tls_cipher_suites(
+            """
+    TLS_RSA_WITH_AES_256_CBC_SHA256
+    TLS_RSA_WITH_AES_128_CBC_SHA256
+"""
+        )
+        self.assertEqual(2, len(c.settings.get('tls_cipher_suites')))
+        self.assertIn(
+            'TLS_RSA_WITH_AES_256_CBC_SHA256',
+            c.settings.get('tls_cipher_suites')
+        )
+        self.assertIn(
+            'TLS_RSA_WITH_AES_128_CBC_SHA256',
+            c.settings.get('tls_cipher_suites')
+        )
+
+    def test_set_tls_cipher_suites_preparsed(self):
+        """
+        Test that the tls_cipher_suites configuration property can be set
+        correctly with a preparsed list of TLS cipher suites, the value
+        expected if the cipher suites were provided via constructor.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        c._set_tls_cipher_suites(
+            [
+                'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA',
+                'TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384',
+                'DH-DSS-AES128-SHA'
+            ]
+        )
+        self.assertEqual(3, len(c.settings.get('tls_cipher_suites')))
+        self.assertIn(
+            'DH-DSS-AES128-SHA',
+            c.settings.get('tls_cipher_suites')
+        )
+        self.assertIn(
+            'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA',
+            c.settings.get('tls_cipher_suites')
+        )
+        self.assertIn(
+            'TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384',
+            c.settings.get('tls_cipher_suites')
+        )
+
+    def test_set_tls_cipher_suites_empty(self):
+        """
+        Test that the tls_cipher_suites configuration property can be set
+        correctly with an empty value.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        c._set_tls_cipher_suites(None)
+        self.assertEqual([], c.settings.get('tls_cipher_suites'))
+
+    def test_set_tls_cipher_suites_invalid_value(self):
+        """
+        Test that the right error is raised when an invalid value is used to
+        set the tls_cipher_suites configuration property.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        args = (1,)
+        self.assertRaisesRegexp(
+            exceptions.ConfigurationError,
+            "The TLS cipher suites must be a set of strings representing "
+            "cipher suite names.",
+            c._set_tls_cipher_suites,
+            *args
+        )
+
+    def test_set_tls_cipher_suites_invalid_list_value(self):
+        """
+        Test that the right error is raised when an invalid list value is used
+        to set the tls_cipher_suites configuration property.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        args = ([0],)
+        self.assertRaisesRegexp(
+            exceptions.ConfigurationError,
+            "The TLS cipher suites must be a set of strings representing "
+            "cipher suite names.",
+            c._set_tls_cipher_suites,
             *args
         )

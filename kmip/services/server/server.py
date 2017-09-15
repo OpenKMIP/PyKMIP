@@ -51,7 +51,8 @@ class KmipServer(object):
             config_path='/etc/pykmip/server.conf',
             log_path='/var/log/pykmip/server.log',
             policy_path=None,
-            enable_tls_client_auth=None
+            enable_tls_client_auth=None,
+            tls_cipher_suites=None
     ):
         """
         Create a KmipServer.
@@ -100,6 +101,12 @@ class KmipServer(object):
                 certificate client auth flag should be required for client
                 certificates when establishing a new client session. Optional,
                 defaults to None.
+            tls_cipher_suites (string): A comma-delimited list of cipher suite
+                names (e.g., TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_
+                128_CBC_SHA256), indicating which specific cipher suites should
+                be used by the server when establishing a TLS connection with
+                a client. Optional, defaults to None. If None, the default set
+                of TLS cipher suites will be used.
         """
         self._logger = logging.getLogger('kmip.server')
         self._setup_logging(log_path)
@@ -114,13 +121,15 @@ class KmipServer(object):
             ca_path,
             auth_suite,
             policy_path,
-            enable_tls_client_auth
+            enable_tls_client_auth,
+            tls_cipher_suites
         )
 
+        cipher_suites = self.config.settings.get('tls_cipher_suites')
         if self.config.settings.get('auth_suite') == 'TLS1.2':
-            self.auth_suite = auth.TLS12AuthenticationSuite()
+            self.auth_suite = auth.TLS12AuthenticationSuite(cipher_suites)
         else:
-            self.auth_suite = auth.BasicAuthenticationSuite()
+            self.auth_suite = auth.BasicAuthenticationSuite(cipher_suites)
 
         self._engine = engine.KmipEngine(
             self.config.settings.get('policy_path')
@@ -147,7 +156,7 @@ class KmipServer(object):
             )
         )
         self._logger.addHandler(handler)
-        self._logger.setLevel(logging.INFO)
+        self._logger.setLevel(logging.DEBUG)
 
     def _setup_configuration(
             self,
@@ -159,7 +168,8 @@ class KmipServer(object):
             ca_path=None,
             auth_suite=None,
             policy_path=None,
-            enable_tls_client_auth=None
+            enable_tls_client_auth=None,
+            tls_cipher_suites=None
     ):
         if path:
             self.config.load_settings(path)
@@ -183,6 +193,11 @@ class KmipServer(object):
                 'enable_tls_client_auth',
                 enable_tls_client_auth
             )
+        if tls_cipher_suites:
+            self.config.set_setting(
+                'tls_cipher_suites',
+                tls_cipher_suites.split(',')
+            )
 
     def start(self):
         """
@@ -201,6 +216,22 @@ class KmipServer(object):
         # Create a TCP stream socket and configure it for immediate reuse.
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+        self._logger.debug(
+            "Configured cipher suites: {0}".format(
+                len(self.config.settings.get('tls_cipher_suites'))
+            )
+        )
+        for cipher in self.config.settings.get('tls_cipher_suites'):
+            self._logger.debug(cipher)
+        auth_suite_ciphers = self.auth_suite.ciphers.split(':')
+        self._logger.debug(
+            "Authentication suite ciphers to use: {0}".format(
+                len(auth_suite_ciphers)
+            )
+        )
+        for cipher in auth_suite_ciphers:
+            self._logger.debug(cipher)
 
         self._socket = ssl.wrap_socket(
             self._socket,

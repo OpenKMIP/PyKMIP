@@ -158,6 +158,17 @@ class KmipSession(threading.Thread):
         max_size = self._max_response_size
 
         try:
+            shared_ciphers = self._connection.shared_ciphers()
+            self._logger.debug(
+                "Possible session ciphers: {0}".format(len(shared_ciphers))
+            )
+            for cipher in shared_ciphers:
+                self._logger.debug(cipher)
+            self._logger.debug(
+                "Session cipher selected: {0}".format(
+                    self._connection.cipher()
+                )
+            )
             client_identity = self._get_client_identity()
             request.read(request_data)
         except Exception as e:
