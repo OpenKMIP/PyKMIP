@@ -64,6 +64,60 @@ class TestBasicAuthenticationSuite(testtools.TestCase):
 
         self.assertEqual(cipher_string, ciphers)
 
+    def test_custom_ciphers(self):
+        """
+        Test that providing a custom list of cipher suites yields the right
+        cipher string for the Basic auth suite.
+        """
+        suite = auth.BasicAuthenticationSuite(
+            [
+                'TLS_RSA_WITH_AES_128_CBC_SHA',
+                'TLS_RSA_WITH_AES_256_CBC_SHA',
+                'TLS_DHE_PSK_WITH_AES_128_CBC_SHA',
+                'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA',
+                'DHE-DSS-AES256-SHA',
+                'DHE-RSA-AES256-SHA'
+            ]
+        )
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+        suites = ciphers.split(':')
+        self.assertEqual(4, len(suites))
+        self.assertIn('AES128-SHA', suites)
+        self.assertIn('AES256-SHA', suites)
+        self.assertIn('DHE-DSS-AES256-SHA', suites)
+        self.assertIn('DHE-RSA-AES256-SHA', suites)
+
+    def test_custom_ciphers_empty(self):
+        """
+        Test that providing a custom list of cipher suites that ultimately
+        yields an empty suite list causes the default cipher suite list to
+        be provided instead.
+        """
+        suite = auth.BasicAuthenticationSuite(
+            [
+                'TLS_RSA_WITH_AES_256_CBC_SHA256'
+            ]
+        )
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+        suites = ciphers.split(':')
+        self.assertEqual(12, len(suites))
+        self.assertIn('AES128-SHA', suites)
+        self.assertIn('DES-CBC3-SHA', suites)
+        self.assertIn('AES256-SHA', suites)
+        self.assertIn('DHE-DSS-DES-CBC3-SHA', suites)
+        self.assertIn('DHE-RSA-DES-CBC3-SHA', suites)
+        self.assertIn('DH-DSS-AES128-SHA', suites)
+        self.assertIn('DH-RSA-AES128-SHA', suites)
+        self.assertIn('DHE-DSS-AES128-SHA', suites)
+        self.assertIn('DHE-RSA-AES128-SHA', suites)
+        self.assertIn('DH-RSA-AES256-SHA', suites)
+        self.assertIn('DHE-DSS-AES256-SHA', suites)
+        self.assertIn('DHE-RSA-AES256-SHA', suites)
+
 
 @pytest.mark.skipif(not hasattr(ssl, 'PROTOCOL_TLSv1_2'),
                     reason="Requires ssl.PROTOCOL_TLSv1_2")
@@ -121,3 +175,65 @@ class TestTLS12AuthenticationSuite(testtools.TestCase):
         ))
 
         self.assertEqual(cipher_string, ciphers)
+
+    def test_custom_ciphers(self):
+        """
+        Test that providing a custom list of cipher suites yields the right
+        cipher string.
+        """
+        suite = auth.TLS12AuthenticationSuite(
+            [
+                'TLS_RSA_WITH_AES_256_CBC_SHA256',
+                'TLS_RSA_WITH_AES_256_CBC_SHA',
+                'TLS_DHE_PSK_WITH_AES_128_CBC_SHA',
+                'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA',
+                'DHE-DSS-AES256-SHA',
+                'DHE-RSA-AES256-SHA'
+            ]
+        )
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+        suites = ciphers.split(':')
+        self.assertEqual(1, len(suites))
+        self.assertIn('AES256-SHA256', suites)
+
+    def test_custom_ciphers_empty(self):
+        """
+        Test that providing a custom list of cipher suites that ultimately
+        yields an empty suite list causes the default cipher suite list to
+        be provided instead.
+        """
+        suite = auth.TLS12AuthenticationSuite(
+            [
+                'TLS_RSA_WITH_AES_256_CBC_SHA'
+            ]
+        )
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+        suites = ciphers.split(':')
+        self.assertEqual(23, len(suites))
+        self.assertIn('AES128-SHA256', suites)
+        self.assertIn('AES256-SHA256', suites)
+        self.assertIn('DH-DSS-AES256-SHA256', suites)
+        self.assertIn('DH-DSS-AES128-SHA256', suites)
+        self.assertIn('DH-RSA-AES128-SHA256', suites)
+        self.assertIn('DHE-DSS-AES128-SHA256', suites)
+        self.assertIn('DHE-RSA-AES128-SHA256', suites)
+        self.assertIn('DH-DSS-AES256-SHA256', suites)
+        self.assertIn('DH-RSA-AES256-SHA256', suites)
+        self.assertIn('DHE-DSS-AES256-SHA256', suites)
+        self.assertIn('DHE-RSA-AES256-SHA256', suites)
+        self.assertIn('ECDH-ECDSA-AES128-SHA256', suites)
+        self.assertIn('ECDH-ECDSA-AES256-SHA256', suites)
+        self.assertIn('ECDHE-ECDSA-AES128-SHA256', suites)
+        self.assertIn('ECDHE-ECDSA-AES256-SHA384', suites)
+        self.assertIn('ECDH-RSA-AES128-SHA256', suites)
+        self.assertIn('ECDH-RSA-AES256-SHA384', suites)
+        self.assertIn('ECDHE-RSA-AES128-SHA256', suites)
+        self.assertIn('ECDHE-RSA-AES256-SHA384', suites)
+        self.assertIn('ECDHE-ECDSA-AES128-GCM-SHA256', suites)
+        self.assertIn('ECDHE-ECDSA-AES256-GCM-SHA384', suites)
+        self.assertIn('ECDHE-ECDSA-AES128-SHA256', suites)
+        self.assertIn('ECDHE-ECDSA-AES256-SHA384', suites)

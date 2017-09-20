@@ -35,6 +35,7 @@ class KmipServerConfig(object):
 
         self.settings = dict()
         self.settings['enable_tls_client_auth'] = True
+        self.settings['tls_cipher_suites'] = []
 
         self._expected_settings = [
             'hostname',
@@ -46,7 +47,8 @@ class KmipServerConfig(object):
         ]
         self._optional_settings = [
             'policy_path',
-            'enable_tls_client_auth'
+            'enable_tls_client_auth',
+            'tls_cipher_suites'
         ]
 
     def set_setting(self, setting, value):
@@ -84,8 +86,10 @@ class KmipServerConfig(object):
             self._set_auth_suite(value)
         elif setting == 'policy_path':
             self._set_policy_path(value)
-        else:
+        elif setting == 'enable_tls_client_auth':
             self._set_enable_tls_client_auth(value)
+        else:
+            self._set_tls_cipher_suites(value)
 
     def load_settings(self, path):
         """
@@ -155,6 +159,10 @@ class KmipServerConfig(object):
         if parser.has_option('server', 'enable_tls_client_auth'):
             self._set_enable_tls_client_auth(
                 parser.getboolean('server', 'enable_tls_client_auth')
+            )
+        if parser.has_option('server', 'tls_cipher_suites'):
+            self._set_tls_cipher_suites(
+                parser.get('server', 'tls_cipher_suites')
             )
 
     def _set_hostname(self, value):
@@ -260,4 +268,25 @@ class KmipServerConfig(object):
             raise exceptions.ConfigurationError(
                 "The flag enabling the TLS certificate client auth flag check "
                 "must be a boolean."
+            )
+
+    def _set_tls_cipher_suites(self, value):
+        if not value:
+            self.settings['tls_cipher_suites'] = []
+            return
+        if isinstance(value, six.string_types):
+            value = value.split()
+
+        if isinstance(value, list):
+            for entry in value:
+                if not isinstance(entry, six.string_types):
+                    raise exceptions.ConfigurationError(
+                        "The TLS cipher suites must be a set of strings "
+                        "representing cipher suite names."
+                    )
+            self.settings['tls_cipher_suites'] = list(set(value))
+        else:
+            raise exceptions.ConfigurationError(
+                "The TLS cipher suites must be a set of strings representing "
+                "cipher suite names."
             )
