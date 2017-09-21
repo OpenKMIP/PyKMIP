@@ -19,7 +19,7 @@ from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import utils
 
-from kmip.core.messages.payloads import get_attribute_list
+from kmip.core.messages import payloads
 
 
 class TestGetAttributeListRequestPayload(testtools.TestCase):
@@ -52,14 +52,14 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that a GetAttributeList request payload can be constructed with
         no arguments.
         """
-        get_attribute_list.GetAttributeListRequestPayload()
+        payloads.GetAttributeListRequestPayload()
 
     def test_init_with_args(self):
         """
         Test that a GetAttributeList request payload can be constructed with a
         valid value.
         """
-        get_attribute_list.GetAttributeListRequestPayload(
+        payloads.GetAttributeListRequestPayload(
             'test-unique-identifier',
         )
 
@@ -68,7 +68,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that the unique_identifier attribute of a GetAttributeList
         request payload can be properly set and retrieved.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload()
+        payload = payloads.GetAttributeListRequestPayload()
 
         self.assertIsNone(payload.unique_identifier)
         self.assertIsNone(payload._unique_identifier)
@@ -89,7 +89,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid ID is used to set
         the unique_identifier attribute of a GetAttributeList request payload.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload()
+        payload = payloads.GetAttributeListRequestPayload()
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -103,7 +103,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that a GetAttributeList request payload can be read from a data
         stream.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload()
+        payload = payloads.GetAttributeListRequestPayload()
 
         self.assertEqual(None, payload._unique_identifier)
 
@@ -123,7 +123,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that a GetAttributeList response payload with no ID or attribute
         names can be read from a data stream.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload()
+        payload = payloads.GetAttributeListRequestPayload()
 
         self.assertEqual(None, payload._unique_identifier)
 
@@ -137,7 +137,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that a GetAttributeList request payload can be written to a data
         stream.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload(
+        payload = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
         stream = utils.BytearrayStream()
@@ -151,7 +151,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that a GetAttributeList request payload with no ID or attribute
         names can be written to a data stream.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload()
+        payload = payloads.GetAttributeListRequestPayload()
         stream = utils.BytearrayStream()
         payload.write(stream)
 
@@ -162,7 +162,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         """
         Test that repr can be applied to a GetAttributeList request payload.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload(
+        payload = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
         unique_identifier = "unique_identifier={0}".format(
@@ -179,7 +179,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that repr can be applied to a GetAttributeList request payload
         with no ID or attribute names.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload(
+        payload = payloads.GetAttributeListRequestPayload(
             None
         )
         unique_identifier = "unique_identifier={0}".format(
@@ -195,7 +195,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         """
         Test that str can be applied to a GetAttributeList request payload.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload(
+        payload = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
         expected = str({
@@ -209,7 +209,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that str can be applied to a GetAttributeList request payload
         with no ID or attribute names.
         """
-        payload = get_attribute_list.GetAttributeListRequestPayload(
+        payload = payloads.GetAttributeListRequestPayload(
             None
         )
         expected = str({
@@ -223,10 +223,10 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         GetAttributeList request payloads with the same data.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(
+        a = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
-        b = get_attribute_list.GetAttributeListRequestPayload(
+        b = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
 
@@ -238,10 +238,10 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetAttributeList request payloads with different IDs.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(
+        a = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
-        b = get_attribute_list.GetAttributeListRequestPayload(
+        b = payloads.GetAttributeListRequestPayload(
             'invalid'
         )
 
@@ -254,7 +254,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         GetAttributeList request payload to a non-GetAttributeList request
         payload.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(
+        a = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
         b = "invalid"
@@ -267,10 +267,10 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing
         two GetAttributeList request payloads with the same internal data.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(
+        a = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
-        b = get_attribute_list.GetAttributeListRequestPayload(
+        b = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
 
@@ -282,10 +282,10 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetAttributeList request payloads with different IDs.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(
+        a = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
-        b = get_attribute_list.GetAttributeListRequestPayload(
+        b = payloads.GetAttributeListRequestPayload(
             'invalid'
         )
 
@@ -298,7 +298,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         GetAttributeList request payload to a non-GetAttributeList request
         payload.
         """
-        a = get_attribute_list.GetAttributeListRequestPayload(
+        a = payloads.GetAttributeListRequestPayload(
             self.unique_identifier
         )
         b = "invalid"
@@ -398,14 +398,14 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a GetAttributeList response payload can be constructed with
         no arguments.
         """
-        get_attribute_list.GetAttributeListResponsePayload()
+        payloads.GetAttributeListResponsePayload()
 
     def test_init_with_args(self):
         """
         Test that a GetAttributeList response payload can be constructed with a
         valid value.
         """
-        get_attribute_list.GetAttributeListResponsePayload(
+        payloads.GetAttributeListResponsePayload(
             'test-unique-identifier',
             ['test-attribute-name-1', 'test-attribute-name-2']
         )
@@ -415,7 +415,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that the unique_identifier attribute of a GetAttributeList
         response payload can be properly set and retrieved.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
 
         self.assertIsNone(payload.unique_identifier)
         self.assertIsNone(payload._unique_identifier)
@@ -437,7 +437,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         the unique_identifier attribute of a GetAttributeList response
         payload.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -451,7 +451,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that the attribute_names attribute of a GetAttributeList response
         payload can be properly set and retrieved.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
 
         self.assertEqual(list(), payload.attribute_names)
         self.assertEqual(list(), payload._attribute_names)
@@ -485,7 +485,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid list is used to set
         the attribute_names attribute of a GetAttributeList response payload.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
         args = (payload, 'attribute_names', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -500,7 +500,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         included in the list used to set the attribute_names attribute of a
         GetAttributeList response payload.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
         args = (
             payload,
             'attribute_names',
@@ -519,7 +519,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that duplicate attribute names are silently removed when setting
         the attribute_names attribute of a GetAttributeList response payload.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
 
         self.assertEqual(list(), payload.attribute_names)
         self.assertEqual(list(), payload._attribute_names)
@@ -554,7 +554,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a GetAttributeList response payload can be read from a data
         stream.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
 
         self.assertEqual(None, payload._unique_identifier)
         self.assertEqual(list(), payload._attribute_names)
@@ -587,7 +587,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a GetAttributeList response payload with no ID can be read
         from a data stream.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
 
         self.assertEqual(None, payload._unique_identifier)
         self.assertEqual(list(), payload._attribute_names)
@@ -614,7 +614,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a GetAttributeList response payload with no attribute names
         can be read from a data stream.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
 
         self.assertEqual(None, payload._unique_identifier)
         self.assertEqual(list(), payload._attribute_names)
@@ -637,7 +637,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a GetAttributeList response payload with no ID or attribute
         names can be read from a data stream.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
 
         self.assertEqual(None, payload._unique_identifier)
         self.assertEqual(list(), payload._attribute_names)
@@ -654,7 +654,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a GetAttributeList response payload can be written to a data
         stream.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
@@ -669,7 +669,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a GetAttributeList response payload with no ID can be
         written to a data stream.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             None,
             self.attribute_names
         )
@@ -690,7 +690,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a GetAttributeList response payload with no attribute names
         can be written to a data stream.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             None
         )
@@ -705,7 +705,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that a GetAttributeList response payload with no ID or attribute
         names can be written to a data stream.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload()
+        payload = payloads.GetAttributeListResponsePayload()
         stream = utils.BytearrayStream()
         payload.write(stream)
 
@@ -716,7 +716,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         """
         Test that repr can be applied to a GetAttributeList response payload.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
@@ -738,7 +738,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that repr can be applied to a GetAttributeList response payload
         with no ID.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             None,
             self.attribute_names
         )
@@ -760,7 +760,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that repr can be applied to a GetAttributeList response payload
         with no attribute names.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             None
         )
@@ -782,7 +782,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that repr can be applied to a GetAttributeList response payload
         with no ID or attribute names.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             None,
             None
         )
@@ -803,7 +803,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         """
         Test that str can be applied to a GetAttributeList response payload.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
@@ -819,7 +819,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that str can be applied to a GetAttributeList response payload
         with no ID.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             None,
             self.attribute_names
         )
@@ -835,7 +835,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that str can be applied to a GetAttributeList response payload
         with no attribute names.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             None
         )
@@ -851,7 +851,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that str can be applied to a GetAttributeList response payload
         with no ID or attribute names.
         """
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             None,
             None
         )
@@ -867,11 +867,11 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         GetAttributeList response payloads with the same data.
         """
-        a = get_attribute_list.GetAttributeListResponsePayload(
+        a = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
-        b = get_attribute_list.GetAttributeListResponsePayload(
+        b = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
@@ -885,12 +885,12 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         GetAttributeList response payload with the same attribute_name sets
         but with different attribute name orderings.
         """
-        a = get_attribute_list.GetAttributeListResponsePayload(
+        a = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
         self.attribute_names.reverse()
-        b = get_attribute_list.GetAttributeListResponsePayload(
+        b = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
@@ -903,11 +903,11 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetAttributeList response payloads with different IDs.
         """
-        a = get_attribute_list.GetAttributeListResponsePayload(
+        a = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
-        b = get_attribute_list.GetAttributeListResponsePayload(
+        b = payloads.GetAttributeListResponsePayload(
             'invalid',
             self.attribute_names
         )
@@ -920,11 +920,11 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetAttributeList response payloads with different attribute names.
         """
-        a = get_attribute_list.GetAttributeListResponsePayload(
+        a = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
-        b = get_attribute_list.GetAttributeListResponsePayload(
+        b = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             None
         )
@@ -938,7 +938,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         GetAttributeList response payload to a non-GetAttributeList response
         payload.
         """
-        a = get_attribute_list.GetAttributeListResponsePayload(
+        a = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
@@ -952,11 +952,11 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing
         two GetAttributeList response payloads with the same internal data.
         """
-        a = get_attribute_list.GetAttributeListResponsePayload(
+        a = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
-        b = get_attribute_list.GetAttributeListResponsePayload(
+        b = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
@@ -969,11 +969,11 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetAttributeList response payloads with different IDs.
         """
-        a = get_attribute_list.GetAttributeListResponsePayload(
+        a = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
-        b = get_attribute_list.GetAttributeListResponsePayload(
+        b = payloads.GetAttributeListResponsePayload(
             'invalid',
             self.attribute_names
         )
@@ -986,11 +986,11 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetAttributeList response payloads with different attribute names.
         """
-        a = get_attribute_list.GetAttributeListResponsePayload(
+        a = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )
-        b = get_attribute_list.GetAttributeListResponsePayload(
+        b = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             None
         )
@@ -1004,7 +1004,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         GetAttributeList response payload to a non-GetAttributeList response
         payload.
         """
-        a = get_attribute_list.GetAttributeListResponsePayload(
+        a = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             self.attribute_names
         )

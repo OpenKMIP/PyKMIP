@@ -21,7 +21,7 @@ from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
 
-from kmip.core.messages.payloads import revoke
+from kmip.core.messages import payloads
 
 
 class TestRevokeRequestPayload(TestCase):
@@ -55,14 +55,14 @@ class TestRevokeRequestPayload(TestCase):
         Test that a RevokeRequestPayload object can be constructed with no
         specified value.
         """
-        revoke.RevokeRequestPayload()
+        payloads.RevokeRequestPayload()
 
     def test_init_with_args(self):
         """
         Test that a RevokeRequestPayload object can be constructed with valid
         values.
         """
-        revoke.RevokeRequestPayload(unique_identifier=self.uuid)
+        payloads.RevokeRequestPayload(unique_identifier=self.uuid)
 
     def test_validate_with_bad_uuid_type(self):
         """
@@ -71,7 +71,7 @@ class TestRevokeRequestPayload(TestCase):
         """
         self.assertRaisesRegexp(
             TypeError, "invalid unique identifier",
-            revoke.RevokeRequestPayload, "not-a-uuid")
+            payloads.RevokeRequestPayload, "not-a-uuid")
 
     def test_validate_with_bad_date_type(self):
         """
@@ -81,7 +81,7 @@ class TestRevokeRequestPayload(TestCase):
         reason = objects.RevocationReason()
         self.assertRaisesRegexp(
             TypeError, "invalid compromise time",
-            revoke.RevokeRequestPayload, self.uuid, reason, "not-a-date")
+            payloads.RevokeRequestPayload, self.uuid, reason, "not-a-date")
 
     def test_validate_with_bad_reason_type(self):
         """
@@ -90,14 +90,14 @@ class TestRevokeRequestPayload(TestCase):
         """
         self.assertRaisesRegexp(
             TypeError, "invalid revocation reason",
-            revoke.RevokeRequestPayload, self.uuid, "not-a-reason")
+            payloads.RevokeRequestPayload, self.uuid, "not-a-reason")
 
     def test_read_with_known_uuid(self):
         """
         Test that a RevokeRequestPayload object with known UUID can be read
         from a data stream.
         """
-        payload = revoke.RevokeRequestPayload()
+        payload = payloads.RevokeRequestPayload()
         payload.read(self.encoding_a)
         expected = '668eff89-3010-4258-bc0e-8c402309c746'
         observed = payload.unique_identifier.value
@@ -118,7 +118,7 @@ class TestRevokeRequestPayload(TestCase):
             tag=enums.Tags.COMPROMISE_OCCURRENCE_DATE, value=6)
 
         stream = utils.BytearrayStream()
-        payload = revoke.RevokeRequestPayload(
+        payload = payloads.RevokeRequestPayload(
             unique_identifier=self.uuid,
             revocation_reason=reason,
             compromise_occurrence_date=date)
@@ -165,14 +165,14 @@ class TestRevokeResponsePayload(TestCase):
         Test that a RevokeResponsePayload object can be constructed with no
         specified value.
         """
-        revoke.RevokeResponsePayload()
+        payloads.RevokeResponsePayload()
 
     def test_init_with_args(self):
         """
         Test that a RevokeResponsePayload object can be constructed with
         valid values.
         """
-        revoke.RevokeResponsePayload(unique_identifier=self.uuid)
+        payloads.RevokeResponsePayload(unique_identifier=self.uuid)
 
     def test_validate_with_invalid_uuid(self):
         """
@@ -181,14 +181,14 @@ class TestRevokeResponsePayload(TestCase):
         """
         self.assertRaisesRegexp(
             TypeError, "invalid unique identifier",
-            revoke.RevokeResponsePayload, "not-a-uuid")
+            payloads.RevokeResponsePayload, "not-a-uuid")
 
     def test_read_with_known_uuid(self):
         """
         Test that a RevokeResponsePayload object with known UUID can be read
         from a data stream.
         """
-        payload = revoke.RevokeResponsePayload()
+        payload = payloads.RevokeResponsePayload()
         payload.read(self.encoding_a)
         expected = '668eff89-3010-4258-bc0e-8c402309c746'
         observed = payload.unique_identifier.value
@@ -204,7 +204,7 @@ class TestRevokeResponsePayload(TestCase):
         written to a data stream.
         """
         stream = utils.BytearrayStream()
-        payload = revoke.RevokeResponsePayload(self.uuid)
+        payload = payloads.RevokeResponsePayload(self.uuid)
         payload.write(stream)
 
         length_expected = len(self.encoding_a)

@@ -21,7 +21,7 @@ from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
 
-from kmip.core.messages.payloads import derive_key
+from kmip.core.messages import payloads
 
 
 class TestDeriveKeyRequestPayload(testtools.TestCase):
@@ -150,7 +150,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a DeriveKey request payload can be constructed with no
         arguments.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
 
         self.assertEqual(None, payload.object_type)
         self.assertEqual(None, payload.unique_identifiers)
@@ -163,7 +163,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a DeriveKey request payload can be constructed with valid
         values
         """
-        payload = derive_key.DeriveKeyRequestPayload(
+        payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=['00000000-1111-2222-3333-444444444444'],
             derivation_method=enums.DerivationMethod.HASH,
@@ -197,7 +197,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the object type of a DeriveKey request payload.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'object_type', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
@@ -211,7 +211,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when invalid values are used to set
         the unique identifiers of a DeriveKey request payload.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'unique_identifiers', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
@@ -241,7 +241,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the derivation method of a DeriveKey request payload.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'derivation_method', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
@@ -255,7 +255,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the derivation parameters of a DeriveKey request payload.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'derivation_parameters', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
@@ -269,7 +269,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the template attribute of a DeriveKey request payload.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'template_attribute', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
@@ -282,7 +282,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         """
         Test that a DeriveKey request payload can be read from a data stream.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
 
         self.assertEqual(None, payload.object_type)
         self.assertEqual(None, payload.unique_identifiers)
@@ -347,7 +347,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when decoding a DeriveKey request
         payload encoding missing the object type.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
 
         self.assertEqual(None, payload.object_type)
         self.assertEqual(None, payload.unique_identifiers)
@@ -368,7 +368,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when decoding a DeriveKey request
         payload encoding missing the unique identifiers.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
 
         self.assertEqual(None, payload.object_type)
         self.assertEqual(None, payload.unique_identifiers)
@@ -389,7 +389,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when decoding a DeriveKey request
         payload encoding missing the derivation method.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
 
         self.assertEqual(None, payload.object_type)
         self.assertEqual(None, payload.unique_identifiers)
@@ -410,7 +410,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when decoding a DeriveKey request
         payload encoding missing the derivation parameters.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
 
         self.assertEqual(None, payload.object_type)
         self.assertEqual(None, payload.unique_identifiers)
@@ -431,7 +431,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when decoding a DeriveKey request
         payload encoding missing the template attribute.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
 
         self.assertEqual(None, payload.object_type)
         self.assertEqual(None, payload.unique_identifiers)
@@ -451,7 +451,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         """
         Test that a DeriveKey request payload can be written to a data stream.
         """
-        payload = derive_key.DeriveKeyRequestPayload(
+        payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -501,7 +501,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when encoding a DeriveKey request
         payload missing the object type.
         """
-        payload = derive_key.DeriveKeyRequestPayload()
+        payload = payloads.DeriveKeyRequestPayload()
 
         args = (utils.BytearrayStream(), )
         self.assertRaisesRegexp(
@@ -516,7 +516,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when encoding a DeriveKey request
         payload missing the unique identifiers.
         """
-        payload = derive_key.DeriveKeyRequestPayload(
+        payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY
         )
 
@@ -533,7 +533,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when encoding a DeriveKey request
         payload missing the derivation method.
         """
-        payload = derive_key.DeriveKeyRequestPayload(
+        payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -555,7 +555,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when encoding a DeriveKey request
         payload missing the derivation parameters.
         """
-        payload = derive_key.DeriveKeyRequestPayload(
+        payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -578,7 +578,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when encoding a DeriveKey request
         payload missing the template attribute.
         """
-        payload = derive_key.DeriveKeyRequestPayload(
+        payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -608,13 +608,13 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         DeriveKey request payloads with the same data.
         """
-        a = derive_key.DeriveKeyRequestPayload()
-        b = derive_key.DeriveKeyRequestPayload()
+        a = payloads.DeriveKeyRequestPayload()
+        b = payloads.DeriveKeyRequestPayload()
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -653,7 +653,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -701,10 +701,10 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         DeriveKey request payloads with different object types.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SECRET_DATA
         )
 
@@ -716,24 +716,24 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         DeriveKey request payloads with different sets of unique identifiers.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             unique_identifiers=['fb4b5b9c-6188-4c63-8142-fe9c328129fc']
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             unique_identifiers=['5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3']
         )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
                 '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3',
                 '1703250b-4d40-4de2-93a0-c494a1d4ae40'
             ]
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             unique_identifiers=[
                 '1703250b-4d40-4de2-93a0-c494a1d4ae40',
                 '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3',
@@ -744,14 +744,14 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
                 '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3',
                 '1703250b-4d40-4de2-93a0-c494a1d4ae40'
             ]
         )
-        b = derive_key.DeriveKeyRequestPayload(unique_identifiers=[])
+        b = payloads.DeriveKeyRequestPayload(unique_identifiers=[])
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -761,10 +761,10 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         DeriveKey request payloads with different derivation methods.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             derivation_method=enums.DerivationMethod.HASH
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             derivation_method=enums.DerivationMethod.PBKDF2
         )
 
@@ -776,7 +776,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         DeriveKey request payloads with different derivation parameters.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters(
                 cryptographic_parameters=attributes.CryptographicParameters(
                     hashing_algorithm=enums.HashingAlgorithm.SHA_256
@@ -785,7 +785,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters(
                 cryptographic_parameters=attributes.CryptographicParameters(
                     hashing_algorithm=enums.HashingAlgorithm.SHA_1
@@ -798,7 +798,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters(
                 cryptographic_parameters=attributes.CryptographicParameters(
                     hashing_algorithm=enums.HashingAlgorithm.SHA_256
@@ -807,15 +807,15 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters()
         )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = derive_key.DeriveKeyRequestPayload(derivation_parameters=None)
-        b = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(derivation_parameters=None)
+        b = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters(
                 cryptographic_parameters=attributes.CryptographicParameters(
                     hashing_algorithm=enums.HashingAlgorithm.SHA_256
@@ -833,7 +833,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         DeriveKey request payloads with different template attributes.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -858,7 +858,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -887,7 +887,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -912,15 +912,15 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute()
         )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = derive_key.DeriveKeyRequestPayload(template_attribute=None)
-        b = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(template_attribute=None)
+        b = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -954,7 +954,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         DeriveKey request payloads with different types.
         """
-        a = derive_key.DeriveKeyRequestPayload()
+        a = payloads.DeriveKeyRequestPayload()
         b = 'invalid'
 
         self.assertFalse(a == b)
@@ -965,13 +965,13 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing two
         DeriveKey request payloads with the same data.
         """
-        a = derive_key.DeriveKeyRequestPayload()
-        b = derive_key.DeriveKeyRequestPayload()
+        a = payloads.DeriveKeyRequestPayload()
+        b = payloads.DeriveKeyRequestPayload()
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -1010,7 +1010,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -1058,10 +1058,10 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         DeriveKey request payloads with different object types.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SECRET_DATA
         )
 
@@ -1073,24 +1073,24 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         DeriveKey request payloads with different sets of unique identifiers.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             unique_identifiers=['fb4b5b9c-6188-4c63-8142-fe9c328129fc']
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             unique_identifiers=['5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3']
         )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
                 '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3',
                 '1703250b-4d40-4de2-93a0-c494a1d4ae40'
             ]
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             unique_identifiers=[
                 '1703250b-4d40-4de2-93a0-c494a1d4ae40',
                 '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3',
@@ -1101,14 +1101,14 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
                 '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3',
                 '1703250b-4d40-4de2-93a0-c494a1d4ae40'
             ]
         )
-        b = derive_key.DeriveKeyRequestPayload(unique_identifiers=[])
+        b = payloads.DeriveKeyRequestPayload(unique_identifiers=[])
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1118,10 +1118,10 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         DeriveKey request payloads with different derivation methods.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             derivation_method=enums.DerivationMethod.HASH
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             derivation_method=enums.DerivationMethod.PBKDF2
         )
 
@@ -1133,7 +1133,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         DeriveKey request payloads with different derivation parameters.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters(
                 cryptographic_parameters=attributes.CryptographicParameters(
                     hashing_algorithm=enums.HashingAlgorithm.SHA_256
@@ -1142,7 +1142,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters(
                 cryptographic_parameters=attributes.CryptographicParameters(
                     hashing_algorithm=enums.HashingAlgorithm.SHA_1
@@ -1155,7 +1155,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters(
                 cryptographic_parameters=attributes.CryptographicParameters(
                     hashing_algorithm=enums.HashingAlgorithm.SHA_256
@@ -1164,15 +1164,15 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters()
         )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = derive_key.DeriveKeyRequestPayload(derivation_parameters=None)
-        b = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(derivation_parameters=None)
+        b = payloads.DeriveKeyRequestPayload(
             derivation_parameters=attributes.DerivationParameters(
                 cryptographic_parameters=attributes.CryptographicParameters(
                     hashing_algorithm=enums.HashingAlgorithm.SHA_256
@@ -1190,7 +1190,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         DeriveKey request payloads with different template attribute.
         """
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -1215,7 +1215,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -1244,7 +1244,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -1269,15 +1269,15 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyRequestPayload(
+        b = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute()
         )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = derive_key.DeriveKeyRequestPayload(template_attribute=None)
-        b = derive_key.DeriveKeyRequestPayload(
+        a = payloads.DeriveKeyRequestPayload(template_attribute=None)
+        b = payloads.DeriveKeyRequestPayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -1311,7 +1311,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         DeriveKey request payloads with different types.
         """
-        a = derive_key.DeriveKeyRequestPayload()
+        a = payloads.DeriveKeyRequestPayload()
         b = 'invalid'
 
         self.assertTrue(a != b)
@@ -1351,7 +1351,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 )
             ]
         )
-        payload = derive_key.DeriveKeyRequestPayload(
+        payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -1417,7 +1417,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
                 )
             ]
         )
-        payload = derive_key.DeriveKeyRequestPayload(
+        payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifiers=[
                 'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
@@ -1506,7 +1506,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that a DeriveKey response payload can be constructed with no
         arguments.
         """
-        payload = derive_key.DeriveKeyResponsePayload()
+        payload = payloads.DeriveKeyResponsePayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.template_attribute)
@@ -1516,7 +1516,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that a DeriveKey response payload can be constructed with valid
         values
         """
-        payload = derive_key.DeriveKeyResponsePayload(
+        payload = payloads.DeriveKeyResponsePayload(
             unique_identifier='00000000-1111-2222-3333-444444444444',
             template_attribute=objects.TemplateAttribute()
         )
@@ -1535,7 +1535,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when invalid values are used to set
         the unique identifier of a DeriveKey request payload.
         """
-        payload = derive_key.DeriveKeyResponsePayload()
+        payload = payloads.DeriveKeyResponsePayload()
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -1549,7 +1549,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the template attribute of a DeriveKey response payload.
         """
-        payload = derive_key.DeriveKeyResponsePayload()
+        payload = payloads.DeriveKeyResponsePayload()
         args = (payload, 'template_attribute', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
@@ -1562,7 +1562,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         """
         Test that a DeriveKey response payload can be read from a data stream.
         """
-        payload = derive_key.DeriveKeyResponsePayload()
+        payload = payloads.DeriveKeyResponsePayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.template_attribute)
@@ -1605,7 +1605,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when decoding a DeriveKey response
         payload encoding missing the unique identifier.
         """
-        payload = derive_key.DeriveKeyResponsePayload()
+        payload = payloads.DeriveKeyResponsePayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.template_attribute)
@@ -1624,7 +1624,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that a DeriveKey response payload missing a template attribute
         can be read from a data stream.
         """
-        payload = derive_key.DeriveKeyResponsePayload()
+        payload = payloads.DeriveKeyResponsePayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.template_attribute)
@@ -1641,7 +1641,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         """
         Test that a DeriveKey response payload can be written to a data stream.
         """
-        payload = derive_key.DeriveKeyResponsePayload(
+        payload = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc',
             template_attribute=objects.TemplateAttribute(
                 attributes=[
@@ -1678,7 +1678,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when encoding a DeriveKey response
         payload missing the unique identifier.
         """
-        payload = derive_key.DeriveKeyResponsePayload()
+        payload = payloads.DeriveKeyResponsePayload()
 
         args = (utils.BytearrayStream(), )
         self.assertRaisesRegexp(
@@ -1693,7 +1693,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when encoding a DeriveKey response
         payload missing the template attribute.
         """
-        payload = derive_key.DeriveKeyResponsePayload(
+        payload = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc'
         )
         stream = utils.BytearrayStream()
@@ -1714,13 +1714,13 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         DeriveKey response payloads with the same data.
         """
-        a = derive_key.DeriveKeyResponsePayload()
-        b = derive_key.DeriveKeyResponsePayload()
+        a = payloads.DeriveKeyResponsePayload()
+        b = payloads.DeriveKeyResponsePayload()
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc',
             template_attribute=objects.TemplateAttribute(
                 attributes=[
@@ -1746,7 +1746,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyResponsePayload(
+        b = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc',
             template_attribute=objects.TemplateAttribute(
                 attributes=[
@@ -1781,20 +1781,20 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         DeriveKey response payloads with different unique identifiers.
         """
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc'
         )
-        b = derive_key.DeriveKeyResponsePayload(
+        b = payloads.DeriveKeyResponsePayload(
             unique_identifier='5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3'
         )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             unique_identifier='1703250b-4d40-4de2-93a0-c494a1d4ae40'
         )
-        b = derive_key.DeriveKeyResponsePayload(unique_identifier=None)
+        b = payloads.DeriveKeyResponsePayload(unique_identifier=None)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1804,7 +1804,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         DeriveKey response payloads with different template attributes.
         """
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -1829,7 +1829,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyResponsePayload(
+        b = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -1858,7 +1858,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -1883,15 +1883,15 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyResponsePayload(
+        b = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute()
         )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = derive_key.DeriveKeyResponsePayload(template_attribute=None)
-        b = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(template_attribute=None)
+        b = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -1925,7 +1925,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         DeriveKey response payloads with different types.
         """
-        a = derive_key.DeriveKeyResponsePayload()
+        a = payloads.DeriveKeyResponsePayload()
         b = 'invalid'
 
         self.assertFalse(a == b)
@@ -1936,13 +1936,13 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing two
         DeriveKey response payloads with the same data.
         """
-        a = derive_key.DeriveKeyResponsePayload()
-        b = derive_key.DeriveKeyResponsePayload()
+        a = payloads.DeriveKeyResponsePayload()
+        b = payloads.DeriveKeyResponsePayload()
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc',
             template_attribute=objects.TemplateAttribute(
                 attributes=[
@@ -1968,7 +1968,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyResponsePayload(
+        b = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc',
             template_attribute=objects.TemplateAttribute(
                 attributes=[
@@ -2006,20 +2006,20 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         DeriveKey response payloads with different unique identifiers.
         """
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc'
         )
-        b = derive_key.DeriveKeyResponsePayload(
+        b = payloads.DeriveKeyResponsePayload(
             unique_identifier='5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3'
         )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             unique_identifier='1703250b-4d40-4de2-93a0-c494a1d4ae40'
         )
-        b = derive_key.DeriveKeyResponsePayload(unique_identifier=None)
+        b = payloads.DeriveKeyResponsePayload(unique_identifier=None)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -2029,7 +2029,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         DeriveKey response payloads with different template attribute.
         """
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -2054,7 +2054,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyResponsePayload(
+        b = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -2083,7 +2083,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -2108,15 +2108,15 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
                 ]
             )
         )
-        b = derive_key.DeriveKeyResponsePayload(
+        b = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute()
         )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = derive_key.DeriveKeyResponsePayload(template_attribute=None)
-        b = derive_key.DeriveKeyResponsePayload(
+        a = payloads.DeriveKeyResponsePayload(template_attribute=None)
+        b = payloads.DeriveKeyResponsePayload(
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
@@ -2150,7 +2150,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         DeriveKey response payloads with different types.
         """
-        a = derive_key.DeriveKeyResponsePayload()
+        a = payloads.DeriveKeyResponsePayload()
         b = 'invalid'
 
         self.assertTrue(a != b)
@@ -2183,7 +2183,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
                 )
             ]
         )
-        payload = derive_key.DeriveKeyResponsePayload(
+        payload = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc',
             template_attribute=template_attribute
         )
@@ -2228,7 +2228,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
                 )
             ]
         )
-        payload = derive_key.DeriveKeyResponsePayload(
+        payload = payloads.DeriveKeyResponsePayload(
             unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc',
             template_attribute=template_attribute
         )

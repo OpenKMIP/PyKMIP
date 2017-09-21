@@ -13,4 +13,121 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-__all__ = ['create', 'destroy', 'get', 'locate', 'register']
+from kmip.core.messages.payloads.activate import (
+    ActivateRequestPayload,
+    ActivateResponsePayload
+)
+from kmip.core.messages.payloads.create import (
+    CreateRequestPayload,
+    CreateResponsePayload
+)
+from kmip.core.messages.payloads.create_key_pair import (
+    CreateKeyPairRequestPayload,
+    CreateKeyPairResponsePayload
+)
+from kmip.core.messages.payloads.decrypt import (
+    DecryptRequestPayload,
+    DecryptResponsePayload
+)
+from kmip.core.messages.payloads.derive_key import (
+    DeriveKeyRequestPayload,
+    DeriveKeyResponsePayload
+)
+from kmip.core.messages.payloads.destroy import (
+    DestroyRequestPayload,
+    DestroyResponsePayload
+)
+from kmip.core.messages.payloads.discover_versions import (
+    DiscoverVersionsRequestPayload,
+    DiscoverVersionsResponsePayload
+)
+from kmip.core.messages.payloads.encrypt import (
+    EncryptRequestPayload,
+    EncryptResponsePayload
+)
+from kmip.core.messages.payloads.get import (
+    GetRequestPayload,
+    GetResponsePayload
+)
+from kmip.core.messages.payloads.get_attribute_list import (
+    GetAttributeListRequestPayload,
+    GetAttributeListResponsePayload
+)
+from kmip.core.messages.payloads.get_attributes import (
+    GetAttributesRequestPayload,
+    GetAttributesResponsePayload
+)
+from kmip.core.messages.payloads.locate import (
+    LocateRequestPayload,
+    LocateResponsePayload
+)
+from kmip.core.messages.payloads.mac import (
+    MACRequestPayload,
+    MACResponsePayload
+)
+from kmip.core.messages.payloads.query import (
+    QueryRequestPayload,
+    QueryResponsePayload
+)
+from kmip.core.messages.payloads.register import (
+    RegisterRequestPayload,
+    RegisterResponsePayload
+)
+from kmip.core.messages.payloads.rekey_key_pair import (
+    RekeyKeyPairRequestPayload,
+    RekeyKeyPairResponsePayload
+)
+from kmip.core.messages.payloads.revoke import (
+    RevokeRequestPayload,
+    RevokeResponsePayload
+)
+from kmip.core.messages.payloads.sign import (
+    SignRequestPayload,
+    SignResponsePayload
+)
+from kmip.core.messages.payloads.signature_verify import (
+    SignatureVerifyRequestPayload,
+    SignatureVerifyResponsePayload
+)
+
+
+__all__ = [
+    "ActivateRequestPayload",
+    "ActivateResponsePayload",
+    "CreateRequestPayload",
+    "CreateResponsePayload",
+    "CreateKeyPairRequestPayload",
+    "CreateKeyPairResponsePayload",
+    "DecryptRequestPayload",
+    "DecryptResponsePayload",
+    "DeriveKeyRequestPayload",
+    "DeriveKeyResponsePayload",
+    "DestroyRequestPayload",
+    "DestroyResponsePayload",
+    "DiscoverVersionsRequestPayload",
+    "DiscoverVersionsResponsePayload",
+    "EncryptRequestPayload",
+    "EncryptResponsePayload",
+    "GetRequestPayload",
+    "GetResponsePayload",
+    "GetAttributeListRequestPayload",
+    "GetAttributeListResponsePayload",
+    "GetAttributesRequestPayload",
+    "GetAttributesResponsePayload",
+    "LocateRequestPayload",
+    "LocateResponsePayload",
+    "MACRequestPayload",
+    "MACResponsePayload",
+    "QueryRequestPayload",
+    "QueryResponsePayload",
+    "RegisterRequestPayload",
+    "RegisterResponsePayload",
+    "RekeyKeyPairRequestPayload",
+    "RekeyKeyPairResponsePayload",
+    "RevokeRequestPayload",
+    "RevokeResponsePayload",
+    "SignRequestPayload",
+    "SignResponsePayload",
+    "SignatureVerifyRequestPayload",
+    "SignatureVerifyResponsePayload"
+]

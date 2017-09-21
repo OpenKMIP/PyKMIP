@@ -22,7 +22,7 @@ from kmip.core import objects
 from kmip.core import secrets
 from kmip.core import utils
 
-from kmip.core.messages.payloads import get
+from kmip.core.messages import payloads
 
 
 class TestGetRequestPayload(testtools.TestCase):
@@ -95,7 +95,7 @@ class TestGetRequestPayload(testtools.TestCase):
         """
         Test that a Get request payload can be constructed with no arguments.
         """
-        payload = get.GetRequestPayload()
+        payload = payloads.GetRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.key_format_type)
@@ -106,7 +106,7 @@ class TestGetRequestPayload(testtools.TestCase):
         """
         Test that a Get request payload can be constructed with valid values.
         """
-        payload = get.GetRequestPayload(
+        payload = payloads.GetRequestPayload(
             unique_identifier='00000000-2222-4444-6666-888888888888',
             key_format_type=enums.KeyFormatType.RAW,
             key_compression_type=enums.KeyCompressionType.
@@ -143,11 +143,11 @@ class TestGetRequestPayload(testtools.TestCase):
         self.assertRaisesRegexp(
             TypeError,
             "Unique identifier must be a string.",
-            get.GetRequestPayload,
+            payloads.GetRequestPayload,
             **kwargs
         )
 
-        args = (get.GetRequestPayload(), 'unique_identifier', 0)
+        args = (payloads.GetRequestPayload(), 'unique_identifier', 0)
         self.assertRaisesRegexp(
             TypeError,
             "Unique identifier must be a string.",
@@ -164,11 +164,11 @@ class TestGetRequestPayload(testtools.TestCase):
         self.assertRaisesRegexp(
             TypeError,
             "Key format type must be a KeyFormatType enumeration.",
-            get.GetRequestPayload,
+            payloads.GetRequestPayload,
             **kwargs
         )
 
-        args = (get.GetRequestPayload(), 'key_format_type', 'invalid')
+        args = (payloads.GetRequestPayload(), 'key_format_type', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
             "Key format type must be a KeyFormatType enumeration.",
@@ -185,11 +185,15 @@ class TestGetRequestPayload(testtools.TestCase):
         self.assertRaisesRegexp(
             TypeError,
             "Key compression type must be a KeyCompressionType enumeration.",
-            get.GetRequestPayload,
+            payloads.GetRequestPayload,
             **kwargs
         )
 
-        args = (get.GetRequestPayload(), 'key_compression_type', 'invalid')
+        args = (
+            payloads.GetRequestPayload(),
+            'key_compression_type',
+            'invalid'
+        )
         self.assertRaisesRegexp(
             TypeError,
             "Key compression type must be a KeyCompressionType enumeration.",
@@ -207,12 +211,12 @@ class TestGetRequestPayload(testtools.TestCase):
             TypeError,
             "Key wrapping specification must be a KeyWrappingSpecification "
             "struct.",
-            get.GetRequestPayload,
+            payloads.GetRequestPayload,
             **kwargs
         )
 
         args = (
-            get.GetRequestPayload(),
+            payloads.GetRequestPayload(),
             'key_wrapping_specification',
             'invalid'
         )
@@ -228,7 +232,7 @@ class TestGetRequestPayload(testtools.TestCase):
         """
         Test that a GetRequestPayload struct can be read from a data stream.
         """
-        payload = get.GetRequestPayload()
+        payload = payloads.GetRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.key_format_type)
@@ -282,7 +286,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that a GetRequestPayload struct can be read from a partial data
         stream.
         """
-        payload = get.GetRequestPayload()
+        payload = payloads.GetRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.key_format_type)
@@ -304,7 +308,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that a GetRequestPayload struct can be read from an empty data
         stream.
         """
-        payload = get.GetRequestPayload()
+        payload = payloads.GetRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.key_format_type)
@@ -322,7 +326,7 @@ class TestGetRequestPayload(testtools.TestCase):
         """
         Test that a GetRequestPayload struct can be written to a data stream.
         """
-        payload = get.GetRequestPayload(
+        payload = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             key_format_type=enums.KeyFormatType.RAW,
             key_compression_type=enums.KeyCompressionType.
@@ -351,7 +355,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that a partially defined GetRequestPayload struct can be written
         to a data stream.
         """
-        payload = get.GetRequestPayload(
+        payload = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
         )
         stream = utils.BytearrayStream()
@@ -366,7 +370,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that an empty GetRequestPayload struct can be written to a data
         stream.
         """
-        payload = get.GetRequestPayload()
+        payload = payloads.GetRequestPayload()
         stream = utils.BytearrayStream()
 
         payload.write(stream)
@@ -379,13 +383,13 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         GetRequestPayload structs with the same data.
         """
-        a = get.GetRequestPayload()
-        b = get.GetRequestPayload()
+        a = payloads.GetRequestPayload()
+        b = payloads.GetRequestPayload()
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             key_format_type=enums.KeyFormatType.RAW,
             key_compression_type=enums.KeyCompressionType.
@@ -402,7 +406,7 @@ class TestGetRequestPayload(testtools.TestCase):
                 encoding_option=enums.EncodingOption.NO_ENCODING
             )
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             key_format_type=enums.KeyFormatType.RAW,
             key_compression_type=enums.KeyCompressionType.
@@ -428,10 +432,10 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetRequestPayload structs with different unique identifiers.
         """
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c303f'
         )
 
@@ -443,10 +447,10 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetRequestPayload structs with different key format types.
         """
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             key_format_type=enums.KeyFormatType.RAW
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             key_format_type=enums.KeyFormatType.OPAQUE
         )
 
@@ -458,11 +462,11 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetRequestPayload structs with different key compression types.
         """
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             key_compression_type=enums.KeyCompressionType.
             EC_PUBLIC_KEY_TYPE_UNCOMPRESSED
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             key_compression_type=enums.KeyCompressionType.
             EC_PUBLIC_KEY_TYPE_X9_62_HYBRID
         )
@@ -475,7 +479,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetRequestPayload structs with different key wrapping specifications.
         """
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT_THEN_MAC_SIGN,
                 encryption_key_information=objects.EncryptionKeyInformation(
@@ -488,7 +492,7 @@ class TestGetRequestPayload(testtools.TestCase):
                 encoding_option=enums.EncodingOption.NO_ENCODING
             )
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
@@ -510,7 +514,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetRequestPayload structs with different types.
         """
-        a = get.GetRequestPayload()
+        a = payloads.GetRequestPayload()
         b = 'invalid'
 
         self.assertFalse(a == b)
@@ -521,13 +525,13 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing two
         GetRequestPayload structs with the same data.
         """
-        a = get.GetRequestPayload()
-        b = get.GetRequestPayload()
+        a = payloads.GetRequestPayload()
+        b = payloads.GetRequestPayload()
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             key_format_type=enums.KeyFormatType.RAW,
             key_compression_type=enums.KeyCompressionType.
@@ -544,7 +548,7 @@ class TestGetRequestPayload(testtools.TestCase):
                 encoding_option=enums.EncodingOption.NO_ENCODING
             )
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             key_format_type=enums.KeyFormatType.RAW,
             key_compression_type=enums.KeyCompressionType.
@@ -570,10 +574,10 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetRequestPayload structs with different unique identifiers.
         """
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c303f'
         )
 
@@ -585,10 +589,10 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetRequestPayload structs with different key format types.
         """
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             key_format_type=enums.KeyFormatType.RAW
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             key_format_type=enums.KeyFormatType.OPAQUE
         )
 
@@ -600,11 +604,11 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetRequestPayload structs with different key compression types.
         """
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             key_compression_type=enums.KeyCompressionType.
             EC_PUBLIC_KEY_TYPE_UNCOMPRESSED
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             key_compression_type=enums.KeyCompressionType.
             EC_PUBLIC_KEY_TYPE_X9_62_HYBRID
         )
@@ -617,7 +621,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetRequestPayload structs with different key wrapping specifications.
         """
-        a = get.GetRequestPayload(
+        a = payloads.GetRequestPayload(
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT_THEN_MAC_SIGN,
                 encryption_key_information=objects.EncryptionKeyInformation(
@@ -630,7 +634,7 @@ class TestGetRequestPayload(testtools.TestCase):
                 encoding_option=enums.EncodingOption.NO_ENCODING
             )
         )
-        b = get.GetRequestPayload(
+        b = payloads.GetRequestPayload(
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
@@ -652,7 +656,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetRequestPayload structs with different types.
         """
-        a = get.GetRequestPayload()
+        a = payloads.GetRequestPayload()
         b = 'invalid'
 
         self.assertTrue(a != b)
@@ -662,7 +666,7 @@ class TestGetRequestPayload(testtools.TestCase):
         """
         Test that repr can be applied to a GetRequestPayload struct.
         """
-        payload = get.GetRequestPayload(
+        payload = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             key_format_type=enums.KeyFormatType.RAW,
             key_compression_type=enums.KeyCompressionType.
@@ -717,7 +721,7 @@ class TestGetRequestPayload(testtools.TestCase):
         """
         Test that str can be applied to a GetRequestPayload struct.
         """
-        payload = get.GetRequestPayload(
+        payload = payloads.GetRequestPayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             key_format_type=enums.KeyFormatType.RAW,
             key_compression_type=enums.KeyCompressionType.
@@ -844,7 +848,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a GetRequestPayload struct can be constructed with no
         arguments.
         """
-        payload = get.GetResponsePayload()
+        payload = payloads.GetResponsePayload()
 
         self.assertEqual(None, payload.object_type)
         self.assertEqual(None, payload.unique_identifier)
@@ -855,7 +859,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a GetRequestPayload struct can be constructed with valid
         values.
         """
-        payload = get.GetResponsePayload(
+        payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifier='11111111-3333-5555-7777-999999999999',
             secret=secrets.SymmetricKey(
@@ -938,11 +942,11 @@ class TestGetResponsePayload(testtools.TestCase):
         self.assertRaisesRegexp(
             TypeError,
             "Object type must be an ObjectType enumeration.",
-            get.GetResponsePayload,
+            payloads.GetResponsePayload,
             **kwargs
         )
 
-        args = (get.GetResponsePayload(), 'object_type', 'invalid')
+        args = (payloads.GetResponsePayload(), 'object_type', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
             "Object type must be an ObjectType enumeration.",
@@ -959,11 +963,11 @@ class TestGetResponsePayload(testtools.TestCase):
         self.assertRaisesRegexp(
             TypeError,
             "Unique identifier must be a string.",
-            get.GetResponsePayload,
+            payloads.GetResponsePayload,
             **kwargs
         )
 
-        args = (get.GetResponsePayload(), 'unique_identifier', 0)
+        args = (payloads.GetResponsePayload(), 'unique_identifier', 0)
         self.assertRaisesRegexp(
             TypeError,
             "Unique identifier must be a string.",
@@ -982,11 +986,11 @@ class TestGetResponsePayload(testtools.TestCase):
             "Secret must be one of the following structs: Certificate, "
             "OpaqueObject, PrivateKey, PublicKey, SecretData, SplitKey, "
             "SymmetricKey, Template",
-            get.GetResponsePayload,
+            payloads.GetResponsePayload,
             **kwargs
         )
 
-        args = (get.GetResponsePayload(), 'secret', 0)
+        args = (payloads.GetResponsePayload(), 'secret', 0)
         self.assertRaisesRegexp(
             TypeError,
             "Secret must be one of the following structs: Certificate, "
@@ -1000,7 +1004,7 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         Test that a GetResponsePayload struct can be read from a data stream.
         """
-        payload = get.GetResponsePayload()
+        payload = payloads.GetResponsePayload()
 
         self.assertEqual(None, payload.object_type)
         self.assertEqual(None, payload.unique_identifier)
@@ -1061,7 +1065,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when a required GetResponsePayload
         field is missing when decoding the struct.
         """
-        payload = get.GetResponsePayload()
+        payload = payloads.GetResponsePayload()
         args = (self.partial_encoding_missing_object_type, )
         self.assertRaisesRegexp(
             ValueError,
@@ -1075,7 +1079,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when a required GetResponsePayload
         field is missing when decoding the struct.
         """
-        payload = get.GetResponsePayload()
+        payload = payloads.GetResponsePayload()
         args = (self.partial_encoding_missing_unique_id, )
         self.assertRaisesRegexp(
             ValueError,
@@ -1089,7 +1093,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when a required GetResponsePayload
         field is missing when decoding the struct.
         """
-        payload = get.GetResponsePayload()
+        payload = payloads.GetResponsePayload()
         args = (self.partial_encoding_missing_secret, )
         self.assertRaisesRegexp(
             ValueError,
@@ -1102,7 +1106,7 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         Test that a GetResponsePayload struct can be written to a data stream.
         """
-        payload = get.GetResponsePayload(
+        payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             secret=secrets.SymmetricKey(
@@ -1135,7 +1139,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when a required GetResponsePayload
         field is missing when encoding the struct.
         """
-        payload = get.GetResponsePayload()
+        payload = payloads.GetResponsePayload()
         stream = utils.BytearrayStream()
         args = (stream, )
         self.assertRaisesRegexp(
@@ -1150,7 +1154,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when a required GetResponsePayload
         field is missing when encoding the struct.
         """
-        payload = get.GetResponsePayload(
+        payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY
         )
         stream = utils.BytearrayStream()
@@ -1167,7 +1171,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when a required GetResponsePayload
         field is missing when encoding the struct.
         """
-        payload = get.GetResponsePayload(
+        payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
         )
@@ -1185,8 +1189,8 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         GetResponsePayload structs with the same data.
         """
-        a = get.GetResponsePayload()
-        b = get.GetResponsePayload()
+        a = payloads.GetResponsePayload()
+        b = payloads.GetResponsePayload()
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
@@ -1212,12 +1216,12 @@ class TestGetResponsePayload(testtools.TestCase):
                 )
             )
 
-        a = get.GetResponsePayload(
+        a = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             secret=secret
         )
-        b = get.GetResponsePayload(
+        b = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             secret=secret
@@ -1231,8 +1235,12 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetResponsePayload structs with different object type fields.
         """
-        a = get.GetResponsePayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
-        b = get.GetResponsePayload(object_type=enums.ObjectType.OPAQUE_DATA)
+        a = payloads.GetResponsePayload(
+            object_type=enums.ObjectType.SYMMETRIC_KEY
+        )
+        b = payloads.GetResponsePayload(
+            object_type=enums.ObjectType.OPAQUE_DATA
+        )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1242,10 +1250,10 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetResponsePayload structs with different unique identifier fields.
         """
-        a = get.GetResponsePayload(
+        a = payloads.GetResponsePayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
         )
-        b = get.GetResponsePayload(
+        b = payloads.GetResponsePayload(
             unique_identifier='49a1ca88-6bea-4fb2-ffff-7e58802c3038'
         )
 
@@ -1259,7 +1267,7 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         # TODO (peter-hamilton): Update this test case once SymmetricKeys
         # support proper field-based equality.
-        a = get.GetResponsePayload(
+        a = payloads.GetResponsePayload(
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
                     key_format_type=misc.KeyFormatType(
@@ -1279,7 +1287,7 @@ class TestGetResponsePayload(testtools.TestCase):
                 )
             )
         )
-        b = get.GetResponsePayload(
+        b = payloads.GetResponsePayload(
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
                     key_format_type=misc.KeyFormatType(
@@ -1308,7 +1316,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the equality operators returns False when comparing two
         GetResponsePayload structs with different types.
         """
-        a = get.GetResponsePayload()
+        a = payloads.GetResponsePayload()
         b = 'invalid'
 
         self.assertFalse(a == b)
@@ -1319,8 +1327,8 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing two
         GetResponsePayload structs with the same data.
         """
-        a = get.GetResponsePayload()
-        b = get.GetResponsePayload()
+        a = payloads.GetResponsePayload()
+        b = payloads.GetResponsePayload()
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
@@ -1344,12 +1352,12 @@ class TestGetResponsePayload(testtools.TestCase):
             )
         )
 
-        a = get.GetResponsePayload(
+        a = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             secret=secret
         )
-        b = get.GetResponsePayload(
+        b = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             secret=secret
@@ -1363,8 +1371,12 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetResponsePayload structs with different object type fields.
         """
-        a = get.GetResponsePayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
-        b = get.GetResponsePayload(object_type=enums.ObjectType.OPAQUE_DATA)
+        a = payloads.GetResponsePayload(
+            object_type=enums.ObjectType.SYMMETRIC_KEY
+        )
+        b = payloads.GetResponsePayload(
+            object_type=enums.ObjectType.OPAQUE_DATA
+        )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1374,10 +1386,10 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetResponsePayload structs with different unique identifier fields.
         """
-        a = get.GetResponsePayload(
+        a = payloads.GetResponsePayload(
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
         )
-        b = get.GetResponsePayload(
+        b = payloads.GetResponsePayload(
             unique_identifier='49a1ca88-6bea-4fb2-ffff-7e58802c3038'
         )
 
@@ -1391,7 +1403,7 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         # TODO (peter-hamilton): Update this test case once SymmetricKeys
         # support proper field-based equality.
-        a = get.GetResponsePayload(
+        a = payloads.GetResponsePayload(
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
                     key_format_type=misc.KeyFormatType(
@@ -1411,7 +1423,7 @@ class TestGetResponsePayload(testtools.TestCase):
                 )
             )
         )
-        b = get.GetResponsePayload(
+        b = payloads.GetResponsePayload(
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
                     key_format_type=misc.KeyFormatType(
@@ -1440,7 +1452,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the inequality operators returns True when comparing two
         GetResponsePayload structs with different types.
         """
-        a = get.GetResponsePayload()
+        a = payloads.GetResponsePayload()
         b = 'invalid'
 
         self.assertTrue(a != b)
@@ -1450,7 +1462,7 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         Test that repr can be applied to a GetResponsePayload struct.
         """
-        payload = get.GetResponsePayload(
+        payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             secret=secrets.SymmetricKey(
@@ -1506,7 +1518,7 @@ class TestGetResponsePayload(testtools.TestCase):
                 cryptographic_length=attributes.CryptographicLength(168)
             )
         )
-        payload = get.GetResponsePayload(
+        payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
             unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
             secret=secret

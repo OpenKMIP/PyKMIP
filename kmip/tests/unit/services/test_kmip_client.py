@@ -42,21 +42,7 @@ from kmip.core.messages.contents import ResultStatus
 from kmip.core.messages.contents import ResultReason
 from kmip.core.messages.contents import ResultMessage
 from kmip.core.messages.contents import ProtocolVersion
-from kmip.core.messages.payloads.create_key_pair import \
-    CreateKeyPairRequestPayload, CreateKeyPairResponsePayload
-from kmip.core.messages.payloads import decrypt
-from kmip.core.messages.payloads import derive_key
-from kmip.core.messages.payloads.discover_versions import \
-    DiscoverVersionsRequestPayload, DiscoverVersionsResponsePayload
-from kmip.core.messages.payloads import encrypt
-from kmip.core.messages.payloads import get_attributes
-from kmip.core.messages.payloads import get_attribute_list
-from kmip.core.messages.payloads.query import \
-    QueryRequestPayload, QueryResponsePayload
-from kmip.core.messages.payloads.rekey_key_pair import \
-    RekeyKeyPairRequestPayload, RekeyKeyPairResponsePayload
-from kmip.core.messages.payloads import sign
-from kmip.core.messages.payloads import signature_verify
+from kmip.core.messages import payloads
 
 from kmip.core.misc import Offset
 from kmip.core.misc import QueryFunction
@@ -236,8 +222,12 @@ class TestKMIPClient(TestCase):
 
         payload = batch_item.request_payload
 
-        msg = base.format(CreateKeyPairRequestPayload, payload)
-        self.assertIsInstance(payload, CreateKeyPairRequestPayload, msg)
+        msg = base.format(payloads.CreateKeyPairRequestPayload, payload)
+        self.assertIsInstance(
+            payload,
+            payloads.CreateKeyPairRequestPayload,
+            msg
+        )
 
         common_observed = payload.common_template_attribute
         private_observed = payload.private_key_template_attribute
@@ -285,8 +275,12 @@ class TestKMIPClient(TestCase):
 
         payload = batch_item.request_payload
 
-        msg = base.format(RekeyKeyPairRequestPayload, payload)
-        self.assertIsInstance(payload, RekeyKeyPairRequestPayload, msg)
+        msg = base.format(payloads.RekeyKeyPairRequestPayload, payload)
+        self.assertIsInstance(
+            payload,
+            payloads.RekeyKeyPairRequestPayload,
+            msg
+        )
 
         private_key_uuid_observed = payload.private_key_uuid
         offset_observed = payload.offset
@@ -342,8 +336,8 @@ class TestKMIPClient(TestCase):
         if query_functions is None:
             query_functions = list()
 
-        msg = base.format(QueryRequestPayload, payload)
-        self.assertIsInstance(payload, QueryRequestPayload, msg)
+        msg = base.format(payloads.QueryRequestPayload, payload)
+        self.assertIsInstance(payload, payloads.QueryRequestPayload, msg)
 
         query_functions_observed = payload.query_functions
         self.assertEqual(query_functions, query_functions_observed)
@@ -378,8 +372,12 @@ class TestKMIPClient(TestCase):
         if protocol_versions is None:
             protocol_versions = list()
 
-        msg = base.format(DiscoverVersionsRequestPayload, payload)
-        self.assertIsInstance(payload, DiscoverVersionsRequestPayload, msg)
+        msg = base.format(payloads.DiscoverVersionsRequestPayload, payload)
+        self.assertIsInstance(
+            payload,
+            payloads.DiscoverVersionsRequestPayload,
+            msg
+        )
 
         observed = payload.protocol_versions
 
@@ -413,7 +411,7 @@ class TestKMIPClient(TestCase):
         )
         self.assertIsInstance(
             batch_item.request_payload,
-            get_attributes.GetAttributesRequestPayload
+            payloads.GetAttributesRequestPayload
         )
         self.assertEqual(uuid, batch_item.request_payload.unique_identifier)
         self.assertEqual(
@@ -431,13 +429,13 @@ class TestKMIPClient(TestCase):
             OperationEnum.GET_ATTRIBUTE_LIST, batch_item.operation.value)
         self.assertIsInstance(
             batch_item.request_payload,
-            get_attribute_list.GetAttributeListRequestPayload)
+            payloads.GetAttributeListRequestPayload)
         self.assertEqual(uid, batch_item.request_payload.unique_identifier)
 
     def test_process_batch_items(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE_KEY_PAIR),
-            response_payload=CreateKeyPairResponsePayload())
+            response_payload=payloads.CreateKeyPairResponsePayload())
         response = ResponseMessage(batch_items=[batch_item, batch_item])
         results = self.client._process_batch_items(response)
 
@@ -522,7 +520,7 @@ class TestKMIPClient(TestCase):
     def test_process_create_key_pair_batch_item(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE_KEY_PAIR),
-            response_payload=CreateKeyPairResponsePayload())
+            response_payload=payloads.CreateKeyPairResponsePayload())
         result = self.client._process_create_key_pair_batch_item(batch_item)
 
         msg = "expected {0}, received {1}".format(CreateKeyPairResult, result)
@@ -531,7 +529,7 @@ class TestKMIPClient(TestCase):
     def test_process_rekey_key_pair_batch_item(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.REKEY_KEY_PAIR),
-            response_payload=RekeyKeyPairResponsePayload())
+            response_payload=payloads.RekeyKeyPairResponsePayload())
         result = self.client._process_rekey_key_pair_batch_item(batch_item)
 
         msg = "expected {0}, received {1}".format(RekeyKeyPairResult, result)
@@ -546,7 +544,7 @@ class TestKMIPClient(TestCase):
             application_namespaces,
             extension_information):
 
-        payload = QueryResponsePayload(
+        payload = payloads.QueryResponsePayload(
             operations,
             object_types,
             vendor_identification,
@@ -598,7 +596,7 @@ class TestKMIPClient(TestCase):
     def _test_process_discover_versions_batch_item(self, protocol_versions):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.DISCOVER_VERSIONS),
-            response_payload=DiscoverVersionsResponsePayload(
+            response_payload=payloads.DiscoverVersionsResponsePayload(
                 protocol_versions))
         result = self.client._process_discover_versions_batch_item(batch_item)
 
@@ -624,7 +622,7 @@ class TestKMIPClient(TestCase):
     def test_process_get_attributes_batch_item(self):
         uuid = '00000000-1111-2222-3333-444444444444'
         attributes = []
-        payload = get_attributes.GetAttributesResponsePayload(
+        payload = payloads.GetAttributesResponsePayload(
             unique_identifier=uuid,
             attributes=attributes
         )
@@ -641,7 +639,7 @@ class TestKMIPClient(TestCase):
     def test_process_get_attribute_list_batch_item(self):
         uid = '00000000-1111-2222-3333-444444444444'
         names = ['Cryptographic Algorithm', 'Cryptographic Length']
-        payload = get_attribute_list.GetAttributeListResponsePayload(
+        payload = payloads.GetAttributeListResponsePayload(
             unique_identifier=uid, attribute_names=names)
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.GET_ATTRIBUTE_LIST),
@@ -735,7 +733,7 @@ class TestKMIPClient(TestCase):
         """
         Test that the client can derive a key.
         """
-        payload = derive_key.DeriveKeyResponsePayload(
+        payload = payloads.DeriveKeyResponsePayload(
             unique_identifier='1',
         )
         batch_item = ResponseBatchItem(
@@ -793,7 +791,7 @@ class TestKMIPClient(TestCase):
         """
         Test that the client can encrypt data.
         """
-        payload = encrypt.EncryptResponsePayload(
+        payload = payloads.EncryptResponsePayload(
             unique_identifier='1',
             data=(
                 b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
@@ -856,7 +854,7 @@ class TestKMIPClient(TestCase):
         """
         Test that the client can decrypt data.
         """
-        payload = decrypt.DecryptResponsePayload(
+        payload = payloads.DecryptResponsePayload(
             unique_identifier='1',
             data=(
                 b'\x37\x36\x35\x34\x33\x32\x31\x20'
@@ -918,7 +916,7 @@ class TestKMIPClient(TestCase):
         """
         Test that the client can verify a signature.
         """
-        payload = signature_verify.SignatureVerifyResponsePayload(
+        payload = payloads.SignatureVerifyResponsePayload(
             unique_identifier='1',
             validity_indicator=enums.ValidityIndicator.INVALID
         )
@@ -972,7 +970,7 @@ class TestKMIPClient(TestCase):
         """
         Test that the client can sign data
         """
-        payload = sign.SignResponsePayload(
+        payload = payloads.SignResponsePayload(
             unique_identifier='1',
             signature_data=b'aaaaaaaaaaaaaaaa'
         )

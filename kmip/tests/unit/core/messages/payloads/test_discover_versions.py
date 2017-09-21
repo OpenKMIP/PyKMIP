@@ -20,7 +20,7 @@ from testtools import TestCase
 from kmip.core import utils
 
 from kmip.core.messages.contents import ProtocolVersion
-from kmip.core.messages.payloads import discover_versions
+from kmip.core.messages import payloads
 
 
 class TestDiscoverVersionsRequestPayload(TestCase):
@@ -54,23 +54,23 @@ class TestDiscoverVersionsRequestPayload(TestCase):
         super(TestDiscoverVersionsRequestPayload, self).tearDown()
 
     def test_init_with_none(self):
-        discover_versions.DiscoverVersionsRequestPayload()
+        payloads.DiscoverVersionsRequestPayload()
 
     def test_init_with_args(self):
-        discover_versions.DiscoverVersionsRequestPayload(
+        payloads.DiscoverVersionsRequestPayload(
             self.protocol_versions_empty)
 
     def test_validate_with_invalid_protocol_versions(self):
         kwargs = {'protocol_versions': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid protocol versions list",
-            discover_versions.DiscoverVersionsRequestPayload, **kwargs)
+            payloads.DiscoverVersionsRequestPayload, **kwargs)
 
     def test_validate_with_invalid_protocol_version(self):
         kwargs = {'protocol_versions': ['invalid']}
         self.assertRaisesRegexp(
             TypeError, "invalid protocol version",
-            discover_versions.DiscoverVersionsRequestPayload, **kwargs)
+            payloads.DiscoverVersionsRequestPayload, **kwargs)
 
     def _test_read(self, stream, payload, protocol_versions):
         payload.read(stream)
@@ -92,21 +92,21 @@ class TestDiscoverVersionsRequestPayload(TestCase):
 
     def test_read_with_empty_protocol_list(self):
         stream = self.encoding_empty
-        payload = discover_versions.DiscoverVersionsRequestPayload()
+        payload = payloads.DiscoverVersionsRequestPayload()
         protocol_versions = self.protocol_versions_empty
 
         self._test_read(stream, payload, protocol_versions)
 
     def test_read_with_one_protocol_version(self):
         stream = self.encoding_one
-        payload = discover_versions.DiscoverVersionsRequestPayload()
+        payload = payloads.DiscoverVersionsRequestPayload()
         protocol_versions = self.protocol_versions_one
 
         self._test_read(stream, payload, protocol_versions)
 
     def test_read_with_two_protocol_versions(self):
         stream = self.encoding_two
-        payload = discover_versions.DiscoverVersionsRequestPayload()
+        payload = payloads.DiscoverVersionsRequestPayload()
         protocol_versions = self.protocol_versions_two
 
         self._test_read(stream, payload, protocol_versions)
@@ -129,21 +129,21 @@ class TestDiscoverVersionsRequestPayload(TestCase):
         self.assertEqual(expected, stream, msg)
 
     def test_write_with_empty_protocol_list(self):
-        payload = discover_versions.DiscoverVersionsRequestPayload(
+        payload = payloads.DiscoverVersionsRequestPayload(
             self.protocol_versions_empty)
         expected = self.encoding_empty
 
         self._test_write(payload, expected)
 
     def test_write_with_one_protocol_version(self):
-        payload = discover_versions.DiscoverVersionsRequestPayload(
+        payload = payloads.DiscoverVersionsRequestPayload(
             self.protocol_versions_one)
         expected = self.encoding_one
 
         self._test_write(payload, expected)
 
     def test_write_with_two_protocol_versions(self):
-        payload = discover_versions.DiscoverVersionsRequestPayload(
+        payload = payloads.DiscoverVersionsRequestPayload(
             self.protocol_versions_two)
         expected = self.encoding_two
 
@@ -181,23 +181,23 @@ class TestDiscoverVersionsResponsePayload(TestCase):
         super(TestDiscoverVersionsResponsePayload, self).tearDown()
 
     def test_init_with_none(self):
-        discover_versions.DiscoverVersionsResponsePayload()
+        payloads.DiscoverVersionsResponsePayload()
 
     def test_init_with_args(self):
-        discover_versions.DiscoverVersionsResponsePayload(
+        payloads.DiscoverVersionsResponsePayload(
             self.protocol_versions_empty)
 
     def test_validate_with_invalid_protocol_versions(self):
         kwargs = {'protocol_versions': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid protocol versions list",
-            discover_versions.DiscoverVersionsResponsePayload, **kwargs)
+            payloads.DiscoverVersionsResponsePayload, **kwargs)
 
     def test_validate_with_invalid_protocol_version(self):
         kwargs = {'protocol_versions': ['invalid']}
         self.assertRaisesRegexp(
             TypeError, "invalid protocol version",
-            discover_versions.DiscoverVersionsResponsePayload, **kwargs)
+            payloads.DiscoverVersionsResponsePayload, **kwargs)
 
     def _test_read(self, stream, payload, protocol_versions):
         payload.read(stream)
@@ -219,21 +219,21 @@ class TestDiscoverVersionsResponsePayload(TestCase):
 
     def test_read_with_empty_protocol_list(self):
         stream = self.encoding_empty
-        payload = discover_versions.DiscoverVersionsResponsePayload()
+        payload = payloads.DiscoverVersionsResponsePayload()
         protocol_versions = self.protocol_versions_empty
 
         self._test_read(stream, payload, protocol_versions)
 
     def test_read_with_one_protocol_version(self):
         stream = self.encoding_one
-        payload = discover_versions.DiscoverVersionsResponsePayload()
+        payload = payloads.DiscoverVersionsResponsePayload()
         protocol_versions = self.protocol_versions_one
 
         self._test_read(stream, payload, protocol_versions)
 
     def test_read_with_two_protocol_versions(self):
         stream = self.encoding_two
-        payload = discover_versions.DiscoverVersionsResponsePayload()
+        payload = payloads.DiscoverVersionsResponsePayload()
         protocol_versions = self.protocol_versions_two
 
         self._test_read(stream, payload, protocol_versions)
@@ -256,21 +256,21 @@ class TestDiscoverVersionsResponsePayload(TestCase):
         self.assertEqual(expected, stream, msg)
 
     def test_write_with_empty_protocol_list(self):
-        payload = discover_versions.DiscoverVersionsResponsePayload(
+        payload = payloads.DiscoverVersionsResponsePayload(
             self.protocol_versions_empty)
         expected = self.encoding_empty
 
         self._test_write(payload, expected)
 
     def test_write_with_one_protocol_version(self):
-        payload = discover_versions.DiscoverVersionsResponsePayload(
+        payload = payloads.DiscoverVersionsResponsePayload(
             self.protocol_versions_one)
         expected = self.encoding_one
 
         self._test_write(payload, expected)
 
     def test_write_with_two_protocol_versions(self):
-        payload = discover_versions.DiscoverVersionsResponsePayload(
+        payload = payloads.DiscoverVersionsResponsePayload(
             self.protocol_versions_two)
         expected = self.encoding_two
 

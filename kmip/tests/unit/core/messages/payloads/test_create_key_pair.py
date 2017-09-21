@@ -19,7 +19,7 @@ from kmip.core import attributes
 from kmip.core import objects
 from kmip.core import utils
 
-from kmip.core.messages.payloads import create_key_pair
+from kmip.core.messages import payloads
 
 
 class TestCreateKeyPairRequestPayload(TestCase):
@@ -44,10 +44,10 @@ class TestCreateKeyPairRequestPayload(TestCase):
         super(TestCreateKeyPairRequestPayload, self).tearDown()
 
     def test_init_with_none(self):
-        create_key_pair.CreateKeyPairRequestPayload()
+        payloads.CreateKeyPairRequestPayload()
 
     def test_init_with_args(self):
-        create_key_pair.CreateKeyPairRequestPayload(
+        payloads.CreateKeyPairRequestPayload(
             self.common_template_attribute,
             self.private_key_template_attribute,
             self.public_key_template_attribute)
@@ -58,7 +58,7 @@ class TestCreateKeyPairRequestPayload(TestCase):
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid common template attribute",
-            create_key_pair.CreateKeyPairRequestPayload, **kwargs)
+            payloads.CreateKeyPairRequestPayload, **kwargs)
 
     def test_validate_with_invalid_private_key_template_attribute(self):
         kwargs = {'common_template_attribute': None,
@@ -66,7 +66,7 @@ class TestCreateKeyPairRequestPayload(TestCase):
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid private key template attribute",
-            create_key_pair.CreateKeyPairRequestPayload, **kwargs)
+            payloads.CreateKeyPairRequestPayload, **kwargs)
 
     def test_validate_with_invalid_public_key_template_attribute(self):
         kwargs = {'common_template_attribute': None,
@@ -74,7 +74,7 @@ class TestCreateKeyPairRequestPayload(TestCase):
                   'public_key_template_attribute': 'invalid'}
         self.assertRaises(
             TypeError, "invalid public key template attribute",
-            create_key_pair.CreateKeyPairRequestPayload, **kwargs)
+            payloads.CreateKeyPairRequestPayload, **kwargs)
 
     def _test_read(self, stream, payload, common_template_attribute,
                    private_key_template_attribute,
@@ -103,13 +103,13 @@ class TestCreateKeyPairRequestPayload(TestCase):
 
     def test_read_with_none(self):
         stream = self.encoding_empty
-        payload = create_key_pair.CreateKeyPairRequestPayload()
+        payload = payloads.CreateKeyPairRequestPayload()
 
         self._test_read(stream, payload, None, None, None)
 
     def test_read_with_args(self):
         stream = self.encoding_full
-        payload = create_key_pair.CreateKeyPairRequestPayload()
+        payload = payloads.CreateKeyPairRequestPayload()
 
         self._test_read(stream, payload, self.common_template_attribute,
                         self.private_key_template_attribute,
@@ -133,13 +133,13 @@ class TestCreateKeyPairRequestPayload(TestCase):
 
     def test_write_with_none(self):
         stream = utils.BytearrayStream()
-        payload = create_key_pair.CreateKeyPairRequestPayload()
+        payload = payloads.CreateKeyPairRequestPayload()
 
         self._test_write(stream, payload, self.encoding_empty)
 
     def test_write_with_args(self):
         stream = utils.BytearrayStream()
-        payload = create_key_pair.CreateKeyPairRequestPayload(
+        payload = payloads.CreateKeyPairRequestPayload(
             self.common_template_attribute,
             self.private_key_template_attribute,
             self.public_key_template_attribute)
@@ -182,10 +182,10 @@ class TestCreateKeyPairResponsePayload(TestCase):
         super(TestCreateKeyPairResponsePayload, self).tearDown()
 
     def test_init_with_none(self):
-        create_key_pair.CreateKeyPairResponsePayload()
+        payloads.CreateKeyPairResponsePayload()
 
     def test_init_with_args(self):
-        create_key_pair.CreateKeyPairResponsePayload(
+        payloads.CreateKeyPairResponsePayload(
             self.private_key_uuid, self.public_key_uuid,
             self.private_key_template_attribute,
             self.public_key_template_attribute)
@@ -197,7 +197,7 @@ class TestCreateKeyPairResponsePayload(TestCase):
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid private key unique identifier",
-            create_key_pair.CreateKeyPairResponsePayload, **kwargs)
+            payloads.CreateKeyPairResponsePayload, **kwargs)
 
     def test_validate_with_invalid_public_key_unique_identifier(self):
         kwargs = {'private_key_uuid': None,
@@ -206,7 +206,7 @@ class TestCreateKeyPairResponsePayload(TestCase):
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid public key unique identifier",
-            create_key_pair.CreateKeyPairResponsePayload, **kwargs)
+            payloads.CreateKeyPairResponsePayload, **kwargs)
 
     def test_validate_with_invalid_private_key_template_attribute(self):
         kwargs = {'private_key_uuid': self.private_key_uuid,
@@ -215,7 +215,7 @@ class TestCreateKeyPairResponsePayload(TestCase):
                   'public_key_template_attribute': None}
         self.assertRaisesRegexp(
             TypeError, "invalid private key template attribute",
-            create_key_pair.CreateKeyPairResponsePayload, **kwargs)
+            payloads.CreateKeyPairResponsePayload, **kwargs)
 
     def test_validate_with_invalid_public_key_template_attribute(self):
         kwargs = {'private_key_uuid': self.private_key_uuid,
@@ -224,7 +224,7 @@ class TestCreateKeyPairResponsePayload(TestCase):
                   'public_key_template_attribute': 'invalid'}
         self.assertRaisesRegexp(
             TypeError, "invalid public key template attribute",
-            create_key_pair.CreateKeyPairResponsePayload, **kwargs)
+            payloads.CreateKeyPairResponsePayload, **kwargs)
 
     def _test_read(self, stream, payload, private_key_uuid, public_key_uuid,
                    private_key_template_attribute,
@@ -257,14 +257,14 @@ class TestCreateKeyPairResponsePayload(TestCase):
 
     def test_read_with_none(self):
         stream = self.encoding_empty
-        payload = create_key_pair.CreateKeyPairResponsePayload()
+        payload = payloads.CreateKeyPairResponsePayload()
 
         self._test_read(stream, payload, self.empty_private_key_uuid,
                         self.empty_public_key_uuid, None, None)
 
     def test_read_with_args(self):
         stream = self.encoding_full
-        payload = create_key_pair.CreateKeyPairResponsePayload(
+        payload = payloads.CreateKeyPairResponsePayload(
             self.private_key_uuid, self.public_key_uuid,
             self.private_key_template_attribute,
             self.public_key_template_attribute)
@@ -292,13 +292,13 @@ class TestCreateKeyPairResponsePayload(TestCase):
 
     def test_write_with_none(self):
         stream = utils.BytearrayStream()
-        payload = create_key_pair.CreateKeyPairResponsePayload()
+        payload = payloads.CreateKeyPairResponsePayload()
 
         self._test_write(stream, payload, self.encoding_empty)
 
     def test_write_with_args(self):
         stream = utils.BytearrayStream()
-        payload = create_key_pair.CreateKeyPairResponsePayload(
+        payload = payloads.CreateKeyPairResponsePayload(
             self.private_key_uuid, self.public_key_uuid,
             self.private_key_template_attribute,
             self.public_key_template_attribute)

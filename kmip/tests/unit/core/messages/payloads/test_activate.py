@@ -18,7 +18,7 @@ from testtools import TestCase
 from kmip.core import utils
 from kmip.core import attributes
 
-from kmip.core.messages.payloads import activate
+from kmip.core.messages import payloads
 
 
 class TestActivateRequestPayload(TestCase):
@@ -49,14 +49,14 @@ class TestActivateRequestPayload(TestCase):
         Test that a ActivateRequestPayload object can be constructed with no
         specified value.
         """
-        activate.ActivateRequestPayload()
+        payloads.ActivateRequestPayload()
 
     def test_init_with_args(self):
         """
         Test that a ActivateRequestPayload object can be constructed with valid
         values.
         """
-        activate.ActivateRequestPayload(unique_identifier=self.uuid)
+        payloads.ActivateRequestPayload(unique_identifier=self.uuid)
 
     def test_validate_with_bad_uuid_type(self):
         """
@@ -65,14 +65,14 @@ class TestActivateRequestPayload(TestCase):
         """
         self.assertRaisesRegexp(
             TypeError, "invalid unique identifier",
-            activate.ActivateRequestPayload, "not-a-uuid")
+            payloads.ActivateRequestPayload, "not-a-uuid")
 
     def test_read_with_known_uuid(self):
         """
         Test that a ActivateRequestPayload object with known UUID can be read
         from a data stream.
         """
-        payload = activate.ActivateRequestPayload()
+        payload = payloads.ActivateRequestPayload()
         payload.read(self.encoding_a)
         expected = '668eff89-3010-4258-bc0e-8c402309c746'
         observed = payload.unique_identifier.value
@@ -88,7 +88,7 @@ class TestActivateRequestPayload(TestCase):
         written to a data stream.
         """
         stream = utils.BytearrayStream()
-        payload = activate.ActivateRequestPayload(self.uuid)
+        payload = payloads.ActivateRequestPayload(self.uuid)
         payload.write(stream)
 
         length_expected = len(self.encoding_a)
@@ -132,14 +132,14 @@ class TestActivateResponsePayload(TestCase):
         Test that a ActivateResponsePayload object can be constructed with no
         specified value.
         """
-        activate.ActivateResponsePayload()
+        payloads.ActivateResponsePayload()
 
     def test_init_with_args(self):
         """
         Test that a ActivateResponsePayload object can be constructed with
         valid values.
         """
-        activate.ActivateResponsePayload(unique_identifier=self.uuid)
+        payloads.ActivateResponsePayload(unique_identifier=self.uuid)
 
     def test_validate_with_invalid_uuid(self):
         """
@@ -148,14 +148,14 @@ class TestActivateResponsePayload(TestCase):
         """
         self.assertRaisesRegexp(
             TypeError, "invalid unique identifier",
-            activate.ActivateResponsePayload, "not-a-uuid")
+            payloads.ActivateResponsePayload, "not-a-uuid")
 
     def test_read_with_known_uuid(self):
         """
         Test that a ActivateResponsePayload object with known UUID can be read
         from a data stream.
         """
-        payload = activate.ActivateResponsePayload()
+        payload = payloads.ActivateResponsePayload()
         payload.read(self.encoding_a)
         expected = '668eff89-3010-4258-bc0e-8c402309c746'
         observed = payload.unique_identifier.value
@@ -171,7 +171,7 @@ class TestActivateResponsePayload(TestCase):
         written to a data stream.
         """
         stream = utils.BytearrayStream()
-        payload = activate.ActivateResponsePayload(self.uuid)
+        payload = payloads.ActivateResponsePayload(self.uuid)
         payload.write(stream)
 
         length_expected = len(self.encoding_a)

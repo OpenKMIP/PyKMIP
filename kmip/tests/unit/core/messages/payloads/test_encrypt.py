@@ -19,7 +19,7 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import utils
 
-from kmip.core.messages.payloads import encrypt
+from kmip.core.messages import payloads
 
 
 class TestEncryptRequestPayload(testtools.TestCase):
@@ -98,7 +98,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that an Encrypt request payload can be constructed with no
         arguments.
         """
-        payload = encrypt.EncryptRequestPayload()
+        payload = payloads.EncryptRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.cryptographic_parameters)
@@ -110,7 +110,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that an Encrypt request payload can be constructed with valid
         values
         """
-        payload = encrypt.EncryptRequestPayload(
+        payload = payloads.EncryptRequestPayload(
             unique_identifier='00000000-1111-2222-3333-444444444444',
             cryptographic_parameters=attributes.CryptographicParameters(),
             data=b'\x01\x02\x03',
@@ -133,7 +133,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of an Encrypt request payload.
         """
-        payload = encrypt.EncryptRequestPayload()
+        payload = payloads.EncryptRequestPayload()
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -147,7 +147,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the cryptographic parameters of an Encrypt request payload.
         """
-        payload = encrypt.EncryptRequestPayload()
+        payload = payloads.EncryptRequestPayload()
         args = (payload, 'cryptographic_parameters', 'invalid')
         self.assertRaisesRegexp(
             TypeError,
@@ -162,7 +162,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the data of an Encrypt request payload.
         """
-        payload = encrypt.EncryptRequestPayload()
+        payload = payloads.EncryptRequestPayload()
         args = (payload, 'data', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -176,7 +176,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the IV/counter/nonce of an Encrypt request payload.
         """
-        payload = encrypt.EncryptRequestPayload()
+        payload = payloads.EncryptRequestPayload()
         args = (payload, 'iv_counter_nonce', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -189,7 +189,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         """
         Test that an Encrypt request payload can be read from a data stream.
         """
-        payload = encrypt.EncryptRequestPayload()
+        payload = payloads.EncryptRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.cryptographic_parameters)
@@ -251,7 +251,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that an Encrypt request payload can be read from a partial data
         stream containing the minimum required attributes.
         """
-        payload = encrypt.EncryptRequestPayload()
+        payload = payloads.EncryptRequestPayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.cryptographic_parameters)
@@ -270,7 +270,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when a required Encrypt request
         payload attribute is missing from the payload encoding.
         """
-        payload = encrypt.EncryptRequestPayload()
+        payload = payloads.EncryptRequestPayload()
         args = (self.empty_encoding, )
         self.assertRaisesRegexp(
             ValueError,
@@ -283,7 +283,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         """
         Test that an Encrypt request payload can be written to a data stream.
         """
-        payload = encrypt.EncryptRequestPayload(
+        payload = payloads.EncryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -315,7 +315,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that a partially defined Encrypt request payload can be written
         to a data stream.
         """
-        payload = encrypt.EncryptRequestPayload(
+        payload = payloads.EncryptRequestPayload(
             data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
         )
         stream = utils.BytearrayStream()
@@ -329,7 +329,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that a ValueError gets raised when a required Encrypt request
         payload attribute is missing when encoding the payload.
         """
-        payload = encrypt.EncryptRequestPayload()
+        payload = payloads.EncryptRequestPayload()
         stream = utils.BytearrayStream()
         args = (stream, )
         self.assertRaisesRegexp(
@@ -344,13 +344,13 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         Encrypt request payloads with the same data.
         """
-        a = encrypt.EncryptRequestPayload()
-        b = encrypt.EncryptRequestPayload()
+        a = payloads.EncryptRequestPayload()
+        b = payloads.EncryptRequestPayload()
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-        a = encrypt.EncryptRequestPayload(
+        a = payloads.EncryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -371,7 +371,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
         )
-        b = encrypt.EncryptRequestPayload(
+        b = payloads.EncryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -401,10 +401,10 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Encrypt request payloads with different unique identifiers.
         """
-        a = encrypt.EncryptRequestPayload(
+        a = payloads.EncryptRequestPayload(
             unique_identifier='a'
         )
-        b = encrypt.EncryptRequestPayload(
+        b = payloads.EncryptRequestPayload(
             unique_identifier='b'
         )
 
@@ -416,12 +416,12 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Encrypt request payloads with different cryptographic parameters.
         """
-        a = encrypt.EncryptRequestPayload(
+        a = payloads.EncryptRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
             )
         )
-        b = encrypt.EncryptRequestPayload(
+        b = payloads.EncryptRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
                 hashing_algorithm=enums.HashingAlgorithm.MD5
             )
@@ -435,8 +435,8 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Encrypt request payloads with different data.
         """
-        a = encrypt.EncryptRequestPayload(data=b'\x11')
-        b = encrypt.EncryptRequestPayload(data=b'\xFF')
+        a = payloads.EncryptRequestPayload(data=b'\x11')
+        b = payloads.EncryptRequestPayload(data=b'\xFF')
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -446,8 +446,8 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Encrypt request payloads with different IV/counter/nonce values.
         """
-        a = encrypt.EncryptRequestPayload(iv_counter_nonce=b'\x22')
-        b = encrypt.EncryptRequestPayload(iv_counter_nonce=b'\xAA')
+        a = payloads.EncryptRequestPayload(iv_counter_nonce=b'\x22')
+        b = payloads.EncryptRequestPayload(iv_counter_nonce=b'\xAA')
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -457,7 +457,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Encrypt request payloads with different types.
         """
-        a = encrypt.EncryptRequestPayload()
+        a = payloads.EncryptRequestPayload()
         b = 'invalid'
 
         self.assertFalse(a == b)
@@ -468,13 +468,13 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing two
         Encrypt request payloads with the same data.
         """
-        a = encrypt.EncryptRequestPayload()
-        b = encrypt.EncryptRequestPayload()
+        a = payloads.EncryptRequestPayload()
+        b = payloads.EncryptRequestPayload()
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-        a = encrypt.EncryptRequestPayload(
+        a = payloads.EncryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -495,7 +495,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
         )
-        b = encrypt.EncryptRequestPayload(
+        b = payloads.EncryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -525,10 +525,10 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Encrypt request payloads with different unique identifiers.
         """
-        a = encrypt.EncryptRequestPayload(
+        a = payloads.EncryptRequestPayload(
             unique_identifier='a'
         )
-        b = encrypt.EncryptRequestPayload(
+        b = payloads.EncryptRequestPayload(
             unique_identifier='b'
         )
 
@@ -540,12 +540,12 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Encrypt request payloads with different cryptographic parameters.
         """
-        a = encrypt.EncryptRequestPayload(
+        a = payloads.EncryptRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
             )
         )
-        b = encrypt.EncryptRequestPayload(
+        b = payloads.EncryptRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
                 hashing_algorithm=enums.HashingAlgorithm.MD5
             )
@@ -559,8 +559,8 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Encrypt request payloads with different data.
         """
-        a = encrypt.EncryptRequestPayload(data=b'\x11')
-        b = encrypt.EncryptRequestPayload(data=b'\xFF')
+        a = payloads.EncryptRequestPayload(data=b'\x11')
+        b = payloads.EncryptRequestPayload(data=b'\xFF')
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -570,8 +570,8 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Encrypt request payloads with different IV/counter/nonce values.
         """
-        a = encrypt.EncryptRequestPayload(iv_counter_nonce=b'\x22')
-        b = encrypt.EncryptRequestPayload(iv_counter_nonce=b'\xAA')
+        a = payloads.EncryptRequestPayload(iv_counter_nonce=b'\x22')
+        b = payloads.EncryptRequestPayload(iv_counter_nonce=b'\xAA')
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -581,7 +581,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Encrypt request payloads with different types.
         """
-        a = encrypt.EncryptRequestPayload()
+        a = payloads.EncryptRequestPayload()
         b = 'invalid'
 
         self.assertTrue(a != b)
@@ -591,7 +591,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
         """
         Test that repr can be applied to an Encrypt request payload.
         """
-        payload = encrypt.EncryptRequestPayload(
+        payload = payloads.EncryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
@@ -657,7 +657,7 @@ class TestEncryptRequestPayload(testtools.TestCase):
             counter_length=0,
             initial_counter_value=1
         )
-        payload = encrypt.EncryptRequestPayload(
+        payload = payloads.EncryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=cryptographic_parameters,
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
@@ -738,7 +738,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that an Encrypt response payload can be constructed with no
         arguments.
         """
-        payload = encrypt.EncryptResponsePayload()
+        payload = payloads.EncryptResponsePayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.data)
@@ -749,7 +749,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that an Encrypt response payload can be constructed with valid
         values
         """
-        payload = encrypt.EncryptResponsePayload(
+        payload = payloads.EncryptResponsePayload(
             unique_identifier='00000000-1111-2222-3333-444444444444',
             data=b'\x01\x02\x03',
             iv_counter_nonce=b'\x01'
@@ -767,7 +767,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of an Encrypt response payload.
         """
-        payload = encrypt.EncryptResponsePayload()
+        payload = payloads.EncryptResponsePayload()
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -781,7 +781,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the data of an Encrypt response payload.
         """
-        payload = encrypt.EncryptResponsePayload()
+        payload = payloads.EncryptResponsePayload()
         args = (payload, 'data', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -795,7 +795,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the IV/counter/nonce of an Encrypt response payload.
         """
-        payload = encrypt.EncryptResponsePayload()
+        payload = payloads.EncryptResponsePayload()
         args = (payload, 'iv_counter_nonce', 0)
         self.assertRaisesRegexp(
             TypeError,
@@ -808,7 +808,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         """
         Test that an Encrypt response payload can be read from a data stream.
         """
-        payload = encrypt.EncryptResponsePayload()
+        payload = payloads.EncryptResponsePayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.data)
@@ -828,7 +828,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that an Encrypt response payload can be read from a partial data
         stream containing the minimum required attributes.
         """
-        payload = encrypt.EncryptResponsePayload()
+        payload = payloads.EncryptResponsePayload()
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload.data)
@@ -848,7 +848,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when required Encrypt response
         payload attributes are missing from the payload encoding.
         """
-        payload = encrypt.EncryptResponsePayload()
+        payload = payloads.EncryptResponsePayload()
         args = (self.empty_encoding, )
         self.assertRaisesRegexp(
             ValueError,
@@ -857,7 +857,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
             *args
         )
 
-        payload = encrypt.EncryptResponsePayload()
+        payload = payloads.EncryptResponsePayload()
         args = (self.incomplete_encoding, )
         self.assertRaisesRegexp(
             ValueError,
@@ -870,7 +870,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         """
         Test that an Encrypt response payload can be written to a data stream.
         """
-        payload = encrypt.EncryptResponsePayload(
+        payload = payloads.EncryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
@@ -886,7 +886,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that a partially defined Encrypt response payload can be written
         to a data stream.
         """
-        payload = encrypt.EncryptResponsePayload(
+        payload = payloads.EncryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
         )
@@ -901,7 +901,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that a ValueError gets raised when required Encrypt response
         payload attributes are missing when encoding the payload.
         """
-        payload = encrypt.EncryptResponsePayload()
+        payload = payloads.EncryptResponsePayload()
         self.assertIsNone(payload.unique_identifier)
         stream = utils.BytearrayStream()
         args = (stream, )
@@ -912,7 +912,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
             *args
         )
 
-        payload = encrypt.EncryptResponsePayload(
+        payload = payloads.EncryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959'
         )
         stream = utils.BytearrayStream()
@@ -929,18 +929,18 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         Encrypt response payloads with the same data.
         """
-        a = encrypt.EncryptResponsePayload()
-        b = encrypt.EncryptResponsePayload()
+        a = payloads.EncryptResponsePayload()
+        b = payloads.EncryptResponsePayload()
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-        a = encrypt.EncryptResponsePayload(
+        a = payloads.EncryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
         )
-        b = encrypt.EncryptResponsePayload(
+        b = payloads.EncryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
@@ -954,10 +954,10 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Encrypt response payloads with different unique identifiers.
         """
-        a = encrypt.EncryptResponsePayload(
+        a = payloads.EncryptResponsePayload(
             unique_identifier='a'
         )
-        b = encrypt.EncryptResponsePayload(
+        b = payloads.EncryptResponsePayload(
             unique_identifier='b'
         )
 
@@ -969,8 +969,8 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Encrypt response payloads with different data.
         """
-        a = encrypt.EncryptResponsePayload(data=b'\x11')
-        b = encrypt.EncryptResponsePayload(data=b'\xFF')
+        a = payloads.EncryptResponsePayload(data=b'\x11')
+        b = payloads.EncryptResponsePayload(data=b'\xFF')
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -980,8 +980,8 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Encrypt response payloads with different IV/counter/nonce values.
         """
-        a = encrypt.EncryptResponsePayload(iv_counter_nonce=b'\x22')
-        b = encrypt.EncryptResponsePayload(iv_counter_nonce=b'\xAA')
+        a = payloads.EncryptResponsePayload(iv_counter_nonce=b'\x22')
+        b = payloads.EncryptResponsePayload(iv_counter_nonce=b'\xAA')
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -991,7 +991,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Encrypt response payloads with different types.
         """
-        a = encrypt.EncryptResponsePayload()
+        a = payloads.EncryptResponsePayload()
         b = 'invalid'
 
         self.assertFalse(a == b)
@@ -1002,18 +1002,18 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing two
         Encrypt response payloads with the same data.
         """
-        a = encrypt.EncryptResponsePayload()
-        b = encrypt.EncryptResponsePayload()
+        a = payloads.EncryptResponsePayload()
+        b = payloads.EncryptResponsePayload()
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-        a = encrypt.EncryptResponsePayload(
+        a = payloads.EncryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
         )
-        b = encrypt.EncryptResponsePayload(
+        b = payloads.EncryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
@@ -1027,10 +1027,10 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Encrypt response payloads with different unique identifiers.
         """
-        a = encrypt.EncryptResponsePayload(
+        a = payloads.EncryptResponsePayload(
             unique_identifier='a'
         )
-        b = encrypt.EncryptResponsePayload(
+        b = payloads.EncryptResponsePayload(
             unique_identifier='b'
         )
 
@@ -1042,8 +1042,8 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Encrypt response payloads with different data.
         """
-        a = encrypt.EncryptResponsePayload(data=b'\x11')
-        b = encrypt.EncryptResponsePayload(data=b'\xFF')
+        a = payloads.EncryptResponsePayload(data=b'\x11')
+        b = payloads.EncryptResponsePayload(data=b'\xFF')
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1053,8 +1053,8 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Encrypt response payloads with different IV/counter/nonce values.
         """
-        a = encrypt.EncryptResponsePayload(iv_counter_nonce=b'\x22')
-        b = encrypt.EncryptResponsePayload(iv_counter_nonce=b'\xAA')
+        a = payloads.EncryptResponsePayload(iv_counter_nonce=b'\x22')
+        b = payloads.EncryptResponsePayload(iv_counter_nonce=b'\xAA')
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1064,7 +1064,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Encrypt response payloads with different types.
         """
-        a = encrypt.EncryptResponsePayload()
+        a = payloads.EncryptResponsePayload()
         b = 'invalid'
 
         self.assertTrue(a != b)
@@ -1074,7 +1074,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         """
         Test that repr can be applied to an Encrypt response payload.
         """
-        payload = encrypt.EncryptResponsePayload(
+        payload = payloads.EncryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
@@ -1093,7 +1093,7 @@ class TestEncryptResponsePayload(testtools.TestCase):
         """
         Test that str can be applied to an Encrypt response payload
         """
-        payload = encrypt.EncryptResponsePayload(
+        payload = payloads.EncryptResponsePayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
             iv_counter_nonce=b'\x01'
