@@ -134,11 +134,10 @@ class ProxyKmipClient(api.KmipClient):
         Close the client connection.
 
         Raises:
-            ClientConnectionNotOpen: if the client connection is not open
             Exception: if an error occurs while trying to close the connection
         """
         if not self._is_open:
-            raise exceptions.ClientConnectionNotOpen()
+            return
         else:
             try:
                 self.proxy.close()
