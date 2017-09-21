@@ -1122,11 +1122,9 @@ class KMIPProxy(KMIP):
     def _activate(self, unique_identifier=None, credential=None):
         operation = Operation(OperationEnum.ACTIVATE)
 
-        uuid = None
-        if unique_identifier is not None:
-            uuid = attr.UniqueIdentifier(unique_identifier)
-
-        payload = activate.ActivateRequestPayload(unique_identifier=uuid)
+        payload = activate.ActivateRequestPayload(
+            unique_identifier=unique_identifier
+        )
 
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=payload)

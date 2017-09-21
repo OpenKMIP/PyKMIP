@@ -1783,7 +1783,7 @@ class KmipEngine(object):
         self._logger.info("Processing operation: Activate")
 
         if payload.unique_identifier:
-            unique_identifier = payload.unique_identifier.value
+            unique_identifier = payload.unique_identifier
         else:
             unique_identifier = self._id_placeholder
 
@@ -1810,7 +1810,7 @@ class KmipEngine(object):
         self._data_session.commit()
 
         response_payload = activate.ActivateResponsePayload(
-            unique_identifier=attributes.UniqueIdentifier(unique_identifier)
+            unique_identifier=unique_identifier
         )
 
         return response_payload

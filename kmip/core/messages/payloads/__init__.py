@@ -13,4 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-__all__ = ['create', 'destroy', 'get', 'locate', 'register']
+from kmip.core.messages.payloads.activate import (
+    ActivateRequestPayload, ActivateResponsePayload
+)
+
+
+__all__ = [
+    'ActivateRequestPayload',
+    'ActivateResponsePayload'
+]
