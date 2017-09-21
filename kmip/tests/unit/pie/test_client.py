@@ -115,11 +115,10 @@ class TestProxyKmipClient(testtools.TestCase):
                 mock.MagicMock(spec_set=KMIPProxy))
     def test_close_on_close(self):
         """
-        Test that a ClientConnectionNotOpen exception is raised when trying
-        to close a closed client connection.
+        Test that a closed client connection can be closed with no error.
         """
         client = ProxyKmipClient()
-        self.assertRaises(ClientConnectionNotOpen, client.close)
+        client.close()
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
