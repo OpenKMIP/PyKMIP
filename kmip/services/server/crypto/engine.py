@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import binascii
 import logging
 import os
 
@@ -1204,14 +1203,14 @@ class CryptographyEngine(api.CryptographicEngine):
 
         try:
             private_key = serialization.load_pem_private_key(
-                binascii.unhexlify(bytes),
+                bytes,
                 password=None,
                 backend=default_backend()
             )
             return private_key
         except:
             private_key = serialization.load_der_private_key(
-                binascii.unhexlify(bytes),
+                bytes,
                 password=None,
                 backend=default_backend()
             )
