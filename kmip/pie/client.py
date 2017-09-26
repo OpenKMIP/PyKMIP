@@ -216,7 +216,9 @@ class ProxyKmipClient(api.KmipClient):
                         length,
                         operation_policy_name=None,
                         public_name=None,
-                        private_name=None):
+                        public_usage_mask=None,
+                        private_name=None,
+                        private_usage_mask=None):
         """
         Create an asymmetric key pair on a KMIP appliance.
 
@@ -228,8 +230,14 @@ class ProxyKmipClient(api.KmipClient):
                 to use for the new key pair. Optional, defaults to None.
             public_name (string): The name to give the public key.
                                   Optional, defaults to None.
+            public_usage_mask (list): A list of CryptographicUsageMask
+                enumerations indicating how the public key should be used.
+                Optional, defaults to None.
             private_name (string): The name to give the public key.
                                    Optional, defaults to None.
+            private_usage_mask (list): A list of CryptographicUsageMask
+                enumerations indicating how the private key should be used.
+                Optional, defaults to None.
 
         Returns:
             string: The uid of the newly created public key.
@@ -257,17 +265,39 @@ class ProxyKmipClient(api.KmipClient):
 
         # Create public / private specific attributes
         public_template = None
+        names = None
         if public_name:
-            name_attr = self._build_name_attribute(name=public_name)
+            names = self._build_name_attribute(name=public_name)
+        attrs = []
+        if public_usage_mask:
+            attrs = [
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    public_usage_mask
+                )
+            ]
+        if names or attrs:
             public_template = cobjects.PublicKeyTemplateAttribute(
-                names=name_attr
+                names=names,
+                attributes=attrs
             )
 
         private_template = None
+        names = None
         if private_name:
-            name_attr = self._build_name_attribute(name=private_name)
+            names = self._build_name_attribute(name=private_name)
+        attrs = []
+        if private_usage_mask:
+            attrs = [
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    private_usage_mask
+                )
+            ]
+        if names or attrs:
             private_template = cobjects.PrivateKeyTemplateAttribute(
-                names=name_attr
+                names=names,
+                attributes=attrs
             )
 
         # Create the asymmetric key pair and handle the results

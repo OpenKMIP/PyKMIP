@@ -594,6 +594,69 @@ class TestProxyKmipClient(testtools.TestCase):
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
+    def test_create_key_pair_with_cryptographic_usage_masks(self):
+        """
+        Test that an asymmetric key pair can be created with proper inputs,
+        specifically testing that the private / public usage masks are
+        correctly sent with the request.
+        """
+        # Create the template to test the create key pair call
+        algorithm = enums.CryptographicAlgorithm.RSA
+        length = 2048
+        algorithm_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm)
+        length_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length)
+        mask_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [enums.CryptographicUsageMask.ENCRYPT,
+             enums.CryptographicUsageMask.DECRYPT])
+
+        private_usage_mask = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [enums.CryptographicUsageMask.SIGN]
+        )
+        public_usage_mask = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [enums.CryptographicUsageMask.VERIFY]
+        )
+
+        pair_attributes = [
+            algorithm_attribute,
+            length_attribute,
+            mask_attribute]
+
+        template = obj.CommonTemplateAttribute(attributes=pair_attributes)
+        private_template = obj.PrivateKeyTemplateAttribute(
+            attributes=[private_usage_mask])
+        public_template = obj.PublicKeyTemplateAttribute(
+            attributes=[public_usage_mask])
+
+        status = enums.ResultStatus.SUCCESS
+        result = results.CreateKeyPairResult(
+            contents.ResultStatus(status),
+            public_key_uuid=attr.PublicKeyUniqueIdentifier(
+                'aaaaaaaa-1111-2222-3333-ffffffffffff'),
+            private_key_uuid=attr.PrivateKeyUniqueIdentifier(
+                'ffffffff-3333-2222-1111-aaaaaaaaaaaa'))
+
+        with ProxyKmipClient() as client:
+            client.proxy.create_key_pair.return_value = result
+
+            _, _ = client.create_key_pair(
+                enums.CryptographicAlgorithm.RSA,
+                2048,
+                public_usage_mask=[enums.CryptographicUsageMask.VERIFY],
+                private_usage_mask=[enums.CryptographicUsageMask.SIGN]
+            )
+
+            kwargs = {'common_template_attribute': template,
+                      'private_key_template_attribute': private_template,
+                      'public_key_template_attribute': public_template}
+            client.proxy.create_key_pair.assert_called_with(**kwargs)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
     def test_create_key_pair_on_invalid_algorithm(self):
         """
         Test that a TypeError exception is raised when trying to create an
