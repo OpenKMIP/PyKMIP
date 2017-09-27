@@ -641,6 +641,67 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             secret.value
         )
 
+    def test_encrypt_decrypt(self):
+        """
+        Test that the ProxyKmipClient can create an encryption key, encrypt
+        plain text with it, and then decrypt the cipher text, retrieving the
+        original plain text.
+        """
+        # Create an encryption key.
+        key_id = self.client.create(
+            enums.CryptographicAlgorithm.AES,
+            256,
+            cryptographic_usage_mask=[
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ]
+        )
+
+        # Activate the encryption key.
+        self.client.activate(key_id)
+
+        # Encrypt some plain text.
+        plain_text = b'This is a secret message.'
+        cipher_text, iv = self.client.encrypt(
+            plain_text,
+            uid=key_id,
+            cryptographic_parameters={
+                'cryptographic_algorithm': enums.CryptographicAlgorithm.AES,
+                'block_cipher_mode': enums.BlockCipherMode.CBC,
+                'padding_method': enums.PaddingMethod.PKCS5
+            },
+            iv_counter_nonce=(
+                b'\x85\x1e\x87\x64\x77\x6e\x67\x96'
+                b'\xaa\xb7\x22\xdb\xb6\x44\xac\xe8'
+            )
+        )
+
+        self.assertEqual(None, iv)
+
+        # Decrypt the cipher text.
+        result = self.client.decrypt(
+            cipher_text,
+            uid=key_id,
+            cryptographic_parameters={
+                'cryptographic_algorithm': enums.CryptographicAlgorithm.AES,
+                'block_cipher_mode': enums.BlockCipherMode.CBC,
+                'padding_method': enums.PaddingMethod.PKCS5
+            },
+            iv_counter_nonce=(
+                b'\x85\x1e\x87\x64\x77\x6e\x67\x96'
+                b'\xaa\xb7\x22\xdb\xb6\x44\xac\xe8'
+            )
+        )
+
+        self.assertEqual(plain_text, result)
+
+        # Clean up.
+        self.client.revoke(
+            enums.RevocationReasonCode.CESSATION_OF_OPERATION,
+            key_id
+        )
+        self.client.destroy(key_id)
+
     def test_create_key_pair_sign_signature_verify(self):
         """
         Test that the ProxyKmipClient can create an asymmetric key pair and
@@ -692,3 +753,15 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         )
 
         self.assertEqual(result, enums.ValidityIndicator.VALID)
+
+        # Clean up.
+        self.client.revoke(
+            enums.RevocationReasonCode.CESSATION_OF_OPERATION,
+            public_key_id
+        )
+        self.client.revoke(
+            enums.RevocationReasonCode.CESSATION_OF_OPERATION,
+            private_key_id
+        )
+        self.client.destroy(public_key_id)
+        self.client.destroy(private_key_id)
