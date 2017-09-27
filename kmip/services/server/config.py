@@ -36,6 +36,7 @@ class KmipServerConfig(object):
         self.settings = dict()
         self.settings['enable_tls_client_auth'] = True
         self.settings['tls_cipher_suites'] = []
+        self.settings['logging_level'] = logging.INFO
 
         self._expected_settings = [
             'hostname',
@@ -48,7 +49,8 @@ class KmipServerConfig(object):
         self._optional_settings = [
             'policy_path',
             'enable_tls_client_auth',
-            'tls_cipher_suites'
+            'tls_cipher_suites',
+            'logging_level'
         ]
 
     def set_setting(self, setting, value):
@@ -88,8 +90,10 @@ class KmipServerConfig(object):
             self._set_policy_path(value)
         elif setting == 'enable_tls_client_auth':
             self._set_enable_tls_client_auth(value)
-        else:
+        elif setting == 'tls_cipher_suites':
             self._set_tls_cipher_suites(value)
+        else:
+            self._set_logging_level(value)
 
     def load_settings(self, path):
         """
@@ -163,6 +167,10 @@ class KmipServerConfig(object):
         if parser.has_option('server', 'tls_cipher_suites'):
             self._set_tls_cipher_suites(
                 parser.get('server', 'tls_cipher_suites')
+            )
+        if parser.has_option('server', 'logging_level'):
+            self._set_logging_level(
+                parser.get('server', 'logging_level')
             )
 
     def _set_hostname(self, value):
@@ -289,4 +297,33 @@ class KmipServerConfig(object):
             raise exceptions.ConfigurationError(
                 "The TLS cipher suites must be a set of strings representing "
                 "cipher suite names."
+            )
+
+    def _set_logging_level(self, value):
+        if value is None:
+            self.settings['logging_level'] = logging.INFO
+            return
+
+        logging_levels = {
+            "DEBUG":    logging.DEBUG,
+            "INFO":     logging.INFO,
+            "WARNING":  logging.WARNING,
+            "ERROR":    logging.ERROR,
+            "CRITICAL": logging.CRITICAL
+        }
+        if value in logging_levels.values():
+            self.settings['logging_level'] = value
+        elif isinstance(value, six.string_types):
+            level = logging_levels.get(value.upper())
+            if level:
+                self.settings['logging_level'] = level
+            else:
+                raise exceptions.ConfigurationError(
+                    "The logging level must be a string representing a valid "
+                    "logging level."
+                )
+        else:
+            raise exceptions.ConfigurationError(
+                "The logging level must be a string representing a valid "
+                "logging level."
             )

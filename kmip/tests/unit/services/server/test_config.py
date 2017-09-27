@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import logging
 import mock
 
 from six.moves import configparser
@@ -65,6 +66,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_policy_path = mock.MagicMock()
         c._set_enable_tls_client_auth = mock.MagicMock()
         c._set_tls_cipher_suites = mock.MagicMock()
+        c._set_logging_level = mock.MagicMock()
 
         # Test the right error is generated when setting an unsupported
         # setting.
@@ -108,6 +110,9 @@ class TestKmipServerConfig(testtools.TestCase):
 
         c.set_setting('tls_cipher_suites', [])
         c._set_tls_cipher_suites.assert_called_once_with([])
+
+        c.set_setting('logging_level', 'WARNING')
+        c._set_logging_level.assert_called_once_with('WARNING')
 
     def test_load_settings(self):
         """
@@ -163,6 +168,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_policy_path = mock.MagicMock()
         c._set_enable_tls_client_auth = mock.MagicMock()
         c._set_tls_cipher_suites = mock.MagicMock()
+        c._set_logging_level = mock.MagicMock()
 
         # Test that the right calls are made when correctly parsing settings.
         parser = configparser.SafeConfigParser()
@@ -180,6 +186,7 @@ class TestKmipServerConfig(testtools.TestCase):
             'tls_cipher_suites',
             "\n    TLS_RSA_WITH_AES_256_CBC_SHA256"
         )
+        parser.set('server', 'logging_level', 'ERROR')
 
         c._parse_settings(parser)
 
@@ -196,6 +203,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_tls_cipher_suites.assert_called_once_with(
             "\n    TLS_RSA_WITH_AES_256_CBC_SHA256"
         )
+        c._set_logging_level.assert_called_once_with('ERROR')
 
         # Test that a ConfigurationError is generated when the expected
         # section is missing.
@@ -684,5 +692,67 @@ class TestKmipServerConfig(testtools.TestCase):
             "The TLS cipher suites must be a set of strings representing "
             "cipher suite names.",
             c._set_tls_cipher_suites,
+            *args
+        )
+
+    def test_set_logging_level(self):
+        """
+        Test that the logging_level configuration property can be set
+        correctly with a value expected from the config file.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        c._set_logging_level("DEBUG")
+        self.assertEqual(logging.DEBUG, c.settings.get('logging_level'))
+
+    def test_set_logging_level_enum(self):
+        """
+        Test that the logging_level configuration property can be set
+        correctly with a value expected from the server constructor.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        c._set_logging_level(logging.DEBUG)
+        self.assertEqual(logging.DEBUG, c.settings.get('logging_level'))
+
+    def test_set_logging_level_default(self):
+        """
+        Test that the logging_level configuration property can be set
+        correctly without specifying a value.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        c._set_logging_level(logging.DEBUG)
+        self.assertEqual(logging.DEBUG, c.settings.get('logging_level'))
+
+        c._set_logging_level(None)
+        self.assertEqual(logging.INFO, c.settings.get('logging_level'))
+
+    def test_set_logging_level_invalid_value(self):
+        """
+        Test that the right error is raised when an invalid value is used to
+        set the tls_cipher_suites configuration property.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        args = (0,)
+        self.assertRaisesRegexp(
+            exceptions.ConfigurationError,
+            "The logging level must be a string representing a valid logging "
+            "level.",
+            c._set_logging_level,
+            *args
+        )
+
+        args = ('invalid',)
+        self.assertRaisesRegexp(
+            exceptions.ConfigurationError,
+            "The logging level must be a string representing a valid logging "
+            "level.",
+            c._set_logging_level,
             *args
         )
