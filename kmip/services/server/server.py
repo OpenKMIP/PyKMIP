@@ -52,7 +52,8 @@ class KmipServer(object):
             log_path='/var/log/pykmip/server.log',
             policy_path=None,
             enable_tls_client_auth=None,
-            tls_cipher_suites=None
+            tls_cipher_suites=None,
+            logging_level=None
     ):
         """
         Create a KmipServer.
@@ -107,6 +108,11 @@ class KmipServer(object):
                 be used by the server when establishing a TLS connection with
                 a client. Optional, defaults to None. If None, the default set
                 of TLS cipher suites will be used.
+            logging_level (string): A logging level enumeration defined by the
+                logging package (e.g., DEBUG, INFO). Sets the base logging
+                level for the server. All log messages logged at this level or
+                higher in criticality will be logged. All log messages lower
+                in criticality will not be logged. Optional, defaults to None.
         """
         self._logger = logging.getLogger('kmip.server')
         self._setup_logging(log_path)
@@ -122,8 +128,11 @@ class KmipServer(object):
             auth_suite,
             policy_path,
             enable_tls_client_auth,
-            tls_cipher_suites
+            tls_cipher_suites,
+            logging_level
         )
+
+        self._logger.setLevel(self.config.settings.get('logging_level'))
 
         cipher_suites = self.config.settings.get('tls_cipher_suites')
         if self.config.settings.get('auth_suite') == 'TLS1.2':
@@ -169,7 +178,8 @@ class KmipServer(object):
             auth_suite=None,
             policy_path=None,
             enable_tls_client_auth=None,
-            tls_cipher_suites=None
+            tls_cipher_suites=None,
+            logging_level=None
     ):
         if path:
             self.config.load_settings(path)
@@ -198,6 +208,8 @@ class KmipServer(object):
                 'tls_cipher_suites',
                 tls_cipher_suites.split(',')
             )
+        if logging_level:
+            self.config.set_setting('logging_level', logging_level)
 
     def start(self):
         """
@@ -536,6 +548,18 @@ def build_argument_parser():
             "Optional, defaults to None."
         )
     )
+    parser.add_option(
+        "-v",
+        "--logging_level",
+        action="store",
+        type="str",
+        default=None,
+        dest="logging_level",
+        help=(
+            "A string representing the logging level for the server (e.g., "
+            "DEBUG, INFO). Optional, defaults to None."
+        )
+    )
 
     return parser
 
@@ -566,6 +590,8 @@ def main(args=None):
         kwargs['policy_path'] = opts.policy_path
     if opts.ignore_tls_client_auth:
         kwargs['enable_tls_client_auth'] = False
+    if opts.logging_level:
+        kwargs['logging_level'] = opts.logging_level
 
     # Create and start the server.
     s = KmipServer(**kwargs)

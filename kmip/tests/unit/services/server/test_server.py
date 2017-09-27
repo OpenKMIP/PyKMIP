@@ -95,7 +95,7 @@ class TestKmipServer(testtools.TestCase):
         open_mock.assert_called_once_with('/test/path/server.log', 'w')
 
         self.assertTrue(s._logger.addHandler.called)
-        s._logger.setLevel.assert_called_once_with(logging.DEBUG)
+        s._logger.setLevel.assert_any_call(logging.DEBUG)
 
     @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.auth.TLS12AuthenticationSuite')
@@ -121,7 +121,8 @@ class TestKmipServer(testtools.TestCase):
             'Basic',
             '/etc/pykmip/policies',
             False,
-            'TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA'
+            'TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA',
+            'DEBUG'
         )
 
         s.config.load_settings.assert_called_with('/etc/pykmip/server.conf')
@@ -155,6 +156,7 @@ class TestKmipServer(testtools.TestCase):
                 'TLS_RSA_WITH_AES_256_CBC_SHA'
             ]
         )
+        s.config.set_setting.assert_any_call('logging_level', 'DEBUG')
 
         # Test that an attempt is made to instantiate the TLS 1.2 auth suite
         s = server.KmipServer(
