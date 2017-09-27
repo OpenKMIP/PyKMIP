@@ -640,3 +640,55 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             ),
             secret.value
         )
+
+    def test_create_key_pair_sign_signature_verify(self):
+        """
+        Test that the ProxyKmipClient can create an asymmetric key pair and
+        then use that key pair (1) to sign data and (2) verify the signature
+        on the data.
+        """
+        # Create a public/private key pair.
+        public_key_id, private_key_id = self.client.create_key_pair(
+            enums.CryptographicAlgorithm.RSA,
+            2048,
+            public_usage_mask=[
+                enums.CryptographicUsageMask.VERIFY
+            ],
+            private_usage_mask=[
+                enums.CryptographicUsageMask.SIGN
+            ]
+        )
+
+        self.assertIsInstance(public_key_id, str)
+        self.assertIsInstance(private_key_id, str)
+
+        # Activate the signing key and the signature verification key.
+        self.client.activate(private_key_id)
+        self.client.activate(public_key_id)
+
+        # Sign a message.
+        signature = self.client.sign(
+            b'This is a signed message.',
+            uid=private_key_id,
+            cryptographic_parameters={
+                'padding_method': enums.PaddingMethod.PSS,
+                'cryptographic_algorithm': enums.CryptographicAlgorithm.RSA,
+                'hashing_algorithm': enums.HashingAlgorithm.SHA_256
+            }
+        )
+
+        self.assertIsInstance(signature, six.binary_type)
+
+        # Verify the message signature.
+        result = self.client.signature_verify(
+            b'This is a signed message.',
+            signature,
+            uid=public_key_id,
+            cryptographic_parameters={
+                'padding_method': enums.PaddingMethod.PSS,
+                'cryptographic_algorithm': enums.CryptographicAlgorithm.RSA,
+                'hashing_algorithm': enums.HashingAlgorithm.SHA_256
+            }
+        )
+
+        self.assertEqual(result, enums.ValidityIndicator.VALID)
