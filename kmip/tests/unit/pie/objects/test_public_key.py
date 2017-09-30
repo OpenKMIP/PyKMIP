@@ -198,9 +198,13 @@ class TestPublicKey(testtools.TestCase):
         key = PublicKey(
             enums.CryptographicAlgorithm.RSA, 1024, self.bytes_1024,
             enums.KeyFormatType.X_509)
-        args = "algorithm={0}, length={1}, value={2}, format_type={3}".format(
-            enums.CryptographicAlgorithm.RSA, 1024,
-            binascii.hexlify(self.bytes_1024), enums.KeyFormatType.X_509)
+        args = "{0}, {1}, {2}, {3}, {4}".format(
+            "algorithm={0}".format(enums.CryptographicAlgorithm.RSA),
+            "length={0}".format(1024),
+            "value={0}".format(binascii.hexlify(self.bytes_1024)),
+            "format_type={0}".format(enums.KeyFormatType.X_509),
+            "key_wrapping_data={0}".format({})
+        )
         expected = "PublicKey({0})".format(args)
         observed = repr(key)
         self.assertEqual(expected, observed)
@@ -286,6 +290,31 @@ class TestPublicKey(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
+    def test_equal_on_not_equal_key_wrapping_data(self):
+        """
+        Test that the equality operator returns False when comparing two
+        PublicKey objects with different key wrapping data.
+        """
+        a = PublicKey(
+            enums.CryptographicAlgorithm.RSA,
+            1024,
+            self.bytes_1024,
+            enums.KeyFormatType.X_509,
+            key_wrapping_data={}
+        )
+        b = PublicKey(
+            enums.CryptographicAlgorithm.RSA,
+            1024,
+            self.bytes_1024,
+            enums.KeyFormatType.X_509,
+            key_wrapping_data={
+                'wrapping_method': enums.WrappingMethod.ENCRYPT
+            }
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
     def test_equal_on_type_mismatch(self):
         """
         Test that the equality operator returns False when comparing a
@@ -365,6 +394,31 @@ class TestPublicKey(testtools.TestCase):
         b = PublicKey(
             enums.CryptographicAlgorithm.RSA, 2048, self.bytes_2048,
             enums.KeyFormatType.X_509)
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_key_wrapping_data(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        PublicKey objects with different key wrapping data.
+        """
+        a = PublicKey(
+            enums.CryptographicAlgorithm.RSA,
+            1024,
+            self.bytes_1024,
+            enums.KeyFormatType.X_509,
+            key_wrapping_data={}
+        )
+        b = PublicKey(
+            enums.CryptographicAlgorithm.RSA,
+            1024,
+            self.bytes_1024,
+            enums.KeyFormatType.X_509,
+            key_wrapping_data={
+                'wrapping_method': enums.WrappingMethod.ENCRYPT
+            }
+        )
+
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 

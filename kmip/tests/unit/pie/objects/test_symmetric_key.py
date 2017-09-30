@@ -179,11 +179,17 @@ class TestSymmetricKey(testtools.TestCase):
         Test that repr can be applied to a SymmetricKey.
         """
         key = SymmetricKey(
-            enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.bytes_128a
+        )
 
-        args = "algorithm={0}, length={1}, value={2}".format(
-            enums.CryptographicAlgorithm.AES, 128,
-            binascii.hexlify(self.bytes_128a))
+        args = "{0}, {1}, {2}, {3}".format(
+            "algorithm={0}".format(enums.CryptographicAlgorithm.AES),
+            "length={0}".format(128),
+            "value={0}".format(binascii.hexlify(self.bytes_128a)),
+            "key_wrapping_data={0}".format({})
+        )
         expected = "SymmetricKey({0})".format(args)
         observed = repr(key)
 
@@ -253,6 +259,29 @@ class TestSymmetricKey(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
+    def test_equal_on_not_equal_key_wrapping_data(self):
+        """
+        Test that the equality operator returns False when comparing two
+        SymmetricKey objects with different key wrapping data.
+        """
+        a = SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.bytes_128a,
+            key_wrapping_data={}
+        )
+        b = SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.bytes_128a,
+            key_wrapping_data={
+                'wrapping_method': enums.WrappingMethod.ENCRYPT
+            }
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
     def test_equal_on_type_mismatch(self):
         """
         Test that the equality operator returns False when comparing a
@@ -313,6 +342,29 @@ class TestSymmetricKey(testtools.TestCase):
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a)
         b = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128b)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_key_wrapping_data(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        SymmetricKey objects with different key wrapping data.
+        """
+        a = SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.bytes_128a,
+            key_wrapping_data={}
+        )
+        b = SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.bytes_128a,
+            key_wrapping_data={
+                'wrapping_method': enums.WrappingMethod.ENCRYPT
+            }
+        )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)

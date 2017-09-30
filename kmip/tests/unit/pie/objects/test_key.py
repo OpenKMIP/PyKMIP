@@ -94,3 +94,17 @@ class TestKey(TestCase):
         """
         dummy = DummyKey()
         self.assertFalse(dummy != dummy)
+
+    def test_key_wrapping_data_invalid(self):
+        """
+        Test that the right error is raised when setting the key wrapping
+        data with an invalid value.
+        """
+        dummy = DummyKey()
+        args = (dummy, 'key_wrapping_data', 'invalid')
+        self.assertRaisesRegexp(
+            TypeError,
+            "Key wrapping data must be a dictionary.",
+            setattr,
+            *args
+        )

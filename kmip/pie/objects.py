@@ -15,6 +15,7 @@
 
 from abc import abstractmethod
 from sqlalchemy import Column, event, ForeignKey, Integer, String, VARBINARY
+from sqlalchemy import Boolean
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
@@ -212,6 +213,8 @@ class Key(CryptographicObject):
         cryptographic_length: An int defining the length of the key in bits.
         key_format_type: A KeyFormatType enumeration defining the format of
             the key value.
+        key_wrapping_data: A dictionary containing key wrapping data
+            settings, describing how the key value has been wrapped.
     """
 
     __tablename__ = 'keys'
@@ -224,6 +227,167 @@ class Key(CryptographicObject):
     key_format_type = Column(
         'key_format_type', sql.EnumType(enums.KeyFormatType))
 
+    # Key wrapping data fields
+    _kdw_wrapping_method = Column(
+        '_kdw_wrapping_method',
+        sql.EnumType(enums.WrappingMethod),
+        default=None
+    )
+    _kdw_eki_unique_identifier = Column(
+        '_kdw_eki_unique_identifier',
+        String,
+        default=None
+    )
+    _kdw_eki_cp_block_cipher_mode = Column(
+        '_kdw_eki_cp_block_cipher_mode',
+        sql.EnumType(enums.BlockCipherMode),
+        default=None
+    )
+    _kdw_eki_cp_padding_method = Column(
+        '_kdw_eki_cp_padding_method',
+        sql.EnumType(enums.PaddingMethod),
+        default=None
+    )
+    _kdw_eki_cp_hashing_algorithm = Column(
+        '_kdw_eki_cp_hashing_algorithm',
+        sql.EnumType(enums.HashingAlgorithm),
+        default=None
+    )
+    _kdw_eki_cp_key_role_type = Column(
+        '_kdw_eki_cp_key_role_type',
+        sql.EnumType(enums.KeyRoleType),
+        default=None
+    )
+    _kdw_eki_cp_digital_signature_algorithm = Column(
+        '_kdw_eki_cp_digital_signature_algorithm',
+        sql.EnumType(enums.DigitalSignatureAlgorithm),
+        default=None
+    )
+    _kdw_eki_cp_cryptographic_algorithm = Column(
+        '_kdw_eki_cp_cryptographic_algorithm',
+        sql.EnumType(enums.CryptographicAlgorithm),
+        default=None
+    )
+    _kdw_eki_cp_random_iv = Column(
+        '_kdw_eki_cp_random_iv',
+        Boolean,
+        default=None
+    )
+    _kdw_eki_cp_iv_length = Column(
+        '_kdw_eki_cp_iv_length',
+        Integer,
+        default=None
+    )
+    _kdw_eki_cp_tag_length = Column(
+        '_kdw_eki_cp_tag_length',
+        Integer,
+        default=None
+    )
+    _kdw_eki_cp_fixed_field_length = Column(
+        '_kdw_eki_cp_fixed_field_length',
+        Integer,
+        default=None
+    )
+    _kdw_eki_cp_invocation_field_length = Column(
+        '_kdw_eki_cp_invocation_field_length',
+        Integer
+    )
+    _kdw_eki_cp_counter_length = Column(
+        '_kdw_eki_cp_counter_length',
+        Integer,
+        default=None
+    )
+    _kdw_eki_cp_initial_counter_value = Column(
+        '_kdw_eki_cp_initial_counter_value',
+        Integer,
+        default=None
+    )
+    _kdw_mski_unique_identifier = Column(
+        '_kdw_mski_unique_identifier',
+        String,
+        default=None
+    )
+    _kdw_mski_cp_block_cipher_mode = Column(
+        '_kdw_mski_cp_block_cipher_mode',
+        sql.EnumType(enums.BlockCipherMode),
+        default=None
+    )
+    _kdw_mski_cp_padding_method = Column(
+        '_kdw_mski_cp_padding_method',
+        sql.EnumType(enums.PaddingMethod),
+        default=None
+    )
+    _kdw_mski_cp_hashing_algorithm = Column(
+        '_kdw_mski_cp_hashing_algorithm',
+        sql.EnumType(enums.HashingAlgorithm),
+        default=None
+    )
+    _kdw_mski_cp_key_role_type = Column(
+        '_kdw_mski_cp_key_role_type',
+        sql.EnumType(enums.KeyRoleType),
+        default=None
+    )
+    _kdw_mski_cp_digital_signature_algorithm = Column(
+        '_kdw_mski_cp_digital_signature_algorithm',
+        sql.EnumType(enums.DigitalSignatureAlgorithm),
+        default=None
+    )
+    _kdw_mski_cp_cryptographic_algorithm = Column(
+        '_kdw_mski_cp_cryptographic_algorithm',
+        sql.EnumType(enums.CryptographicAlgorithm),
+        default=None
+    )
+    _kdw_mski_cp_random_iv = Column(
+        '_kdw_mski_cp_random_iv',
+        Boolean,
+        default=None
+    )
+    _kdw_mski_cp_iv_length = Column(
+        '_kdw_mski_cp_iv_length',
+        Integer,
+        default=None
+    )
+    _kdw_mski_cp_tag_length = Column(
+        '_kdw_mski_cp_tag_length',
+        Integer,
+        default=None
+    )
+    _kdw_mski_cp_fixed_field_length = Column(
+        '_kdw_mski_cp_fixed_field_length',
+        Integer,
+        default=None
+    )
+    _kdw_mski_cp_invocation_field_length = Column(
+        '_kdw_mski_cp_invocation_field_length',
+        Integer,
+        default=None
+    )
+    _kdw_mski_cp_counter_length = Column(
+        '_kdw_mski_cp_counter_length',
+        Integer,
+        default=None
+    )
+    _kdw_mski_cp_initial_counter_value = Column(
+        '_kdw_mski_cp_initial_counter_value',
+        Integer,
+        default=None
+    )
+    _kdw_mac_signature = Column(
+        '_kdw_mac_signature',
+        VARBINARY(1024),
+        default=None
+    )
+    _kdw_iv_counter_nonce = Column(
+        '_kdw_iv_counter_nonce',
+        VARBINARY(1024),
+        default=None
+    )
+    _kdw_encoding_option = Column(
+        '_kdw_encoding_option',
+        sql.EnumType(enums.EncodingOption),
+        default=None
+    )
+
     __mapper_args__ = {
         'polymorphic_identity': 'Key'
     }
@@ -232,15 +396,21 @@ class Key(CryptographicObject):
     }
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self, key_wrapping_data=None):
         """
         Create a Key object.
+
+        Args:
+            key_wrapping_data(dict): A dictionary containing key wrapping data
+                settings, describing how the key value has been wrapped.
+                Optional, defaults to None.
         """
         super(Key, self).__init__()
 
         self.cryptographic_algorithm = None
         self.cryptographic_length = None
         self.key_format_type = None
+        self.key_wrapping_data = key_wrapping_data
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -249,6 +419,145 @@ class Key(CryptographicObject):
         # The following attributes are placeholders for attributes that are
         # unsupported by kmip.core
         self._usage_limits = None
+
+    @property
+    def key_wrapping_data(self):
+        """
+        Retrieve all of the relevant key wrapping data fields and return them
+        as a dictionary.
+        """
+        key_wrapping_data = {}
+        encryption_key_info = {
+            'unique_identifier': self._kdw_eki_unique_identifier,
+            'cryptographic_parameters': {
+                'block_cipher_mode': self._kdw_eki_cp_block_cipher_mode,
+                'padding_method': self._kdw_eki_cp_padding_method,
+                'hashing_algorithm': self._kdw_eki_cp_hashing_algorithm,
+                'key_role_type': self._kdw_eki_cp_key_role_type,
+                'digital_signature_algorithm':
+                    self._kdw_eki_cp_digital_signature_algorithm,
+                'cryptographic_algorithm':
+                    self._kdw_eki_cp_cryptographic_algorithm,
+                'random_iv': self._kdw_eki_cp_random_iv,
+                'iv_length': self._kdw_eki_cp_iv_length,
+                'tag_length': self._kdw_eki_cp_tag_length,
+                'fixed_field_length': self._kdw_eki_cp_fixed_field_length,
+                'invocation_field_length':
+                    self._kdw_eki_cp_invocation_field_length,
+                'counter_length': self._kdw_eki_cp_counter_length,
+                'initial_counter_value':
+                    self._kdw_eki_cp_initial_counter_value
+            }
+        }
+        if not any(encryption_key_info['cryptographic_parameters'].values()):
+            encryption_key_info['cryptographic_parameters'] = {}
+        if not any(encryption_key_info.values()):
+            encryption_key_info = {}
+
+        mac_sign_key_info = {
+            'unique_identifier': self._kdw_mski_unique_identifier,
+            'cryptographic_parameters': {
+                'block_cipher_mode': self._kdw_mski_cp_block_cipher_mode,
+                'padding_method': self._kdw_mski_cp_padding_method,
+                'hashing_algorithm': self._kdw_mski_cp_hashing_algorithm,
+                'key_role_type': self._kdw_mski_cp_key_role_type,
+                'digital_signature_algorithm':
+                    self._kdw_mski_cp_digital_signature_algorithm,
+                'cryptographic_algorithm':
+                    self._kdw_mski_cp_cryptographic_algorithm,
+                'random_iv': self._kdw_mski_cp_random_iv,
+                'iv_length': self._kdw_mski_cp_iv_length,
+                'tag_length': self._kdw_mski_cp_tag_length,
+                'fixed_field_length': self._kdw_mski_cp_fixed_field_length,
+                'invocation_field_length':
+                    self._kdw_mski_cp_invocation_field_length,
+                'counter_length': self._kdw_mski_cp_counter_length,
+                'initial_counter_value':
+                    self._kdw_mski_cp_initial_counter_value
+            }
+        }
+        if not any(mac_sign_key_info['cryptographic_parameters'].values()):
+            mac_sign_key_info['cryptographic_parameters'] = {}
+        if not any(mac_sign_key_info.values()):
+            mac_sign_key_info = {}
+
+        key_wrapping_data['wrapping_method'] = self._kdw_wrapping_method
+        key_wrapping_data['encryption_key_information'] = encryption_key_info
+        key_wrapping_data['mac_signature_key_information'] = mac_sign_key_info
+        key_wrapping_data['mac_signature'] = self._kdw_mac_signature
+        key_wrapping_data['iv_counter_nonce'] = self._kdw_iv_counter_nonce
+        key_wrapping_data['encoding_option'] = self._kdw_encoding_option
+        if not any(key_wrapping_data.values()):
+            key_wrapping_data = {}
+
+        return key_wrapping_data
+
+    @key_wrapping_data.setter
+    def key_wrapping_data(self, value):
+        """
+        Set the key wrapping data attributes using a dictionary.
+        """
+        if value is None:
+            value = {}
+        elif not isinstance(value, dict):
+            raise TypeError("Key wrapping data must be a dictionary.")
+
+        self._kdw_wrapping_method = value.get('wrapping_method')
+
+        eki = value.get('encryption_key_information')
+        if eki is None:
+            eki = {}
+        self._kdw_eki_unique_identifier = eki.get('unique_identifier')
+        eki_cp = eki.get('cryptographic_parameters')
+        if eki_cp is None:
+            eki_cp = {}
+        self._kdw_eki_cp_block_cipher_mode = eki_cp.get('block_cipher_mode')
+        self._kdw_eki_cp_padding_method = eki_cp.get('padding_method')
+        self._kdw_eki_cp_hashing_algorithm = eki_cp.get('hashing_algorithm')
+        self._kdw_eki_cp_key_role_type = eki_cp.get('key_role_type')
+        self._kdw_eki_cp_digital_signature_algorithm = \
+            eki_cp.get('digital_signature_algorithm')
+        self._kdw_eki_cp_cryptographic_algorithm = \
+            eki_cp.get('cryptographic_algorithm')
+        self._kdw_eki_cp_random_iv = eki_cp.get('random_iv')
+        self._kdw_eki_cp_iv_length = eki_cp.get('iv_length')
+        self._kdw_eki_cp_tag_length = eki_cp.get('tag_length')
+        self._kdw_eki_cp_fixed_field_length = eki_cp.get('fixed_field_length')
+        self._kdw_eki_cp_invocation_field_length = \
+            eki_cp.get('invocation_field_length')
+        self._kdw_eki_cp_counter_length = eki_cp.get('counter_length')
+        self._kdw_eki_cp_initial_counter_value = \
+            eki_cp.get('initial_counter_value')
+
+        mski = value.get('mac_signature_key_information')
+        if mski is None:
+            mski = {}
+        self._kdw_mski_unique_identifier = mski.get('unique_identifier')
+        mski_cp = mski.get('cryptographic_parameters')
+        if mski_cp is None:
+            mski_cp = {}
+        self._kdw_mski_cp_block_cipher_mode = mski_cp.get('block_cipher_mode')
+        self._kdw_mski_cp_padding_method = mski_cp.get('padding_method')
+        self._kdw_mski_cp_hashing_algorithm = mski_cp.get('hashing_algorithm')
+        self._kdw_mski_cp_key_role_type = mski_cp.get('key_role_type')
+        self._kdw_mski_cp_digital_signature_algorithm = \
+            mski_cp.get('digital_signature_algorithm')
+        self._kdw_mski_cp_cryptographic_algorithm = \
+            mski_cp.get('cryptographic_algorithm')
+        self._kdw_mski_cp_random_iv = mski_cp.get('random_iv')
+        self._kdw_mski_cp_iv_length = mski_cp.get('iv_length')
+        self._kdw_mski_cp_tag_length = mski_cp.get('tag_length')
+        self._kdw_mski_cp_fixed_field_length = \
+            mski_cp.get('fixed_field_length')
+        self._kdw_mski_cp_invocation_field_length = \
+            mski_cp.get('invocation_field_length')
+        self._kdw_mski_cp_counter_length = mski_cp.get('counter_length')
+        self._kdw_mski_cp_initial_counter_value = \
+            mski_cp.get('initial_counter_value')
+
+        self._kdw_mac_signature = value.get('mac_signature')
+        self._kdw_iv_counter_nonce = value.get('iv_counter_nonce')
+        self._kdw_encoding_option = value.get('encoding_option')
 
 
 class SymmetricKey(Key):
@@ -267,6 +576,8 @@ class SymmetricKey(Key):
         cryptographic_usage_masks: The list of usage mask flags for
             SymmetricKey application.
         names: The string names of the SymmetricKey.
+        key_wrapping_data: A dictionary containing key wrapping data
+            settings, describing how the key value has been wrapped.
     """
 
     __tablename__ = 'symmetric_keys'
@@ -282,7 +593,7 @@ class SymmetricKey(Key):
     }
 
     def __init__(self, algorithm, length, value, masks=None,
-                 name='Symmetric Key'):
+                 name='Symmetric Key', key_wrapping_data=None):
         """
         Create a SymmetricKey.
 
@@ -295,8 +606,13 @@ class SymmetricKey(Key):
                 how the key will be used. Optional, defaults to None.
             name(string): The string name of the key. Optional, defaults to
                 'Symmetric Key'.
+            key_wrapping_data(dict): A dictionary containing key wrapping data
+                settings, describing how the key value has been wrapped.
+                Optional, defaults to None.
         """
-        super(SymmetricKey, self).__init__()
+        super(SymmetricKey, self).__init__(
+            key_wrapping_data=key_wrapping_data
+        )
 
         self._object_type = enums.ObjectType.SYMMETRIC_KEY
         self.key_format_type = enums.KeyFormatType.RAW
@@ -353,17 +669,29 @@ class SymmetricKey(Key):
                 raise TypeError("key name {0} must be a string".format(
                     position))
 
-        if (len(self.value) * 8) != self.cryptographic_length:
-            msg = "key length ({0}) not equal to key value length ({1})"
-            msg = msg.format(self.cryptographic_length, len(self.value) * 8)
-            raise ValueError(msg)
+        if not self.key_wrapping_data:
+            if (len(self.value) * 8) != self.cryptographic_length:
+                msg = "key length ({0}) not equal to key value length ({1})"
+                msg = msg.format(
+                    self.cryptographic_length,
+                    len(self.value) * 8
+                )
+                raise ValueError(msg)
 
     def __repr__(self):
         algorithm = "algorithm={0}".format(self.cryptographic_algorithm)
         length = "length={0}".format(self.cryptographic_length)
         value = "value={0}".format(binascii.hexlify(self.value))
+        key_wrapping_data = "key_wrapping_data={0}".format(
+            self.key_wrapping_data
+        )
 
-        return "SymmetricKey({0}, {1}, {2})".format(algorithm, length, value)
+        return "SymmetricKey({0}, {1}, {2}, {3})".format(
+            algorithm,
+            length,
+            value,
+            key_wrapping_data
+        )
 
     def __str__(self):
         return str(binascii.hexlify(self.value))
@@ -375,6 +703,8 @@ class SymmetricKey(Key):
             elif self.cryptographic_algorithm != other.cryptographic_algorithm:
                 return False
             elif self.cryptographic_length != other.cryptographic_length:
+                return False
+            elif self.key_wrapping_data != other.key_wrapping_data:
                 return False
             else:
                 return True
@@ -408,6 +738,8 @@ class PublicKey(Key):
         cryptographic_usage_masks: The list of usage mask flags for PublicKey
             application.
         names: The list of string names of the PublicKey.
+        key_wrapping_data(dict): A dictionary containing key wrapping data
+            settings, describing how the key value has been wrapped.
     """
 
     __tablename__ = 'public_keys'
@@ -424,7 +756,7 @@ class PublicKey(Key):
 
     def __init__(self, algorithm, length, value,
                  format_type=enums.KeyFormatType.X_509, masks=None,
-                 name='Public Key'):
+                 name='Public Key', key_wrapping_data=None):
         """
         Create a PublicKey.
 
@@ -439,8 +771,13 @@ class PublicKey(Key):
                 defining how the key will be used. Optional, defaults to None.
             name(string): The string name of the key. Optional, defaults to
                 'Public Key'.
+            key_wrapping_data(dict): A dictionary containing key wrapping data
+                settings, describing how the key value has been wrapped.
+                Optional, defaults to None.
         """
-        super(PublicKey, self).__init__()
+        super(PublicKey, self).__init__(
+            key_wrapping_data=key_wrapping_data
+        )
 
         self._object_type = enums.ObjectType.PUBLIC_KEY
         self._valid_formats = [
@@ -512,9 +849,12 @@ class PublicKey(Key):
         length = "length={0}".format(self.cryptographic_length)
         value = "value={0}".format(binascii.hexlify(self.value))
         format_type = "format_type={0}".format(self.key_format_type)
+        key_wrapping_data = "key_wrapping_data={0}".format(
+            self.key_wrapping_data
+        )
 
-        return "PublicKey({0}, {1}, {2}, {3})".format(
-            algorithm, length, value, format_type)
+        return "PublicKey({0}, {1}, {2}, {3}, {4})".format(
+            algorithm, length, value, format_type, key_wrapping_data)
 
     def __str__(self):
         return str(binascii.hexlify(self.value))
@@ -528,6 +868,8 @@ class PublicKey(Key):
             elif self.cryptographic_algorithm != other.cryptographic_algorithm:
                 return False
             elif self.cryptographic_length != other.cryptographic_length:
+                return False
+            elif self.key_wrapping_data != other.key_wrapping_data:
                 return False
             else:
                 return True
@@ -562,6 +904,8 @@ class PrivateKey(Key):
             application. Optional, defaults to None.
         names: The list of string names of the PrivateKey. Optional, defaults
             to 'Private Key'.
+        key_wrapping_data(dict): A dictionary containing key wrapping data
+            settings, describing how the key value has been wrapped.
     """
 
     __tablename__ = 'private_keys'
@@ -577,7 +921,7 @@ class PrivateKey(Key):
     }
 
     def __init__(self, algorithm, length, value, format_type, masks=None,
-                 name='Private Key'):
+                 name='Private Key', key_wrapping_data=None):
         """
         Create a PrivateKey.
 
@@ -591,8 +935,13 @@ class PrivateKey(Key):
             masks(list): A list of CryptographicUsageMask enumerations
                 defining how the key will be used.
             name(string): The string name of the key.
+            key_wrapping_data(dict): A dictionary containing key wrapping data
+                settings, describing how the key value has been wrapped.
+                Optional, defaults to None.
         """
-        super(PrivateKey, self).__init__()
+        super(PrivateKey, self).__init__(
+            key_wrapping_data=key_wrapping_data
+        )
 
         self._object_type = enums.ObjectType.PRIVATE_KEY
         self._valid_formats = [
@@ -664,9 +1013,12 @@ class PrivateKey(Key):
         length = "length={0}".format(self.cryptographic_length)
         value = "value={0}".format(binascii.hexlify(self.value))
         format_type = "format_type={0}".format(self.key_format_type)
+        key_wrapping_data = "key_wrapping_data={0}".format(
+            self.key_wrapping_data
+        )
 
-        return "PrivateKey({0}, {1}, {2}, {3})".format(
-            algorithm, length, value, format_type)
+        return "PrivateKey({0}, {1}, {2}, {3}, {4})".format(
+            algorithm, length, value, format_type, key_wrapping_data)
 
     def __str__(self):
         return str(binascii.hexlify(self.value))
@@ -680,6 +1032,8 @@ class PrivateKey(Key):
             elif self.cryptographic_algorithm != other.cryptographic_algorithm:
                 return False
             elif self.cryptographic_length != other.cryptographic_length:
+                return False
+            elif self.key_wrapping_data != other.key_wrapping_data:
                 return False
             else:
                 return True
