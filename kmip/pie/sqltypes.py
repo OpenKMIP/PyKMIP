@@ -107,7 +107,10 @@ class EnumType(types.TypeDecorator):
             value(Enum): An Enum instance whose integer value is to be stored.
             dialect(string): SQL dialect
         """
-        return value.value
+        if value:
+            return value.value
+        else:
+            return -1
 
     def process_result_value(self, value, dialect):
         """
@@ -120,6 +123,8 @@ class EnumType(types.TypeDecorator):
                 to create the Enum
             dialect(string): SQL dialect
         """
+        if value == -1:
+            return None
         return self._cls(value)
 
 

@@ -562,3 +562,103 @@ class TestObjectFactory(testtools.TestCase):
         self.assertEqual(key.cryptographic_length, length)
         self.assertEqual(key.key_format_type, format_type)
         self.assertEqual(key.value, value)
+
+    def test_build_cryptographic_parameters(self):
+        cryptographic_parameters = cobjects.CryptographicParameters(
+            block_cipher_mode=enums.BlockCipherMode.CBC,
+            padding_method=enums.PaddingMethod.ANSI_X923,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            key_role_type=enums.KeyRoleType.KEK,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
+            DSA_WITH_SHA1,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            random_iv=True,
+            iv_length=32,
+            tag_length=33,
+            fixed_field_length=34,
+            invocation_field_length=35,
+            counter_length=36,
+            initial_counter_value=0
+        )
+
+        result = self.factory._build_cryptographic_parameters(
+            cryptographic_parameters
+        )
+        self.assertIsInstance(result, dict)
+        self.assertEqual(
+            enums.BlockCipherMode.CBC,
+            result.get('block_cipher_mode')
+        )
+        self.assertEqual(
+            enums.PaddingMethod.ANSI_X923,
+            result.get('padding_method')
+        )
+        self.assertEqual(
+            enums.HashingAlgorithm.SHA_256,
+            result.get('hashing_algorithm')
+        )
+        self.assertEqual(
+            enums.KeyRoleType.KEK,
+            result.get('key_role_type')
+        )
+        self.assertEqual(
+            enums.DigitalSignatureAlgorithm.DSA_WITH_SHA1,
+            result.get('digital_signature_algorithm')
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            result.get('cryptographic_algorithm')
+        )
+        self.assertEqual(True, result.get('random_iv'))
+        self.assertEqual(32, result.get('iv_length'))
+        self.assertEqual(33, result.get('tag_length'))
+        self.assertEqual(34, result.get('fixed_field_length'))
+        self.assertEqual(35, result.get('invocation_field_length'))
+        self.assertEqual(36, result.get('counter_length'))
+        self.assertEqual(0, result.get('initial_counter_value'))
+
+    def test_build_key_wrapping_data(self):
+        key_wrapping_data = cobjects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information=cobjects.EncryptionKeyInformation(
+                unique_identifier='1',
+                cryptographic_parameters=cobjects.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CBC
+                )
+            ),
+            mac_signature_key_information=cobjects.MACSignatureKeyInformation(
+                unique_identifier='2',
+                cryptographic_parameters=cobjects.CryptographicParameters(
+                    block_cipher_mode=enums.BlockCipherMode.CCM
+                )
+            ),
+            mac_signature=b'\x01',
+            iv_counter_nonce=b'\x02',
+            encoding_option=enums.EncodingOption.NO_ENCODING
+        )
+
+        result = self.factory._build_key_wrapping_data(
+            key_wrapping_data
+        )
+        self.assertIsInstance(result, dict)
+        self.assertEqual(
+            enums.WrappingMethod.ENCRYPT,
+            result.get('wrapping_method')
+        )
+        self.assertIsInstance(result.get('encryption_key_information'), dict)
+        eki = result.get('encryption_key_information')
+        self.assertEqual('1', eki.get('unique_identifier'))
+        self.assertIsInstance(eki.get('cryptographic_parameters'), dict)
+        self.assertIsInstance(
+            result.get('mac_signature_key_information'),
+            dict
+        )
+        mski = result.get('mac_signature_key_information')
+        self.assertEqual('2', mski.get('unique_identifier'))
+        self.assertIsInstance(mski.get('cryptographic_parameters'), dict)
+        self.assertEqual(b'\x01', result.get('mac_signature'))
+        self.assertEqual(b'\x02', result.get('iv_counter_nonce'))
+        self.assertEqual(
+            enums.EncodingOption.NO_ENCODING,
+            result.get('encoding_option')
+        )
