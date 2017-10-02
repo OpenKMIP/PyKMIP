@@ -56,6 +56,50 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.destroy, uid)
 
+    def test_create_get_wrapped_destroy(self):
+        """
+        Test that the ProxyKmipClient can create keys, retrieve a wrapped key,
+        and then destroy the keys for cleanup.
+        """
+        key_id = self.client.create(enums.CryptographicAlgorithm.AES, 256)
+        wrapping_id = self.client.create(
+            enums.CryptographicAlgorithm.AES,
+            256,
+            cryptographic_usage_mask=[
+                enums.CryptographicUsageMask.WRAP_KEY,
+                enums.CryptographicUsageMask.UNWRAP_KEY,
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ]
+        )
+
+        self.client.activate(wrapping_id)
+
+        unwrapped_key = self.client.get(key_id)
+        wrapped_key = self.client.get(
+            key_id,
+            key_wrapping_specification={
+                'wrapping_method': enums.WrappingMethod.ENCRYPT,
+                'encryption_key_information': {
+                    'unique_identifier': wrapping_id,
+                    'cryptographic_parameters': {
+                        'block_cipher_mode':
+                            enums.BlockCipherMode.NIST_KEY_WRAP
+                    }
+                },
+                'encoding_option': enums.EncodingOption.NO_ENCODING
+            }
+        )
+
+        self.assertNotEqual(unwrapped_key.value, wrapped_key.value)
+
+        self.client.revoke(
+            enums.RevocationReasonCode.CESSATION_OF_OPERATION,
+            wrapping_id
+        )
+        self.client.destroy(key_id)
+        self.client.destroy(wrapping_id)
+
     def test_symmetric_key_register_get_destroy(self):
         """
         Test that the ProxyKmipClient can register, retrieve, and destroy a
