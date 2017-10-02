@@ -559,12 +559,15 @@ class ProxyKmipClient(api.KmipClient):
             raise exceptions.KmipOperationFailure(status, reason, message)
 
     @is_connected
-    def get(self, uid=None):
+    def get(self, uid=None, key_wrapping_specification=None):
         """
         Get a managed object from a KMIP appliance.
 
         Args:
             uid (string): The unique ID of the managed object to retrieve.
+            key_wrapping_specification (dict): A dictionary containing various
+                settings to be used when wrapping the key during retrieval.
+                See Note below. Optional, defaults to None.
 
         Returns:
             ManagedObject: The retrieved managed object object.
@@ -573,14 +576,48 @@ class ProxyKmipClient(api.KmipClient):
             ClientConnectionNotOpen: if the client connection is unusable
             KmipOperationFailure: if the operation result is a failure
             TypeError: if the input argument is invalid
+
+        Notes:
+            The derivation_parameters argument is a dictionary that can
+            contain the following key/value pairs:
+
+            Key                             | Value
+            --------------------------------|---------------------------------
+            'wrapping_method'               | A WrappingMethod enumeration
+                                            | that specifies how the object
+                                            | should be wrapped.
+            'encryption_key_information'    | A dictionary containing the ID
+                                            | of the wrapping key and
+                                            | associated cryptographic
+                                            | parameters.
+            'mac_signature_key_information' | A dictionary containing the ID
+                                            | of the wrapping key and
+                                            | associated cryptographic
+                                            | parameters.
+            'attribute_names'               | A list of strings representing
+                                            | the names of attributes that
+                                            | should be included with the
+                                            | wrapped object.
+            'encoding_option'               | An EncodingOption enumeration
+                                            | that specifies the encoding of
+                                            | the object before it is wrapped.
         """
         # Check input
         if uid is not None:
             if not isinstance(uid, six.string_types):
                 raise TypeError("uid must be a string")
+        if key_wrapping_specification is not None:
+            if not isinstance(key_wrapping_specification, dict):
+                raise TypeError(
+                    "Key wrapping specification must be a dictionary."
+                )
+
+        spec = self._build_key_wrapping_specification(
+            key_wrapping_specification
+        )
 
         # Get the managed object and handle the results
-        result = self.proxy.get(uid)
+        result = self.proxy.get(uid, key_wrapping_specification=spec)
 
         status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
@@ -1225,6 +1262,103 @@ class ProxyKmipClient(api.KmipClient):
             initial_counter_value=value.get('initial_counter_value')
         )
         return cryptographic_parameters
+
+    def _build_encryption_key_information(self, value):
+        """
+        Build an EncryptionKeyInformation struct from a dictionary.
+
+        Args:
+            value (dict): A dictionary containing the key/value pairs for a
+                EncryptionKeyInformation struct.
+
+        Returns:
+            EncryptionKeyInformation: an EncryptionKeyInformation struct
+
+        Raises:
+            TypeError: if the input argument is invalid
+        """
+        if value is None:
+            return None
+        if not isinstance(value, dict):
+            raise TypeError("Encryption key information must be a dictionary.")
+
+        cryptographic_parameters = value.get('cryptographic_parameters')
+        if cryptographic_parameters:
+            cryptographic_parameters = self._build_cryptographic_parameters(
+                cryptographic_parameters
+            )
+        encryption_key_information = cobjects.EncryptionKeyInformation(
+            unique_identifier=value.get('unique_identifier'),
+            cryptographic_parameters=cryptographic_parameters
+        )
+        return encryption_key_information
+
+    def _build_mac_signature_key_information(self, value):
+        """
+        Build an MACSignatureKeyInformation struct from a dictionary.
+
+        Args:
+            value (dict): A dictionary containing the key/value pairs for a
+                MACSignatureKeyInformation struct.
+
+        Returns:
+            MACSignatureInformation: a MACSignatureKeyInformation struct
+
+        Raises:
+            TypeError: if the input argument is invalid
+        """
+        if value is None:
+            return None
+        if not isinstance(value, dict):
+            raise TypeError(
+                "MAC/signature key information must be a dictionary."
+            )
+
+        cryptographic_parameters = value.get('cryptographic_parameters')
+        if cryptographic_parameters:
+            cryptographic_parameters = self._build_cryptographic_parameters(
+                cryptographic_parameters
+            )
+        mac_signature_key_information = cobjects.MACSignatureKeyInformation(
+            unique_identifier=value.get('unique_identifier'),
+            cryptographic_parameters=cryptographic_parameters
+        )
+        return mac_signature_key_information
+
+    def _build_key_wrapping_specification(self, value):
+        """
+        Build a KeyWrappingSpecification struct from a dictionary.
+
+        Args:
+            value (dict): A dictionary containing the key/value pairs for a
+                KeyWrappingSpecification struct.
+
+        Returns:
+            KeyWrappingSpecification: a KeyWrappingSpecification struct
+
+        Raises:
+            TypeError: if the input argument is invalid
+        """
+        if value is None:
+            return None
+        if not isinstance(value, dict):
+            raise TypeError("Key wrapping specification must be a dictionary.")
+
+        encryption_key_info = self._build_encryption_key_information(
+            value.get('encryption_key_information')
+        )
+        mac_signature_key_info = self._build_mac_signature_key_information(
+            value.get('mac_signature_key_information')
+        )
+
+        key_wrapping_specification = cobjects.KeyWrappingSpecification(
+            wrapping_method=value.get('wrapping_method'),
+            encryption_key_information=encryption_key_info,
+            mac_signature_key_information=mac_signature_key_info,
+            attribute_names=value.get('attribute_names'),
+            encoding_option=value.get('encoding_option')
+        )
+        return key_wrapping_specification
 
     def _build_common_attributes(self, operation_policy_name=None):
         '''

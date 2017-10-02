@@ -743,7 +743,9 @@ class TestProxyKmipClient(testtools.TestCase):
 
             result = client.get('aaaaaaaa-1111-2222-3333-ffffffffffff')
             client.proxy.get.assert_called_with(
-                'aaaaaaaa-1111-2222-3333-ffffffffffff')
+                'aaaaaaaa-1111-2222-3333-ffffffffffff',
+                key_wrapping_specification=None
+            )
             self.assertIsInstance(result, objects.SymmetricKey)
             self.assertEqual(result, secret)
 
@@ -757,6 +759,24 @@ class TestProxyKmipClient(testtools.TestCase):
         args = [0]
         with ProxyKmipClient() as client:
             self.assertRaises(TypeError, client.get, *args)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_get_on_invalid_key_wrapping_specification(self):
+        """
+        Test that a TypeError exception is raised when trying to retrieve a
+        secret with an invalid key wrapping specification.
+        """
+        args = ['1']
+        kwargs = {'key_wrapping_specification': 'invalid'}
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "Key wrapping specification must be a dictionary.",
+                client.get,
+                *args,
+                **kwargs
+            )
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
@@ -2592,5 +2612,190 @@ class TestProxyKmipClient(testtools.TestCase):
             TypeError,
             "Cryptographic parameters must be a dictionary.",
             client._build_cryptographic_parameters,
+            *args
+        )
+
+    def test_build_encryption_key_information(self):
+        """
+        Test that an EncryptionKeyInformation struct can be built from a
+        dictionary.
+        """
+        client = ProxyKmipClient()
+
+        # Test with no value
+        result = client._build_encryption_key_information(None)
+
+        self.assertEqual(None, result)
+
+        # Test with a value
+        result = client._build_encryption_key_information(
+            {
+                'unique_identifier': 'test',
+                'cryptographic_parameters': {
+                    'block_cipher_mode': enums.BlockCipherMode.CBC
+                }
+            }
+        )
+
+        self.assertIsInstance(result, obj.EncryptionKeyInformation)
+        self.assertEqual('test', result.unique_identifier)
+        self.assertIsInstance(
+            result.cryptographic_parameters,
+            obj.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.BlockCipherMode.CBC,
+            result.cryptographic_parameters.block_cipher_mode
+        )
+
+    def test_build_encryption_key_information_invalid(self):
+        """
+        Test that the right error is raised when attempting to build
+        an EncryptionKeyInformation struct with an invalid value.
+        """
+        client = ProxyKmipClient()
+        args = ['invalid']
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Encryption key information must be a dictionary.",
+            client._build_encryption_key_information,
+            *args
+        )
+
+    def test_build_mac_signature_key_information(self):
+        """
+        Test that a MACSignatureKeyInformation struct can be built from a
+        dictionary.
+        """
+        client = ProxyKmipClient()
+
+        # Test with no value
+        result = client._build_mac_signature_key_information(None)
+
+        self.assertEqual(None, result)
+
+        # Test with a value
+        result = client._build_mac_signature_key_information(
+            {
+                'unique_identifier': '1',
+                'cryptographic_parameters': {
+                    'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
+                }
+            }
+        )
+
+        self.assertIsInstance(result, obj.MACSignatureKeyInformation)
+        self.assertEqual('1', result.unique_identifier)
+        self.assertIsInstance(
+            result.cryptographic_parameters,
+            obj.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            result.cryptographic_parameters.cryptographic_algorithm
+        )
+
+    def test_build_mac_signature_key_information_invalid(self):
+        """
+        Test that the right error is raised when attempting to build
+        a MACSignatureKeyInformation struct with an invalid value.
+        """
+        client = ProxyKmipClient()
+        args = ['invalid']
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "MAC/signature key information must be a dictionary.",
+            client._build_mac_signature_key_information,
+            *args
+        )
+
+    def test_build_key_wrapping_specification(self):
+        """
+        Test that a KeyWrappingSpecification can be built from a dictionary.
+        """
+        client = ProxyKmipClient()
+
+        # Test with no value
+        result = client._build_key_wrapping_specification(None)
+
+        self.assertEqual(None, result)
+
+        # Test with a value
+        result = client._build_key_wrapping_specification(
+            {
+                'wrapping_method': enums.WrappingMethod.ENCRYPT,
+                'encryption_key_information': {
+                    'unique_identifier': '1',
+                    'cryptographic_parameters': {
+                        'cryptographic_algorithm':
+                            enums.CryptographicAlgorithm.AES
+                    }
+                },
+                'mac_signature_key_information': {
+                    'unique_identifier': '2',
+                    'cryptographic_parameters': {
+                        'padding_method': enums.PaddingMethod.PKCS5
+                    }
+                },
+                'attribute_names': [
+                    'Cryptographic Algorithm',
+                    'Cryptographic Length'
+                ],
+                'encoding_option': enums.EncodingOption.NO_ENCODING
+            }
+        )
+
+        self.assertIsInstance(result, obj.KeyWrappingSpecification)
+        self.assertIsInstance(
+            result.encryption_key_information,
+            obj.EncryptionKeyInformation
+        )
+        info = result.encryption_key_information
+        self.assertEqual('1', info.unique_identifier)
+        self.assertIsInstance(
+            info.cryptographic_parameters,
+            obj.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            info.cryptographic_parameters.cryptographic_algorithm
+        )
+        self.assertIsInstance(
+            result.mac_signature_key_information,
+            obj.MACSignatureKeyInformation
+        )
+        info = result.mac_signature_key_information
+        self.assertEqual('2', info.unique_identifier)
+        self.assertIsInstance(
+            info.cryptographic_parameters,
+            obj.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.PaddingMethod.PKCS5,
+            info.cryptographic_parameters.padding_method
+        )
+        self.assertIsInstance(result.attribute_names, list)
+        self.assertEqual(2, len(result.attribute_names))
+        self.assertIn('Cryptographic Algorithm', result.attribute_names)
+        self.assertIn('Cryptographic Length', result.attribute_names)
+        self.assertEqual(
+            enums.EncodingOption.NO_ENCODING,
+            result.encoding_option
+        )
+
+    def test_build_key_wrapping_specification_invalid(self):
+        """
+        Test that the right error is raised when attempting to build
+        a KeyWrappingSpecification struct with an invalid value.
+        """
+        client = ProxyKmipClient()
+        args = ['invalid']
+
+        self.assertRaisesRegexp(
+            TypeError,
+            "Key wrapping specification must be a dictionary.",
+            client._build_key_wrapping_specification,
             *args
         )
