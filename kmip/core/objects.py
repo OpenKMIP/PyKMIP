@@ -715,8 +715,10 @@ class EncryptionKeyInformation(Struct):
 
     @cryptographic_parameters.setter
     def cryptographic_parameters(self, value):
-        if value is None:
+        if not value:
             self._cryptographic_parameters = None
+        elif isinstance(value, dict):
+            self._cryptographic_parameters = CryptographicParameters(**value)
         elif isinstance(value, CryptographicParameters):
             self._cryptographic_parameters = value
         else:
@@ -871,8 +873,10 @@ class MACSignatureKeyInformation(primitives.Struct):
 
     @cryptographic_parameters.setter
     def cryptographic_parameters(self, value):
-        if value is None:
+        if not value:
             self._cryptographic_parameters = None
+        elif isinstance(value, dict):
+            self._cryptographic_parameters = CryptographicParameters(**value)
         elif isinstance(value, CryptographicParameters):
             self._cryptographic_parameters = value
         else:
@@ -1051,8 +1055,11 @@ class KeyWrappingData(Struct):
 
     @encryption_key_information.setter
     def encryption_key_information(self, value):
-        if value is None:
+        if not value:
             self._encryption_key_information = None
+        elif isinstance(value, dict):
+            self._encryption_key_information = \
+                EncryptionKeyInformation(**value)
         elif isinstance(value, EncryptionKeyInformation):
             self._encryption_key_information = value
         else:
@@ -1067,8 +1074,11 @@ class KeyWrappingData(Struct):
 
     @mac_signature_key_information.setter
     def mac_signature_key_information(self, value):
-        if value is None:
+        if not value:
             self._mac_signature_key_information = None
+        elif isinstance(value, dict):
+            self._mac_signature_key_information = \
+                MACSignatureKeyInformation(**value)
         elif isinstance(value, MACSignatureKeyInformation):
             self._mac_signature_key_information = value
         else:

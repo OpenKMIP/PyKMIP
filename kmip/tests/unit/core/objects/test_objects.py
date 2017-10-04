@@ -385,6 +385,27 @@ class TestEncryptionKeyInformation(testtools.TestCase):
             parameters.block_cipher_mode
         )
 
+        encryption_key_information = objects.EncryptionKeyInformation(
+            unique_identifier="00000000-1111-2222-3333-444444444444",
+            cryptographic_parameters={
+                'block_cipher_mode': enums.BlockCipherMode.CTR
+            }
+        )
+
+        self.assertEqual(
+            "00000000-1111-2222-3333-444444444444",
+            encryption_key_information.unique_identifier
+        )
+        self.assertIsInstance(
+            encryption_key_information.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        parameters = encryption_key_information.cryptographic_parameters
+        self.assertEqual(
+            enums.BlockCipherMode.CTR,
+            parameters.block_cipher_mode
+        )
+
     def test_invalid_unique_identifier(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
@@ -821,6 +842,27 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         mac_signature_key_information = objects.MACSignatureKeyInformation(
             unique_identifier="00000000-1111-2222-3333-444444444444",
             cryptographic_parameters=cryptographic_parameters
+        )
+
+        self.assertEqual(
+            "00000000-1111-2222-3333-444444444444",
+            mac_signature_key_information.unique_identifier
+        )
+        self.assertIsInstance(
+            mac_signature_key_information.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        parameters = mac_signature_key_information.cryptographic_parameters
+        self.assertEqual(
+            enums.BlockCipherMode.CTR,
+            parameters.block_cipher_mode
+        )
+
+        mac_signature_key_information = objects.MACSignatureKeyInformation(
+            unique_identifier="00000000-1111-2222-3333-444444444444",
+            cryptographic_parameters={
+                'block_cipher_mode': enums.BlockCipherMode.CTR
+            }
         )
 
         self.assertEqual(
@@ -1317,6 +1359,70 @@ class TestKeyWrappingData(testtools.TestCase):
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
                 )
             ),
+            mac_signature=b'\x01',
+            iv_counter_nonce=b'\x02',
+            encoding_option=enums.EncodingOption.TTLV_ENCODING
+        )
+
+        self.assertEqual(
+            enums.WrappingMethod.ENCRYPT,
+            key_wrapping_data.wrapping_method
+        )
+        self.assertIsInstance(
+            key_wrapping_data.encryption_key_information,
+            objects.EncryptionKeyInformation
+        )
+        e = key_wrapping_data.encryption_key_information
+        self.assertEqual(
+            "12345678-9012-3456-7890-123456789012",
+            e.unique_identifier
+        )
+        self.assertIsInstance(
+            e.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.BlockCipherMode.CTR,
+            e.cryptographic_parameters.block_cipher_mode
+        )
+        self.assertIsInstance(
+            key_wrapping_data.mac_signature_key_information,
+            objects.MACSignatureKeyInformation
+        )
+        m = key_wrapping_data.mac_signature_key_information
+        self.assertEqual(
+            "00000000-1111-2222-3333-444444444444",
+            m.unique_identifier
+        )
+        self.assertIsInstance(
+            m.cryptographic_parameters,
+            attributes.CryptographicParameters
+        )
+        self.assertEqual(
+            enums.BlockCipherMode.NIST_KEY_WRAP,
+            m.cryptographic_parameters.block_cipher_mode
+        )
+        self.assertEqual(b'\x01', key_wrapping_data.mac_signature)
+        self.assertEqual(b'\x02', key_wrapping_data.iv_counter_nonce)
+        self.assertEqual(
+            enums.EncodingOption.TTLV_ENCODING,
+            key_wrapping_data.encoding_option
+        )
+
+        key_wrapping_data = objects.KeyWrappingData(
+            wrapping_method=enums.WrappingMethod.ENCRYPT,
+            encryption_key_information={
+                'unique_identifier': "12345678-9012-3456-7890-123456789012",
+                'cryptographic_parameters': {
+                    'block_cipher_mode': enums.BlockCipherMode.CTR
+                }
+            },
+            mac_signature_key_information={
+                'unique_identifier': "00000000-1111-2222-3333-444444444444",
+                'cryptographic_parameters': {
+                    'block_cipher_mode': enums.BlockCipherMode.NIST_KEY_WRAP
+                }
+            },
             mac_signature=b'\x01',
             iv_counter_nonce=b'\x02',
             encoding_option=enums.EncodingOption.TTLV_ENCODING
