@@ -128,6 +128,51 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.destroy, uid)
 
+    def test_register_wrapped_get_destroy(self):
+        """
+        Test that a wrapped key can be registered with the server and that its
+        metadata is retrieved with the get operation.
+        """
+        key = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E'
+             b'\x0F'),
+            key_wrapping_data={
+                'wrapping_method': enums.WrappingMethod.ENCRYPT,
+                'encryption_key_information': {
+                    'unique_identifier': '42',
+                    'cryptographic_parameters': {
+                        'block_cipher_mode':
+                            enums.BlockCipherMode.NIST_KEY_WRAP
+                    }
+                },
+                'encoding_option': enums.EncodingOption.NO_ENCODING
+            }
+        )
+        key_id = self.client.register(key)
+
+        result = self.client.get(key_id)
+        key_wrapping_data = result.key_wrapping_data
+        self.assertIsInstance(key_wrapping_data, dict)
+        self.assertEqual(
+            enums.WrappingMethod.ENCRYPT,
+            key_wrapping_data.get('wrapping_method')
+        )
+        eki = key_wrapping_data.get('encryption_key_information')
+        self.assertIsInstance(eki, dict)
+        self.assertEqual('42', eki.get('unique_identifier'))
+        cp = eki.get('cryptographic_parameters')
+        self.assertIsInstance(cp, dict)
+        self.assertEqual(
+            enums.BlockCipherMode.NIST_KEY_WRAP,
+            cp.get('block_cipher_mode')
+        )
+        self.assertEqual(
+            enums.EncodingOption.NO_ENCODING,
+            key_wrapping_data.get('encoding_option')
+        )
+
     def test_asymmetric_key_pair_create_get_destroy(self):
         """
         Test that the ProxyKmipClient can create, retrieve, and destroy an
