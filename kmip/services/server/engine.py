@@ -534,21 +534,24 @@ class KmipEngine(object):
                 'cryptographic_algorithm': obj.cryptographic_algorithm,
                 'cryptographic_length': obj.cryptographic_length,
                 'key_format_type': obj.key_format_type,
-                'key_value': obj.value
+                'key_value': obj.value,
+                'key_wrapping_data': obj.key_wrapping_data
             }
         elif object_type == enums.ObjectType.PUBLIC_KEY:
             value = {
                 'cryptographic_algorithm': obj.cryptographic_algorithm,
                 'cryptographic_length': obj.cryptographic_length,
                 'key_format_type': obj.key_format_type,
-                'key_value': obj.value
+                'key_value': obj.value,
+                'key_wrapping_data': obj.key_wrapping_data
             }
         elif object_type == enums.ObjectType.PRIVATE_KEY:
             value = {
                 'cryptographic_algorithm': obj.cryptographic_algorithm,
                 'cryptographic_length': obj.cryptographic_length,
                 'key_format_type': obj.key_format_type,
-                'key_value': obj.value
+                'key_value': obj.value,
+                'key_wrapping_data': obj.key_wrapping_data
             }
         elif object_type == enums.ObjectType.SECRET_DATA:
             value = {

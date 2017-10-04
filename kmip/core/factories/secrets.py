@@ -183,11 +183,11 @@ class SecretFactory(object):
                 crypto_length = CryptographicLength(cryptographic_length)
 
             key_wrap_data = None
-            if key_wrapping_data is not None:
+            if key_wrapping_data:
                 # TODO (peter-hamilton) This currently isn't used in the tests
                 # TODO (peter-hamilton) but needs to be updated to properly
                 # TODO (peter-hamilton) create a KeyWrappingData object.
-                key_wrap_data = KeyWrappingData(key_wrapping_data)
+                key_wrap_data = KeyWrappingData(**key_wrapping_data)
 
             key_block = KeyBlock(key_format_type,
                                  key_comp_type,
