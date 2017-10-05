@@ -16,6 +16,8 @@
 import os
 import re
 
+from kmip.core import enums
+
 # Dynamically set __version__
 version_path = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), 'version.py')
@@ -24,4 +26,9 @@ with open(version_path, 'r') as version_file:
     __version__ = mo.group(1)
 
 
-__all__ = ['core', 'demos', 'services']
+__all__ = [
+    'core',
+    'demos',
+    'enums',
+    'services'
+]
