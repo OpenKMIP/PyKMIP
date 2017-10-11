@@ -26,7 +26,6 @@ from kmip.core.attributes import Name
 from kmip.core.attributes import OperationPolicyName
 
 from kmip.core import enums
-from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.enums import NameType
 
@@ -310,10 +309,10 @@ class TestCertificateType(TestCase):
         super(TestCertificateType, self).tearDown()
 
     def _test_init(self, value):
-        if (isinstance(value, CertificateTypeEnum)) or (value is None):
+        if (isinstance(value, enums.CertificateType)) or (value is None):
             if value is None:
                 certificate_type = CertificateType()
-                value = CertificateTypeEnum.X_509
+                value = enums.CertificateType.X_509
             else:
                 certificate_type = CertificateType(value)
 
@@ -335,7 +334,7 @@ class TestCertificateType(TestCase):
         Test that a CertificateType object can be constructed with valid byte
         data.
         """
-        self._test_init(CertificateTypeEnum.PGP)
+        self._test_init(enums.CertificateType.PGP)
 
 
 class TestDigestValue(TestCase):

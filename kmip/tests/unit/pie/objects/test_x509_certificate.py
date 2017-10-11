@@ -149,7 +149,7 @@ class TestX509Certificate(testtools.TestCase):
         certificate = X509Certificate(self.bytes_a)
 
         self.assertEqual(
-            certificate.certificate_type, enums.CertificateTypeEnum.X_509)
+            certificate.certificate_type, enums.CertificateType.X_509)
         self.assertEqual(certificate.value, self.bytes_a)
         self.assertEqual(certificate.cryptographic_usage_masks, list())
         self.assertEqual(certificate.names, ['X.509 Certificate'])
@@ -166,7 +166,7 @@ class TestX509Certificate(testtools.TestCase):
             name='Test X.509 Certificate')
 
         self.assertEqual(
-            cert.certificate_type, enums.CertificateTypeEnum.X_509)
+            cert.certificate_type, enums.CertificateType.X_509)
         self.assertEqual(cert.value, self.bytes_a)
         self.assertEqual(cert.cryptographic_usage_masks,
                          [enums.CryptographicUsageMask.ENCRYPT,
@@ -223,7 +223,7 @@ class TestX509Certificate(testtools.TestCase):
         """
         cert = X509Certificate(self.bytes_a)
         args = "certificate_type={0}, value={1}".format(
-            enums.CertificateTypeEnum.X_509, binascii.hexlify(self.bytes_a))
+            enums.CertificateType.X_509, binascii.hexlify(self.bytes_a))
         expected = "X509Certificate({0})".format(args)
         observed = repr(cert)
         self.assertEqual(expected, observed)

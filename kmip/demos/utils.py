@@ -22,7 +22,7 @@ from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
 
 from kmip.core.enums import AttributeType
-from kmip.core.enums import CertificateTypeEnum
+from kmip.core.enums import CertificateType
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import ObjectType
@@ -302,7 +302,7 @@ def build_object(logger, object_type, key_format_type):
     if object_type == ObjectType.CERTIFICATE:
         value = build_secret_value(logger, object_type)
         return Certificate(
-            certificate_type=CertificateTypeEnum.X_509,
+            certificate_type=CertificateType.X_509,
             certificate_value=value)
     else:
         return build_key(logger, object_type, key_format_type)

@@ -341,7 +341,7 @@ class TestObjectFactory(testtools.TestCase):
         Test that a core certificate can be converted into a Pie certificate.
         """
         core_cert = secrets.Certificate(
-            enums.CertificateTypeEnum.X_509, self.certificate_bytes)
+            enums.CertificateType.X_509, self.certificate_bytes)
         pie_cert = self.factory.convert(core_cert)
 
         self.assertIsInstance(pie_cert, pobjects.X509Certificate)
@@ -526,7 +526,7 @@ class TestObjectFactory(testtools.TestCase):
         unsupported certificate type.
         """
         core_cert = secrets.Certificate(
-            enums.CertificateTypeEnum.PGP, self.certificate_bytes)
+            enums.CertificateType.PGP, self.certificate_bytes)
         args = (core_cert, )
         self.assertRaises(
             TypeError, self.factory._build_pie_certificate, *args)

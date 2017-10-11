@@ -137,7 +137,7 @@ class CertificateRequestType(enum.Enum):
     PGP    = 0x00000004  # DEPRECATED
 
 
-class CertificateTypeEnum(enum.Enum):
+class CertificateType(enum.Enum):
     X_509 = 0x00000001
     PGP   = 0x00000002  # Deprecated as of KMIP 1.4
 

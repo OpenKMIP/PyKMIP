@@ -171,7 +171,7 @@ class TestCertificate(testtools.TestCase):
         """
         Test that direct instantiation of a Certificate fails.
         """
-        args = (enums.CertificateTypeEnum.X_509, self.bytes_a)
+        args = (enums.CertificateType.X_509, self.bytes_a)
         self.assertRaises(TypeError, objects.Certificate, *args)
 
     def test_init(self):
@@ -179,10 +179,10 @@ class TestCertificate(testtools.TestCase):
         Test that a complete subclass of Certificate can be instantiated.
         """
         certificate = DummyCertificate(
-            enums.CertificateTypeEnum.X_509, self.bytes_a)
+            enums.CertificateType.X_509, self.bytes_a)
 
         self.assertEqual(
-            certificate.certificate_type, enums.CertificateTypeEnum.X_509)
+            certificate.certificate_type, enums.CertificateType.X_509)
         self.assertEqual(certificate.value, self.bytes_a)
         self.assertEqual(certificate.cryptographic_usage_masks, list())
         self.assertEqual(certificate.names, ['Certificate'])
@@ -193,14 +193,14 @@ class TestCertificate(testtools.TestCase):
         all arguments.
         """
         cert = DummyCertificate(
-            enums.CertificateTypeEnum.X_509,
+            enums.CertificateType.X_509,
             self.bytes_a,
             masks=[enums.CryptographicUsageMask.ENCRYPT,
                    enums.CryptographicUsageMask.VERIFY],
             name='Test Certificate')
 
         self.assertEqual(
-            cert.certificate_type, enums.CertificateTypeEnum.X_509)
+            cert.certificate_type, enums.CertificateType.X_509)
         self.assertEqual(cert.value, self.bytes_a)
         self.assertEqual(cert.cryptographic_usage_masks,
                          [enums.CryptographicUsageMask.ENCRYPT,
@@ -213,7 +213,7 @@ class TestCertificate(testtools.TestCase):
         of Certificate.
         """
         expected = enums.ObjectType.CERTIFICATE
-        cert = DummyCertificate(enums.CertificateTypeEnum.X_509, self.bytes_a)
+        cert = DummyCertificate(enums.CertificateType.X_509, self.bytes_a)
         observed = cert.object_type
         self.assertEqual(expected, observed)
 
@@ -230,7 +230,7 @@ class TestCertificate(testtools.TestCase):
         Test that a TypeError is raised when an invalid length value is used
         to construct a complete subclass of Certificate.
         """
-        args = (enums.CertificateTypeEnum.X_509, 0)
+        args = (enums.CertificateType.X_509, 0)
         self.assertRaises(TypeError, DummyCertificate, *args)
 
     def test_validate_on_invalid_masks(self):
@@ -238,7 +238,7 @@ class TestCertificate(testtools.TestCase):
         Test that a TypeError is raised when an invalid masks value is used to
         construct a complete subclass of Certificate.
         """
-        args = (enums.CertificateTypeEnum.X_509, self.bytes_a)
+        args = (enums.CertificateType.X_509, self.bytes_a)
         kwargs = {'masks': 'invalid'}
         self.assertRaises(TypeError, DummyCertificate, *args, **kwargs)
 
@@ -247,7 +247,7 @@ class TestCertificate(testtools.TestCase):
         Test that a TypeError is raised when an invalid mask value is used to
         construct a complete subclass of Certificate.
         """
-        args = (enums.CertificateTypeEnum.X_509, self.bytes_a)
+        args = (enums.CertificateType.X_509, self.bytes_a)
         kwargs = {'masks': ['invalid']}
         self.assertRaises(TypeError, DummyCertificate, *args, **kwargs)
 
@@ -256,7 +256,7 @@ class TestCertificate(testtools.TestCase):
         Test that a TypeError is raised when an invalid name value is used to
         construct a complete subclass of Certificate.
         """
-        args = (enums.CertificateTypeEnum.X_509, self.bytes_a)
+        args = (enums.CertificateType.X_509, self.bytes_a)
         kwargs = {'name': 0}
         self.assertRaises(TypeError, DummyCertificate, *args, **kwargs)
 
@@ -264,14 +264,14 @@ class TestCertificate(testtools.TestCase):
         """
         Test that repr can be applied to a complete subclass of Certificate.
         """
-        dummy = DummyCertificate(enums.CertificateTypeEnum.X_509, self.bytes_a)
+        dummy = DummyCertificate(enums.CertificateType.X_509, self.bytes_a)
         repr(dummy)
 
     def test_str(self):
         """
         Test that str can be applied to a complete subclass of Certificate.
         """
-        dummy = DummyCertificate(enums.CertificateTypeEnum.X_509, self.bytes_a)
+        dummy = DummyCertificate(enums.CertificateType.X_509, self.bytes_a)
         str(dummy)
 
     def test_eq(self):
@@ -279,7 +279,7 @@ class TestCertificate(testtools.TestCase):
         Test that equality can be applied to a complete subclass of
         Certificate.
         """
-        dummy = DummyCertificate(enums.CertificateTypeEnum.X_509, self.bytes_a)
+        dummy = DummyCertificate(enums.CertificateType.X_509, self.bytes_a)
         self.assertTrue(dummy == dummy)
 
     def test_ne(self):
@@ -287,5 +287,5 @@ class TestCertificate(testtools.TestCase):
         Test that inequality can be applied to a complete subclass of
         Certificate.
         """
-        dummy = DummyCertificate(enums.CertificateTypeEnum.X_509, self.bytes_a)
+        dummy = DummyCertificate(enums.CertificateType.X_509, self.bytes_a)
         self.assertFalse(dummy != dummy)
