@@ -17,6 +17,9 @@ import os
 import re
 
 from kmip.core import enums
+from kmip.pie import client
+from kmip.pie import objects
+from kmip.pie.client import ProxyKmipClient as KmipClient
 
 # Dynamically set __version__
 version_path = os.path.join(os.path.dirname(
@@ -27,8 +30,11 @@ with open(version_path, 'r') as version_file:
 
 
 __all__ = [
+    'client',
     'core',
     'demos',
     'enums',
+    'KmipClient',
+    'objects',
     'services'
 ]
