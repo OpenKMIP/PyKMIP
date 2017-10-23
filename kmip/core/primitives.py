@@ -678,7 +678,7 @@ class Boolean(Base):
         """
         try:
             value = unpack('!Q', istream.read(self.LENGTH))[0]
-        except:
+        except Exception:
             self.logger.error("Error reading boolean value from buffer")
             raise
 
@@ -713,7 +713,7 @@ class Boolean(Base):
         """
         try:
             ostream.write(pack('!Q', self.value))
-        except:
+        except Exception:
             self.logger.error("Error writing boolean value to buffer")
             raise
 

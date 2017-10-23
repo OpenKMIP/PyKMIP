@@ -2664,7 +2664,7 @@ def load_private_key(key):
             password=None,
             backend=default_backend()
         )
-    except:
+    except Exception:
         return serialization.load_pem_private_key(
             key,
             password=None,

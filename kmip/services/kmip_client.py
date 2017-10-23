@@ -357,11 +357,11 @@ class KMIPProxy(KMIP):
         result['result_status'] = batch_item.result_status.value
         try:
             result['result_reason'] = batch_item.result_reason.value
-        except:
+        except Exception:
             result['result_reason'] = batch_item.result_reason
         try:
             result['result_message'] = batch_item.result_message.value
-        except:
+        except Exception:
             result['result_message'] = batch_item.result_message
 
         return result
@@ -571,11 +571,11 @@ class KMIPProxy(KMIP):
         result['result_status'] = batch_item.result_status.value
         try:
             result['result_reason'] = batch_item.result_reason.value
-        except:
+        except Exception:
             result['result_reason'] = batch_item.result_reason
         try:
             result['result_message'] = batch_item.result_message.value
-        except:
+        except Exception:
             result['result_message'] = batch_item.result_message
 
         return result
@@ -646,11 +646,11 @@ class KMIPProxy(KMIP):
         result['result_status'] = batch_item.result_status.value
         try:
             result['result_reason'] = batch_item.result_reason.value
-        except:
+        except Exception:
             result['result_reason'] = batch_item.result_reason
         try:
             result['result_message'] = batch_item.result_message.value
-        except:
+        except Exception:
             result['result_message'] = batch_item.result_message
 
         return result
@@ -721,11 +721,11 @@ class KMIPProxy(KMIP):
         result['result_status'] = batch_item.result_status.value
         try:
             result['result_reason'] = batch_item.result_reason.value
-        except:
+        except Exception:
             result['result_reason'] = batch_item.result_reason
         try:
             result['result_message'] = batch_item.result_message.value
-        except:
+        except Exception:
             result['result_message'] = batch_item.result_message
 
         return result
@@ -787,11 +787,11 @@ class KMIPProxy(KMIP):
         result['result_status'] = batch_item.result_status.value
         try:
             result['result_reason'] = batch_item.result_reason.value
-        except:
+        except Exception:
             result['result_reason'] = batch_item.result_reason
         try:
             result['result_message'] = batch_item.result_message.value
-        except:
+        except Exception:
             result['result_message'] = batch_item.result_message
 
         return result

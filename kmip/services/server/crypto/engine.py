@@ -1208,7 +1208,7 @@ class CryptographyEngine(api.CryptographicEngine):
                 backend=default_backend()
             )
             return private_key
-        except:
+        except Exception:
             private_key = serialization.load_der_private_key(
                 bytes,
                 password=None,
@@ -1271,7 +1271,7 @@ class CryptographyEngine(api.CryptographicEngine):
         if crypto_alg == enums.CryptographicAlgorithm.RSA:
             try:
                 key = self._create_RSA_private_key(signing_key)
-            except:
+            except Exception:
                 raise exceptions.InvalidField('Unable to deserialize key '
                                               'bytes, unknown format.')
         else:
