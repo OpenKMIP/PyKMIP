@@ -17,7 +17,7 @@ import logging
 
 try:
     import unittest.mock as mock
-except:
+except Exception:
     import mock
 
 import signal

@@ -83,7 +83,7 @@ class ConfigHelper(object):
                 self.logger.debug(CONF_MSG.format(return_value,
                                                   CONFIG_FILE,
                                                   config_option_name))
-            except:
+            except Exception:
                 return_value = default_value
                 self.logger.debug(DEFAULT_MSG.format(default_value,
                                                      config_option_name))
