@@ -24,7 +24,7 @@ from kmip.core.enums import AttributeType
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
-from kmip.core.enums import CertificateTypeEnum
+from kmip.core.enums import CertificateType
 from kmip.core.enums import NameType
 from kmip.core.enums import ObjectType
 from kmip.core.enums import OpaqueDataType
@@ -838,7 +838,7 @@ class TestIntegration(TestCase):
         cert_template_attribute = TemplateAttribute(
             attributes=cert_attributes)
 
-        cert_format_type = CertificateTypeEnum.X_509
+        cert_format_type = CertificateType.X_509
 
         cert_data = (
             b'\x30\x82\x03\x12\x30\x82\x01\xFA\xA0\x03\x02\x01\x02\x02\x01\x01'

@@ -1074,7 +1074,7 @@ class TestKmipEngine(testtools.TestCase):
             core_object.certificate_value.value
         )
         self.assertEqual(
-            enums.CertificateTypeEnum.X_509,
+            enums.CertificateType.X_509,
             core_object.certificate_type.value
         )
 
@@ -1592,7 +1592,7 @@ class TestKmipEngine(testtools.TestCase):
             certificate,
             'Certificate Type'
         )
-        self.assertEqual(enums.CertificateTypeEnum.X_509, result)
+        self.assertEqual(enums.CertificateType.X_509, result)
 
         result = e._get_attribute_from_managed_object(
             certificate,

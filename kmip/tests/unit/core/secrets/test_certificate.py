@@ -16,7 +16,7 @@
 from testtools import TestCase
 
 from kmip.core.attributes import CertificateType
-from kmip.core.enums import CertificateTypeEnum
+from kmip.core import enums
 from kmip.core.misc import CertificateValue
 from kmip.core.secrets import Certificate
 from kmip.core.utils import BytearrayStream
@@ -31,7 +31,7 @@ class TestCertificate(TestCase):
         super(TestCertificate, self).setUp()
 
         self.certificate_type_a = None
-        self.certificate_type_b = CertificateTypeEnum.X_509
+        self.certificate_type_b = enums.CertificateType.X_509
 
         # Encodings obtained from Section 13.2 of KMIP 1.1 Test Cases document.
         self.certificate_value_a = None

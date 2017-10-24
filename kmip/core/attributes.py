@@ -17,7 +17,6 @@ import six
 
 from kmip.core import enums
 
-from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
@@ -781,17 +780,17 @@ class CertificateType(Enumeration):
     information.
     """
 
-    def __init__(self, value=CertificateTypeEnum.X_509):
+    def __init__(self, value=enums.CertificateType.X_509):
         """
         Construct a CertificateType object.
 
         Args:
-            value (CertificateTypeEnum): A CertificateTypeEnum enumeration
-                value, (e.g., CertificateTypeEnum.PGP). Optional, defaults to
-                CertificateTypeEnum.X_509.
+            value (CertificateType): A CertificateType enumeration
+                value, (e.g., CertificateType.PGP). Optional, defaults to
+                CertificateType.X_509.
         """
         super(CertificateType, self).__init__(
-            enums.CertificateTypeEnum, value, Tags.CERTIFICATE_TYPE)
+            enums.CertificateType, value, Tags.CERTIFICATE_TYPE)
 
 
 class DigestValue(ByteString):

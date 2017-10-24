@@ -52,7 +52,7 @@ class Certificate(Struct):
         Construct a Certificate object.
 
         Args:
-            certificate_type (CertificateTypeEnum): The type of the
+            certificate_type (CertificateType): The type of the
                 certificate. Optional, defaults to None.
             certificate_value (bytes): The bytes of the certificate. Optional,
                 defaults to None.
