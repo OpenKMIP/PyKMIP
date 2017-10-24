@@ -25,7 +25,6 @@ from kmip.core.factories import attributes
 from kmip.core.attributes import CryptographicParameters
 from kmip.core.attributes import DerivationParameters
 
-from kmip.pie import api
 from kmip.pie import exceptions
 from kmip.pie import factory
 from kmip.pie import objects as pobjects
@@ -41,7 +40,7 @@ def is_connected(function):
     return wrapper
 
 
-class ProxyKmipClient(api.KmipClient):
+class ProxyKmipClient(object):
     """
     A simplified KMIP client for conducting KMIP operations.
 
