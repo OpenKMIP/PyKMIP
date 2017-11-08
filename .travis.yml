@@ -2,18 +2,60 @@ language: python
 matrix:
     include:
         - python: 2.7
+          os: linux
+          dist: precise
+          env: TOXENV=py27
+        - python: 2.7
+          os: linux
+          dist: trusty
           env: TOXENV=py27
         - python: 3.3
+          os: linux
+          dist: precise
+          env: TOXENV=py33
+        - python: 3.3
+          os: linux
+          dist: trusty
           env: TOXENV=py33
         - python: 3.4
+          os: linux
+          dist: precise
+          env: TOXENV=py34
+        - python: 3.4
+          os: linux
+          dist: trusty
           env: TOXENV=py34
         - python: 3.5
+          os: linux
+          dist: precise
+          env: TOXENV=py35
+        - python: 3.5
+          os: linux
+          dist: trusty
           env: TOXENV=py35
         - python: 3.6
+          os: linux
+          dist: precise
+          env: TOXENV=py36
+        - python: 3.6
+          os: linux
+          dist: trusty
           env: TOXENV=py36
         - python: 2.7
+          os: linux
+          dist: precise
           env: TOXENV=pep8
         - python: 2.7
+          os: linux
+          dist: trusty
+          env: TOXENV=pep8
+        - python: 2.7
+          os: linux
+          dist: precise
+          env: TOXENV=bandit
+        - python: 2.7
+          os: linux
+          dist: trusty
           env: TOXENV=bandit
 install:
   - pip install tox
