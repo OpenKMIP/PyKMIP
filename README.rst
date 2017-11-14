@@ -11,7 +11,7 @@ Protocol (KMIP). KMIP is a client/server communication protocol for the
 storage and maintenance of key, certificate, and secret objects. The standard
 is governed by the `Organization for the Advancement of Structured Information
 Standards`_ (OASIS). PyKMIP supports a subset of features in versions
-1.0 - 1.2 of the KMIP specification.
+1.0 - 1.4 of the KMIP specification.
 
 For a high-level overview of KMIP, check out the `KMIP Wikipedia page`_. For
 comprehensive documentation from OASIS and information about the KMIP
@@ -23,13 +23,13 @@ Usage
 =====
 Client
 ------
-There are two implementations of the KMIP client. The first,
-``kmip.services.kmip_client.KMIPProxy``, is the original client and provides
-support for the following operations:
+The KMIP client, ``kmip.pie.client.ProxyKmipClient``, provides support for
+the following operations:
 
 * ``Create``
 * ``CreateKeyPair``
 * ``Register``
+* ``DeriveKey``
 * ``Locate``
 * ``Get``
 * ``GetAttributes``
@@ -37,29 +37,20 @@ support for the following operations:
 * ``Activate``
 * ``Revoke``
 * ``Destroy``
-* ``Query``
-* ``DiscoverVersions``
+* ``Encrypt``
+* ``Decrypt``
+* ``Sign``
+* ``SignatureVerify``
+* ``MAC``
 
-The second client, ``kmip.pie.client.ProxyKmipClient``, wraps the original
-``KMIPProxy`` and provides a simpler interface. It provides support for the
-following operations:
-
-* ``Create``
-* ``CreateKeyPair``
-* ``Register``
-* ``Get``
-* ``GetAttributes``
-* ``GetAttributeList``
-* ``Destroy``
-
-For examples of how to create and use the different clients, see the scripts
-in ``kmip/demos``.
+For examples of how to create and use the client, see the scripts in
+``kmip/demos/pie``.
 
 Configuration
 *************
-A KMIP client can be configured in different ways to connect to a KMIP server.
-The first method is the default approach, which uses settings found in the
-PyKMIP configuration file. The configuration file can be stored in several
+The KMIP client can be configured in different ways to connect to a KMIP
+server. The first method is the default approach, which uses settings found in
+the PyKMIP configuration file. The configuration file can be stored in several
 different locations, including:
 
 * ``<user home>/.pykmip/pykmip.conf``
@@ -106,7 +97,7 @@ specifying the different configuration values::
       config='client'
   )
 
-A KMIP client will load the configuration settings found in the ``client``
+The KMIP client will load the configuration settings found in the ``client``
 settings block by default. Settings specified at runtime, as in the above
 example, will take precedence over the default values found in the
 configuration file.
@@ -117,7 +108,7 @@ information, check out the `Python SSL library documentation`_.
 
 Server
 ------
-In addition to the KMIP clients, PyKMIP provides a basic software
+In addition to the KMIP client, PyKMIP provides a basic software
 implementation of a KMIP server, ``kmip.services.server.KmipServer``.
 However, the server is intended for use only in testing and demonstration
 environments. The server is **not** intended to be a substitute for a secure,
@@ -129,12 +120,20 @@ The KMIP server provides support for the following operations:
 * ``Create``
 * ``CreateKeyPair``
 * ``Register``
+* ``DeriveKey``
+* ``Locate``
 * ``Get``
 * ``GetAttributes``
 * ``Activate``
+* ``Revoke``
 * ``Destroy``
 * ``Query``
 * ``DiscoverVersions``
+* ``Encrypt``
+* ``Decrypt``
+* ``Sign``
+* ``SignatureVerify``
+* ``MAC``
 
 Configuration
 *************
@@ -151,6 +150,12 @@ below::
   ca_path=/path/to/ca/certificate/file
   auth_suite=Basic
   policy_path=/path/to/policy/file
+  enable_tls_client_auth=True
+  tls_cipher_suites=
+      TLS_RSA_WITH_AES_128_CBC_SHA256
+      TLS_RSA_WITH_AES_256_CBC_SHA256
+      TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+  logging_level=DEBUG
 
 The server can also be configured manually. The following example shows how
 to create the ``KmipServer`` in Python code, directly specifying the
@@ -165,7 +170,14 @@ different configuration values::
       auth_suite='Basic',
       config_path='/etc/pykmip/server.conf',
       log_path='/var/log/pykmip/server.log',
-      policy_path='/etc/pykmip/policies'
+      policy_path='/etc/pykmip/policies',
+      enable_tls_client_auth=True,
+      tls_cipher_suites=[
+          'TLS_RSA_WITH_AES_128_CBC_SHA256',
+          'TLS_RSA_WITH_AES_256_CBC_SHA256',
+          'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384'
+      ],
+      logging_level='DEBUG'
   )
 
 **NOTE:** The ``kmip_server.KMIPServer`` implementation of the software
@@ -214,6 +226,19 @@ The different configuration options are defined below:
 * ``policy_path``
     A string representing a path to the filesystem directory containing
     PyKMIP server operation policy JSON files.
+* ``enable_tls_client_auth``
+    A boolean indicating whether or not extension checks should be performed
+    on client certificates to verify that they can be used to derive client
+    identity. This setting is enabled by default for backwards compatibility
+    and must be explicitly disabled if this behavior is not desired.
+* ``tls_cipher_suites``
+    A list of strings representing the set of cipher suites to use when
+    establishing TLS connections with new clients. Enable debug logging for
+    more information on the cipher suites used by the client and server.
+* ``logging_level``
+    A string indicating what the base logging level should be for the server.
+    Options include: DEBUG, INFO, WARNING, ERROR, CRITICAL. The DEBUG log level
+    logs the most information, the CRITICAL log level logs the least.
 
 **NOTE:** When installing PyKMIP and deploying the KMIP software server, you
 must manually set up the server configuration file. It **will not** be placed
@@ -268,42 +293,8 @@ template for the operation policy JSON file can be found under ``examples``.
 Note that the ``default`` and ``public`` policies are reserved and cannot
 be redefined by a user's policy.
 
-Profiles
-========
-The KMIP standard includes various profiles that tailor the standard for
-specific use cases (e.g., symmetric key storage with TLS 1.2). These profiles
-specify conformance to certain operations and attributes.
-
-The PyKMIP ``KMIPProxy`` client provides full support for the following
-profile(s):
-
-* Basic Discover Versions Client KMIP Profile
-
 Development
 ===========
-Roadmap
--------
-The development plan for PyKMIP follows the requirements for the following
-KMIP profiles. The foundation for symmetric and asymmetric key operation
-support is already built into the library.
-
-Client profiles:
-
-* Basic Baseline Client KMIP Profile
-* Basic Symmetric Key Store Client KMIP Profile
-* Basic Symmetric Key Foundry Client KMIP Profile
-* Basic Asymmetric Key Store Client KMIP Profile
-* Basic Asymmetric Key Foundry Client KMIP Profile
-
-Server profiles:
-
-* Basic Discover Versions Server KMIP Profile
-* Basic Baseline Server KMIP Profile
-* Basic Symmetric Key Store and Server KMIP Profile
-* Basic Symmetric Key Foundry and Server KMIP Profile
-* Basic Asymmetric Key Store Server KMIP Profile
-* Basic Asymmetric Key Foundry and Server KMIP Profile
-
 Testing
 -------
 The PyKMIP test suite is composed of two parts, a unit test suite and an
