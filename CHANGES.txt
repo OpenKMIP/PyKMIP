@@ -1,3 +1,30 @@
+0.7.0 - November 14, 2017
+* Add support for Python 3.6
+* Add support for the InitialDate attribute
+* Add server support for the GetAttributeList operation
+* Add server support for the Locate operation
+* Add client and server support for the MAC operation
+* Add client and server support for the Revoke operation
+* Add client and server support for the Encrypt operation
+* Add client and server support for the Decrypt operation
+* Add client and server support for the DeriveKey operation
+* Add client and server support for the Sign operation
+* Add client and server support for the SignatureVerify operation
+* Add client and server support for retrieving wrapped keys
+* Add client and server support for storing wrapped keys
+* Add KMIP 1.4 enumerations
+* Add server config option enabling certificate extension checks
+* Add server config option defining set of usable TLS ciphers
+* Add server config option setting the server log level
+* Update the server to enforce checking object state and usage masks
+* Update server Locate support to allow object name filtering
+* Remove support for Python 2.6
+* Fix bug with multithreading support with the SQLite backend
+* Fix bug with how open() is mocked in the server test suite
+* Fix bug with mismapped polymorphic identity for certificate objects
+* Fix bug with socket interrupt handling under Python 3.5
+* Fix bug with detached instance errors in the server test suite
+
 0.6.0 - December 14, 2016
 * Add support for Python 3.5
 * Add support for the State and OperationPolicyName attributes
