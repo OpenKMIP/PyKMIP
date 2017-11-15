@@ -1,3 +1,6 @@
+0.8 - master
+- This version is under active development and has not been released.
+
 0.7.0 - November 14, 2017
 * Add support for Python 3.6
 * Add support for the InitialDate attribute
