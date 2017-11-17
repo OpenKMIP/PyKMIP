@@ -1232,7 +1232,7 @@ class KmipEngine(object):
 
         if self._enable_tpm:
             self._data_session.add(self._cryptography_engine.tpm_encrypt_key(public_key))
-            self._data_session.add(self._cryptography_engine.tpm_decrypt_key(private_key))
+            self._data_session.add(self._cryptography_engine.tpm_encrypt_key(private_key))
         else:
             self._data_session.add(public_key)
             self._data_session.add(private_key)
@@ -1579,6 +1579,8 @@ class KmipEngine(object):
             unique_identifier,
             enums.Operation.GET
         )
+        if self._enable_tpm:
+            managed_object = self._cryptography_engine.tpm_decrypt_key(managed_object)
 
         if key_format_type:
             if not hasattr(managed_object, 'key_format_type'):
