@@ -170,6 +170,10 @@ class KmipServerConfig(object):
             self._set_enable_tls_client_auth(
                 parser.getboolean('server', 'enable_tls_client_auth')
             )
+        if parser.has_option('server', 'enable_tpm'):
+            self._set_enable_tpm(parser.getboolean('server', 'enable_tpm'))
+        if parser.has_option('server', 'tpm_srk_pswd'):
+            self._set_tpm_srk_pswd(paser.get('server', 'tpm_srk_pswd'))
         if parser.has_option('server', 'tls_cipher_suites'):
             self._set_tls_cipher_suites(
                 parser.get('server', 'tls_cipher_suites')

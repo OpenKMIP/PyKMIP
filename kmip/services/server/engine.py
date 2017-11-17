@@ -77,7 +77,7 @@ class KmipEngine(object):
         * Cryptographic usage mask enforcement per object type
     """
 
-    def __init__(self, policy_path=None):
+    def __init__(self, policy_path=None, enable_tpm=None):
         """
         Create a KmipEngine.
 
@@ -126,7 +126,7 @@ class KmipEngine(object):
         self._attribute_policy = policy.AttributePolicy(self._protocol_version)
         self._operation_policies = copy.deepcopy(operation_policy.policies)
         self._load_operation_policies(policy_path)
-
+        self._enable_tpm = enable_tpm
         self._client_identity = None
 
     def _load_operation_policies(self, policy_path):
@@ -1230,8 +1230,12 @@ class KmipEngine(object):
         private_key._owner = self._client_identity
         private_key.initial_date = public_key.initial_date
 
-        self._data_session.add(public_key)
-        self._data_session.add(private_key)
+        if self._enable_tpm:
+            self._data_session.add(self._cryptography_engine.tpm_encrypt_key(public_key))
+            self._data_session.add(self._cryptography_engine.tpm_decrypt_key(private_key))
+        else:
+            self._data_session.add(public_key)
+            self._data_session.add(private_key)
 
         # NOTE (peterhamilton) SQLAlchemy will *not* assign an ID until
         # commit is called. This makes future support for UNDO problematic.

@@ -52,6 +52,7 @@ class KmipServer(object):
             log_path='/var/log/pykmip/server.log',
             policy_path=None,
             enable_tls_client_auth=None,
+            enable_tpm=None,
             tls_cipher_suites=None,
             logging_level=None
     ):
@@ -128,6 +129,7 @@ class KmipServer(object):
             auth_suite,
             policy_path,
             enable_tls_client_auth,
+            enable_tpm,
             tls_cipher_suites,
             logging_level
         )
@@ -141,7 +143,8 @@ class KmipServer(object):
             self.auth_suite = auth.BasicAuthenticationSuite(cipher_suites)
 
         self._engine = engine.KmipEngine(
-            self.config.settings.get('policy_path')
+            self.config.settings.get('policy_path'),
+            self.config.settings.get('enable_tpm')
         )
         self._session_id = 1
         self._is_serving = False
@@ -178,6 +181,7 @@ class KmipServer(object):
             auth_suite=None,
             policy_path=None,
             enable_tls_client_auth=None,
+            enable_tpm=None,
             tls_cipher_suites=None,
             logging_level=None
     ):
@@ -203,6 +207,8 @@ class KmipServer(object):
                 'enable_tls_client_auth',
                 enable_tls_client_auth
             )
+        if enable_tpm:
+            self.config.set_setting('enable_tpm', enable_tpm)
         if tls_cipher_suites:
             self.config.set_setting(
                 'tls_cipher_suites',
