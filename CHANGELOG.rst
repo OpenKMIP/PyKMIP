@@ -1,7 +1,18 @@
-0.8 - master
-- This version is under active development and has not been released.
+=========
+Changelog
+=========
 
-0.7.0 - November 14, 2017
+.. _v0.8:
+
+0.8 - `master`_
+~~~~~~~~~~~~~~~
+
+.. note:: This version is not yet released and is under active development.
+
+.. _v0.7:
+
+0.7 - November 14, 2017
+~~~~~~~~~~~~~~~~~~~~~~~
 * Add support for Python 3.6
 * Add support for the InitialDate attribute
 * Add server support for the GetAttributeList operation
@@ -28,7 +39,10 @@
 * Fix bug with socket interrupt handling under Python 3.5
 * Fix bug with detached instance errors in the server test suite
 
-0.6.0 - December 14, 2016
+.. _v0.6:
+
+0.6 - December 14, 2016
+~~~~~~~~~~~~~~~~~~~~~~~~~
 * Add support for Python 3.5
 * Add support for the State and OperationPolicyName attributes
 * Add server support for the Activate and GetAttributes operations
@@ -46,7 +60,10 @@
 * Fix bug with deprecated usage of the bandit config file
 * Fix bug with ProxyKmipClient registering unset object attributes
 
-0.5.0 - April 14, 2016
+.. _v0.5:
+
+0.5 - April 14, 2016
+~~~~~~~~~~~~~~~~~~~~~~
 * Add KmipServer server implementation
 * Add KmipSession to manage threaded client/server connections
 * Add KmipEngine for processing core server application logic
@@ -69,7 +86,10 @@
 * Fix bug with Locate payload parsing optional values
 * Fix bug with DateTime string tests and move to UTC representation
 
+.. _v0.4.1:
+
 0.4.1 - December 2, 2015
+~~~~~~~~~~~~~~~~~~~~~~~~
 * Add support for the GetAttributeList operation
 * Add integration with Travis CI, Codecov/Coveralls, and Bandit
 * Add client/server failover support using multiple IP addresses
@@ -79,7 +99,10 @@
 * Remove use of exec when handling library version numbers
 * Remove broken server script
 
-0.4.0 - August 14, 2015
+.. _v0.4:
+
+0.4 - August 14, 2015
+~~~~~~~~~~~~~~~~~~~~~
 * Add the official Pie API for a simpler KMIP interface
 * Add the ProxyKmipClient implementation of the Pie API
 * Add key, secret, and opaque objects to the Pie object hierarchy
@@ -94,7 +117,10 @@
 * Fix bug with dangling file handle when setting __version__
 * Fix bug with dangling socket connection upon client destruction
 
+.. _v0.3.3:
+
 0.3.3 - June 25, 2015
+~~~~~~~~~~~~~~~~~~~~~
 * Add the core ManagedObject class hierarchy for the new Pie API
 * Add updated Boolean primitive implementation and test suite
 * Add integration tests for symmetric key creation and registration
@@ -105,7 +131,10 @@
 * Fix bug with relative path use for version number handling
 * Fix bug with Integer primitive breaking on valid long integer values
 
+.. _v0.3.2:
+
 0.3.2 - June 11, 2015
+~~~~~~~~~~~~~~~~~~~~~
 * Add support for registering and retrieving Certificates
 * Update unit demos to work with Certificates
 * Reorganize test suite into unit and integration test suites
@@ -113,12 +142,18 @@
 * Fix bug with incorrect KeyMaterialStruct tag
 * Fix bug causing infinite recursion with object inheritance
 
+.. _v0.3.1:
+
 0.3.1 - April 23, 2015
+~~~~~~~~~~~~~~~~~~~~~~
 * Add KMIP profile information to the client
 * Add support for registering/retrieving SecretData and Opaque objects
 * Update the SecretFactory to build Public/PrivateKeys with user data
 
-0.3.0 - March 14, 2015
+.. _v0.3:
+
+0.3 - March 14, 2015
+~~~~~~~~~~~~~~~~~~~~
 * Add client support for the DiscoverVersions and Query operations
 * Add client support for the CreateKeyPair and ReKeyKeyPair operations
 * Add support for registering and retrieving PublicKeys and PrivateKeys
@@ -131,22 +166,36 @@
 * Fix bug with unindexed format strings (impacts Python 2.6)
 * Fix missing certificate file issue when installing library from PyPI
 
-0.2.0 - November 17, 2014
+.. _v0.2:
+
+0.2 - November 17, 2014
+~~~~~~~~~~~~~~~~~~~~~~~~~
 * Add configuration file support
 * Add client support for the Locate operation
 * Update README with additional information and reStructuredText format
 
+.. _v0.1.1:
+
 0.1.1 - September 12, 2014
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Fix bug with auto-installing third party dependencies
 
+.. _v0.1:
+
 0.1.0 - August 28, 2014
+~~~~~~~~~~~~~~~~~~~~~~~
 * Add support for Python 3.3 and 3.4
 * Add support for KMIP client/server SSL connections
 * Remove all Thrift library dependencies
 
+.. _v0.0.1:
+
 0.0.1 - August 12, 2014
+~~~~~~~~~~~~~~~~~~~~~~~
 * Initial release
 * Add support for Python 2.6 and 2.7
 * Add KMIP client and server
 * Add client/server support for Create, Get, Register, and Destroy operations
 * Add unit test suite
+
+.. _`master`: https://github.com/openkmip/pykmip/
