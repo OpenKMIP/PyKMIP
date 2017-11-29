@@ -1,5 +1,5 @@
 coverage
-pytest<3.3  # TODO (peter-hamilton): Unpin this after Python 3.3 is dropped
+pytest
 flake8
 testtools
 fixtures
