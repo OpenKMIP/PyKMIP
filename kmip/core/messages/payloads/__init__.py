@@ -81,6 +81,10 @@ from kmip.core.messages.payloads.mac import (
     MACRequestPayload,
     MACResponsePayload
 )
+from kmip.core.messages.payloads.obtain_lease import (
+    ObtainLeaseRequestPayload,
+    ObtainLeaseResponsePayload
+)
 from kmip.core.messages.payloads.query import (
     QueryRequestPayload,
     QueryResponsePayload
@@ -146,6 +150,8 @@ __all__ = [
     "LocateResponsePayload",
     "MACRequestPayload",
     "MACResponsePayload",
+    "ObtainLeaseRequestPayload",
+    "ObtainLeaseResponsePayload",
     "QueryRequestPayload",
     "QueryResponsePayload",
     "RecoverRequestPayload",
