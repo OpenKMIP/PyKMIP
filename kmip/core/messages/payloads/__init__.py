@@ -65,6 +65,10 @@ from kmip.core.messages.payloads.get_attributes import (
     GetAttributesRequestPayload,
     GetAttributesResponsePayload
 )
+from kmip.core.messages.payloads.get_usage_allocation import (
+    GetUsageAllocationRequestPayload,
+    GetUsageAllocationResponsePayload
+)
 from kmip.core.messages.payloads.locate import (
     LocateRequestPayload,
     LocateResponsePayload
@@ -126,6 +130,8 @@ __all__ = [
     "GetAttributeListResponsePayload",
     "GetAttributesRequestPayload",
     "GetAttributesResponsePayload",
+    "GetUsageAllocationRequestPayload",
+    "GetUsageAllocationResponsePayload",
     "LocateRequestPayload",
     "LocateResponsePayload",
     "MACRequestPayload",
