@@ -85,6 +85,10 @@ from kmip.core.messages.payloads.query import (
     QueryRequestPayload,
     QueryResponsePayload
 )
+from kmip.core.messages.payloads.recover import (
+    RecoverRequestPayload,
+    RecoverResponsePayload
+)
 from kmip.core.messages.payloads.register import (
     RegisterRequestPayload,
     RegisterResponsePayload
@@ -144,6 +148,8 @@ __all__ = [
     "MACResponsePayload",
     "QueryRequestPayload",
     "QueryResponsePayload",
+    "RecoverRequestPayload",
+    "RecoverResponsePayload",
     "RegisterRequestPayload",
     "RegisterResponsePayload",
     "RekeyKeyPairRequestPayload",
