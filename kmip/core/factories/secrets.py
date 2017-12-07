@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core.factories.keys import KeyFactory
-
 from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
 
@@ -43,8 +41,6 @@ from kmip.core import utils
 class SecretFactory(object):
 
     def __init__(self):
-        self.key_factory = KeyFactory()
-
         self.base_error = ErrorStrings.BAD_EXP_RECV
         self.template_input = self.base_error.format('Template', '{0}', '{1}',
                                                      '{2}')
