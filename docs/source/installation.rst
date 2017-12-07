@@ -8,7 +8,7 @@ You can install PyKMIP via ``pip``:
 
 Supported platforms
 -------------------
-PyKMIP is tested on Python 2.7, 3.3, 3.4, 3.5, and 3.6 on the following
+PyKMIP is tested on Python 2.7, 3.4, 3.5, and 3.6 on the following
 operating systems:
 
 * Ubuntu 12.04, 14.04, and 16.04

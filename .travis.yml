@@ -9,14 +9,6 @@ matrix:
           os: linux
           dist: trusty
           env: TOXENV=py27
-        - python: 3.3
-          os: linux
-          dist: precise
-          env: TOXENV=py33
-        - python: 3.3
-          os: linux
-          dist: trusty
-          env: TOXENV=py33
         - python: 3.4
           os: linux
           dist: precise
