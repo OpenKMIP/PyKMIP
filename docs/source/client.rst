@@ -3,6 +3,121 @@ Client
 The PyKMIP client allows developers to connect to a KMIP-compliant key
 management server and conduct key management operations.
 
+Configuration
+-------------
+The client settings can be managed by a configuration file, by default
+located at ``/etc/pykmip/pykmip.conf``. An example client configuration
+settings block, as found in the configuration file, is shown below:
+
+.. code-block:: console
+
+    [client]
+    host=127.0.0.1
+    port=5696
+    certfile=/path/to/certificate/file
+    keyfile=/path/to/certificate/key/file
+    ca_certs=/path/to/ca/certificate/file
+    cert_reqs=CERT_REQUIRED
+    ssl_version=PROTOCOL_SSLv23
+    do_handshake_on_connect=True
+    suppress_ragged_eofs=True
+    username=example_username
+    password=example_password
+
+The configuration file can contain multiple settings blocks. Only one,
+``[client]``, is shown above. You can swap between different settings
+blocks by simply providing the name of the block as the ``config``
+parameter (see below).
+
+The client can also be configured manually via Python. The following example
+shows how to create the ``ProxyKmipClient`` in Python code, directly
+specifying the different configuration values:
+
+.. code-block:: python
+
+    >>> import ssl
+    >>> from kmip.pie.client import ProxyKmipClient
+    >>> client = ProxyKmipClient(
+    ...     hostname='127.0.0.1',
+    ...     port=5696,
+    ...     cert='/path/to/certificate/file',
+    ...     key='/path/to/certificate/key/file',
+    ...     ca='/path/to/ca/certificate/file',
+    ...     ssl_version=ssl.PROTOCOL_SSLv23,
+    ...     username='example_username',
+    ...     password='example_password'
+    ...     config='client'
+    ... )
+
+Settings specified at runtime, as in the above example, will take precedence
+over the default values found in the configuration file.
+
+The different configuration options are defined below:
+
+* ``host``
+    A string representing either a hostname in Internet domain notation or an
+    IPv4 address.
+* ``port``
+    An integer representing a port number. Recommended to be ``5696``
+    according to the KMIP specification.
+* ``certfile``
+    A string representing a path to a PEM-encoded client certificate file. For
+    more information, see the `ssl`_ documentation.
+* ``keyfile``
+    A string representing a path to a PEM-encoded client certificate key file.
+    The private key contained in the file must correspond to the certificate
+    pointed to by ``certfile``. For more information, see the `ssl`_
+    documentation.
+* ``ca_certs``
+    A string representing a path to a PEM-encoded certificate authority
+    certificate file. This certificate will be used to verify the server's
+    certificate when establishing a TLS connection. For more information, see
+    the `ssl`_ documentation.
+* ``cert_reqs``
+    A flag indicating the enforcement level to use when validating the
+    certificate received from the server. Options include: ``CERT_NONE``,
+    ``CERT_OPTIONAL``, and ``CERT_REQUIRED``. ``CERT_REQUIRED`` is the most
+    secure option and should be used at all times. The other options can be
+    helpful when debugging TLS connections. For more information, see the
+    `ssl`_ documentation.
+* ``ssl_version``
+    A flag indicating the SSL/TLS version to use when establishing a TLS
+    connection with a server. Options are derived from the `ssl`_ module.
+    The recommended value is ``PROTOCOL_SSLv23`` or ``PROTOCOL_TLS``, which
+    automatically allows the client to pick the most secure option provided
+    by the server. For more information, see the `ssl`_ documentation.
+* ``do_handshake_on_connect``
+    A boolean flag indicating when the client should perform the TLS handshake
+    when establishing the TLS connection. The recommended value is ``True``.
+    For more information, see the `ssl`_ documentation.
+
+    .. note::
+       This configuration option is deprecated and will be removed in a future
+       version of PyKMIP.
+* ``suppress_ragged_eofs``
+    A boolean flag indicating how the client should handle unexpected EOF from
+    the TLS connection. The recommended value is ``True``. For more
+    information, see the `ssl`_ documentation.
+
+    .. note::
+       This configuration option is deprecated and will be removed in a future
+       version of PyKMIP.
+* ``username``
+    A string representing the username to use for KMIP requests. Optional
+    depending on server access policies. Leave blank if not needed.
+* ``password``
+    A string representing the password to use for KMIP requests. Optional
+    depending on server access policies. Leave blank if not needed.
+
+Usage
+-----
+
+The following class documentation provides numerous examples detailing how to
+use the client. For additional examples, demo scripts for different operations
+are available in the ``kmip/demos/pie`` directory.
+
+Class Documentation
+-------------------
 .. py:module:: kmip.pie.client
 
 .. py:class:: ProxyKmipClient(hostname=None, port=None, cert=None, key=None, ca=None, ssl_version=None, username=None, password=None, config='client')
@@ -972,3 +1087,6 @@ management server and conduct key management operations.
     .. py:method:: mac(data, uid=None, algorithm=None)
 
         Documentation coming soon.
+
+
+.. _`ssl`: https://docs.python.org/dev/library/ssl.html#socket-creation
