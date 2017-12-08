@@ -16,7 +16,6 @@
 from testtools import TestCase
 import binascii
 
-from kmip.core.factories.keys import KeyFactory
 from kmip.core.factories.secrets import SecretFactory
 from kmip.core.factories.attributes import AttributeFactory
 
@@ -1144,7 +1143,6 @@ class TestResponseMessage(TestCase):
     def setUp(self):
         super(TestResponseMessage, self).setUp()
         self.stream = BytearrayStream()
-        self.key_factory = KeyFactory()
         self.secret_factory = SecretFactory()
         self.msg = errors.ErrorStrings.BAD_EXP_RECV
         self.create = (
