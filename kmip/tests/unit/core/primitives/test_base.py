@@ -15,7 +15,7 @@
 
 import testtools
 
-from kmip.core import errors
+from kmip.core import exceptions
 from kmip.core import primitives
 from kmip.core import utils
 
@@ -26,11 +26,11 @@ class TestBase(testtools.TestCase):
         super(TestBase, self).setUp()
         self.stream = utils.BytearrayStream()
         self.bad_init = 'Bad Base initialization: attribute {0} missing'
-        self.bad_write = errors.ErrorStrings.BAD_EXP_RECV.format(
+        self.bad_write = exceptions.ErrorStrings.BAD_EXP_RECV.format(
             'primitives.Base.{0}', 'write', '{1}', '{2}')
-        self.bad_encoding = errors.ErrorStrings.BAD_ENCODING.format(
+        self.bad_encoding = exceptions.ErrorStrings.BAD_ENCODING.format(
             'primitives.Base.{0}', 'write')
-        self.bad_match = errors.ErrorStrings.BAD_EXP_RECV.format(
+        self.bad_match = exceptions.ErrorStrings.BAD_EXP_RECV.format(
             'primitives.Base.{0}', 'comparison', '{1}', '{2}')
 
     def tearDown(self):
@@ -44,7 +44,10 @@ class TestBase(testtools.TestCase):
         self.stream.write(b'\x00')
         base = primitives.Base()
         self.assertRaises(
-            errors.StreamNotEmptyError, base.is_oversized, self.stream)
+            exceptions.StreamNotEmptyError,
+            base.is_oversized,
+            self.stream
+        )
 
     def test_read_tag(self):
         encoding = (b'\x42\x00\x00')
@@ -56,7 +59,11 @@ class TestBase(testtools.TestCase):
         encoding = (b'\x42\x00\x01')
         base = primitives.Base()
         self.stream = utils.BytearrayStream(encoding)
-        self.assertRaises(errors.ReadValueError, base.read_tag, self.stream)
+        self.assertRaises(
+            exceptions.ReadValueError,
+            base.read_tag,
+            self.stream
+        )
 
     def test_read_type(self):
         self.stream.write(b'\x00')
@@ -66,11 +73,19 @@ class TestBase(testtools.TestCase):
     def test_read_type_error(self):
         self.stream.write(b'\x01')
         base = primitives.Base()
-        self.assertRaises(errors.ReadValueError, base.read_type, self.stream)
+        self.assertRaises(
+            exceptions.ReadValueError,
+            base.read_type,
+            self.stream
+        )
 
     def test_read_type_underflow(self):
         base = primitives.Base()
-        self.assertRaises(errors.ReadValueError, base.read_type, self.stream)
+        self.assertRaises(
+            exceptions.ReadValueError,
+            base.read_type,
+            self.stream
+        )
 
     def test_read_type_overflow(self):
         self.stream.write(b'\x00\x00')
@@ -87,7 +102,11 @@ class TestBase(testtools.TestCase):
         self.stream.write(b'\x00')
         base = primitives.Base()
         base.length = 4
-        self.assertRaises(errors.ReadValueError, base.read_length, self.stream)
+        self.assertRaises(
+            exceptions.ReadValueError,
+            base.read_length,
+            self.stream
+        )
 
     def test_read_length_overflow(self):
         self.stream.write(b'\x00\x00\x00\x04\x00')

@@ -27,8 +27,8 @@ from kmip.core.enums import Tags
 from kmip.core.enums import Types
 from kmip.core.enums import CredentialType
 from kmip.core.enums import RevocationReasonCode as RevocationReasonCodeEnum
+from kmip.core import exceptions
 
-from kmip.core.errors import ErrorStrings
 from kmip.core.misc import KeyFormatType
 
 from kmip.core import primitives
@@ -474,8 +474,12 @@ class KeyBlock(Struct):
                 member = 'KeyBlock.key_format_type'
                 exp_type = KeyFormatType
                 rcv_type = type(self.key_format_type)
-                msg = ErrorStrings.BAD_EXP_RECV.format(member, 'type',
-                                                       exp_type, rcv_type)
+                msg = exceptions.ErrorStrings.BAD_EXP_RECV.format(
+                    member,
+                    'type',
+                    exp_type,
+                    rcv_type
+                )
                 raise TypeError(msg)
 
 

@@ -15,8 +15,7 @@
 
 from testtools import TestCase
 
-from kmip.core.errors import ErrorStrings
-
+from kmip.core import exceptions
 from kmip.core import utils
 
 
@@ -62,12 +61,24 @@ class TestBytearrayStream(TestCase):
         super(TestBytearrayStream, self).setUp()
         self.stream = utils.BytearrayStream()
 
-        self.bad_type = ErrorStrings.BAD_EXP_RECV.format('BytearrayStream.{0}',
-                                                         'type', '{1}', '{2}')
-        self.bad_len = ErrorStrings.BAD_EXP_RECV.format('BytearrayStream.{0}',
-                                                        'length', '{1}', '{2}')
-        self.bad_val = ErrorStrings.BAD_EXP_RECV.format('BytearrayStream.{0}',
-                                                        'value', '{1}', '{2}')
+        self.bad_type = exceptions.ErrorStrings.BAD_EXP_RECV.format(
+            'BytearrayStream.{0}',
+            'type',
+            '{1}',
+            '{2}'
+        )
+        self.bad_len = exceptions.ErrorStrings.BAD_EXP_RECV.format(
+            'BytearrayStream.{0}',
+            'length',
+            '{1}',
+            '{2}'
+        )
+        self.bad_val = exceptions.ErrorStrings.BAD_EXP_RECV.format(
+            'BytearrayStream.{0}',
+            'value',
+            '{1}',
+            '{2}'
+        )
 
     def tearDown(self):
         super(TestBytearrayStream, self).tearDown()

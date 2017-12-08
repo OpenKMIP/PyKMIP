@@ -15,7 +15,7 @@
 
 import testtools
 
-from kmip.core import errors
+from kmip.core import exceptions
 from kmip.core import primitives
 from kmip.core import utils
 
@@ -146,7 +146,11 @@ class TestInteger(testtools.TestCase):
         self.stream = utils.BytearrayStream(encoding)
         i = primitives.Integer()
 
-        self.assertRaises(errors.ReadValueError, i.read, self.stream)
+        self.assertRaises(
+            exceptions.ReadValueError,
+            i.read,
+            self.stream
+        )
 
     def test_read_on_invalid_padding(self):
         encoding = (
@@ -155,7 +159,11 @@ class TestInteger(testtools.TestCase):
         self.stream = utils.BytearrayStream(encoding)
         i = primitives.Integer()
 
-        self.assertRaises(errors.ReadValueError, i.read, self.stream)
+        self.assertRaises(
+            exceptions.ReadValueError,
+            i.read,
+            self.stream
+        )
 
     def test_write_value(self):
         encoding = (b'\x00\x00\x00\x01\x00\x00\x00\x00')

@@ -22,10 +22,7 @@ import time
 
 from struct import pack, unpack
 
-from kmip.core.errors import ErrorStrings
-
 from kmip.core import enums
-from kmip.core import errors
 from kmip.core import exceptions
 from kmip.core import utils
 
@@ -45,7 +42,7 @@ class Base(object):
     def is_oversized(self, stream):
         extra = len(stream.peek())
         if extra > 0:
-            raise errors.StreamNotEmptyError(Base.__name__, extra)
+            raise exceptions.StreamNotEmptyError(Base.__name__, extra)
 
     def read_tag(self, istream):
         # Read in the bytes for the tag
@@ -56,8 +53,12 @@ class Base(object):
 
         # Verify that the tag matches for the current object
         if enum_tag is not self.tag:
-            raise errors.ReadValueError(Base.__name__, 'tag',
-                                        hex(self.tag.value), hex(tag))
+            raise exceptions.ReadValueError(
+                Base.__name__,
+                'tag',
+                hex(self.tag.value),
+                hex(tag)
+            )
 
     def read_type(self, istream):
         # Read in the bytes for the type
@@ -65,15 +66,23 @@ class Base(object):
         num_bytes = len(tts)
         if num_bytes != self.TYPE_SIZE:
             min_bytes = 'a minimum of {0} bytes'.format(self.TYPE_SIZE)
-            raise errors.ReadValueError(Base.__name__, 'type', min_bytes,
-                                        '{0} bytes'.format(num_bytes))
+            raise exceptions.ReadValueError(
+                Base.__name__,
+                'type',
+                min_bytes,
+                '{0} bytes'.format(num_bytes)
+            )
         typ = unpack('!B', tts)[0]
 
         enum_typ = enums.Types(typ)
 
         if enum_typ is not self.type:
-            raise errors.ReadValueError(Base.__name__, 'type',
-                                        self.type.value, typ)
+            raise exceptions.ReadValueError(
+                Base.__name__,
+                'type',
+                self.type.value,
+                typ
+            )
 
     def read_length(self, istream):
         # Read in the bytes for the length
@@ -81,8 +90,12 @@ class Base(object):
         num_bytes = len(lst)
         if num_bytes != self.LENGTH_SIZE:
             min_bytes = 'a minimum of {0} bytes'.format(self.LENGTH_SIZE)
-            raise errors.ReadValueError(Base.__name__, 'length', min_bytes,
-                                        '{0} bytes'.format(num_bytes))
+            raise exceptions.ReadValueError(
+                Base.__name__,
+                'length',
+                min_bytes,
+                '{0} bytes'.format(num_bytes)
+            )
         self.length = unpack('!I', lst)[0]
 
     def read_value(self, istream):
@@ -99,20 +112,24 @@ class Base(object):
 
     def write_type(self, ostream):
         if type(self.type) is not enums.Types:
-            msg = ErrorStrings.BAD_EXP_RECV
+            msg = exceptions.ErrorStrings.BAD_EXP_RECV
             raise TypeError(msg.format(Base.__name__, 'type',
                                        enums.Types, type(self.type)))
         ostream.write(pack('!B', self.type.value))
 
     def write_length(self, ostream):
         if type(self.length) is not int:
-            msg = ErrorStrings.BAD_EXP_RECV
+            msg = exceptions.ErrorStrings.BAD_EXP_RECV
             raise TypeError(msg.format(Base.__name__, 'length',
                                        int, type(self.length)))
         num_bytes = utils.count_bytes(self.length)
         if num_bytes > self.LENGTH_SIZE:
-            raise errors.WriteOverflowError(Base.__name__, 'length',
-                                            self.LENGTH_SIZE, num_bytes)
+            raise exceptions.WriteOverflowError(
+                Base.__name__,
+                'length',
+                self.LENGTH_SIZE,
+                num_bytes
+            )
         ostream.write(pack('!I', self.length))
 
     def write_value(self, ostream):
@@ -188,15 +205,23 @@ class Integer(Base):
 
     def read_value(self, istream):
         if self.length is not self.LENGTH:
-            raise errors.ReadValueError(Integer.__name__, 'length',
-                                        self.LENGTH, self.length)
+            raise exceptions.ReadValueError(
+                Integer.__name__,
+                'length',
+                self.LENGTH,
+                self.length
+            )
 
         self.value = unpack(self.pack_string, istream.read(self.length))[0]
         pad = unpack(self.pack_string, istream.read(self.padding_length))[0]
 
         if pad is not 0:
-            raise errors.ReadValueError(Integer.__name__, 'pad', 0,
-                                        pad)
+            raise exceptions.ReadValueError(
+                Integer.__name__,
+                'pad',
+                0,
+                pad
+            )
         self.validate()
 
     def read(self, istream):
@@ -799,8 +824,12 @@ class TextString(Base):
             for _ in range(self.padding_length):
                 pad = unpack('!B', istream.read(1))[0]
                 if pad is not 0:
-                    raise errors.ReadValueError(TextString.__name__, 'pad', 0,
-                                                pad)
+                    raise exceptions.ReadValueError(
+                        TextString.__name__,
+                        'pad',
+                        0,
+                        pad
+                    )
 
     def read(self, istream):
         super(TextString, self).read(istream)
@@ -826,7 +855,7 @@ class TextString(Base):
     def __validate(self):
         if self.value is not None:
             if not isinstance(self.value, six.string_types):
-                msg = ErrorStrings.BAD_EXP_RECV
+                msg = exceptions.ErrorStrings.BAD_EXP_RECV
                 raise TypeError(msg.format('TextString', 'value', str,
                                            type(self.value)))
 
@@ -890,8 +919,12 @@ class ByteString(Base):
             for _ in range(self.padding_length):
                 pad = unpack('!B', istream.read(1))[0]
                 if pad is not 0:
-                    raise errors.ReadValueError(TextString.__name__, 'pad', 0,
-                                                pad)
+                    raise exceptions.ReadValueError(
+                        TextString.__name__,
+                        'pad',
+                        0,
+                        pad
+                    )
 
     def read(self, istream):
         super(ByteString, self).read(istream)
@@ -919,7 +952,7 @@ class ByteString(Base):
         if self.value is not None:
             data_type = type(self.value)
             if data_type is not bytes:
-                msg = ErrorStrings.BAD_EXP_RECV
+                msg = exceptions.ErrorStrings.BAD_EXP_RECV
                 raise TypeError(msg.format('ByteString', 'value', bytes,
                                            data_type))
 

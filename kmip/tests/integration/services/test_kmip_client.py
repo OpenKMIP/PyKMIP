@@ -35,8 +35,8 @@ from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import ResultReason
 
-from kmip.core.errors import KMIPServerSuicideError
-from kmip.core.errors import KMIPServerZombieError
+from kmip.core.exceptions import KMIPServerSuicideError
+from kmip.core.exceptions import KMIPServerZombieError
 
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.factories.credentials import CredentialFactory
