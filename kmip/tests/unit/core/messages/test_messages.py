@@ -35,9 +35,7 @@ from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
 from kmip.core.enums import NameType
 
-from kmip.core import errors
-from kmip.core.errors import ErrorStrings
-
+from kmip.core import exceptions
 from kmip.core import objects
 
 from kmip.core.messages import contents
@@ -60,7 +58,7 @@ class TestRequestMessage(TestCase):
         super(TestRequestMessage, self).setUp()
         self.stream = BytearrayStream()
         self.attribute_factory = AttributeFactory()
-        self.msg = errors.ErrorStrings.BAD_EXP_RECV
+        self.msg = exceptions.ErrorStrings.BAD_EXP_RECV
         self.create = (
             b'\x42\x00\x78\x01\x00\x00\x01\x20\x42\x00\x77\x01\x00\x00\x00\x38'
             b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6A\x02\x00\x00\x00\x04'
@@ -735,28 +733,44 @@ class TestRequestMessage(TestCase):
             names = template_attribute.names
             exp_type = list
             rcv_type = type(names)
-            msg = ErrorStrings.BAD_EXP_RECV.format('TemplateAttribute.names',
-                                                   'type', '{0}', '{0}')
+            msg = exceptions.ErrorStrings.BAD_EXP_RECV.format(
+                'TemplateAttribute.names',
+                'type',
+                '{0}',
+                '{0}'
+            )
             self.assertIsInstance(names, exp_type,
                                   msg.format(exp_type, rcv_type))
             exp_length = 0
             rcv_length = len(names)
-            msg = ErrorStrings.BAD_EXP_RECV.format('TemplateAttribute.names',
-                                                   'length', '{0}', '{0}')
+            msg = exceptions.ErrorStrings.BAD_EXP_RECV.format(
+                'TemplateAttribute.names',
+                'length',
+                '{0}',
+                '{0}'
+            )
             self.assertEqual(exp_length, rcv_length,
                              msg.format(exp_length, rcv_length))
 
             attributes = template_attribute.attributes
             exp_type = list
             rcv_type = type(attributes)
-            msg = ErrorStrings.BAD_EXP_RECV.format(
-                'TemplateAttribute.attributes', 'type', '{0}', '{1}')
+            msg = exceptions.ErrorStrings.BAD_EXP_RECV.format(
+                'TemplateAttribute.attributes',
+                'type',
+                '{0}',
+                '{1}'
+            )
             self.assertIsInstance(names, exp_type,
                                   msg.format(exp_type, rcv_type))
             exp_length = 0
             rcv_length = len(attributes)
-            msg = ErrorStrings.BAD_EXP_RECV.format(
-                'TemplateAttribute.attributes', 'length', '{0}', '{1}')
+            msg = exceptions.ErrorStrings.BAD_EXP_RECV.format(
+                'TemplateAttribute.attributes',
+                'length',
+                '{0}',
+                '{1}'
+            )
             self.assertEqual(exp_length, rcv_length,
                              msg.format(exp_length, rcv_length))
 
@@ -1144,7 +1158,7 @@ class TestResponseMessage(TestCase):
         super(TestResponseMessage, self).setUp()
         self.stream = BytearrayStream()
         self.secret_factory = SecretFactory()
-        self.msg = errors.ErrorStrings.BAD_EXP_RECV
+        self.msg = exceptions.ErrorStrings.BAD_EXP_RECV
         self.create = (
             b'\x42\x00\x7B\x01\x00\x00\x00\xC0\x42\x00\x7A\x01\x00\x00\x00\x48'
             b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6A\x02\x00\x00\x00\x04'

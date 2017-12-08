@@ -16,7 +16,7 @@
 import six
 import testtools
 
-from kmip.core import errors
+from kmip.core import exceptions
 from kmip.core import primitives
 from kmip.core import utils
 
@@ -26,17 +26,17 @@ class TestTextString(testtools.TestCase):
     def setUp(self):
         super(TestTextString, self).setUp()
         self.stream = utils.BytearrayStream()
-        self.bad_type = errors.ErrorStrings.BAD_EXP_RECV.format(
+        self.bad_type = exceptions.ErrorStrings.BAD_EXP_RECV.format(
             'primitives.TextString.{0}', 'type', '{1}', '{2}')
-        self.bad_value = errors.ErrorStrings.BAD_EXP_RECV.format(
+        self.bad_value = exceptions.ErrorStrings.BAD_EXP_RECV.format(
             'primitives.TextString.{0}', 'value', '{1}', '{2}')
-        self.bad_read = errors.ErrorStrings.BAD_EXP_RECV.format(
+        self.bad_read = exceptions.ErrorStrings.BAD_EXP_RECV.format(
             'primitives.TextString.{0}', '', '{1}', '{2}')
-        self.bad_write = errors.ErrorStrings.BAD_EXP_RECV.format(
+        self.bad_write = exceptions.ErrorStrings.BAD_EXP_RECV.format(
             'primitives.TextString.{0}', 'write', '{1}', '{2}')
-        self.bad_encoding = errors.ErrorStrings.BAD_ENCODING.format(
+        self.bad_encoding = exceptions.ErrorStrings.BAD_ENCODING.format(
             'primitives.TextString', '')
-        self.bad_length = errors.ErrorStrings.BAD_EXP_RECV.format(
+        self.bad_length = exceptions.ErrorStrings.BAD_EXP_RECV.format(
             'primitives.TextString', 'length', '{0} bytes', '{1} bytes')
 
     def tearDown(self):
@@ -139,7 +139,7 @@ class TestTextString(testtools.TestCase):
         self.stream = utils.BytearrayStream(encoding)
         ts = primitives.TextString()
 
-        self.assertRaises(errors.ReadValueError, ts.read, self.stream)
+        self.assertRaises(exceptions.ReadValueError, ts.read, self.stream)
 
     def test_write_value(self):
         encoding = (

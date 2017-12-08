@@ -17,7 +17,6 @@ from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
 
 from kmip.core.enums import ObjectType
-from kmip.core.errors import ErrorStrings
 
 from kmip.core.misc import KeyFormatType
 
@@ -36,12 +35,13 @@ from kmip.core.secrets import SymmetricKey
 from kmip.core.secrets import Template
 
 from kmip.core import utils
+from kmip.core import exceptions
 
 
 class SecretFactory(object):
 
     def __init__(self):
-        self.base_error = ErrorStrings.BAD_EXP_RECV
+        self.base_error = exceptions.ErrorStrings.BAD_EXP_RECV
         self.template_input = self.base_error.format('Template', '{0}', '{1}',
                                                      '{2}')
 

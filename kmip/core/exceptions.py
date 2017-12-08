@@ -290,3 +290,73 @@ class InvalidPrimitiveLength(Exception):
     lengths.
     """
     pass
+
+
+class StreamNotEmptyError(Exception):
+    def __init__(self, cls, extra):
+        super(StreamNotEmptyError, self).__init__()
+
+        self.cls = cls
+        self.extra = extra
+
+    def __str__(self):
+        msg = "Invalid length used to read {0}, bytes remaining: {1}"
+        return msg.format(self.cls, self.extra)
+
+
+class ReadValueError(Exception):
+    def __init__(self, cls, attr, exp, recv):
+        super(ReadValueError, self).__init__()
+
+        self.cls = cls
+        self.attr = attr
+        self.exp = exp
+        self.recv = recv
+
+    def __str__(self):
+        msg = "Tried to read {0}.{1}: expected {2}, received {3}"
+        return msg.format(self.cls, self.attr, self.exp, self.recv)
+
+
+class WriteOverflowError(Exception):
+    def __init__(self, cls, attr, exp, recv):
+        super(WriteOverflowError, self).__init__()
+
+        self.cls = cls
+        self.attr = attr
+        self.exp = exp
+        self.recv = recv
+
+    def __str__(self):
+        msg = "Tried to write {0}.{1} with too many bytes: "
+        msg += "expected {2}, received {3}"
+        return msg.format(self.cls, self.attr, self.exp, self.recv)
+
+
+class KMIPServerZombieError(Exception):
+    """KMIP server error for hung and persistent live KMIP servers."""
+    def __init__(self, pid):
+        super(KMIPServerZombieError, self).__init__()
+
+        self.message = 'KMIP server alive after termination: PID {0}'.format(
+            pid
+        )
+
+    def __str__(self):
+        return self.message
+
+
+class KMIPServerSuicideError(Exception):
+    """KMIP server error for prematurely dead KMIP servers."""
+    def __init__(self, pid):
+        super(KMIPServerSuicideError, self).__init__()
+
+        self.message = 'KMIP server dead prematurely: PID {0}'.format(pid)
+
+    def __str__(self):
+        return self.message
+
+
+class ErrorStrings:
+    BAD_EXP_RECV = "Bad {0} {1}: expected {2}, received {3}"
+    BAD_ENCODING = "Bad {0} {1}: encoding mismatch"

@@ -16,12 +16,11 @@
 import six
 
 from kmip.core import enums
+from kmip.core import exceptions
 
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
-
-from kmip.core.errors import ErrorStrings
 
 from kmip.core.misc import KeyFormatType
 
@@ -138,7 +137,7 @@ class Name(Struct):
 
     def __validate(self):
         name = Name.__name__
-        msg = ErrorStrings.BAD_EXP_RECV
+        msg = exceptions.ErrorStrings.BAD_EXP_RECV
         if self.name_value and \
                 not isinstance(self.name_value, Name.NameValue) and \
                 not isinstance(self.name_value, str):
@@ -165,7 +164,7 @@ class Name(Struct):
             value = cls.NameValue(name_value)
         else:
             name = 'Name'
-            msg = ErrorStrings.BAD_EXP_RECV
+            msg = exceptions.ErrorStrings.BAD_EXP_RECV
             member = 'name_value'
             raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                        'name_value', type(Name.NameValue),
@@ -177,7 +176,7 @@ class Name(Struct):
             n_type = cls.NameType(name_type)
         else:
             name = 'Name'
-            msg = ErrorStrings.BAD_EXP_RECV
+            msg = exceptions.ErrorStrings.BAD_EXP_RECV
             member = 'name_type'
             raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                        'name_type', type(Name.NameType),
