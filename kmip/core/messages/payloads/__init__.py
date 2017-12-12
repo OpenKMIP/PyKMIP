@@ -25,6 +25,10 @@ from kmip.core.messages.payloads.cancel import (
     CancelRequestPayload,
     CancelResponsePayload
 )
+from kmip.core.messages.payloads.check import (
+    CheckRequestPayload,
+    CheckResponsePayload
+)
 from kmip.core.messages.payloads.create import (
     CreateRequestPayload,
     CreateResponsePayload
@@ -110,6 +114,8 @@ __all__ = [
     "ArchiveResponsePayload",
     "CancelRequestPayload",
     "CancelResponsePayload",
+    "CheckRequestPayload",
+    "CheckResponsePayload",
     "CreateRequestPayload",
     "CreateResponsePayload",
     "CreateKeyPairRequestPayload",
