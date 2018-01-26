@@ -373,11 +373,11 @@ CreateKeyPair
 ~~~~~~~~~~~~~
 The CreateKeyPair operation is used to create asymmetric key pairs.
 
-==========  ==========
+==========  ===============
 Algorithm   Key Sizes
-==========  ==========
-RSA         1024, 2048
-==========  ==========
+==========  ===============
+RSA         512, 1024, 2048
+==========  ===============
 
 All users are allowed to create asymmetric keys. There are no quotas currently
 enforced by the server.
