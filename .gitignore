@@ -1,14 +1,14 @@
+.cache
+.coverage
+.idea
 .project
 .pydevproject
+.pytest_cache
+.tox
+
+*.egg-info
 *.pyc
 
-.cache/
-.coverage
-.idea/
-.tox/
-ChangeLog
-PyKMIP.egg-info/
-dist/
-htmlcov/
-tags
-build/
+build
+dist
+htmlcov
