@@ -12,9 +12,12 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-
+import base64
 import logging
 import os
+
+import subprocess
+import tempfile
 
 from cryptography import exceptions as errors
 from cryptography.hazmat.backends import default_backend
@@ -1439,3 +1442,22 @@ class CryptographyEngine(api.CryptographicEngine):
                 "The signing algorithm '{0}' is not supported for "
                 "signature verification.".format(signing_algorithm)
             )
+
+    def tpm_encrypt_key(self, plain_key):
+        p = subprocess.Popen(['tpm_sealdata', '--well-known'],
+                             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        encrypted = p.communicate(plain_key)[0]
+        return base64.b64encode(encrypted)
+
+    def tpm_decrypt_key(self, encrypted_key):
+        encrypted_key = base64.b64decode(encrypted_key)
+        (encfile, encpath) = tempfile.mkstemp()
+        encfile = open(encpath, 'w')
+        encfile.write(encrypted_key)
+        encfile.close()
+        p = subprocess.Popen(['tpm_unsealdata', '--srk-well-known',
+                              '-i', encpath],
+                             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        plain_key = p.communicate()[0]
+        os.remove(encpath)
+        return plain_key

@@ -50,7 +50,9 @@ class KmipServerConfig(object):
             'policy_path',
             'enable_tls_client_auth',
             'tls_cipher_suites',
-            'logging_level'
+            'logging_level',
+            'tpm_srk_pswd',
+            'enable_tpm'
         ]
 
     def set_setting(self, setting, value):
@@ -92,6 +94,10 @@ class KmipServerConfig(object):
             self._set_enable_tls_client_auth(value)
         elif setting == 'tls_cipher_suites':
             self._set_tls_cipher_suites(value)
+        elif setting == 'enable_tpm':
+            self._set_enable_tpm(value)
+        elif setting == 'tpm_srk_pswd':
+            self._set_tpm_srk_pswd(value)
         else:
             self._set_logging_level(value)
 
@@ -164,6 +170,10 @@ class KmipServerConfig(object):
             self._set_enable_tls_client_auth(
                 parser.getboolean('server', 'enable_tls_client_auth')
             )
+        if parser.has_option('server', 'enable_tpm'):
+            self._set_enable_tpm(parser.getboolean('server', 'enable_tpm'))
+        if parser.has_option('server', 'tpm_srk_pswd'):
+            self._set_tpm_srk_pswd(paser.get('server', 'tpm_srk_pswd'))
         if parser.has_option('server', 'tls_cipher_suites'):
             self._set_tls_cipher_suites(
                 parser.get('server', 'tls_cipher_suites')
@@ -276,6 +286,26 @@ class KmipServerConfig(object):
             raise exceptions.ConfigurationError(
                 "The flag enabling the TLS certificate client auth flag check "
                 "must be a boolean."
+            )
+
+    def _set_enable_tpm(self, value):
+        if value is None:
+            self.settings['enable_tpm'] = False
+        elif isinstance(value, bool):
+            self.settings['enable_tpm'] = value
+        else:
+            raise exceptions.ConfigurationError(
+                "The flag enabling the TPM must be a boolean"
+            )
+
+    def _set_tpm_srk_pswd(self, value):
+        if not value:
+            self.settings['tpm_srk_pswd'] = '0'*20
+        elif isinstance(value, six.string_types):
+            self.settings['tpm_srk_pswd'] = value
+        else:
+            raise exceptions.ConfigurationError(
+                "The tpm srk password, if specified, must be a valid string"
             )
 
     def _set_tls_cipher_suites(self, value):
