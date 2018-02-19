@@ -32,7 +32,198 @@ class TestPolicy(testtools.TestCase):
     def tearDown(self):
         super(TestPolicy, self).tearDown()
 
+    def test_parse_policy(self):
+        """
+        Test that parsing a text-based policy works correctly.
+        """
+        object_policy = {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}
+        observed = policy.parse_policy(object_policy)
+
+        expected = {
+            enums.ObjectType.CERTIFICATE: {
+                enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
+            }
+        }
+
+        self.assertEqual(expected, observed)
+
+    def test_parse_policy_with_bad_object_type(self):
+        """
+        Test that policy parsing correctly handles an invalid object type
+        string.
+        """
+        object_policy = {"INVALID": {"LOCATE": "ALLOW_ALL"}}
+
+        args = (object_policy, )
+        regex = "'INVALID' is not a valid ObjectType value."
+        self.assertRaisesRegexp(
+            ValueError,
+            regex,
+            policy.parse_policy,
+            *args
+        )
+
+    def test_parse_policy_with_bad_operation(self):
+        """
+        Test that policy parsing correctly handles an invalid operation string.
+        """
+        object_policy = {"CERTIFICATE": {"INVALID": "ALLOW_ALL"}}
+
+        args = (object_policy, )
+        regex = "'INVALID' is not a valid Operation value."
+        self.assertRaisesRegexp(
+            ValueError,
+            regex,
+            policy.parse_policy,
+            *args
+        )
+
+    def test_parse_policy_with_bad_permission(self):
+        """
+        Test that policy parsing correctly handles an invalid permission
+        string.
+        """
+        object_policy = {"CERTIFICATE": {"LOCATE": "INVALID"}}
+
+        args = (object_policy, )
+        regex = "'INVALID' is not a valid Policy value."
+        self.assertRaisesRegexp(
+            ValueError,
+            regex,
+            policy.parse_policy,
+            *args
+        )
+
     def test_read_policy_from_file(self):
+        """
+        Test that reading a policy file works correctly.
+        """
+        policy_file = tempfile.NamedTemporaryFile(
+            dir=self.temp_dir,
+            delete=False
+        )
+        with open(policy_file.name, 'w') as f:
+            f.write(
+                '{"test": {'
+                '"groups": {"group_A": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}, '
+                '"default": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}'
+                '}'
+            )
+
+        policies = policy.read_policy_from_file(policy_file.name)
+
+        self.assertEqual(1, len(policies))
+        self.assertIn('test', policies.keys())
+
+        expected = {
+            'groups': {
+                'group_A': {
+                    enums.ObjectType.SPLIT_KEY: {
+                        enums.Operation.GET: enums.Policy.ALLOW_ALL
+                    }
+                }
+            },
+            'default': {
+                enums.ObjectType.SPLIT_KEY: {
+                    enums.Operation.GET: enums.Policy.ALLOW_ALL
+                }
+            }
+        }
+
+        self.assertEqual(expected, policies.get('test'))
+
+    def test_read_policy_from_file_groups_only(self):
+        """
+        Test that reading a policy file with only a groups section works
+        correctly.
+        """
+        policy_file = tempfile.NamedTemporaryFile(
+            dir=self.temp_dir,
+            delete=False
+        )
+        with open(policy_file.name, 'w') as f:
+            f.write(
+                '{"test": '
+                '{"groups": {"group_A": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}}}'
+            )
+
+        policies = policy.read_policy_from_file(policy_file.name)
+
+        self.assertEqual(1, len(policies))
+        self.assertIn('test', policies.keys())
+
+        expected = {
+            'groups': {
+                'group_A': {
+                    enums.ObjectType.SPLIT_KEY: {
+                        enums.Operation.GET: enums.Policy.ALLOW_ALL
+                    }
+                }
+            }
+        }
+
+        self.assertEqual(expected, policies.get('test'))
+
+    def test_read_policy_from_file_default_only(self):
+        """
+        Test that reading a policy file with only a default section works
+        correctly.
+        """
+        policy_file = tempfile.NamedTemporaryFile(
+            dir=self.temp_dir,
+            delete=False
+        )
+        with open(policy_file.name, 'w') as f:
+            f.write(
+                '{"test": '
+                '{"default": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}}'
+            )
+
+        policies = policy.read_policy_from_file(policy_file.name)
+
+        self.assertEqual(1, len(policies))
+        self.assertIn('test', policies.keys())
+
+        expected = {
+            'default': {
+                enums.ObjectType.SPLIT_KEY: {
+                    enums.Operation.GET: enums.Policy.ALLOW_ALL
+                }
+            }
+        }
+
+        self.assertEqual(expected, policies.get('test'))
+
+    def test_read_policy_from_file_invalid_section(self):
+        """
+        Test that reading a policy file with an invalid section generates
+        the right error.
+        """
+        policy_file = tempfile.NamedTemporaryFile(
+            dir=self.temp_dir,
+            delete=False
+        )
+        with open(policy_file.name, 'w') as f:
+            f.write(
+                '{"test": {'
+                '"invalid": {"group_A": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}}}'
+            )
+
+        args = (policy_file.name, )
+        regex = "Policy 'test' contains an invalid section named: invalid"
+        self.assertRaisesRegexp(
+            ValueError,
+            regex,
+            policy.read_policy_from_file,
+            *args
+        )
+
+    def test_read_policy_from_file_legacy(self):
+        """
+        Test that reading a legacy policy file works correctly.
+
+        Note: legacy policy file support may be removed in the future.
+        """
         policy_file = tempfile.NamedTemporaryFile(
             dir=self.temp_dir,
             delete=False
@@ -47,15 +238,20 @@ class TestPolicy(testtools.TestCase):
         self.assertEqual(1, len(policies))
         self.assertIn('test', policies.keys())
 
-        test_policy = {
-            enums.ObjectType.CERTIFICATE: {
-                enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
+        expected = {
+            'default': {
+                enums.ObjectType.CERTIFICATE: {
+                    enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
+                }
             }
         }
 
-        self.assertEqual(test_policy, policies.get('test'))
+        self.assertEqual(expected, policies.get('test'))
 
     def test_read_policy_from_file_empty(self):
+        """
+        Test that reading an empty policy file generates the right error.
+        """
         policy_file = tempfile.NamedTemporaryFile(
             dir=self.temp_dir,
             delete=False
@@ -64,7 +260,9 @@ class TestPolicy(testtools.TestCase):
             f.write('')
 
         args = (policy_file.name, )
-        regex = "An error occurred while attempting to parse the JSON file."
+        regex = "Loading the policy file '{}' generated a JSON error:".format(
+            policy_file.name
+        )
         self.assertRaisesRegexp(
             ValueError,
             regex,
@@ -72,59 +270,19 @@ class TestPolicy(testtools.TestCase):
             *args
         )
 
-    def test_read_policy_from_file_bad_object_type(self):
+    def test_read_policy_from_file_empty_policy(self):
+        """
+        Test that reading a file with an empty policy is handled correctly.
+        """
         policy_file = tempfile.NamedTemporaryFile(
             dir=self.temp_dir,
             delete=False
         )
         with open(policy_file.name, 'w') as f:
             f.write(
-                '{"test": {"INVALID": {"LOCATE": "ALLOW_ALL"}}}'
+                '{"test": {}}'
             )
 
-        args = (policy_file.name, )
-        regex = "'INVALID' is not a valid ObjectType value."
-        self.assertRaisesRegexp(
-            ValueError,
-            regex,
-            policy.read_policy_from_file,
-            *args
-        )
+        policies = policy.read_policy_from_file(policy_file.name)
 
-    def test_read_policy_from_file_bad_operation(self):
-        policy_file = tempfile.NamedTemporaryFile(
-            dir=self.temp_dir,
-            delete=False
-        )
-        with open(policy_file.name, 'w') as f:
-            f.write(
-                '{"test": {"CERTIFICATE": {"INVALID": "ALLOW_ALL"}}}'
-            )
-
-        args = (policy_file.name, )
-        regex = "'INVALID' is not a valid Operation value."
-        self.assertRaisesRegexp(
-            ValueError,
-            regex,
-            policy.read_policy_from_file,
-            *args
-        )
-
-    def test_read_policy_from_file_bad_permission(self):
-        policy_file = tempfile.NamedTemporaryFile(
-            dir=self.temp_dir,
-            delete=False
-        )
-        with open(policy_file.name, 'w') as f:
-            f.write(
-                '{"test": {"CERTIFICATE": {"LOCATE": "INVALID"}}}'
-            )
-
-        args = (policy_file.name, )
-        regex = "'INVALID' is not a valid Policy value."
-        self.assertRaisesRegexp(
-            ValueError,
-            regex,
-            policy.read_policy_from_file,
-            *args
-        )
+        self.assertEqual(0, len(policies))
