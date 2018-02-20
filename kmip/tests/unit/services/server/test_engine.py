@@ -160,7 +160,8 @@ class TestKmipEngine(testtools.TestCase):
         )
         with open(policy_file.name, 'w') as f:
             f.write(
-                '{"test": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}'
+                '{"test": '
+                '{"default": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}}'
             )
 
         self.assertEqual(2, len(e._operation_policies))
@@ -181,8 +182,10 @@ class TestKmipEngine(testtools.TestCase):
         self.assertIn('test', e._operation_policies.keys())
 
         test_policy = {
-            enums.ObjectType.CERTIFICATE: {
-                enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
+            'default': {
+                enums.ObjectType.CERTIFICATE: {
+                    enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
+                }
             }
         }
 
@@ -264,6 +267,7 @@ class TestKmipEngine(testtools.TestCase):
         Test that the KmipEngine can correctly load operation policies, even
         when a policy is defined multiple times.
         """
+        self.skip('Refactor')
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
@@ -2081,243 +2085,436 @@ class TestKmipEngine(testtools.TestCase):
             *args
         )
 
-    def test_is_allowed_by_operation_policy(self):
+    def test_is_allowed_by_operation_policy_granted(self):
         """
-        Test that an allowed operation is correctly allowed by the operation
-        policy.
+        Test that access granted by operation policy is processed correctly.
         """
         e = engine.KmipEngine()
-        e._operation_policies = {
-            'test': {
-                enums.ObjectType.SYMMETRIC_KEY: {
-                    enums.Operation.GET: enums.Policy.ALLOW_OWNER
-                }
-            }
-        }
+        e.is_allowed = mock.Mock(return_value=True)
 
-        is_allowed = e._is_allowed_by_operation_policy(
-            'test',
-            'test',
-            'test',
+        result = e._is_allowed_by_operation_policy(
+            'test_policy',
+            ['test_user', ['test_group_A', 'test_group_B']],
+            'test_user',
             enums.ObjectType.SYMMETRIC_KEY,
             enums.Operation.GET
         )
 
-        self.assertTrue(is_allowed)
+        e.is_allowed.assert_called_once_with(
+            'test_policy',
+            'test_user',
+            'test_group_A',
+            'test_user',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.GET
+        )
+        self.assertTrue(result)
 
-    def test_is_allowed_by_operation_policy_blocked(self):
+    def test_is_allowed_by_operation_policy_denied(self):
         """
-        Test that an unallowed operation is correctly blocked by the operation
-        policy.
+        Test that access denied by operation policy is processed correctly.
         """
         e = engine.KmipEngine()
-        e._operation_policies = {
-            'test': {
-                enums.ObjectType.SYMMETRIC_KEY: {
-                    enums.Operation.GET: enums.Policy.ALLOW_OWNER
-                }
-            }
-        }
+        e.is_allowed = mock.Mock(return_value=False)
 
-        is_allowed = e._is_allowed_by_operation_policy(
-            'test',
-            'random',
-            'test',
+        result = e._is_allowed_by_operation_policy(
+            'test_policy',
+            ['test_user', ['test_group_A', 'test_group_B']],
+            'test_user',
             enums.ObjectType.SYMMETRIC_KEY,
             enums.Operation.GET
         )
 
-        self.assertFalse(is_allowed)
+        e.is_allowed.assert_any_call(
+            'test_policy',
+            'test_user',
+            'test_group_A',
+            'test_user',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.GET
+        )
+        e.is_allowed.assert_any_call(
+            'test_policy',
+            'test_user',
+            'test_group_B',
+            'test_user',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.GET
+        )
+        self.assertFalse(result)
 
-    def test_is_allowed_by_operation_public(self):
+    def test_is_allowed_by_operation_policy_no_groups(self):
         """
-        Test that a public operation is allowed by the operation policy.
+        Test that access by operation policy is processed correctly when no
+        user groups are provided.
+        """
+        e = engine.KmipEngine()
+        e.is_allowed = mock.Mock(return_value=True)
+
+        result = e._is_allowed_by_operation_policy(
+            'test_policy',
+            ['test_user', None],
+            'test_user',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.GET
+        )
+
+        e.is_allowed.assert_called_once_with(
+            'test_policy',
+            'test_user',
+            None,
+            'test_user',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.GET
+        )
+        self.assertTrue(result)
+
+    def test_is_allowed_by_operation_policy_groups_empty(self):
+        """
+        Test that access by operation policy is processed correctly when the
+        provided set of user groups is empty.
+
+        Note that _is_allowed will always return True here, but because there
+        are no groups to check, access is by default denied.
+        """
+        e = engine.KmipEngine()
+        e.is_allowed = mock.Mock(return_value=True)
+
+        result = e._is_allowed_by_operation_policy(
+            'test_policy',
+            ['test_user', []],
+            'test_user',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.GET
+        )
+
+        e.is_allowed.assert_not_called()
+        self.assertFalse(result)
+
+    def test_get_relevant_policy_section_policy_missing(self):
+        """
+        Test that the lookup for a non-existent policy is handled correctly.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+
+        result = e.get_relevant_policy_section('invalid')
+
+        e._logger.warning.assert_called_once_with(
+            "The 'invalid' policy does not exist."
+        )
+        self.assertIsNone(result)
+
+    def test_get_relevant_policy_section_no_group(self):
+        """
+        Test that the lookup for a policy with no group specified is handled
+        correctly.
         """
         e = engine.KmipEngine()
         e._operation_policies = {
-            'test': {
+            'test_policy': {
+                'default': {
+                    enums.ObjectType.SYMMETRIC_KEY: {
+                        enums.Operation.GET: enums.Policy.ALLOW_OWNER
+                    }
+                }
+            }
+        }
+
+        expected = {
+            enums.ObjectType.SYMMETRIC_KEY: {
+                enums.Operation.GET: enums.Policy.ALLOW_OWNER
+            }
+        }
+
+        result = e.get_relevant_policy_section('test_policy')
+        self.assertEqual(expected, result)
+
+    def test_get_relevant_policy_section_group(self):
+        """
+        Test that the lookup for a policy with a group specified is handled
+        correctly.
+        """
+        e = engine.KmipEngine()
+        e._operation_policies = {
+            'test_policy': {
+                'default': {
+                    enums.ObjectType.SYMMETRIC_KEY: {
+                        enums.Operation.GET: enums.Policy.ALLOW_OWNER
+                    }
+                },
+                'groups': {
+                    'test_group': {
+                        enums.ObjectType.CERTIFICATE: {
+                            enums.Operation.CREATE: enums.Policy.ALLOW_ALL
+                        }
+                    }
+                }
+            }
+        }
+
+        expected = {
+            enums.ObjectType.CERTIFICATE: {
+                enums.Operation.CREATE: enums.Policy.ALLOW_ALL
+            }
+        }
+
+        result = e.get_relevant_policy_section('test_policy', 'test_group')
+        self.assertEqual(expected, result)
+
+    def test_get_relevant_policy_section_group_not_supported(self):
+        """
+        Test that the lookup for a policy with a group specified but not
+        supported is handled correctly.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+        e._operation_policies = {
+            'test_policy': {
+                'default': {
+                    enums.ObjectType.SYMMETRIC_KEY: {
+                        enums.Operation.GET: enums.Policy.ALLOW_OWNER
+                    }
+                },
+                'groups': {
+                    'test_group_B': {
+                        enums.ObjectType.CERTIFICATE: {
+                            enums.Operation.CREATE: enums.Policy.ALLOW_ALL
+                        }
+                    }
+                }
+            }
+        }
+
+        result = e.get_relevant_policy_section('test_policy', 'test_group_A')
+
+        e._logger.debug.assert_called_once_with(
+            "The 'test_policy' policy does not support group 'test_group_A'."
+        )
+        self.assertIsNone(result)
+
+    def test_get_relevant_policy_section_groups_not_supported(self):
+        """
+        Test that the lookup for a group-less policy with a group specified is
+        handled correctly.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.MagicMock()
+        e._operation_policies = {
+            'test_policy': {
+                'default': {
+                    enums.ObjectType.SYMMETRIC_KEY: {
+                        enums.Operation.GET: enums.Policy.ALLOW_OWNER
+                    }
+                }
+            }
+        }
+
+        result = e.get_relevant_policy_section('test_policy', 'test_group_A')
+
+        e._logger.debug.assert_called_once_with(
+            "The 'test_policy' policy does not support groups."
+        )
+        self.assertIsNone(result)
+
+    def test_is_allowed_policy_not_found(self):
+        """
+        Test that an access check using a non-existent policy is handled
+        correctly.
+        """
+        e = engine.KmipEngine()
+        e.get_relevant_policy_section = mock.Mock(return_value=None)
+
+        result = e.is_allowed(
+            'test_policy',
+            'test_user',
+            'test_group',
+            'test_user',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.GET
+        )
+        self.assertFalse(result)
+
+    def test_is_allowed_policy_object_type_mismatch(self):
+        """
+        Test that an access check using a policy that does not support the
+        specified object type is handled correctly.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.Mock()
+        e._get_enum_string = mock.Mock(return_value="Certificate")
+        e.get_relevant_policy_section = mock.Mock(
+            return_value={
+                enums.ObjectType.SYMMETRIC_KEY: {
+                    enums.Operation.GET: enums.Policy.ALLOW_OWNER
+                }
+            }
+        )
+
+        result = e.is_allowed(
+            'test_policy',
+            'test_user',
+            'test_group',
+            'test_user',
+            enums.ObjectType.CERTIFICATE,
+            enums.Operation.GET
+        )
+
+        e._logger.warning.assert_called_once_with(
+            "The 'test_policy' policy does not apply to Certificate objects."
+        )
+        self.assertFalse(result)
+
+    def test_is_allowed_policy_operation_mismatch(self):
+        """
+        Test that an access check using a policy that does not support the
+        specified operation is handled correctly.
+        """
+        e = engine.KmipEngine()
+        e._logger = mock.Mock()
+        e._get_enum_string = mock.Mock(side_effect=["Create", "SymmetricKey"])
+        e.get_relevant_policy_section = mock.Mock(
+            return_value={
+                enums.ObjectType.SYMMETRIC_KEY: {
+                    enums.Operation.GET: enums.Policy.ALLOW_OWNER
+                }
+            }
+        )
+
+        result = e.is_allowed(
+            'test_policy',
+            'test_user',
+            'test_group',
+            'test_user',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.CREATE
+        )
+
+        e._logger.warning.assert_called_once_with(
+            "The 'test_policy' policy does not apply to Create operations on "
+            "SymmetricKey objects."
+        )
+        self.assertFalse(result)
+
+    def test_is_allowed_allow_all(self):
+        """
+        Test that an access check resulting in an "Allow All" policy is
+        processed correctly.
+        """
+        e = engine.KmipEngine()
+        e.get_relevant_policy_section = mock.Mock(
+            return_value={
                 enums.ObjectType.SYMMETRIC_KEY: {
                     enums.Operation.GET: enums.Policy.ALLOW_ALL
                 }
             }
-        }
+        )
 
-        is_allowed = e._is_allowed_by_operation_policy(
-            'test',
-            'test',
-            'test',
+        result = e.is_allowed(
+            'test_policy',
+            'test_user',
+            'test_group',
+            'test_user',
             enums.ObjectType.SYMMETRIC_KEY,
             enums.Operation.GET
         )
+        self.assertTrue(result)
 
-        self.assertTrue(is_allowed)
-
-        is_allowed = e._is_allowed_by_operation_policy(
-            'test',
-            'random',
-            'test',
-            enums.ObjectType.SYMMETRIC_KEY,
-            enums.Operation.GET
-        )
-
-        self.assertTrue(is_allowed)
-
-    def test_is_allowed_by_operation_block_all(self):
+    def test_is_allowed_allow_owner(self):
         """
-        Test that a blocked operation is blocked by the operation policy.
+        Test that an access check resulting in an "Allow Owner" policy is
+        processed correctly.
         """
         e = engine.KmipEngine()
-        e._operation_policies = {
-            'test': {
+        e.get_relevant_policy_section = mock.Mock(
+            return_value={
+                enums.ObjectType.SYMMETRIC_KEY: {
+                    enums.Operation.GET: enums.Policy.ALLOW_OWNER
+                }
+            }
+        )
+
+        result = e.is_allowed(
+            'test_policy',
+            'test_user',
+            'test_group',
+            'test_user',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.GET
+        )
+        self.assertTrue(result)
+
+    def test_is_allowed_allow_owner_not_owner(self):
+        """
+        Test that an access check resulting in an "Allow Owner" policy is
+        processed correctly when the user requesting access is not the owner.
+        """
+        e = engine.KmipEngine()
+        e.get_relevant_policy_section = mock.Mock(
+            return_value={
+                enums.ObjectType.SYMMETRIC_KEY: {
+                    enums.Operation.GET: enums.Policy.ALLOW_OWNER
+                }
+            }
+        )
+
+        result = e.is_allowed(
+            'test_policy',
+            'test_user_A',
+            'test_group',
+            'test_user_B',
+            enums.ObjectType.SYMMETRIC_KEY,
+            enums.Operation.GET
+        )
+        self.assertFalse(result)
+
+    def test_is_allowed_disallow_all(self):
+        """
+        Test that an access check resulting in an "Disallow All" policy is
+        processed correctly.
+        """
+        e = engine.KmipEngine()
+        e.get_relevant_policy_section = mock.Mock(
+            return_value={
                 enums.ObjectType.SYMMETRIC_KEY: {
                     enums.Operation.GET: enums.Policy.DISALLOW_ALL
                 }
             }
-        }
+        )
 
-        is_allowed = e._is_allowed_by_operation_policy(
-            'test',
-            'test',
-            'test',
+        result = e.is_allowed(
+            'test_policy',
+            'test_user',
+            'test_group',
+            'test_user',
             enums.ObjectType.SYMMETRIC_KEY,
             enums.Operation.GET
         )
+        self.assertFalse(result)
 
-        self.assertFalse(is_allowed)
-
-        is_allowed = e._is_allowed_by_operation_policy(
-            'test',
-            'random',
-            'test',
-            enums.ObjectType.SYMMETRIC_KEY,
-            enums.Operation.GET
-        )
-
-        self.assertFalse(is_allowed)
-
-    def test_is_allowed_by_operation_safety_check(self):
+    def test_is_allowed_invalid_permission(self):
         """
-        Test that an unknown operation is blocked by the operation policy.
+        Test that an access check resulting in an invalid policy option is
+        processed correctly.
         """
         e = engine.KmipEngine()
-        e._operation_policies = {
-            'test': {
+        e.get_relevant_policy_section = mock.Mock(
+            return_value={
                 enums.ObjectType.SYMMETRIC_KEY: {
-                    enums.Operation.GET: 'unknown value'
+                    enums.Operation.GET: 'invalid'
                 }
             }
-        }
+        )
 
-        is_allowed = e._is_allowed_by_operation_policy(
-            'test',
-            'test',
-            'test',
+        result = e.is_allowed(
+            'test_policy',
+            'test_user',
+            'test_group',
+            'test_user',
             enums.ObjectType.SYMMETRIC_KEY,
             enums.Operation.GET
         )
-
-        self.assertFalse(is_allowed)
-
-        is_allowed = e._is_allowed_by_operation_policy(
-            'test',
-            'random',
-            'test',
-            enums.ObjectType.SYMMETRIC_KEY,
-            enums.Operation.GET
-        )
-
-        self.assertFalse(is_allowed)
-
-    def test_is_allowed_by_operation_policy_nonexistent_policy(self):
-        """
-        Test that a check with a non-existent policy yields a logging warning
-        and a blocked operation.
-        """
-        e = engine.KmipEngine()
-        e._logger = mock.MagicMock()
-
-        policy = 'nonexistent-policy'
-        is_allowed = e._is_allowed_by_operation_policy(
-            policy,
-            'test',
-            'test',
-            enums.ObjectType.SYMMETRIC_KEY,
-            enums.Operation.GET
-        )
-
-        self.assertFalse(is_allowed)
-        e._logger.warning.assert_called_once_with(
-            "The '{0}' policy does not exist.".format(policy)
-        )
-
-    def test_is_allowed_by_operation_policy_not_object_applicable(self):
-        """
-        Test that a check for an object with a non-applicable policy yields
-        a logging warning and a blocked operation.
-        """
-        e = engine.KmipEngine()
-        e._logger = mock.MagicMock()
-        e._operation_policies = {
-            'test': {
-                enums.ObjectType.SYMMETRIC_KEY: {
-                    enums.Operation.GET: enums.Policy.ALLOW_OWNER
-                }
-            }
-        }
-
-        policy = 'test'
-        object_type = enums.ObjectType.PRIVATE_KEY
-        is_allowed = e._is_allowed_by_operation_policy(
-            policy,
-            'test',
-            'test',
-            object_type,
-            enums.Operation.GET
-        )
-
-        self.assertFalse(is_allowed)
-        e._logger.warning.assert_called_once_with(
-            "The '{0}' policy does not apply to {1} objects.".format(
-                policy,
-                e._get_enum_string(object_type)
-            )
-        )
-
-    def test_is_allowed_by_operation_policy_not_applicable(self):
-        """
-        Test that a check with a non-applicable policy yields a logging
-        warning and a blocked operation.
-        """
-        e = engine.KmipEngine()
-        e._logger = mock.MagicMock()
-        e._operation_policies = {
-            'test': {
-                enums.ObjectType.SYMMETRIC_KEY: {
-                    enums.Operation.GET: enums.Policy.ALLOW_OWNER
-                }
-            }
-        }
-
-        policy = 'test'
-        object_type = enums.ObjectType.SYMMETRIC_KEY
-        operation = enums.Operation.CREATE
-        is_allowed = e._is_allowed_by_operation_policy(
-            policy,
-            'test',
-            'test',
-            object_type,
-            operation
-        )
-
-        self.assertFalse(is_allowed)
-        e._logger.warning.assert_called_once_with(
-            "The '{0}' policy does not apply to {1} operations on {2} "
-            "objects.".format(
-                policy,
-                e._get_enum_string(operation),
-                e._get_enum_string(object_type)
-            )
-        )
+        self.assertFalse(result)
 
     def test_get_object_with_access_controls(self):
         """

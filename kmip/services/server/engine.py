@@ -127,7 +127,7 @@ class KmipEngine(object):
         self._operation_policies = copy.deepcopy(operation_policy.policies)
         self._load_operation_policies(policy_path)
 
-        self._client_identity = None
+        self._client_identity = [None, None]
 
     def _load_operation_policies(self, policy_path):
         if (policy_path is None) or (not os.path.isdir(policy_path)):
@@ -262,7 +262,7 @@ class KmipEngine(object):
             ResponseMessage: The response containing all of the results from
                 the request batch items.
         """
-        self._client_identity = None
+        self._client_identity = [None, None]
         header = request.request_header
 
         # Process the protocol version
@@ -331,6 +331,10 @@ class KmipEngine(object):
             auth_credentials = header.authentication.credential
         else:
             auth_credentials = None
+
+        # TODO (peter-hamilton) This is a shim until SLUGS integration is done.
+        credential = [credential, None]
+
         self._verify_credential(auth_credentials, credential)
 
         # Process the batch error continuation option
@@ -850,24 +854,94 @@ class KmipEngine(object):
 
     def _is_allowed_by_operation_policy(
             self,
-            operation_policy,
+            policy_name,
             session_identity,
             object_owner,
             object_type,
             operation
     ):
-        policy_set = self._operation_policies.get(operation_policy)
-        if not policy_set:
-            self._logger.warning(
-                "The '{0}' policy does not exist.".format(operation_policy)
+        session_user = session_identity[0]
+        session_groups = session_identity[1]
+
+        if session_groups is None:
+            session_groups = [None]
+
+        for session_group in session_groups:
+            allowed = self.is_allowed(
+                policy_name,
+                session_user,
+                session_group,
+                object_owner,
+                object_type,
+                operation
             )
+            if allowed:
+                return True
+
+        return False
+
+    def get_relevant_policy_section(self, policy_name, group=None):
+        """
+        Look up the policy corresponding to the provided policy name and
+        group (optional). Log any issues found during the look up.
+        """
+        policy_bundle = self._operation_policies.get(policy_name)
+
+        if not policy_bundle:
+            self._logger.warning(
+                "The '{}' policy does not exist.".format(policy_name)
+            )
+            return None
+
+        if group:
+            groups_policy_bundle = policy_bundle.get('groups')
+            if not groups_policy_bundle:
+                self._logger.debug(
+                    "The '{}' policy does not support groups.".format(
+                        policy_name
+                    )
+                )
+                return None
+            else:
+                group_policy = groups_policy_bundle.get(group)
+                if not group_policy:
+                    self._logger.debug(
+                        "The '{}' policy does not support group '{}'.".format(
+                            policy_name,
+                            group
+                        )
+                    )
+                    return None
+                else:
+                    return group_policy
+        else:
+            return policy_bundle.get('default')
+
+    def is_allowed(
+            self,
+            policy_name,
+            session_user,
+            session_group,
+            object_owner,
+            object_type,
+            operation
+    ):
+        """
+        Determine if object access is allowed for the provided policy and
+        session settings.
+        """
+        policy_section = self.get_relevant_policy_section(
+            policy_name,
+            session_group
+        )
+        if policy_section is None:
             return False
 
-        object_policy = policy_set.get(object_type)
+        object_policy = policy_section.get(object_type)
         if not object_policy:
             self._logger.warning(
                 "The '{0}' policy does not apply to {1} objects.".format(
-                    operation_policy,
+                    policy_name,
                     self._get_enum_string(object_type)
                 )
             )
@@ -878,7 +952,7 @@ class KmipEngine(object):
             self._logger.warning(
                 "The '{0}' policy does not apply to {1} operations on {2} "
                 "objects.".format(
-                    operation_policy,
+                    policy_name,
                     self._get_enum_string(operation),
                     self._get_enum_string(object_type)
                 )
@@ -888,7 +962,7 @@ class KmipEngine(object):
         if operation_object_policy == enums.Policy.ALLOW_ALL:
             return True
         elif operation_object_policy == enums.Policy.ALLOW_OWNER:
-            if session_identity == object_owner:
+            if session_user == object_owner:
                 return True
             else:
                 return False
@@ -1057,7 +1131,7 @@ class KmipEngine(object):
         )
 
         # TODO (peterhamilton) Set additional server-only attributes.
-        managed_object._owner = self._client_identity
+        managed_object._owner = self._client_identity[0]
         managed_object.initial_date = int(time.time())
 
         self._data_session.add(managed_object)
@@ -1225,9 +1299,9 @@ class KmipEngine(object):
         )
 
         # TODO (peterhamilton) Set additional server-only attributes.
-        public_key._owner = self._client_identity
+        public_key._owner = self._client_identity[0]
         public_key.initial_date = int(time.time())
-        private_key._owner = self._client_identity
+        private_key._owner = self._client_identity[0]
         private_key.initial_date = public_key.initial_date
 
         self._data_session.add(public_key)
@@ -1302,7 +1376,7 @@ class KmipEngine(object):
         )
 
         # TODO (peterhamilton) Set additional server-only attributes.
-        managed_object._owner = self._client_identity
+        managed_object._owner = self._client_identity[0]
         managed_object.initial_date = int(time.time())
 
         self._data_session.add(managed_object)
@@ -1490,7 +1564,7 @@ class KmipEngine(object):
         )
 
         # TODO (peterhamilton) Set additional server-only attributes.
-        managed_object._owner = self._client_identity
+        managed_object._owner = self._client_identity[0]
         managed_object.initial_date = int(time.time())
 
         self._data_session.add(managed_object)
