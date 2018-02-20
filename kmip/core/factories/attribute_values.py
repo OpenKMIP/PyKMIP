@@ -35,10 +35,6 @@ class AttributeValueFactory(object):
             return self._create_cryptographic_length(value)
         elif name is enums.AttributeType.CRYPTOGRAPHIC_PARAMETERS:
             return self._create_cryptographic_parameters(value)
-        elif name is enums.AttributeType.CRYPTOGRAPHIC_DOMAIN_PARAMETERS:
-            raise NotImplementedError()
-        elif name is enums.AttributeType.CERTIFICATE_TYPE:
-            raise NotImplementedError()
         elif name is enums.AttributeType.CERTIFICATE_LENGTH:
             return primitives.Integer(value, enums.Tags.CERTIFICATE_LENGTH)
         elif name is enums.AttributeType.X_509_CERTIFICATE_IDENTIFIER:
@@ -69,6 +65,8 @@ class AttributeValueFactory(object):
             return attributes.State(value)
         elif name is enums.AttributeType.INITIAL_DATE:
             return primitives.DateTime(value, enums.Tags.INITIAL_DATE)
+        elif name is enums.AttributeType.ORIGINAL_CREATION_DATE:
+            return primitives.DateTime(value, enums.Tags.ORIGINAL_CREATION_DATE)
         elif name is enums.AttributeType.ACTIVATION_DATE:
             return primitives.DateTime(value, enums.Tags.ACTIVATION_DATE)
         elif name is enums.AttributeType.PROCESS_START_DATE:
@@ -85,7 +83,7 @@ class AttributeValueFactory(object):
         elif name is enums.AttributeType.COMPROMISE_DATE:
             return primitives.DateTime(value, enums.Tags.COMPROMISE_DATE)
         elif name is enums.AttributeType.REVOCATION_REASON:
-            raise NotImplementedError()
+            return attributes.RevocationReason()
         elif name is enums.AttributeType.ARCHIVE_DATE:
             return primitives.DateTime(value, enums.Tags.ARCHIVE_DATE)
         elif name is enums.AttributeType.OBJECT_GROUP:
@@ -93,7 +91,7 @@ class AttributeValueFactory(object):
         elif name is enums.AttributeType.FRESH:
             return primitives.Boolean(value, enums.Tags.FRESH)
         elif name is enums.AttributeType.LINK:
-            raise NotImplementedError()
+            return attributes.Link()
         elif name is enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION:
             return self._create_application_specific_information(value)
         elif name is enums.AttributeType.CONTACT_INFORMATION:
@@ -102,6 +100,16 @@ class AttributeValueFactory(object):
             return primitives.DateTime(value, enums.Tags.LAST_CHANGE_DATE)
         elif name is enums.AttributeType.CUSTOM_ATTRIBUTE:
             return attributes.CustomAttribute(value)
+        elif name is enums.AttributeType.SENSITIVE:
+            return attributes.Sensitive(value)
+        elif name is enums.AttributeType.EXTRACTABLE:
+            return attributes.Extractable(value)
+        elif name is enums.AttributeType.CERTIFICATE_LENGTH:
+            return attributes.CertificateLength(value)
+        elif name is enums.AttributeType.CERTIFICATE_TYPE:
+            return attributes.CertificateType(value)
+        elif name is enums.AttributeType.CRYPTOGRAPHIC_DOMAIN_PARAMETERS:
+            return attributes.CryptographicDomainParameters()
         else:
             if not isinstance(name, str):
                 raise ValueError('Unrecognized attribute type: '

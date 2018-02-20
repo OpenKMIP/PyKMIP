@@ -16,7 +16,7 @@
 from binascii import hexlify
 import io
 
-from kmip.core import exceptions
+from kmip.core.errors import ErrorStrings
 
 
 def bit_length(num):
@@ -52,8 +52,9 @@ def is_stream_empty(stream):
 
 def build_er_error(class_object, descriptor, expected, received,
                    attribute=None):
-    msg = exceptions.ErrorStrings.BAD_EXP_RECV
+    msg = ErrorStrings.BAD_EXP_RECV
 
+    class_string = ''
     if attribute is None:
         class_string = '{0}'.format(class_object.__name__)
     else:

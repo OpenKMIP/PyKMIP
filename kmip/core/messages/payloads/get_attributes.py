@@ -297,6 +297,7 @@ class GetAttributesResponsePayload(primitives.Struct):
         while self.is_tag_next(enums.Tags.ATTRIBUTE, tstream):
             attribute = objects.Attribute()
             attribute.read(tstream)
+            #print(attribute)
             self._attributes.append(attribute)
 
         self.is_oversized(tstream)

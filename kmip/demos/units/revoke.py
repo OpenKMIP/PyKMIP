@@ -46,8 +46,9 @@ if __name__ == '__main__':
 
     # Activate the object
     result = client.revoke(
-        uuid,
         RevocationReasonCode.UNSPECIFIED,
+        #RevocationReasonCode.KEY_COMPROMISE,
+        uuid,
         'Demo revocation message')
     client.close()
 

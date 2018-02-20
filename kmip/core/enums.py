@@ -79,6 +79,8 @@ class AttributeType(enum.Enum):
     KEY_VALUE_PRESENT                = 'Key Value Present'
     KEY_VALUE_LOCATION               = 'Key Value Location'
     ORIGINAL_CREATION_DATE           = 'Original Creation Date'
+    SENSITIVE                        = 'Sensitive'
+    EXTRACTABLE                      = 'Extractable'
 
 
 class AuthenticationSuite(enum.Enum):
@@ -137,7 +139,7 @@ class CertificateRequestType(enum.Enum):
     PGP    = 0x00000004  # DEPRECATED
 
 
-class CertificateType(enum.Enum):
+class CertificateTypeEnum(enum.Enum):
     X_509 = 0x00000001
     PGP   = 0x00000002  # Deprecated as of KMIP 1.4
 

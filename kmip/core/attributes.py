@@ -16,11 +16,13 @@
 import six
 
 from kmip.core import enums
-from kmip.core import exceptions
 
+from kmip.core.enums import CertificateTypeEnum
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
+
+from kmip.core.errors import ErrorStrings
 
 from kmip.core.misc import KeyFormatType
 
@@ -137,7 +139,7 @@ class Name(Struct):
 
     def __validate(self):
         name = Name.__name__
-        msg = exceptions.ErrorStrings.BAD_EXP_RECV
+        msg = ErrorStrings.BAD_EXP_RECV
         if self.name_value and \
                 not isinstance(self.name_value, Name.NameValue) and \
                 not isinstance(self.name_value, str):
@@ -164,7 +166,7 @@ class Name(Struct):
             value = cls.NameValue(name_value)
         else:
             name = 'Name'
-            msg = exceptions.ErrorStrings.BAD_EXP_RECV
+            msg = ErrorStrings.BAD_EXP_RECV
             member = 'name_value'
             raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                        'name_value', type(Name.NameValue),
@@ -176,7 +178,7 @@ class Name(Struct):
             n_type = cls.NameType(name_type)
         else:
             name = 'Name'
-            msg = exceptions.ErrorStrings.BAD_EXP_RECV
+            msg = ErrorStrings.BAD_EXP_RECV
             member = 'name_type'
             raise TypeError(msg.format('{0}.{1}'.format(name, member),
                                        'name_type', type(Name.NameType),
@@ -779,17 +781,17 @@ class CertificateType(Enumeration):
     information.
     """
 
-    def __init__(self, value=enums.CertificateType.X_509):
+    def __init__(self, value=CertificateTypeEnum.X_509):
         """
         Construct a CertificateType object.
 
         Args:
-            value (CertificateType): A CertificateType enumeration
-                value, (e.g., CertificateType.PGP). Optional, defaults to
-                CertificateType.X_509.
+            value (CertificateTypeEnum): A CertificateTypeEnum enumeration
+                value, (e.g., CertificateTypeEnum.PGP). Optional, defaults to
+                CertificateTypeEnum.X_509.
         """
         super(CertificateType, self).__init__(
-            enums.CertificateType, value, Tags.CERTIFICATE_TYPE)
+            enums.CertificateTypeEnum, value, Tags.CERTIFICATE_TYPE)
 
 
 class DigestValue(ByteString):
@@ -1501,3 +1503,93 @@ class DerivationParameters(Struct):
             'salt': self.salt,
             'iteration_count': self.iteration_count
         })
+
+class Sensitive(Boolean):
+
+    def __init__(self, value=None):
+        super(Sensitive, self).__init__(
+            value, Tags.SENSITIVE)
+
+class Extractable(Boolean):
+
+    def __init__(self, value=None):
+        super(Extractable, self).__init__(
+            value, Tags.EXTRACTABLE)
+
+class CertificateLength(Integer):
+
+    def __init__(self, value=None):
+        super(CertificateLength, self).__init__(
+            value, Tags.CERTIFICATE_LENGTH)
+
+class CryptographicDomainParameters(Struct):
+    def __init__(self):
+        super(CryptographicDomainParameters, self).__init__(Tags.CRYPTOGRAPHIC_DOMAIN_PARAMETERS)
+        self.validate()
+
+    def read(self, istream):
+        super(CryptographicDomainParameters, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+        if self.is_tag_next(Tags.RECOMMENDED_CURVE, tstream):
+            self.rcurve = Enumeration(enums.RecommendedCurve, tag=Tags.RECOMMENDED_CURVE)
+            self.rcurve.read(tstream)
+        self.is_oversized(tstream)
+        self.validate()
+
+    def validate(self):
+        pass
+
+    def __repr__(self):
+        return "{0}(value={1})".format(type(self).__name__, repr(self.rcurve))
+
+    def __str__(self):
+        return "{0}".format(self.rcurve)
+
+class Link(Struct):
+    def __init__(self):
+        super(Link, self).__init__(Tags.LINK)
+        self.validate()
+
+    def read(self, istream):
+        super(Link, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+        if self.is_tag_next(Tags.LINK_TYPE, tstream):
+            self.link_type = Enumeration(enums.LinkType, tag=Tags.LINK_TYPE)
+            self.link_type.read(tstream)
+        if self.is_tag_next(Tags.LINKED_OBJECT_IDENTIFIER, tstream):
+            self.link_obj_id = TextString(tag=enums.Tags.LINKED_OBJECT_IDENTIFIER)
+            self.link_obj_id.read(tstream)
+        self.is_oversized(tstream)
+        self.validate()
+
+    def validate(self):
+        pass
+
+    def __repr__(self):
+        return "{0}(value={1},{2})".format(type(self).__name__, repr(self.link_type), repl(self.link_obj_id))
+
+    def __str__(self):
+        return "{0},{1}".format(self.link_type, repr(self.link_obj_id))
+
+class RevocationReason(Struct):
+    def __init__(self):
+        super(RevocationReason, self).__init__(Tags.REVOCATION_REASON)
+        self.validate()
+
+    def read(self, istream):
+        super(RevocationReason, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+        if self.is_tag_next(Tags.REVOCATION_REASON_CODE, tstream):
+            self.revoke_code = Enumeration(enums.RevocationReasonCode, tag=Tags.REVOCATION_REASON_CODE)
+            self.revoke_code.read(tstream)
+        self.is_oversized(tstream)
+        self.validate()
+
+    def validate(self):
+        pass
+
+    def __repr__(self):
+        return "{0}(value={1})".format(type(self).__name__, repr(self.revoke_code))
+
+    def __str__(self):
+        return "{0}".format(self.revoke_code)

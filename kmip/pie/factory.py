@@ -75,7 +75,7 @@ class ObjectFactory:
         certificate_type = cert.certificate_type.value
         value = cert.certificate_value.value
 
-        if certificate_type == enums.CertificateType.X_509:
+        if certificate_type == enums.CertificateTypeEnum.X_509:
             return pobjects.X509Certificate(value)
         else:
             raise TypeError("core certificate type not supported")

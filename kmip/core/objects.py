@@ -27,8 +27,8 @@ from kmip.core.enums import Tags
 from kmip.core.enums import Types
 from kmip.core.enums import CredentialType
 from kmip.core.enums import RevocationReasonCode as RevocationReasonCodeEnum
-from kmip.core import exceptions
 
+from kmip.core.errors import ErrorStrings
 from kmip.core.misc import KeyFormatType
 
 from kmip.core import primitives
@@ -106,6 +106,7 @@ class Attribute(Struct):
         enum_type = None
 
         try:
+            #print(enum_name)
             enum_type = AttributeType[enum_name]
         except KeyError:
             # Likely custom attribute, pass raw name string as attribute type
@@ -115,7 +116,6 @@ class Attribute(Struct):
         self.attribute_value = value
         self.attribute_value.tag = Tags.ATTRIBUTE_VALUE
         self.attribute_value.read(tstream)
-
         self.is_oversized(tstream)
 
     def write(self, ostream):
@@ -474,12 +474,8 @@ class KeyBlock(Struct):
                 member = 'KeyBlock.key_format_type'
                 exp_type = KeyFormatType
                 rcv_type = type(self.key_format_type)
-                msg = exceptions.ErrorStrings.BAD_EXP_RECV.format(
-                    member,
-                    'type',
-                    exp_type,
-                    rcv_type
-                )
+                msg = ErrorStrings.BAD_EXP_RECV.format(member, 'type',
+                                                       exp_type, rcv_type)
                 raise TypeError(msg)
 
 
@@ -600,6 +596,67 @@ class KeyValue(Struct):
             msg += "; expected {0}, received {1}".format(
                 list, self.attributes)
             raise TypeError(msg)
+
+
+# 2.1.5
+class WrappingMethod(Enumeration):
+
+    def __init__(self, value=None):
+        super(WrappingMethod, self).__init__(
+            enums.WrappingMethod, value, Tags.WRAPPING_METHOD)
+
+
+class EncodingOption(Enumeration):
+
+    def __init__(self, value=None):
+        super(EncodingOption, self).__init__(
+            enums.EncodingOption, value, Tags.ENCODING_OPTION)
+
+
+class KeyInformation(Struct):
+
+    def __init__(self,
+                 unique_identifier=None,
+                 cryptographic_parameters=None,
+                 tag=Tags.ENCRYPTION_KEY_INFORMATION):
+        super(KeyInformation, self).__init__(tag=tag)
+        self.unique_identifier = unique_identifier
+        self.cryptographic_parameters = cryptographic_parameters
+        self.validate()
+
+    def read(self, istream):
+        super(KeyInformation, self).read(istream)
+        tstream = BytearrayStream(istream.read(self.length))
+
+        self.unique_identifier = attributes.UniqueIdentifier()
+        self.unique_identifier.read(tstream)
+
+        if self.is_tag_next(Tags.CRYPTOGRAPHIC_PARAMETERS, tstream):
+            self.cryptographic_parameters = CryptographicParameters()
+            self.cryptographic_parameters.read(tstream)
+
+        self.is_oversized(tstream)
+        self.validate()
+
+    def write(self, ostream):
+        tstream = BytearrayStream()
+
+        self.unique_identifier.write(tstream)
+
+        if self.cryptographic_parameters is not None:
+            self.cryptographic_parameters.write(tstream)
+
+        # Write the length and value of the template attribute
+        self.length = tstream.length()
+        super(KeyInformation, self).write(ostream)
+        ostream.write(tstream.buffer)
+
+    def validate(self):
+        self.__validate()
+
+    def __validate(self):
+        # TODO (peter-hamilton) Finish implementation.
+        pass
 
 
 class EncryptionKeyInformation(Struct):

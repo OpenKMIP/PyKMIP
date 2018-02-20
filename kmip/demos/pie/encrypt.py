@@ -47,7 +47,7 @@ if __name__ == '__main__':
     config = opts.config
     message = opts.message
 
-    message = bytes(message, 'utf-8')
+    #message = bytes(message, 'utf-8')
 
     # Build the client and connect to the server
     with client.ProxyKmipClient(config=config) as client:

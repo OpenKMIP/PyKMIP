@@ -1072,7 +1072,7 @@ class Certificate(CryptographicObject):
                                ForeignKey('crypto_objects.uid'),
                                primary_key=True)
     certificate_type = Column(
-        'certificate_type', sql.EnumType(enums.CertificateType))
+        'certificate_type', sql.EnumType(enums.CertificateTypeEnum))
 
     __mapper_args__ = {
         'polymorphic_identity': 'Certificate'
@@ -1129,8 +1129,8 @@ class Certificate(CryptographicObject):
         if not isinstance(self.value, bytes):
             raise TypeError("certificate value must be bytes")
         elif not isinstance(self.certificate_type,
-                            enums.CertificateType):
-            raise TypeError("certificate type must be a CertificateType "
+                            enums.CertificateTypeEnum):
+            raise TypeError("certificate type must be a CertificateTypeEnum "
                             "enumeration")
 
         mask_count = len(self.cryptographic_usage_masks)
@@ -1192,7 +1192,7 @@ class X509Certificate(Certificate):
             name(string): The string name of the certificate.
         """
         super(X509Certificate, self).__init__(
-            enums.CertificateType.X_509, value, masks, name)
+            enums.CertificateTypeEnum.X_509, value, masks, name)
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.

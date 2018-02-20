@@ -17,18 +17,6 @@ from kmip.core.messages.payloads.activate import (
     ActivateRequestPayload,
     ActivateResponsePayload
 )
-from kmip.core.messages.payloads.archive import (
-    ArchiveRequestPayload,
-    ArchiveResponsePayload
-)
-from kmip.core.messages.payloads.cancel import (
-    CancelRequestPayload,
-    CancelResponsePayload
-)
-from kmip.core.messages.payloads.check import (
-    CheckRequestPayload,
-    CheckResponsePayload
-)
 from kmip.core.messages.payloads.create import (
     CreateRequestPayload,
     CreateResponsePayload
@@ -69,10 +57,6 @@ from kmip.core.messages.payloads.get_attributes import (
     GetAttributesRequestPayload,
     GetAttributesResponsePayload
 )
-from kmip.core.messages.payloads.get_usage_allocation import (
-    GetUsageAllocationRequestPayload,
-    GetUsageAllocationResponsePayload
-)
 from kmip.core.messages.payloads.locate import (
     LocateRequestPayload,
     LocateResponsePayload
@@ -81,20 +65,9 @@ from kmip.core.messages.payloads.mac import (
     MACRequestPayload,
     MACResponsePayload
 )
-from kmip.core.messages.payloads.obtain_lease import (
-    ObtainLeaseRequestPayload,
-    ObtainLeaseResponsePayload
-)
-from kmip.core.messages.payloads.poll import (
-    PollRequestPayload
-)
 from kmip.core.messages.payloads.query import (
     QueryRequestPayload,
     QueryResponsePayload
-)
-from kmip.core.messages.payloads.recover import (
-    RecoverRequestPayload,
-    RecoverResponsePayload
 )
 from kmip.core.messages.payloads.register import (
     RegisterRequestPayload,
@@ -121,12 +94,6 @@ from kmip.core.messages.payloads.signature_verify import (
 __all__ = [
     "ActivateRequestPayload",
     "ActivateResponsePayload",
-    "ArchiveRequestPayload",
-    "ArchiveResponsePayload",
-    "CancelRequestPayload",
-    "CancelResponsePayload",
-    "CheckRequestPayload",
-    "CheckResponsePayload",
     "CreateRequestPayload",
     "CreateResponsePayload",
     "CreateKeyPairRequestPayload",
@@ -147,19 +114,12 @@ __all__ = [
     "GetAttributeListResponsePayload",
     "GetAttributesRequestPayload",
     "GetAttributesResponsePayload",
-    "GetUsageAllocationRequestPayload",
-    "GetUsageAllocationResponsePayload",
     "LocateRequestPayload",
     "LocateResponsePayload",
     "MACRequestPayload",
     "MACResponsePayload",
-    "ObtainLeaseRequestPayload",
-    "ObtainLeaseResponsePayload",
-    "PollRequestPayload",
     "QueryRequestPayload",
     "QueryResponsePayload",
-    "RecoverRequestPayload",
-    "RecoverResponsePayload",
     "RegisterRequestPayload",
     "RegisterResponsePayload",
     "RekeyKeyPairRequestPayload",

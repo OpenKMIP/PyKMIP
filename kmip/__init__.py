@@ -17,24 +17,18 @@ import os
 import re
 
 from kmip.core import enums
-from kmip.pie import client
-from kmip.pie import objects
-from kmip.pie.client import ProxyKmipClient as KmipClient
 
 # Dynamically set __version__
 version_path = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), 'version.py')
 with open(version_path, 'r') as version_file:
-    mo = re.search(r"^.*= '(\d\.\d\..*)'$", version_file.read(), re.MULTILINE)
+    mo = re.search(r"^.*= '(\d\.\d\.\d)'$", version_file.read(), re.MULTILINE)
     __version__ = mo.group(1)
 
 
 __all__ = [
-    'client',
     'core',
     'demos',
     'enums',
-    'KmipClient',
-    'objects',
     'services'
 ]
