@@ -1341,7 +1341,7 @@ class KMIPProxy(KMIP):
         return credential
 
     def _build_request_message(self, credential, batch_items):
-        protocol_version = ProtocolVersion.create(1, 2)
+        protocol_version = ProtocolVersion(1, 2)
 
         if credential is None:
             credential = self._build_credential()

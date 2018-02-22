@@ -13,171 +13,243 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from testtools import TestCase
+import testtools
 
-from kmip.core.messages.contents import ProtocolVersion
-from kmip.core.utils import BytearrayStream
+from kmip.core.messages import contents
+from kmip.core import utils
 
 
-class TestProtocolVersion(TestCase):
+class TestProtocolVersion(testtools.TestCase):
 
     def setUp(self):
         super(TestProtocolVersion, self).setUp()
 
-        self.major_default = ProtocolVersion.ProtocolVersionMajor()
-        self.minor_default = ProtocolVersion.ProtocolVersionMinor()
-        self.major = ProtocolVersion.ProtocolVersionMajor(1)
-        self.minor = ProtocolVersion.ProtocolVersionMinor(1)
+        # Encoding obtained from the KMIP 1.1 testing document, Section 3.1.1.
+        #
+        # This encoding matches the following set of values:
+        # ProtocolVersion
+        #     ProtocolVersionMajor - 1
+        #     ProtocolVersionMinor - 1
 
-        self.encoding_default = BytearrayStream((
-            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6A\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x00\x00\x00\x00\x00\x42\x00\x6B\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x00\x00\x00\x00\x00'))
-        self.encoding = BytearrayStream((
-            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6A\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6B\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00'))
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x00\x69\x01\x00\x00\x00\x20'
+            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        )
+
+        self.encoding_no_major_number = utils.BytearrayStream(
+            b'\x42\x00\x69\x01\x00\x00\x00\x10'
+            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        )
+
+        self.encoding_no_minor_number = utils.BytearrayStream(
+            b'\x42\x00\x69\x01\x00\x00\x00\x10'
+            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        )
 
     def tearDown(self):
         super(TestProtocolVersion, self).tearDown()
 
-    def _test_init(self, protocol_version_major, protocol_version_minor):
-        protocol_version = ProtocolVersion(
-            protocol_version_major, protocol_version_minor)
+    def test_init(self):
+        """
+        Test that a ProtocolVersion struct can be constructed with no
+        arguments.
+        """
+        struct = contents.ProtocolVersion()
 
-        if protocol_version_major is None:
-            self.assertEqual(ProtocolVersion.ProtocolVersionMajor(),
-                             protocol_version.protocol_version_major)
-        else:
-            self.assertEqual(protocol_version_major,
-                             protocol_version.protocol_version_major)
-
-        if protocol_version_minor is None:
-            self.assertEqual(ProtocolVersion.ProtocolVersionMinor(),
-                             protocol_version.protocol_version_minor)
-        else:
-            self.assertEqual(protocol_version_minor,
-                             protocol_version.protocol_version_minor)
-
-    def test_init_with_none(self):
-        self._test_init(None, None)
+        self.assertEqual(None, struct.major)
+        self.assertEqual(None, struct.minor)
 
     def test_init_with_args(self):
-        major = ProtocolVersion.ProtocolVersionMajor(1)
-        minor = ProtocolVersion.ProtocolVersionMinor(0)
+        """
+        Test that a ProtocolVersion struct can be constructed with valid
+        values.
+        """
+        struct = contents.ProtocolVersion(1, 1)
 
-        self._test_init(major, minor)
+        self.assertEqual(1, struct.major)
+        self.assertEqual(1, struct.minor)
 
-    def test_validate_on_invalid_protocol_version_major(self):
-        major = "invalid"
-        minor = ProtocolVersion.ProtocolVersionMinor(0)
-        args = [major, minor]
-
+    def test_invalid_protocol_version_major(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the major protocol version number of a ProtocolVersion struct.
+        """
+        struct = contents.ProtocolVersion()
+        args = (struct, 'major', 'invalid')
         self.assertRaisesRegexp(
-            TypeError, "invalid protocol version major", self._test_init,
-            *args)
+            TypeError,
+            "Major protocol version number must be an integer.",
+            setattr,
+            *args
+        )
 
-    def test_validate_on_invalid_protocol_version_minor(self):
-        major = ProtocolVersion.ProtocolVersionMajor(1)
-        minor = "invalid"
-        args = [major, minor]
-
+    def test_invalid_protocol_version_minor(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the minor protocol version number of a ProtocolVersion struct.
+        """
+        struct = contents.ProtocolVersion()
+        args = (struct, 'minor', 'invalid')
         self.assertRaisesRegexp(
-            TypeError, "invalid protocol version minor", self._test_init,
-            *args)
+            TypeError,
+            "Minor protocol version number must be an integer.",
+            setattr,
+            *args
+        )
 
-    def _test_read(self, stream, major, minor):
-        protocol_version = ProtocolVersion()
-        protocol_version.read(stream)
+    def test_read(self):
+        """
+        Test that a ProtocolVersion struct can be read from a data stream.
+        """
+        struct = contents.ProtocolVersion()
 
-        msg = "protocol version major decoding mismatch"
-        msg += "; expected {0}, received {1}".format(
-            major, protocol_version.protocol_version_major)
-        self.assertEqual(major, protocol_version.protocol_version_major, msg)
+        self.assertEqual(None, struct.major)
+        self.assertEqual(None, struct.minor)
 
-        msg = "protocol version minor decoding mismatch"
-        msg += "; expected {0}, received {1}".format(
-            minor, protocol_version.protocol_version_minor)
-        self.assertEqual(minor, protocol_version.protocol_version_minor, msg)
+        struct.read(self.full_encoding)
 
-    def test_read_with_none(self):
-        self._test_read(self.encoding_default, self.major_default,
-                        self.minor_default)
+        self.assertEqual(1, struct.major)
+        self.assertEqual(1, struct.minor)
 
-    def test_read_with_args(self):
-        self._test_read(self.encoding, self.major, self.minor)
+    def test_read_missing_major_number(self):
+        """
+        Test that a ValueError gets raised when a required ProtocolVersion
+        struct attribute is missing from the struct encoding.
+        """
+        struct = contents.ProtocolVersion()
+        args = (self.encoding_no_major_number, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Invalid encoding missing the major protocol version number.",
+            struct.read,
+            *args
+        )
 
-    def _test_write(self, stream_expected, major, minor):
-        stream_observed = BytearrayStream()
-        protocol_version = ProtocolVersion(major, minor)
-        protocol_version.write(stream_observed)
+    def test_read_missing_minor_number(self):
+        """
+        Test that a ValueError gets raised when a required ProtocolVersion
+        struct attribute is missing from the struct encoding.
+        """
+        struct = contents.ProtocolVersion()
+        args = (self.encoding_no_minor_number, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Invalid encoding missing the minor protocol version number.",
+            struct.read,
+            *args
+        )
 
-        length_expected = len(stream_expected)
-        length_observed = len(stream_observed)
+    def test_write(self):
+        """
+        Test that a ProtocolVersion struct can be written to a data stream.
+        """
+        struct = contents.ProtocolVersion(1, 1)
+        stream = utils.BytearrayStream()
+        struct.write(stream)
 
-        msg = "encoding lengths not equal"
-        msg += "; expected {0}, received {1}".format(
-            length_expected, length_observed)
-        self.assertEqual(length_expected, length_observed, msg)
+        self.assertEqual(len(self.full_encoding), len(stream))
+        self.assertEqual(str(self.full_encoding), str(stream))
 
-        msg = "encoding mismatch"
-        msg += ";\nexpected:\n{0}\nreceived:\n{1}".format(
-            stream_expected, stream_observed)
+    def test_write_missing_major_number(self):
+        """
+        Test that a ValueError gets raised when a required ProtocolVersion
+        struct attribute is missing when encoding the struct.
+        """
+        struct = contents.ProtocolVersion(None, 1)
+        stream = utils.BytearrayStream()
+        args = (stream, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Invalid struct missing the major protocol version number.",
+            struct.write,
+            *args
+        )
 
-        self.assertEqual(stream_expected, stream_observed, msg)
-
-    def test_write_with_none(self):
-        self._test_write(self.encoding_default, self.major_default,
-                         self.minor_default)
-
-    def test_write_with_args(self):
-        self._test_write(self.encoding, self.major, self.minor)
+    def test_write_missing_minor_number(self):
+        """
+        Test that a ValueError gets raised when a required ProtocolVersion
+        struct attribute is missing when encoding the struct.
+        """
+        struct = contents.ProtocolVersion(1, None)
+        stream = utils.BytearrayStream()
+        args = (stream, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Invalid struct missing the minor protocol version number.",
+            struct.write,
+            *args
+        )
 
     def test_equal_on_equal(self):
-        a = ProtocolVersion.create(1, 0)
-        b = ProtocolVersion.create(1, 0)
+        """
+        Test that the equality operator returns True when comparing two
+        ProtocolVersion structs with the same data.
+        """
+        a = contents.ProtocolVersion(1, 0)
+        b = contents.ProtocolVersion(1, 0)
 
         self.assertTrue(a == b)
 
     def test_equal_on_not_equal(self):
-        a = ProtocolVersion.create(1, 0)
-        b = ProtocolVersion.create(0, 1)
+        """
+        Test that the equality operator returns False when comparing two
+        ProtocolVersion structs with different data.
+        """
+        a = contents.ProtocolVersion(1, 0)
+        b = contents.ProtocolVersion(0, 1)
 
         self.assertFalse(a == b)
 
     def test_equal_on_type_mismatch(self):
-        a = ProtocolVersion.create(1, 0)
+        """
+        Test that the equality operator returns False when comparing two
+        ProtocolVersion structs with different types.
+        """
+        a = contents.ProtocolVersion(1, 0)
         b = "invalid"
 
         self.assertFalse(a == b)
 
     def test_not_equal_on_equal(self):
-        a = ProtocolVersion.create(1, 0)
-        b = ProtocolVersion.create(1, 0)
+        """
+        Test that the inequality operator returns False when comparing two
+        ProtocolVersion structs with the same data.
+        """
+        a = contents.ProtocolVersion(1, 0)
+        b = contents.ProtocolVersion(1, 0)
 
         self.assertFalse(a != b)
 
     def test_not_equal_on_not_equal(self):
-        a = ProtocolVersion.create(1, 0)
-        b = ProtocolVersion.create(0, 1)
+        """
+        Test that the inequality operator returns True when comparing two
+        ProtocolVersion structs with different data.
+        """
+        a = contents.ProtocolVersion(1, 0)
+        b = contents.ProtocolVersion(0, 1)
 
         self.assertTrue(a != b)
 
     def test_not_equal_on_type_mismatch(self):
-        a = ProtocolVersion.create(1, 0)
+        """
+        Test that the inequality operator returns True when comparing two
+        ProtocolVersion structs with different types.
+        """
+        a = contents.ProtocolVersion(1, 0)
         b = "invalid"
 
         self.assertTrue(a != b)
 
     def test_less_than(self):
         """
-        Test that the less than operator returns True/False when comparing
-        two different ProtocolVersions.
+        Test that the less than operator correctly returns True/False when
+        comparing two different ProtocolVersions.
         """
-        a = ProtocolVersion.create(1, 0)
-        b = ProtocolVersion.create(1, 1)
-        c = ProtocolVersion.create(2, 0)
-        d = ProtocolVersion.create(0, 2)
+        a = contents.ProtocolVersion(1, 0)
+        b = contents.ProtocolVersion(1, 1)
+        c = contents.ProtocolVersion(2, 0)
+        d = contents.ProtocolVersion(0, 2)
 
         self.assertTrue(a < b)
         self.assertFalse(b < a)
@@ -187,15 +259,19 @@ class TestProtocolVersion(TestCase):
         self.assertFalse(c < d)
         self.assertTrue(d < c)
 
+        # A direct call to __lt__ is required here due to differences in how
+        # Python 2 and Python 3 treat comparison operators.
+        self.assertEqual(NotImplemented, a.__lt__('invalid'))
+
     def test_greater_than(self):
         """
-        Test that the greater than operator returns True/False when
+        Test that the greater than operator correctly returns True/False when
         comparing two different ProtocolVersions.
         """
-        a = ProtocolVersion.create(1, 0)
-        b = ProtocolVersion.create(1, 1)
-        c = ProtocolVersion.create(2, 0)
-        d = ProtocolVersion.create(0, 2)
+        a = contents.ProtocolVersion(1, 0)
+        b = contents.ProtocolVersion(1, 1)
+        c = contents.ProtocolVersion(2, 0)
+        d = contents.ProtocolVersion(0, 2)
 
         self.assertFalse(a > b)
         self.assertTrue(b > a)
@@ -205,15 +281,19 @@ class TestProtocolVersion(TestCase):
         self.assertTrue(c > d)
         self.assertFalse(d > c)
 
+        # A direct call to __gt__ is required here due to differences in how
+        # Python 2 and Python 3 treat comparison operators.
+        self.assertEqual(NotImplemented, a.__gt__('invalid'))
+
     def test_less_than_or_equal(self):
         """
-        Test that the less than or equal operator returns True/False when
-        comparing two different ProtocolVersions.
+        Test that the less than or equal operator correctly returns True/False
+        when comparing two different ProtocolVersions.
         """
-        a = ProtocolVersion.create(1, 0)
-        b = ProtocolVersion.create(1, 1)
-        c = ProtocolVersion.create(2, 0)
-        d = ProtocolVersion.create(0, 2)
+        a = contents.ProtocolVersion(1, 0)
+        b = contents.ProtocolVersion(1, 1)
+        c = contents.ProtocolVersion(2, 0)
+        d = contents.ProtocolVersion(0, 2)
 
         self.assertTrue(a <= b)
         self.assertFalse(b <= a)
@@ -223,15 +303,19 @@ class TestProtocolVersion(TestCase):
         self.assertFalse(c <= d)
         self.assertTrue(d <= c)
 
+        # A direct call to __le__ is required here due to differences in how
+        # Python 2 and Python 3 treat comparison operators.
+        self.assertEqual(NotImplemented, a.__le__('invalid'))
+
     def test_greater_than_or_equal(self):
         """
-        Test that the greater than or equal operator returns True/False when
-        comparing two different ProtocolVersions.
+        Test that the greater than or equal operator correctly returns
+        True/False when comparing two different ProtocolVersions.
         """
-        a = ProtocolVersion.create(1, 0)
-        b = ProtocolVersion.create(1, 1)
-        c = ProtocolVersion.create(2, 0)
-        d = ProtocolVersion.create(0, 2)
+        a = contents.ProtocolVersion(1, 0)
+        b = contents.ProtocolVersion(1, 1)
+        c = contents.ProtocolVersion(2, 0)
+        d = contents.ProtocolVersion(0, 2)
 
         self.assertFalse(a >= b)
         self.assertTrue(b >= a)
@@ -241,30 +325,25 @@ class TestProtocolVersion(TestCase):
         self.assertTrue(c >= d)
         self.assertFalse(d >= c)
 
+        # A direct call to __ge__ is required here due to differences in how
+        # Python 2 and Python 3 treat comparison operators.
+        self.assertEqual(NotImplemented, a.__ge__('invalid'))
+
     def test_repr(self):
-        a = ProtocolVersion.create(1, 0)
+        """
+        Test that repr can be applied to a ProtocolVersion struct.
+        """
+        struct = contents.ProtocolVersion(1, 0)
 
-        self.assertEqual("1.0", "{0}".format(a))
+        self.assertEqual(
+            "ProtocolVersion(major=1, minor=0)",
+            "{}".format(repr(struct))
+        )
 
-    def _test_create(self, major, minor):
-        protocol_version = ProtocolVersion.create(major, minor)
+    def test_str(self):
+        """
+        Test that str can be applied to a ProtocolVersion struct.
+        """
+        struct = contents.ProtocolVersion(1, 0)
 
-        if major is None:
-            expected = ProtocolVersion.ProtocolVersionMajor()
-        else:
-            expected = ProtocolVersion.ProtocolVersionMajor(major)
-
-        self.assertEqual(expected, protocol_version.protocol_version_major)
-
-        if minor is None:
-            expected = ProtocolVersion.ProtocolVersionMinor()
-        else:
-            expected = ProtocolVersion.ProtocolVersionMinor(minor)
-
-        self.assertEqual(expected, protocol_version.protocol_version_minor)
-
-    def test_create_with_none(self):
-        self._test_create(None, None)
-
-    def test_create_with_args(self):
-        self._test_create(1, 0)
+        self.assertEqual("1.0", str(struct))

@@ -176,7 +176,7 @@ class KmipSession(threading.Thread):
             self._logger.warning("Failure parsing request message.")
             self._logger.exception(e)
             response = self._engine.build_error_response(
-                contents.ProtocolVersion.create(1, 0),
+                contents.ProtocolVersion(1, 0),
                 enums.ResultReason.INVALID_MESSAGE,
                 "Error parsing request message. See server logs for more "
                 "information."

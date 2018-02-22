@@ -157,9 +157,6 @@ class ResponseHeader(Struct):
         ostream.write(tstream.buffer)
 
     def validate(self):
-        if self.protocol_version is not None:
-            # TODO (peter-hamilton) conduct type check
-            self.protocol_version.validate()
         if self.time_stamp is not None:
             # TODO (peter-hamilton) conduct type check
             self.time_stamp.validate()

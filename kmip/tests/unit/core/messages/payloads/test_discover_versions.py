@@ -30,10 +30,10 @@ class TestDiscoverVersionsRequestPayload(TestCase):
 
         self.protocol_versions_empty = list()
         self.protocol_versions_one = list()
-        self.protocol_versions_one.append(ProtocolVersion.create(1, 0))
+        self.protocol_versions_one.append(ProtocolVersion(1, 0))
         self.protocol_versions_two = list()
-        self.protocol_versions_two.append(ProtocolVersion.create(1, 1))
-        self.protocol_versions_two.append(ProtocolVersion.create(1, 0))
+        self.protocol_versions_two.append(ProtocolVersion(1, 1))
+        self.protocol_versions_two.append(ProtocolVersion(1, 0))
 
         self.encoding_empty = utils.BytearrayStream((
             b'\x42\x00\x79\x01\x00\x00\x00\x00'))
@@ -157,10 +157,10 @@ class TestDiscoverVersionsResponsePayload(TestCase):
 
         self.protocol_versions_empty = list()
         self.protocol_versions_one = list()
-        self.protocol_versions_one.append(ProtocolVersion.create(1, 0))
+        self.protocol_versions_one.append(ProtocolVersion(1, 0))
         self.protocol_versions_two = list()
-        self.protocol_versions_two.append(ProtocolVersion.create(1, 1))
-        self.protocol_versions_two.append(ProtocolVersion.create(1, 0))
+        self.protocol_versions_two.append(ProtocolVersion(1, 1))
+        self.protocol_versions_two.append(ProtocolVersion(1, 0))
 
         self.encoding_empty = utils.BytearrayStream((
             b'\x42\x00\x7C\x01\x00\x00\x00\x00'))

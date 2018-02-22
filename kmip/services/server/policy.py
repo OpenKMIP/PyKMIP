@@ -157,7 +157,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Name': AttributeRuleSet(
                 False,
@@ -181,7 +181,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Object Type': AttributeRuleSet(
                 True,
@@ -210,7 +210,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Cryptographic Algorithm': AttributeRuleSet(
                 True,
@@ -237,7 +237,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Cryptographic Length': AttributeRuleSet(
                 True,
@@ -264,7 +264,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Cryptographic Parameters': AttributeRuleSet(
                 False,
@@ -286,7 +286,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Cryptographic Domain Parameters': AttributeRuleSet(
                 False,
@@ -304,7 +304,7 @@ class AttributePolicy(object):
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.TEMPLATE
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Certificate Type': AttributeRuleSet(
                 True,
@@ -321,7 +321,7 @@ class AttributePolicy(object):
                 (
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Certificate Length': AttributeRuleSet(
                 True,
@@ -338,7 +338,7 @@ class AttributePolicy(object):
                 (
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion.create(1, 1)
+                contents.ProtocolVersion(1, 1)
             ),
             'X.509 Certificate Identifier': AttributeRuleSet(
                 True,
@@ -356,7 +356,7 @@ class AttributePolicy(object):
                     # TODO (peterhamilton) Enforce only on X.509 certificates
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion.create(1, 1)
+                contents.ProtocolVersion(1, 1)
             ),
             'X.509 Certificate Subject': AttributeRuleSet(
                 True,
@@ -374,7 +374,7 @@ class AttributePolicy(object):
                     # TODO (peterhamilton) Enforce only on X.509 certificates
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion.create(1, 1)
+                contents.ProtocolVersion(1, 1)
             ),
             'X.509 Certificate Issuer': AttributeRuleSet(
                 True,
@@ -392,7 +392,7 @@ class AttributePolicy(object):
                     # TODO (peterhamilton) Enforce only on X.509 certificates
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion.create(1, 1)
+                contents.ProtocolVersion(1, 1)
             ),
             'Certificate Identifier': AttributeRuleSet(
                 True,
@@ -409,8 +409,8 @@ class AttributePolicy(object):
                 (
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion.create(1, 0),
-                contents.ProtocolVersion.create(1, 1)
+                contents.ProtocolVersion(1, 0),
+                contents.ProtocolVersion(1, 1)
             ),
             'Certificate Subject': AttributeRuleSet(
                 True,
@@ -427,8 +427,8 @@ class AttributePolicy(object):
                 (
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion.create(1, 0),
-                contents.ProtocolVersion.create(1, 1)
+                contents.ProtocolVersion(1, 0),
+                contents.ProtocolVersion(1, 1)
             ),
             'Certificate Issuer': AttributeRuleSet(
                 True,
@@ -445,8 +445,8 @@ class AttributePolicy(object):
                 (
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion.create(1, 0),
-                contents.ProtocolVersion.create(1, 1)
+                contents.ProtocolVersion(1, 0),
+                contents.ProtocolVersion(1, 1)
             ),
             'Digital Signature Algorithm': AttributeRuleSet(
                 True,
@@ -464,7 +464,7 @@ class AttributePolicy(object):
                 (
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion.create(1, 1)
+                contents.ProtocolVersion(1, 1)
             ),
             'Digest': AttributeRuleSet(
                 True,  # If the server has access to the data
@@ -492,7 +492,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Operation Policy Name': AttributeRuleSet(
                 False,
@@ -521,7 +521,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Cryptographic Usage Mask': AttributeRuleSet(
                 True,
@@ -549,7 +549,7 @@ class AttributePolicy(object):
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Lease Time': AttributeRuleSet(
                 False,
@@ -576,7 +576,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.SECRET_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Usage Limits': AttributeRuleSet(
                 False,
@@ -601,7 +601,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'State': AttributeRuleSet(
                 True,
@@ -631,7 +631,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.SECRET_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Initial Date': AttributeRuleSet(
                 True,
@@ -660,7 +660,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Activation Date': AttributeRuleSet(
                 False,
@@ -689,7 +689,7 @@ class AttributePolicy(object):
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Process Start Date': AttributeRuleSet(
                 False,
@@ -710,7 +710,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Protect Stop Date': AttributeRuleSet(
                 False,
@@ -731,7 +731,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Deactivation Date': AttributeRuleSet(
                 False,
@@ -760,7 +760,7 @@ class AttributePolicy(object):
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Destroy Date': AttributeRuleSet(
                 False,
@@ -781,7 +781,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Compromise Occurrence Date': AttributeRuleSet(
                 False,
@@ -802,7 +802,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Compromise Date': AttributeRuleSet(
                 False,
@@ -823,7 +823,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Revocation Reason': AttributeRuleSet(
                 False,
@@ -844,7 +844,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Archive Date': AttributeRuleSet(
                 False,
@@ -866,7 +866,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Object Group': AttributeRuleSet(
                 False,
@@ -895,7 +895,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Fresh': AttributeRuleSet(
                 False,
@@ -924,7 +924,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 1)
+                contents.ProtocolVersion(1, 1)
             ),
             'Link': AttributeRuleSet(
                 False,
@@ -951,7 +951,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Application Specific Information': AttributeRuleSet(
                 False,
@@ -975,7 +975,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Contact Information': AttributeRuleSet(
                 False,
@@ -1004,7 +1004,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Last Change Date': AttributeRuleSet(
                 True,
@@ -1042,7 +1042,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
             'Custom Attribute': AttributeRuleSet(
                 False,
@@ -1074,7 +1074,7 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion.create(1, 0)
+                contents.ProtocolVersion(1, 0)
             ),
         }
 

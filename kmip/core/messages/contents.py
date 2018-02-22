@@ -13,10 +13,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import six
+
 from kmip.core import enums
 from kmip.core import objects
 from kmip.core import utils
 
+from kmip.core import primitives
 from kmip.core.primitives import Struct
 from kmip.core.primitives import Integer
 from kmip.core.primitives import Enumeration
@@ -26,105 +29,170 @@ from kmip.core.primitives import ByteString
 from kmip.core.primitives import DateTime
 
 
-# 6.1
-class ProtocolVersion(Struct):
+class ProtocolVersion(primitives.Struct):
+    """
+    A struct representing a ProtocolVersion number.
 
-    class ProtocolVersionMajor(Integer):
-        def __init__(self, value=None):
-            super(ProtocolVersion.ProtocolVersionMajor, self).\
-                __init__(value, enums.Tags.PROTOCOL_VERSION_MAJOR)
+    Attributes:
+        major: The major protocol version number.
+        minor: The minor protocol version number.
+    """
 
-    class ProtocolVersionMinor(Integer):
-        def __init__(self, value=None):
-            super(ProtocolVersion.ProtocolVersionMinor, self).\
-                __init__(value, enums.Tags.PROTOCOL_VERSION_MINOR)
+    def __init__(self, major=None, minor=None):
+        """
+        Construct a ProtocolVersion struct.
 
-    def __init__(self,
-                 protocol_version_major=None,
-                 protocol_version_minor=None):
+        Args:
+            major (int): The major protocol version number. Optional, defaults
+                to None.
+            minor (int): The minor protocol version number. Optional, defaults
+                to None.
+        """
         super(ProtocolVersion, self).__init__(enums.Tags.PROTOCOL_VERSION)
 
-        if protocol_version_major is None:
-            self.protocol_version_major = \
-                ProtocolVersion.ProtocolVersionMajor()
+        self._major = None
+        self._minor = None
+
+        self.major = major
+        self.minor = minor
+
+    @property
+    def major(self):
+        if self._major:
+            return self._major.value
         else:
-            self.protocol_version_major = protocol_version_major
+            return None
 
-        if protocol_version_minor is None:
-            self.protocol_version_minor = \
-                ProtocolVersion.ProtocolVersionMinor()
+    @major.setter
+    def major(self, value):
+        if value is None:
+            self._major = None
+        elif isinstance(value, six.integer_types):
+            self._major = primitives.Integer(
+                value=value,
+                tag=enums.Tags.PROTOCOL_VERSION_MAJOR
+            )
         else:
-            self.protocol_version_minor = protocol_version_minor
+            raise TypeError(
+                "Major protocol version number must be an integer."
+            )
 
-        self.validate()
+    @property
+    def minor(self):
+        if self._minor:
+            return self._minor.value
+        else:
+            return None
 
-    def read(self, istream):
-        super(ProtocolVersion, self).read(istream)
-        tstream = utils.BytearrayStream(istream.read(self.length))
+    @minor.setter
+    def minor(self, value):
+        if value is None:
+            self._minor = None
+        elif isinstance(value, six.integer_types):
+            self._minor = primitives.Integer(
+                value=value,
+                tag=enums.Tags.PROTOCOL_VERSION_MINOR
+            )
+        else:
+            raise TypeError(
+                "Minor protocol version number must be an integer."
+            )
 
-        # Read the major and minor portions of the version number
-        self.protocol_version_major.read(tstream)
-        self.protocol_version_minor.read(tstream)
+    def read(self, input_stream):
+        """
+        Read the data encoding the ProtocolVersion struct and decode it into
+        its constituent parts.
 
-        self.is_oversized(tstream)
+        Args:
+            input_stream (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
 
-    def write(self, ostream):
-        tstream = utils.BytearrayStream()
+        Raises:
+            ValueError: Raised if either the major or minor protocol versions
+                are missing from the encoding.
+        """
+        super(ProtocolVersion, self).read(input_stream)
+        local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
-        # Write the major and minor portions of the protocol version
-        self.protocol_version_major.write(tstream)
-        self.protocol_version_minor.write(tstream)
+        if self.is_tag_next(enums.Tags.PROTOCOL_VERSION_MAJOR, local_stream):
+            self._major = primitives.Integer(
+                tag=enums.Tags.PROTOCOL_VERSION_MAJOR
+            )
+            self._major.read(local_stream)
+        else:
+            raise ValueError(
+                "Invalid encoding missing the major protocol version number."
+            )
 
-        # Write the length and value of the protocol version
-        self.length = tstream.length()
-        super(ProtocolVersion, self).write(ostream)
-        ostream.write(tstream.buffer)
+        if self.is_tag_next(enums.Tags.PROTOCOL_VERSION_MINOR, local_stream):
+            self._minor = primitives.Integer(
+                tag=enums.Tags.PROTOCOL_VERSION_MINOR
+            )
+            self._minor.read(local_stream)
+        else:
+            raise ValueError(
+                "Invalid encoding missing the minor protocol version number."
+            )
 
-    def validate(self):
-        self.__validate()
+        self.is_oversized(local_stream)
 
-    def __validate(self):
-        if not isinstance(self.protocol_version_major,
-                          ProtocolVersion.ProtocolVersionMajor):
-            msg = "invalid protocol version major"
-            msg += "; expected {0}, received {1}".format(
-                ProtocolVersion.ProtocolVersionMajor,
-                self.protocol_version_major)
-            raise TypeError(msg)
+    def write(self, output_stream):
+        """
+        Write the data encoding the ProtocolVersion struct to a stream.
 
-        if not isinstance(self.protocol_version_minor,
-                          ProtocolVersion.ProtocolVersionMinor):
-            msg = "invalid protocol version minor"
-            msg += "; expected {0}, received {1}".format(
-                ProtocolVersion.ProtocolVersionMinor,
-                self.protocol_version_minor)
-            raise TypeError(msg)
+        Args:
+            output_stream (stream): A data stream in which to encode object
+                data, supporting a write method; usually a BytearrayStream
+                object.
+
+        Raises:
+            ValueError: Raised if the data attribute is not defined.
+        """
+        local_stream = utils.BytearrayStream()
+
+        if self._major:
+            self._major.write(local_stream)
+        else:
+            raise ValueError(
+                "Invalid struct missing the major protocol version number."
+            )
+
+        if self._minor:
+            self._minor.write(local_stream)
+        else:
+            raise ValueError(
+                "Invalid struct missing the minor protocol version number."
+            )
+
+        self.length = local_stream.length()
+        super(ProtocolVersion, self).write(output_stream)
+        output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
         if isinstance(other, ProtocolVersion):
-            if ((self.protocol_version_major ==
-                 other.protocol_version_major) and
-                (self.protocol_version_minor ==
-                 other.protocol_version_minor)):
-                return True
-            else:
+            if self.major != other.major:
                 return False
+            elif self.minor != other.minor:
+                return False
+            else:
+                return True
         else:
             return NotImplemented
 
     def __ne__(self, other):
         if isinstance(other, ProtocolVersion):
-            return not self.__eq__(other)
+            return not (self == other)
         else:
             return NotImplemented
 
     def __lt__(self, other):
         if isinstance(other, ProtocolVersion):
-            if self.protocol_version_major < other.protocol_version_major:
+            if self.major < other.major:
                 return True
-            elif self.protocol_version_major > other.protocol_version_major:
+            elif self.major > other.major:
                 return False
-            elif self.protocol_version_minor < other.protocol_version_minor:
+            elif self.minor < other.minor:
                 return True
             else:
                 return False
@@ -133,24 +201,16 @@ class ProtocolVersion(Struct):
 
     def __gt__(self, other):
         if isinstance(other, ProtocolVersion):
-            if self.protocol_version_major > other.protocol_version_major:
-                return True
-            elif self.protocol_version_major < other.protocol_version_major:
+            if (self == other) or (self < other):
                 return False
-            elif self.protocol_version_minor > other.protocol_version_minor:
-                return True
             else:
-                return False
+                return True
         else:
             return NotImplemented
 
     def __le__(self, other):
         if isinstance(other, ProtocolVersion):
-            if self.protocol_version_major < other.protocol_version_major:
-                return True
-            elif self.protocol_version_major > other.protocol_version_major:
-                return False
-            elif self.protocol_version_minor <= other.protocol_version_minor:
+            if (self == other) or (self < other):
                 return True
             else:
                 return False
@@ -159,11 +219,7 @@ class ProtocolVersion(Struct):
 
     def __ge__(self, other):
         if isinstance(other, ProtocolVersion):
-            if self.protocol_version_major > other.protocol_version_major:
-                return True
-            elif self.protocol_version_major < other.protocol_version_major:
-                return False
-            elif self.protocol_version_minor >= other.protocol_version_minor:
+            if (self == other) or (self > other):
                 return True
             else:
                 return False
@@ -171,15 +227,14 @@ class ProtocolVersion(Struct):
             return NotImplemented
 
     def __repr__(self):
-        major = self.protocol_version_major.value
-        minor = self.protocol_version_minor.value
-        return "{0}.{1}".format(major, minor)
+        args = ", ".join([
+            "major={}".format(self.major),
+            "minor={}".format(self.minor)
+        ])
+        return "ProtocolVersion({})".format(args)
 
-    @classmethod
-    def create(cls, major, minor):
-        major = cls.ProtocolVersionMajor(major)
-        minor = cls.ProtocolVersionMinor(minor)
-        return ProtocolVersion(major, minor)
+    def __str__(self):
+        return "{}.{}".format(self.major, self.minor)
 
 
 # 6.2

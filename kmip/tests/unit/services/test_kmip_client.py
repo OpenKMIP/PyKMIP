@@ -385,7 +385,7 @@ class TestKMIPClient(TestCase):
         self.assertEqual(protocol_versions, observed, msg)
 
     def test_build_discover_versions_batch_item_with_input(self):
-        protocol_versions = [ProtocolVersion.create(1, 0)]
+        protocol_versions = [ProtocolVersion(1, 0)]
         self._test_build_discover_versions_batch_item(protocol_versions)
 
     def test_build_discover_versions_batch_item_no_input(self):
@@ -612,7 +612,7 @@ class TestKMIPClient(TestCase):
         self.assertEqual(protocol_versions, result.protocol_versions, msg)
 
     def test_process_discover_versions_batch_item_with_results(self):
-        protocol_versions = [ProtocolVersion.create(1, 0)]
+        protocol_versions = [ProtocolVersion(1, 0)]
         self._test_process_discover_versions_batch_item(protocol_versions)
 
     def test_process_discover_versions_batch_item_no_results(self):

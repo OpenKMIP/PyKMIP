@@ -89,7 +89,7 @@ class TestKmipEngine(testtools.TestCase):
             )
         ]
 
-        protocol = contents.ProtocolVersion.create(1, 0)
+        protocol = contents.ProtocolVersion(1, 0)
         max_size = contents.MaximumResponseSize(2 ** 20)
         asynch = contents.AsynchronousIndicator(False)
 
@@ -339,7 +339,7 @@ class TestKmipEngine(testtools.TestCase):
         """
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
-        e._protocol_version = contents.ProtocolVersion.create(1, 0)
+        e._protocol_version = contents.ProtocolVersion(1, 0)
 
         args = (None, )
         regex = "DiscoverVersions is not supported by KMIP {0}".format(
@@ -360,7 +360,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
-        protocol = contents.ProtocolVersion.create(1, 1)
+        protocol = contents.ProtocolVersion(1, 1)
         header = messages.RequestHeader(
             protocol_version=protocol,
             maximum_response_size=contents.MaximumResponseSize(2 ** 20),
@@ -402,7 +402,7 @@ class TestKmipEngine(testtools.TestCase):
 
         self.assertIsNotNone(header)
         self.assertEqual(
-            contents.ProtocolVersion.create(1, 1),
+            contents.ProtocolVersion(1, 1),
             header.protocol_version
         )
         self.assertIsInstance(header.time_stamp, contents.TimeStamp)
@@ -442,7 +442,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
-        protocol = contents.ProtocolVersion.create(0, 1)
+        protocol = contents.ProtocolVersion(0, 1)
         header = messages.RequestHeader(
             protocol_version=protocol
         )
@@ -470,7 +470,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
-        protocol = contents.ProtocolVersion.create(1, 0)
+        protocol = contents.ProtocolVersion(1, 0)
         header = messages.RequestHeader(
             protocol_version=protocol,
             time_stamp=contents.TimeStamp(0)
@@ -503,7 +503,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
-        protocol = contents.ProtocolVersion.create(1, 0)
+        protocol = contents.ProtocolVersion(1, 0)
         header = messages.RequestHeader(
             protocol_version=protocol,
             time_stamp=contents.TimeStamp(10 ** 10)
@@ -536,7 +536,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
-        protocol = contents.ProtocolVersion.create(1, 1)
+        protocol = contents.ProtocolVersion(1, 1)
         header = messages.RequestHeader(
             protocol_version=protocol,
             asynchronous_indicator=contents.AsynchronousIndicator(True)
@@ -563,7 +563,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
-        protocol = contents.ProtocolVersion.create(1, 1)
+        protocol = contents.ProtocolVersion(1, 1)
         header = messages.RequestHeader(
             protocol_version=protocol,
             authentication=contents.Authentication(),
@@ -593,7 +593,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
-        protocol = contents.ProtocolVersion.create(1, 1)
+        protocol = contents.ProtocolVersion(1, 1)
         header = messages.RequestHeader(
             protocol_version=protocol,
             authentication=None,
@@ -629,7 +629,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger = mock.MagicMock()
 
         response = e.build_error_response(
-            contents.ProtocolVersion.create(1, 1),
+            contents.ProtocolVersion(1, 1),
             enums.ResultReason.GENERAL_FAILURE,
             "A general test failure occurred."
         )
@@ -639,7 +639,7 @@ class TestKmipEngine(testtools.TestCase):
         header = response.response_header
 
         self.assertEqual(
-            contents.ProtocolVersion.create(1, 1),
+            contents.ProtocolVersion(1, 1),
             header.protocol_version
         )
         self.assertIsNotNone(header.time_stamp)
@@ -760,7 +760,7 @@ class TestKmipEngine(testtools.TestCase):
         """
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
-        e._protocol_version = contents.ProtocolVersion.create(1, 0)
+        e._protocol_version = contents.ProtocolVersion(1, 0)
 
         batch = list([
             messages.RequestBatchItem(
@@ -6515,7 +6515,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
 
         e._logger = mock.MagicMock()
-        e._protocol_version = contents.ProtocolVersion.create(1, 0)
+        e._protocol_version = contents.ProtocolVersion(1, 0)
 
         payload = payloads.QueryRequestPayload([
             misc.QueryFunction(enums.QueryFunction.QUERY_OPERATIONS),
@@ -6601,7 +6601,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
 
         e._logger = mock.MagicMock()
-        e._protocol_version = contents.ProtocolVersion.create(1, 1)
+        e._protocol_version = contents.ProtocolVersion(1, 1)
 
         payload = payloads.QueryRequestPayload([
             misc.QueryFunction(enums.QueryFunction.QUERY_OPERATIONS),
@@ -6691,7 +6691,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
 
         e._logger = mock.MagicMock()
-        e._protocol_version = contents.ProtocolVersion.create(1, 2)
+        e._protocol_version = contents.ProtocolVersion(1, 2)
 
         payload = payloads.QueryRequestPayload([
             misc.QueryFunction(enums.QueryFunction.QUERY_OPERATIONS),
@@ -6817,22 +6817,22 @@ class TestKmipEngine(testtools.TestCase):
         self.assertIsNotNone(result.protocol_versions)
         self.assertEqual(3, len(result.protocol_versions))
         self.assertEqual(
-            contents.ProtocolVersion.create(1, 2),
+            contents.ProtocolVersion(1, 2),
             result.protocol_versions[0]
         )
         self.assertEqual(
-            contents.ProtocolVersion.create(1, 1),
+            contents.ProtocolVersion(1, 1),
             result.protocol_versions[1]
         )
         self.assertEqual(
-            contents.ProtocolVersion.create(1, 0),
+            contents.ProtocolVersion(1, 0),
             result.protocol_versions[2]
         )
 
         # Test detailed request.
         e._logger = mock.MagicMock()
         payload = payloads.DiscoverVersionsRequestPayload([
-            contents.ProtocolVersion.create(1, 0)
+            contents.ProtocolVersion(1, 0)
         ])
 
         result = e._process_discover_versions(payload)
@@ -6843,14 +6843,14 @@ class TestKmipEngine(testtools.TestCase):
         self.assertIsNotNone(result.protocol_versions)
         self.assertEqual(1, len(result.protocol_versions))
         self.assertEqual(
-            contents.ProtocolVersion.create(1, 0),
+            contents.ProtocolVersion(1, 0),
             result.protocol_versions[0]
         )
 
         # Test disjoint request.
         e._logger = mock.MagicMock()
         payload = payloads.DiscoverVersionsRequestPayload([
-            contents.ProtocolVersion.create(0, 1)
+            contents.ProtocolVersion(0, 1)
         ])
 
         result = e._process_discover_versions(payload)
