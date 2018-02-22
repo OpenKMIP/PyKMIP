@@ -105,9 +105,9 @@ class KmipEngine(object):
         self._id_placeholder = None
 
         self._protocol_versions = [
-            contents.ProtocolVersion.create(1, 2),
-            contents.ProtocolVersion.create(1, 1),
-            contents.ProtocolVersion.create(1, 0)
+            contents.ProtocolVersion(1, 2),
+            contents.ProtocolVersion(1, 1),
+            contents.ProtocolVersion(1, 0)
         ]
 
         self._protocol_version = self._protocol_versions[0]
@@ -2001,11 +2001,11 @@ class KmipEngine(object):
                 contents.Operation(enums.Operation.QUERY)
             ])
 
-            if self._protocol_version >= contents.ProtocolVersion.create(1, 1):
+            if self._protocol_version >= contents.ProtocolVersion(1, 1):
                 operations.extend([
                     contents.Operation(enums.Operation.DISCOVER_VERSIONS)
                 ])
-            if self._protocol_version >= contents.ProtocolVersion.create(1, 2):
+            if self._protocol_version >= contents.ProtocolVersion(1, 2):
                 operations.extend([
                     contents.Operation(enums.Operation.ENCRYPT),
                     contents.Operation(enums.Operation.DECRYPT),

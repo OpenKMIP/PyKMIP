@@ -345,7 +345,7 @@ class TestKmipSession(testtools.TestCase):
         )
         batch_items = [batch_item]
         header = messages.ResponseHeader(
-            protocol_version=contents.ProtocolVersion.create(1, 0),
+            protocol_version=contents.ProtocolVersion(1, 0),
             time_stamp=contents.TimeStamp(int(time.time())),
             batch_count=contents.BatchCount(len(batch_items))
         )

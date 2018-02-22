@@ -35,14 +35,14 @@ class TestAttributePolicy(testtools.TestCase):
         """
         Test that an AttributePolicy can be built without any errors.
         """
-        policy.AttributePolicy(contents.ProtocolVersion.create(1, 0))
+        policy.AttributePolicy(contents.ProtocolVersion(1, 0))
 
     def test_is_attribute_supported(self):
         """
         Test that is_attribute_supported returns the expected results in all
         cases.
         """
-        rules = policy.AttributePolicy(contents.ProtocolVersion.create(1, 0))
+        rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
         attribute_a = 'Unique Identifier'
         attribute_b = 'Certificate Length'
         attribute_c = 'invalid'
@@ -61,7 +61,7 @@ class TestAttributePolicy(testtools.TestCase):
         Test that is_attribute_deprecated returns the expected results in all
         cases.
         """
-        rules = policy.AttributePolicy(contents.ProtocolVersion.create(1, 0))
+        rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
         attribute_a = 'Name'
         attribute_b = 'Certificate Subject'
 
@@ -71,7 +71,7 @@ class TestAttributePolicy(testtools.TestCase):
         result = rules.is_attribute_deprecated(attribute_b)
         self.assertFalse(result)
 
-        rules = policy.AttributePolicy(contents.ProtocolVersion.create(1, 1))
+        rules = policy.AttributePolicy(contents.ProtocolVersion(1, 1))
 
         result = rules.is_attribute_deprecated(attribute_b)
         self.assertTrue(result)
@@ -81,7 +81,7 @@ class TestAttributePolicy(testtools.TestCase):
         Test that is_attribute_applicable_to_object_type returns the
         expected results in all cases.
         """
-        rules = policy.AttributePolicy(contents.ProtocolVersion.create(1, 0))
+        rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
         attribute = 'Cryptographic Algorithm'
         object_type_a = enums.ObjectType.SYMMETRIC_KEY
         object_type_b = enums.ObjectType.OPAQUE_DATA
@@ -103,7 +103,7 @@ class TestAttributePolicy(testtools.TestCase):
         Test that is_attribute_multivalued returns the expected results in
         all cases.
         """
-        rules = policy.AttributePolicy(contents.ProtocolVersion.create(1, 0))
+        rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
         attribute_a = 'Object Type'
         attribute_b = 'Link'
 
@@ -118,7 +118,7 @@ class TestAttributePolicy(testtools.TestCase):
         Test that get_all_attribute_names returns a complete list of the
         names of all spec-defined attributes.
         """
-        rules = policy.AttributePolicy(contents.ProtocolVersion.create(1, 0))
+        rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
         attribute_names = [
             'Unique Identifier',
             'Name',

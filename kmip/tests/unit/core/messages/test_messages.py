@@ -183,25 +183,25 @@ class TestRequestMessage(TestCase):
                               msg.format(contents.ProtocolVersion,
                                          type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
+        protocol_version_major = protocol_version.major
         msg = "Bad protocol version major type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version major value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_major.value,
-                         msg.format(1, protocol_version_major.value))
+        self.assertEqual(1, protocol_version_major,
+                         msg.format(1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
+        protocol_version_minor = protocol_version.minor
         msg = "Bad protocol version minor type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version minor value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_minor.value,
-                         msg.format(1, protocol_version_minor.value))
+        self.assertEqual(1, protocol_version_minor,
+                         msg.format(1, protocol_version_minor))
 
         batch_count = request_header.batch_count
         msg = "Bad batch count type: expected {0}, received {1}"
@@ -352,7 +352,7 @@ class TestRequestMessage(TestCase):
                                           exp_value, attribute_value.value))
 
     def test_create_request_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         batch_count = contents.BatchCount(1)
         request_header = messages.RequestHeader(protocol_version=prot_ver,
@@ -414,25 +414,25 @@ class TestRequestMessage(TestCase):
                               msg.format(contents.ProtocolVersion,
                                          type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
+        protocol_version_major = protocol_version.major
         msg = "Bad protocol version major type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version major value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_major.value,
-                         msg.format(1, protocol_version_major.value))
+        self.assertEqual(1, protocol_version_major,
+                         msg.format(1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
+        protocol_version_minor = protocol_version.minor
         msg = "Bad protocol version minor type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version minor value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_minor.value,
-                         msg.format(1, protocol_version_minor.value))
+        self.assertEqual(1, protocol_version_minor,
+                         msg.format(1, protocol_version_minor))
 
         batch_count = request_header.batch_count
         msg = "Bad batch count type: expected {0}, received {1}"
@@ -486,7 +486,7 @@ class TestRequestMessage(TestCase):
         )
 
     def test_get_request_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         batch_count = contents.BatchCount(1)
         req_header = messages.RequestHeader(protocol_version=prot_ver,
@@ -532,25 +532,25 @@ class TestRequestMessage(TestCase):
                               msg.format(contents.ProtocolVersion,
                                          type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
+        protocol_version_major = protocol_version.major
         msg = "Bad protocol version major type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version major value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_major.value,
-                         msg.format(1, protocol_version_major.value))
+        self.assertEqual(1, protocol_version_major,
+                         msg.format(1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
+        protocol_version_minor = protocol_version.minor
         msg = "Bad protocol version minor type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version minor value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_minor.value,
-                         msg.format(1, protocol_version_minor.value))
+        self.assertEqual(1, protocol_version_minor,
+                         msg.format(1, protocol_version_minor))
 
         batch_count = request_header.batch_count
         msg = "Bad batch count type: expected {0}, received {1}"
@@ -605,7 +605,7 @@ class TestRequestMessage(TestCase):
                          msg.format(exp_value, rcv_value))
 
     def test_destroy_request_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         batch_count = contents.BatchCount(1)
         req_header = messages.RequestHeader(protocol_version=prot_ver,
@@ -651,25 +651,25 @@ class TestRequestMessage(TestCase):
                               msg.format(contents.ProtocolVersion,
                                          type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
+        protocol_version_major = protocol_version.major
         msg = "Bad protocol version major type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version major value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_major.value,
-                         msg.format(1, protocol_version_major.value))
+        self.assertEqual(1, protocol_version_major,
+                         msg.format(1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
+        protocol_version_minor = protocol_version.minor
         msg = "Bad protocol version minor type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version minor value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_minor.value,
-                         msg.format(1, protocol_version_minor.value))
+        self.assertEqual(1, protocol_version_minor,
+                         msg.format(1, protocol_version_minor))
 
         batch_count = request_header.batch_count
         msg = "Bad batch count type: expected {0}, received {1}"
@@ -775,7 +775,7 @@ class TestRequestMessage(TestCase):
                              msg.format(exp_length, rcv_length))
 
     def test_register_request_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         batch_count = contents.BatchCount(1)
         req_header = messages.RequestHeader(protocol_version=prot_ver,
@@ -867,25 +867,25 @@ class TestRequestMessage(TestCase):
                               msg.format(contents.ProtocolVersion,
                                          type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
+        protocol_version_major = protocol_version.major
         msg = "Bad protocol version major type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version major value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_major.value,
-                         msg.format(1, protocol_version_major.value))
+        self.assertEqual(1, protocol_version_major,
+                         msg.format(1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
+        protocol_version_minor = protocol_version.minor
         msg = "Bad protocol version minor type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version minor value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_minor.value,
-                         msg.format(1, protocol_version_minor.value))
+        self.assertEqual(1, protocol_version_minor,
+                         msg.format(1, protocol_version_minor))
 
         batch_count = request_header.batch_count
         msg = "Bad batch count type: expected {0}, received {1}"
@@ -1012,25 +1012,25 @@ class TestRequestMessage(TestCase):
                               msg.format(contents.ProtocolVersion,
                                          type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
+        protocol_version_major = protocol_version.major
         msg = "Bad protocol version major type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version major value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_major.value,
-                         msg.format(1, protocol_version_major.value))
+        self.assertEqual(1, protocol_version_major,
+                         msg.format(1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
+        protocol_version_minor = protocol_version.minor
         msg = "Bad protocol version minor type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version minor value: expected {0}, received {1}"
-        self.assertEqual(2, protocol_version_minor.value,
-                         msg.format(2, protocol_version_minor.value))
+        self.assertEqual(2, protocol_version_minor,
+                         msg.format(2, protocol_version_minor))
 
         batch_count = request_header.batch_count
         msg = "Bad batch count type: expected {0}, received {1}"
@@ -1114,7 +1114,7 @@ class TestRequestMessage(TestCase):
         )
 
     def test_mac_request_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 2)
+        prot_ver = contents.ProtocolVersion(1, 2)
 
         batch_count = contents.BatchCount(1)
         req_header = messages.RequestHeader(protocol_version=prot_ver,
@@ -1284,26 +1284,26 @@ class TestResponseMessage(TestCase):
                                               contents.ProtocolVersion,
                                               type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        protocol_version_major = protocol_version.major
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               self.msg.format('protocol version major',
                                               'type', exp_type, rcv_type))
-        self.assertEqual(1, protocol_version_major.value,
+        self.assertEqual(1, protocol_version_major,
                          self.msg.format('protocol version major', 'value',
-                                         1, protocol_version_major.value))
+                                         1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        protocol_version_minor = protocol_version.minor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor,
-                              contents.ProtocolVersion.ProtocolVersionMinor,
+                              int,
                               self.msg.format('protocol version minor',
                                               'type', exp_type, rcv_type))
-        self.assertEqual(1, protocol_version_minor.value,
+        self.assertEqual(1, protocol_version_minor,
                          self.msg.format('protocol version minor', 'value',
-                                         1, protocol_version_minor.value))
+                                         1, protocol_version_minor))
 
         time_stamp = response_header.time_stamp
         value = 0x4f9a54e5  # Fri Apr 27 10:12:21 CEST 2012
@@ -1383,7 +1383,7 @@ class TestResponseMessage(TestCase):
                                              unique_identifier.value, value))
 
     def test_create_response_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         # Fri Apr 27 10:12:21 CEST 2012
         time_stamp = contents.TimeStamp(0x4f9a54e5)
@@ -1436,25 +1436,25 @@ class TestResponseMessage(TestCase):
                                               contents.ProtocolVersion,
                                               type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        protocol_version_major = protocol_version.major
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               self.msg.format('protocol version major', 'type',
                                               exp_type, rcv_type))
-        self.assertEqual(1, protocol_version_major.value,
+        self.assertEqual(1, protocol_version_major,
                          self.msg.format('protocol version major', 'value',
-                                         1, protocol_version_major.value))
+                                         1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        protocol_version_minor = protocol_version.minor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               self.msg.format('protocol version minor', 'type',
                                               exp_type, rcv_type))
-        self.assertEqual(1, protocol_version_minor.value,
+        self.assertEqual(1, protocol_version_minor,
                          self.msg.format('protocol version minor', 'value',
-                                         1, protocol_version_minor.value))
+                                         1, protocol_version_minor))
 
         time_stamp = response_header.time_stamp
         value = 0x4f9a54e7  # Fri Apr 27 10:12:23 CEST 2012
@@ -1584,7 +1584,7 @@ class TestResponseMessage(TestCase):
                                                        'value', exp, obs))
 
     def test_get_response_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         # Fri Apr 27 10:12:23 CEST 2012
         time_stamp = contents.TimeStamp(0x4f9a54e7)
@@ -1665,25 +1665,25 @@ class TestResponseMessage(TestCase):
                               msg.format(contents.ProtocolVersion,
                                          type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
+        protocol_version_major = protocol_version.major
         msg = "Bad protocol version major type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version major value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_major.value,
-                         msg.format(1, protocol_version_major.value))
+        self.assertEqual(1, protocol_version_major,
+                         msg.format(1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
+        protocol_version_minor = protocol_version.minor
         msg = "Bad protocol version minor type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version minor value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_minor.value,
-                         msg.format(1, protocol_version_minor.value))
+        self.assertEqual(1, protocol_version_minor,
+                         msg.format(1, protocol_version_minor))
 
         time_stamp = response_header.time_stamp
         value = 0x4f9a54e5  # Fri Apr 27 10:12:21 CEST 2012
@@ -1758,7 +1758,7 @@ class TestResponseMessage(TestCase):
                              msg.format(exp_value, rcv_value))
 
     def test_destroy_response_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         # Fri Apr 27 10:12:21 CEST 2012
         time_stamp = contents.TimeStamp(0x4f9a54e5)
@@ -1808,25 +1808,25 @@ class TestResponseMessage(TestCase):
                               msg.format(contents.ProtocolVersion,
                                          type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
+        protocol_version_major = protocol_version.major
         msg = "Bad protocol version major type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version major value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_major.value,
-                         msg.format(1, protocol_version_major.value))
+        self.assertEqual(1, protocol_version_major,
+                         msg.format(1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
+        protocol_version_minor = protocol_version.minor
         msg = "Bad protocol version minor type: expected {0}, received {1}"
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               msg.format(exp_type, rcv_type))
         msg = "Bad protocol version minor value: expected {0}, received {1}"
-        self.assertEqual(1, protocol_version_minor.value,
-                         msg.format(1, protocol_version_minor.value))
+        self.assertEqual(1, protocol_version_minor,
+                         msg.format(1, protocol_version_minor))
 
         time_stamp = response_header.time_stamp
         value = 0x4f9a54e5  # Fri Apr 27 10:12:21 CEST 2012
@@ -1901,7 +1901,7 @@ class TestResponseMessage(TestCase):
                              msg.format(exp_value, rcv_value))
 
     def test_register_response_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         # Fri Apr 27 10:12:21 CEST 2012
         time_stamp = contents.TimeStamp(0x4f9a54e5)
@@ -1934,7 +1934,7 @@ class TestResponseMessage(TestCase):
         self.assertEqual(self.register, result, msg)
 
     def test_locate_response_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         # Fri Apr 27 10:12:22 CEST 2012
         time_stamp = contents.TimeStamp(0x4f9a54e6)
@@ -1985,25 +1985,25 @@ class TestResponseMessage(TestCase):
                                               contents.ProtocolVersion,
                                               type(protocol_version)))
 
-        protocol_version_major = protocol_version.protocol_version_major
-        exp_type = contents.ProtocolVersion.ProtocolVersionMajor
+        protocol_version_major = protocol_version.major
+        exp_type = int
         rcv_type = type(protocol_version_major)
         self.assertIsInstance(protocol_version_major, exp_type,
                               self.msg.format('protocol version major', 'type',
                                               exp_type, rcv_type))
-        self.assertEqual(1, protocol_version_major.value,
+        self.assertEqual(1, protocol_version_major,
                          self.msg.format('protocol version major', 'value',
-                                         1, protocol_version_major.value))
+                                         1, protocol_version_major))
 
-        protocol_version_minor = protocol_version.protocol_version_minor
-        exp_type = contents.ProtocolVersion.ProtocolVersionMinor
+        protocol_version_minor = protocol_version.minor
+        exp_type = int
         rcv_type = type(protocol_version_minor)
         self.assertIsInstance(protocol_version_minor, exp_type,
                               self.msg.format('protocol version minor', 'type',
                                               exp_type, rcv_type))
-        self.assertEqual(2, protocol_version_minor.value,
+        self.assertEqual(2, protocol_version_minor,
                          self.msg.format('protocol version minor', 'value',
-                                         2, protocol_version_minor.value))
+                                         2, protocol_version_minor))
 
         time_stamp = response_header.time_stamp
         value = 0x588a3f23
@@ -2092,7 +2092,7 @@ class TestResponseMessage(TestCase):
                                              binascii.hexlify(value)))
 
     def test_mac_response_write(self):
-        prot_ver = contents.ProtocolVersion.create(1, 2)
+        prot_ver = contents.ProtocolVersion(1, 2)
 
         # Fri Apr 27 10:12:23 CEST 2012
         time_stamp = contents.TimeStamp(0x588a3f23)
@@ -2142,7 +2142,7 @@ class TestResponseMessage(TestCase):
     def test_message_invalid_response_write(self):
         # Batch item of 'INVALID MESSAGE' response
         # has no 'operation' attribute
-        prot_ver = contents.ProtocolVersion.create(1, 1)
+        prot_ver = contents.ProtocolVersion(1, 1)
 
         # Time stamp Tue Mar 29 10:58:37 2016
         time_stamp = contents.TimeStamp(0x56fa43bd)

@@ -42,8 +42,7 @@ if __name__ == '__main__':
     if opts.protocol_versions is not None:
         for version in re.split(',| ', opts.protocol_versions):
             mm = re.split('\.', version)
-            protocol_versions.append(ProtocolVersion.create(int(mm[0]),
-                                                            int(mm[1])))
+            protocol_versions.append(ProtocolVersion(int(mm[0]), int(mm[1])))
 
     # Build the client and connect to the server
     client = KMIPProxy(config=config)
