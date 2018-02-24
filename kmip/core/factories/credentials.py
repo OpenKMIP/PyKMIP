@@ -13,43 +13,41 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core.enums import CredentialType
-
-from kmip.core.objects import Credential
+from kmip.core import enums
+from kmip.core import objects
 
 
 class CredentialFactory(object):
-    def __init__(self):
-        pass
 
-    def _create_credential(self, credential_type, credential_value):
-        credential_type = Credential.CredentialType(credential_type)
-        return Credential(credential_type=credential_type,
-                          credential_value=credential_value)
-
-    def create_credential(self, cred_type, value):
+    def create_credential(self, credential_type, credential_value):
         # Switch on the type of the credential
-        if cred_type is CredentialType.USERNAME_AND_PASSWORD:
-            value = self._create_username_password_credential(value)
-        elif cred_type is CredentialType.DEVICE:
-            value = self._create_device_credential(value)
+        if credential_type is enums.CredentialType.USERNAME_AND_PASSWORD:
+            credential_value = self.create_username_password_credential(
+                credential_value
+            )
+        elif credential_type is enums.CredentialType.DEVICE:
+            credential_value = self.create_device_credential(credential_value)
         else:
             msg = 'Unrecognized credential type: {0}'
-            raise ValueError(msg.format(cred_type))
+            raise ValueError(msg.format(credential_type))
 
-        return self._create_credential(cred_type, value)
+        return objects.Credential(
+            credential_type=credential_type,
+            credential_value=credential_value
+        )
 
-    def _create_username_password_credential(self, value):
+    @staticmethod
+    def create_username_password_credential(value):
         username = value.get('Username')
         password = value.get('Password')
 
-        username = Credential.UsernamePasswordCredential.Username(username)
-        password = Credential.UsernamePasswordCredential.Password(password)
+        return objects.UsernamePasswordCredential(
+            username=username,
+            password=password
+        )
 
-        return Credential.UsernamePasswordCredential(username=username,
-                                                     password=password)
-
-    def _create_device_credential(self, value):
+    @staticmethod
+    def create_device_credential(value):
         dsn = value.get('Device Serial Number')
         password = value.get('Password')
         dev_id = value.get('Device Identifier')
@@ -57,16 +55,11 @@ class CredentialFactory(object):
         mach_id = value.get('Machine Identifier')
         med_id = value.get('Media Identifier')
 
-        dsn = Credential.DeviceCredential.DeviceSerialNumber(dsn)
-        password = Credential.DeviceCredential.Password(password)
-        dev_id = Credential.DeviceCredential.DeviceIdentifier(dev_id)
-        net_id = Credential.DeviceCredential.NetworkIdentifier(net_id)
-        mach_id = Credential.DeviceCredential.MachineIdentifier(mach_id)
-        med_id = Credential.DeviceCredential.MediaIdentifier(med_id)
-
-        return Credential.DeviceCredential(device_serial_number=dsn,
-                                           password=password,
-                                           device_identifier=dev_id,
-                                           network_identifier=net_id,
-                                           machine_identifier=mach_id,
-                                           media_identifier=med_id)
+        return objects.DeviceCredential(
+            device_serial_number=dsn,
+            password=password,
+            device_identifier=dev_id,
+            network_identifier=net_id,
+            machine_identifier=mach_id,
+            media_identifier=med_id
+        )
