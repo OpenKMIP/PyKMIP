@@ -64,8 +64,6 @@ from kmip.services.results import OperationResult
 from kmip.services.results import QueryResult
 from kmip.services.results import RekeyKeyPairResult
 
-import kmip.core.utils as utils
-
 import mock
 import os
 import socket
@@ -144,31 +142,17 @@ class TestKMIPClient(TestCase):
     def test_build_credential(self):
         username = 'username'
         password = 'password'
-        cred_type = CredentialType.USERNAME_AND_PASSWORD
         self.client.username = username
         self.client.password = password
 
         credential = self.client._build_credential()
 
-        message = utils.build_er_error(credential.__class__, 'type',
-                                       cred_type,
-                                       credential.credential_type.value,
-                                       'value')
-        self.assertEqual(CredentialType.USERNAME_AND_PASSWORD,
-                         credential.credential_type.value,
-                         message)
-
-        message = utils.build_er_error(
-            credential.__class__, 'type', username,
-            credential.credential_value.username.value, 'value')
-        self.assertEqual(username, credential.credential_value.username.value,
-                         message)
-
-        message = utils.build_er_error(
-            credential.__class__, 'type', password,
-            credential.credential_value.password.value, 'value')
-        self.assertEqual(password, credential.credential_value.password.value,
-                         message)
+        self.assertEqual(
+            CredentialType.USERNAME_AND_PASSWORD,
+            credential.credential_type
+        )
+        self.assertEqual(username, credential.credential_value.username)
+        self.assertEqual(password, credential.credential_value.password)
 
     def test_build_credential_no_username(self):
         username = None
