@@ -1348,7 +1348,7 @@ class KMIPProxy(KMIP):
 
         authentication = None
         if credential is not None:
-            authentication = Authentication(credential)
+            authentication = Authentication([credential])
 
         batch_count = BatchCount(len(batch_items))
         req_header = messages.RequestHeader(protocol_version=protocol_version,
