@@ -328,7 +328,10 @@ class KmipEngine(object):
 
         # Process the authentication credentials
         if header.authentication:
-            auth_credentials = header.authentication.credential
+            if header.authentication.credentials:
+                auth_credentials = header.authentication.credentials[0]
+            else:
+                auth_credentials = None
         else:
             auth_credentials = None
 
