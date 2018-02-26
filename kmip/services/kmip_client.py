@@ -39,7 +39,6 @@ from kmip.core.enums import Operation as OperationEnum
 from kmip.core.factories.credentials import CredentialFactory
 
 from kmip.core import objects
-from kmip.core.server import KMIP
 
 from kmip.core.messages.contents import Authentication
 from kmip.core.messages.contents import BatchCount
@@ -66,7 +65,7 @@ FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))
 
 
-class KMIPProxy(KMIP):
+class KMIPProxy:
 
     def __init__(self, host=None, port=None, keyfile=None,
                  certfile=None,
@@ -74,7 +73,6 @@ class KMIPProxy(KMIP):
                  do_handshake_on_connect=None,
                  suppress_ragged_eofs=None,
                  username=None, password=None, timeout=30, config='client'):
-        super(KMIPProxy, self).__init__()
         self.logger = logging.getLogger(__name__)
         self.credential_factory = CredentialFactory()
         self.config = config
