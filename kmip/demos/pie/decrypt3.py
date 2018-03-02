@@ -115,6 +115,15 @@ def build_cli_parser():
         dest="padding",
         help="Padding for block cipher."
     )
+    parser.add_option(
+        "-v",
+        "--iv",
+        action="store",
+        type="str",
+        default=None,
+        dest="iv",
+        help="IV for block cipher."
+    )
     return parser
 
 if __name__ == '__main__':
@@ -127,30 +136,41 @@ if __name__ == '__main__':
     uuid = opts.uuid
     padding = opts.padding
     mode = opts.mode
-    message = opts.message
-
+    message = opts.message    
+    iv = opts.iv
+    
     if not message.startswith("b"):
         raise ValueError("The message should be a byte string (e.g., b'...').")
     else:
         message = binascii.unhexlify(message[1:])
+        
+    if not iv.startswith("b"):
+        raise ValueError("The IV should be a byte string (e.g., b'...').")
+    else:
+        iv = binascii.unhexlify(iv[1:])
 
     # Build the client and connect to the server
     with client.ProxyKmipClient(config=config) as client:
         # Decrypt the cipher text with the encryption key.
+                       
         try:
+        
+            if uuid:
+                retrieved_id, retrieved_attributes = client.get_attributes(
+                        uuid,
+                        ["Cryptographic Algorithm"]        
+                    )
+                t_alg = next((x for x in retrieved_attributes if x.attribute_name.value == 'Cryptographic Algorithm'), None).attribute_value.value                    
+        
             plain_text = client.decrypt(
                 message,
                 uid=uuid,
                 cryptographic_parameters={
-                    'cryptographic_algorithm':
-                        enums.CryptographicAlgorithm.AES,
+                    'cryptographic_algorithm': t_alg,
                     'block_cipher_mode': enums.BlockCipherMode[mode],
                     'padding_method': enums.PaddingMethod[padding]
                 },
-                iv_counter_nonce=(
-                    b'\x01\x7D\x45\xA0\x88\x08\x11\x11'
-                    b'\xF0\x00\x12\xFF\x7A\x3A\x36\x90'
-                )
+                iv_counter_nonce=iv
             )
             logger.info("Successfully decrypted the message.")
             logger.info("Plain text: '{0}'".format(plain_text.decode('utf-8')))
