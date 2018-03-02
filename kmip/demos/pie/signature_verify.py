@@ -51,6 +51,7 @@ if __name__ == '__main__':
                         b'\x7b\x72\x60\xac\x37\xc1\x06\x86\x1d\xc7\x8c\xa5\xa2'
                         b'\x5f\xaa\x9c\xb2\xe3\x02\x03\x01\x00\x01'
                     ),
+                    enums.KeyFormatType.PKCS_1,
                     masks=[
                         enums.CryptographicUsageMask.SIGN,
                         enums.CryptographicUsageMask.VERIFY

@@ -109,7 +109,7 @@ if __name__ == '__main__':
         b'\x17\xE1\xF0\xC9\xB2\x3A\xFF\xA4\xD4\x96\x61\x8D\xBC\x02\x49\x86'
         b'\xED\x69\x0B\xBB\x7B\x02\x57\x68\xFF\x9D\xF8\xAC\x15\x41\x6F\x48'
         b'\x9F\x81\x29\xC3\x23\x41\xA8\xB4\x4F')
-    format_type = enums.KeyFormatType.PKCS_8
+    format_type = enums.KeyFormatType.PKCS_1
     usage_mask = [enums.CryptographicUsageMask.SIGN]
     name = 'Demo Private Key'
 
