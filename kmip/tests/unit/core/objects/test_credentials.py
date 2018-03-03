@@ -13,11 +13,389 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import enum
+import mock
 import testtools
 
 from kmip import enums
 from kmip.core import objects
 from kmip.core import utils
+
+
+class TestNonce(testtools.TestCase):
+    """
+    Test suite for the Nonce struct.
+    """
+
+    def setUp(self):
+        super(TestNonce, self).setUp()
+
+        # There are no Nonce encodings available in any of the KMIP testing
+        # documents. The following encodings were adapted from other structure
+        # encodings present in the KMIP testing suite.
+        #
+        # This encoding matches the following set of values:
+        # Nonce
+        #     Nonce ID - 1
+        #     Nonce Value - 0x0001020304050607
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x00\xC8\x01\x00\x00\x00\x20'
+            b'\x42\x00\xC9\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xCA\x08\x00\x00\x00\x08\x00\x01\x02\x03\x04\x05\x06\x07'
+        )
+        self.encoding_missing_nonce_id = utils.BytearrayStream(
+            b'\x42\x00\xC8\x01\x00\x00\x00\x10'
+            b'\x42\x00\xCA\x08\x00\x00\x00\x08\x00\x01\x02\x03\x04\x05\x06\x07'
+        )
+        self.encoding_missing_nonce_value = utils.BytearrayStream(
+            b'\x42\x00\xC8\x01\x00\x00\x00\x10'
+            b'\x42\x00\xC9\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestNonce, self).tearDown()
+
+    def test_init(self):
+        """
+        Test that a Nonce struct can be constructed without arguments.
+        """
+        nonce = objects.Nonce()
+
+        self.assertEqual(None, nonce.nonce_id)
+        self.assertEqual(None, nonce.nonce_value)
+
+    def test_init_with_args(self):
+        """
+        Test that a Nonce struct can be constructed with arguments.
+        """
+        nonce = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+        )
+
+        self.assertEqual(b'\x01', nonce.nonce_id)
+        self.assertEqual(
+            b'\x00\x01\x02\x03\x04\x05\x06\x07',
+            nonce.nonce_value
+        )
+
+    def test_invalid_nonce_id(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the nonce ID of a Nonce struct.
+        """
+        kwargs = {'nonce_id': 0}
+        self.assertRaisesRegexp(
+            TypeError,
+            "Nonce ID must be bytes.",
+            objects.Nonce,
+            **kwargs
+        )
+
+        nonce = objects.Nonce()
+        args = (nonce, "nonce_id", 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "Nonce ID must be bytes.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_nonce_value(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the nonce value of a Nonce struct.
+        """
+        kwargs = {'nonce_value': 0}
+        self.assertRaisesRegexp(
+            TypeError,
+            "Nonce value must be bytes.",
+            objects.Nonce,
+            **kwargs
+        )
+
+        nonce = objects.Nonce()
+        args = (nonce, "nonce_value", 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "Nonce value must be bytes.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that a Nonce struct can be read from a data stream.
+        """
+        nonce = objects.Nonce()
+
+        self.assertEqual(None, nonce.nonce_id)
+        self.assertEqual(None, nonce.nonce_value)
+
+        nonce.read(self.full_encoding)
+
+        self.assertEqual(b'\x01', nonce.nonce_id)
+        self.assertEqual(
+            b'\x00\x01\x02\x03\x04\x05\x06\x07',
+            nonce.nonce_value
+        )
+
+    def test_read_missing_nonce_id(self):
+        """
+        Test that a ValueError gets raised when attempting to read a
+        Nonce struct from a data stream missing the nonce ID data.
+        """
+        nonce = objects.Nonce()
+
+        self.assertEqual(None, nonce.nonce_id)
+        self.assertEqual(None, nonce.nonce_value)
+
+        args = (self.encoding_missing_nonce_id, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Nonce encoding missing the nonce ID.",
+            nonce.read,
+            *args
+        )
+
+    def test_read_missing_nonce_value(self):
+        """
+        Test that a ValueError gets raised when attempting to read a
+        Nonce struct from a data stream missing the nonce value data.
+        """
+        nonce = objects.Nonce()
+
+        self.assertEqual(None, nonce.nonce_id)
+        self.assertEqual(None, nonce.nonce_value)
+
+        args = (self.encoding_missing_nonce_value, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Nonce encoding missing the nonce value.",
+            nonce.read,
+            *args
+        )
+
+    def test_write(self):
+        """
+        Test that a Nonce struct can be written to a data stream.
+        """
+        nonce = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+        )
+        stream = utils.BytearrayStream()
+
+        nonce.write(stream)
+
+        self.assertEqual(len(self.full_encoding), len(stream))
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_write_missing_nonce_id(self):
+        """
+        Test that a ValueError gets raised when attempting to write a
+        Nonce struct missing nonce ID data to a data stream.
+        """
+        nonce = objects.Nonce(
+            nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+        )
+        stream = utils.BytearrayStream()
+
+        args = (stream, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Nonce struct is missing the nonce ID.",
+            nonce.write,
+            *args
+        )
+
+    def test_write_missing_nonce_value(self):
+        """
+        Test that a ValueError gets raised when attempting to write a
+        Nonce struct missing nonce value data to a data stream.
+        """
+        nonce = objects.Nonce(
+            nonce_id=b'\x01'
+        )
+        stream = utils.BytearrayStream()
+
+        args = (stream, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Nonce struct is missing the nonce value.",
+            nonce.write,
+            *args
+        )
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        Nonce structs with the same data.
+        """
+        a = objects.Nonce()
+        b = objects.Nonce()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+        b = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_nonce_id(self):
+        """
+        Test that the equality operator returns False when comparing two
+        Nonce structs with different nonce IDs.
+        """
+        a = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+        b = objects.Nonce(
+            nonce_id=b'\x02',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_nonce_value(self):
+        """
+        Test that the equality operator returns False when comparing two
+        Nonce structs with different nonce values.
+        """
+        a = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+        b = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x03\x02\x01\x00'
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing two
+        Nonce structs with different types.
+        """
+        a = objects.Nonce()
+        b = 'invalid'
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        Nonce structs with the same data.
+        """
+        a = objects.Nonce()
+        b = objects.Nonce()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+        b = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_nonce_id(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Nonce structs with different nonce IDs.
+        """
+        a = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+        b = objects.Nonce(
+            nonce_id=b'\x02',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_nonce_value(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Nonce structs with different nonce values.
+        """
+        a = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03'
+        )
+        b = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x03\x02\x01\x00'
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Nonce structs with different types.
+        """
+        a = objects.Nonce()
+        b = 'invalid'
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to a Nonce struct.
+        """
+        credential = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+        )
+        expected = (
+            "Nonce("
+            "nonce_id=" + str(b'\x01') + ", "
+            "nonce_value=" + str(b'\x00\x01\x02\x03\x04\x05\x06\x07') + ")"
+        )
+        observed = repr(credential)
+
+        self.assertEqual(expected, observed)
+
+    def test_str(self):
+        """
+        Test that str can be applied to a Nonce struct.
+        """
+        credential = objects.Nonce(
+            nonce_id=b'\x01',
+            nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+        )
+        expected = ", ".join([
+            "'nonce_id': {}".format(b'\x01'),
+            "'nonce_value': {}".format(b'\x00\x01\x02\x03\x04\x05\x06\x07')
+        ])
+        expected = "{" + expected + "}"
+        observed = str(credential)
+
+        self.assertEqual(expected, observed)
 
 
 class TestUsernamePasswordCredential(testtools.TestCase):
@@ -1336,6 +1714,788 @@ class TestDeviceCredential(testtools.TestCase):
         self.assertEqual(expected, observed)
 
 
+class TestAttestationCredential(testtools.TestCase):
+    """
+    Test suite for the AttestationCredential struct.
+    """
+
+    def setUp(self):
+        super(TestAttestationCredential, self).setUp()
+
+        # There are no AttestationCredential encodings available in any of the
+        # KMIP testing documents. The following encodings were adapted from
+        # other structure encodings present in the KMIP testing suite.
+        #
+        # This encoding matches the following set of values:
+        # AttestationCredential
+        #     Nonce
+        #         Nonce ID - 1
+        #         Nonce Value - 0x0001020304050607
+        #     AttestationType - TPM Quote
+        #     AttestationMeasurement - 0xFFFFFFFFFFFFFFFF
+        #     AttestationAssertion - 0x1111111111111111
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x00\x25\x01\x00\x00\x00\x58'
+            b'\x42\x00\xC8\x01\x00\x00\x00\x20'
+            b'\x42\x00\xC9\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xCA\x08\x00\x00\x00\x08\x00\x01\x02\x03\x04\x05\x06\x07'
+            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xCB\x08\x00\x00\x00\x08\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+            b'\x42\x00\xCC\x08\x00\x00\x00\x08\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        self.encoding_missing_nonce = utils.BytearrayStream(
+            b'\x42\x00\x25\x01\x00\x00\x00\x30'
+            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xCB\x08\x00\x00\x00\x08\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+            b'\x42\x00\xCC\x08\x00\x00\x00\x08\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        self.encoding_missing_attestation_type = utils.BytearrayStream(
+            b'\x42\x00\x25\x01\x00\x00\x00\x48'
+            b'\x42\x00\xC8\x01\x00\x00\x00\x20'
+            b'\x42\x00\xC9\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xCA\x08\x00\x00\x00\x08\x00\x01\x02\x03\x04\x05\x06\x07'
+            b'\x42\x00\xCB\x08\x00\x00\x00\x08\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+            b'\x42\x00\xCC\x08\x00\x00\x00\x08\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        self.encoding_missing_attestation_measurement = utils.BytearrayStream(
+            b'\x42\x00\x25\x01\x00\x00\x00\x48'
+            b'\x42\x00\xC8\x01\x00\x00\x00\x20'
+            b'\x42\x00\xC9\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xCA\x08\x00\x00\x00\x08\x00\x01\x02\x03\x04\x05\x06\x07'
+            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xCC\x08\x00\x00\x00\x08\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        self.encoding_missing_attestation_assertion = utils.BytearrayStream(
+            b'\x42\x00\x25\x01\x00\x00\x00\x48'
+            b'\x42\x00\xC8\x01\x00\x00\x00\x20'
+            b'\x42\x00\xC9\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xCA\x08\x00\x00\x00\x08\x00\x01\x02\x03\x04\x05\x06\x07'
+            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xCB\x08\x00\x00\x00\x08\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+        )
+        self.encoding_missing_attestation = utils.BytearrayStream(
+            b'\x42\x00\x25\x01\x00\x00\x00\x38'
+            b'\x42\x00\xC8\x01\x00\x00\x00\x20'
+            b'\x42\x00\xC9\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xCA\x08\x00\x00\x00\x08\x00\x01\x02\x03\x04\x05\x06\x07'
+            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestAttestationCredential, self).tearDown()
+
+    def test_init(self):
+        """
+        Test that an AttestationCredential struct can be constructed without
+        arguments.
+        """
+        credential = objects.AttestationCredential()
+
+        self.assertEqual(None, credential.nonce)
+        self.assertEqual(None, credential.attestation_type)
+        self.assertEqual(None, credential.attestation_measurement)
+        self.assertEqual(None, credential.attestation_assertion)
+
+    def test_init_with_args(self):
+        """
+        Test that an AttestationCredential struct can be constructed with
+        arguments.
+        """
+        credential = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+
+        self.assertEqual(
+            objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            credential.nonce
+        )
+        self.assertEqual(
+            enums.AttestationType.TPM_QUOTE,
+            credential.attestation_type
+        )
+        self.assertEqual(
+            b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            credential.attestation_measurement
+        )
+        self.assertEqual(
+            b'\x11\x11\x11\x11\x11\x11\x11\x11',
+            credential.attestation_assertion
+        )
+
+    def test_invalid_nonce(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the nonce of an AttestationCredential struct.
+        """
+        kwargs = {"nonce": "invalid"}
+        self.assertRaisesRegexp(
+            TypeError,
+            "Nonce must be a Nonce struct.",
+            objects.AttestationCredential,
+            **kwargs
+        )
+
+        credential = objects.AttestationCredential()
+        args = (credential, "nonce", 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "Nonce must be a Nonce struct.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_attestation_type(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the attestation type of an AttestationCredential struct.
+        """
+        kwargs = {"attestation_type": "invalid"}
+        self.assertRaisesRegexp(
+            TypeError,
+            "Attestation type must be an AttestationType enumeration.",
+            objects.AttestationCredential,
+            **kwargs
+        )
+
+        credential = objects.AttestationCredential()
+        args = (credential, "attestation_type", 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "Attestation type must be an AttestationType enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_attestation_measurement(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the attestation measurement of an AttestationCredential struct.
+        """
+        kwargs = {"attestation_measurement": 0}
+        self.assertRaisesRegexp(
+            TypeError,
+            "Attestation measurement must be bytes.",
+            objects.AttestationCredential,
+            **kwargs
+        )
+
+        credential = objects.AttestationCredential()
+        args = (credential, "attestation_measurement", 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "Attestation measurement must be bytes.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_attestation_assertion(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the attestation assertion of an AttestationCredential struct.
+        """
+        kwargs = {"attestation_assertion": 0}
+        self.assertRaisesRegexp(
+            TypeError,
+            "Attestation assertion must be bytes.",
+            objects.AttestationCredential,
+            **kwargs
+        )
+
+        credential = objects.AttestationCredential()
+        args = (credential, "attestation_assertion", 0)
+        self.assertRaisesRegexp(
+            TypeError,
+            "Attestation assertion must be bytes.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that an AttestationCredential struct can be read from a data
+        stream.
+        """
+        credential = objects.AttestationCredential()
+
+        self.assertEqual(None, credential.nonce)
+        self.assertEqual(None, credential.attestation_type)
+        self.assertEqual(None, credential.attestation_measurement)
+        self.assertEqual(None, credential.attestation_assertion)
+
+        credential.read(self.full_encoding)
+
+        self.assertEqual(
+            objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            credential.nonce
+        )
+        self.assertEqual(
+            enums.AttestationType.TPM_QUOTE,
+            credential.attestation_type
+        )
+        self.assertEqual(
+            b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            credential.attestation_measurement
+        )
+        self.assertEqual(
+            b'\x11\x11\x11\x11\x11\x11\x11\x11',
+            credential.attestation_assertion
+        )
+
+    def test_read_missing_nonce(self):
+        """
+        Test that a ValueError gets raised when attempting to read an
+        AttestationCredential struct from a data stream missing the nonce data.
+        """
+        credential = objects.AttestationCredential()
+
+        self.assertEqual(None, credential.nonce)
+        self.assertEqual(None, credential.attestation_type)
+        self.assertEqual(None, credential.attestation_measurement)
+        self.assertEqual(None, credential.attestation_assertion)
+
+        args = (self.encoding_missing_nonce, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Attestation credential encoding is missing the nonce.",
+            credential.read,
+            *args
+        )
+
+    def test_read_missing_attestation_type(self):
+        """
+        Test that a ValueError gets raised when attempting to read an
+        AttestationCredential struct from a data stream missing the
+        attestation type data.
+        """
+        credential = objects.AttestationCredential()
+
+        self.assertEqual(None, credential.nonce)
+        self.assertEqual(None, credential.attestation_type)
+        self.assertEqual(None, credential.attestation_measurement)
+        self.assertEqual(None, credential.attestation_assertion)
+
+        args = (self.encoding_missing_attestation_type, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Attestation credential encoding is missing the attestation type.",
+            credential.read,
+            *args
+        )
+
+    def test_read_missing_attestation_measurement(self):
+        """
+        Test that an AttestationCredential struct can be read from a data
+        stream missing the attestation measurement data.
+        """
+        credential = objects.AttestationCredential()
+
+        self.assertEqual(None, credential.nonce)
+        self.assertEqual(None, credential.attestation_type)
+        self.assertEqual(None, credential.attestation_measurement)
+        self.assertEqual(None, credential.attestation_assertion)
+
+        credential.read(self.encoding_missing_attestation_measurement)
+
+        self.assertEqual(
+            objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            credential.nonce
+        )
+        self.assertEqual(
+            enums.AttestationType.TPM_QUOTE,
+            credential.attestation_type
+        )
+        self.assertEqual(None, credential.attestation_measurement)
+        self.assertEqual(
+            b'\x11\x11\x11\x11\x11\x11\x11\x11',
+            credential.attestation_assertion
+        )
+
+    def test_read_missing_attestation_assertion(self):
+        """
+        Test that an AttestationCredential struct can be read from a data
+        stream missing the attestation assertion data.
+        """
+
+        credential = objects.AttestationCredential()
+
+        self.assertEqual(None, credential.nonce)
+        self.assertEqual(None, credential.attestation_type)
+        self.assertEqual(None, credential.attestation_measurement)
+        self.assertEqual(None, credential.attestation_assertion)
+
+        credential.read(self.encoding_missing_attestation_assertion)
+
+        self.assertEqual(
+            objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            credential.nonce
+        )
+        self.assertEqual(
+            enums.AttestationType.TPM_QUOTE,
+            credential.attestation_type
+        )
+        self.assertEqual(
+            b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            credential.attestation_measurement
+        )
+        self.assertEqual(None, credential.attestation_assertion)
+
+    def test_read_missing_attestation_measurement_and_assertion(self):
+        """
+        Test that a ValueError gets raised when attempting to read an
+        AttestationCredential struct from a data stream missing both the
+        attestation measurement and attestation assertion data.
+        """
+        credential = objects.AttestationCredential()
+
+        self.assertEqual(None, credential.nonce)
+        self.assertEqual(None, credential.attestation_type)
+        self.assertEqual(None, credential.attestation_measurement)
+        self.assertEqual(None, credential.attestation_assertion)
+
+        args = (self.encoding_missing_attestation, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Attestation credential encoding is missing either the "
+            "attestation measurement or the attestation assertion.",
+            credential.read,
+            *args
+        )
+
+    def test_write(self):
+        """
+        Test that an AttestationCredential struct can be written to a data
+        stream.
+        """
+        credential = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        stream = utils.BytearrayStream()
+
+        credential.write(stream)
+
+        self.assertEqual(len(self.full_encoding), len(stream))
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_write_missing_nonce(self):
+        """
+        Test that a ValueError gets raised when attempting to write an
+        AttestationCredential struct missing nonce data to a data stream.
+        """
+        credential = objects.AttestationCredential(
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        stream = utils.BytearrayStream()
+
+        args = (stream, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Attestation credential struct is missing the nonce.",
+            credential.write,
+            *args
+        )
+
+    def test_write_missing_attestation_type(self):
+        """
+        Test that a ValueError gets raised when attempting to write an
+        AttestationCredential struct missing nonce data to a data stream.
+        """
+        credential = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        stream = utils.BytearrayStream()
+
+        args = (stream, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Attestation credential struct is missing the attestation type.",
+            credential.write,
+            *args
+        )
+
+    def test_write_missing_attestation_measurement(self):
+        """
+        Test that an AttestationCredential struct can be written to a data
+        stream missing attestation measurement data.
+        """
+        credential = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        stream = utils.BytearrayStream()
+
+        credential.write(stream)
+
+        self.assertEqual(
+            len(self.encoding_missing_attestation_measurement),
+            len(stream)
+        )
+        self.assertEqual(
+            str(self.encoding_missing_attestation_measurement),
+            str(stream)
+        )
+
+    def test_write_missing_attestation_assertion(self):
+        """
+        Test that an AttestationCredential struct can be written to a data
+        stream missing attestation assertion data.
+        """
+        credential = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+        )
+        stream = utils.BytearrayStream()
+
+        credential.write(stream)
+
+        self.assertEqual(
+            len(self.encoding_missing_attestation_assertion),
+            len(stream)
+        )
+        self.assertEqual(
+            str(self.encoding_missing_attestation_assertion),
+            str(stream)
+        )
+
+    def test_write_missing_attestation_measurement_and_assertion(self):
+        """
+        Test that a ValueError gets raised when attempting to write an
+        AttestationCredential struct missing both attestation measurement and
+        attestation assertion data to a data stream.
+        """
+        credential = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE
+        )
+        stream = utils.BytearrayStream()
+
+        args = (stream, )
+        self.assertRaisesRegexp(
+            ValueError,
+            "Attestation credential struct is missing either the attestation "
+            "measurement or the attestation assertion.",
+            credential.write,
+            *args
+        )
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        AttestationCredential structs with the same data.
+        """
+        a = objects.AttestationCredential()
+        b = objects.AttestationCredential()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        b = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_nonce(self):
+        """
+        Test that the equality operator returns False when comparing two
+        AttestationCredential structs with different nonce values.
+        """
+        a = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            )
+        )
+        b = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x02',
+                nonce_value=b'\x07\x06\x05\x04\x03\x02\x01\x00'
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_attestation_type(self):
+        """
+        Test that the equality operator returns False when comparing two
+        AttestationCredential structs with different attestation types.
+        """
+        a = objects.AttestationCredential(
+            attestation_type=enums.AttestationType.TPM_QUOTE
+        )
+        b = objects.AttestationCredential(
+            attestation_type=enums.AttestationType.SAML_ASSERTION
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_attestation_measurement(self):
+        """
+        Test that the equality operator returns False when comparing two
+        AttestationCredential structs with different attestation measurements.
+        """
+        a = objects.AttestationCredential(
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+        )
+        b = objects.AttestationCredential(
+            attestation_measurement=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_attestation_assertion(self):
+        """
+        Test that the equality operator returns False when comparing two
+        AttestationCredential structs with different attestation assertions.
+        """
+        a = objects.AttestationCredential(
+            attestation_assertion=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+        )
+        b = objects.AttestationCredential(
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing two
+        AttestationCredential structs with different types.
+        """
+        a = objects.AttestationCredential()
+        b = 'invalid'
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        AttestationCredential structs with the same data.
+        """
+        a = objects.AttestationCredential()
+        b = objects.AttestationCredential()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        b = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_nonce(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        AttestationCredential structs with different nonce values.
+        """
+        a = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            )
+        )
+        b = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x02',
+                nonce_value=b'\x07\x06\x05\x04\x03\x02\x01\x00'
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_attestation_type(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        AttestationCredential structs with different attestation types.
+        """
+        a = objects.AttestationCredential(
+            attestation_type=enums.AttestationType.TPM_QUOTE
+        )
+        b = objects.AttestationCredential(
+            attestation_type=enums.AttestationType.SAML_ASSERTION
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_attestation_measurement(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        AttestationCredential structs with different attestation measurements.
+        """
+        a = objects.AttestationCredential(
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+        )
+        b = objects.AttestationCredential(
+            attestation_measurement=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_attestation_assertion(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        AttestationCredential structs with different attestation assertions.
+        """
+        a = objects.AttestationCredential(
+            attestation_assertion=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
+        )
+        b = objects.AttestationCredential(
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        AttestationCredential structs with different types.
+        """
+        a = objects.AttestationCredential()
+        b = 'invalid'
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to an AttestationCredential struct.
+        """
+        credential = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        expected = (
+            "AttestationCredential("
+            "nonce=Nonce("
+            "nonce_id=" + str(b'\x01') + ", "
+            "nonce_value=" + str(b'\x00\x01\x02\x03\x04\x05\x06\x07') + "), "
+            "attestation_type=AttestationType.TPM_QUOTE, "
+            "attestation_measurement=" +
+            str(b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF') + ", "
+            "attestation_assertion=" +
+            str(b'\x11\x11\x11\x11\x11\x11\x11\x11') + ")"
+        )
+        observed = repr(credential)
+
+        self.assertEqual(expected, observed)
+
+    def test_str(self):
+        """
+        Test that str can be applied to an AttestationCredential struct.
+        """
+        credential = objects.AttestationCredential(
+            nonce=objects.Nonce(
+                nonce_id=b'\x01',
+                nonce_value=b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ),
+            attestation_type=enums.AttestationType.TPM_QUOTE,
+            attestation_measurement=b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF',
+            attestation_assertion=b'\x11\x11\x11\x11\x11\x11\x11\x11'
+        )
+        expected = "{" \
+                   "'nonce': {" \
+                   "'nonce_id': " + str(b'\x01') + ", " \
+                   "'nonce_value': " + \
+                   str(b'\x00\x01\x02\x03\x04\x05\x06\x07') + "}, " \
+                   "'attestation_type': " + \
+                   str(enums.AttestationType.TPM_QUOTE) + ", " \
+                   "'attestation_measurement': " + \
+                   str(b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF') + ", " \
+                   "'attestation_assertion': " + \
+                   str(b'\x11\x11\x11\x11\x11\x11\x11\x11') + "}"
+        observed = str(credential)
+
+        self.assertEqual(expected, observed)
+
+
 class TestCredential(testtools.TestCase):
     """
     Test suite for the Credential struct.
@@ -1375,7 +2535,7 @@ class TestCredential(testtools.TestCase):
         )
         self.encoding_unknown_credential_type = utils.BytearrayStream(
             b'\x42\x00\x23\x01\x00\x00\x00\x40'
-            b'\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\xFF\x00\x00\x00\x00'
             b'\x42\x00\x25\x01\x00\x00\x00\x28'
             b'\x42\x00\x99\x07\x00\x00\x00\x04'
             b'\x46\x72\x65\x64\x00\x00\x00\x00'
@@ -1559,6 +2719,14 @@ class TestCredential(testtools.TestCase):
             *args
         )
 
+    @mock.patch(
+        'kmip.core.enums.CredentialType',
+        enum.Enum(
+            'FakeCredentialType',
+            [(i.name, i.value) for i in enums.CredentialType] +
+            [('UNKNOWN', 0x000000FF)]
+        )
+    )
     def test_read_unknown_credential_type(self):
         """
         Test that a ValueError gets raised when attempting to read a
