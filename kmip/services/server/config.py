@@ -37,6 +37,7 @@ class KmipServerConfig(object):
         self.settings['enable_tls_client_auth'] = True
         self.settings['tls_cipher_suites'] = []
         self.settings['logging_level'] = logging.INFO
+        self.settings['auth_plugins'] = []
 
         self._expected_settings = [
             'hostname',
@@ -121,6 +122,12 @@ class KmipServerConfig(object):
         parser = configparser.SafeConfigParser()
         parser.read(path)
         self._parse_settings(parser)
+        self.parse_auth_settings(parser)
+
+    def parse_auth_settings(self, parser):
+        sections = [x for x in parser.sections() if x.startswith("auth:")]
+        configs = [(x, dict(parser.items(x))) for x in sections]
+        self.settings['auth_plugins'] = configs
 
     def _parse_settings(self, parser):
         if not parser.has_section('server'):

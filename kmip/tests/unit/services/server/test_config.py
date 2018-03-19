@@ -16,6 +16,7 @@
 import logging
 import mock
 
+import six
 from six.moves import configparser
 
 import testtools
@@ -123,6 +124,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c = config.KmipServerConfig()
         c._logger = mock.MagicMock()
         c._parse_settings = mock.MagicMock()
+        c.parse_auth_settings = mock.MagicMock()
 
         # Test that the right calls are made when correctly processing the
         # configuration file.
@@ -138,6 +140,7 @@ class TestKmipServerConfig(testtools.TestCase):
                 )
                 parser_mock.assert_called_with("/test/path/server.conf")
                 self.assertTrue(c._parse_settings.called)
+                self.assertTrue(c.parse_auth_settings.called)
 
         # Test that a ConfigurationError is generated when the path is invalid.
         c._logger.reset_mock()
@@ -150,6 +153,66 @@ class TestKmipServerConfig(testtools.TestCase):
                 c.load_settings,
                 *args
             )
+
+    def test_parse_auth_settings(self):
+        """
+        Test that server authentication plugin settings are parsed correctly.
+        """
+        parser = configparser.SafeConfigParser()
+        parser.add_section('server')
+        parser.add_section('auth:slugs')
+        parser.set('auth:slugs', 'enabled', 'True')
+        parser.set('auth:slugs', 'url', 'http://127.0.0.1:8080/slugs/')
+        parser.add_section('auth:ldap')
+        parser.set('auth:ldap', 'enabled', 'False')
+        parser.set('auth:ldap', 'url', 'http://127.0.0.1:8080/ldap/')
+
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        self.assertEqual([], c.settings['auth_plugins'])
+
+        c.parse_auth_settings(parser)
+        configs = c.settings['auth_plugins']
+
+        self.assertIsInstance(configs, list)
+        self.assertEqual(2, len(configs))
+
+        for c in configs:
+            self.assertIsInstance(c, tuple)
+            self.assertEqual(2, len(c))
+            self.assertIn(c[0], ['auth:slugs', 'auth:ldap'])
+            self.assertIsInstance(c[1], dict)
+
+            if c[0] == 'auth:slugs':
+                self.assertIn('enabled', six.iterkeys(c[1]))
+                self.assertEqual('True', c[1]['enabled'])
+                self.assertIn('url', six.iterkeys(c[1]))
+                self.assertEqual('http://127.0.0.1:8080/slugs/', c[1]['url'])
+            elif c[0] == 'auth:ldap':
+                self.assertIn('enabled', six.iterkeys(c[1]))
+                self.assertEqual('False', c[1]['enabled'])
+                self.assertIn('url', six.iterkeys(c[1]))
+                self.assertEqual('http://127.0.0.1:8080/ldap/', c[1]['url'])
+
+    def test_parse_auth_settings_no_config(self):
+        """
+        Test that server authentication plugin settings are parsed correctly,
+        even when not specified.
+        """
+        parser = configparser.SafeConfigParser()
+        parser.add_section('server')
+
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        self.assertEqual([], c.settings['auth_plugins'])
+
+        c.parse_auth_settings(parser)
+        configs = c.settings['auth_plugins']
+
+        self.assertIsInstance(configs, list)
+        self.assertEqual(0, len(configs))
 
     def test_parse_settings(self):
         """
