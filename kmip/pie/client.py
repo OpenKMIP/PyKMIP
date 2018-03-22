@@ -353,6 +353,14 @@ class ProxyKmipClient(object):
                     managed_object.operation_policy_name
                 )
                 object_attributes.append(opn_attribute)
+        if hasattr(managed_object, 'names'):
+            if managed_object.names:
+                for name in managed_object.names:
+                    name_attribute = self.attribute_factory.create_attribute(
+                        enums.AttributeType.NAME,
+                        name
+                    )
+                    object_attributes.append(name_attribute)
 
         template = cobjects.TemplateAttribute(attributes=object_attributes)
         object_type = managed_object.object_type
