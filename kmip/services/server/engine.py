@@ -335,9 +335,6 @@ class KmipEngine(object):
         else:
             auth_credentials = None
 
-        # TODO (peter-hamilton) This is a shim until SLUGS integration is done.
-        credential = [credential, None]
-
         self._verify_credential(auth_credentials, credential)
 
         # Process the batch error continuation option

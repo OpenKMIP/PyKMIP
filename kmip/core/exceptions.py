@@ -38,6 +38,25 @@ class KmipError(Exception):
         self.status = status
         self.reason = reason
 
+    def __eq__(self, other):
+        if isinstance(other, KmipError):
+            if str(self) != str(other):
+                return False
+            elif self.status != other.status:
+                return False
+            elif self.reason != other.reason:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, KmipError):
+            return self == other
+        else:
+            return NotImplemented
+
 
 class CryptographicFailure(KmipError):
     """
