@@ -17,15 +17,17 @@ import logging
 import socket
 import struct
 import threading
+import time
 
 from cryptography import x509
-from cryptography.hazmat import backends
 
 from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core.messages import contents
 from kmip.core.messages import messages
 from kmip.core import utils
+
+from kmip.services.server import auth
 
 
 class KmipSession(threading.Thread):
@@ -36,8 +38,10 @@ class KmipSession(threading.Thread):
     def __init__(self,
                  engine,
                  connection,
+                 address,
                  name=None,
-                 enable_tls_client_auth=True):
+                 enable_tls_client_auth=True,
+                 auth_settings=None):
         """
         Create a KmipSession.
 
@@ -46,12 +50,19 @@ class KmipSession(threading.Thread):
                 that handles message processing. Required.
             connection (socket): A client socket.socket TLS connection
                 representing a new KMIP connection. Required.
+            address (tuple): The address tuple produced with the session
+                connection. Contains the IP address and port number of the
+                remote connection endpoint. Required.
             name (str): The name of the KmipSession. Optional, defaults to
                 None.
             enable_tls_client_auth (bool): A flag that enables a strict check
                 for the client auth flag in the extended key usage extension
                 in client certificates when establishing the client/server TLS
                 connection. Optional, defaults to True.
+            auth_settings (list): A list of tuples, each containing (1) the
+                name of the 'auth:' settings block from the server config file,
+                and (2) a dictionary of configuration settings for a specific
+                authentication plugin. Optional, defaults to None.
         """
         super(KmipSession, self).__init__(
             group=None,
@@ -67,9 +78,12 @@ class KmipSession(threading.Thread):
 
         self._engine = engine
         self._connection = connection
+        self._address = address
 
         self._enable_tls_client_auth = enable_tls_client_auth
+        self._auth_settings = [] if auth_settings is None else auth_settings
 
+        self._session_time = time.time()
         self._max_buffer_size = 4096
         self._max_request_size = 1048576
         self._max_response_size = 1048576
@@ -96,61 +110,6 @@ class KmipSession(threading.Thread):
         self._connection.close()
         self._logger.info("Stopping session: {0}".format(self.name))
 
-    def _get_client_identity(self):
-        certificate_data = self._connection.getpeercert(binary_form=True)
-        try:
-            cert = x509.load_der_x509_certificate(
-                certificate_data,
-                backends.default_backend()
-            )
-        except Exception:
-            # This should never get raised "in theory," as the ssl socket
-            # should fail to connect non-TLS connections before the session
-            # gets created. This is a failsafe in case that protection fails.
-            raise exceptions.PermissionDenied(
-                "Failure loading the client certificate from the session "
-                "connection. Could not retrieve client identity."
-            )
-
-        if self._enable_tls_client_auth:
-            try:
-                extended_key_usage = cert.extensions.get_extension_for_oid(
-                    x509.oid.ExtensionOID.EXTENDED_KEY_USAGE
-                ).value
-            except x509.ExtensionNotFound:
-                raise exceptions.PermissionDenied(
-                    "The extended key usage extension is missing from the "
-                    "client certificate. Session client identity unavailable."
-                )
-
-            if x509.oid.ExtendedKeyUsageOID.CLIENT_AUTH not in \
-                    extended_key_usage:
-                raise exceptions.PermissionDenied(
-                    "The extended key usage extension is not marked for "
-                    "client authentication in the client certificate. Session "
-                    "client identity unavailable."
-                )
-
-        client_identities = cert.subject.get_attributes_for_oid(
-            x509.oid.NameOID.COMMON_NAME
-        )
-        if len(client_identities) > 0:
-            if len(client_identities) > 1:
-                self._logger.warning(
-                    "Multiple client identities found. Using the first "
-                    "one processed."
-                )
-            client_identity = client_identities[0].value
-            self._logger.info(
-                "Session client identity: {0}".format(client_identity)
-            )
-            return client_identity
-        else:
-            raise exceptions.PermissionDenied(
-                "The client certificate does not define a subject common "
-                "name. Session client identity unavailable."
-            )
-
     def _handle_message_loop(self):
         request_data = self._receive_request()
         request = messages.RequestMessage()
@@ -170,8 +129,41 @@ class KmipSession(threading.Thread):
                     self._connection.cipher()
                 )
             )
-            client_identity = self._get_client_identity()
+
+            certificate = auth.get_certificate_from_connection(
+                self._connection
+            )
+            if certificate is None:
+                raise exceptions.PermissionDenied(
+                    "The client certificate could not be loaded from the "
+                    "session connection."
+                )
+
+            if self._enable_tls_client_auth:
+                extension = auth.get_extended_key_usage_from_certificate(
+                    certificate
+                )
+                if extension is None:
+                    raise exceptions.PermissionDenied(
+                        "The extended key usage extension is missing from "
+                        "the client certificate."
+                    )
+                if x509.oid.ExtendedKeyUsageOID.CLIENT_AUTH not in extension:
+                    raise exceptions.PermissionDenied(
+                        "The extended key usage extension is not marked for "
+                        "client authentication in the client certificate."
+                    )
+
             request.read(request_data)
+        except exceptions.PermissionDenied as e:
+            self._logger.warning("Failure verifying the client certificate.")
+            self._logger.exception(e)
+            response = self._engine.build_error_response(
+                contents.ProtocolVersion(1, 0),
+                enums.ResultReason.AUTHENTICATION_NOT_SUCCESSFUL,
+                "Error verifying the client certificate. "
+                "See server logs for more information."
+            )
         except Exception as e:
             self._logger.warning("Failure parsing request message.")
             self._logger.exception(e)
@@ -183,29 +175,44 @@ class KmipSession(threading.Thread):
             )
         else:
             try:
-                response, max_response_size = self._engine.process_request(
-                    request,
-                    client_identity
+                client_identity = self.authenticate(certificate, request)
+                self._logger.info(
+                    "Session client identity: {}".format(client_identity[0])
                 )
-                if max_response_size:
-                    max_size = max_response_size
-            except exceptions.KmipError as e:
+            except Exception:
+                self._logger.warning("Authentication failed.")
                 response = self._engine.build_error_response(
                     request.request_header.protocol_version,
-                    e.reason,
-                    str(e)
-                )
-            except Exception as e:
-                self._logger.warning(
-                    "An unexpected error occurred while processing request."
-                )
-                self._logger.exception(e)
-                response = self._engine.build_error_response(
-                    request.request_header.protocol_version,
-                    enums.ResultReason.GENERAL_FAILURE,
-                    "An unexpected error occurred while processing request. "
+                    enums.ResultReason.AUTHENTICATION_NOT_SUCCESSFUL,
+                    "An error occurred during client authentication. "
                     "See server logs for more information."
                 )
+            else:
+                try:
+                    response, max_response_size = self._engine.process_request(
+                        request,
+                        client_identity
+                    )
+                    if max_response_size:
+                        max_size = max_response_size
+                except exceptions.KmipError as e:
+                    response = self._engine.build_error_response(
+                        request.request_header.protocol_version,
+                        e.reason,
+                        str(e)
+                    )
+                except Exception as e:
+                    self._logger.warning(
+                        "An unexpected error occurred while processing "
+                        "request."
+                    )
+                    self._logger.exception(e)
+                    response = self._engine.build_error_response(
+                        request.request_header.protocol_version,
+                        enums.ResultReason.GENERAL_FAILURE,
+                        "An unexpected error occurred while processing "
+                        "request. See server logs for more information."
+                    )
 
         response_data = utils.BytearrayStream()
         response.write(response_data)
@@ -228,6 +235,68 @@ class KmipSession(threading.Thread):
             response.write(response_data)
 
         self._send_response(response_data.buffer)
+
+    def authenticate(self, certificate, request):
+        credentials = []
+        if request.request_header.authentication is not None:
+            credentials = request.request_header.authentication.credentials
+
+        plugin_enabled = False
+
+        for auth_settings in self._auth_settings:
+            plugin_name, plugin_config = auth_settings
+
+            if plugin_name.startswith("auth:slugs"):
+                if plugin_config.get("enabled") == "True":
+                    plugin_enabled = True
+                    plugin = auth.SLUGSConnector(plugin_config.get("url"))
+                    self._logger.debug(
+                        "Authenticating with plugin: {}".format(plugin_name)
+                    )
+                    try:
+                        client_identity = plugin.authenticate(
+                            certificate,
+                            (self._address, self._session_time),
+                            credentials
+                        )
+                    except Exception as e:
+                        self._logger.warning(
+                            "Authentication failed."
+                        )
+                        self._logger.exception(e)
+                    else:
+                        self._logger.debug(
+                            "Authentication succeeded for client identity: "
+                            "{}".format(client_identity[0])
+                        )
+                        return client_identity
+            else:
+                self._logger.warning(
+                    "Authentication plugin '{}' is not "
+                    "supported.".format(plugin_name)
+                )
+
+        if not plugin_enabled:
+            self._logger.debug(
+                "No authentication plugins are enabled. The client identity "
+                "will be extracted from the client certificate."
+            )
+            try:
+                client_identity = auth.get_client_identity_from_certificate(
+                    certificate
+                )
+            except Exception as e:
+                self._logger.warning("Client identity extraction failed.")
+                self._logger.exception(e)
+            else:
+                self._logger.debug(
+                    "Extraction succeeded for client identity: {}".format(
+                        client_identity
+                    )
+                )
+                return tuple([client_identity, None])
+
+        raise exceptions.PermissionDenied("Authentication failed.")
 
     def _receive_request(self):
         header = self._receive_bytes(8)

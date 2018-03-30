@@ -398,10 +398,12 @@ class KmipServer(object):
             s = session.KmipSession(
                 self._engine,
                 connection,
+                address,
                 name=session_name,
                 enable_tls_client_auth=self.config.settings.get(
                     'enable_tls_client_auth'
-                )
+                ),
+                auth_settings=self.config.settings.get('auth_plugins')
             )
             s.daemon = True
             s.start()
