@@ -38,6 +38,7 @@ if __name__ == '__main__':
     name = 'Demo Secret Data'
 
     secret = objects.SecretData(value, data_type, usage_mask, name)
+    secret.operation_policy_name = opts.operation_policy_name
 
     # Build the client and connect to the server
     with client.ProxyKmipClient(config=config) as client:

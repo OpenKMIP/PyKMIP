@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.core import enums
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CredentialType
 from kmip.core.enums import CryptographicAlgorithm
@@ -108,6 +109,14 @@ if __name__ == '__main__':
                                                     length)
 
     attributes = [algorithm_obj, length_obj, name, usage_mask]
+
+    if opts.operation_policy_name is not None:
+        opn = attribute_factory.create_attribute(
+            enums.AttributeType.OPERATION_POLICY_NAME,
+            opts.operation_policy_name
+        )
+        attributes.append(opn)
+
     common = CommonTemplateAttribute(attributes=attributes)
     private = PrivateKeyTemplateAttribute(attributes=attributes)
     public = PublicKeyTemplateAttribute(attributes=attributes)

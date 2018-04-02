@@ -104,6 +104,15 @@ def build_cli_parser(operation=None):
             default=None,
             dest="length",
             help="Key length in bits (e.g., 128, 256)")
+        parser.add_option(
+            "-o",
+            "--operation-policy-name",
+            action="store",
+            type="str",
+            default=None,
+            dest="operation_policy_name",
+            help="Operation policy name for the secret (e.g., 'default')"
+        )
     elif operation is Operation.CREATE_KEY_PAIR:
         parser.add_option(
             "-a",
@@ -129,6 +138,16 @@ def build_cli_parser(operation=None):
             default=None,
             dest="name",
             help="Name of key pair to create")
+        parser.add_option(
+            "-o",
+            "--operation-policy-name",
+            action="store",
+            type="str",
+            default=None,
+            dest="operation_policy_name",
+            help="Operation policy name for the secrets (e.g., 'default')"
+        )
+
     elif operation is Operation.DESTROY:
         parser.add_option(
             "-i",
@@ -212,6 +231,15 @@ def build_cli_parser(operation=None):
             help=("Type of the object to register. Supported types include: "
                   "CERTIFICATE, PRIVATE_KEY, PUBLIC_KEY, SYMMETRIC_KEY, "
                   "SECRET_DATA"))
+        parser.add_option(
+            "-o",
+            "--operation-policy-name",
+            action="store",
+            type="str",
+            default=None,
+            dest="operation_policy_name",
+            help="Operation policy name for the secret (e.g., 'default')"
+        )
     elif operation is Operation.DISCOVER_VERSIONS:
         parser.add_option(
             "-v",

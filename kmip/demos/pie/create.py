@@ -46,7 +46,11 @@ if __name__ == '__main__':
     # Build the client and connect to the server
     with client.ProxyKmipClient(config=config) as client:
         try:
-            uid = client.create(algorithm, length)
+            uid = client.create(
+                algorithm,
+                length,
+                operation_policy_name=opts.operation_policy_name
+            )
             logger.info("Successfully created symmetric key with ID: "
                         "{0}".format(uid))
         except Exception as e:

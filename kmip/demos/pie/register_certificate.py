@@ -88,6 +88,7 @@ if __name__ == '__main__':
     name = 'Demo X.509 Certificate'
 
     cert = objects.X509Certificate(value, usage_mask, name)
+    cert.operation_policy_name = opts.operation_policy_name
 
     # Build the client and connect to the server
     with client.ProxyKmipClient(config=config) as client:

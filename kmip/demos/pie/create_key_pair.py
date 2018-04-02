@@ -45,7 +45,11 @@ if __name__ == '__main__':
     # Build the client and connect to the server
     with client.ProxyKmipClient(config=config) as client:
         try:
-            public_uid, private_uid = client.create_key_pair(algorithm, length)
+            public_uid, private_uid = client.create_key_pair(
+                algorithm,
+                length,
+                operation_policy_name=opts.operation_policy_name
+            )
             logger.info("Successfully created public key with ID: {0}".format(
                 public_uid))
             logger.info("Successfully created private key with ID: {0}".format(
