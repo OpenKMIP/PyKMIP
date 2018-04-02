@@ -41,6 +41,7 @@ if __name__ == '__main__':
     name = 'Demo Symmetric Key'
 
     key = objects.SymmetricKey(algorithm, length, value, usage_mask, name)
+    key.operation_policy_name = opts.operation_policy_name
 
     # Build the client and connect to the server
     with client.ProxyKmipClient(config=config) as client:

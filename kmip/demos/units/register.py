@@ -13,11 +13,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.core import enums
 from kmip.core.enums import KeyFormatType
 from kmip.core.enums import ObjectType
 from kmip.core.enums import Operation
 from kmip.core.enums import ResultStatus
 
+from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.objects import TemplateAttribute
 
 from kmip.demos import utils
@@ -51,9 +53,19 @@ if __name__ == '__main__':
         logger.error(
             "Invalid key format type specified; exiting early from demo")
 
+    attribute_factory = AttributeFactory()
+
     # Create the template attribute for the secret and then build the secret
     usage_mask = utils.build_cryptographic_usage_mask(logger, object_type)
     attributes = [usage_mask]
+
+    if opts.operation_policy_name is not None:
+        opn = attribute_factory.create_attribute(
+            enums.AttributeType.OPERATION_POLICY_NAME,
+            opts.operation_policy_name
+        )
+        attributes.append(opn)
+
     template_attribute = TemplateAttribute(attributes=attributes)
 
     secret = utils.build_object(logger, object_type, key_format_type)

@@ -57,6 +57,7 @@ if __name__ == '__main__':
 
     key = objects.PublicKey(
         algorithm, length, value, format_type, usage_mask, name)
+    key.operation_policy_name = opts.operation_policy_name
 
     # Build the client and connect to the server
     with client.ProxyKmipClient(config=config) as client:
