@@ -1243,12 +1243,15 @@ class ProxyKmipClient(object):
                 CryptographicParameters struct.
 
         Returns:
+            None: if value is None
             CryptographicParameters: a CryptographicParameters struct
 
         Raises:
             TypeError: if the input argument is invalid
         """
-        if not isinstance(value, dict):
+        if value is None:
+            return None
+        elif not isinstance(value, dict):
             raise TypeError("Cryptographic parameters must be a dictionary.")
 
         cryptographic_parameters = CryptographicParameters(

@@ -2600,6 +2600,15 @@ class TestProxyKmipClient(testtools.TestCase):
         self.assertRaises(
            ClientConnectionNotOpen, client.locate, *args)
 
+    def test_build_cryptographic_parameters_with_none(self):
+        """
+        Test that an empty set of cryptographic parameters is processed
+        correctly.
+        """
+        client = ProxyKmipClient()
+        result = client._build_cryptographic_parameters(None)
+        self.assertEqual(None, result)
+
     def test_build_cryptographic_parameters_invalid(self):
         """
         Test that the right error is raised when attempting to build
