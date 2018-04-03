@@ -99,18 +99,25 @@ if __name__ == '__main__':
     name = Attribute(attribute_name=name, attribute_value=value)
 
     usage_mask = Attribute.AttributeName('Cryptographic Usage Mask')
-    value = CryptographicUsageMask(
-        UsageMaskEnum.ENCRYPT.value | UsageMaskEnum.DECRYPT.value)
-    usage_mask = Attribute(attribute_name=usage_mask, attribute_value=value)
+    value1 = CryptographicUsageMask(
+        UsageMaskEnum.DECRYPT.value | UsageMaskEnum.SIGN.value)
+
+    value2 = CryptographicUsageMask(
+        UsageMaskEnum.ENCRYPT.value | UsageMaskEnum.VERIFY.value)
+
+    usage_mask1 = Attribute(attribute_name=usage_mask, attribute_value=value1)
+    usage_mask2 = Attribute(attribute_name=usage_mask, attribute_value=value2)
 
     attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
     length_obj = attribute_factory.create_attribute(attribute_type,
                                                     length)
 
-    attributes = [algorithm_obj, length_obj, name, usage_mask]
-    common = CommonTemplateAttribute(attributes=attributes)
-    private = PrivateKeyTemplateAttribute(attributes=attributes)
-    public = PublicKeyTemplateAttribute(attributes=attributes)
+    attributes1 = [algorithm_obj, length_obj, name, usage_mask1]
+    attributes2 = [algorithm_obj, length_obj, name, usage_mask2]
+
+    common = CommonTemplateAttribute(attributes=attributes1)
+    private = PrivateKeyTemplateAttribute(attributes=attributes1)
+    public = PublicKeyTemplateAttribute(attributes=attributes2)
 
     # Create the SYMMETRIC_KEY object
     result = client.create_key_pair(common_template_attribute=common,
