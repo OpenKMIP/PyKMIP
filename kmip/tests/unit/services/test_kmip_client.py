@@ -713,6 +713,60 @@ class TestKMIPClient(TestCase):
     @mock.patch(
         'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
     )
+    def test_check(self, send_mock, build_mock):
+        """
+        Test that the client can correctly build, send, and process a Check
+        request.
+        """
+        payload = payloads.CheckResponsePayload(
+            unique_identifier='1',
+            usage_limits_count=100,
+            cryptographic_usage_mask=12,
+            lease_time=10000
+        )
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.CHECK),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=payload
+        )
+        response = ResponseMessage(batch_items=[batch_item])
+
+        build_mock.return_value = None
+        send_mock.return_value = response
+
+        result = self.client.check(
+            '1',
+            100,
+            [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ],
+            10000
+        )
+
+        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual(100, result.get('usage_limits_count'))
+        self.assertEqual(
+            [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ],
+            result.get('cryptographic_usage_mask')
+        )
+        self.assertEqual(10000, result.get('lease_time'))
+        self.assertEqual(
+            ResultStatusEnum.SUCCESS,
+            result.get('result_status')
+        )
+        self.assertEqual(None, result.get('result_reason'))
+        self.assertEqual(None, result.get('result_message'))
+
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._build_request_message'
+    )
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
+    )
     def test_derive_key(self, send_mock, build_mock):
         """
         Test that the client can derive a key.
