@@ -717,6 +717,161 @@ class TestProxyKmipClient(testtools.TestCase):
             KmipOperationFailure, error_msg,
             client.create_key_pair, *args)
 
+    @mock.patch(
+        'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)
+    )
+    def test_check(self):
+        """
+        Test that the client can check an object.
+        """
+        result = {
+            'unique_identifier': '1',
+            'result_status': enums.ResultStatus.SUCCESS
+        }
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.check.return_value = result
+
+        checked_id = client.check(
+            uid='1',
+            usage_limits_count=100,
+            cryptographic_usage_mask=[
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ],
+            lease_time=10000
+        )
+
+        self.assertEqual('1', checked_id)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_check_on_invalid_unique_identifier(self):
+        """
+        Test that a TypeError exception is raised when trying to check an
+        object with an invalid unique identifier.
+        """
+        kwargs = {'uid': 0}
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "The unique identifier must be a string.",
+                client.check,
+                **kwargs
+            )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_check_on_invalid_usage_limits_count(self):
+        """
+        Test that a TypeError exception is raised when trying to check an
+        object with an invalid usage limits count.
+        """
+        kwargs = {'usage_limits_count': 'invalid'}
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "The usage limits count must be an integer.",
+                client.check,
+                **kwargs
+            )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_check_on_invalid_cryptographic_usage_mask(self):
+        """
+        Test that a TypeError exception is raised when trying to check an
+        object with an invalid cryptographic usage mask.
+        """
+        kwargs = {'cryptographic_usage_mask': 'invalid'}
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "The cryptographic usage mask must be a list of "
+                "CryptographicUsageMask enumerations.",
+                client.check,
+                **kwargs
+            )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_check_on_invalid_lease_time(self):
+        """
+        Test that a TypeError exception is raised when trying to check an
+        object with an invalid lease time.
+        """
+        kwargs = {'lease_time': 'invalid'}
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "The lease time must be an integer.",
+                client.check,
+                **kwargs
+            )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_check_on_closed(self):
+        """
+        Test that a ClientConnectionNotOpen exception is raised when trying
+        to check an object on an unopened client connection.
+        """
+        client = ProxyKmipClient()
+        kwargs = {
+            'uid': '1',
+            'usage_limits_count': 100,
+            'cryptographic_usage_mask': [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ],
+            'lease_time': 10000
+        }
+
+        self.assertRaises(
+            ClientConnectionNotOpen,
+            client.check,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_check_on_operation_failure(self):
+        """
+        Test that a KmipOperationFailure exception is raised when the
+        backend fails to derive a key.
+        """
+        status = enums.ResultStatus.OPERATION_FAILED
+        reason = enums.ResultReason.GENERAL_FAILURE
+        message = "Test failure message"
+
+        result = {
+            'result_status': status,
+            'result_reason': reason,
+            'result_message': message
+        }
+        error_message = str(KmipOperationFailure(status, reason, message))
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.check.return_value = result
+        kwargs = {
+            'uid': '1',
+            'usage_limits_count': 100,
+            'cryptographic_usage_mask': [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ],
+            'lease_time': 10000
+        }
+
+        self.assertRaisesRegexp(
+            KmipOperationFailure,
+            error_message,
+            client.check,
+            **kwargs
+        )
+
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
     def test_get(self):
