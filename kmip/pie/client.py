@@ -566,6 +566,63 @@ class ProxyKmipClient(object):
             raise exceptions.KmipOperationFailure(status, reason, message)
 
     @is_connected
+    def check(self,
+              uid=None,
+              usage_limits_count=None,
+              cryptographic_usage_mask=None,
+              lease_time=None):
+        """
+        Check the constraints for a managed object.
+
+        Args:
+            uid (string): The unique ID of the managed object to check.
+                Optional, defaults to None.
+            usage_limits_count (int): The number of items that can be secured
+                with the specified managed object. Optional, defaults to None.
+            cryptographic_usage_mask (list): A list of CryptographicUsageMask
+                enumerations specifying the operations possible with the
+                specified managed object. Optional, defaults to None.
+            lease_time (int): The number of seconds that can be leased for the
+                specified managed object. Optional, defaults to None.
+        """
+        if uid is not None:
+            if not isinstance(uid, six.string_types):
+                raise TypeError("The unique identifier must be a string.")
+        if usage_limits_count is not None:
+            if not isinstance(usage_limits_count, six.integer_types):
+                raise TypeError("The usage limits count must be an integer.")
+        if cryptographic_usage_mask is not None:
+            if not isinstance(cryptographic_usage_mask, list) or \
+                    not all(isinstance(
+                        x,
+                        enums.CryptographicUsageMask
+                    ) for x in cryptographic_usage_mask):
+                raise TypeError(
+                    "The cryptographic usage mask must be a list of "
+                    "CryptographicUsageMask enumerations."
+                )
+        if lease_time is not None:
+            if not isinstance(lease_time, six.integer_types):
+                raise TypeError("The lease time must be an integer.")
+
+        result = self.proxy.check(
+            uid,
+            usage_limits_count,
+            cryptographic_usage_mask,
+            lease_time
+        )
+
+        status = result.get('result_status')
+        if status == enums.ResultStatus.SUCCESS:
+            return result.get('unique_identifier')
+        else:
+            raise exceptions.KmipOperationFailure(
+                status,
+                result.get('result_reason'),
+                result.get('result_message')
+            )
+
+    @is_connected
     def get(self, uid=None, key_wrapping_specification=None):
         """
         Get a managed object from a KMIP appliance.
