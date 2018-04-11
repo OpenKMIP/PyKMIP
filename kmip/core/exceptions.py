@@ -311,6 +311,12 @@ class InvalidPrimitiveLength(Exception):
     pass
 
 
+class ShutdownError(Exception):
+    """
+    An error generated when a problem occurs with shutting down the server.
+    """
+
+
 class StreamNotEmptyError(Exception):
     def __init__(self, cls, extra):
         super(StreamNotEmptyError, self).__init__()

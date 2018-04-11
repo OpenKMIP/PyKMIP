@@ -51,7 +51,6 @@ class TestKmipServer(testtools.TestCase):
         self.assertTrue(logging_mock.called)
 
         self.assertIsInstance(s.auth_suite, auth.BasicAuthenticationSuite)
-        self.assertIsNotNone(s._engine)
         self.assertEqual(1, s._session_id)
         self.assertFalse(s._is_serving)
 
@@ -167,13 +166,27 @@ class TestKmipServer(testtools.TestCase):
         self.assertEqual('TLS1.2', s.config.settings.get('auth_suite'))
         self.assertIsNotNone(s.auth_suite)
 
+    @mock.patch('multiprocessing.Manager')
+    @mock.patch('kmip.services.server.monitor.PolicyDirectoryMonitor')
     @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
-    def test_start(self, logging_mock, engine_mock):
+    def test_start(self,
+                   logging_mock,
+                   engine_mock,
+                   monitor_mock,
+                   manager_mock):
         """
         Test that starting the KmipServer either runs as expected or generates
         the expected error.
         """
+        monitor_instance_mock = mock.MagicMock()
+        monitor_mock.return_value = monitor_instance_mock
+
+        dict_mock = mock.MagicMock()
+        manager_instance_mock = mock.MagicMock()
+        manager_instance_mock.dict.return_value = dict_mock
+        manager_mock.return_value = manager_instance_mock
+
         a_mock = mock.MagicMock()
         b_mock = mock.MagicMock()
 
@@ -196,7 +209,18 @@ class TestKmipServer(testtools.TestCase):
                 socket_mock.return_value = a_mock
                 ssl_mock.return_value = b_mock
 
+                manager_mock.assert_not_called()
+                monitor_mock.assert_not_called()
+
                 s.start()
+
+                manager_mock.assert_called_once_with()
+                monitor_mock.assert_called_once_with(
+                    None,
+                    dict_mock,
+                    False
+                )
+                self.assertIsNotNone(s._engine)
                 s._logger.info.assert_any_call(
                     "Starting server socket handler."
                 )
@@ -223,8 +247,20 @@ class TestKmipServer(testtools.TestCase):
                     "127.0.0.1:5696"
                 )
 
+        monitor_instance_mock.stop.assert_not_called()
+        handler = signal.getsignal(signal.SIGINT)
+        handler(None, None)
+        monitor_instance_mock.stop.assert_called_once_with()
+        monitor_instance_mock.stop.reset_mock()
+        monitor_instance_mock.stop.assert_not_called()
+        handler = signal.getsignal(signal.SIGTERM)
+        handler(None, None)
+        monitor_instance_mock.stop.assert_called_once_with()
+
         self.assertTrue(s._is_serving)
 
+        manager_mock.reset_mock()
+        monitor_mock.reset_mock()
         a_mock.reset_mock()
         b_mock.reset_mock()
 
@@ -237,6 +273,9 @@ class TestKmipServer(testtools.TestCase):
                 test_exception = Exception()
                 b_mock.bind.side_effect = test_exception
 
+                manager_mock.assert_not_called()
+                monitor_mock.assert_not_called()
+
                 regex = (
                     "Server failed to bind socket handler to 127.0.0.1:5696"
                 )
@@ -244,6 +283,13 @@ class TestKmipServer(testtools.TestCase):
                     exceptions.NetworkingError,
                     regex,
                     s.start
+                )
+
+                manager_mock.assert_called_once_with()
+                monitor_mock.assert_called_once_with(
+                    None,
+                    dict_mock,
+                    False
                 )
                 s._logger.info.assert_any_call(
                     "Starting server socket handler."
@@ -370,6 +416,50 @@ class TestKmipServer(testtools.TestCase):
 
     @mock.patch('kmip.services.server.engine.KmipEngine')
     @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
+    def test_stop_with_monitor_shutdown_error(self, logging_mock, engine_mock):
+        """
+        Test that the right calls and log messages are triggered when stopping
+        the server results in an error while shutting down the policy monitor.
+        """
+        s = server.KmipServer(
+            hostname='127.0.0.1',
+            port=5696,
+            config_path=None,
+            policy_path=None
+        )
+        s._logger = mock.MagicMock()
+        s._socket = mock.MagicMock()
+        s.policy_monitor = mock.MagicMock()
+        test_exception = Exception()
+        s.policy_monitor.join.side_effect = test_exception
+
+        # Test the expected behavior for a normal server stop sequence
+        thread_mock = mock.MagicMock()
+        thread_mock.join = mock.MagicMock()
+        thread_mock.is_alive = mock.MagicMock(return_value=False)
+        thread_mock.name = 'TestThread'
+
+        regex = "Server failed to clean up the policy monitor."
+        self.assertRaisesRegexp(
+            exceptions.ShutdownError,
+            regex,
+            s.stop
+        )
+        s._logger.info.assert_any_call(
+            "Cleaning up remaining connection threads."
+        )
+        s._logger.info.assert_any_call(
+            "Shutting down server socket handler."
+        )
+        s._socket.shutdown.assert_called_once_with(socket.SHUT_RDWR)
+        s._socket.close.assert_called_once_with()
+
+        s.policy_monitor.stop.assert_called_once_with()
+        s.policy_monitor.join.assert_called_once_with()
+        s._logger.exception(test_exception)
+
+    @mock.patch('kmip.services.server.engine.KmipEngine')
+    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
     def test_serve(self, logging_mock, engine_mock):
         """
         Test that the right calls and log messages are triggered while
@@ -468,6 +558,7 @@ class TestKmipServer(testtools.TestCase):
             policy_path=None
         )
         s._logger = mock.MagicMock()
+        s._engine = engine_mock
 
         # Test that the right calls and log messages are made when
         # starting a new session.
