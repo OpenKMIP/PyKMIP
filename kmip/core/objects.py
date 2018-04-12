@@ -2453,6 +2453,8 @@ class TemplateAttribute(Struct):
             if len(self.attributes) != len(other.attributes):
                 return False
 
+            # TODO (peter-hamilton) Allow order independence?
+
             for i in xrange(len(self.names)):
                 a = self.names[i]
                 b = other.names[i]
