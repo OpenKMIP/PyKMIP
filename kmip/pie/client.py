@@ -484,6 +484,13 @@ class ProxyKmipClient(object):
                     kwargs.get('cryptographic_algorithm')
                 )
             )
+        if kwargs.get('cryptographic_usage_mask'):
+            attributes.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    kwargs.get('cryptographic_usage_mask')
+                )
+            )
         template_attribute = cobjects.TemplateAttribute(
             attributes=attributes
         )

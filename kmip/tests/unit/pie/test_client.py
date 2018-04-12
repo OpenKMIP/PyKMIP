@@ -1586,7 +1586,11 @@ class TestProxyKmipClient(testtools.TestCase):
                 'derivation_data': b'\xFF\xFE\xFE\xFC'
             },
             cryptographic_length=128,
-            cryptographic_algorithm=enums.CryptographicAlgorithm.AES
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_usage_mask=[
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ]
         )
 
         self.assertEqual('1', derived_id)
