@@ -450,12 +450,8 @@ class TestProxyKmipClient(testtools.TestCase):
             enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm)
         length_attribute = self.attribute_factory.create_attribute(
             enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length)
-        mask_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-            [enums.CryptographicUsageMask.ENCRYPT,
-             enums.CryptographicUsageMask.DECRYPT])
 
-        attributes = [algorithm_attribute, length_attribute, mask_attribute]
+        attributes = [algorithm_attribute, length_attribute]
         template = obj.CommonTemplateAttribute(attributes=attributes)
 
         status = enums.ResultStatus.SUCCESS
@@ -470,7 +466,9 @@ class TestProxyKmipClient(testtools.TestCase):
             client.proxy.create_key_pair.return_value = result
 
             public_uid, private_uid = client.create_key_pair(
-                enums.CryptographicAlgorithm.RSA, 2048)
+                enums.CryptographicAlgorithm.RSA,
+                2048
+            )
 
             kwargs = {'common_template_attribute': template,
                       'private_key_template_attribute': None,
@@ -494,20 +492,15 @@ class TestProxyKmipClient(testtools.TestCase):
             enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm)
         length_attribute = self.attribute_factory.create_attribute(
             enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length)
-        mask_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-            [enums.CryptographicUsageMask.ENCRYPT,
-             enums.CryptographicUsageMask.DECRYPT])
         opn_attribute = self.attribute_factory.create_attribute(
             enums.AttributeType.OPERATION_POLICY_NAME,
             'test'
         )
 
         pair_attributes = [
+            opn_attribute,
             algorithm_attribute,
-            length_attribute,
-            mask_attribute,
-            opn_attribute
+            length_attribute
         ]
         template = obj.CommonTemplateAttribute(attributes=pair_attributes)
 
@@ -548,10 +541,6 @@ class TestProxyKmipClient(testtools.TestCase):
             enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm)
         length_attribute = self.attribute_factory.create_attribute(
             enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length)
-        mask_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-            [enums.CryptographicUsageMask.ENCRYPT,
-             enums.CryptographicUsageMask.DECRYPT])
 
         private_name_attribute = self.attribute_factory.create_attribute(
             enums.AttributeType.NAME, "private")
@@ -560,8 +549,8 @@ class TestProxyKmipClient(testtools.TestCase):
 
         pair_attributes = [
             algorithm_attribute,
-            length_attribute,
-            mask_attribute]
+            length_attribute
+        ]
 
         template = obj.CommonTemplateAttribute(attributes=pair_attributes)
         private_template = obj.PrivateKeyTemplateAttribute(
@@ -607,10 +596,6 @@ class TestProxyKmipClient(testtools.TestCase):
             enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm)
         length_attribute = self.attribute_factory.create_attribute(
             enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length)
-        mask_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-            [enums.CryptographicUsageMask.ENCRYPT,
-             enums.CryptographicUsageMask.DECRYPT])
 
         private_usage_mask = self.attribute_factory.create_attribute(
             enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
@@ -623,8 +608,8 @@ class TestProxyKmipClient(testtools.TestCase):
 
         pair_attributes = [
             algorithm_attribute,
-            length_attribute,
-            mask_attribute]
+            length_attribute
+        ]
 
         template = obj.CommonTemplateAttribute(attributes=pair_attributes)
         private_template = obj.PrivateKeyTemplateAttribute(

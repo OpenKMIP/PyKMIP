@@ -227,13 +227,13 @@ class ProxyKmipClient(object):
             length (int): The length in bits for the key pair.
             operation_policy_name (string): The name of the operation policy
                 to use for the new key pair. Optional, defaults to None.
-            public_name (string): The name to give the public key.
-                                  Optional, defaults to None.
+            public_name (string): The name to give the public key. Optional,
+                defaults to None.
             public_usage_mask (list): A list of CryptographicUsageMask
                 enumerations indicating how the public key should be used.
                 Optional, defaults to None.
-            private_name (string): The name to give the public key.
-                                   Optional, defaults to None.
+            private_name (string): The name to give the public key. Optional,
+                defaults to None.
             private_usage_mask (list): A list of CryptographicUsageMask
                 enumerations indicating how the private key should be used.
                 Optional, defaults to None.
@@ -258,9 +258,20 @@ class ProxyKmipClient(object):
         common_attributes = self._build_common_attributes(
             operation_policy_name
         )
-        key_attributes = self._build_key_attributes(algorithm, length)
-        key_attributes.extend(common_attributes)
-        template = cobjects.CommonTemplateAttribute(attributes=key_attributes)
+
+        algorithm_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            algorithm
+        )
+        length_attribute = self.attribute_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+            length
+        )
+
+        common_attributes.extend([algorithm_attribute, length_attribute])
+        template = cobjects.CommonTemplateAttribute(
+            attributes=common_attributes
+        )
 
         # Create public / private specific attributes
         public_template = None

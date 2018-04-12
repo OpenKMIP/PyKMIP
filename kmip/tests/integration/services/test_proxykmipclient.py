@@ -181,7 +181,11 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         asymmetric key pair.
         """
         public_uid, private_uid = self.client.create_key_pair(
-            enums.CryptographicAlgorithm.RSA, 2048)
+            enums.CryptographicAlgorithm.RSA,
+            2048,
+            public_usage_mask=[enums.CryptographicUsageMask.ENCRYPT],
+            private_usage_mask=[enums.CryptographicUsageMask.DECRYPT]
+        )
         self.assertIsInstance(public_uid, six.string_types)
         self.assertIsInstance(private_uid, six.string_types)
 
