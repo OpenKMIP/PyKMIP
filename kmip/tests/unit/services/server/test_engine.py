@@ -148,179 +148,6 @@ class TestKmipEngine(testtools.TestCase):
         }
         create_engine_mock.assert_called_once_with(*args, **fargs)
 
-    def test_load_operation_policies(self):
-        """
-        Test that the KmipEngine can correctly load operation policies.
-        """
-        e = engine.KmipEngine()
-        e._logger = mock.MagicMock()
-
-        policy_file = tempfile.NamedTemporaryFile(
-            dir=self.temp_dir
-        )
-        with open(policy_file.name, 'w') as f:
-            f.write(
-                '{"test": '
-                '{"default": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}}'
-            )
-
-        self.assertEqual(2, len(e._operation_policies))
-
-        e._load_operation_policies(self.temp_dir)
-        e._logger.info.assert_any_call(
-            "Loading user-defined operation policy files from: {0}".format(
-                self.temp_dir
-            )
-        )
-        e._logger.info.assert_any_call(
-            "Loading user-defined operation policies from file: {0}".format(
-                policy_file.name
-            )
-        )
-
-        self.assertEqual(3, len(e._operation_policies))
-        self.assertIn('test', e._operation_policies.keys())
-
-        test_policy = {
-            'default': {
-                enums.ObjectType.CERTIFICATE: {
-                    enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
-                }
-            }
-        }
-
-        self.assertEqual(test_policy, e._operation_policies.get('test'))
-
-    def test_load_operation_policies_with_file_read_error(self):
-        """
-        Test that the KmipEngine can correctly handle load errors.
-        """
-        e = engine.KmipEngine()
-        e._logger = mock.MagicMock()
-
-        policy_file = tempfile.NamedTemporaryFile(
-            dir=self.temp_dir
-        )
-        with open(policy_file.name, 'w') as f:
-            f.write(
-                '{"test": {"INVALID": {"LOCATE": "ALLOW_ALL"}}}'
-            )
-
-        self.assertEqual(2, len(e._operation_policies))
-
-        e._load_operation_policies(self.temp_dir)
-        e._logger.info.assert_any_call(
-            "Loading user-defined operation policy files from: {0}".format(
-                self.temp_dir
-            )
-        )
-        e._logger.info.assert_any_call(
-            "Loading user-defined operation policies from file: {0}".format(
-                policy_file.name
-            )
-        )
-        e._logger.error.assert_called_once_with(
-             "A failure occurred while loading policies."
-        )
-        e._logger.exception.assert_called_once()
-
-        self.assertEqual(2, len(e._operation_policies))
-
-    def test_load_operation_policies_with_reserved(self):
-        """
-        Test that the KmipEngine can correctly load operation policies, even
-        when a policy attempts to overwrite a reserved one.
-        """
-        e = engine.KmipEngine()
-        e._logger = mock.MagicMock()
-
-        policy_file = tempfile.NamedTemporaryFile(
-            dir=self.temp_dir
-        )
-        with open(policy_file.name, 'w') as f:
-            f.write(
-                '{"public": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}'
-            )
-
-        self.assertEqual(2, len(e._operation_policies))
-
-        e._load_operation_policies(self.temp_dir)
-        e._logger.info.assert_any_call(
-            "Loading user-defined operation policy files from: {0}".format(
-                self.temp_dir
-            )
-        )
-        e._logger.info.assert_any_call(
-            "Loading user-defined operation policies from file: {0}".format(
-                policy_file.name
-            )
-        )
-        e._logger.warning.assert_called_once_with(
-            "Loaded policy 'public' overwrites a reserved policy and will "
-            "be thrown out."
-        )
-
-        self.assertEqual(2, len(e._operation_policies))
-
-    def test_load_operation_policies_with_duplicate(self):
-        """
-        Test that the KmipEngine can correctly load operation policies, even
-        when a policy is defined multiple times.
-        """
-        self.skip('Refactor')
-        e = engine.KmipEngine()
-        e._logger = mock.MagicMock()
-
-        policy_file_a = tempfile.NamedTemporaryFile(
-            dir=self.temp_dir
-        )
-        with open(policy_file_a.name, 'w') as f:
-            f.write(
-                '{"test": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}'
-            )
-
-        policy_file_b = tempfile.NamedTemporaryFile(
-            dir=self.temp_dir
-        )
-        with open(policy_file_b.name, 'w') as f:
-            f.write(
-                '{"test": {"CERTIFICATE": {"LOCATE": "ALLOW_ALL"}}}'
-            )
-
-        self.assertEqual(2, len(e._operation_policies))
-
-        e._load_operation_policies(self.temp_dir)
-        e._logger.info.assert_any_call(
-            "Loading user-defined operation policy files from: {0}".format(
-                self.temp_dir
-            )
-        )
-        e._logger.info.assert_any_call(
-            "Loading user-defined operation policies from file: {0}".format(
-                policy_file_a.name
-            )
-        )
-        e._logger.info.assert_any_call(
-            "Loading user-defined operation policies from file: {0}".format(
-                policy_file_b.name
-            )
-        )
-        e._logger.warning.assert_called_once_with(
-            "Loaded policy 'test' overwrites a preexisting policy and will "
-            "be thrown out."
-        )
-
-        self.assertEqual(3, len(e._operation_policies))
-        self.assertIn('test', e._operation_policies.keys())
-
-        test_policy = {
-            enums.ObjectType.CERTIFICATE: {
-                enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
-            }
-        }
-
-        self.assertEqual(test_policy, e._operation_policies.get('test'))
-
     def test_version_operation_match(self):
         """
         Test that a valid response is generated when trying to invoke an
@@ -957,6 +784,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
@@ -981,6 +809,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         args = ('1', )
@@ -1007,6 +836,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         test_exception = exc.MultipleResultsFound()
         e._data_session.query = mock.MagicMock(side_effect=test_exception)
         e._logger = mock.MagicMock()
@@ -1033,6 +863,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
@@ -1419,6 +1250,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         symmetric_key = pie_objects.SymmetricKey(
@@ -1481,6 +1313,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         symmetric_key = pie_objects.SymmetricKey(
@@ -2196,6 +2029,7 @@ class TestKmipEngine(testtools.TestCase):
         Test that the lookup for a non-existent policy is handled correctly.
         """
         e = engine.KmipEngine()
+        e._operation_policies = {}
         e._logger = mock.MagicMock()
 
         result = e.get_relevant_policy_section('invalid')
@@ -2524,6 +2358,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=False)
         e._logger = mock.MagicMock()
         e._client_identity = 'test'
 
@@ -3677,6 +3512,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -3851,6 +3687,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -3968,6 +3805,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -4003,6 +3841,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -4042,6 +3881,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -4162,6 +4002,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -4219,6 +4060,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -4280,6 +4122,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -4337,6 +4180,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -4402,6 +4246,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
@@ -4485,6 +4330,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         key = (b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
@@ -4580,6 +4426,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
@@ -4686,6 +4533,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         obj_a = pie_objects.SymmetricKey(
@@ -4793,6 +4641,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=False)
         e._logger = mock.MagicMock()
         e._client_identity = 'test'
 
@@ -4824,6 +4673,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -4937,6 +4787,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -5003,6 +4854,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -5067,6 +4919,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -5111,6 +4964,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -5162,6 +5016,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -5226,6 +5081,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -5290,6 +5146,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -5355,6 +5212,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -5420,6 +5278,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -5485,6 +5344,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         secret = pie_objects.SymmetricKey(
@@ -5541,6 +5401,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         secret = pie_objects.SymmetricKey(
@@ -5624,6 +5485,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=False)
         e._logger = mock.MagicMock()
         e._client_identity = 'test'
 
@@ -5657,6 +5519,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         secret = pie_objects.SymmetricKey(
@@ -5734,6 +5597,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         secret = pie_objects.SymmetricKey(
@@ -5810,6 +5674,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=False)
         e._logger = mock.MagicMock()
         e._client_identity = 'test'
 
@@ -5843,6 +5708,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         managed_object = pie_objects.SymmetricKey(
@@ -5913,6 +5779,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         managed_object = pie_objects.OpaqueObject(
@@ -5953,6 +5820,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         managed_object = pie_objects.SymmetricKey(
@@ -5989,6 +5857,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=False)
         e._logger = mock.MagicMock()
         e._client_identity = 'test'
 
@@ -6021,6 +5890,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         managed_object = pie_objects.SymmetricKey(
@@ -6169,6 +6039,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         managed_object = pie_objects.SymmetricKey(
@@ -6211,6 +6082,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         managed_object = pie_objects.SymmetricKey(
@@ -6255,6 +6127,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         managed_object = pie_objects.OpaqueObject(
@@ -6299,6 +6172,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=False)
         e._logger = mock.MagicMock()
         e._client_identity = 'test'
 
@@ -6337,6 +6211,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         obj_a = pie_objects.OpaqueObject(b'', enums.OpaqueDataType.NONE)
@@ -6445,6 +6320,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=False)
         e._logger = mock.MagicMock()
         e._client_identity = 'test'
 
@@ -6479,6 +6355,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         key = (b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
@@ -6871,6 +6748,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -6937,6 +6815,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -6999,6 +6878,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7051,6 +6931,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7102,6 +6983,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7158,6 +7040,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7217,6 +7100,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7286,6 +7170,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7338,6 +7223,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7389,6 +7275,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7445,6 +7332,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7501,6 +7389,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7637,6 +7526,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7690,6 +7580,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7732,6 +7623,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7790,6 +7682,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7847,6 +7740,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -7915,6 +7809,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         key = (b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
@@ -7992,6 +7887,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -8040,6 +7936,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -8089,6 +7986,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         attribute_factory = factory.AttributeFactory()
@@ -8214,6 +8112,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         attribute_factory = factory.AttributeFactory()
@@ -8424,6 +8323,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         attribute_factory = factory.AttributeFactory()
@@ -8565,6 +8465,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
         attribute_factory = factory.AttributeFactory()
@@ -8773,6 +8674,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -8866,6 +8768,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -8946,6 +8849,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -8990,6 +8894,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 
@@ -9077,6 +8982,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_store = self.engine
         e._data_store_session_factory = self.session_factory
         e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
         e._cryptography_engine.logger = mock.MagicMock()
 

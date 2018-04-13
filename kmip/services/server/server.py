@@ -13,20 +13,25 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import copy
 import logging
 import logging.handlers as handlers
+import multiprocessing
 import optparse
 import os
 import signal
+import six
 import socket
 import ssl
 import sys
 import threading
 
 from kmip.core import exceptions
+from kmip.core import policy as operation_policy
 from kmip.services import auth
 from kmip.services.server import config
 from kmip.services.server import engine
+from kmip.services.server import monitor
 from kmip.services.server import session
 
 
@@ -53,7 +58,8 @@ class KmipServer(object):
             policy_path=None,
             enable_tls_client_auth=None,
             tls_cipher_suites=None,
-            logging_level=None
+            logging_level=None,
+            live_policies=False
     ):
         """
         Create a KmipServer.
@@ -113,6 +119,10 @@ class KmipServer(object):
                 level for the server. All log messages logged at this level or
                 higher in criticality will be logged. All log messages lower
                 in criticality will not be logged. Optional, defaults to None.
+            live_policies (boolean): A boolean indicating if the operation
+                policy directory should be actively monitored to autoload any
+                policy changes while the server is running. Optional, defaults
+                to False.
         """
         self._logger = logging.getLogger('kmip.server')
         self._setup_logging(log_path)
@@ -131,6 +141,8 @@ class KmipServer(object):
             tls_cipher_suites,
             logging_level
         )
+        self.live_policies = live_policies
+        self.policies = {}
 
         self._logger.setLevel(self.config.settings.get('logging_level'))
 
@@ -140,9 +152,6 @@ class KmipServer(object):
         else:
             self.auth_suite = auth.BasicAuthenticationSuite(cipher_suites)
 
-        self._engine = engine.KmipEngine(
-            self.config.settings.get('policy_path')
-        )
         self._session_id = 1
         self._is_serving = False
 
@@ -223,6 +232,29 @@ class KmipServer(object):
             NetworkingError: Raised if the TLS socket cannot be bound to the
                 network address.
         """
+        self.manager = multiprocessing.Manager()
+        self.policies = self.manager.dict()
+        policies = copy.deepcopy(operation_policy.policies)
+        for policy_name, policy_set in six.iteritems(policies):
+            self.policies[policy_name] = policy_set
+
+        self.policy_monitor = monitor.PolicyDirectoryMonitor(
+            self.config.settings.get('policy_path'),
+            self.policies,
+            self.live_policies
+        )
+
+        def interrupt_handler(trigger, frame):
+            self.policy_monitor.stop()
+        signal.signal(signal.SIGINT, interrupt_handler)
+        signal.signal(signal.SIGTERM, interrupt_handler)
+
+        self.policy_monitor.start()
+
+        self._engine = engine.KmipEngine(
+            policies=self.policies
+        )
+
         self._logger.info("Starting server socket handler.")
 
         # Create a TCP stream socket and configure it for immediate reuse.
@@ -327,6 +359,16 @@ class KmipServer(object):
             raise exceptions.NetworkingError(
                 "Server failed to shutdown socket handler."
             )
+
+        if hasattr(self, "policy_monitor"):
+            try:
+                self.policy_monitor.stop()
+                self.policy_monitor.join()
+            except Exception as e:
+                self._logger.exception(e)
+                raise exceptions.ShutdownError(
+                    "Server failed to clean up the policy monitor."
+                )
 
     def serve(self):
         """
@@ -594,6 +636,8 @@ def main(args=None):
         kwargs['enable_tls_client_auth'] = False
     if opts.logging_level:
         kwargs['logging_level'] = opts.logging_level
+
+    kwargs['live_policies'] = True
 
     # Create and start the server.
     s = KmipServer(**kwargs)
