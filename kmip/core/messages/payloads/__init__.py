@@ -104,6 +104,10 @@ from kmip.core.messages.payloads.rekey_key_pair import (
     RekeyKeyPairRequestPayload,
     RekeyKeyPairResponsePayload
 )
+from kmip.core.messages.payloads.rekey import (
+    RekeyRequestPayload,
+    RekeyResponsePayload
+)
 from kmip.core.messages.payloads.revoke import (
     RevokeRequestPayload,
     RevokeResponsePayload
@@ -164,6 +168,8 @@ __all__ = [
     "RegisterResponsePayload",
     "RekeyKeyPairRequestPayload",
     "RekeyKeyPairResponsePayload",
+    "RekeyRequestPayload",
+    "RekeyResponsePayload",
     "RevokeRequestPayload",
     "RevokeResponsePayload",
     "SignRequestPayload",
