@@ -390,6 +390,94 @@ class ProxyKmipClient(object):
             raise exceptions.KmipOperationFailure(status, reason, message)
 
     @is_connected
+    def rekey(self,
+              uid=None,
+              offset=None,
+              **kwargs):
+        """
+        Rekey an existing key.
+
+        Args:
+            uid (string): The unique ID of the symmetric key to rekey.
+                Optional, defaults to None.
+            offset (int): The time delta, in seconds, between the new key's
+                initialization date and activation date. Optional, defaults
+                to None.
+            **kwargs (various): A placeholder for object attributes that
+                should be set on the newly rekeyed key. Currently
+                supported attributes include:
+                    activation_date (int)
+                    process_start_date (int)
+                    protect_stop_date (int)
+                    deactivation_date (int)
+
+        Returns:
+            string: The unique ID of the newly rekeyed key.
+
+        Raises:
+            ClientConnectionNotOpen: if the client connection is unusable
+            KmipOperationFailure: if the operation result is a failure
+            TypeError: if the input arguments are invalid
+        """
+        if uid is not None:
+            if not isinstance(uid, six.string_types):
+                raise TypeError("The unique identifier must be a string.")
+        if offset is not None:
+            if not isinstance(offset, six.integer_types):
+                raise TypeError("The offset must be an integer.")
+
+        # TODO (peter-hamilton) Unify attribute handling across operations
+        attributes = []
+        if kwargs.get('activation_date'):
+            attributes.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.ACTIVATION_DATE,
+                    kwargs.get('activation_date')
+                )
+            )
+        if kwargs.get('process_start_date'):
+            attributes.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.PROCESS_START_DATE,
+                    kwargs.get('process_start_date')
+                )
+            )
+        if kwargs.get('protect_stop_date'):
+            attributes.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.PROTECT_STOP_DATE,
+                    kwargs.get('protect_stop_date')
+                )
+            )
+        if kwargs.get('deactivation_date'):
+            attributes.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.DEACTIVATION_DATE,
+                    kwargs.get('deactivation_date')
+                )
+            )
+        template_attribute = cobjects.TemplateAttribute(
+            attributes=attributes
+        )
+
+        # Derive the new key/data and handle the results
+        result = self.proxy.rekey(
+            uuid=uid,
+            offset=offset,
+            template_attribute=template_attribute
+        )
+
+        status = result.get('result_status')
+        if status == enums.ResultStatus.SUCCESS:
+            return result.get('unique_identifier')
+        else:
+            raise exceptions.KmipOperationFailure(
+                status,
+                result.get('result_reason'),
+                result.get('result_message')
+            )
+
+    @is_connected
     def derive_key(self,
                    object_type,
                    unique_identifiers,
