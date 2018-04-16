@@ -49,10 +49,12 @@ from kmip.core.misc import QueryFunction
 from kmip.core.misc import ServerInformation
 from kmip.core.misc import VendorIdentification
 
+from kmip.core import objects
 from kmip.core.objects import TemplateAttribute
 from kmip.core.objects import CommonTemplateAttribute
 from kmip.core.objects import PrivateKeyTemplateAttribute
 from kmip.core.objects import PublicKeyTemplateAttribute
+from kmip.core import primitives
 
 from kmip.services.kmip_client import KMIPProxy
 
@@ -754,6 +756,105 @@ class TestKMIPClient(TestCase):
             result.get('cryptographic_usage_mask')
         )
         self.assertEqual(10000, result.get('lease_time'))
+        self.assertEqual(
+            ResultStatusEnum.SUCCESS,
+            result.get('result_status')
+        )
+        self.assertEqual(None, result.get('result_reason'))
+        self.assertEqual(None, result.get('result_message'))
+
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._build_request_message'
+    )
+    @mock.patch(
+        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
+    )
+    def test_rekey(self, send_mock, build_mock):
+        """
+        Test that the client can correctly build, send, and process a Rekey
+        request.
+        """
+        payload = payloads.RekeyResponsePayload(
+            unique_identifier='1',
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Algorithm'
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Length'
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    )
+                ]
+            )
+        )
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.REKEY),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=payload
+        )
+        response = ResponseMessage(batch_items=[batch_item])
+
+        build_mock.return_value = None
+        send_mock.return_value = response
+
+        result = self.client.rekey(
+            uuid='1',
+            offset=0,
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Activation Date'
+                        ),
+                        attribute_value=primitives.DateTime(
+                            value=1136113200,
+                            tag=enums.Tags.ACTIVATION_DATE
+                        )
+                    )
+                ]
+            )
+        )
+
+        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual(
+            objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Algorithm'
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Length'
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    )
+                ]
+            ),
+            result.get('template_attribute')
+        )
         self.assertEqual(
             ResultStatusEnum.SUCCESS,
             result.get('result_status')
