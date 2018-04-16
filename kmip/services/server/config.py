@@ -51,7 +51,8 @@ class KmipServerConfig(object):
             'policy_path',
             'enable_tls_client_auth',
             'tls_cipher_suites',
-            'logging_level'
+            'logging_level',
+            'database_path'
         ]
 
     def set_setting(self, setting, value):
@@ -93,8 +94,10 @@ class KmipServerConfig(object):
             self._set_enable_tls_client_auth(value)
         elif setting == 'tls_cipher_suites':
             self._set_tls_cipher_suites(value)
-        else:
+        elif setting == 'logging_level':
             self._set_logging_level(value)
+        else:
+            self._set_database_path(value)
 
     def load_settings(self, path):
         """
@@ -179,6 +182,8 @@ class KmipServerConfig(object):
             self._set_logging_level(
                 parser.get('server', 'logging_level')
             )
+        if parser.has_option('server', 'database_path'):
+            self._set_database_path(parser.get('server', 'database_path'))
 
     def _set_hostname(self, value):
         if isinstance(value, six.string_types):
@@ -333,4 +338,15 @@ class KmipServerConfig(object):
             raise exceptions.ConfigurationError(
                 "The logging level must be a string representing a valid "
                 "logging level."
+            )
+
+    def _set_database_path(self, value):
+        if not value:
+            self.settings['database_path'] = None
+        elif isinstance(value, six.string_types):
+            self.settings['database_path'] = value
+        else:
+            raise exceptions.ConfigurationError(
+                "The database path, if specified, must be a valid path to a "
+                "SQLite database file."
             )

@@ -68,6 +68,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_enable_tls_client_auth = mock.MagicMock()
         c._set_tls_cipher_suites = mock.MagicMock()
         c._set_logging_level = mock.MagicMock()
+        c._set_database_path = mock.MagicMock()
 
         # Test the right error is generated when setting an unsupported
         # setting.
@@ -114,6 +115,9 @@ class TestKmipServerConfig(testtools.TestCase):
 
         c.set_setting('logging_level', 'WARNING')
         c._set_logging_level.assert_called_once_with('WARNING')
+
+        c.set_setting('database_path', '/var/pykmip/pykmip.db')
+        c._set_database_path.assert_called_once_with('/var/pykmip/pykmip.db')
 
     def test_load_settings(self):
         """
@@ -232,6 +236,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_enable_tls_client_auth = mock.MagicMock()
         c._set_tls_cipher_suites = mock.MagicMock()
         c._set_logging_level = mock.MagicMock()
+        c._set_database_path = mock.MagicMock()
 
         # Test that the right calls are made when correctly parsing settings.
         parser = configparser.SafeConfigParser()
@@ -250,6 +255,7 @@ class TestKmipServerConfig(testtools.TestCase):
             "\n    TLS_RSA_WITH_AES_256_CBC_SHA256"
         )
         parser.set('server', 'logging_level', 'ERROR')
+        parser.set('server', 'database_path', '/var/pykmip/pykmip.db')
 
         c._parse_settings(parser)
 
@@ -267,6 +273,7 @@ class TestKmipServerConfig(testtools.TestCase):
             "\n    TLS_RSA_WITH_AES_256_CBC_SHA256"
         )
         c._set_logging_level.assert_called_once_with('ERROR')
+        c._set_database_path.assert_called_once_with('/var/pykmip/pykmip.db')
 
         # Test that a ConfigurationError is generated when the expected
         # section is missing.
@@ -819,3 +826,55 @@ class TestKmipServerConfig(testtools.TestCase):
             c._set_logging_level,
             *args
         )
+
+    def test_set_database_path(self):
+        """
+        Test that the database_path configuration property can be set
+        correctly.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        self.assertNotIn('database_path', c.settings.keys())
+
+        with mock.patch('os.path.exists') as os_mock:
+            os_mock.return_value = True
+            c._set_database_path('/test/path/database.db')
+
+        self.assertIn('database_path', c.settings.keys())
+        self.assertEqual(
+            '/test/path/database.db',
+            c.settings.get('database_path')
+        )
+
+    def test_set_database_path_default(self):
+        """
+        Test that the database_path configuration property can be set correctly
+        without specifying a value.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        self.assertNotIn('database_path', c.settings.keys())
+
+        c._set_database_path(None)
+        self.assertIn('database_path', c.settings.keys())
+        self.assertEqual(None, c.settings.get('database_path'))
+
+    def test_set_database_path_invalid_value(self):
+        """
+        Test that the right error is raised when an invalid value is used to
+        set the database_path configuration property.
+        """
+        c = config.KmipServerConfig()
+        c._logger = mock.MagicMock()
+
+        self.assertNotIn('database_path', c.settings.keys())
+
+        args = (1, )
+        self.assertRaises(
+            exceptions.ConfigurationError,
+            c._set_database_path,
+            *args
+        )
+        self.assertNotEqual(1, c.settings.get('database_path'))

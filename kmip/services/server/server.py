@@ -45,6 +45,7 @@ class KmipServer(object):
     shutting down all server components upon receiving a termination signal.
     """
 
+    # TODO (peter-hamilton) Move to using **kwargs for all server parameters.
     def __init__(
             self,
             hostname=None,
@@ -59,7 +60,8 @@ class KmipServer(object):
             enable_tls_client_auth=None,
             tls_cipher_suites=None,
             logging_level=None,
-            live_policies=False
+            live_policies=False,
+            database_path=None
     ):
         """
         Create a KmipServer.
@@ -123,6 +125,8 @@ class KmipServer(object):
                 policy directory should be actively monitored to autoload any
                 policy changes while the server is running. Optional, defaults
                 to False.
+            database_path (string): The path to the server's SQLite database
+                file. Optional, defaults to None.
         """
         self._logger = logging.getLogger('kmip.server')
         self._setup_logging(log_path)
@@ -139,7 +143,8 @@ class KmipServer(object):
             policy_path,
             enable_tls_client_auth,
             tls_cipher_suites,
-            logging_level
+            logging_level,
+            database_path
         )
         self.live_policies = live_policies
         self.policies = {}
@@ -188,7 +193,8 @@ class KmipServer(object):
             policy_path=None,
             enable_tls_client_auth=None,
             tls_cipher_suites=None,
-            logging_level=None
+            logging_level=None,
+            database_path=None
     ):
         if path:
             self.config.load_settings(path)
@@ -219,6 +225,8 @@ class KmipServer(object):
             )
         if logging_level:
             self.config.set_setting('logging_level', logging_level)
+        if database_path:
+            self.config.set_setting('database_path', database_path)
 
     def start(self):
         """
@@ -252,7 +260,8 @@ class KmipServer(object):
         self.policy_monitor.start()
 
         self._engine = engine.KmipEngine(
-            policies=self.policies
+            policies=self.policies,
+            database_path=self.config.settings.get('database_path')
         )
 
         self._logger.info("Starting server socket handler.")
@@ -604,6 +613,18 @@ def build_argument_parser():
             "DEBUG, INFO). Optional, defaults to None."
         )
     )
+    parser.add_option(
+        "-d",
+        "--database_path",
+        action="store",
+        type="str",
+        default=None,
+        dest="database_path",
+        help=(
+            "A string representing a path to the server's SQLite database "
+            "file. Optional, defaults to None."
+        ),
+    )
 
     return parser
 
@@ -636,6 +657,8 @@ def main(args=None):
         kwargs['enable_tls_client_auth'] = False
     if opts.logging_level:
         kwargs['logging_level'] = opts.logging_level
+    if opts.database_path:
+        kwargs['database_path'] = opts.database_path
 
     kwargs['live_policies'] = True
 

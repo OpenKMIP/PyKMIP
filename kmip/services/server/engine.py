@@ -74,7 +74,7 @@ class KmipEngine(object):
         * Cryptographic usage mask enforcement per object type
     """
 
-    def __init__(self, policies=None):
+    def __init__(self, policies=None, database_path=None):
         """
         Create a KmipEngine.
 
@@ -82,13 +82,20 @@ class KmipEngine(object):
             policy_path (string): The path to the filesystem directory
                 containing PyKMIP server operation policy JSON files.
                 Optional, defaults to None.
+            database_path (string): The path to the SQLite database file
+                used to store all server data. Optional, defaults to None.
+                If none, database path defaults to '/tmp/pykmip.database'.
         """
         self._logger = logging.getLogger('kmip.server.engine')
 
         self._cryptography_engine = engine.CryptographyEngine()
 
+        self.database_path = 'sqlite:///{}'.format(database_path)
+        if not database_path:
+            self.database_path = 'sqlite:////tmp/pykmip.database'
+
         self._data_store = sqlalchemy.create_engine(
-            'sqlite:////tmp/pykmip.database',
+            self.database_path,
             echo=False,
             connect_args={'check_same_thread': False}
         )
