@@ -705,6 +705,118 @@ class TestProxyKmipClient(testtools.TestCase):
     @mock.patch(
         'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)
     )
+    def test_rekey(self):
+        """
+        Test that the client can rekey an object.
+        """
+        result = {
+            'unique_identifier': '2',
+            'result_status': enums.ResultStatus.SUCCESS
+        }
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.rekey.return_value = result
+
+        checked_id = client.rekey(
+            uid='1',
+            offset=0,
+            activation_date=1000000,
+            process_start_date=1000001,
+            protect_stop_date=1000002,
+            deactivation_date=1000003
+        )
+
+        self.assertEqual('2', checked_id)
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_rekey_on_invalid_unique_identifier(self):
+        """
+        Test that a TypeError exception is raised when trying to rekey an
+        object with an invalid unique identifier.
+        """
+        kwargs = {'uid': 0}
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "The unique identifier must be a string.",
+                client.rekey,
+                **kwargs
+            )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_rekey_on_invalid_offset(self):
+        """
+        Test that a TypeError exception is raised when trying to rekey an
+        object with an invalid offset.
+        """
+        kwargs = {'offset': 'invalid'}
+        with ProxyKmipClient() as client:
+            self.assertRaisesRegexp(
+                TypeError,
+                "The offset must be an integer.",
+                client.rekey,
+                **kwargs
+            )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_rekey_on_closed(self):
+        """
+        Test that a ClientConnectionNotOpen exception is raised when trying
+        to rekey an object on an unopened client connection.
+        """
+        client = ProxyKmipClient()
+        kwargs = {
+            'uid': '1',
+            'offset': 10
+        }
+
+        self.assertRaises(
+            ClientConnectionNotOpen,
+            client.rekey,
+            **kwargs
+        )
+
+    @mock.patch('kmip.pie.client.KMIPProxy',
+                mock.MagicMock(spec_set=KMIPProxy))
+    def test_rekey_on_operation_failure(self):
+        """
+        Test that a KmipOperationFailure exception is raised when the
+        backend fails to rekey a key.
+        """
+        status = enums.ResultStatus.OPERATION_FAILED
+        reason = enums.ResultReason.GENERAL_FAILURE
+        message = "Test failure message"
+
+        result = {
+            'result_status': status,
+            'result_reason': reason,
+            'result_message': message
+        }
+        error_message = str(KmipOperationFailure(status, reason, message))
+
+        client = ProxyKmipClient()
+        client.open()
+        client.proxy.rekey.return_value = result
+        kwargs = {
+            'uid': '1',
+            'offset': 1,
+            'deactivation_date': 10000
+        }
+
+        self.assertRaisesRegexp(
+            KmipOperationFailure,
+            error_message,
+            client.rekey,
+            **kwargs
+        )
+
+    @mock.patch(
+        'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)
+    )
     def test_check(self):
         """
         Test that the client can check an object.
