@@ -121,7 +121,8 @@ class TestKmipServer(testtools.TestCase):
             '/etc/pykmip/policies',
             False,
             'TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA',
-            'DEBUG'
+            'DEBUG',
+            '/var/pykmip/pykmip.db'
         )
 
         s.config.load_settings.assert_called_with('/etc/pykmip/server.conf')
@@ -156,6 +157,10 @@ class TestKmipServer(testtools.TestCase):
             ]
         )
         s.config.set_setting.assert_any_call('logging_level', 'DEBUG')
+        s.config.set_setting.assert_any_call(
+            'database_path',
+            '/var/pykmip/pykmip.db'
+        )
 
         # Test that an attempt is made to instantiate the TLS 1.2 auth suite
         s = server.KmipServer(
