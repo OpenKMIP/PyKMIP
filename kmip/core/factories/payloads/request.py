@@ -31,6 +31,9 @@ class RequestPayloadFactory(PayloadFactory):
     def _create_derive_key_payload(self):
         return payloads.DeriveKeyRequestPayload()
 
+    def _create_rekey_payload(self):
+        return payloads.RekeyRequestPayload()
+
     def _create_rekey_key_pair_payload(self):
         return payloads.RekeyKeyPairRequestPayload()
 

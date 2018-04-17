@@ -53,7 +53,8 @@ class TestRequestPayloadFactory(testtools.TestCase):
         self._test_payload_type(payload, payloads.RegisterRequestPayload)
 
     def test_create_rekey_payload(self):
-        self._test_not_implemented(self.factory.create, enums.Operation.REKEY)
+        payload = self.factory.create(enums.Operation.REKEY)
+        self._test_payload_type(payload, payloads.RekeyRequestPayload)
 
     def test_create_derive_key_payload(self):
         payload = self.factory.create(enums.Operation.DERIVE_KEY)
