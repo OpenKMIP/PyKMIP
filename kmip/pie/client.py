@@ -61,7 +61,8 @@ class ProxyKmipClient(object):
                  ssl_version=None,
                  username=None,
                  password=None,
-                 config='client'):
+                 config='client',
+                 config_file=None):
         """
         Construct a ProxyKmipClient.
 
@@ -88,6 +89,9 @@ class ProxyKmipClient(object):
                 file. Use to load a specific set of configuration settings from
                 the configuration file, instead of specifying them manually.
                 Optional, defaults to the default client section, 'client'.
+            config_file (string): The path to the client's configuration file.
+                Optional, defaults to None.
+
         """
         self.logger = logging.getLogger()
 
@@ -104,7 +108,9 @@ class ProxyKmipClient(object):
             ssl_version=ssl_version,
             username=username,
             password=password,
-            config=config)
+            config=config,
+            config_file=config_file
+        )
 
         # TODO (peter-hamilton) Add a multiprocessing lock for synchronization.
         self._is_open = False

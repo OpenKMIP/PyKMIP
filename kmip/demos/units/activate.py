@@ -40,7 +40,7 @@ if __name__ == '__main__':
         sys.exit()
 
     # Build the client and connect to the server
-    client = KMIPProxy(config=config)
+    client = KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
 
     # Activate the object

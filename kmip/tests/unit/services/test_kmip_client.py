@@ -96,6 +96,32 @@ class TestKMIPClient(TestCase):
     def tearDown(self):
         super(TestKMIPClient, self).tearDown()
 
+    def test_init_with_invalid_config_file_value(self):
+        """
+        Test that the right error is raised when an invalid configuration file
+        value is provided to the client.
+        """
+        kwargs = {'config_file': 1}
+        self.assertRaisesRegexp(
+            ValueError,
+            "The client configuration file argument must be a string.",
+            KMIPProxy,
+            **kwargs
+        )
+
+    def test_init_with_invalid_config_file_path(self):
+        """
+        Test that the right error is raised when an invalid configuration file
+        path is provided to the client.
+        """
+        kwargs = {'config_file': 'invalid'}
+        self.assertRaisesRegexp(
+            ValueError,
+            "The client configuration file 'invalid' does not exist.",
+            KMIPProxy,
+            **kwargs
+        )
+
     def test_close(self):
         """
         Test that calling close on the client works as expected.
@@ -646,13 +672,21 @@ class TestKMIPClient(TestCase):
         host_list_string = '127.0.0.1,127.0.0.3,  127.0.0.5'
         host_list_expected = ['127.0.0.1', '127.0.0.3', '127.0.0.5']
 
-        self.client._set_variables(host=host_list_string,
-                                   port=None, keyfile=None, certfile=None,
-                                   cert_reqs=None, ssl_version=None,
-                                   ca_certs=None,
-                                   do_handshake_on_connect=False,
-                                   suppress_ragged_eofs=None, username=None,
-                                   password=None, timeout=None)
+        self.client._set_variables(
+            host=host_list_string,
+            port=None,
+            keyfile=None,
+            certfile=None,
+            cert_reqs=None,
+            ssl_version=None,
+            ca_certs=None,
+            do_handshake_on_connect=False,
+            suppress_ragged_eofs=None,
+            username=None,
+            password=None,
+            timeout=None,
+            config_file=None
+        )
         self.assertEqual(host_list_expected, self.client.host_list)
 
     def test_host_is_invalid_input(self):

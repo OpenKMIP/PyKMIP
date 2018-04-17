@@ -86,6 +86,15 @@ def build_cli_parser(operation=None):
         default="client",
         dest="config",
         help="Client configuration group to load from configuration file")
+    parser.add_option(
+        "-s",
+        "--config-file",
+        action="store",
+        type="str",
+        default=None,
+        dest="config_file",
+        help="Path to the client configuration file."
+    )
 
     if operation is Operation.CREATE:
         parser.add_option(

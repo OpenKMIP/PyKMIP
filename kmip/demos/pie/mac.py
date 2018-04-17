@@ -48,7 +48,10 @@ if __name__ == '__main__':
     algorithm = getattr(enums.CryptographicAlgorithm, algorithm, None)
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(config=config) as client:
+    with client.ProxyKmipClient(
+            config=config,
+            config_file=opts.config_file
+    ) as client:
         try:
             uid, mac_data = client.mac(data, uid, algorithm)
             logger.info("Successfully done MAC using key with ID: "

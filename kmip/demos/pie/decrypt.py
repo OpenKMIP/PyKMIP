@@ -54,7 +54,10 @@ if __name__ == '__main__':
         message = binascii.unhexlify(message[1:])
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(config=config) as client:
+    with client.ProxyKmipClient(
+            config=config,
+            config_file=opts.config_file
+    ) as client:
         # Decrypt the cipher text with the encryption key.
         try:
             plain_text = client.decrypt(

@@ -77,7 +77,7 @@ if __name__ == '__main__':
         key_format_type = KeyFormatType(format_type_enum)
 
     # Build the client and connect to the server
-    client = KMIPProxy(config=config)
+    client = KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
 
     # Retrieve the SYMMETRIC_KEY object

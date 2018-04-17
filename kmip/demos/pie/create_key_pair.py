@@ -43,7 +43,10 @@ if __name__ == '__main__':
     algorithm = getattr(enums.CryptographicAlgorithm, algorithm, None)
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(config=config) as client:
+    with client.ProxyKmipClient(
+            config=config,
+            config_file=opts.config_file
+    ) as client:
         try:
             public_uid, private_uid = client.create_key_pair(
                 algorithm,

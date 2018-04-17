@@ -45,7 +45,7 @@ if __name__ == '__main__':
             protocol_versions.append(ProtocolVersion(int(mm[0]), int(mm[1])))
 
     # Build the client and connect to the server
-    client = KMIPProxy(config=config)
+    client = KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
 
     result = client.discover_versions(protocol_versions=protocol_versions)
