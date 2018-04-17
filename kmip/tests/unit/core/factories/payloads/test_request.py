@@ -77,7 +77,8 @@ class TestRequestPayloadFactory(testtools.TestCase):
         self._test_payload_type(payload, payloads.LocateRequestPayload)
 
     def test_create_check_payload(self):
-        self._test_not_implemented(self.factory.create, enums.Operation.CHECK)
+        payload = self.factory.create(enums.Operation.CHECK)
+        self._test_payload_type(payload, payloads.CheckRequestPayload)
 
     def test_create_get_payload(self):
         payload = self.factory.create(enums.Operation.GET)
