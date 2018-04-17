@@ -64,7 +64,7 @@ if __name__ == '__main__':
         credential = credential_factory.create_credential(credential_type,
                                                           credential_value)
     # Build the client and connect to the server
-    client = KMIPProxy(config=config)
+    client = KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
 
     # Build name attribute

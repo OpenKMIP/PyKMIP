@@ -44,7 +44,10 @@ if __name__ == '__main__':
     key.operation_policy_name = opts.operation_policy_name
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(config=config) as client:
+    with client.ProxyKmipClient(
+            config=config,
+            config_file=opts.config_file
+    ) as client:
         try:
             uid = client.register(key)
             logger.info("Successfully registered symmetric key with ID: "

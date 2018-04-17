@@ -45,15 +45,20 @@ class ConfigHelper(object):
     # Timeout measured in seconds
     DEFAULT_TIMEOUT = 30
 
-    def __init__(self):
+    def __init__(self, path=None):
         self.logger = logging.getLogger(__name__)
 
         self.conf = SafeConfigParser()
-        if self.conf.read(CONFIG_FILE):
-            self.logger.debug("Using config file at {0}".format(CONFIG_FILE))
+
+        filenames = path
+        if not path:
+            filenames = CONFIG_FILE
+
+        if self.conf.read(filenames):
+            self.logger.debug("Using config file at {0}".format(filenames))
         else:
             self.logger.warning(
-                "Config file {0} not found".format(CONFIG_FILE))
+                "Config file {0} not found".format(filenames))
 
     def get_valid_value(self, direct_value, config_section,
                         config_option_name, default_value):

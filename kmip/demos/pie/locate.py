@@ -53,7 +53,10 @@ if __name__ == '__main__':
     attributes = [name_obj]
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(config=config) as client:
+    with client.ProxyKmipClient(
+            config=config,
+            config_file=opts.config_file
+    ) as client:
         try:
             uuids = client.locate(attributes=attributes)
             logger.info("Located uuids: {0}".format(uuids))

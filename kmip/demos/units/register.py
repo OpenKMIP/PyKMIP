@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     # Build the client, connect to the server, register the secret, and
     # disconnect from the server
-    client = KMIPProxy(config=config)
+    client = KMIPProxy(config=config, config_file=opts.config_file)
 
     client.open()
     result = client.register(object_type, template_attribute, secret)

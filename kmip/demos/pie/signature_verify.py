@@ -31,7 +31,10 @@ if __name__ == '__main__':
     config = opts.config
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(config=config) as client:
+    with client.ProxyKmipClient(
+            config=config,
+            config_file=opts.config_file
+    ) as client:
         # Create keys to use for derivation
         try:
             signing_key_id = client.register(

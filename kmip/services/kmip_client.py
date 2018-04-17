@@ -59,6 +59,7 @@ from kmip.core.utils import BytearrayStream
 import logging
 import logging.config
 import os
+import six
 import socket
 import ssl
 
@@ -73,15 +74,27 @@ class KMIPProxy:
                  cert_reqs=None, ssl_version=None, ca_certs=None,
                  do_handshake_on_connect=None,
                  suppress_ragged_eofs=None,
-                 username=None, password=None, timeout=30, config='client'):
+                 username=None, password=None, timeout=30, config='client',
+                 config_file=None):
         self.logger = logging.getLogger(__name__)
         self.credential_factory = CredentialFactory()
         self.config = config
 
+        if config_file:
+            if not isinstance(config_file, six.string_types):
+                raise ValueError(
+                    "The client configuration file argument must be a string."
+                )
+            if not os.path.exists(config_file):
+                raise ValueError(
+                    "The client configuration file '{}' does not "
+                    "exist.".format(config_file)
+                )
+
         self._set_variables(host, port, keyfile, certfile,
                             cert_reqs, ssl_version, ca_certs,
                             do_handshake_on_connect, suppress_ragged_eofs,
-                            username, password, timeout)
+                            username, password, timeout, config_file)
         self.batch_items = []
 
         self.conformance_clauses = [
@@ -1553,8 +1566,8 @@ class KMIPProxy:
     def _set_variables(self, host, port, keyfile, certfile,
                        cert_reqs, ssl_version, ca_certs,
                        do_handshake_on_connect, suppress_ragged_eofs,
-                       username, password, timeout):
-        conf = ConfigHelper()
+                       username, password, timeout, config_file):
+        conf = ConfigHelper(config_file)
 
         # TODO: set this to a host list
         self.host_list_str = conf.get_valid_value(

@@ -56,7 +56,7 @@ if __name__ == '__main__':
         QueryFunction(QueryFunctionEnum.QUERY_EXTENSION_MAP))
 
     # Build the client and connect to the server
-    client = KMIPProxy(config=config)
+    client = KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
 
     result = client.query(query_functions=query_functions)
