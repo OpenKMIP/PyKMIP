@@ -40,6 +40,9 @@ class ResponsePayloadFactory(PayloadFactory):
     def _create_locate_payload(self):
         return payloads.LocateResponsePayload()
 
+    def _create_check_payload(self):
+        return payloads.CheckResponsePayload()
+
     def _create_get_payload(self):
         return payloads.GetResponsePayload()
 
