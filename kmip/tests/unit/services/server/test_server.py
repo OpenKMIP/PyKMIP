@@ -485,7 +485,11 @@ class TestKmipServer(testtools.TestCase):
 
         # Test the expected behavior for a normal server/interrupt sequence
         s._socket.accept = mock.MagicMock(
-            side_effect=[('connection', 'address'), expected_error]
+            side_effect=[
+                ('connection', 'address'),
+                socket.timeout,
+                expected_error
+            ]
         )
 
         s.serve()

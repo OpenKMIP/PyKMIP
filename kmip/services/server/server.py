@@ -267,6 +267,7 @@ class KmipServer(object):
         self._logger.info("Starting server socket handler.")
 
         # Create a TCP stream socket and configure it for immediate reuse.
+        socket.setdefaulttimeout(10)
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -407,6 +408,11 @@ class KmipServer(object):
         while self._is_serving:
             try:
                 connection, address = self._socket.accept()
+            except socket.timeout:
+                # Setting the default socket timeout to break hung connections
+                # will cause accept to periodically raise socket.timeout. This
+                # is expected behavior, so ignore it and retry accept.
+                pass
             except socket.error as e:
                 self._logger.warning(
                     "Error detected while establishing new connection."
