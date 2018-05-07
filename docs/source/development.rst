@@ -33,6 +33,30 @@ New code should generally follow ``PEP 8`` style guidelines, though there are
 exceptions that will be allowed in special cases. Run the ``flake8`` tests to
 check your code before submitting a pull request (see :ref:`running-tests`).
 
+.. _writing-docs:
+
+Writing Documentation
+---------------------
+Like new code, new documentation should be written in its own Git branch.
+All PyKMIP documentation is written in `RST`_ format and managed using
+``sphinx``. It can be found under ``docs/source``.
+
+If you are interested in contributing to the project documentation, install
+the project documentation requirements:
+
+.. code:: console
+
+    $ pip install -r doc-requirements.txt
+
+To build the documentation, navigate into the ``docs`` directory and run:
+
+.. code:: console
+
+    $ make html
+
+This will build the PyKMIP documentation as HTML and place it under the new
+``docs/build/html`` directory. View it using your preferred web browser.
+
 Commit Messages
 ---------------
 Commit messages should include a single line title (75 character max) followed
@@ -81,15 +105,15 @@ PyKMIP, up to and including ``master``.
 Running Tests
 -------------
 PyKMIP uses ``tox`` to manage testing across multiple Python versions. Test
-infrastructure currently supports Python 2.7, 3.3, 3.4, 3.5, and 3.6. Test
-coverage results are currently included with each Python test environment. To
-test against a specific Python version (e.g., Python 2.7), run:
+infrastructure currently supports Python 2.7, 3.4, 3.5, and 3.6. Additional
+test environments are provided for security, style, and documentation checks.
 
-.. code-block:: console
+.. note::
 
-    $ tox -e py27
+    All of the ``tox`` commands discussed in this section should be run from
+    the root of the PyKMIP repository, in the same directory as the
+    ``tox.ini`` configuration file.
 
-PyKMIP also provides ``tox`` environments for style and security checks.
 The style checks leverage ``flake8`` and can be run like so:
 
 .. code-block:: console
@@ -102,11 +126,92 @@ The security checks use ``bandit`` and can be run like so:
 
     $ tox -e bandit
 
-To run the entire testing suite, simply run ``tox`` without any arguments:
+The documentation checks leverage ``sphinx`` to build the HTML documentation
+in a temporary directory, verifying that there are no errors. These checks
+can be run like so:
+
+.. code-block:: console
+
+    $ tox -e docs
+
+To run the above checks along with the entire unit test suite, simply run
+``tox`` without any arguments:
 
 .. code-block:: console
 
     $ tox
+
+Unit Tests
+~~~~~~~~~~
+The unit test suite tests many of the individual components of the PyKMIP code
+base, verifying that each component works correctly in isolation. Ideal code
+coverage would include the entire code base. To facilitate improving coverage,
+test coverage results are included with each Python unit test environment.
+
+To test against a specific Python version (e.g., Python 2.7), run:
+
+.. code-block:: console
+
+    $ tox -e py27
+
+Integration Tests
+~~~~~~~~~~~~~~~~~
+The integration test suite tests the functionality of the PyKMIP clients
+against a KMIP server, verifying that the right response data and status
+codes are returned for specific KMIP requests. A KMIP server must already
+be running and available over the network for the integration test cases
+to pass.
+
+Code base coverage is not a goal of the integration test suite. Code coverage
+statistics are therefore not included in the output of the integration tests.
+For code coverage, run the unit tests above.
+
+For the Travis CI tests run through GitHub, the KMIP server used for
+integration testing is actually an instance of the PyKMIP server, allowing us
+to verify the functionality of the clients and server simultaneously.
+
+Any third-party KMIP server can be tested using the integration test suite.
+Simply add a section to the client configuration file containing the
+connection settings for the server and provide the name of the new section
+when invoking the integration tests.
+
+To run the integration test suite, the configuration file section name for
+the client settings must be passed to the test suite using the ``--config``
+configuration argument. Assuming the section name is ``server_1``, the
+following ``tox`` command will set up and execute the integration tests:
+
+.. code-block:: console
+
+    $ tox -r -e integration -- --config server_1
+
+Functional Tests
+~~~~~~~~~~~~~~~~
+The functional test suite tests capabilities and functionality specific to
+the PyKMIP server. While similar in structure to the integration test suite
+described above, the functional tests cannot be used with arbitrary
+third-party servers and require a very specific environment in which to
+operate successfully. Therefore, the functional tests are usually only used
+for continuous integration testing via Travis CI.
+
+Like the integration test suite, code base coverage is not a goal of the
+functional test suite. For code coverage, run the unit tests above.
+
+The functional tests specifically exercise third-party authentication and
+group-based access control features supported by the PyKMIP server. The
+third-party authentication system in this case is an instance of `SLUGS`_.
+The PyKMIP client/server certificates and server operation policies must
+align exactly with the user/group information provided by SLUGS for the
+functional tests to pass. For more information, see the Travis CI build
+information under ``.travis`` in the PyKMIP repository.
+
+To invoke the functional tests, the configuration file path must be passed
+to the test suite using the ``--config-file`` configuration argument. Assuming
+the file path is ``/tmp/pykmip/client.conf``, the following ``tox`` command
+will set up and execute the functional tests:
+
+.. code-block:: console
+
+    $ tox -r -e functional -- --config-file /tmp/pykmip/client.conf
 
 For more information on the testing tools used here, see the following
 resources:
@@ -116,8 +221,10 @@ resources:
 * `bandit`_
 
 .. _`issue tracker`: https://github.com/OpenKMIP/PyKMIP/issues
+.. _`RST`: http://docutils.sourceforge.net/rst.html
 .. _`Issue #312`: https://github.com/OpenKMIP/PyKMIP/issues/312
 .. _`What to put in your bug report`: http://www.contribution-guide.org/#what-to-put-in-your-bug-report
 .. _`tox`: https://pypi.python.org/pypi/tox
 .. _`flake8`: https://pypi.python.org/pypi/flake8
 .. _`bandit`: https://pypi.python.org/pypi/bandit
+.. _`SLUGS`: https://github.com/OpenKMIP/SLUGS
