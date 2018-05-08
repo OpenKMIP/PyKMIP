@@ -5,6 +5,7 @@ testtools
 fixtures
 testresources
 mock
+slugs
 testscenarios
 testrepository
 sphinx

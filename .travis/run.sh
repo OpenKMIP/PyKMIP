@@ -16,6 +16,21 @@ if [[ "${RUN_INTEGRATION_TESTS}" == "1" ]]; then
     sudo chmod 777 /var/log/pykmip
     python ./bin/run_server.py &
     tox -e integration -- --config client
+elif [[ "${RUN_INTEGRATION_TESTS}" == "2" ]]; then
+    # Set up the SLUGS instance
+    cp -r ./.travis/functional/slugs /tmp/
+    slugs -c /tmp/slugs/slugs.conf &
+
+    # Set up the PyKMIP server
+    cp -r ./.travis/functional/pykmip /tmp/
+    python ./bin/create_certificates.py
+    mv *.pem /tmp/pykmip/certs/
+    sudo mkdir /var/log/pykmip
+    sudo chmod 777 /var/log/pykmip
+    pykmip-server -f /tmp/pykmip/server.conf -l /tmp/pykmip/server.log &
+
+    # Run the functional tests
+    tox -e functional -- --config-file /tmp/pykmip/client.conf
 else
     tox
 fi

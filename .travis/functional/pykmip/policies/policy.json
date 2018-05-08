@@ -1,0 +1,24 @@
+{
+  "policy_1": {
+    "groups": {
+      "Group A": {
+        "SYMMETRIC_KEY": {
+          "GET": "ALLOW_ALL",
+          "DESTROY": "ALLOW_ALL"
+        }
+      },
+      "Group B": {
+        "SYMMETRIC_KEY": {
+          "GET": "ALLOW_ALL",
+          "DESTROY": "DISALLOW_ALL"
+        }
+      }
+    },
+    "default": {
+      "SYMMETRIC_KEY": {
+        "GET": "DISALLOW_ALL",
+        "DESTROY": "DISALLOW_ALL"
+      }
+    }
+  }
+}
