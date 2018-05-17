@@ -106,7 +106,7 @@ class TestPolicy(testtools.TestCase):
             f.write(
                 '{"test": {'
                 '"groups": {"group_A": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}, '
-                '"default": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}'
+                '"preset": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}'
                 '}'
             )
 
@@ -123,7 +123,7 @@ class TestPolicy(testtools.TestCase):
                     }
                 }
             },
-            'default': {
+            'preset': {
                 enums.ObjectType.SPLIT_KEY: {
                     enums.Operation.GET: enums.Policy.ALLOW_ALL
                 }
@@ -166,7 +166,7 @@ class TestPolicy(testtools.TestCase):
 
     def test_read_policy_from_file_default_only(self):
         """
-        Test that reading a policy file with only a default section works
+        Test that reading a policy file with only a preset section works
         correctly.
         """
         policy_file = tempfile.NamedTemporaryFile(
@@ -176,7 +176,7 @@ class TestPolicy(testtools.TestCase):
         with open(policy_file.name, 'w') as f:
             f.write(
                 '{"test": '
-                '{"default": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}}'
+                '{"preset": {"SPLIT_KEY": {"GET": "ALLOW_ALL"}}}}'
             )
 
         policies = policy.read_policy_from_file(policy_file.name)
@@ -185,7 +185,7 @@ class TestPolicy(testtools.TestCase):
         self.assertIn('test', policies.keys())
 
         expected = {
-            'default': {
+            'preset': {
                 enums.ObjectType.SPLIT_KEY: {
                     enums.Operation.GET: enums.Policy.ALLOW_ALL
                 }
@@ -239,7 +239,7 @@ class TestPolicy(testtools.TestCase):
         self.assertIn('test', policies.keys())
 
         expected = {
-            'default': {
+            'preset': {
                 enums.ObjectType.CERTIFICATE: {
                     enums.Operation.LOCATE: enums.Policy.ALLOW_ALL
                 }

@@ -859,7 +859,7 @@ class KmipEngine(object):
                 else:
                     return group_policy
         else:
-            return policy_bundle.get('default')
+            return policy_bundle.get('preset')
 
     def is_allowed(
             self,
