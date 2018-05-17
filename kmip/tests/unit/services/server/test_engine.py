@@ -2376,7 +2376,7 @@ class TestKmipEngine(testtools.TestCase):
         args = [id_a, enums.Operation.GET]
         six.assertRaisesRegex(
             self,
-            exceptions.ItemNotFound,
+            exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._get_object_with_access_controls,
             *args
@@ -4659,7 +4659,7 @@ class TestKmipEngine(testtools.TestCase):
         args = [payload]
         six.assertRaisesRegex(
             self,
-            exceptions.ItemNotFound,
+            exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._process_get,
             *args
@@ -5505,7 +5505,7 @@ class TestKmipEngine(testtools.TestCase):
         # be retrieved.
         args = [payload]
         self.assertRaisesRegex(
-            exceptions.ItemNotFound,
+            exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._process_get_attributes,
             *args
@@ -5694,7 +5694,7 @@ class TestKmipEngine(testtools.TestCase):
         # be retrieved.
         args = [payload]
         self.assertRaisesRegex(
-            exceptions.ItemNotFound,
+            exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._process_get_attribute_list,
             *args
@@ -5876,7 +5876,7 @@ class TestKmipEngine(testtools.TestCase):
         # Test by specifying the ID of the object to activate.
         args = [payload]
         self.assertRaisesRegex(
-            exceptions.ItemNotFound,
+            exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._process_activate,
             *args
@@ -6197,7 +6197,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = [payload]
         self.assertRaisesRegex(
-            exceptions.ItemNotFound,
+            exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._process_revoke,
             *args
@@ -6340,7 +6340,7 @@ class TestKmipEngine(testtools.TestCase):
         args = [payload]
         six.assertRaisesRegex(
             self,
-            exceptions.ItemNotFound,
+            exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._process_destroy,
             *args
