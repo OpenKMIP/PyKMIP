@@ -112,6 +112,8 @@ class Attribute(Struct):
             enum_type = name
 
         value = self.value_factory.create_attribute_value(enum_type, None)
+        if value is None:
+            raise Exception("No value type for {}".format(enum_name))
         self.attribute_value = value
         self.attribute_value.tag = Tags.ATTRIBUTE_VALUE
         self.attribute_value.read(tstream)
