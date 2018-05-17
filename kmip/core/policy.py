@@ -71,7 +71,7 @@ def read_policy_from_file(path):
                 "{}".format(path, e)
             )
 
-    policy_sections = {'groups', 'default'}
+    policy_sections = {'groups', 'preset'}
     object_types = set([t.name for t in enums.ObjectType])
     result = {}
 
@@ -84,9 +84,9 @@ def read_policy_from_file(path):
         if sections <= policy_sections:
             parsed_policies = dict()
 
-            default_policy = object_policy.get('default')
+            default_policy = object_policy.get('preset')
             if default_policy:
-                parsed_policies['default'] = parse_policy(default_policy)
+                parsed_policies['preset'] = parse_policy(default_policy)
 
             group_policies = object_policy.get('groups')
             if group_policies:
@@ -100,7 +100,7 @@ def read_policy_from_file(path):
             result[name] = parsed_policies
         elif sections <= object_types:
             policy = parse_policy(object_policy)
-            result[name] = {'default': policy}
+            result[name] = {'preset': policy}
         else:
             invalid_sections = sections - policy_sections - object_types
             raise ValueError(
@@ -113,7 +113,7 @@ def read_policy_from_file(path):
 
 policies = {
     'default': {
-        'default': {
+        'preset': {
             enums.ObjectType.CERTIFICATE: {
                 enums.Operation.LOCATE:             enums.Policy.ALLOW_ALL,
                 enums.Operation.CHECK:              enums.Policy.ALLOW_ALL,
@@ -279,7 +279,7 @@ policies = {
         }
     },
     'public': {
-        'default': {
+        'preset': {
             enums.ObjectType.TEMPLATE: {
                 enums.Operation.LOCATE:             enums.Policy.ALLOW_ALL,
                 enums.Operation.GET:                enums.Policy.ALLOW_ALL,

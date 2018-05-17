@@ -14,7 +14,7 @@
         }
       }
     },
-    "default": {
+    "preset": {
       "SYMMETRIC_KEY": {
         "GET": "DISALLOW_ALL",
         "DESTROY": "DISALLOW_ALL"

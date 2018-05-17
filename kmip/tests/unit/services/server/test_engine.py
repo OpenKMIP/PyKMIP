@@ -2047,7 +2047,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._operation_policies = {
             'test_policy': {
-                'default': {
+                'preset': {
                     enums.ObjectType.SYMMETRIC_KEY: {
                         enums.Operation.GET: enums.Policy.ALLOW_OWNER
                     }
@@ -2072,7 +2072,7 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._operation_policies = {
             'test_policy': {
-                'default': {
+                'preset': {
                     enums.ObjectType.SYMMETRIC_KEY: {
                         enums.Operation.GET: enums.Policy.ALLOW_OWNER
                     }
@@ -2105,7 +2105,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger = mock.MagicMock()
         e._operation_policies = {
             'test_policy': {
-                'default': {
+                'preset': {
                     enums.ObjectType.SYMMETRIC_KEY: {
                         enums.Operation.GET: enums.Policy.ALLOW_OWNER
                     }
@@ -2136,7 +2136,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger = mock.MagicMock()
         e._operation_policies = {
             'test_policy': {
-                'default': {
+                'preset': {
                     enums.ObjectType.SYMMETRIC_KEY: {
                         enums.Operation.GET: enums.Policy.ALLOW_OWNER
                     }

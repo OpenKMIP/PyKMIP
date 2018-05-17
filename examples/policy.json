@@ -1,6 +1,6 @@
 {
     "example": {
-        "default": {
+        "preset": {
             "CERTIFICATE": {
                 "LOCATE": "ALLOW_ALL",
                 "CHECK": "ALLOW_ALL",
