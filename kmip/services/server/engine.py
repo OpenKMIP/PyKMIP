@@ -938,7 +938,7 @@ class KmipEngine(object):
             operation
         )
         if not is_allowed:
-            raise exceptions.ItemNotFound(
+            raise exceptions.PermissionDenied(
                 "Could not locate object: {0}".format(uid)
             )
 
