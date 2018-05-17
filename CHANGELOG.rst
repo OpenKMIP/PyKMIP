@@ -2,6 +2,13 @@
 Changelog
 =========
 
+.. _v0.9:
+
+0.9 - `master`_
+~~~~~~~~~~~~~~~
+
+.. note:: This version is not yet released and is under active development.
+
 .. _v0.8:
 
 0.8 - May 18, 2018
