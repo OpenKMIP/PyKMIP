@@ -4,10 +4,30 @@ Changelog
 
 .. _v0.8:
 
-0.8 - `master`_
-~~~~~~~~~~~~~~~
-
-.. note:: This version is not yet released and is under active development.
+0.8 - May 18, 2018
+~~~~~~~~~~~~~~~~~~
+* Add Sphinx-based client and server library documentation
+* Add server support for third-party authentication systems
+* Add client support for the Check operation
+* Add client support for the Rekey operation
+* Add client support for attestation credentials
+* Add a functional test suite for server authentication and access control
+* Add payloads for the Archive, Cancel, and GetUsageAllocation operations
+* Add payloads for the ObtainLease, Poll, and Recover operations
+* Update the server to support group-based operation policies
+* Update the server to support live loading of operation policy files
+* Update the server to support custom backend database file paths
+* Update the server to raise PermissionDenied on access control violations
+* Update the client to support custom configuration file paths
+* Update the ProxyKmipClient to support custom names for the Register operation
+* Update the ProxyKmipClient to set cryptographic usage masks for Derived keys
+* Update the README to reference the new documentation
+* Update the Travis CI configuration to include building the documentation
+* Update the Travis CI configuration to run integration and functional tests
+* Remove support for Python 3.3
+* Fix a denial-of-service bug by setting the server socket timeout
+* Fix a ProxyKmipClient bug with generic cryptographic parameter handling
+* Fix a ProxyKmipClient bug with cryptographic usage mask processing
 
 .. _v0.7:
 
