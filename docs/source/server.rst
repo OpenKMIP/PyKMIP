@@ -120,12 +120,40 @@ The different configuration options are defined below:
     Options include: DEBUG, INFO, WARNING, ERROR, and CRITICAL. The DEBUG
     log level logs the most information, the CRITICAL log level logs the
     least.
+* ``database_path``
+    A string representing a path to a SQLite database file. The server will
+    store all managed objects (e.g., keys, certificates) in this file.
 
 .. note::
    When installing PyKMIP and deploying the server, you must manually set up
    the server configuration file. It **will not** be placed in ``/etc/pykmip``
    automatically. See ``/examples`` in the PyKMIP repository for a boilerplate
    configuration file to get started.
+
+.. _`third-party-auth-config`:
+
+Third-Party Authentication
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To configure third-party authentication plugins, separate configuration blocks
+must be specified in the server configuration file.
+
+.. note::
+    Third-party authentication settings can only be set in the server
+    configuration file. There is no way to set them using the ``KmipServer``
+    constructor in Python code.
+
+An example authentication plugin configuration settings block is shown below:
+
+.. code-block:: console
+
+    [auth:slugs]
+    enabled=False
+    url=http://127.0.0.1:8080/slugs/
+
+All authentication plugin configuration settings blocks must begin with the
+string ``auth:``. For more information on third-party authentication
+integration, see :ref:`third-party-auth-integration`.
 
 Usage
 -----
@@ -153,10 +181,11 @@ copy the startup script and run it from any directory you choose.
 Storage
 -------
 All data storage for the server is managed via `sqlalchemy`_. The current
-backend leverages `SQLite`_, storing managed objects in a flat file located
-at ``/tmp/pykmip.database``. If this file is deleted, the stored objects will
-be gone for good. If this file is preserved across server restarts, object
-access will be maintained.
+backend leverages `SQLite`_, storing managed objects in a flat file. The file
+location can be configured using the ``database_path`` configuration setting.
+By default this file will be located at ``/tmp/pykmip.database``. If this
+database file is deleted, the stored objects will be gone for good. If this
+file is preserved across server restarts, object access will be maintained.
 
 .. note::
    Updates to the server data model will generate errors if the server is
@@ -166,6 +195,489 @@ access will be maintained.
 Long term, the intent is to add support for more robust database and storage
 backends available through ``sqlalchemy``. If you are interested in this work,
 please see :doc:`Development <development>` for more information.
+
+.. _authentication:
+
+Authentication
+--------------
+Client authentication for the PyKMIP server is currently enforced by the
+validation of the client certificate used to establish the client/server
+TLS connection. If the client connects to the server with a certificate
+that has been signed by a certificate authority recognized by the server,
+the initial connection is allowed. If the server cannot validate the client's
+certificate, the connection is blocked and the client cannot access any
+objects stored on the server.
+
+If client authentication succeeds, the identity of the client is obtained
+from the client's certificate. The server will extract the common name from
+the certificate's subject distinguished name and use the common name as the
+identity of the client. If the ``enable_tls_client_auth`` configuration
+setting is set to ``True``, the server will check the client's certificate
+for the extended key usage extension (see `RFC 5280`_). In this case the
+certificate must have the extension marked for client authentication, which
+indicates that the certificate can be used to derive client identity. If
+the extension is not present or is marked incorrectly, the server will not
+be able to derive the client's identity and will close the connection. If
+the ``enable_tls_client_auth`` configuration setting is set to ``False``,
+the certificate extension check is omitted.
+
+Once the client's identity is obtained, the client's request is processed. Any
+objects created or registered by the client will be marked as owned by the
+client identity. This identity is then used in conjunction with KMIP operation
+policies to enforce object access control (see :ref:`access-control`).
+
+.. _third-party-auth-integration:
+
+Third-Party Integration
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Beyond validating the client's certificate and extracting the client identity
+from the certificate's subject distinguished name, the server also supports
+a configurable framework for third-party authentication. This allows the
+server to integrate with existing authentication systems.
+
+For each enabled third-party authentication plugin, the server will query the
+associated third-party service to verify that the user identified by the
+client certificate is a valid user. If validation succeeds, the server will
+also query the service for information pertaining to any groups the user may
+belong to. This information is leveraged for fine-grained access control
+(see :ref:`access-control`). No other plugins are queried once a validation
+success has occurred. If validation fails, the server will attempt to
+authenticate with the next enabled plugin. If validation fails for all enabled
+plugins, the server will reject the client's request and close the connection.
+Validation only needs to succeed for one authentication plugin for client
+authentication to succeed.
+
+If no third-party authentication plugins are enabled, the server will skip
+third-party authentication and will rely solely on client certificate
+validation for client authentication. Note that in this case, no user group
+information is available for fine-grained access control.
+
+For more information on configuring third-party authentication plugins, see
+:ref:`third-party-auth-config`.
+
+Supported third-party authentication plugins are discussed below.
+
+SLUGS
+*****
+The Simple, Lightweight User Group Services (SLUGS) library is an open-source
+web service that serves user/group membership data over a basic REST
+interface. It is intended as an easy-to-use stopgap for developers and
+deployers interested in leveraging third-party authentication with the PyKMIP
+server.
+
+All SLUGS plugin configuration settings blocks must begin with the string
+``auth:slugs``. Multiple SLUGS plugins can be configured at once; simply add
+a unique suffix to the block name to distinguish it from other blocks (e.g.,
+``auth:slugs:primary``, ``auth:slugs:secondary``).
+
+The different configuration options supported by the SLUGS plugin are defined
+below:
+
+* ``enabled``
+    A boolean indicating whether or not the authentication plugin should be
+    used for authentication.
+* ``url``
+    A string representing the URL at which to access a SLUGS REST interface.
+
+For more information on SLUGS, see `SLUGS`_.
+
+.. _access-control:
+
+Access Control
+--------------
+
+Access control for server objects is managed through KMIP operation policies.
+An operation policy is a set of permissions, indexed by object type and
+operation. For any KMIP object type and operation pair, the policy defines
+who is allowed to conduct the operation on the object type.
+
+There are three basic permissions currently supported by KMIP:
+
+* ``Allow All``
+    This permission indicates that any client authenticated with the server
+    can conduct the corresponding operation on any object of the corresponding
+    type.
+* ``Allow Owner``
+    This permission restricts the operation to any client authenticated and
+    identified as the owner of the object.
+* ``Disallow All``
+    This permission blocks any client from conducting the operation on the
+    object and is usually reserved for static public objects or tasks that
+    only the server itself is allowed to perform.
+
+For example, let's examine a simple use case where a client wants to retrieve
+a symmetric key from the server.
+
+1. The client submits a ``Get`` request to the server (see :ref:`get`),
+   including the UUID of the symmetric key it wants to retrieve.
+2. The server will derive the client's identity and then lookup the object
+   with the corresponding UUID.
+3. If the object is located, the server will check the object's operation
+   policy attribute for the name of the operation policy associated with the
+   object.
+4. The server will then use the operation policy, the client's identity,
+   the object's type, the object's owner, and the operation to determine if
+   the client can retrieve the symmetric key.
+5. If the operation policy has symmetric keys and the ``Get`` operation
+   mapped to ``Allow All``, the operation is allowed for the client regardless
+   of the client's identity and the symmetric key is returned to the client.
+   If the permission is set to ``Allow Owner``, the server will return the
+   symmetric key only if the client's identity matches the object's owner.
+   If the permission is set to ``Disallow All``, the server will refuse to
+   return the symmetric key, regardless of the client's identity.
+
+While an operation policy can cover every possible combination of object type
+and operation, it does not have to. If a policy does not cover a specific
+object type or operation, the server defaults to the safest option and acts
+as if the permission was set to ``Disallow All``.
+
+Each KMIP object is assigned an operation policy and owner upon creation. If
+no operation policy is included in the creation request, the server
+automatically assigns it the ``default`` operation policy. The ``default``
+operation policy is defined in the KMIP specification and is built into the
+PyKMIP server; it cannot be redefined or overridden by the user or server
+administrator. For more information on reserved policies, see
+:ref:`reserved-policies`.
+
+Policy Files
+~~~~~~~~~~~~
+
+In addition to the built-in operation policies, the PyKMIP server allows
+users to define their own operation policies via policy files. A policy file
+is a basic JSON file that maps names for policies to tables of access
+controls. The server dynamically loads policy files from the policy directory,
+which is defined by the ``policy_path`` configuration setting. The server
+tracks any changes made to the policy directory, supporting the addition,
+modification, and/or removal of policy files and/or policies within those
+files. This allows users and administrators to modify and update their
+policies while the server is running, without any downtime. Note that it is up
+to the server administrator to ensure that user-defined policies do not
+overwrite each other by using identical policy names. Should this occur, the
+server will cache older policies, dynamically restoring them should the naming
+collision be corrected.
+
+An example policy file, ``policy.json``, is included in the ``examples``
+directory of the PyKMIP repository. Let's take a look at the first few lines
+from the policy:
+
+.. code-block:: console
+
+    {
+        "example": {
+            "preset": {
+                "CERTIFICATE": {
+                    "LOCATE": "ALLOW_ALL",
+                    "CHECK":  "ALLOW_ALL",
+    ...
+
+The first piece of information in the policy file is the name of the policy,
+in this case ``example``. The name maps to collections of operation policies,
+grouped into two sets. The first set, shown here, is the ``preset``
+collection. The ``preset`` collection contains rules that are used when user
+group information is unavailable; this is usually the case when third-party
+authentication is disabled. The ``preset`` collection rules consist of a set
+of object types, which in turn are mapped to a set of operations with
+associated permissions. In the snippet above, the first object type supported
+is ``CERTIFICATE`` followed by two supported operations, ``LOCATE`` and
+``CHECK``. Both operations are mapped to the ``ALLOW_ALL`` permission. Putting
+this all together, all clients are allowed to use the ``LOCATE`` and ``CHECK``
+operations with certificate objects under the ``example`` policy, regardless
+of who owns the certificate being accessed. If you examine the full example
+file, you will see more operations listed, along with additional object types.
+
+The second collection of operation policies that can be found in an operation
+policy file is the ``groups`` collection. This collection is used to provide
+group-based access control to objects. The following snippet is similar to the
+above snippet, reworked to use ``groups`` instead of ``preset``:
+
+.. code-block:: console
+
+    {
+        "example": {
+            "groups": {
+                "group_A": {
+                    "CERTIFICATE": {
+                        "GET": "ALLOW_ALL",
+                        "DESTROY": "ALLOW_ALL",
+                        ...
+                },
+                "group_B": {
+                    "CERTIFICATE": {
+                        "GET": "ALLOW_ALL",
+                        "DESTROY": "DISALLOW_ALL",
+                        ...
+
+Like the prior snippet, the policy name is ``example``. However, unlike the
+``preset`` collection shown before, the ``groups`` collection first maps to a
+series of group names, in this case ``group_A`` and ``group_B``. Each group
+maps to a set of object types and then access controls, following the same
+structure used by ``preset``. The controls mapped under each group are
+distinct. This allows the policy to provide segregated access controls for
+groups of users, making it easy to share objects managed by the server while
+retaining fine-grained access control. In this case, any user belonging to
+``group_A`` will be able to retrieve and destroy certificates using the
+``example`` policy. Users in ``group_B`` will also be able to retrieve these
+certificates, but they will be unable to destroy them. Users belonging to both
+groups will receive the most permissive permissions available across the set
+of controls, meaning these users will be able to retrieve and destroy
+certificates since the controls under ``group_A`` are the most permissive.
+
+The ``preset`` and ``groups`` collections can be included in the same policy.
+For example:
+
+.. code-block:: console
+
+    {
+        "example": {
+            "preset": {
+                "CERTIFICATE": {
+                    "DESTROY": "DISALLOW_ALL",
+                    ...
+            },
+            "groups": {
+                "group_A": {
+                    "CERTIFICATE": {
+                        "DESTROY": "ALLOW_ALL",
+                    ...
+                },
+                "group_B": {
+                    "CERTIFICATE": {
+                        "DESTROY": "DISALLOW_ALL",
+                        ...
+                }
+            }
+        }
+    }
+
+As stated above, the controls belonging to the ``groups`` collection are only
+enforced if user group information is available after client authentication.
+If client authentication succeeds but no group information is available, the
+controls belonging to the ``preset`` collection are enforced. This allows
+users to effectively enable/disable group-level access controls if applicable
+to their use case. If group information is provided but only ``preset``
+controls are defined, the ``preset`` controls will be enforced. If group
+information is not provided but only ``groups`` controls are defined,
+``Disallow All`` will be the only enforced control for the policy. This
+ensures that the policy behaves according to user expectations.
+
+Finally, a single policy file can contain multiple policies:
+
+.. code-block:: console
+
+    {
+        "example_1": {
+            "preset": {
+                "CERTIFICATE": {
+                    "DESTROY": "DISALLOW_ALL",
+                    ...
+            }
+        },
+        "example_2": {
+            "groups": {
+                "group_A": {
+                    "CERTIFICATE": {
+                        "DESTROY": "ALLOW_ALL",
+                    ...
+                },
+                "group_B": {
+                    "CERTIFICATE": {
+                        "DESTROY": "DISALLOW_ALL",
+                        ...
+                }
+            }
+        }
+    }
+
+The above snippet shows two policies, ``example_1`` and ``example_2``. Each
+contains a different set of rules, one leveraging a ``preset`` collection and
+the other using the ``groups`` collection. While defined in the same JSON
+block, these policies are distinct from one another and are treated as
+separate entities. All of the previously defined rules and conventions for
+policies still apply.
+
+.. _reserved-policies:
+
+Reserved Operation Policies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The PyKMIP server defines two reserved, built-in operation policies:
+``default`` and ``public``. Both of these policies are defined in the KMIP
+specification. Neither can be renamed or overridden by user-defined policies.
+The ``default`` policy is used for newly created objects that are not assigned
+a policy by their creators, though it can be used by creators intentionally.
+The ``public`` policy is intended for use with template objects that are
+public to the entire user-base of the server.
+
+The following tables define the permissions for each of the built-in policies.
+
+``default`` policy
+******************
+
+=============  ====================  ============
+Object Type    Operation             Permission
+=============  ====================  ============
+Certificate    Locate                Allow All
+Certificate    Check                 Allow All
+Certificate    Get                   Allow All
+Certificate    Get Attributes        Allow All
+Certificate    Get Attribute List    Allow All
+Certificate    Add Attribute         Allow Owner
+Certificate    Modify Attribute      Allow Owner
+Certificate    Delete Attribute      Allow Owner
+Certificate    Obtain Lease          Allow All
+Certificate    Activate              Allow Owner
+Certificate    Revoke                Allow Owner
+Certificate    Destroy               Allow Owner
+Certificate    Archive               Allow Owner
+Certificate    Recover               Allow Owner
+Symmetric Key  Rekey                 Allow Owner
+Symmetric Key  Rekey Key Pair        Allow Owner
+Symmetric Key  Derive Key            Allow Owner
+Symmetric Key  Locate                Allow Owner
+Symmetric Key  Check                 Allow Owner
+Symmetric Key  Get                   Allow Owner
+Symmetric Key  Get Attributes        Allow Owner
+Symmetric Key  Get Attribute List    Allow Owner
+Symmetric Key  Add Attribute         Allow Owner
+Symmetric Key  Modify Attribute      Allow Owner
+Symmetric Key  Delete Attribute      Allow Owner
+Symmetric Key  Obtain Lease          Allow Owner
+Symmetric Key  Get Usage Allocation  Allow Owner
+Symmetric Key  Activate              Allow Owner
+Symmetric Key  Revoke                Allow Owner
+Symmetric Key  Destroy               Allow Owner
+Symmetric Key  Archive               Allow Owner
+Symmetric Key  Recover               Allow Owner
+Public Key 	   Locate                Allow All
+Public Key     Check                 Allow All
+Public Key     Get                   Allow All
+Public Key 	   Get Attributes        Allow All
+Public Key     Get Attribute List    Allow All
+Public Key     Add Attribute         Allow Owner
+Public Key     Modify Attribute      Allow Owner
+Public Key     Delete Attribute      Allow Owner
+Public Key     Obtain Lease          Allow All
+Public Key     Activate              Allow Owner
+Public Key     Revoke                Allow Owner
+Public Key     Destroy               Allow Owner
+Public Key     Archive               Allow Owner
+Public Key     Recover               Allow Owner
+Private Key    Rekey                 Allow Owner
+Private Key    Rekey Key Pair        Allow Owner
+Private Key    Derive Key            Allow Owner
+Private Key    Locate                Allow Owner
+Private Key    Check                 Allow Owner
+Private Key    Get                   Allow Owner
+Private Key    Get Attributes        Allow Owner
+Private Key    Get Attribute List    Allow Owner
+Private Key    Add Attribute         Allow Owner
+Private Key    Modify Attribute      Allow Owner
+Private Key    Delete Attribute      Allow Owner
+Private Key    Obtain Lease          Allow Owner
+Private Key    Get Usage Allocation  Allow Owner
+Private Key    Activate              Allow Owner
+Private Key    Revoke                Allow Owner
+Private Key    Destroy               Allow Owner
+Private Key    Archive               Allow Owner
+Private Key    Recover               Allow Owner
+Split Key      Rekey                 Allow Owner
+Split Key      Rekey Key Pair        Allow Owner
+Split Key      Derive Key            Allow Owner
+Split Key      Locate                Allow Owner
+Split Key      Check                 Allow Owner
+Split Key      Get                   Allow Owner
+Split Key      Get Attributes        Allow Owner
+Split Key      Get Attribute List    Allow Owner
+Split Key      Add Attribute         Allow Owner
+Split Key      Modify Attribute      Allow Owner
+Split Key      Delete Attribute      Allow Owner
+Split Key      Obtain Lease          Allow Owner
+Split Key      Get Usage Allocation  Allow Owner
+Split Key      Activate              Allow Owner
+Split Key      Revoke                Allow Owner
+Split Key      Destroy               Allow Owner
+Split Key      Archive               Allow Owner
+Split Key      Recover               Allow Owner
+Template       Locate                Allow Owner
+Template       Get                   Allow Owner
+Template       Get Attributes        Allow Owner
+Template       Get Attribute List    Allow Owner
+Template       Add Attribute         Allow Owner
+Template       Modify Attribute      Allow Owner
+Template       Delete Attribute      Allow Owner
+Template       Destroy               Allow Owner
+Secret Data    Rekey                 Allow Owner
+Secret Data    Rekey Key Pair        Allow Owner
+Secret Data    Derive Key            Allow Owner
+Secret Data    Locate                Allow Owner
+Secret Data    Check                 Allow Owner
+Secret Data    Get                   Allow Owner
+Secret Data    Get Attributes        Allow Owner
+Secret Data    Get Attribute List    Allow Owner
+Secret Data    Add Attribute         Allow Owner
+Secret Data    Modify                Allow Owner
+Secret Data    Delete Attribute      Allow Owner
+Secret Data    Obtain Lease          Allow Owner
+Secret Data    Get Usage Allocation  Allow Owner
+Secret Data    Activate              Allow Owner
+Secret Data    Revoke                Allow Owner
+Secret Data    Destroy               Allow Owner
+Secret Data    Archive               Allow Owner
+Secret Data    Recover               Allow Owner
+Opaque Data    Rekey                 Allow Owner
+Opaque Data    Rekey Key Pair        Allow Owner
+Opaque Data    Derive Key            Allow Owner
+Opaque Data    Locate                Allow Owner
+Opaque Data    Check                 Allow Owner
+Opaque Data    Get                   Allow Owner
+Opaque Data    Get Attributes        Allow Owner
+Opaque Data    Get Attribute List    Allow Owner
+Opaque Data    Add Attribute         Allow Owner
+Opaque Data    Modify Attribute      Allow Owner
+Opaque Data    Delete Attribute      Allow Owner
+Opaque Data    Obtain Lease          Allow Owner
+Opaque Data    Get Usage Allocation  Allow Owner
+Opaque Data    Activate              Allow Owner
+Opaque Data    Revoke                Allow Owner
+Opaque Data    Destroy               Allow Owner
+Opaque Data    Archive               Allow Owner
+Opaque Data    Recover               Allow Owner
+PGP Key        Rekey                 Allow Owner
+PGP Key        Rekey Key Pair        Allow Owner
+PGP Key        Derive Key            Allow Owner
+PGP Key        Locate                Allow Owner
+PGP Key        Check                 Allow Owner
+PGP Key        Get                   Allow Owner
+PGP Key        Get Attributes        Allow Owner
+PGP Key        Get Attribute List    Allow Owner
+PGP Key        Add Attribute         Allow Owner
+PGP Key        Modify Attribute      Allow Owner
+PGP Key        Delete Attribute      Allow Owner
+PGP Key        Obtain Lease          Allow Owner
+PGP Key        Get Usage Allocation  Allow Owner
+PGP Key        Activate              Allow Owner
+PGP Key        Revoke                Allow Owner
+PGP Key        Destroy               Allow Owner
+PGP Key        Archive               Allow Owner
+PGP Key        Recover               Allow Owner
+=============  ====================  ============
+
+``public`` policy
+*****************
+
+===========  ==================  ============
+Object Type  Operation           Permission
+===========  ==================  ============
+Template     Locate              Allow All
+Template     Get                 Allow All
+Template     Get Attributes      Allow All
+Template     Get Attribute List  Allow All
+Template     Add Attribute       Disallow All
+Template     Modify Attribute    Disallow All
+Template     Delete Attribute    Disallow All
+Template     Destroy             Disallow All
+===========  ==================  ============
 
 .. _objects:
 
@@ -471,6 +983,8 @@ If no filtering values are provided, the server will return a list of
 :term:`unique_identifier` values corresponding to all of the managed objects
 the user has access to.
 
+.. _get:
+
 Get
 ~~~
 The Get attribute is used to retrieve a managed object stored on the server.
@@ -700,25 +1214,6 @@ may occur in the following cases:
 * the managed object does not have the Generate bit set in its usage mask
 * the requested algorithm is not supported for HMAC/CMAC generation
 
-.. Miscellaneous
-.. -------------
-..
-.. Object State
-.. ~~~~~~~~~~~~
-.. TBD
-..
-.. Object Operation Policy
-.. ~~~~~~~~~~~~~~~~~~~~~~~
-.. TBD
-..
-.. Object Ownership
-.. ~~~~~~~~~~~~~~~~
-.. TBD
-..
-.. Object Usage
-.. ~~~~~~~~~~~~
-.. TBD
-
 .. _`ssl`: https://docs.python.org/dev/library/ssl.html#socket-creation
 .. _`sqlalchemy`: https://www.sqlalchemy.org/
 .. _`SQLite`: http://docs.sqlalchemy.org/en/latest/dialects/sqlite.html
@@ -740,3 +1235,5 @@ may occur in the following cases:
 .. _`SHA512`: https://en.wikipedia.org/wiki/SHA-2
 .. _`HMAC`: https://en.wikipedia.org/wiki/Hash-based_message_authentication_code
 .. _`CMAC`: https://en.wikipedia.org/wiki/One-key_MAC
+.. _`RFC 5280`: https://www.ietf.org/rfc/rfc5280.txt
+.. _`SLUGS`: https://github.com/OpenKMIP/SLUGS
