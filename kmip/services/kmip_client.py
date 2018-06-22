@@ -224,7 +224,7 @@ class KMIPProxy:
                 self.socket.connect((self.host, self.port))
             except Exception as e:
                 self.logger.error("An error occurred while connecting to "
-                                  "appliance " + self.host)
+                                  "appliance %s: %s", self.host, e)
                 self.socket.close()
                 last_error = e
             else:
