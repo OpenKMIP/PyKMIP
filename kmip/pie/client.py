@@ -93,7 +93,7 @@ class ProxyKmipClient(object):
                 Optional, defaults to None.
 
         """
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger(__name__)
 
         self.attribute_factory = attributes.AttributeFactory()
         self.object_factory = factory.ObjectFactory()
