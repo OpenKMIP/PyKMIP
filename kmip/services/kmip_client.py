@@ -62,6 +62,7 @@ import os
 import six
 import socket
 import ssl
+import sys
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))
@@ -226,13 +227,13 @@ class KMIPProxy:
                 self.logger.error("An error occurred while connecting to "
                                   "appliance %s: %s", self.host, e)
                 self.socket.close()
-                last_error = e
+                last_error = sys.exc_info()
             else:
                 return
 
         self.socket = None
         if last_error:
-            raise last_error
+            six.reraise(*last_error)
 
     def _create_socket(self, sock):
         self.socket = ssl.wrap_socket(
