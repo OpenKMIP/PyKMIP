@@ -93,7 +93,7 @@ class ProxyKmipClient(object):
                 Optional, defaults to None.
 
         """
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger(__name__)
 
         self.attribute_factory = attributes.AttributeFactory()
         self.object_factory = factory.ObjectFactory()
@@ -131,7 +131,7 @@ class ProxyKmipClient(object):
                 self.proxy.open()
                 self._is_open = True
             except Exception as e:
-                self.logger.exception("could not open client connection", e)
+                self.logger.error("could not open client connection: %s", e)
                 raise
 
     def close(self):
@@ -148,7 +148,7 @@ class ProxyKmipClient(object):
                 self.proxy.close()
                 self._is_open = False
             except Exception as e:
-                self.logger.exception("could not close client connection", e)
+                self.logger.error("could not close client connection: %s", e)
                 raise
 
     @is_connected
