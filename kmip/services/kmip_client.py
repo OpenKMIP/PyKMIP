@@ -80,6 +80,10 @@ class KMIPProxy:
         self.logger = logging.getLogger(__name__)
         self.credential_factory = CredentialFactory()
         self.config = config
+        # Even partially-initialized objects need to be garbage collected, so
+        # make sure we have a socket attr before we go raising ValueErrors.
+        # Otherwise, we can hit AttributeErrors when __del__ is called.
+        self.socket = None
 
         if config_file:
             if not isinstance(config_file, six.string_types):
@@ -104,7 +108,6 @@ class KMIPProxy:
         self.authentication_suites = [
             AuthenticationSuite.BASIC,
             AuthenticationSuite.TLS12]
-        self.socket = None
 
     def get_supported_conformance_clauses(self):
         """
@@ -257,7 +260,7 @@ class KMIPProxy:
             try:
                 self.socket.shutdown(socket.SHUT_RDWR)
                 self.socket.close()
-            except OSError:
+            except (OSError, socket.error):
                 # Can be thrown if the socket is not actually connected to
                 # anything. In this case, ignore the error.
                 pass
