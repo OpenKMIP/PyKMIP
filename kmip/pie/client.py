@@ -153,7 +153,7 @@ class ProxyKmipClient(object):
 
     @is_connected
     def create(self, algorithm, length, operation_policy_name=None, name=None,
-               cryptographic_usage_mask=None):
+               cryptographic_usage_mask=None, no_default_usage_mask=False):
         """
         Create a symmetric key on a KMIP appliance.
 
@@ -165,8 +165,10 @@ class ProxyKmipClient(object):
                 to use for the new symmetric key. Optional, defaults to None
             name (string): The name to give the key. Optional, defaults to None
             cryptographic_usage_mask (list): list of enumerations of crypto
-                usage mask passing to the symmetric key. Optional, defaults to
-                None
+                usage mask passing to the symmetric key. Optional, always adds
+                ENCRYPT and DECRYPT unless no_default_usage_mask is True
+            no_default_usage_mask (boolean): If true, don't add ENCRYPT and
+                DECRYPT to the mask
 
         Returns:
             string: The uid of the newly created symmetric key.
@@ -195,7 +197,8 @@ class ProxyKmipClient(object):
             operation_policy_name
         )
         key_attributes = self._build_key_attributes(
-                            algorithm, length, cryptographic_usage_mask)
+                            algorithm, length, cryptographic_usage_mask,
+                            no_default_usage_mask)
         key_attributes.extend(common_attributes)
 
         if name:
@@ -1382,7 +1385,8 @@ class ProxyKmipClient(object):
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
 
-    def _build_key_attributes(self, algorithm, length, masks=None):
+    def _build_key_attributes(self, algorithm, length, masks=None,
+                              no_default_usage_mask=False):
         # Build a list of core key attributes.
         algorithm_attribute = self.attribute_factory.create_attribute(
             enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -1393,6 +1397,8 @@ class ProxyKmipClient(object):
         # Default crypto usage mask value
         mask_value = [enums.CryptographicUsageMask.ENCRYPT,
                       enums.CryptographicUsageMask.DECRYPT]
+        if no_default_usage_mask:
+            mask_value = []
         if masks:
             mask_value.extend(masks)
         # remove duplicates
