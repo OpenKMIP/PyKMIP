@@ -23,7 +23,7 @@ EXECLOGFILE=./execlogfile.txt
 pythonexe=/cygdrive/c/Python27/python.exe
 unitspath=/projetos/dinamo/PyKMIP/kmip/demos/units
 piepath=/projetos/dinamo/PyKMIP/kmip/demos/pie
-config_session=hs47
+config_session=kmip_test
 outfile=out.txt
 tst_pwd=12345678
 
@@ -323,9 +323,9 @@ function test_keys
         
     test_sym_key "AES"          "128 192 256" "ECB CBC"     "NONE ZEROS PKCS5"
     
-    #testar padd 
-    # ANSI_X923 : simétrico
-    # X931       : assimétrico   
+    #testar padds
+    # ANSI_X923 : simetrico
+    # X931       : assimetrico
     
     test_asym_key_pair "RSA"\
                         "1024 2048"\
