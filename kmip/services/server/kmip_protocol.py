@@ -27,6 +27,10 @@ class KMIPProtocol(object):
     def __init__(self, socket, buffer_size=1024):
         self.socket = socket
         self.logger = logging.getLogger(__name__)
+        # DEBUG logging here may expose secrets, so log at INFO by default.
+        # However, if consumers know the risks, let them go ahead and override.
+        if self.logger.level == logging.NOTSET:
+            self.logger.setLevel(logging.INFO)
 
     def write(self, data):
         if len(data) > 0:

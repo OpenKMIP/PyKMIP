@@ -47,6 +47,10 @@ class ConfigHelper(object):
 
     def __init__(self, path=None):
         self.logger = logging.getLogger(__name__)
+        # DEBUG logging here may expose passwords, so log at INFO by default.
+        # However, if consumers know the risks, let them go ahead and override.
+        if self.logger.level == logging.NOTSET:
+            self.logger.setLevel(logging.INFO)
 
         self.conf = SafeConfigParser()
 
