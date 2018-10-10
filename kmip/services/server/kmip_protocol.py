@@ -44,7 +44,7 @@ class KMIPProtocol(object):
             header = self._recv_all(self.HEADER_SIZE)
         except RequestLengthMismatch as e:
             if e.received == 0:
-                raise EOFError("No request to process")
+                raise EOFError("No data read from socket")
             else:
                 raise
         msg_size = unpack('!I', header[4:])[0]
