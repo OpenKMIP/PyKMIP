@@ -41,7 +41,7 @@ if __name__ == '__main__':
     protocol_versions = list()
     if opts.protocol_versions is not None:
         for version in re.split(',| ', opts.protocol_versions):
-            mm = re.split('\.', version)
+            mm = re.split(r'\.', version)
             protocol_versions.append(ProtocolVersion(int(mm[0]), int(mm[1])))
 
     # Build the client and connect to the server
