@@ -1444,7 +1444,7 @@ class KmipEngine(object):
             else:
                 raise exceptions.InvalidField(
                     "The cryptographic length must correspond to a valid "
-                    "number of bytes (i.e., it must be a multiple of 8)."
+                    "number of bytes; it must be a multiple of 8."
                 )
         else:
             raise exceptions.InvalidField(

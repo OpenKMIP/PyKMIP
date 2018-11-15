@@ -4108,7 +4108,7 @@ class TestKmipEngine(testtools.TestCase):
         self.assertRaisesRegexp(
             exceptions.InvalidField,
             "The cryptographic length must correspond to a valid number of "
-            "bytes \(i.e., it must be a multiple of 8\).",
+            "bytes; it must be a multiple of 8.",
             e._process_derive_key,
             *args
         )
