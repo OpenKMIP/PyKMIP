@@ -91,7 +91,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         """
         payload = payloads.GetAttributeListRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifier must be a string",
             setattr,
@@ -439,7 +439,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetAttributeListResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifier must be a string",
             setattr,
@@ -487,7 +487,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetAttributeListResponsePayload()
         args = (payload, 'attribute_names', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "attribute_names must be a list of strings",
             setattr,
@@ -506,7 +506,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
             'attribute_names',
             ['test-attribute-name-1', 0]
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "attribute_names must be a list of strings; "
             "item 2 has type {0}".format(type(0)),

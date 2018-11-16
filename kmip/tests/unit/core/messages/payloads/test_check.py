@@ -104,7 +104,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         the unique identifier of a Check request payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.CheckRequestPayload,
@@ -113,7 +113,7 @@ class TestCheckRequestPayload(testtools.TestCase):
 
         payload = payloads.CheckRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -126,7 +126,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         the usage limits count of a Check request payload.
         """
         kwargs = {'usage_limits_count': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Usage limits count must be an integer.",
             payloads.CheckRequestPayload,
@@ -135,7 +135,7 @@ class TestCheckRequestPayload(testtools.TestCase):
 
         payload = payloads.CheckRequestPayload()
         args = (payload, 'usage_limits_count', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Usage limits count must be an integer.",
             setattr,
@@ -148,7 +148,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         the cryptographic usage mask of a Check request payload.
         """
         kwargs = {'cryptographic_usage_mask': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic usage mask must be an integer.",
             payloads.CheckRequestPayload,
@@ -157,7 +157,7 @@ class TestCheckRequestPayload(testtools.TestCase):
 
         payload = payloads.CheckRequestPayload()
         args = (payload, 'cryptographic_usage_mask', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic usage mask must be an integer.",
             setattr,
@@ -170,7 +170,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         the lease time of a Check request payload.
         """
         kwargs = {'lease_time': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Lease time must be an integer.",
             payloads.CheckRequestPayload,
@@ -179,7 +179,7 @@ class TestCheckRequestPayload(testtools.TestCase):
 
         payload = payloads.CheckRequestPayload()
         args = (payload, 'lease_time', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Lease time must be an integer.",
             setattr,
@@ -617,7 +617,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         the unique identifier of a Check response payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.CheckResponsePayload,
@@ -626,7 +626,7 @@ class TestCheckResponsePayload(testtools.TestCase):
 
         payload = payloads.CheckResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -639,7 +639,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         the usage limits count of a Check response payload.
         """
         kwargs = {'usage_limits_count': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Usage limits count must be an integer.",
             payloads.CheckResponsePayload,
@@ -648,7 +648,7 @@ class TestCheckResponsePayload(testtools.TestCase):
 
         payload = payloads.CheckResponsePayload()
         args = (payload, 'usage_limits_count', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Usage limits count must be an integer.",
             setattr,
@@ -661,7 +661,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         the cryptographic usage mask of a Check response payload.
         """
         kwargs = {'cryptographic_usage_mask': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic usage mask must be an integer.",
             payloads.CheckResponsePayload,
@@ -670,7 +670,7 @@ class TestCheckResponsePayload(testtools.TestCase):
 
         payload = payloads.CheckResponsePayload()
         args = (payload, 'cryptographic_usage_mask', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic usage mask must be an integer.",
             setattr,
@@ -683,7 +683,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         the lease time of a Check response payload.
         """
         kwargs = {'lease_time': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Lease time must be an integer.",
             payloads.CheckResponsePayload,
@@ -692,7 +692,7 @@ class TestCheckResponsePayload(testtools.TestCase):
 
         payload = payloads.CheckResponsePayload()
         args = (payload, 'lease_time', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Lease time must be an integer.",
             setattr,

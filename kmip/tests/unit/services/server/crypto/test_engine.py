@@ -275,7 +275,7 @@ class TestCryptographyEngine(testtools.TestCase):
         engine = crypto.CryptographyEngine()
 
         args = (None, b'', b'')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Encryption algorithm is required.",
             engine.encrypt,
@@ -283,7 +283,7 @@ class TestCryptographyEngine(testtools.TestCase):
         )
 
         args = ('invalid', b'', b'')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Encryption algorithm 'invalid' is not a supported symmetric "
             "encryption algorithm.",
@@ -299,7 +299,7 @@ class TestCryptographyEngine(testtools.TestCase):
         engine = crypto.CryptographyEngine()
 
         args = (enums.CryptographicAlgorithm.AES, b'', b'')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.CryptographicFailure,
             "Invalid key bytes for the specified encryption algorithm.",
             engine.encrypt,
@@ -333,7 +333,7 @@ class TestCryptographyEngine(testtools.TestCase):
             b'\x0F\x0E\x0D\x0C\x0B\x0A\x09\x08'
             b'\x07\x06\x05\x04\x03\x02\x01\x00'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Cipher mode is required.",
             engine.encrypt,
@@ -341,7 +341,7 @@ class TestCryptographyEngine(testtools.TestCase):
         )
 
         kwargs = {'cipher_mode': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Cipher mode 'invalid' is not a supported mode.",
             engine.encrypt,
@@ -393,7 +393,7 @@ class TestCryptographyEngine(testtools.TestCase):
         engine = crypto.CryptographyEngine()
 
         args = ('invalid', b'', b'', None, None)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The cryptographic algorithm 'invalid' is not supported for "
             "asymmetric encryption.",
@@ -417,7 +417,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'padding_method': enums.PaddingMethod.OAEP,
             'hashing_algorithm': 'invalid'
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The hashing algorithm 'invalid' is not supported for asymmetric "
             "encryption.",
@@ -442,7 +442,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'padding_method': 'invalid',
             'hashing_algorithm': enums.HashingAlgorithm.SHA_1
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The padding method 'invalid' is not supported for asymmetric "
             "encryption.",
@@ -467,7 +467,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'padding_method': enums.PaddingMethod.OAEP,
             'hashing_algorithm': enums.HashingAlgorithm.SHA_1
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.CryptographicFailure,
             "The public key bytes could not be loaded.",
             engine.encrypt,
@@ -483,7 +483,7 @@ class TestCryptographyEngine(testtools.TestCase):
         engine = crypto.CryptographyEngine()
 
         args = ('invalid', b'', b'', None, None)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The cryptographic algorithm 'invalid' is not supported for "
             "asymmetric decryption.",
@@ -507,7 +507,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'padding_method': enums.PaddingMethod.OAEP,
             'hashing_algorithm': 'invalid'
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The hashing algorithm 'invalid' is not supported for asymmetric "
             "decryption.",
@@ -532,7 +532,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'padding_method': 'invalid',
             'hashing_algorithm': enums.HashingAlgorithm.SHA_1
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The padding method 'invalid' is not supported for asymmetric "
             "decryption.",
@@ -557,7 +557,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'padding_method': enums.PaddingMethod.OAEP,
             'hashing_algorithm': enums.HashingAlgorithm.SHA_1
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.CryptographicFailure,
             "The private key bytes could not be loaded.",
             engine.decrypt,
@@ -573,7 +573,7 @@ class TestCryptographyEngine(testtools.TestCase):
         engine = crypto.CryptographyEngine()
 
         args = (None, b'', b'')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Decryption algorithm is required.",
             engine.decrypt,
@@ -581,7 +581,7 @@ class TestCryptographyEngine(testtools.TestCase):
         )
 
         args = ('invalid', b'', b'')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Decryption algorithm 'invalid' is not a supported symmetric "
             "decryption algorithm.",
@@ -597,7 +597,7 @@ class TestCryptographyEngine(testtools.TestCase):
         engine = crypto.CryptographyEngine()
 
         args = (enums.CryptographicAlgorithm.AES, b'', b'')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.CryptographicFailure,
             "Invalid key bytes for the specified decryption algorithm.",
             engine.decrypt,
@@ -618,7 +618,7 @@ class TestCryptographyEngine(testtools.TestCase):
             b'\x0F\x0E\x0D\x0C\x0B\x0A\x09\x08'
             b'\x07\x06\x05\x04\x03\x02\x01\x00'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Cipher mode is required.",
             engine.decrypt,
@@ -626,7 +626,7 @@ class TestCryptographyEngine(testtools.TestCase):
         )
 
         kwargs = {'cipher_mode': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Cipher mode 'invalid' is not a supported mode.",
             engine.decrypt,
@@ -652,7 +652,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'cipher_mode': enums.BlockCipherMode.CBC,
             'padding_method': enums.PaddingMethod.PKCS5
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "IV/nonce is required.",
             engine.decrypt,
@@ -673,7 +673,7 @@ class TestCryptographyEngine(testtools.TestCase):
             None
         )
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Padding method is required.",
             engine._handle_symmetric_padding,
@@ -686,7 +686,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'invalid'
         )
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Padding method 'invalid' is not supported.",
             engine._handle_symmetric_padding,
@@ -705,7 +705,7 @@ class TestCryptographyEngine(testtools.TestCase):
             16
         )
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Hash algorithm is required.",
             engine.derive_key,
@@ -727,7 +727,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'hash_algorithm': 'invalid'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Hash algorithm 'invalid' is not a supported hashing algorithm.",
             engine.derive_key,
@@ -752,7 +752,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'key_material': b'\x0A\x0B\x0C\x0D'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "For hash-based key derivation, specify only derivation data or "
             "key material, not both.",
@@ -776,7 +776,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'hash_algorithm': enums.HashingAlgorithm.SHA_256
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "For hash-based key derivation, derivation data or key material "
             "must be specified.",
@@ -800,7 +800,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'hash_algorithm': enums.HashingAlgorithm.SHA_256
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "For PBKDF2 key derivation, salt must be specified.",
             engine.derive_key,
@@ -824,7 +824,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'salt': b'\x11\x22\x33\x44'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "For PBKDF2 key derivation, iteration count must be specified.",
             engine.derive_key,
@@ -847,7 +847,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'hash_algorithm': enums.HashingAlgorithm.SHA_256
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Derivation method 'invalid' is not a supported key derivation "
             "method.",
@@ -864,7 +864,7 @@ class TestCryptographyEngine(testtools.TestCase):
         engine = crypto.CryptographyEngine()
 
         args = (b'', 'invalid', enums.BlockCipherMode.NIST_KEY_WRAP, b'')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Wrapping method 'invalid' is not a supported key wrapping "
             "method.",
@@ -880,7 +880,7 @@ class TestCryptographyEngine(testtools.TestCase):
         engine = crypto.CryptographyEngine()
 
         args = (b'', enums.WrappingMethod.ENCRYPT, 'invalid', b'')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Encryption algorithm 'invalid' is not a supported key wrapping "
             "algorithm.",
@@ -915,7 +915,7 @@ class TestCryptographyEngine(testtools.TestCase):
         engine = crypto.CryptographyEngine()
 
         args = (None, None, None, None, None, None)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             'For signing, either a digital signature algorithm or a hash'
             ' algorithm and a cryptographic algorithm must be specified.',
@@ -938,7 +938,7 @@ class TestCryptographyEngine(testtools.TestCase):
             None,
             None
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             'For signing, an RSA key must be used.',
             engine.sign,
@@ -960,7 +960,7 @@ class TestCryptographyEngine(testtools.TestCase):
             DER_RSA_KEY,
             None
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Padding method 'PaddingMethod.OAEP' is not a supported"
             " signature padding method.",
@@ -983,7 +983,7 @@ class TestCryptographyEngine(testtools.TestCase):
             DER_RSA_KEY,
             None
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             'For signing, a padding method must be specified.',
             engine.sign,
@@ -1006,7 +1006,7 @@ class TestCryptographyEngine(testtools.TestCase):
             None
         )
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             'Unable to deserialize key '
             'bytes, unknown format.',
@@ -1033,7 +1033,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'digital_signature_algorithm':
                 enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The signing algorithm does not match the digital signature "
             "algorithm.",
@@ -1061,7 +1061,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'digital_signature_algorithm':
                 enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The hashing algorithm does not match the digital signature "
             "algorithm.",
@@ -1088,7 +1088,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'hashing_algorithm': None,
             'digital_signature_algorithm': None
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "A hashing algorithm must be specified for PSS padding.",
             engine.verify_signature,
@@ -1114,7 +1114,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
             'digital_signature_algorithm': None
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The padding method 'invalid' is not supported for signature "
             "verification.",
@@ -1141,7 +1141,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
             'digital_signature_algorithm': None
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.CryptographicFailure,
             "The signing key bytes could not be loaded.",
             engine.verify_signature,
@@ -1222,7 +1222,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'hashing_algorithm': None,
             'digital_signature_algorithm': None
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.CryptographicFailure,
             "The signature verification process failed.",
             engine.verify_signature,
@@ -1248,7 +1248,7 @@ class TestCryptographyEngine(testtools.TestCase):
             'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
             'digital_signature_algorithm': None
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The signing algorithm 'invalid' is not supported for signature "
             "verification.",

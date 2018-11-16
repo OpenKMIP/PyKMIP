@@ -90,7 +90,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         the unique identifier of a GetUsageAllocation request payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.GetUsageAllocationRequestPayload,
@@ -99,7 +99,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
 
         payload = payloads.GetUsageAllocationRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -112,7 +112,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         the usage limits count of a GetUsageAllocation request payload.
         """
         kwargs = {'usage_limits_count': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Usage limits count must be an integer.",
             payloads.GetUsageAllocationRequestPayload,
@@ -121,7 +121,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
 
         payload = payloads.GetUsageAllocationRequestPayload()
         args = (payload, 'usage_limits_count', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Usage limits count must be an integer.",
             setattr,
@@ -438,7 +438,7 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         the unique identifier of a GetUsageAllocation response payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.GetUsageAllocationResponsePayload,
@@ -447,7 +447,7 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
 
         payload = payloads.GetUsageAllocationResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,

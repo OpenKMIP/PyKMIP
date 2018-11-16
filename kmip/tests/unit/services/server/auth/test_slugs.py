@@ -95,7 +95,7 @@ class TestSLUGSConnector(testtools.TestCase):
         the URL of a SLUGSConnector.
         """
         kwargs = {'url': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "URL must be a string.",
             auth.SLUGSConnector,
@@ -104,7 +104,7 @@ class TestSLUGSConnector(testtools.TestCase):
 
         connector = auth.SLUGSConnector()
         args = (connector, "url", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "URL must be a string.",
             setattr,
@@ -158,7 +158,7 @@ class TestSLUGSConnector(testtools.TestCase):
         connector = auth.SLUGSConnector()
 
         args = ("test", )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             "The SLUGS URL must be specified.",
             connector.authenticate,
@@ -183,7 +183,7 @@ class TestSLUGSConnector(testtools.TestCase):
             url="http://127.0.0.1:8080/test/slugs/"
         )
         args = ("test", )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             "A connection could not be established using the SLUGS URL.",
             connector.authenticate,
@@ -212,7 +212,7 @@ class TestSLUGSConnector(testtools.TestCase):
             url="http://127.0.0.1:8080/test/slugs/"
         )
         args = ("test", )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "Unrecognized user ID: John Doe",
             connector.authenticate,
@@ -243,7 +243,7 @@ class TestSLUGSConnector(testtools.TestCase):
             url="http://127.0.0.1:8080/test/slugs/"
         )
         args = ("test", )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "Group information could not be retrieved for user ID: John Doe",
             connector.authenticate,

@@ -85,7 +85,7 @@ class TestExtensionInformation(TestCase):
         ExtensionName is used to construct an ExtensionInformation object.
         """
         kwargs = {'extension_name': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid extension name",
             ExtensionInformation, **kwargs)
 
@@ -95,7 +95,7 @@ class TestExtensionInformation(TestCase):
         ExtensionTag is used to construct an ExtensionInformation object.
         """
         kwargs = {'extension_tag': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid extension tag",
             ExtensionInformation, **kwargs)
 
@@ -105,7 +105,7 @@ class TestExtensionInformation(TestCase):
         ExtensionType is used to construct an ExtensionInformation object.
         """
         kwargs = {'extension_type': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid extension type",
             ExtensionInformation, **kwargs)
 

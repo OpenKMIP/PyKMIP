@@ -175,7 +175,7 @@ class TestAuthentication(testtools.TestCase):
         the credentials of an Authentication struct.
         """
         kwargs = {'credentials': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Credentials must be a list of Credential structs.",
             contents.Authentication,
@@ -184,7 +184,7 @@ class TestAuthentication(testtools.TestCase):
 
         authentication = contents.Authentication()
         args = (authentication, "credentials", 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Credentials must be a list of Credential structs.",
             setattr,
@@ -208,7 +208,7 @@ class TestAuthentication(testtools.TestCase):
                 'invalid'
             ]
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Credentials must be a list of Credential structs. Item 2 has "
             "type: {}".format(type('invalid')),
@@ -231,7 +231,7 @@ class TestAuthentication(testtools.TestCase):
                 'invalid'
             ]
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Credentials must be a list of Credential structs. Item 2 has "
             "type: {}".format(type('invalid')),
@@ -328,7 +328,7 @@ class TestAuthentication(testtools.TestCase):
         self.assertEqual([], authentication.credentials)
 
         args = (self.encoding_missing_credentials, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Authentication encoding missing credentials.",
             authentication.read,
@@ -420,7 +420,7 @@ class TestAuthentication(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Authentication struct missing credentials.",
             authentication.write,

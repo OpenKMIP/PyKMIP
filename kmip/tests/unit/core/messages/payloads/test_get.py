@@ -140,7 +140,7 @@ class TestGetRequestPayload(testtools.TestCase):
         the unique identifier of a Get request payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.GetRequestPayload,
@@ -148,7 +148,7 @@ class TestGetRequestPayload(testtools.TestCase):
         )
 
         args = (payloads.GetRequestPayload(), 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -161,7 +161,7 @@ class TestGetRequestPayload(testtools.TestCase):
         the key format type of a Get request payload.
         """
         kwargs = {'key_format_type': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Key format type must be a KeyFormatType enumeration.",
             payloads.GetRequestPayload,
@@ -169,7 +169,7 @@ class TestGetRequestPayload(testtools.TestCase):
         )
 
         args = (payloads.GetRequestPayload(), 'key_format_type', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Key format type must be a KeyFormatType enumeration.",
             setattr,
@@ -182,7 +182,7 @@ class TestGetRequestPayload(testtools.TestCase):
         the key compression type of a Get request payload.
         """
         kwargs = {'key_compression_type': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Key compression type must be a KeyCompressionType enumeration.",
             payloads.GetRequestPayload,
@@ -194,7 +194,7 @@ class TestGetRequestPayload(testtools.TestCase):
             'key_compression_type',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Key compression type must be a KeyCompressionType enumeration.",
             setattr,
@@ -207,7 +207,7 @@ class TestGetRequestPayload(testtools.TestCase):
         the key wrapping specification of a Get request payload.
         """
         kwargs = {'key_wrapping_specification': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Key wrapping specification must be a KeyWrappingSpecification "
             "struct.",
@@ -220,7 +220,7 @@ class TestGetRequestPayload(testtools.TestCase):
             'key_wrapping_specification',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Key wrapping specification must be a KeyWrappingSpecification "
             "struct.",
@@ -939,7 +939,7 @@ class TestGetResponsePayload(testtools.TestCase):
         the object type of a GetResponsePayload struct.
         """
         kwargs = {'object_type': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Object type must be an ObjectType enumeration.",
             payloads.GetResponsePayload,
@@ -947,7 +947,7 @@ class TestGetResponsePayload(testtools.TestCase):
         )
 
         args = (payloads.GetResponsePayload(), 'object_type', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Object type must be an ObjectType enumeration.",
             setattr,
@@ -960,7 +960,7 @@ class TestGetResponsePayload(testtools.TestCase):
         the unique identifier of a GetResponsePayload struct.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.GetResponsePayload,
@@ -968,7 +968,7 @@ class TestGetResponsePayload(testtools.TestCase):
         )
 
         args = (payloads.GetResponsePayload(), 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -981,7 +981,7 @@ class TestGetResponsePayload(testtools.TestCase):
         the secret of a GetResponsePayload struct.
         """
         kwargs = {'secret': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Secret must be one of the following structs: Certificate, "
             "OpaqueObject, PrivateKey, PublicKey, SecretData, SplitKey, "
@@ -991,7 +991,7 @@ class TestGetResponsePayload(testtools.TestCase):
         )
 
         args = (payloads.GetResponsePayload(), 'secret', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Secret must be one of the following structs: Certificate, "
             "OpaqueObject, PrivateKey, PublicKey, SecretData, SplitKey, "
@@ -1067,7 +1067,7 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetResponsePayload()
         args = (self.partial_encoding_missing_object_type, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the object type field.",
             payload.read,
@@ -1081,7 +1081,7 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetResponsePayload()
         args = (self.partial_encoding_missing_unique_id, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the unique identifier field.",
             payload.read,
@@ -1095,7 +1095,7 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetResponsePayload()
         args = (self.partial_encoding_missing_secret, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the secret field.",
             payload.read,
@@ -1142,7 +1142,7 @@ class TestGetResponsePayload(testtools.TestCase):
         payload = payloads.GetResponsePayload()
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Payload is missing the object type field.",
             payload.write,
@@ -1159,7 +1159,7 @@ class TestGetResponsePayload(testtools.TestCase):
         )
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Payload is missing the unique identifier field.",
             payload.write,
@@ -1177,7 +1177,7 @@ class TestGetResponsePayload(testtools.TestCase):
         )
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Payload is missing the secret field.",
             payload.write,

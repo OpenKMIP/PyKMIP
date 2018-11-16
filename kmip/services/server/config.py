@@ -122,7 +122,7 @@ class KmipServerConfig(object):
             "Loading server configuration settings from: {0}".format(path)
         )
 
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
         parser.read(path)
         self._parse_settings(parser)
         self.parse_auth_settings(parser)

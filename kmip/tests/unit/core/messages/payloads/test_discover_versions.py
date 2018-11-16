@@ -62,13 +62,13 @@ class TestDiscoverVersionsRequestPayload(TestCase):
 
     def test_validate_with_invalid_protocol_versions(self):
         kwargs = {'protocol_versions': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid protocol versions list",
             payloads.DiscoverVersionsRequestPayload, **kwargs)
 
     def test_validate_with_invalid_protocol_version(self):
         kwargs = {'protocol_versions': ['invalid']}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid protocol version",
             payloads.DiscoverVersionsRequestPayload, **kwargs)
 
@@ -189,13 +189,13 @@ class TestDiscoverVersionsResponsePayload(TestCase):
 
     def test_validate_with_invalid_protocol_versions(self):
         kwargs = {'protocol_versions': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid protocol versions list",
             payloads.DiscoverVersionsResponsePayload, **kwargs)
 
     def test_validate_with_invalid_protocol_version(self):
         kwargs = {'protocol_versions': ['invalid']}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid protocol version",
             payloads.DiscoverVersionsResponsePayload, **kwargs)
 

@@ -56,7 +56,7 @@ class TestPolicy(testtools.TestCase):
 
         args = (object_policy, )
         regex = "'INVALID' is not a valid ObjectType value."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             regex,
             policy.parse_policy,
@@ -71,7 +71,7 @@ class TestPolicy(testtools.TestCase):
 
         args = (object_policy, )
         regex = "'INVALID' is not a valid Operation value."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             regex,
             policy.parse_policy,
@@ -87,7 +87,7 @@ class TestPolicy(testtools.TestCase):
 
         args = (object_policy, )
         regex = "'INVALID' is not a valid Policy value."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             regex,
             policy.parse_policy,
@@ -211,7 +211,7 @@ class TestPolicy(testtools.TestCase):
 
         args = (policy_file.name, )
         regex = "Policy 'test' contains an invalid section named: invalid"
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             regex,
             policy.read_policy_from_file,
@@ -263,7 +263,7 @@ class TestPolicy(testtools.TestCase):
         regex = "Loading the policy file '{}' generated a JSON error:".format(
             policy_file.name
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             regex,
             policy.read_policy_from_file,

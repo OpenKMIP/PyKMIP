@@ -199,7 +199,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         """
         payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'object_type', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "object type must be an ObjectType enumeration",
             setattr,
@@ -213,7 +213,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         """
         payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'unique_identifiers', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifiers must be a list of strings",
             setattr,
@@ -221,7 +221,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         )
 
         args = (payload, 'unique_identifiers', [0])
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifiers must be a list of strings",
             setattr,
@@ -229,7 +229,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         )
 
         args = (payload, 'unique_identifiers', ['valid', 'valid', 0])
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifiers must be a list of strings",
             setattr,
@@ -243,7 +243,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         """
         payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'derivation_method', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "derivation method must be a DerivationMethod enumeration",
             setattr,
@@ -257,7 +257,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         """
         payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'derivation_parameters', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "derivation parameters must be a DerivationParameters struct",
             setattr,
@@ -271,7 +271,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         """
         payload = payloads.DeriveKeyRequestPayload()
         args = (payload, 'template_attribute', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "template attribute must be a TemplateAttribute struct",
             setattr,
@@ -356,7 +356,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertEqual(None, payload.template_attribute)
 
         args = (self.partial_encoding_no_object_type, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing object type",
             payload.read,
@@ -377,7 +377,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertEqual(None, payload.template_attribute)
 
         args = (self.partial_encoding_no_unique_identifiers, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing unique identifiers",
             payload.read,
@@ -398,7 +398,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertEqual(None, payload.template_attribute)
 
         args = (self.partial_encoding_no_derivation_method, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing derivation method",
             payload.read,
@@ -419,7 +419,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertEqual(None, payload.template_attribute)
 
         args = (self.partial_encoding_no_derivation_parameters, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing derivation parameters",
             payload.read,
@@ -440,7 +440,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertEqual(None, payload.template_attribute)
 
         args = (self.partial_encoding_no_template_attribute, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing template attribute",
             payload.read,
@@ -504,7 +504,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         payload = payloads.DeriveKeyRequestPayload()
 
         args = (utils.BytearrayStream(), )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing object type",
             payload.write,
@@ -521,7 +521,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         )
 
         args = (utils.BytearrayStream(), )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing unique identifiers",
             payload.write,
@@ -543,7 +543,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         )
 
         args = (utils.BytearrayStream(), )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing derivation method",
             payload.write,
@@ -566,7 +566,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         )
 
         args = (utils.BytearrayStream(), )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing derivation parameters",
             payload.write,
@@ -596,7 +596,7 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         )
 
         args = (utils.BytearrayStream(), )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing template attribute",
             payload.write,
@@ -1537,7 +1537,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         """
         payload = payloads.DeriveKeyResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifier must be a string",
             setattr,
@@ -1551,7 +1551,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         """
         payload = payloads.DeriveKeyResponsePayload()
         args = (payload, 'template_attribute', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "template attribute must be a TemplateAttribute struct",
             setattr,
@@ -1611,7 +1611,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         self.assertEqual(None, payload.template_attribute)
 
         args = (self.partial_encoding_no_unique_identifier, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing unique identifier",
             payload.read,
@@ -1681,7 +1681,7 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         payload = payloads.DeriveKeyResponsePayload()
 
         args = (utils.BytearrayStream(), )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing unique identifier",
             payload.write,

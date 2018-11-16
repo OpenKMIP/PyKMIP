@@ -77,7 +77,7 @@ class TestRecoverRequestPayload(testtools.TestCase):
         the unique identifier of a Recover request payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.RecoverRequestPayload,
@@ -86,7 +86,7 @@ class TestRecoverRequestPayload(testtools.TestCase):
 
         payload = payloads.RecoverRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -329,7 +329,7 @@ class TestRecoverResponsePayload(testtools.TestCase):
         the unique identifier of a Recover response payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.RecoverResponsePayload,
@@ -338,7 +338,7 @@ class TestRecoverResponsePayload(testtools.TestCase):
 
         payload = payloads.RecoverResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,

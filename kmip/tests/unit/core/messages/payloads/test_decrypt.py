@@ -135,7 +135,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         """
         payload = payloads.DecryptRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifier must be a string",
             setattr,
@@ -149,7 +149,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         """
         payload = payloads.DecryptRequestPayload()
         args = (payload, 'cryptographic_parameters', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "cryptographic parameters must be a CryptographicParameters "
             "struct",
@@ -164,7 +164,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         """
         payload = payloads.DecryptRequestPayload()
         args = (payload, 'data', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "data must be bytes",
             setattr,
@@ -178,7 +178,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         """
         payload = payloads.DecryptRequestPayload()
         args = (payload, 'iv_counter_nonce', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "IV/counter/nonce must be bytes",
             setattr,
@@ -272,7 +272,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         """
         payload = payloads.DecryptRequestPayload()
         args = (self.empty_encoding, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the data attribute",
             payload.read,
@@ -332,7 +332,7 @@ class TestDecryptRequestPayload(testtools.TestCase):
         payload = payloads.DecryptRequestPayload()
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the data attribute",
             payload.write,
@@ -752,7 +752,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         """
         payload = payloads.DecryptResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifier must be a string",
             setattr,
@@ -766,7 +766,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         """
         payload = payloads.DecryptResponsePayload()
         args = (payload, 'data', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "data must be bytes",
             setattr,
@@ -797,7 +797,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         """
         payload = payloads.DecryptResponsePayload()
         args = (self.empty_encoding, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the unique identifier attribute",
             payload.read,
@@ -806,7 +806,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
 
         payload = payloads.DecryptResponsePayload()
         args = (self.incomplete_encoding, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the data attribute",
             payload.read,
@@ -836,7 +836,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.unique_identifier)
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the unique identifier attribute",
             payload.write,
@@ -848,7 +848,7 @@ class TestDecryptResponsePayload(testtools.TestCase):
         )
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the data attribute",
             payload.write,

@@ -91,7 +91,7 @@ class TestApplicationSpecificInformation(TestCase):
         application_data = ApplicationData()
         args = [application_namespace, application_data]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid application namespace",
             ApplicationSpecificInformation, *args)
 
@@ -105,7 +105,7 @@ class TestApplicationSpecificInformation(TestCase):
         application_data = "invalid"
         args = [application_namespace, application_data]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid application data",
             ApplicationSpecificInformation, *args)
 

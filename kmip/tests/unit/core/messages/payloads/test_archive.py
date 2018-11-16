@@ -77,7 +77,7 @@ class TestArchiveRequestPayload(testtools.TestCase):
         the unique identifier of an Archive request payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.ArchiveRequestPayload,
@@ -86,7 +86,7 @@ class TestArchiveRequestPayload(testtools.TestCase):
 
         payload = payloads.ArchiveRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -329,7 +329,7 @@ class TestArchiveResponsePayload(testtools.TestCase):
         the unique identifier of an Archive response payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.ArchiveResponsePayload,
@@ -338,7 +338,7 @@ class TestArchiveResponsePayload(testtools.TestCase):
 
         payload = payloads.ArchiveResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,

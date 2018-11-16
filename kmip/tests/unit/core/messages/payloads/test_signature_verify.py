@@ -224,7 +224,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         the unique identifier of a SignatureVerify request payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             signature_verify.SignatureVerifyRequestPayload,
@@ -233,7 +233,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -246,7 +246,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         the cryptographic parameters of a SignatureVerify request payload.
         """
         kwargs = {'cryptographic_parameters': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic parameters must be a CryptographicParameters "
             "struct.",
@@ -256,7 +256,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyRequestPayload()
         args = (payload, 'cryptographic_parameters', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic parameters must be a CryptographicParameters "
             "struct.",
@@ -270,7 +270,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         the data of a SignatureVerify request payload.
         """
         kwargs = {'data': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Data must be bytes.",
             signature_verify.SignatureVerifyRequestPayload,
@@ -279,7 +279,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyRequestPayload()
         args = (payload, 'data', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Data must be bytes.",
             setattr,
@@ -292,7 +292,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         the digested data of a SignatureVerify request payload.
         """
         kwargs = {'digested_data': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Digested data must be bytes.",
             signature_verify.SignatureVerifyRequestPayload,
@@ -301,7 +301,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyRequestPayload()
         args = (payload, 'digested_data', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Digested data must be bytes.",
             setattr,
@@ -314,7 +314,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         the signature data of a SignatureVerify request payload.
         """
         kwargs = {'signature_data': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Signature data must be bytes.",
             signature_verify.SignatureVerifyRequestPayload,
@@ -323,7 +323,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyRequestPayload()
         args = (payload, 'signature_data', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Signature data must be bytes.",
             setattr,
@@ -336,7 +336,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         the correlation value of a SignatureVerify request payload.
         """
         kwargs = {'correlation_value': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Correlation value must be bytes.",
             signature_verify.SignatureVerifyRequestPayload,
@@ -345,7 +345,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyRequestPayload()
         args = (payload, 'correlation_value', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Correlation value must be bytes.",
             setattr,
@@ -358,7 +358,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         the init indicator of a SignatureVerify request payload.
         """
         kwargs = {'init_indicator': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Init indicator must be a boolean.",
             signature_verify.SignatureVerifyRequestPayload,
@@ -367,7 +367,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyRequestPayload()
         args = (payload, 'init_indicator', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Init indicator must be a boolean.",
             setattr,
@@ -380,7 +380,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         the final indicator of a SignatureVerify request payload.
         """
         kwargs = {'final_indicator': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Final indicator must be a boolean.",
             signature_verify.SignatureVerifyRequestPayload,
@@ -389,7 +389,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyRequestPayload()
         args = (payload, 'final_indicator', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Final indicator must be a boolean.",
             setattr,
@@ -1126,7 +1126,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         the unique identifier of a SignatureVerify response payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             signature_verify.SignatureVerifyResponsePayload,
@@ -1135,7 +1135,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -1148,7 +1148,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         the validity indicator of a SignatureVerify response payload.
         """
         kwargs = {'validity_indicator': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Validity indicator must be a ValidityIndicator enumeration.",
             signature_verify.SignatureVerifyResponsePayload,
@@ -1157,7 +1157,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyResponsePayload()
         args = (payload, 'validity_indicator', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Validity indicator must be a ValidityIndicator enumeration.",
             setattr,
@@ -1170,7 +1170,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         the data of a SignatureVerify request payload.
         """
         kwargs = {'data': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Data must be bytes.",
             signature_verify.SignatureVerifyResponsePayload,
@@ -1179,7 +1179,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyResponsePayload()
         args = (payload, 'data', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Data must be bytes.",
             setattr,
@@ -1192,7 +1192,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         the correlation value of a SignatureVerify request payload.
         """
         kwargs = {'correlation_value': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Correlation value must be bytes.",
             signature_verify.SignatureVerifyResponsePayload,
@@ -1201,7 +1201,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
 
         payload = signature_verify.SignatureVerifyResponsePayload()
         args = (payload, 'correlation_value', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Correlation value must be bytes.",
             setattr,
@@ -1266,7 +1266,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         """
         payload = signature_verify.SignatureVerifyResponsePayload()
         args = (self.partial_encoding_missing_unique_id, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the unique identifier field.",
             payload.read,
@@ -1281,7 +1281,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         """
         payload = signature_verify.SignatureVerifyResponsePayload()
         args = (self.partial_encoding_missing_validity_ind, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the validity indicator field.",
             payload.read,
@@ -1329,7 +1329,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         payload = signature_verify.SignatureVerifyResponsePayload()
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Payload is missing the unique identifier field.",
             payload.write,
@@ -1347,7 +1347,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         )
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Payload is missing the validity indicator field.",
             payload.write,

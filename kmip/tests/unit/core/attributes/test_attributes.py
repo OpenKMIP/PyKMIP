@@ -44,16 +44,16 @@ class TestNameValue(TestCase):
         super(TestNameValue, self).tearDown()
 
     def test_write_no_padding(self):
-        self.skip('Not implemented')
+        self.skipTest('Not implemented')
 
     def test_write_with_padding(self):
-        self.skip('Not implemented')
+        self.skipTest('Not implemented')
 
     def test_read_no_padding(self):
-        self.skip('Not implemented')
+        self.skipTest('Not implemented')
 
     def test_read_with_padding(self):
-        self.skip('Not implemented')
+        self.skipTest('Not implemented')
 
     def test__eq(self):
         name_val = Name.NameValue(self.stringName1)
@@ -91,16 +91,16 @@ class TestNameType(TestCase):
         super(TestNameType, self).tearDown()
 
     def test_write_no_padding(self):
-        self.skip('Not implemented')
+        self.skipTest('Not implemented')
 
     def test_write_with_padding(self):
-        self.skip('Not implemented')
+        self.skipTest('Not implemented')
 
     def test_read_no_padding(self):
-        self.skip('Not implemented')
+        self.skipTest('Not implemented')
 
     def test_read_with_padding(self):
-        self.skip('Not implemented')
+        self.skipTest('Not implemented')
 
     def test__eq(self):
         type_uri = Name.NameType(self.enum_uri)
@@ -642,7 +642,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'block_cipher_mode', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "block cipher mode must be a BlockCipherMode enumeration",
             setattr,
@@ -656,7 +656,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'padding_method', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "padding method must be a PaddingMethod enumeration",
             setattr,
@@ -670,7 +670,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'hashing_algorithm', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "hashing algorithm must be a HashingAlgorithm enumeration",
             setattr,
@@ -684,7 +684,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'key_role_type', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "key role type must be a KeyRoleType enumeration",
             setattr,
@@ -702,7 +702,7 @@ class TestCryptographicParameters(TestCase):
             'digital_signature_algorithm',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "digital signature algorithm must be a "
             "DigitalSignatureAlgorithm enumeration",
@@ -717,7 +717,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'cryptographic_algorithm', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "cryptographic algorithm must be a CryptographicAlgorithm "
             "enumeration",
@@ -732,7 +732,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'random_iv', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "random iv must be a boolean",
             setattr,
@@ -746,7 +746,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'iv_length', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "iv length must be an integer",
             setattr,
@@ -760,7 +760,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'tag_length', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "tag length must be an integer",
             setattr,
@@ -774,7 +774,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'fixed_field_length', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "fixed field length must be an integer",
             setattr,
@@ -788,7 +788,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'invocation_field_length', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "invocation field length must be an integer",
             setattr,
@@ -802,7 +802,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'counter_length', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "counter length must be an integer",
             setattr,
@@ -816,7 +816,7 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'initial_counter_value', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "initial counter value must be an integer",
             setattr,
@@ -1776,7 +1776,7 @@ class TestDerivationParameters(TestCase):
         the cryptographic parameters of a DerivationParameters struct.
         """
         kwargs = {'cryptographic_parameters': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "cryptographic parameters must be a CryptographicParameters "
             "struct",
@@ -1786,7 +1786,7 @@ class TestDerivationParameters(TestCase):
 
         derivation_parameters = DerivationParameters()
         args = (derivation_parameters, 'cryptographic_parameters', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "cryptographic parameters must be a CryptographicParameters "
             "struct",
@@ -1801,7 +1801,7 @@ class TestDerivationParameters(TestCase):
         """
         derivation_parameters = DerivationParameters()
         args = (derivation_parameters, 'initialization_vector', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "initialization vector must be bytes",
             setattr,
@@ -1815,7 +1815,7 @@ class TestDerivationParameters(TestCase):
         """
         derivation_parameters = DerivationParameters()
         args = (derivation_parameters, 'derivation_data', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "derivation data must be bytes",
             setattr,
@@ -1829,7 +1829,7 @@ class TestDerivationParameters(TestCase):
         """
         derivation_parameters = DerivationParameters()
         args = (derivation_parameters, 'salt', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "salt must be bytes",
             setattr,
@@ -1843,7 +1843,7 @@ class TestDerivationParameters(TestCase):
         """
         derivation_parameters = DerivationParameters()
         args = (derivation_parameters, 'iteration_count', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "iteration count must be an integer",
             setattr,

@@ -185,9 +185,11 @@ class TestBase(testtools.TestCase):
         self.assertRaises(TypeError, base.write_length, self.stream)
 
     def test_write_length_overflow(self):
-        self.skip('No easy way to test with a number requiring more than '
-                  '2 ** 0xffffffff bytes for representation. Test preserved '
-                  'for completeness.')
+        self.skipTest(
+            'No easy way to test with a number requiring more than '
+            '2 ** 0xffffffff bytes for representation. Test preserved '
+            'for completeness.'
+        )
 
     def test_write_value(self):
         base = primitives.Base()
