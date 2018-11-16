@@ -85,7 +85,7 @@ class TestNonce(testtools.TestCase):
         the nonce ID of a Nonce struct.
         """
         kwargs = {'nonce_id': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Nonce ID must be bytes.",
             objects.Nonce,
@@ -94,7 +94,7 @@ class TestNonce(testtools.TestCase):
 
         nonce = objects.Nonce()
         args = (nonce, "nonce_id", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Nonce ID must be bytes.",
             setattr,
@@ -107,7 +107,7 @@ class TestNonce(testtools.TestCase):
         the nonce value of a Nonce struct.
         """
         kwargs = {'nonce_value': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Nonce value must be bytes.",
             objects.Nonce,
@@ -116,7 +116,7 @@ class TestNonce(testtools.TestCase):
 
         nonce = objects.Nonce()
         args = (nonce, "nonce_value", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Nonce value must be bytes.",
             setattr,
@@ -151,7 +151,7 @@ class TestNonce(testtools.TestCase):
         self.assertEqual(None, nonce.nonce_value)
 
         args = (self.encoding_missing_nonce_id, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Nonce encoding missing the nonce ID.",
             nonce.read,
@@ -169,7 +169,7 @@ class TestNonce(testtools.TestCase):
         self.assertEqual(None, nonce.nonce_value)
 
         args = (self.encoding_missing_nonce_value, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Nonce encoding missing the nonce value.",
             nonce.read,
@@ -202,7 +202,7 @@ class TestNonce(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Nonce struct is missing the nonce ID.",
             nonce.write,
@@ -220,7 +220,7 @@ class TestNonce(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Nonce struct is missing the nonce value.",
             nonce.write,
@@ -464,7 +464,7 @@ class TestUsernamePasswordCredential(testtools.TestCase):
         the username of a UsernamePasswordCredential struct.
         """
         kwargs = {'username': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Username must be a string.",
             objects.UsernamePasswordCredential,
@@ -473,7 +473,7 @@ class TestUsernamePasswordCredential(testtools.TestCase):
 
         credential = objects.UsernamePasswordCredential()
         args = (credential, "username", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Username must be a string.",
             setattr,
@@ -486,7 +486,7 @@ class TestUsernamePasswordCredential(testtools.TestCase):
         the password of a UsernamePasswordCredential struct.
         """
         kwargs = {'password': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Password must be a string.",
             objects.UsernamePasswordCredential,
@@ -495,7 +495,7 @@ class TestUsernamePasswordCredential(testtools.TestCase):
 
         credential = objects.UsernamePasswordCredential()
         args = (credential, "password", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Password must be a string.",
             setattr,
@@ -529,7 +529,7 @@ class TestUsernamePasswordCredential(testtools.TestCase):
         self.assertEqual(None, credential.password)
 
         args = (self.encoding_missing_username, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Username/password credential encoding missing the username.",
             credential.read,
@@ -579,7 +579,7 @@ class TestUsernamePasswordCredential(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Username/password credential struct missing the username.",
             credential.write,
@@ -926,7 +926,7 @@ class TestDeviceCredential(testtools.TestCase):
         the device serial number of a DeviceCredential struct.
         """
         kwargs = {'device_serial_number': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Device serial number must be a string.",
             objects.DeviceCredential,
@@ -935,7 +935,7 @@ class TestDeviceCredential(testtools.TestCase):
 
         credential = objects.DeviceCredential()
         args = (credential, "device_serial_number", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Device serial number must be a string.",
             setattr,
@@ -948,7 +948,7 @@ class TestDeviceCredential(testtools.TestCase):
         the password of a DeviceCredential struct.
         """
         kwargs = {'password': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Password must be a string.",
             objects.DeviceCredential,
@@ -957,7 +957,7 @@ class TestDeviceCredential(testtools.TestCase):
 
         credential = objects.DeviceCredential()
         args = (credential, "password", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Password must be a string.",
             setattr,
@@ -970,7 +970,7 @@ class TestDeviceCredential(testtools.TestCase):
         the device identifier of a DeviceCredential struct.
         """
         kwargs = {'device_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Device identifier must be a string.",
             objects.DeviceCredential,
@@ -979,7 +979,7 @@ class TestDeviceCredential(testtools.TestCase):
 
         credential = objects.DeviceCredential()
         args = (credential, "device_identifier", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Device identifier must be a string.",
             setattr,
@@ -992,7 +992,7 @@ class TestDeviceCredential(testtools.TestCase):
         the network identifier of a DeviceCredential struct.
         """
         kwargs = {'network_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Network identifier must be a string.",
             objects.DeviceCredential,
@@ -1001,7 +1001,7 @@ class TestDeviceCredential(testtools.TestCase):
 
         credential = objects.DeviceCredential()
         args = (credential, "network_identifier", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Network identifier must be a string.",
             setattr,
@@ -1014,7 +1014,7 @@ class TestDeviceCredential(testtools.TestCase):
         the machine identifier of a DeviceCredential struct.
         """
         kwargs = {'machine_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Machine identifier must be a string.",
             objects.DeviceCredential,
@@ -1023,7 +1023,7 @@ class TestDeviceCredential(testtools.TestCase):
 
         credential = objects.DeviceCredential()
         args = (credential, "machine_identifier", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Machine identifier must be a string.",
             setattr,
@@ -1036,7 +1036,7 @@ class TestDeviceCredential(testtools.TestCase):
         the media identifier of a DeviceCredential struct.
         """
         kwargs = {'media_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Media identifier must be a string.",
             objects.DeviceCredential,
@@ -1045,7 +1045,7 @@ class TestDeviceCredential(testtools.TestCase):
 
         credential = objects.DeviceCredential()
         args = (credential, "media_identifier", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Media identifier must be a string.",
             setattr,
@@ -1837,7 +1837,7 @@ class TestAttestationCredential(testtools.TestCase):
         the nonce of an AttestationCredential struct.
         """
         kwargs = {"nonce": "invalid"}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Nonce must be a Nonce struct.",
             objects.AttestationCredential,
@@ -1846,7 +1846,7 @@ class TestAttestationCredential(testtools.TestCase):
 
         credential = objects.AttestationCredential()
         args = (credential, "nonce", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Nonce must be a Nonce struct.",
             setattr,
@@ -1859,7 +1859,7 @@ class TestAttestationCredential(testtools.TestCase):
         the attestation type of an AttestationCredential struct.
         """
         kwargs = {"attestation_type": "invalid"}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Attestation type must be an AttestationType enumeration.",
             objects.AttestationCredential,
@@ -1868,7 +1868,7 @@ class TestAttestationCredential(testtools.TestCase):
 
         credential = objects.AttestationCredential()
         args = (credential, "attestation_type", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Attestation type must be an AttestationType enumeration.",
             setattr,
@@ -1881,7 +1881,7 @@ class TestAttestationCredential(testtools.TestCase):
         the attestation measurement of an AttestationCredential struct.
         """
         kwargs = {"attestation_measurement": 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Attestation measurement must be bytes.",
             objects.AttestationCredential,
@@ -1890,7 +1890,7 @@ class TestAttestationCredential(testtools.TestCase):
 
         credential = objects.AttestationCredential()
         args = (credential, "attestation_measurement", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Attestation measurement must be bytes.",
             setattr,
@@ -1903,7 +1903,7 @@ class TestAttestationCredential(testtools.TestCase):
         the attestation assertion of an AttestationCredential struct.
         """
         kwargs = {"attestation_assertion": 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Attestation assertion must be bytes.",
             objects.AttestationCredential,
@@ -1912,7 +1912,7 @@ class TestAttestationCredential(testtools.TestCase):
 
         credential = objects.AttestationCredential()
         args = (credential, "attestation_assertion", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Attestation assertion must be bytes.",
             setattr,
@@ -1966,7 +1966,7 @@ class TestAttestationCredential(testtools.TestCase):
         self.assertEqual(None, credential.attestation_assertion)
 
         args = (self.encoding_missing_nonce, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Attestation credential encoding is missing the nonce.",
             credential.read,
@@ -1987,7 +1987,7 @@ class TestAttestationCredential(testtools.TestCase):
         self.assertEqual(None, credential.attestation_assertion)
 
         args = (self.encoding_missing_attestation_type, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Attestation credential encoding is missing the attestation type.",
             credential.read,
@@ -2071,7 +2071,7 @@ class TestAttestationCredential(testtools.TestCase):
         self.assertEqual(None, credential.attestation_assertion)
 
         args = (self.encoding_missing_attestation, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Attestation credential encoding is missing either the "
             "attestation measurement or the attestation assertion.",
@@ -2113,7 +2113,7 @@ class TestAttestationCredential(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Attestation credential struct is missing the nonce.",
             credential.write,
@@ -2136,7 +2136,7 @@ class TestAttestationCredential(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Attestation credential struct is missing the attestation type.",
             credential.write,
@@ -2211,7 +2211,7 @@ class TestAttestationCredential(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Attestation credential struct is missing either the attestation "
             "measurement or the attestation assertion.",
@@ -2615,7 +2615,7 @@ class TestCredential(testtools.TestCase):
         the credential type of a Credential struct.
         """
         kwargs = {"credential_type": "invalid"}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Credential type must be a CredentialType enumeration.",
             objects.Credential,
@@ -2624,7 +2624,7 @@ class TestCredential(testtools.TestCase):
 
         credential = objects.Credential()
         args = (credential, "credential_type", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Credential type must be a CredentialType enumeration.",
             setattr,
@@ -2637,7 +2637,7 @@ class TestCredential(testtools.TestCase):
         the credential value of a Credential struct.
         """
         kwargs = {"credential_value": "invalid"}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Credential value must be a CredentialValue struct.",
             objects.Credential,
@@ -2646,7 +2646,7 @@ class TestCredential(testtools.TestCase):
 
         credential = objects.Credential()
         args = (credential, "credential_value", 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Credential value must be a CredentialValue struct.",
             setattr,
@@ -2712,7 +2712,7 @@ class TestCredential(testtools.TestCase):
         self.assertEqual(None, credential.credential_value)
 
         args = (self.encoding_missing_credential_type, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Credential encoding missing the credential type.",
             credential.read,
@@ -2739,7 +2739,7 @@ class TestCredential(testtools.TestCase):
         self.assertEqual(None, credential.credential_value)
 
         args = (self.encoding_unknown_credential_type, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Credential encoding includes unrecognized credential type.",
             credential.read,
@@ -2758,7 +2758,7 @@ class TestCredential(testtools.TestCase):
         self.assertEqual(None, credential.credential_value)
 
         args = (self.encoding_missing_credential_value, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Credential encoding missing the credential value.",
             credential.read,
@@ -2817,7 +2817,7 @@ class TestCredential(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Credential struct missing the credential type.",
             credential.write,
@@ -2835,7 +2835,7 @@ class TestCredential(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Credential struct missing the credential value.",
             credential.write,

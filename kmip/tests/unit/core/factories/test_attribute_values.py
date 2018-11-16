@@ -35,7 +35,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a UniqueIdentifier attribute can be created.
         """
-        self.skip('')
+        self.skipTest('')
 
     def test_create_name(self):
         """
@@ -73,13 +73,13 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a CryptographicAlgorithm attribute can be created.
         """
-        self.skip('')
+        self.skipTest('')
 
     def test_create_cryptographic_length(self):
         """
         Test that a CryptographicLength attribute can be created.
         """
-        self.skip('')
+        self.skipTest('')
 
     def test_create_cryptographic_parameters(self):
         """
@@ -255,7 +255,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a CryptographicUsageMask attribute can be created.
         """
-        self.skip('')
+        self.skipTest('')
 
     def test_create_lease_time(self):
         """
@@ -390,7 +390,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that an ObjectGroup attribute can be created.
         """
-        self.skip('')
+        self.skipTest('')
 
     def test_create_fresh(self):
         """
@@ -415,13 +415,13 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that an ApplicationSpecificInformation attribute can be created.
         """
-        self.skip('')
+        self.skipTest('')
 
     def test_create_contact_information(self):
         """
         Test that a ContactInformation attribute can be created.
         """
-        self.skip('')
+        self.skipTest('')
 
     def test_create_last_change_date(self):
         """

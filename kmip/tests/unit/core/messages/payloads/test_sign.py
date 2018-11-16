@@ -101,7 +101,7 @@ class TestSignRequestPayload(testtools.TestCase):
         """
         payload = sign.SignRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifier must be a string",
             setattr,
@@ -115,7 +115,7 @@ class TestSignRequestPayload(testtools.TestCase):
         """
         payload = sign.SignRequestPayload()
         args = (payload, 'cryptographic_parameters', b'\x01\x02\x03')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "cryptographic parameters must be a CryptographicParameters "
             "struct",
@@ -130,7 +130,7 @@ class TestSignRequestPayload(testtools.TestCase):
         """
         payload = sign.SignRequestPayload()
         args = (payload, 'data', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "data must be bytes",
             setattr,
@@ -190,7 +190,7 @@ class TestSignRequestPayload(testtools.TestCase):
         """
         payload = sign.SignRequestPayload()
         args = (self.empty_encoding, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the data attribute",
             payload.read,
@@ -238,7 +238,7 @@ class TestSignRequestPayload(testtools.TestCase):
         payload = sign.SignRequestPayload()
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the data attribute",
             payload.write,
@@ -539,7 +539,7 @@ class TestSignResponsePayload(testtools.TestCase):
         """
         payload = sign.SignResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifier must be a string",
             setattr,
@@ -553,7 +553,7 @@ class TestSignResponsePayload(testtools.TestCase):
         """
         payload = sign.SignResponsePayload()
         args = (payload, 'signature_data', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "signature data must be bytes",
             setattr,
@@ -588,7 +588,7 @@ class TestSignResponsePayload(testtools.TestCase):
         """
         payload = sign.SignResponsePayload()
         args = (self.empty_encoding, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the unique identifier attribute",
             payload.read,
@@ -597,7 +597,7 @@ class TestSignResponsePayload(testtools.TestCase):
 
         payload = sign.SignResponsePayload()
         args = (self.incomplete_encoding, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the signature data attribute",
             payload.read,
@@ -627,7 +627,7 @@ class TestSignResponsePayload(testtools.TestCase):
         payload = sign.SignResponsePayload()
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the unique identifier attribute",
             payload.write,

@@ -74,7 +74,7 @@ class TestKmipServerConfig(testtools.TestCase):
         # setting.
         args = ('invalid', None)
         regex = "Setting 'invalid' is not supported."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c.set_setting,
@@ -135,7 +135,7 @@ class TestKmipServerConfig(testtools.TestCase):
         with mock.patch('os.path.exists') as os_mock:
             os_mock.return_value = True
             with mock.patch(
-                'six.moves.configparser.SafeConfigParser.read'
+                'six.moves.configparser.ConfigParser.read'
             ) as parser_mock:
                 c.load_settings("/test/path/server.conf")
                 c._logger.info.assert_any_call(
@@ -162,7 +162,7 @@ class TestKmipServerConfig(testtools.TestCase):
         """
         Test that server authentication plugin settings are parsed correctly.
         """
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
         parser.add_section('server')
         parser.add_section('auth:slugs')
         parser.set('auth:slugs', 'enabled', 'True')
@@ -204,7 +204,7 @@ class TestKmipServerConfig(testtools.TestCase):
         Test that server authentication plugin settings are parsed correctly,
         even when not specified.
         """
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
         parser.add_section('server')
 
         c = config.KmipServerConfig()
@@ -239,7 +239,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._set_database_path = mock.MagicMock()
 
         # Test that the right calls are made when correctly parsing settings.
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
         parser.add_section('server')
         parser.set('server', 'hostname', '127.0.0.1')
         parser.set('server', 'port', '5696')
@@ -277,13 +277,13 @@ class TestKmipServerConfig(testtools.TestCase):
 
         # Test that a ConfigurationError is generated when the expected
         # section is missing.
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
 
         args = (parser, )
         regex = (
             "The server configuration file does not have a 'server' section."
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._parse_settings,
@@ -292,7 +292,7 @@ class TestKmipServerConfig(testtools.TestCase):
 
         # Test that a ConfigurationError is generated when an unexpected
         # setting is provided.
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
         parser.add_section('server')
         parser.set('server', 'invalid', 'invalid')
 
@@ -301,7 +301,7 @@ class TestKmipServerConfig(testtools.TestCase):
             "Setting 'invalid' is not a supported setting. Please remove it "
             "from the configuration file."
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._parse_settings,
@@ -310,14 +310,14 @@ class TestKmipServerConfig(testtools.TestCase):
 
         # Test that a ConfigurationError is generated when an expected
         # setting is missing.
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
         parser.add_section('server')
 
         args = (parser, )
         regex = (
             "Setting 'hostname' is missing from the configuration file."
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._parse_settings,
@@ -326,14 +326,14 @@ class TestKmipServerConfig(testtools.TestCase):
 
         # Test that a ConfigurationError is generated when an expected
         # setting is missing.
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
         parser.add_section('server')
 
         args = (parser, )
         regex = (
             "Setting 'hostname' is missing from the configuration file."
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._parse_settings,
@@ -356,7 +356,7 @@ class TestKmipServerConfig(testtools.TestCase):
         # value.
         args = (0, )
         regex = "The hostname value must be a string."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._set_hostname,
@@ -380,7 +380,7 @@ class TestKmipServerConfig(testtools.TestCase):
         # value.
         args = ('invalid', )
         regex = "The port value must be an integer in the range 0 - 65535."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._set_port,
@@ -390,7 +390,7 @@ class TestKmipServerConfig(testtools.TestCase):
 
         args = (65536, )
         regex = "The port value must be an integer in the range 0 - 65535."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._set_port,
@@ -432,7 +432,7 @@ class TestKmipServerConfig(testtools.TestCase):
             "The certificate path value, if specified, must be a valid "
             "string path to a certificate file."
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._set_certificate_path,
@@ -447,7 +447,7 @@ class TestKmipServerConfig(testtools.TestCase):
         )
         with mock.patch('os.path.exists') as os_mock:
             os_mock.return_value = False
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 exceptions.ConfigurationError,
                 regex,
                 c._set_certificate_path,
@@ -491,7 +491,7 @@ class TestKmipServerConfig(testtools.TestCase):
             "The key path value, if specified, must be a valid string path "
             "to a certificate key file."
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._set_key_path,
@@ -506,7 +506,7 @@ class TestKmipServerConfig(testtools.TestCase):
         )
         with mock.patch('os.path.exists') as os_mock:
             os_mock.return_value = False
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 exceptions.ConfigurationError,
                 regex,
                 c._set_key_path,
@@ -585,7 +585,7 @@ class TestKmipServerConfig(testtools.TestCase):
             "The authentication suite must be one of the following: "
             "Basic, TLS1.2"
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             regex,
             c._set_auth_suite,
@@ -658,7 +658,7 @@ class TestKmipServerConfig(testtools.TestCase):
         # Test that a ConfigurationError is generated when setting the wrong
         # value.
         args = ('invalid',)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             "The flag enabling the TLS certificate client auth flag check "
             "must be a boolean.",
@@ -740,7 +740,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._logger = mock.MagicMock()
 
         args = (1,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             "The TLS cipher suites must be a set of strings representing "
             "cipher suite names.",
@@ -757,7 +757,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._logger = mock.MagicMock()
 
         args = ([0],)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             "The TLS cipher suites must be a set of strings representing "
             "cipher suite names.",
@@ -810,7 +810,7 @@ class TestKmipServerConfig(testtools.TestCase):
         c._logger = mock.MagicMock()
 
         args = (0,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             "The logging level must be a string representing a valid logging "
             "level.",
@@ -819,7 +819,7 @@ class TestKmipServerConfig(testtools.TestCase):
         )
 
         args = ('invalid',)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ConfigurationError,
             "The logging level must be a string representing a valid logging "
             "level.",

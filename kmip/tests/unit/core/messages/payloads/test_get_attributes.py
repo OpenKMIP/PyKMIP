@@ -122,7 +122,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         """
         payload = payloads.GetAttributesRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifier must be a string",
             setattr,
@@ -170,7 +170,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         """
         payload = payloads.GetAttributesRequestPayload()
         args = (payload, 'attribute_names', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "attribute_names must be a list of strings",
             setattr,
@@ -189,7 +189,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
             'attribute_names',
             ['test-attribute-name-1', 0]
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "attribute_names must be a list of strings; "
             "item 2 has type {0}".format(type(0)),
@@ -831,7 +831,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetAttributesResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "unique identifier must be a string",
             setattr,
@@ -865,7 +865,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetAttributesResponsePayload()
         args = (payload, 'attributes', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "attributes must be a list of attribute objects",
             setattr,
@@ -884,7 +884,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
             'attributes',
             [objects.Attribute(), 0]
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "attributes must be a list of attribute objects; "
             "item 2 has type {0}".format(type(0)),
@@ -933,7 +933,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         self.assertEqual(list(), payload._attributes)
 
         args = (self.encoding_sans_unique_identifier, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "expected GetAttributes response unique identifier not found",
             payload.read,
@@ -990,7 +990,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         stream = utils.BytearrayStream()
 
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The GetAttributes response unique identifier is required.",
             payload.write,

@@ -63,7 +63,7 @@ class TestActivateRequestPayload(TestCase):
         Test that a TypeError exception is raised when an invalid UUID type
         is used to construct a ActivateRequestPayload object.
         """
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid unique identifier",
             payloads.ActivateRequestPayload, "not-a-uuid")
 
@@ -146,7 +146,7 @@ class TestActivateResponsePayload(TestCase):
         Test that a TypeError exception is raised when an invalid Operations
         list is used to construct a ActivateResponsePayload object.
         """
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid unique identifier",
             payloads.ActivateResponsePayload, "not-a-uuid")
 

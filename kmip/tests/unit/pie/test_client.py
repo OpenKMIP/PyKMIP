@@ -432,7 +432,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client.proxy.create.return_value = result
         args = [enums.CryptographicAlgorithm.AES, 256]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.create, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -698,7 +698,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client.proxy.create_key_pair.return_value = result
         args = [enums.CryptographicAlgorithm.RSA, 2048]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg,
             client.create_key_pair, *args)
 
@@ -738,7 +738,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         kwargs = {'uid': 0}
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "The unique identifier must be a string.",
                 client.rekey,
@@ -754,7 +754,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         kwargs = {'offset': 'invalid'}
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "The offset must be an integer.",
                 client.rekey,
@@ -807,7 +807,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'deactivation_date': 10000
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure,
             error_message,
             client.rekey,
@@ -851,7 +851,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         kwargs = {'uid': 0}
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "The unique identifier must be a string.",
                 client.check,
@@ -867,7 +867,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         kwargs = {'usage_limits_count': 'invalid'}
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "The usage limits count must be an integer.",
                 client.check,
@@ -883,7 +883,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         kwargs = {'cryptographic_usage_mask': 'invalid'}
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "The cryptographic usage mask must be a list of "
                 "CryptographicUsageMask enumerations.",
@@ -900,7 +900,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         kwargs = {'lease_time': 'invalid'}
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "The lease time must be an integer.",
                 client.check,
@@ -962,7 +962,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'lease_time': 10000
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure,
             error_message,
             client.check,
@@ -1022,7 +1022,7 @@ class TestProxyKmipClient(testtools.TestCase):
         args = ['1']
         kwargs = {'key_wrapping_specification': 'invalid'}
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "Key wrapping specification must be a dictionary.",
                 client.get,
@@ -1063,7 +1063,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client.proxy.get.return_value = result
         args = ['id']
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.get, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -1120,7 +1120,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         args = [0]
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "uid must be a string",
                 client.get_attributes,
@@ -1136,7 +1136,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         args = [None, 0]
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "attribute_names must be a list of strings",
                 client.get_attributes,
@@ -1152,7 +1152,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         args = [None, [0]]
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "attribute_names must be a list of strings",
                 client.get_attributes,
@@ -1199,7 +1199,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client.proxy.get_attributes.return_value = result
         args = ['id', []]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.get_attributes, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -1282,7 +1282,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client.proxy.get_attribute_list.return_value = result
         args = ['id']
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.get_attribute_list, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -1347,7 +1347,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client.proxy.activate.return_value = result
         args = ['id']
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.activate, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -1397,7 +1397,7 @@ class TestProxyKmipClient(testtools.TestCase):
         args = [revocation_reason_invalid, uuid, revocation_message,
                 compromise_occurrence_date]
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "revocation_reason must be a RevocationReasonCode enumeration",
                 client.revoke,
@@ -1406,7 +1406,7 @@ class TestProxyKmipClient(testtools.TestCase):
         args = [revocation_reason, uuid_invalid, revocation_message,
                 compromise_occurrence_date]
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "uid must be a string",
                 client.revoke,
@@ -1415,7 +1415,7 @@ class TestProxyKmipClient(testtools.TestCase):
         args = [revocation_reason, uuid, revocation_message_invalid,
                 compromise_occurrence_date]
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "revocation_message must be a string",
                 client.revoke,
@@ -1424,7 +1424,7 @@ class TestProxyKmipClient(testtools.TestCase):
         args = [revocation_reason, uuid, revocation_message,
                 compromise_occurrence_date_invalid]
         with ProxyKmipClient() as client:
-            self.assertRaisesRegexp(
+            self.assertRaisesRegex(
                 TypeError,
                 "compromise_occurrence_date must be an integer",
                 client.revoke,
@@ -1476,7 +1476,7 @@ class TestProxyKmipClient(testtools.TestCase):
         args = [revocation_reason, uuid, revocation_message,
                 compromise_occurrence_date]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.revoke, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -1541,7 +1541,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client.proxy.destroy.return_value = result
         args = ['id']
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.destroy, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -1626,7 +1626,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client.proxy.register.return_value = result
         args = [key]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.register, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -1723,7 +1723,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Object type must be an ObjectType enumeration.",
             client.derive_key,
@@ -1762,7 +1762,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifiers must be a list of strings.",
             client.derive_key,
@@ -1786,7 +1786,7 @@ class TestProxyKmipClient(testtools.TestCase):
             }
         ]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifiers must be a list of strings.",
             client.derive_key,
@@ -1825,7 +1825,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Derivation method must be a DerivationMethod enumeration.",
             client.derive_key,
@@ -1855,7 +1855,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Derivation parameters must be a dictionary.",
             client.derive_key,
@@ -1939,7 +1939,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'cryptographic_algorithm': enums.CryptographicAlgorithm.AES
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure,
             error_message,
             client.derive_key,
@@ -2005,7 +2005,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': b'\x00\x00\x00\x00'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "data must be bytes",
             client.encrypt,
@@ -2020,7 +2020,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': b'\x00\x00\x00\x00'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "uid must be a string",
             client.encrypt,
@@ -2035,7 +2035,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': b'\x00\x00\x00\x00'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "cryptographic_parameters must be a dict",
             client.encrypt,
@@ -2050,7 +2050,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': {}
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "iv_counter_nonce must be bytes",
             client.encrypt,
@@ -2108,7 +2108,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': b'\x00\x00\x00\x00'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure,
             error_message,
             client.encrypt,
@@ -2172,7 +2172,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': b'\x00\x00\x00\x00'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "data must be bytes",
             client.decrypt,
@@ -2187,7 +2187,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': b'\x00\x00\x00\x00'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "uid must be a string",
             client.decrypt,
@@ -2202,7 +2202,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': b'\x00\x00\x00\x00'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "cryptographic_parameters must be a dict",
             client.decrypt,
@@ -2217,7 +2217,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': {}
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "iv_counter_nonce must be bytes",
             client.decrypt,
@@ -2275,7 +2275,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'iv_counter_nonce': b'\x00\x00\x00\x00'
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure,
             error_message,
             client.decrypt,
@@ -2364,7 +2364,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'uid': '1',
             'cryptographic_parameters': {}
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Data to be signed must be bytes.",
             client.sign,
@@ -2379,7 +2379,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'uid': 0,
             'cryptographic_parameters': {}
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             client.sign,
@@ -2391,7 +2391,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'uid': '1',
             'cryptographic_parameters': 'invalid'
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic parameters must be a dictionary.",
             client.sign,
@@ -2418,7 +2418,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'cryptographic_parameters': {}
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Message must be bytes.",
             client.signature_verify,
@@ -2435,7 +2435,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'cryptographic_parameters': {}
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Signature must be bytes.",
             client.signature_verify,
@@ -2451,7 +2451,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'uid': 0,
             'cryptographic_parameters': {}
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             client.signature_verify,
@@ -2467,7 +2467,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'uid': '1',
             'cryptographic_parameters': 'invalid'
         }
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic parameters must be a dictionary.",
             client.signature_verify,
@@ -2529,7 +2529,7 @@ class TestProxyKmipClient(testtools.TestCase):
             'cryptographic_parameters': {}
         }
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure,
             error_message,
             client.signature_verify,
@@ -2621,7 +2621,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client.proxy.mac.return_value = result
         args = [data, uuid, algorithm]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.mac, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -2819,7 +2819,7 @@ class TestProxyKmipClient(testtools.TestCase):
         args = [maximum_items, storage_status_mask,
                 object_group_member, attributes]
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             KmipOperationFailure, error_msg, client.locate, *args)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -2873,7 +2873,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client = ProxyKmipClient()
         args = ['invalid']
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic parameters must be a dictionary.",
             client._build_cryptographic_parameters,
@@ -2921,7 +2921,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client = ProxyKmipClient()
         args = ['invalid']
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Encryption key information must be a dictionary.",
             client._build_encryption_key_information,
@@ -2969,7 +2969,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client = ProxyKmipClient()
         args = ['invalid']
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "MAC/signature key information must be a dictionary.",
             client._build_mac_signature_key_information,
@@ -3058,7 +3058,7 @@ class TestProxyKmipClient(testtools.TestCase):
         client = ProxyKmipClient()
         args = ['invalid']
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Key wrapping specification must be a dictionary.",
             client._build_key_wrapping_specification,

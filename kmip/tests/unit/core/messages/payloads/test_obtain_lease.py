@@ -77,7 +77,7 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         the unique identifier of an ObtainLease request payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.ObtainLeaseRequestPayload,
@@ -86,7 +86,7 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
 
         payload = payloads.ObtainLeaseRequestPayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -352,7 +352,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         the unique identifier of an ObtainLease response payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.ObtainLeaseResponsePayload,
@@ -361,7 +361,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
 
         payload = payloads.ObtainLeaseResponsePayload()
         args = (payload, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -374,7 +374,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         the lease time of an ObtainLease response payload.
         """
         kwargs = {'lease_time': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Lease time must be an integer.",
             payloads.ObtainLeaseResponsePayload,
@@ -383,7 +383,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
 
         payload = payloads.ObtainLeaseResponsePayload()
         args = (payload, 'lease_time', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Lease time must be an integer.",
             setattr,
@@ -396,7 +396,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         the last change date of an ObtainLease response payload.
         """
         kwargs = {'last_change_date': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Last change date must be an integer.",
             payloads.ObtainLeaseResponsePayload,
@@ -405,7 +405,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
 
         payload = payloads.ObtainLeaseResponsePayload()
         args = (payload, 'last_change_date', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Last change date must be an integer.",
             setattr,

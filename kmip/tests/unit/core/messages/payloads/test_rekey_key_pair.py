@@ -66,7 +66,7 @@ class TestRekeyKeyPairRequestPayload(TestCase):
                   'common_template_attribute': None,
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid private key unique identifier",
             payloads.RekeyKeyPairRequestPayload, **kwargs)
 
@@ -75,7 +75,7 @@ class TestRekeyKeyPairRequestPayload(TestCase):
                   'common_template_attribute': None,
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid offset",
             payloads.RekeyKeyPairRequestPayload, **kwargs)
 
@@ -84,7 +84,7 @@ class TestRekeyKeyPairRequestPayload(TestCase):
                   'common_template_attribute': 'invalid',
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid common template attribute",
             payloads.RekeyKeyPairRequestPayload, **kwargs)
 
@@ -93,7 +93,7 @@ class TestRekeyKeyPairRequestPayload(TestCase):
                   'common_template_attribute': None,
                   'private_key_template_attribute': 'invalid',
                   'public_key_template_attribute': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid private key template attribute",
             payloads.RekeyKeyPairRequestPayload, **kwargs)
 
@@ -102,7 +102,7 @@ class TestRekeyKeyPairRequestPayload(TestCase):
                   'common_template_attribute': None,
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid public key template attribute",
             payloads.RekeyKeyPairRequestPayload, **kwargs)
 
@@ -235,7 +235,7 @@ class TestRekeyKeyPairResponsePayload(TestCase):
                   'public_key_uuid': None,
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid private key unique identifier",
             payloads.RekeyKeyPairResponsePayload, **kwargs)
 
@@ -244,7 +244,7 @@ class TestRekeyKeyPairResponsePayload(TestCase):
                   'public_key_uuid': 'invalid',
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid public key unique identifier",
             payloads.RekeyKeyPairResponsePayload, **kwargs)
 
@@ -253,7 +253,7 @@ class TestRekeyKeyPairResponsePayload(TestCase):
                   'public_key_uuid': None,
                   'private_key_template_attribute': 'invalid',
                   'public_key_template_attribute': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid private key template attribute",
             payloads.RekeyKeyPairResponsePayload, **kwargs)
 
@@ -262,7 +262,7 @@ class TestRekeyKeyPairResponsePayload(TestCase):
                   'public_key_uuid': None,
                   'private_key_template_attribute': None,
                   'public_key_template_attribute': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid public key template attribute",
             payloads.RekeyKeyPairResponsePayload, **kwargs)
 

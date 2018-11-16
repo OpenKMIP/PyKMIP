@@ -412,7 +412,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         the unique identifier of an EncryptionKeyInformation struct.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             objects.EncryptionKeyInformation,
@@ -421,7 +421,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
 
         encryption_key_information = objects.EncryptionKeyInformation()
         args = (encryption_key_information, 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -434,7 +434,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         the cryptographic parameters of an EncryptionKeyInformation struct.
         """
         kwargs = {'cryptographic_parameters': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic parameters must be a CryptographicParameters "
             "struct.",
@@ -448,7 +448,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
             'cryptographic_parameters',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic parameters must be a CryptographicParameters "
             "struct.",
@@ -517,7 +517,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         """
         encryption_key_information = objects.EncryptionKeyInformation()
         args = (self.empty_encoding,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the unique identifier attribute.",
             encryption_key_information.read,
@@ -564,7 +564,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         encryption_key_information = objects.EncryptionKeyInformation()
         stream = utils.BytearrayStream()
         args = (stream,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the unique identifier attribute.",
             encryption_key_information.write,
@@ -885,7 +885,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         the unique identifier of a MACSignatureKeyInformation struct.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             objects.MACSignatureKeyInformation,
@@ -893,7 +893,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         )
 
         args = (objects.MACSignatureKeyInformation(), 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -906,7 +906,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         the cryptographic parameters of a MACSignatureKeyInformation struct.
         """
         kwargs = {'cryptographic_parameters': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic parameters must be a CryptographicParameters "
             "struct.",
@@ -919,7 +919,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
             'cryptographic_parameters',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cryptographic parameters must be a CryptographicParameters "
             "struct.",
@@ -994,7 +994,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         """
         mac_signature_key_information = objects.MACSignatureKeyInformation()
         args = (self.empty_encoding,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the unique identifier attribute.",
             mac_signature_key_information.read,
@@ -1041,7 +1041,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         mac_signature_key_information = objects.MACSignatureKeyInformation()
         stream = utils.BytearrayStream()
         args = (stream,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the unique identifier attribute.",
             mac_signature_key_information.write,
@@ -1479,7 +1479,7 @@ class TestKeyWrappingData(testtools.TestCase):
         the wrapping method of a KeyWrappingData struct.
         """
         kwargs = {'wrapping_method': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Wrapping method must be a WrappingMethod enumeration.",
             objects.KeyWrappingData,
@@ -1487,7 +1487,7 @@ class TestKeyWrappingData(testtools.TestCase):
         )
 
         args = (objects.KeyWrappingData(), 'wrapping_method', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Wrapping method must be a WrappingMethod enumeration.",
             setattr,
@@ -1500,7 +1500,7 @@ class TestKeyWrappingData(testtools.TestCase):
         the encryption key information of a KeyWrappingData struct.
         """
         kwargs = {'encryption_key_information': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Encryption key information must be an EncryptionKeyInformation "
             "struct.",
@@ -1513,7 +1513,7 @@ class TestKeyWrappingData(testtools.TestCase):
             'encryption_key_information',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Encryption key information must be an EncryptionKeyInformation "
             "struct.",
@@ -1527,7 +1527,7 @@ class TestKeyWrappingData(testtools.TestCase):
         the MAC/signature key information of a KeyWrappingData struct.
         """
         kwargs = {'mac_signature_key_information': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "MAC/signature key information must be an "
             "MACSignatureKeyInformation struct.",
@@ -1540,7 +1540,7 @@ class TestKeyWrappingData(testtools.TestCase):
             'mac_signature_key_information',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "MAC/signature key information must be an "
             "MACSignatureKeyInformation struct.",
@@ -1554,7 +1554,7 @@ class TestKeyWrappingData(testtools.TestCase):
         the MAC/signature of a KeyWrappingData struct.
         """
         kwargs = {'mac_signature': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "MAC/signature must be bytes.",
             objects.KeyWrappingData,
@@ -1566,7 +1566,7 @@ class TestKeyWrappingData(testtools.TestCase):
             'mac_signature',
             0
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "MAC/signature must be bytes.",
             setattr,
@@ -1579,7 +1579,7 @@ class TestKeyWrappingData(testtools.TestCase):
         the IV/counter/nonce of a KeyWrappingData struct.
         """
         kwargs = {'iv_counter_nonce': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "IV/counter/nonce must be bytes.",
             objects.KeyWrappingData,
@@ -1591,7 +1591,7 @@ class TestKeyWrappingData(testtools.TestCase):
             'iv_counter_nonce',
             0
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "IV/counter/nonce must be bytes.",
             setattr,
@@ -1604,7 +1604,7 @@ class TestKeyWrappingData(testtools.TestCase):
         the encoding option of a KeyWrappingData struct.
         """
         kwargs = {'encoding_option': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Encoding option must be an EncodingOption enumeration.",
             objects.KeyWrappingData,
@@ -1616,7 +1616,7 @@ class TestKeyWrappingData(testtools.TestCase):
             'encoding_option',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Encoding option must be an EncodingOption enumeration.",
             setattr,
@@ -1741,7 +1741,7 @@ class TestKeyWrappingData(testtools.TestCase):
         """
         key_wrapping_data = objects.KeyWrappingData()
         args = (self.empty_encoding,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the wrapping method attribute.",
             key_wrapping_data.read,
@@ -1805,7 +1805,7 @@ class TestKeyWrappingData(testtools.TestCase):
         key_wrapping_data = objects.KeyWrappingData()
         stream = utils.BytearrayStream()
         args = (stream,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the wrapping method attribute.",
             key_wrapping_data.write,
@@ -2447,7 +2447,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         the wrapping method of a KeyWrappingSpecification struct.
         """
         kwargs = {'wrapping_method': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Wrapping method must be a WrappingMethod enumeration.",
             objects.KeyWrappingSpecification,
@@ -2455,7 +2455,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         )
 
         args = (objects.KeyWrappingSpecification(), 'wrapping_method', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Wrapping method must be a WrappingMethod enumeration.",
             setattr,
@@ -2468,7 +2468,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         the encryption key information of a KeyWrappingSpecification struct.
         """
         kwargs = {'encryption_key_information': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Encryption key information must be an EncryptionKeyInformation "
             "struct.",
@@ -2481,7 +2481,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
             'encryption_key_information',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Encryption key information must be an EncryptionKeyInformation "
             "struct.",
@@ -2496,7 +2496,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         struct.
         """
         kwargs = {'mac_signature_key_information': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "MAC/signature key information must be an "
             "MACSignatureKeyInformation struct.",
@@ -2509,7 +2509,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
             'mac_signature_key_information',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "MAC/signature key information must be an "
             "MACSignatureKeyInformation struct.",
@@ -2523,7 +2523,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         the attribute names of a KeyWrappingSpecification struct.
         """
         kwargs = {'attribute_names': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Attribute names must be a list of strings.",
             objects.KeyWrappingSpecification,
@@ -2535,7 +2535,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
             'attribute_names',
             ['valid', 0]
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Attribute names must be a list of strings.",
             setattr,
@@ -2548,7 +2548,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         the encoding option of a KeyWrappingSpecification struct.
         """
         kwargs = {'encoding_option': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Encoding option must be an EncodingOption enumeration.",
             objects.KeyWrappingSpecification,
@@ -2560,7 +2560,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
             'encoding_option',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Encoding option must be an EncodingOption enumeration.",
             setattr,
@@ -2698,7 +2698,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         """
         key_wrapping_specification = objects.KeyWrappingSpecification()
         args = (self.empty_encoding,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the wrapping method attribute.",
             key_wrapping_specification.read,
@@ -2761,7 +2761,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         key_wrapping_specification = objects.KeyWrappingSpecification()
         stream = utils.BytearrayStream()
         args = (stream,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the wrapping method attribute.",
             key_wrapping_specification.write,

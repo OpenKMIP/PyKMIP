@@ -34,13 +34,13 @@ class TestAttribute(testtools.TestCase):
         objects.Attribute()
 
     def test_init_with_args(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_read(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_write(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_repr(self):
         """
@@ -80,31 +80,31 @@ class TestAttribute(testtools.TestCase):
         )
 
     def test_equal_on_equal(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_equal_on_not_equal_name(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_equal_on_not_equal_index(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_equal_on_not_equal_value(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_equal_on_type_mismatch(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_not_equal_on_equal(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_not_equal_on_not_equal_name(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_not_equal_on_not_equal_index(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_not_equal_on_not_equal_value(self):
-        self.skip('')
+        self.skipTest('')
 
     def test_not_equal_on_type_mismatch(self):
-        self.skip('')
+        self.skipTest('')

@@ -102,7 +102,7 @@ class TestKMIPClient(TestCase):
         value is provided to the client.
         """
         kwargs = {'config_file': 1}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "The client configuration file argument must be a string.",
             KMIPProxy,
@@ -115,7 +115,7 @@ class TestKMIPClient(TestCase):
         path is provided to the client.
         """
         kwargs = {'config_file': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "The client configuration file 'invalid' does not exist.",
             KMIPProxy,
@@ -510,9 +510,12 @@ class TestKMIPClient(TestCase):
         msg = base.format(expected, observed)
         self.assertEqual(expected, observed, msg)
 
-        self.assertRaisesRegexp(ValueError, "no processor for operation",
-                                self.client._get_batch_item_processor,
-                                0xA5A5A5A5)
+        self.assertRaisesRegex(
+            ValueError,
+            "no processor for operation",
+            self.client._get_batch_item_processor,
+            0xA5A5A5A5
+        )
 
         expected = self.client._process_get_attributes_batch_item
         observed = self.client._get_batch_item_processor(

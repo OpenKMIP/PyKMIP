@@ -114,11 +114,11 @@ class TestBytearrayStream(TestCase):
 
     def test_read(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skip('')
+        self.skipTest('')
 
     def test_write(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skip('')
+        self.skipTest('')
 
     def test_peek(self):
         # TODO (peter-hamilton) Finish implementation.
@@ -130,16 +130,16 @@ class TestBytearrayStream(TestCase):
 
     def test_peek_overflow(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skip('')
+        self.skipTest('')
 
     def test_peek_empty(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skip('')
+        self.skipTest('')
 
     def test_peek_none(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skip('')
+        self.skipTest('')
 
     def test_length(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skip('')
+        self.skipTest('')

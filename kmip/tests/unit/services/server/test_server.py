@@ -284,7 +284,7 @@ class TestKmipServer(testtools.TestCase):
                 regex = (
                     "Server failed to bind socket handler to 127.0.0.1:5696"
                 )
-                self.assertRaisesRegexp(
+                self.assertRaisesRegex(
                     exceptions.NetworkingError,
                     regex,
                     s.start
@@ -404,7 +404,7 @@ class TestKmipServer(testtools.TestCase):
         s._socket.close = mock.MagicMock(side_effect=test_exception)
 
         regex = "Server failed to shutdown socket handler."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.NetworkingError,
             regex,
             s.stop
@@ -445,7 +445,7 @@ class TestKmipServer(testtools.TestCase):
         thread_mock.name = 'TestThread'
 
         regex = "Server failed to clean up the policy monitor."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ShutdownError,
             regex,
             s.stop

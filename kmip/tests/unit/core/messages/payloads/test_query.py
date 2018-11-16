@@ -99,7 +99,7 @@ class TestQueryRequestPayload(TestCase):
         list is used to construct a QueryRequestPayload object.
         """
         kwargs = {'query_functions': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid query functions list",
             payloads.QueryRequestPayload, **kwargs)
 
@@ -109,7 +109,7 @@ class TestQueryRequestPayload(TestCase):
         item is used to construct a QueryRequestPayload object.
         """
         kwargs = {'query_functions': ['invalid']}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid query function",
             payloads.QueryRequestPayload, **kwargs)
 
@@ -328,7 +328,7 @@ class TestQueryResponsePayload(TestCase):
         list is used to construct a QueryResponsePayload object.
         """
         kwargs = {'operations': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid operations list",
             payloads.QueryResponsePayload, **kwargs)
 
@@ -338,7 +338,7 @@ class TestQueryResponsePayload(TestCase):
         item is used to construct a QueryResponsePayload object.
         """
         kwargs = {'operations': ['invalid']}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid operation",
             payloads.QueryResponsePayload, **kwargs)
 
@@ -348,7 +348,7 @@ class TestQueryResponsePayload(TestCase):
         list is used to construct a QueryResponsePayload object.
         """
         kwargs = {'object_types': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid object types list",
             payloads.QueryResponsePayload, **kwargs)
 
@@ -358,7 +358,7 @@ class TestQueryResponsePayload(TestCase):
         item is used to construct a QueryResponsePayload object.
         """
         kwargs = {'object_types': ['invalid']}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid object type",
             payloads.QueryResponsePayload, **kwargs)
 
@@ -369,7 +369,7 @@ class TestQueryResponsePayload(TestCase):
         object.
         """
         kwargs = {'vendor_identification': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid vendor identification",
             payloads.QueryResponsePayload, **kwargs)
 
@@ -380,7 +380,7 @@ class TestQueryResponsePayload(TestCase):
         object.
         """
         kwargs = {'server_information': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid server information",
             payloads.QueryResponsePayload, **kwargs)
 
@@ -391,7 +391,7 @@ class TestQueryResponsePayload(TestCase):
         object.
         """
         kwargs = {'application_namespaces': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid application namespaces list",
             payloads.QueryResponsePayload, **kwargs)
 
@@ -402,7 +402,7 @@ class TestQueryResponsePayload(TestCase):
         object.
         """
         kwargs = {'application_namespaces': ['invalid']}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid application namespace",
             payloads.QueryResponsePayload, **kwargs)
 
@@ -413,7 +413,7 @@ class TestQueryResponsePayload(TestCase):
         object.
         """
         kwargs = {'extension_information': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid extension information list",
             payloads.QueryResponsePayload, **kwargs)
 
@@ -424,7 +424,7 @@ class TestQueryResponsePayload(TestCase):
         object.
         """
         kwargs = {'extension_information': ['invalid']}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid extension information",
             payloads.QueryResponsePayload, **kwargs)
 

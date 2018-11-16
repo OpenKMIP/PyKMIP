@@ -75,7 +75,7 @@ class TestMACRequestPayload(TestCase):
         kwargs = {'unique_identifier': 'invalid',
                   'cryptographic_parameters': None,
                   'data': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "unique identifier must be UniqueIdentifier type",
             payloads.MACRequestPayload, **kwargs)
 
@@ -83,7 +83,7 @@ class TestMACRequestPayload(TestCase):
         kwargs = {'unique_identifier': None,
                   'cryptographic_parameters': 'invalid',
                   'data': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "cryptographic parameters must be CryptographicParameters type",
             payloads.MACRequestPayload, **kwargs)
@@ -113,7 +113,7 @@ class TestMACRequestPayload(TestCase):
         """
         payload = payloads.MACRequestPayload()
         args = (self.encoding_no_data,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "expected mac request data not found",
             payload.read,
@@ -143,7 +143,7 @@ class TestMACRequestPayload(TestCase):
             self.cryptographic_parameters,
             None)
         args = (stream,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The mac request data is required",
             payload.write,
@@ -205,7 +205,7 @@ class TestMACResponsePayload(TestCase):
     def test_init_with_invalid_unique_identifier(self):
         kwargs = {'unique_identifier': 'invalid',
                   'mac_data': None}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "unique identifier must be UniqueIdentifier type",
             payloads.MACResponsePayload, **kwargs)
 
@@ -231,7 +231,7 @@ class TestMACResponsePayload(TestCase):
         """
         payload = payloads.MACResponsePayload()
         args = (self.encoding_no_unique_identifier,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "expected mac response unique identifier not found",
             payload.read,
@@ -245,7 +245,7 @@ class TestMACResponsePayload(TestCase):
         """
         payload = payloads.MACResponsePayload()
         args = (self.encoding_no_mac_data,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "expected mac response mac data not found",
             payload.read,
@@ -273,7 +273,7 @@ class TestMACResponsePayload(TestCase):
             None,
             self.mac_data)
         args = (stream,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The mac response unique identifier is required",
             payload.write,
@@ -290,7 +290,7 @@ class TestMACResponsePayload(TestCase):
             self.unique_identifier,
             None)
         args = (stream,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The mac response mac data is required",
             payload.write,

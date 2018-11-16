@@ -77,7 +77,7 @@ class TestProtocolVersion(testtools.TestCase):
         """
         struct = contents.ProtocolVersion()
         args = (struct, 'major', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Major protocol version number must be an integer.",
             setattr,
@@ -91,7 +91,7 @@ class TestProtocolVersion(testtools.TestCase):
         """
         struct = contents.ProtocolVersion()
         args = (struct, 'minor', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Minor protocol version number must be an integer.",
             setattr,
@@ -119,7 +119,7 @@ class TestProtocolVersion(testtools.TestCase):
         """
         struct = contents.ProtocolVersion()
         args = (self.encoding_no_major_number, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid encoding missing the major protocol version number.",
             struct.read,
@@ -133,7 +133,7 @@ class TestProtocolVersion(testtools.TestCase):
         """
         struct = contents.ProtocolVersion()
         args = (self.encoding_no_minor_number, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid encoding missing the minor protocol version number.",
             struct.read,
@@ -159,7 +159,7 @@ class TestProtocolVersion(testtools.TestCase):
         struct = contents.ProtocolVersion(None, 1)
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the major protocol version number.",
             struct.write,
@@ -174,7 +174,7 @@ class TestProtocolVersion(testtools.TestCase):
         struct = contents.ProtocolVersion(1, None)
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the minor protocol version number.",
             struct.write,

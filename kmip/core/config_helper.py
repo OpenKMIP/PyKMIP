@@ -16,7 +16,7 @@
 import logging
 import os
 
-from six.moves.configparser import SafeConfigParser
+from six.moves.configparser import ConfigParser
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -52,7 +52,7 @@ class ConfigHelper(object):
         if self.logger.level == logging.NOTSET:
             self.logger.setLevel(logging.INFO)
 
-        self.conf = SafeConfigParser()
+        self.conf = ConfigParser()
 
         filenames = path
         if not path:

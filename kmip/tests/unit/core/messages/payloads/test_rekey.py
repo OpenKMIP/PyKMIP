@@ -135,7 +135,7 @@ class TestRekeyRequestPayload(testtools.TestCase):
         the unique identifier of a Rekey request payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.RekeyRequestPayload,
@@ -143,7 +143,7 @@ class TestRekeyRequestPayload(testtools.TestCase):
         )
 
         args = (payloads.RekeyRequestPayload(), 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -156,7 +156,7 @@ class TestRekeyRequestPayload(testtools.TestCase):
         the offset of a Rekey request payload.
         """
         kwargs = {'offset': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Offset must be an integer.",
             payloads.RekeyRequestPayload,
@@ -164,7 +164,7 @@ class TestRekeyRequestPayload(testtools.TestCase):
         )
 
         args = (payloads.RekeyRequestPayload(), 'offset', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Offset must be an integer.",
             setattr,
@@ -177,7 +177,7 @@ class TestRekeyRequestPayload(testtools.TestCase):
         the template attribute of a Rekey request payload.
         """
         kwargs = {'template_attribute': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute struct.",
             payloads.RekeyRequestPayload,
@@ -189,7 +189,7 @@ class TestRekeyRequestPayload(testtools.TestCase):
             'template_attribute',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute struct.",
             setattr,
@@ -796,7 +796,7 @@ class TestRekeyResponsePayload(testtools.TestCase):
         the unique identifier of a Rekey response payload.
         """
         kwargs = {'unique_identifier': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             payloads.RekeyResponsePayload,
@@ -804,7 +804,7 @@ class TestRekeyResponsePayload(testtools.TestCase):
         )
 
         args = (payloads.RekeyResponsePayload(), 'unique_identifier', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
             setattr,
@@ -817,7 +817,7 @@ class TestRekeyResponsePayload(testtools.TestCase):
         the template attribute of a Rekey response payload.
         """
         kwargs = {'template_attribute': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute struct.",
             payloads.RekeyResponsePayload,
@@ -829,7 +829,7 @@ class TestRekeyResponsePayload(testtools.TestCase):
             'template_attribute',
             'invalid'
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute struct.",
             setattr,
@@ -903,7 +903,7 @@ class TestRekeyResponsePayload(testtools.TestCase):
         """
         payload = payloads.RekeyResponsePayload()
         args = (self.empty_encoding, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "The Rekey response payload encoding is missing the unique "
             "identifier.",
@@ -969,7 +969,7 @@ class TestRekeyResponsePayload(testtools.TestCase):
         payload = payloads.RekeyResponsePayload()
         stream = utils.BytearrayStream()
         args = (stream, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "The Rekey response payload is missing the unique identifier.",
             payload.write,

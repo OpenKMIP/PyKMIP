@@ -70,7 +70,7 @@ class TestPollRequestPayload(testtools.TestCase):
         the asynchronous correlation value of an Poll request payload.
         """
         kwargs = {'asynchronous_correlation_value': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Asynchronous correlation value must be bytes.",
             payloads.PollRequestPayload,
@@ -79,7 +79,7 @@ class TestPollRequestPayload(testtools.TestCase):
 
         payload = payloads.PollRequestPayload()
         args = (payload, 'asynchronous_correlation_value', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Asynchronous correlation value must be bytes.",
             setattr,

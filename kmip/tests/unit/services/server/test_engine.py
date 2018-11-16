@@ -3788,7 +3788,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Key derivation can only generate a SymmetricKey or SecretData "
             "object.",
@@ -3823,7 +3823,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "Object 1 is not a suitable type for key derivation. Please "
             "specify a key or secret data.",
@@ -3864,7 +3864,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The DeriveKey bit must be set in the cryptographic usage mask "
             "for object 1 for it to be used in key derivation.",
@@ -3991,7 +3991,7 @@ class TestKmipEngine(testtools.TestCase):
     def test_derive_key_unspecified_iv(self):
         """
         """
-        self.skip('')
+        self.skipTest('')
 
     def test_derive_key_missing_cryptographic_length(self):
         """
@@ -4043,7 +4043,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The cryptographic length must be provided in the template "
             "attribute.",
@@ -4105,7 +4105,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The cryptographic length must correspond to a valid number of "
             "bytes; it must be a multiple of 8.",
@@ -4163,7 +4163,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The cryptographic algorithm must be provided in the template "
             "attribute when deriving a symmetric key.",
@@ -4228,7 +4228,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.CryptographicFailure,
             "The specified length exceeds the output of the derivation "
             "method.",
@@ -4836,7 +4836,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.OperationNotSupported,
             "Wrapping method '{0}' is not supported.".format(
                 enums.WrappingMethod.MAC_SIGN
@@ -4903,7 +4903,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "Key wrapping with MAC/signing key information is not supported.",
             e._process_get,
@@ -4947,7 +4947,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "Either the encryption key information or the MAC/signature key "
             "information must be specified for key wrapping to be performed.",
@@ -5000,7 +5000,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.ItemNotFound,
             "Wrapping key does not exist.",
             e._process_get,
@@ -5064,7 +5064,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.IllegalOperation,
             "The wrapping encryption key specified by the encryption key "
             "information is not a key.",
@@ -5129,7 +5129,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "Encryption key 1 must be activated to be used for key "
             "wrapping.",
@@ -5195,7 +5195,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The WrapKey bit must be set in the cryptographic usage mask of "
             "encryption key 1 for it to be used for key wrapping.",
@@ -5262,7 +5262,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.IllegalOperation,
             "Wrapping object attributes is not supported.",
             e._process_get,
@@ -5327,7 +5327,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.EncodingOptionError,
             "Encoding option '{0}' is not supported.".format(
                 enums.EncodingOption.TTLV_ENCODING
@@ -5751,7 +5751,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload,)
         regex = "The object state is not pre-active and cannot be activated."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             regex,
             e._process_activate,
@@ -5763,7 +5763,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = payloads.ActivateRequestPayload()
         args = (payload,)
         regex = "The object state is not pre-active and cannot be activated."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             regex,
             e._process_activate,
@@ -5804,7 +5804,7 @@ class TestKmipEngine(testtools.TestCase):
                 [x.capitalize() for x in name.split('_')]
             )
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.IllegalOperation,
             regex,
             e._process_activate,
@@ -5842,7 +5842,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload,)
         regex = "The object state is not pre-active and cannot be activated."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             regex,
             e._process_activate,
@@ -6065,7 +6065,7 @@ class TestKmipEngine(testtools.TestCase):
         payload.revocation_reason = None
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "revocation reason code must be specified",
             e._process_revoke,
@@ -6111,7 +6111,7 @@ class TestKmipEngine(testtools.TestCase):
         args = (payload, )
         regex = "The object is not active and cannot be revoked with " \
                 "reason other than KEY_COMPROMISE"
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.IllegalOperation,
             regex,
             e._process_revoke,
@@ -6157,7 +6157,7 @@ class TestKmipEngine(testtools.TestCase):
                 [x.capitalize() for x in name.split('_')]
             )
         )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.IllegalOperation,
             regex,
             e._process_revoke,
@@ -6915,7 +6915,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The cryptographic parameters must be specified.",
             e._process_encrypt,
@@ -6966,7 +6966,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The requested encryption key is not a symmetric key. "
             "Only symmetric encryption is currently supported.",
@@ -7023,7 +7023,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The encryption key must be in the Active state to be used "
             "for encryption.",
@@ -7081,7 +7081,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The Encrypt bit must be set in the encryption key's "
             "cryptographic usage mask.",
@@ -7207,7 +7207,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The cryptographic parameters must be specified.",
             e._process_decrypt,
@@ -7258,7 +7258,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The requested decryption key is not a symmetric key. "
             "Only symmetric decryption is currently supported.",
@@ -7315,7 +7315,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The decryption key must be in the Active state to be used "
             "for decryption.",
@@ -7373,7 +7373,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The Decrypt bit must be set in the decryption key's "
             "cryptographic usage mask.",
@@ -7564,7 +7564,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The cryptographic parameters must be specified.",
             e._process_signature_verify,
@@ -7606,7 +7606,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The requested signing key is not a public key. A public key must "
             "be specified.",
@@ -7665,7 +7665,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The signing key must be in the Active state to be used for "
             "signature verification.",
@@ -7724,7 +7724,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The Verify bit must be set in the signing key's cryptographic "
             "usage mask.",
@@ -7841,7 +7841,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload_no_key, )
         regex = "A secret key value must be specified"
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             regex,
             e._process_mac,
@@ -7856,7 +7856,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload_no_algorithm, )
         regex = "The cryptographic algorithm must be specified"
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             regex,
             e._process_mac,
@@ -7871,7 +7871,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload_no_data, )
         regex = "No data to be MACed"
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             regex,
             e._process_mac,
@@ -7920,7 +7920,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload,)
         regex = "Object is not in a state that can be used for MACing."
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             regex,
             e._process_mac,
@@ -7970,7 +7970,7 @@ class TestKmipEngine(testtools.TestCase):
         args = (payload,)
         regex = "MAC Generate must be set in the object's cryptographic " \
                 "usage mask"
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             regex,
             e._process_mac,
@@ -8833,7 +8833,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload,)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.InvalidField,
             "The cryptographic parameters must be specified.",
             e._process_sign,
@@ -8877,7 +8877,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The requested signing key is not a private key. "
             "A private key must be specified.",
@@ -8965,7 +8965,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The signing key must be in the Active state to be "
             "used for signing.",
@@ -9055,7 +9055,7 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         args = (payload, )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The Sign bit must be set in the signing key's cryptographic "
             "usage mask.",

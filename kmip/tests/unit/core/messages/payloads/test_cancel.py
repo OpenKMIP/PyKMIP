@@ -72,7 +72,7 @@ class TestCancelRequestPayload(testtools.TestCase):
         the asynchronous correlation value of an Cancel request payload.
         """
         kwargs = {'asynchronous_correlation_value': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Asynchronous correlation value must be bytes.",
             payloads.CancelRequestPayload,
@@ -81,7 +81,7 @@ class TestCancelRequestPayload(testtools.TestCase):
 
         payload = payloads.CancelRequestPayload()
         args = (payload, 'asynchronous_correlation_value', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Asynchronous correlation value must be bytes.",
             setattr,
@@ -325,7 +325,7 @@ class TestCancelResponsePayload(testtools.TestCase):
         the asynchronous correlation value of an Cancel response payload.
         """
         kwargs = {'asynchronous_correlation_value': 0}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Asynchronous correlation value must be bytes.",
             payloads.CancelResponsePayload,
@@ -334,7 +334,7 @@ class TestCancelResponsePayload(testtools.TestCase):
 
         payload = payloads.CancelResponsePayload()
         args = (payload, 'asynchronous_correlation_value', 0)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Asynchronous correlation value must be bytes.",
             setattr,
@@ -347,7 +347,7 @@ class TestCancelResponsePayload(testtools.TestCase):
         the cancellation result of an Cancel response payload.
         """
         kwargs = {'cancellation_result': 'invalid'}
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cancellation result must be a CancellationResult enumeration.",
             payloads.CancelResponsePayload,
@@ -356,7 +356,7 @@ class TestCancelResponsePayload(testtools.TestCase):
 
         payload = payloads.CancelResponsePayload()
         args = (payload, 'cancellation_result', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Cancellation result must be a CancellationResult enumeration.",
             setattr,

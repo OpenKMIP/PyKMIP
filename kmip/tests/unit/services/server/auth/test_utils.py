@@ -243,7 +243,7 @@ class TestUtils(testtools.TestCase):
         mock_get.return_value = ["John Doe", "Jane Doe"]
 
         args = ("test", )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "Multiple client identities found.",
             utils.get_client_identity_from_certificate,
@@ -261,7 +261,7 @@ class TestUtils(testtools.TestCase):
         mock_get.return_value = []
 
         args = ("test", )
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "The certificate does not define any subject common names. Client "
             "identity unavailable.",

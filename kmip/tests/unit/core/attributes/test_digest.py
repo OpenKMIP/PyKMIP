@@ -104,7 +104,7 @@ class TestDigest(TestCase):
         hashing_algorithm = "invalid"
         kwargs = {'hashing_algorithm': hashing_algorithm}
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid hashing algorithm", Digest, **kwargs)
 
     def test_validate_with_invalid_digest_value(self):
@@ -115,7 +115,7 @@ class TestDigest(TestCase):
         digest_value = "invalid"
         kwargs = {'digest_value': digest_value}
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid digest value", Digest, **kwargs)
 
     def test_validate_with_invalid_key_format_type(self):
@@ -126,7 +126,7 @@ class TestDigest(TestCase):
         key_format_type = "invalid"
         kwargs = {'key_format_type': key_format_type}
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid key format type", Digest, **kwargs)
 
     def _test_read(self, stream, hashing_algorithm, digest_value,

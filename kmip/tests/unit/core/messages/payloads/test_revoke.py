@@ -69,7 +69,7 @@ class TestRevokeRequestPayload(TestCase):
         Test that a TypeError exception is raised when an invalid UUID type
         is used to construct a RevokeRequestPayload object.
         """
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid unique identifier",
             payloads.RevokeRequestPayload, "not-a-uuid")
 
@@ -79,7 +79,7 @@ class TestRevokeRequestPayload(TestCase):
         is used to construct a RevokeRequestPayload object.
         """
         reason = objects.RevocationReason()
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid compromise time",
             payloads.RevokeRequestPayload, self.uuid, reason, "not-a-date")
 
@@ -88,7 +88,7 @@ class TestRevokeRequestPayload(TestCase):
         Test that a TypeError exception is raised when an invalid UUID type
         is used to construct a RevokeRequestPayload object.
         """
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid revocation reason",
             payloads.RevokeRequestPayload, self.uuid, "not-a-reason")
 
@@ -179,7 +179,7 @@ class TestRevokeResponsePayload(TestCase):
         Test that a TypeError exception is raised when an invalid Operations
         list is used to construct a RevokeResponsePayload object.
         """
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError, "invalid unique identifier",
             payloads.RevokeResponsePayload, "not-a-uuid")
 

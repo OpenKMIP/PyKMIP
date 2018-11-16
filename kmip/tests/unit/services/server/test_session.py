@@ -749,7 +749,7 @@ class TestKmipSession(testtools.TestCase):
         )
 
         args = ("fake_certificate", fake_request)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "Authentication failed.",
             kmip_session.authenticate,
@@ -781,7 +781,7 @@ class TestKmipSession(testtools.TestCase):
         )
 
         args = ("fake_certificate", fake_request)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             exceptions.PermissionDenied,
             "Authentication failed.",
             kmip_session.authenticate,

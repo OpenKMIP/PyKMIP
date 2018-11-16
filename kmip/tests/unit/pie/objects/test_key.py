@@ -102,7 +102,7 @@ class TestKey(TestCase):
         """
         dummy = DummyKey()
         args = (dummy, 'key_wrapping_data', 'invalid')
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             "Key wrapping data must be a dictionary.",
             setattr,
