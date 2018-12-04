@@ -96,6 +96,36 @@ class TestKMIPClient(TestCase):
     def tearDown(self):
         super(TestKMIPClient, self).tearDown()
 
+    def test_kmip_version_get(self):
+        """
+        Test that the KMIP version can be obtained from the client.
+        """
+        client = KMIPProxy()
+        self.assertEqual(client.kmip_version, enums.KMIPVersion.KMIP_1_2)
+
+    def test_kmip_version_set(self):
+        """
+        Test that the KMIP version of the client can be set to a new value.
+        """
+        client = KMIPProxy()
+        self.assertEqual(client.kmip_version, enums.KMIPVersion.KMIP_1_2)
+        client.kmip_version = enums.KMIPVersion.KMIP_1_1
+        self.assertEqual(client.kmip_version, enums.KMIPVersion.KMIP_1_1)
+
+    def test_kmip_version_set_error(self):
+        """
+        Test that the right error gets raised when setting the client KMIP
+        version with an invalid value.
+        """
+        client = KMIPProxy()
+        args = (client, "kmip_version", None)
+        self.assertRaisesRegexp(
+            ValueError,
+            "KMIP version must be a KMIPVersion enumeration",
+            setattr,
+            *args
+        )
+
     def test_init_with_invalid_config_file_value(self):
         """
         Test that the right error is raised when an invalid configuration file
