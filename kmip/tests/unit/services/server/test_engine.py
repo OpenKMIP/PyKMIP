@@ -6692,18 +6692,26 @@ class TestKmipEngine(testtools.TestCase):
             payloads.DiscoverVersionsResponsePayload
         )
         self.assertIsNotNone(result.protocol_versions)
-        self.assertEqual(3, len(result.protocol_versions))
+        self.assertEqual(5, len(result.protocol_versions))
         self.assertEqual(
-            contents.ProtocolVersion(1, 2),
+            contents.ProtocolVersion(1, 4),
             result.protocol_versions[0]
         )
         self.assertEqual(
-            contents.ProtocolVersion(1, 1),
+            contents.ProtocolVersion(1, 3),
             result.protocol_versions[1]
         )
         self.assertEqual(
-            contents.ProtocolVersion(1, 0),
+            contents.ProtocolVersion(1, 2),
             result.protocol_versions[2]
+        )
+        self.assertEqual(
+            contents.ProtocolVersion(1, 1),
+            result.protocol_versions[3]
+        )
+        self.assertEqual(
+            contents.ProtocolVersion(1, 0),
+            result.protocol_versions[4]
         )
 
         # Test detailed request.
