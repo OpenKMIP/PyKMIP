@@ -68,6 +68,36 @@ class TestProxyKmipClient(testtools.TestCase):
             password='password',
             config='test')
 
+    def test_kmip_version_get(self):
+        """
+        Test that the KMIP version can be obtained from the client.
+        """
+        client = ProxyKmipClient()
+        self.assertEqual(client.kmip_version, enums.KMIPVersion.KMIP_1_2)
+
+    def test_kmip_version_set(self):
+        """
+        Test that the KMIP version of the client can be set to a new value.
+        """
+        client = ProxyKmipClient()
+        self.assertEqual(client.kmip_version, enums.KMIPVersion.KMIP_1_2)
+        client.kmip_version = enums.KMIPVersion.KMIP_1_1
+        self.assertEqual(client.kmip_version, enums.KMIPVersion.KMIP_1_1)
+
+    def test_kmip_version_set_error(self):
+        """
+        Test that the right error gets raised when setting the client KMIP
+        version with an invalid value.
+        """
+        client = ProxyKmipClient()
+        args = (client, "kmip_version", None)
+        self.assertRaisesRegexp(
+            ValueError,
+            "KMIP version must be a KMIPVersion enumeration",
+            setattr,
+            *args
+        )
+
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
     def test_open(self):

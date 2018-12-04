@@ -62,7 +62,8 @@ class ProxyKmipClient(object):
                  username=None,
                  password=None,
                  config='client',
-                 config_file=None):
+                 config_file=None,
+                 kmip_version=None):
         """
         Construct a ProxyKmipClient.
 
@@ -91,6 +92,9 @@ class ProxyKmipClient(object):
                 Optional, defaults to the default client section, 'client'.
             config_file (string): The path to the client's configuration file.
                 Optional, defaults to None.
+            kmip_version (KMIPVersion): The KMIP version the client should use
+                when making requests. Optional, defaults to None. If None at
+                request time, the client will use KMIP 1.2.
 
         """
         self.logger = logging.getLogger(__name__)
@@ -109,11 +113,46 @@ class ProxyKmipClient(object):
             username=username,
             password=password,
             config=config,
-            config_file=config_file
+            config_file=config_file,
+            kmip_version=kmip_version
         )
 
         # TODO (peter-hamilton) Add a multiprocessing lock for synchronization.
         self._is_open = False
+
+    @property
+    def kmip_version(self):
+        """
+        Get the KMIP version for the client.
+
+        Return:
+            kmip_version (KMIPVersion): The KMIPVersion enumeration used by
+                the client for KMIP requests.
+        """
+        return self.proxy.kmip_version
+
+    @kmip_version.setter
+    def kmip_version(self, value):
+        """
+        Set the KMIP version for the client.
+
+        Args:
+            value (KMIPVersion): A KMIPVersion enumeration
+
+        Return:
+            None
+
+        Raises:
+            ValueError: if value is not a KMIPVersion enumeration
+
+        Example:
+            >>> client.kmip_version = enums.KMIPVersion.KMIP_1_1
+            >>>
+        """
+        if isinstance(value, enums.KMIPVersion):
+            self.proxy.kmip_version = value
+        else:
+            raise ValueError("KMIP version must be a KMIPVersion enumeration")
 
     def open(self):
         """

@@ -391,6 +391,14 @@ class KeyWrapType(enum.Enum):
     AS_REGISTERED = 0x00000002
 
 
+class KMIPVersion(enum.Enum):
+    KMIP_1_0 = "KMIP 1.0"
+    KMIP_1_1 = "KMIP 1.1"
+    KMIP_1_2 = "KMIP 1.2"
+    KMIP_1_3 = "KMIP 1.3"
+    KMIP_1_4 = "KMIP 1.4"
+
+
 class LinkType(enum.Enum):
     CERTIFICATE_LINK            = 0x00000101
     PUBLIC_KEY_LINK             = 0x00000102

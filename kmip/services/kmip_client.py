@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
+
 from kmip.services.results import ActivateResult
 from kmip.services.results import CreateResult
 from kmip.services.results import CreateKeyPairResult
@@ -68,7 +70,7 @@ FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))
 
 
-class KMIPProxy:
+class KMIPProxy(object):
 
     def __init__(self, host=None, port=None, keyfile=None,
                  certfile=None,
@@ -76,7 +78,8 @@ class KMIPProxy:
                  do_handshake_on_connect=None,
                  suppress_ragged_eofs=None,
                  username=None, password=None, timeout=30, config='client',
-                 config_file=None):
+                 config_file=None,
+                 kmip_version=None):
         self.logger = logging.getLogger(__name__)
         self.credential_factory = CredentialFactory()
         self.config = config
@@ -84,6 +87,12 @@ class KMIPProxy:
         # make sure we have a socket attr before we go raising ValueErrors.
         # Otherwise, we can hit AttributeErrors when __del__ is called.
         self.socket = None
+
+        self._kmip_version = None
+        if kmip_version:
+            self.kmip_version = kmip_version
+        else:
+            self.kmip_version = enums.KMIPVersion.KMIP_1_2
 
         if config_file:
             if not isinstance(config_file, six.string_types):
@@ -108,6 +117,40 @@ class KMIPProxy:
         self.authentication_suites = [
             AuthenticationSuite.BASIC,
             AuthenticationSuite.TLS12]
+
+    @property
+    def kmip_version(self):
+        """
+        Get the KMIP version for the client.
+
+        Return:
+            kmip_version (KMIPVersion): The KMIPVersion enumeration used by
+                the client for KMIP requests.
+        """
+        return self._kmip_version
+
+    @kmip_version.setter
+    def kmip_version(self, value):
+        """
+        Set the KMIP version for the client.
+
+        Args:
+            value (KMIPVersion): A KMIPVersion enumeration
+
+        Return:
+            None
+
+        Raises:
+            ValueError: if value is not a KMIPVersion enumeration
+
+        Example:
+            >>> client.kmip_version = enums.KMIPVersion.KMIP_1_1
+            >>>
+        """
+        if isinstance(value, enums.KMIPVersion):
+            self._kmip_version = value
+        else:
+            raise ValueError("KMIP version must be a KMIPVersion enumeration")
 
     def get_supported_conformance_clauses(self):
         """
@@ -1534,8 +1577,20 @@ class KMIPProxy:
             credential_value)
         return credential
 
+    def _build_protocol_version(self):
+        if self.kmip_version == enums.KMIPVersion.KMIP_1_0:
+            return ProtocolVersion(1, 0)
+        elif self.kmip_version == enums.KMIPVersion.KMIP_1_1:
+            return ProtocolVersion(1, 1)
+        elif self.kmip_version == enums.KMIPVersion.KMIP_1_2:
+            return ProtocolVersion(1, 2)
+        elif self.kmip_version == enums.KMIPVersion.KMIP_1_3:
+            return ProtocolVersion(1, 3)
+        else:
+            return ProtocolVersion(1, 4)
+
     def _build_request_message(self, credential, batch_items):
-        protocol_version = ProtocolVersion(1, 2)
+        protocol_version = self._build_protocol_version()
 
         if credential is None:
             credential = self._build_credential()
