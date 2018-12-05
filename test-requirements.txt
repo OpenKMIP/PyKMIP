@@ -3,10 +3,7 @@ pytest
 flake8
 testtools
 fixtures
-testresources
 mock
 slugs
-testscenarios
-testrepository
 sphinx
 bandit
