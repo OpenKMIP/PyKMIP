@@ -405,8 +405,9 @@ class KMIPProxy(object):
 
         if payload:
             result['unique_identifier'] = payload.unique_identifier
-        if payload.template_attribute is not None:
-            result['template_attribute'] = payload.template_attribute
+
+            if payload.template_attribute is not None:
+                result['template_attribute'] = payload.template_attribute
 
         result['result_status'] = batch_item.result_status.value
         try:

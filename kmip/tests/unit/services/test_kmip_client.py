@@ -929,9 +929,55 @@ class TestKMIPClient(TestCase):
         self.assertEqual(None, result.get('result_reason'))
         self.assertEqual(None, result.get('result_message'))
 
+    @mock.patch('kmip.services.kmip_client.KMIPProxy._build_request_message')
     @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._build_request_message'
+        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
     )
+    def test_rekey_with_no_payload(self, send_mock, build_mock):
+        """
+        Test that the client correctly handles responses with no payload data.
+        """
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.REKEY),
+            result_status=ResultStatus(ResultStatusEnum.OPERATION_FAILED),
+            result_reason=ResultReason(ResultReasonEnum.PERMISSION_DENIED),
+            result_message=ResultMessage("Permission denied."),
+            response_payload=None
+        )
+        response = ResponseMessage(batch_items=[batch_item])
+
+        build_mock.return_value = None
+        send_mock.return_value = response
+
+        result = self.client.rekey(
+            uuid='1',
+            offset=0,
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Activation Date'
+                        ),
+                        attribute_value=primitives.DateTime(
+                            value=1136113200,
+                            tag=enums.Tags.ACTIVATION_DATE
+                        )
+                    )
+                ]
+            )
+        )
+
+        self.assertEqual(
+            ResultStatusEnum.OPERATION_FAILED,
+            result.get('result_status')
+        )
+        self.assertEqual(
+            ResultReasonEnum.PERMISSION_DENIED,
+            result.get('result_reason')
+        )
+        self.assertEqual("Permission denied.", result.get('result_message'))
+
+    @mock.patch('kmip.services.kmip_client.KMIPProxy._build_request_message')
     @mock.patch(
         'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
     )
