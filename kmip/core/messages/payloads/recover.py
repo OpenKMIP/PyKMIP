@@ -28,16 +28,22 @@ class RecoverRequestPayload(primitives.Struct):
         unique_identifier: The unique ID of the object to recover.
     """
 
-    def __init__(self, unique_identifier=None):
+    def __init__(self,
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Recover request payload struct.
 
         Args:
             unique_identifier (string): The ID of the managed object (e.g.,
                 a public key) to recover. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(RecoverRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -141,16 +147,22 @@ class RecoverResponsePayload(primitives.Struct):
         unique_identifier: The unique ID of the object that was recovered.
     """
 
-    def __init__(self, unique_identifier=None):
+    def __init__(self,
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Recover response payload struct.
 
         Args:
             unique_identifier (string): The ID of the managed object (e.g.,
                 a public key) that was recovered. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(RecoverResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

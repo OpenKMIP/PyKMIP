@@ -28,9 +28,12 @@ class CreateRequestPayload(Struct):
 
     def __init__(self,
                  object_type=None,
-                 template_attribute=None):
+                 template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(CreateRequestPayload, self).__init__(
-            tag=enums.Tags.REQUEST_PAYLOAD)
+            tag=enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
         self.object_type = object_type
         self.template_attribute = template_attribute
         self.validate()
@@ -70,9 +73,12 @@ class CreateResponsePayload(Struct):
     def __init__(self,
                  object_type=None,
                  unique_identifier=None,
-                 template_attribute=None):
+                 template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(CreateResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD)
+            tag=enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
         self.object_type = object_type
         self.unique_identifier = unique_identifier
         self.template_attribute = template_attribute

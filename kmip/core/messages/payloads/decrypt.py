@@ -39,7 +39,8 @@ class DecryptRequestPayload(primitives.Struct):
                  unique_identifier=None,
                  cryptographic_parameters=None,
                  data=None,
-                 iv_counter_nonce=None):
+                 iv_counter_nonce=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Decrypt request payload struct.
 
@@ -56,9 +57,13 @@ class DecryptRequestPayload(primitives.Struct):
                 encoding and decoding.
             iv_counter_nonce (bytes): The IV/counter/nonce value to be used
                 with the decryption algorithm. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(DecryptRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -274,7 +279,8 @@ class DecryptResponsePayload(primitives.Struct):
 
     def __init__(self,
                  unique_identifier=None,
-                 data=None):
+                 data=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Decrypt response payload struct.
 
@@ -284,9 +290,13 @@ class DecryptResponsePayload(primitives.Struct):
                 and decoding.
             data (bytes): The decrypted data in binary form. Required for
                 encoding and decoding.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(DecryptResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

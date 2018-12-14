@@ -36,7 +36,8 @@ class SignRequestPayload(primitives.Struct):
     def __init__(self,
                  unique_identifier=None,
                  cryptographic_parameters=None,
-                 data=None):
+                 data=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Sign request payload struct.
 
@@ -50,9 +51,13 @@ class SignRequestPayload(primitives.Struct):
                 included, the CryptographicParameters associated with the
                 managed object will be used instead.
             data (bytes): The data to be signed, in binary form.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(SignRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -235,9 +240,11 @@ class SignResponsePayload(primitives.Struct):
 
     def __init__(self,
                  unique_identifier=None,
-                 signature_data=None):
+                 signature_data=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(SignResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

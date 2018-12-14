@@ -47,7 +47,8 @@ class Certificate(Struct):
 
     def __init__(self,
                  certificate_type=None,
-                 certificate_value=None):
+                 certificate_value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Certificate object.
 
@@ -56,8 +57,14 @@ class Certificate(Struct):
                 certificate. Optional, defaults to None.
             certificate_value (bytes): The bytes of the certificate. Optional,
                 defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(Certificate, self).__init__(Tags.CERTIFICATE)
+        super(Certificate, self).__init__(
+            Tags.CERTIFICATE,
+            kmip_version=kmip_version
+        )
 
         if certificate_type is None:
             self.certificate_type = CertificateType()
@@ -136,8 +143,11 @@ class Certificate(Struct):
 # 2.2.2
 class KeyBlockKey(Struct):
 
-    def __init__(self, key_block=None, tag=Tags.DEFAULT):
-        super(KeyBlockKey, self).__init__(tag)
+    def __init__(self,
+                 key_block=None,
+                 tag=Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(KeyBlockKey, self).__init__(tag, kmip_version=kmip_version)
         self.key_block = key_block
         self.validate()
 
@@ -171,8 +181,14 @@ class KeyBlockKey(Struct):
 
 class SymmetricKey(KeyBlockKey):
 
-    def __init__(self, key_block=None):
-        super(SymmetricKey, self).__init__(key_block, Tags.SYMMETRIC_KEY)
+    def __init__(self,
+                 key_block=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(SymmetricKey, self).__init__(
+            key_block,
+            Tags.SYMMETRIC_KEY,
+            kmip_version=kmip_version
+        )
         self.validate()
 
     def validate(self):
@@ -186,8 +202,14 @@ class SymmetricKey(KeyBlockKey):
 # 2.2.3
 class PublicKey(KeyBlockKey):
 
-    def __init__(self, key_block=None):
-        super(PublicKey, self).__init__(key_block, Tags.PUBLIC_KEY)
+    def __init__(self,
+                 key_block=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(PublicKey, self).__init__(
+            key_block,
+            Tags.PUBLIC_KEY,
+            kmip_version=kmip_version
+        )
         self.validate()
 
     def validate(self):
@@ -201,8 +223,14 @@ class PublicKey(KeyBlockKey):
 # 2.2.4
 class PrivateKey(KeyBlockKey):
 
-    def __init__(self, key_block=None):
-        super(PrivateKey, self).__init__(key_block, Tags.PRIVATE_KEY)
+    def __init__(self,
+                 key_block=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(PrivateKey, self).__init__(
+            key_block,
+            Tags.PRIVATE_KEY,
+            kmip_version=kmip_version
+        )
         self.validate()
 
     def validate(self):
@@ -218,33 +246,59 @@ class SplitKey(Struct):
 
     class SplitKeyParts(Integer):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(SplitKey.SplitKeyParts, self).__init__(
-                value, Tags.SPLIT_KEY_PARTS)
+                value,
+                Tags.SPLIT_KEY_PARTS,
+                kmip_version=kmip_version
+            )
 
     class KeyPartIdentifier(Integer):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(SplitKey.KeyPartIdentifier, self).__init__(
-                value, Tags.KEY_PART_IDENTIFIER)
+                value,
+                Tags.KEY_PART_IDENTIFIER,
+                kmip_version=kmip_version
+            )
 
     class SplitKeyThreshold(Integer):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(SplitKey.SplitKeyThreshold, self).__init__(
-                value, Tags.SPLIT_KEY_THRESHOLD)
+                value,
+                Tags.SPLIT_KEY_THRESHOLD,
+                kmip_version=kmip_version
+            )
 
     class SplitKeyMethod(Enumeration):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(SplitKey.SplitKeyMethod, self).__init__(
-                enums.SplitKeyMethod, value, Tags.SPLIT_KEY_METHOD)
+                enums.SplitKeyMethod,
+                value,
+                Tags.SPLIT_KEY_METHOD,
+                kmip_version=kmip_version
+            )
 
     class PrimeFieldSize(BigInteger):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(SplitKey.PrimeFieldSize, self).__init__(
-                value, Tags.PRIME_FIELD_SIZE)
+                value,
+                Tags.PRIME_FIELD_SIZE,
+                kmip_version=kmip_version
+            )
 
     def __init__(self,
                  split_key_parts=None,
@@ -252,8 +306,12 @@ class SplitKey(Struct):
                  split_key_threshold=None,
                  split_key_method=None,
                  prime_field_size=None,
-                 key_block=None):
-        super(SplitKey, self).__init__(Tags.SPLIT_KEY)
+                 key_block=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(SplitKey, self).__init__(
+            Tags.SPLIT_KEY,
+            kmip_version=kmip_version
+        )
         self.split_key_parts = split_key_parts
         self.key_part_identifier = key_part_identifier
         self.split_key_threshold = split_key_threshold
@@ -314,8 +372,13 @@ class SplitKey(Struct):
 # 2.2.6
 class Template(Struct):
 
-    def __init__(self, attributes=None):
-        super(Template, self).__init__(Tags.TEMPLATE)
+    def __init__(self,
+                 attributes=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Template, self).__init__(
+            Tags.TEMPLATE,
+            kmip_version=kmip_version
+        )
         self.attributes = attributes
         self.validate()
 
@@ -361,14 +424,24 @@ class SecretData(Struct):
 
     class SecretDataType(Enumeration):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(SecretData.SecretDataType, self).__init__(
-                enums.SecretDataType, value, Tags.SECRET_DATA_TYPE)
+                enums.SecretDataType,
+                value,
+                Tags.SECRET_DATA_TYPE,
+                kmip_version=kmip_version
+            )
 
     def __init__(self,
                  secret_data_type=None,
-                 key_block=None):
-        super(SecretData, self).__init__(Tags.SECRET_DATA)
+                 key_block=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(SecretData, self).__init__(
+            Tags.SECRET_DATA,
+            kmip_version=kmip_version
+        )
         self.secret_data_type = secret_data_type
         self.key_block = key_block
         self.validate()
@@ -410,20 +483,35 @@ class OpaqueObject(Struct):
 
     class OpaqueDataType(Enumeration):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(OpaqueObject.OpaqueDataType, self).__init__(
-                enums.OpaqueDataType, value, Tags.OPAQUE_DATA_TYPE)
+                enums.OpaqueDataType,
+                value,
+                Tags.OPAQUE_DATA_TYPE,
+                kmip_version=kmip_version
+            )
 
     class OpaqueDataValue(ByteString):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(OpaqueObject.OpaqueDataValue, self).__init__(
-                value, Tags.OPAQUE_DATA_VALUE)
+                value,
+                Tags.OPAQUE_DATA_VALUE,
+                kmip_version=kmip_version
+            )
 
     def __init__(self,
                  opaque_data_type=None,
-                 opaque_data_value=None):
-        super(OpaqueObject, self).__init__(Tags.OPAQUE_OBJECT)
+                 opaque_data_value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(OpaqueObject, self).__init__(
+            Tags.OPAQUE_OBJECT,
+            kmip_version=kmip_version
+        )
         self.opaque_data_type = opaque_data_type
         self.opaque_data_value = opaque_data_value
         self.validate()

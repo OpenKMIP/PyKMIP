@@ -33,15 +33,21 @@ class ActivateRequestPayload(Struct):
         unique_identifier: The UUID of a managed cryptographic object
     """
     def __init__(self,
-                 unique_identifier=None):
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a ActivateRequestPayload object.
         Args:
             unique_identifier (UniqueIdentifier): The UUID of a managed
                 cryptographic object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(ActivateRequestPayload, self).__init__(
-            tag=enums.Tags.REQUEST_PAYLOAD)
+            tag=enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
         self.unique_identifier = unique_identifier
         self.validate()
 
@@ -102,16 +108,22 @@ class ActivateResponsePayload(Struct):
         unique_identifier: The UUID of a managed cryptographic object.
     """
     def __init__(self,
-                 unique_identifier=None):
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a ActivateResponsePayload object.
 
         Args:
             unique_identifier (UniqueIdentifier): The UUID of a managed
                 cryptographic object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(ActivateResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD)
+            tag=enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
         if unique_identifier is None:
             self.unique_identifier = attributes.UniqueIdentifier()
         else:

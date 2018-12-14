@@ -29,7 +29,9 @@ class PollRequestPayload(primitives.Struct):
             operation to poll.
     """
 
-    def __init__(self, asynchronous_correlation_value=None):
+    def __init__(self,
+                 asynchronous_correlation_value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Poll request payload struct.
 
@@ -37,9 +39,13 @@ class PollRequestPayload(primitives.Struct):
             asynchronous_correlation_value (bytes): The ID of a pending
                 operation to poll the status of, in bytes. Optional, defaults
                 to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(PollRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._asynchronous_correlation_value = None

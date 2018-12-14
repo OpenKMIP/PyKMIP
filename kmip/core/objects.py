@@ -47,9 +47,14 @@ class Attribute(Struct):
 
     class AttributeName(TextString):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(Attribute.AttributeName, self).__init__(
-                value, Tags.ATTRIBUTE_NAME)
+                value,
+                Tags.ATTRIBUTE_NAME,
+                kmip_version=kmip_version
+            )
 
         def __eq__(self, other):
             if isinstance(other, Attribute.AttributeName):
@@ -68,15 +73,24 @@ class Attribute(Struct):
 
     class AttributeIndex(Integer):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(Attribute.AttributeIndex, self).__init__(
-                value, Tags.ATTRIBUTE_INDEX)
+                value,
+                Tags.ATTRIBUTE_INDEX,
+                kmip_version=kmip_version
+            )
 
     def __init__(self,
                  attribute_name=None,
                  attribute_index=None,
-                 attribute_value=None):
-        super(Attribute, self).__init__(tag=Tags.ATTRIBUTE)
+                 attribute_value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Attribute, self).__init__(
+            tag=Tags.ATTRIBUTE,
+            kmip_version=kmip_version
+        )
 
         self.value_factory = AttributeValueFactory()
 
@@ -184,7 +198,10 @@ class Nonce(primitives.Struct):
         nonce_value (bytes): A binary string representing a random value.
     """
 
-    def __init__(self, nonce_id=None, nonce_value=None):
+    def __init__(self,
+                 nonce_id=None,
+                 nonce_value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Nonce struct.
 
@@ -194,8 +211,14 @@ class Nonce(primitives.Struct):
                 decoding.
             nonce_value (bytes): A binary string representing a random value.
                 Optional, defaults to None. Required for encoding and decoding.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(Nonce, self).__init__(tag=enums.Tags.NONCE)
+        super(Nonce, self).__init__(
+            tag=enums.Tags.NONCE,
+            kmip_version=kmip_version
+        )
 
         self._nonce_id = None
         self._nonce_value = None
@@ -357,7 +380,10 @@ class UsernamePasswordCredential(CredentialValue):
         password: The password associated with the username.
     """
 
-    def __init__(self, username=None, password=None):
+    def __init__(self,
+                 username=None,
+                 password=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a UsernamePasswordCredential struct.
 
@@ -366,9 +392,13 @@ class UsernamePasswordCredential(CredentialValue):
                 Optional, defaults to None. Required for encoding and decoding.
             password (string): The password associated with the username.
                 Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(UsernamePasswordCredential, self).__init__(
-            tag=Tags.CREDENTIAL_VALUE
+            tag=Tags.CREDENTIAL_VALUE,
+            kmip_version=kmip_version
         )
 
         self._username = None
@@ -528,7 +558,8 @@ class DeviceCredential(CredentialValue):
                  device_identifier=None,
                  network_identifier=None,
                  machine_identifier=None,
-                 media_identifier=None):
+                 media_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a DeviceCredential struct.
 
@@ -545,8 +576,14 @@ class DeviceCredential(CredentialValue):
                 credential. Optional, defaults to None.
             media_identifier (string): The media identifier for the
                 credential. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(DeviceCredential, self).__init__(tag=Tags.CREDENTIAL_VALUE)
+        super(DeviceCredential, self).__init__(
+            tag=Tags.CREDENTIAL_VALUE,
+            kmip_version=kmip_version
+        )
 
         self._device_serial_number = None
         self._password = None
@@ -817,7 +854,8 @@ class AttestationCredential(CredentialValue):
                  nonce=None,
                  attestation_type=None,
                  attestation_measurement=None,
-                 attestation_assertion=None):
+                 attestation_assertion=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an AttestationCredential struct.
 
@@ -834,8 +872,14 @@ class AttestationCredential(CredentialValue):
             attestation_assertion (bytes): The network identifier for the
                 credential. Optional, defaults to None. Required for encoding
                 and decoding if the attestation measurement is not provided.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(AttestationCredential, self).__init__(tag=Tags.CREDENTIAL_VALUE)
+        super(AttestationCredential, self).__init__(
+            tag=Tags.CREDENTIAL_VALUE,
+            kmip_version=kmip_version
+        )
 
         self._nonce = None
         self._attestation_type = None
@@ -1079,7 +1123,10 @@ class Credential(primitives.Struct):
         credential_value: The credential value, a CredentialValue instance.
     """
 
-    def __init__(self, credential_type=None, credential_value=None):
+    def __init__(self,
+                 credential_type=None,
+                 credential_value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Credential struct.
 
@@ -1090,8 +1137,14 @@ class Credential(primitives.Struct):
             credential_value (CredentialValue): The credential value
                 corresponding to the credential type. Optional, defaults to
                 None. Required for encoding and decoding.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(Credential, self).__init__(tag=Tags.CREDENTIAL)
+        super(Credential, self).__init__(
+            tag=Tags.CREDENTIAL,
+            kmip_version=kmip_version
+        )
 
         self._credential_type = None
         self._credential_value = None
@@ -1253,9 +1306,15 @@ class KeyBlock(Struct):
 
     class KeyCompressionType(Enumeration):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(KeyBlock.KeyCompressionType, self).__init__(
-                enums.KeyCompressionType, value, Tags.KEY_COMPRESSION_TYPE)
+                enums.KeyCompressionType,
+                value,
+                Tags.KEY_COMPRESSION_TYPE,
+                kmip_version=kmip_version
+            )
 
     def __init__(self,
                  key_format_type=None,
@@ -1263,8 +1322,12 @@ class KeyBlock(Struct):
                  key_value=None,
                  cryptographic_algorithm=None,
                  cryptographic_length=None,
-                 key_wrapping_data=None):
-        super(KeyBlock, self).__init__(Tags.KEY_BLOCK)
+                 key_wrapping_data=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(KeyBlock, self).__init__(
+            Tags.KEY_BLOCK,
+            kmip_version=kmip_version
+        )
         self.key_format_type = key_format_type
         self.key_compression_type = key_compression_type
         self.key_value = key_value
@@ -1345,15 +1408,22 @@ class KeyBlock(Struct):
 # 2.1.4
 class KeyMaterial(ByteString):
 
-    def __init__(self, value=None):
-        super(KeyMaterial, self).__init__(value, Tags.KEY_MATERIAL)
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(KeyMaterial, self).__init__(
+            value,
+            Tags.KEY_MATERIAL,
+            kmip_version=kmip_version
+        )
 
 
 # TODO (peter-hamilton) Get rid of this and replace with a KeyMaterial factory.
 class KeyMaterialStruct(Struct):
 
-    def __init__(self):
-        super(KeyMaterialStruct, self).__init__(Tags.KEY_MATERIAL)
+    def __init__(self, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(KeyMaterialStruct, self).__init__(
+            Tags.KEY_MATERIAL,
+            kmip_version=kmip_version
+        )
 
         self.data = BytearrayStream()
 
@@ -1388,8 +1458,12 @@ class KeyValue(Struct):
 
     def __init__(self,
                  key_material=None,
-                 attributes=None):
-        super(KeyValue, self).__init__(Tags.KEY_VALUE)
+                 attributes=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(KeyValue, self).__init__(
+            Tags.KEY_VALUE,
+            kmip_version=kmip_version
+        )
 
         if key_material is None:
             self.key_material = KeyMaterial()
@@ -1468,7 +1542,8 @@ class EncryptionKeyInformation(Struct):
 
     def __init__(self,
                  unique_identifier=None,
-                 cryptographic_parameters=None):
+                 cryptographic_parameters=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an EncryptionKeyInformation struct.
 
@@ -1481,9 +1556,13 @@ class EncryptionKeyInformation(Struct):
                 the encryption process. Optional, defaults to None. If not
                 included, the CryptographicParameters associated with the
                 managed object will be used instead.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(EncryptionKeyInformation, self).__init__(
-            tag=Tags.ENCRYPTION_KEY_INFORMATION
+            tag=Tags.ENCRYPTION_KEY_INFORMATION,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -1626,7 +1705,8 @@ class MACSignatureKeyInformation(primitives.Struct):
 
     def __init__(self,
                  unique_identifier=None,
-                 cryptographic_parameters=None):
+                 cryptographic_parameters=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a MACSignatureKeyInformation struct.
 
@@ -1639,9 +1719,13 @@ class MACSignatureKeyInformation(primitives.Struct):
                 the MAC/signing process. Optional, defaults to None. If not
                 included, the CryptographicParameters associated with the
                 managed object will be used instead.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(MACSignatureKeyInformation, self).__init__(
-            tag=Tags.MAC_SIGNATURE_KEY_INFORMATION
+            tag=Tags.MAC_SIGNATURE_KEY_INFORMATION,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -1788,7 +1872,8 @@ class KeyWrappingData(Struct):
                  mac_signature_key_information=None,
                  mac_signature=None,
                  iv_counter_nonce=None,
-                 encoding_option=None):
+                 encoding_option=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a KeyWrappingData struct.
 
@@ -1812,8 +1897,14 @@ class KeyWrappingData(Struct):
             encoding_option (EncodingOption): An enumeration value that
                 specifies the encoding of the key value before it is wrapped.
                 Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(KeyWrappingData, self).__init__(Tags.KEY_WRAPPING_DATA)
+        super(KeyWrappingData, self).__init__(
+            Tags.KEY_WRAPPING_DATA,
+            kmip_version=kmip_version
+        )
 
         self._wrapping_method = None
         self._encryption_key_information = None
@@ -2102,7 +2193,8 @@ class KeyWrappingSpecification(primitives.Struct):
                  encryption_key_information=None,
                  mac_signature_key_information=None,
                  attribute_names=None,
-                 encoding_option=None):
+                 encoding_option=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a KeyWrappingSpecification struct.
 
@@ -2124,9 +2216,13 @@ class KeyWrappingSpecification(primitives.Struct):
             encoding_option (EncodingOption): An enumeration value that
                 specifies the encoding of the key value before it is wrapped.
                 Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(KeyWrappingSpecification, self).__init__(
-            tag=Tags.KEY_WRAPPING_SPECIFICATION
+            tag=Tags.KEY_WRAPPING_SPECIFICATION,
+            kmip_version=kmip_version
         )
 
         self._wrapping_method = None
@@ -2390,8 +2486,9 @@ class TemplateAttribute(Struct):
     def __init__(self,
                  names=None,
                  attributes=None,
-                 tag=Tags.TEMPLATE_ATTRIBUTE):
-        super(TemplateAttribute, self).__init__(tag)
+                 tag=Tags.TEMPLATE_ATTRIBUTE,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(TemplateAttribute, self).__init__(tag, kmip_version=kmip_version)
 
         if names is None:
             self.names = list()
@@ -2486,27 +2583,42 @@ class CommonTemplateAttribute(TemplateAttribute):
 
     def __init__(self,
                  names=None,
-                 attributes=None):
+                 attributes=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(CommonTemplateAttribute, self).__init__(
-            names, attributes, Tags.COMMON_TEMPLATE_ATTRIBUTE)
+            names,
+            attributes,
+            Tags.COMMON_TEMPLATE_ATTRIBUTE,
+            kmip_version=kmip_version
+        )
 
 
 class PrivateKeyTemplateAttribute(TemplateAttribute):
 
     def __init__(self,
                  names=None,
-                 attributes=None):
+                 attributes=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(PrivateKeyTemplateAttribute, self).__init__(
-            names, attributes, Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE)
+            names,
+            attributes,
+            Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
+            kmip_version=kmip_version
+        )
 
 
 class PublicKeyTemplateAttribute(TemplateAttribute):
 
     def __init__(self,
                  names=None,
-                 attributes=None):
+                 attributes=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(PublicKeyTemplateAttribute, self).__init__(
-            names, attributes, Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE)
+            names,
+            attributes,
+            Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            kmip_version=kmip_version
+        )
 
 
 # 2.1.9
@@ -2521,15 +2633,22 @@ class ExtensionName(TextString):
     Attributes:
         value: The string data representing the extension name.
     """
-    def __init__(self, value=''):
+    def __init__(self, value='', kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an ExtensionName object.
 
         Args:
             value (str): The string data representing the extension name.
                 Optional, defaults to the empty string.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(ExtensionName, self).__init__(value, Tags.EXTENSION_NAME)
+        super(ExtensionName, self).__init__(
+            value,
+            Tags.EXTENSION_NAME,
+            kmip_version=kmip_version
+        )
 
 
 class ExtensionTag(Integer):
@@ -2542,15 +2661,22 @@ class ExtensionTag(Integer):
     Attributes:
         value: The tag number identifying the extended object.
     """
-    def __init__(self, value=0):
+    def __init__(self, value=0, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an ExtensionTag object.
 
         Args:
             value (int): A number representing the extension tag. Often
                 displayed in hex format. Optional, defaults to 0.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(ExtensionTag, self).__init__(value, Tags.EXTENSION_TAG)
+        super(ExtensionTag, self).__init__(
+            value,
+            Tags.EXTENSION_TAG,
+            kmip_version=kmip_version
+        )
 
 
 class ExtensionType(Integer):
@@ -2564,7 +2690,7 @@ class ExtensionType(Integer):
     Attributes:
         value: The type enumeration for the extended object.
     """
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an ExtensionType object.
 
@@ -2572,8 +2698,15 @@ class ExtensionType(Integer):
             value (Types): A number representing a Types enumeration value,
                 indicating the type of the extended Object. Optional, defaults
                 to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(ExtensionType, self).__init__(value, Tags.EXTENSION_TYPE)
+        super(ExtensionType, self).__init__(
+            value,
+            Tags.EXTENSION_TYPE,
+            kmip_version=kmip_version
+        )
 
 
 class ExtensionInformation(Struct):
@@ -2590,8 +2723,11 @@ class ExtensionInformation(Struct):
         extension_tag: The tag of the extended Object.
         extension_type: The type of the extended Object.
     """
-    def __init__(self, extension_name=None, extension_tag=None,
-                 extension_type=None):
+    def __init__(self,
+                 extension_name=None,
+                 extension_tag=None,
+                 extension_type=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an ExtensionInformation object.
 
@@ -2599,8 +2735,14 @@ class ExtensionInformation(Struct):
             extension_name (ExtensionName): The name of the extended Object.
             extension_tag (ExtensionTag): The tag of the extended Object.
             extension_type (ExtensionType): The type of the extended Object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(ExtensionInformation, self).__init__(Tags.EXTENSION_INFORMATION)
+        super(ExtensionInformation, self).__init__(
+            Tags.EXTENSION_INFORMATION,
+            kmip_version=kmip_version
+        )
 
         if extension_name is None:
             self.extension_name = ExtensionName()
@@ -2753,24 +2895,37 @@ class ExtensionInformation(Struct):
 # 2.1.10
 class Data(ByteString):
 
-    def __init__(self, value=None):
-        super(Data, self).__init__(value, Tags.DATA)
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Data, self).__init__(
+            value,
+            Tags.DATA,
+            kmip_version=kmip_version
+        )
 
 
 # 2.1.13
 class MACData(ByteString):
 
-    def __init__(self, value=None):
-        super(MACData, self).__init__(value, Tags.MAC_DATA)
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(MACData, self).__init__(
+            value,
+            Tags.MAC_DATA,
+            kmip_version=kmip_version
+        )
 
 
 # 3.31, 9.1.3.2.19
 class RevocationReasonCode(Enumeration):
 
-    def __init__(self, value=RevocationReasonCodeEnum.UNSPECIFIED):
+    def __init__(self,
+                 value=RevocationReasonCodeEnum.UNSPECIFIED,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(RevocationReasonCode, self).__init__(
-            RevocationReasonCodeEnum, value=value,
-            tag=Tags.REVOCATION_REASON_CODE)
+            RevocationReasonCodeEnum,
+            value=value,
+            tag=Tags.REVOCATION_REASON_CODE,
+            kmip_version=kmip_version
+        )
 
 
 # 3.31
@@ -2786,15 +2941,24 @@ class RevocationReason(Struct):
         message: An optional revocation message
     """
 
-    def __init__(self, code=None, message=None):
+    def __init__(self,
+                 code=None,
+                 message=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a RevocationReason object.
 
         Parameters:
             code(RevocationReasonCode): revocation reason code
             message(string): An optional revocation message
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(RevocationReason, self).__init__(tag=Tags.REVOCATION_REASON)
+        super(RevocationReason, self).__init__(
+            tag=Tags.REVOCATION_REASON,
+            kmip_version=kmip_version
+        )
         if code is not None:
             self.revocation_code = RevocationReasonCode(value=code)
         else:

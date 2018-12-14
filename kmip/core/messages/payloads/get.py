@@ -43,7 +43,8 @@ class GetRequestPayload(primitives.Struct):
                  unique_identifier=None,
                  key_format_type=None,
                  key_compression_type=None,
-                 key_wrapping_specification=None):
+                 key_wrapping_specification=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Get request payload struct.
 
@@ -61,9 +62,13 @@ class GetRequestPayload(primitives.Struct):
                 KeyWrappingSpecification struct that specifies keys and other
                 information for wrapping the returned object. Optional,
                 defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(GetRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -278,7 +283,8 @@ class GetResponsePayload(primitives.Struct):
     def __init__(self,
                  object_type=None,
                  unique_identifier=None,
-                 secret=None):
+                 secret=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Get response payload struct.
 
@@ -293,9 +299,13 @@ class GetResponsePayload(primitives.Struct):
                 be one of the following:
 
                 Optional, defaults to None. Required for read/write.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(GetResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD
+            tag=enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
         self._object_type = None
         self._unique_identifier = None

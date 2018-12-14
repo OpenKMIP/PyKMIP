@@ -36,7 +36,10 @@ class GetAttributesRequestPayload(primitives.Struct):
         attribute_names: A list of strings identifying the names of the
             attributes associated with the managed object.
     """
-    def __init__(self, unique_identifier=None, attribute_names=None):
+    def __init__(self,
+                 unique_identifier=None,
+                 attribute_names=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a GetAttributes request payload.
 
@@ -47,9 +50,14 @@ class GetAttributesRequestPayload(primitives.Struct):
             attribute_names: A list of strings identifying the names of the
                 attributes associated with the managed object. Optional,
                 defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(GetAttributesRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD)
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self._unique_identifier = None
         self._attribute_names = list()
@@ -211,7 +219,10 @@ class GetAttributesResponsePayload(primitives.Struct):
         attributes: The list of attributes associated with managed object
             identified by the unique identifier above.
     """
-    def __init__(self, unique_identifier=None, attributes=None):
+    def __init__(self,
+                 unique_identifier=None,
+                 attributes=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a GetAttributes response payload.
 
@@ -221,9 +232,14 @@ class GetAttributesResponsePayload(primitives.Struct):
                 defaults to None.
             attributes (list): A list of attribute structures associated with
                 the managed object. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(GetAttributesResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD)
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self._unique_identifier = None
         self._attributes = list()

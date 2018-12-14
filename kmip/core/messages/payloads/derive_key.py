@@ -43,7 +43,8 @@ class DeriveKeyRequestPayload(primitives.Struct):
                  unique_identifiers=None,
                  derivation_method=None,
                  derivation_parameters=None,
-                 template_attribute=None):
+                 template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a DeriveKey request payload struct.
 
@@ -68,9 +69,13 @@ class DeriveKeyRequestPayload(primitives.Struct):
                 cryptographic length) that should be set on the newly derived
                 cryptographic object. Optional, defaults to None. Required
                 for encoding and decoding.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(DeriveKeyRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._object_type = None
@@ -366,7 +371,8 @@ class DeriveKeyResponsePayload(primitives.Struct):
 
     def __init__(self,
                  unique_identifier=None,
-                 template_attribute=None):
+                 template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a DeriveKey response payload struct.
 
@@ -379,9 +385,13 @@ class DeriveKeyResponsePayload(primitives.Struct):
                 cryptographic length) implicitly set by the server on the
                 newly derived cryptographic object. Optional, defaults to
                 None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(DeriveKeyResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

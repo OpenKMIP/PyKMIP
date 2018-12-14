@@ -38,7 +38,10 @@ class ProtocolVersion(primitives.Struct):
         minor: The minor protocol version number.
     """
 
-    def __init__(self, major=None, minor=None):
+    def __init__(self,
+                 major=None,
+                 minor=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a ProtocolVersion struct.
 
@@ -47,8 +50,14 @@ class ProtocolVersion(primitives.Struct):
                 to None.
             minor (int): The minor protocol version number. Optional, defaults
                 to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(ProtocolVersion, self).__init__(enums.Tags.PROTOCOL_VERSION)
+        super(ProtocolVersion, self).__init__(
+            enums.Tags.PROTOCOL_VERSION,
+            kmip_version=kmip_version
+        )
 
         self._major = None
         self._minor = None
@@ -240,29 +249,51 @@ class ProtocolVersion(primitives.Struct):
 # 6.2
 class Operation(Enumeration):
 
-    def __init__(self, value=None):
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(Operation, self).__init__(
-            enums.Operation, value, enums.Tags.OPERATION)
+            enums.Operation,
+            value,
+            enums.Tags.OPERATION,
+            kmip_version=kmip_version
+        )
 
 
 # 6.3
 class MaximumResponseSize(Integer):
-    def __init__(self, value=None):
-        super(MaximumResponseSize, self).\
-            __init__(value, enums.Tags.MAXIMUM_RESPONSE_SIZE)
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(MaximumResponseSize, self).__init__(
+            value,
+            enums.Tags.MAXIMUM_RESPONSE_SIZE,
+            kmip_version=kmip_version
+        )
 
 
 # 6.4
 class UniqueBatchItemID(ByteString):
-    def __init__(self, value=None):
-        super(UniqueBatchItemID, self)\
-            .__init__(value, enums.Tags.UNIQUE_BATCH_ITEM_ID)
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(UniqueBatchItemID, self).__init__(
+            value,
+            enums.Tags.UNIQUE_BATCH_ITEM_ID,
+            kmip_version=kmip_version
+        )
 
 
 # 6.5
 class TimeStamp(DateTime):
-    def __init__(self, value=None):
-        super(TimeStamp, self).__init__(value, enums.Tags.TIME_STAMP)
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(TimeStamp, self).__init__(
+            value,
+            enums.Tags.TIME_STAMP,
+            kmip_version=kmip_version
+        )
 
 
 class Authentication(Struct):
@@ -274,15 +305,23 @@ class Authentication(Struct):
             authentication.
     """
 
-    def __init__(self, credentials=None):
+    def __init__(self,
+                 credentials=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an Authentication struct.
 
         Args:
             credentials (list): A list of Credential structs to be used for
                 authentication. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(Authentication, self).__init__(enums.Tags.AUTHENTICATION)
+        super(Authentication, self).__init__(
+            enums.Tags.AUTHENTICATION,
+            kmip_version=kmip_version
+        )
 
         self._credentials = []
         self.credentials = credentials
@@ -383,71 +422,124 @@ class Authentication(Struct):
 
 # 6.7
 class AsynchronousIndicator(Boolean):
-    def __init__(self, value=None):
-        super(AsynchronousIndicator, self).\
-            __init__(value, enums.Tags.ASYNCHRONOUS_INDICATOR)
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(AsynchronousIndicator, self).__init__(
+            value,
+            enums.Tags.ASYNCHRONOUS_INDICATOR,
+            kmip_version=kmip_version
+        )
 
 
 # 6.8
 class AsynchronousCorrelationValue(ByteString):
-    def __init__(self, value=None):
-        super(AsynchronousCorrelationValue, self).\
-            __init__(value, enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE)
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(AsynchronousCorrelationValue, self).__init__(
+            value,
+            enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE,
+            kmip_version=kmip_version
+        )
 
 
 # 6.9
 class ResultStatus(Enumeration):
 
-    def __init__(self, value=None):
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(ResultStatus, self).__init__(
-            enums.ResultStatus, value, enums.Tags.RESULT_STATUS)
+            enums.ResultStatus,
+            value,
+            enums.Tags.RESULT_STATUS,
+            kmip_version=kmip_version
+        )
 
 
 # 6.10
 class ResultReason(Enumeration):
 
-    def __init__(self, value=None):
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(ResultReason, self).__init__(
-            enums.ResultReason, value, enums.Tags.RESULT_REASON)
+            enums.ResultReason,
+            value,
+            enums.Tags.RESULT_REASON,
+            kmip_version=kmip_version
+        )
 
 
 # 6.11
 class ResultMessage(TextString):
-    def __init__(self, value=None):
-        super(ResultMessage, self).__init__(value, enums.Tags.RESULT_MESSAGE)
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ResultMessage, self).__init__(
+            value,
+            enums.Tags.RESULT_MESSAGE,
+            kmip_version=kmip_version
+        )
 
 
 # 6.12
 class BatchOrderOption(Boolean):
-    def __init__(self, value=None):
-        super(BatchOrderOption, self).\
-            __init__(value, enums.Tags.BATCH_ORDER_OPTION)
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(BatchOrderOption, self).__init__(
+            value,
+            enums.Tags.BATCH_ORDER_OPTION,
+            kmip_version=kmip_version
+        )
 
 
 # 6.13
 class BatchErrorContinuationOption(Enumeration):
 
-    def __init__(self, value=None):
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(BatchErrorContinuationOption, self).__init__(
-            enums.BatchErrorContinuationOption, value,
-            enums.Tags.BATCH_ERROR_CONTINUATION_OPTION)
+            enums.BatchErrorContinuationOption,
+            value,
+            enums.Tags.BATCH_ERROR_CONTINUATION_OPTION,
+            kmip_version=kmip_version
+        )
 
 
 # 6.14
 class BatchCount(Integer):
-    def __init__(self, value=None):
-        super(BatchCount, self).__init__(value, enums.Tags.BATCH_COUNT)
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(BatchCount, self).__init__(
+            value,
+            enums.Tags.BATCH_COUNT,
+            kmip_version=kmip_version
+        )
 
 
 # 6.16
 class MessageExtension(Struct):
-    def __init__(self):
-        super(MessageExtension, self).__init__(enums.Tags.MESSAGE_EXTENSION)
+    def __init__(self, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(MessageExtension, self).__init__(
+            enums.Tags.MESSAGE_EXTENSION,
+            kmip_version=kmip_version
+        )
 
 
 # 9.1.3.2.2
 class KeyCompressionType(Enumeration):
 
-    def __init__(self, value=None):
+    def __init__(self,
+                 value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(KeyCompressionType, self).__init__(
-            enums.KeyCompressionType, value, enums.Tags.KEY_COMPRESSION_TYPE)
+            enums.KeyCompressionType,
+            value,
+            enums.Tags.KEY_COMPRESSION_TYPE,
+            kmip_version=kmip_version
+        )

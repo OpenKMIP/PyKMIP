@@ -39,7 +39,8 @@ class EncryptRequestPayload(primitives.Struct):
                  unique_identifier=None,
                  cryptographic_parameters=None,
                  data=None,
-                 iv_counter_nonce=None):
+                 iv_counter_nonce=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an Encrypt request payload struct.
 
@@ -56,9 +57,13 @@ class EncryptRequestPayload(primitives.Struct):
                 encoding and decoding.
             iv_counter_nonce (bytes): The IV/counter/nonce value to be used
                 with the encryption algorithm. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(EncryptRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -277,7 +282,8 @@ class EncryptResponsePayload(primitives.Struct):
     def __init__(self,
                  unique_identifier=None,
                  data=None,
-                 iv_counter_nonce=None):
+                 iv_counter_nonce=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an Encrypt response payload struct.
 
@@ -291,9 +297,13 @@ class EncryptResponsePayload(primitives.Struct):
                 the encryption algorithm if it was required and if this
                 value was not originally specified by the client. Optional,
                 defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(EncryptResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

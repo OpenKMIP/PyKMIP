@@ -30,10 +30,13 @@ class MACRequestPayload(Struct):
     def __init__(self,
                  unique_identifier=None,
                  cryptographic_parameters=None,
-                 data=None):
+                 data=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
 
         super(MACRequestPayload, self).__init__(
-            tag=enums.Tags.REQUEST_PAYLOAD)
+            tag=enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self._unique_identifier = None
         self._cryptographic_parameters = None
@@ -129,9 +132,12 @@ class MACResponsePayload(Struct):
 
     def __init__(self,
                  unique_identifier=None,
-                 mac_data=None):
+                 mac_data=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(MACResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD)
+            tag=enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self._unique_identifier = None
         self._mac_data = None

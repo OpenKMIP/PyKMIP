@@ -16,6 +16,7 @@
 from kmip.core import attributes
 from kmip.core import objects
 
+from kmip.core import enums
 from kmip.core.enums import Tags
 
 from kmip.core.primitives import Struct
@@ -28,8 +29,12 @@ class CreateKeyPairRequestPayload(Struct):
     def __init__(self,
                  common_template_attribute=None,
                  private_key_template_attribute=None,
-                 public_key_template_attribute=None):
-        super(CreateKeyPairRequestPayload, self).__init__(Tags.REQUEST_PAYLOAD)
+                 public_key_template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(CreateKeyPairRequestPayload, self).__init__(
+            Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self.common_template_attribute = common_template_attribute
         self.private_key_template_attribute = private_key_template_attribute
@@ -112,9 +117,12 @@ class CreateKeyPairResponsePayload(Struct):
                  private_key_uuid=None,
                  public_key_uuid=None,
                  private_key_template_attribute=None,
-                 public_key_template_attribute=None):
+                 public_key_template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(CreateKeyPairResponsePayload, self).__init__(
-            Tags.RESPONSE_PAYLOAD)
+            Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         # Private and public UUIDs are required so make defaults as backup
         if private_key_uuid is None:

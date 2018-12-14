@@ -31,25 +31,49 @@ class LocateRequestPayload(Struct):
     # 9.1.3.2.33
     class ObjectGroupMember(Enumeration):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(LocateRequestPayload.ObjectGroupMember, self).__init__(
-                enums.ObjectGroupMember, value, Tags.OBJECT_GROUP_MEMBER)
+                enums.ObjectGroupMember,
+                value,
+                Tags.OBJECT_GROUP_MEMBER,
+                kmip_version=kmip_version
+            )
 
     class MaximumItems(Integer):
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(LocateRequestPayload.MaximumItems, self).__init__(
-                value, Tags.MAXIMUM_ITEMS)
+                value,
+                Tags.MAXIMUM_ITEMS,
+                kmip_version=kmip_version
+            )
 
     # 9.1.3.3.2
     class StorageStatusMask(Enumeration):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(LocateRequestPayload.StorageStatusMask, self).__init__(
-                enums.StorageStatusMask, value, Tags.STORAGE_STATUS_MASK)
+                enums.StorageStatusMask,
+                value,
+                Tags.STORAGE_STATUS_MASK,
+                kmip_version=kmip_version
+            )
 
-    def __init__(self, maximum_items=None, storage_status_mask=None,
-                 object_group_member=None, attributes=None):
-        super(LocateRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+    def __init__(self,
+                 maximum_items=None,
+                 storage_status_mask=None,
+                 object_group_member=None,
+                 attributes=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(LocateRequestPayload, self).__init__(
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
         self.maximum_items = maximum_items
         self.storage_status_mask = storage_status_mask
         self.object_group_member = object_group_member
@@ -102,9 +126,14 @@ class LocateRequestPayload(Struct):
 
 class LocateResponsePayload(Struct):
 
-    def __init__(self, unique_identifiers=[]):
+    # TODO (ph) Remove the default list below.
+    def __init__(self,
+                 unique_identifiers=[],
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(LocateResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD)
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
         self.unique_identifiers = unique_identifiers or []
         self.validate()
 

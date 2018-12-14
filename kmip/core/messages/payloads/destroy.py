@@ -26,8 +26,12 @@ from kmip.core.utils import BytearrayStream
 class DestroyRequestPayload(Struct):
 
     def __init__(self,
-                 unique_identifier=None):
-        super(DestroyRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(DestroyRequestPayload, self).__init__(
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
         self.unique_identifier = unique_identifier
         self.validate()
 
@@ -64,9 +68,12 @@ class DestroyRequestPayload(Struct):
 class DestroyResponsePayload(Struct):
 
     def __init__(self,
-                 unique_identifier=None):
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(DestroyResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD)
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
         self.unique_identifier = unique_identifier
         self.validate()
 

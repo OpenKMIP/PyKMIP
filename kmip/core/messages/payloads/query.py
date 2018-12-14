@@ -18,6 +18,7 @@ from six.moves import xrange
 from kmip.core.attributes import ApplicationNamespace
 from kmip.core.attributes import ObjectType
 
+from kmip.core import enums
 from kmip.core.enums import Tags
 from kmip.core.messages.contents import Operation
 
@@ -41,14 +42,22 @@ class QueryRequestPayload(Struct):
     Attributes:
         query_functions: A list of QueryFunction enumerations.
     """
-    def __init__(self, query_functions=None):
+    def __init__(self,
+                 query_functions=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a QueryRequestPayload object.
 
         Args:
             query_functions (list): A list of QueryFunction enumerations.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(QueryRequestPayload, self).__init__(Tags.REQUEST_PAYLOAD)
+        super(QueryRequestPayload, self).__init__(
+            Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         if query_functions is None:
             self.query_functions = list()
@@ -136,9 +145,14 @@ class QueryResponsePayload(Struct):
             Objects supported by the server with ItemTag values in the
             Extensions range.
     """
-    def __init__(self, operations=None, object_types=None,
-                 vendor_identification=None, server_information=None,
-                 application_namespaces=None, extension_information=None):
+    def __init__(self,
+                 operations=None,
+                 object_types=None,
+                 vendor_identification=None,
+                 server_information=None,
+                 application_namespaces=None,
+                 extension_information=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a QueryResponsePayload object.
 
@@ -154,8 +168,14 @@ class QueryResponsePayload(Struct):
             extension_information (list): A list of ExtensionInformation
                 objects detailing Objects supported by the server with ItemTag
                 values in the Extensions range.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(QueryResponsePayload, self).__init__(Tags.RESPONSE_PAYLOAD)
+        super(QueryResponsePayload, self).__init__(
+            Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         if operations is None:
             self.operations = list()

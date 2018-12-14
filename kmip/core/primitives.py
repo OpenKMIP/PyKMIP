@@ -32,10 +32,54 @@ class Base(object):
     TYPE_SIZE = 1
     LENGTH_SIZE = 4
 
-    def __init__(self, tag=enums.Tags.DEFAULT, type=enums.Types.DEFAULT):
+    def __init__(self,
+                 tag=enums.Tags.DEFAULT,
+                 type=enums.Types.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         self.tag = tag
         self.type = type
         self.length = None
+
+        self._kmip_version = None
+        self.kmip_version = kmip_version
+
+    @property
+    def kmip_version(self):
+        """
+        Get the KMIP version of the object.
+
+        Return:
+            kmip_version (KMIPVersion): The KMIPVersion enumeration used by
+                the object for encoding and decoding across KMIP versions.
+
+        Example:
+            >>> payload.kmip_version
+            <KMIPVersion.KMIP_1_0: 'KMIP 1.0'>
+        """
+        return self._kmip_version
+
+    @kmip_version.setter
+    def kmip_version(self, value):
+        """
+        Set the KMIP version for the object.
+
+        Args:
+            value (KMIPVersion): A KMIPVersion enumeration.
+
+        Return:
+            None
+
+        Raises:
+            ValueError: if value is not a KMIPVersion enumeration
+
+        Example:
+            >>> payload.kmip_version = enums.KMIPVersion.KMIP_1_2
+            >>>
+        """
+        if isinstance(value, enums.KMIPVersion):
+            self._kmip_version = value
+        else:
+            raise ValueError("KMIP version must be a KMIPVersion enumeration")
 
     # TODO (peter-hamilton) Convert this into a classmethod, class name can be
     #                       obtained from cls parameter that replaces self
@@ -172,8 +216,14 @@ class Base(object):
 
 class Struct(Base):
 
-    def __init__(self, tag=enums.Tags.DEFAULT):
-        super(Struct, self).__init__(tag, type=enums.Types.STRUCTURE)
+    def __init__(self,
+                 tag=enums.Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Struct, self).__init__(
+            tag,
+            type=enums.Types.STRUCTURE,
+            kmip_version=kmip_version
+        )
 
     # NOTE (peter-hamilton) If seen, should indicate repr needs to be defined
     def __repr__(self):
@@ -187,8 +237,16 @@ class Integer(Base):
     MIN = -2147483648
     MAX = 2147483647
 
-    def __init__(self, value=None, tag=enums.Tags.DEFAULT, signed=True):
-        super(Integer, self).__init__(tag, type=enums.Types.INTEGER)
+    def __init__(self,
+                 value=None,
+                 tag=enums.Tags.DEFAULT,
+                 signed=True,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Integer, self).__init__(
+            tag,
+            type=enums.Types.INTEGER,
+            kmip_version=kmip_version
+        )
 
         self.value = value
         if self.value is None:
@@ -313,7 +371,10 @@ class LongInteger(Base):
     MIN = -9223372036854775808
     MAX = 9223372036854775807
 
-    def __init__(self, value=0, tag=enums.Tags.DEFAULT):
+    def __init__(self,
+                 value=0,
+                 tag=enums.Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Create a LongInteger.
 
@@ -321,8 +382,15 @@ class LongInteger(Base):
             value (int): The value of the LongInteger. Optional, defaults to 0.
             tag (Tags): An enumeration defining the tag of the LongInteger.
                 Optional, defaults to Tags.DEFAULT.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(LongInteger, self).__init__(tag, type=enums.Types.LONG_INTEGER)
+        super(LongInteger, self).__init__(
+            tag,
+            type=enums.Types.LONG_INTEGER,
+            kmip_version=kmip_version
+        )
         self.value = value
         self.length = LongInteger.LENGTH
 
@@ -414,8 +482,15 @@ class BigInteger(Base):
     Section 9.1 of the KMIP 1.1 specification.
     """
 
-    def __init__(self, value=0, tag=enums.Tags.DEFAULT):
-        super(BigInteger, self).__init__(tag, type=enums.Types.BIG_INTEGER)
+    def __init__(self,
+                 value=0,
+                 tag=enums.Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(BigInteger, self).__init__(
+            tag,
+            type=enums.Types.BIG_INTEGER,
+            kmip_version=kmip_version
+        )
         self.value = value
 
         self.validate()
@@ -548,7 +623,11 @@ class Enumeration(Base):
     MIN = 0
     MAX = 4294967296
 
-    def __init__(self, enum, value=None, tag=enums.Tags.DEFAULT):
+    def __init__(self,
+                 enum,
+                 value=None,
+                 tag=enums.Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Create an Enumeration.
 
@@ -559,8 +638,15 @@ class Enumeration(Base):
                 (e.g., Tags.DEFAULT). Optional, defaults to None.
             tag (Tags): An enumeration defining the tag of the Enumeration.
                 Optional, defaults to Tags.DEFAULT.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(Enumeration, self).__init__(tag, enums.Types.ENUMERATION)
+        super(Enumeration, self).__init__(
+            tag,
+            enums.Types.ENUMERATION,
+            kmip_version=kmip_version
+        )
 
         self.value = value
         self.enum = enum
@@ -673,7 +759,10 @@ class Boolean(Base):
     """
     LENGTH = 8
 
-    def __init__(self, value=True, tag=enums.Tags.DEFAULT):
+    def __init__(self,
+                 value=True,
+                 tag=enums.Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Create a Boolean object.
 
@@ -681,8 +770,15 @@ class Boolean(Base):
             value (bool): The value of the Boolean. Optional, defaults to True.
             tag (Tags): An enumeration defining the tag of the Boolean object.
                 Optional, defaults to Tags.DEFAULT.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(Boolean, self).__init__(tag, type=enums.Types.BOOLEAN)
+        super(Boolean, self).__init__(
+            tag,
+            type=enums.Types.BOOLEAN,
+            kmip_version=kmip_version
+        )
         self.logger = logging.getLogger(__name__)
         self.value = value
         self.length = self.LENGTH
@@ -788,8 +884,15 @@ class TextString(Base):
     PADDING_SIZE = 8
     BYTE_FORMAT = '!c'
 
-    def __init__(self, value=None, tag=enums.Tags.DEFAULT):
-        super(TextString, self).__init__(tag, type=enums.Types.TEXT_STRING)
+    def __init__(self,
+                 value=None,
+                 tag=enums.Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(TextString, self).__init__(
+            tag,
+            type=enums.Types.TEXT_STRING,
+            kmip_version=kmip_version
+        )
 
         if value is None:
             self.value = ''
@@ -882,8 +985,15 @@ class ByteString(Base):
     PADDING_SIZE = 8
     BYTE_FORMAT = '!B'
 
-    def __init__(self, value=None, tag=enums.Tags.DEFAULT):
-        super(ByteString, self).__init__(tag, type=enums.Types.BYTE_STRING)
+    def __init__(self,
+                 value=None,
+                 tag=enums.Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ByteString, self).__init__(
+            tag,
+            type=enums.Types.BYTE_STRING,
+            kmip_version=kmip_version
+        )
 
         if value is None:
             self.value = bytes()
@@ -985,7 +1095,10 @@ class DateTime(LongInteger):
     more information, see Section 9.1 of the KMIP 1.1 specification.
     """
 
-    def __init__(self, value=None, tag=enums.Tags.DEFAULT):
+    def __init__(self,
+                 value=None,
+                 tag=enums.Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Create a DateTime.
 
@@ -995,10 +1108,13 @@ class DateTime(LongInteger):
                 Optional, defaults to the current time.
             tag (Tags): An enumeration defining the tag of the LongInteger.
                 Optional, defaults to Tags.DEFAULT.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         if value is None:
             value = int(time.time())
-        super(DateTime, self).__init__(value, tag)
+        super(DateTime, self).__init__(value, tag, kmip_version=kmip_version)
         self.type = enums.Types.DATE_TIME
 
     def __repr__(self):
@@ -1023,8 +1139,15 @@ class Interval(Base):
     MIN = 0
     MAX = 4294967296
 
-    def __init__(self, value=0, tag=enums.Tags.DEFAULT):
-        super(Interval, self).__init__(tag, type=enums.Types.INTERVAL)
+    def __init__(self,
+                 value=0,
+                 tag=enums.Tags.DEFAULT,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Interval, self).__init__(
+            tag,
+            type=enums.Types.INTERVAL,
+            kmip_version=kmip_version
+        )
 
         self.value = value
         self.length = Interval.LENGTH

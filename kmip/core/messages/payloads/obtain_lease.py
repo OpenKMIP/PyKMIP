@@ -28,7 +28,9 @@ class ObtainLeaseRequestPayload(primitives.Struct):
         unique_identifier: The unique ID of the object to be leased.
     """
 
-    def __init__(self, unique_identifier=None):
+    def __init__(self,
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an ObtainLease request payload struct.
 
@@ -36,9 +38,13 @@ class ObtainLeaseRequestPayload(primitives.Struct):
             unique_identifier (string): The ID of the managed object (e.g.,
                 a public key) to obtain a lease for. Optional, defaults to
                 None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(ObtainLeaseRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -150,7 +156,8 @@ class ObtainLeaseResponsePayload(primitives.Struct):
     def __init__(self,
                  unique_identifier=None,
                  lease_time=None,
-                 last_change_date=None):
+                 last_change_date=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an ObtainLease response payload struct.
 
@@ -163,9 +170,13 @@ class ObtainLeaseResponsePayload(primitives.Struct):
             last_change_date (int): The date, in seconds since the epoch,
                 when the last change was made to the object or one of its
                 attributes. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(ObtainLeaseResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

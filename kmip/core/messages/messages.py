@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.core import enums
 from kmip.core.enums import Tags
 
 from kmip.core.messages import contents
@@ -37,8 +38,12 @@ class RequestHeader(Struct):
                  batch_error_cont_option=None,
                  batch_order_option=None,
                  time_stamp=None,
-                 batch_count=None):
-        super(RequestHeader, self).__init__(tag=Tags.REQUEST_HEADER)
+                 batch_count=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(RequestHeader, self).__init__(
+            tag=Tags.REQUEST_HEADER,
+            kmip_version=kmip_version
+        )
         self.protocol_version = protocol_version
         self.maximum_response_size = maximum_response_size
         self.asynchronous_indicator = asynchronous_indicator
@@ -120,8 +125,12 @@ class ResponseHeader(Struct):
     def __init__(self,
                  protocol_version=None,
                  time_stamp=None,
-                 batch_count=None):
-        super(ResponseHeader, self).__init__(tag=Tags.RESPONSE_HEADER)
+                 batch_count=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ResponseHeader, self).__init__(
+            tag=Tags.RESPONSE_HEADER,
+            kmip_version=kmip_version
+        )
         self.protocol_version = protocol_version
         self.time_stamp = time_stamp
         self.batch_count = batch_count
@@ -171,8 +180,12 @@ class RequestBatchItem(Struct):
                  operation=None,
                  unique_batch_item_id=None,
                  request_payload=None,
-                 message_extension=None):
-        super(RequestBatchItem, self).__init__(tag=Tags.REQUEST_BATCH_ITEM)
+                 message_extension=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(RequestBatchItem, self).__init__(
+            tag=Tags.REQUEST_BATCH_ITEM,
+            kmip_version=kmip_version
+        )
 
         self.payload_factory = RequestPayloadFactory()
 
@@ -237,8 +250,12 @@ class ResponseBatchItem(Struct):
                  result_message=None,
                  async_correlation_value=None,
                  response_payload=None,
-                 message_extension=None):
-        super(ResponseBatchItem, self).__init__(tag=Tags.RESPONSE_BATCH_ITEM)
+                 message_extension=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ResponseBatchItem, self).__init__(
+            tag=Tags.RESPONSE_BATCH_ITEM,
+            kmip_version=kmip_version
+        )
 
         self.payload_factory = ResponsePayloadFactory()
 
@@ -334,8 +351,14 @@ class ResponseBatchItem(Struct):
 
 class RequestMessage(Struct):
 
-    def __init__(self, request_header=None, batch_items=None,):
-        super(RequestMessage, self).__init__(tag=Tags.REQUEST_MESSAGE)
+    def __init__(self,
+                 request_header=None,
+                 batch_items=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(RequestMessage, self).__init__(
+            tag=Tags.REQUEST_MESSAGE,
+            kmip_version=kmip_version
+        )
         self.request_header = request_header
         self.batch_items = batch_items
 
@@ -367,8 +390,14 @@ class RequestMessage(Struct):
 
 class ResponseMessage(Struct):
 
-    def __init__(self, response_header=None, batch_items=None,):
-        super(ResponseMessage, self).__init__(tag=Tags.RESPONSE_MESSAGE)
+    def __init__(self,
+                 response_header=None,
+                 batch_items=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ResponseMessage, self).__init__(
+            tag=Tags.RESPONSE_MESSAGE,
+            kmip_version=kmip_version
+        )
         self.response_header = response_header
         self.batch_items = batch_items
         self.validate()

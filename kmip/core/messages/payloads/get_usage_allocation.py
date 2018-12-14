@@ -31,7 +31,10 @@ class GetUsageAllocationRequestPayload(primitives.Struct):
             reserved for the object.
     """
 
-    def __init__(self, unique_identifier=None, usage_limits_count=None):
+    def __init__(self,
+                 unique_identifier=None,
+                 usage_limits_count=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a GetUsageAllocation request payload struct.
 
@@ -41,9 +44,13 @@ class GetUsageAllocationRequestPayload(primitives.Struct):
                 defaults to None.
             usage_limits_count (int): The number of usage limits units that
                 should be reserved for the object. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(GetUsageAllocationRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -183,16 +190,22 @@ class GetUsageAllocationResponsePayload(primitives.Struct):
         unique_identifier: The unique ID of the object that was allocated.
     """
 
-    def __init__(self, unique_identifier=None):
+    def __init__(self,
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a GetUsageAllocation response payload struct.
 
         Args:
             unique_identifier (string): The ID of the managed object (e.g.,
                 a public key) that was allocated. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(GetUsageAllocationResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

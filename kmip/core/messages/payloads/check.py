@@ -38,7 +38,8 @@ class CheckRequestPayload(primitives.Struct):
                  unique_identifier=None,
                  usage_limits_count=None,
                  cryptographic_usage_mask=None,
-                 lease_time=None):
+                 lease_time=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Check request payload struct.
 
@@ -54,8 +55,14 @@ class CheckRequestPayload(primitives.Struct):
             lease_time (int): The date in seconds since the epoch that a
                 lease should be available for on the checked object. Optional,
                 defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(CheckRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+        super(CheckRequestPayload, self).__init__(
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self._unique_identifier = None
         self._usage_limits_count = None
@@ -270,7 +277,8 @@ class CheckResponsePayload(primitives.Struct):
                  unique_identifier=None,
                  usage_limits_count=None,
                  cryptographic_usage_mask=None,
-                 lease_time=None):
+                 lease_time=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Check response payload struct.
 
@@ -286,8 +294,14 @@ class CheckResponsePayload(primitives.Struct):
             lease_time (int): The date in seconds since the epoch that a
                 lease should be available for on the checked object. Optional,
                 defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(CheckResponsePayload, self).__init__(enums.Tags.RESPONSE_PAYLOAD)
+        super(CheckResponsePayload, self).__init__(
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self._unique_identifier = None
         self._usage_limits_count = None

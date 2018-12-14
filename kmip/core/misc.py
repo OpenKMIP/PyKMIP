@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.core import enums
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
@@ -35,7 +36,7 @@ class CertificateValue(ByteString):
     information.
     """
 
-    def __init__(self, value=b''):
+    def __init__(self, value=b'', kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a CertificateValue byte string.
 
@@ -43,8 +44,15 @@ class CertificateValue(ByteString):
             value (bytes): A byte string (e.g., b'\x00\x01...') containing the
                 certificate bytes to store. Optional, defaults to the empty
                 byte string.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(CertificateValue, self).__init__(value, Tags.CERTIFICATE_VALUE)
+        super(CertificateValue, self).__init__(
+            value,
+            Tags.CERTIFICATE_VALUE,
+            kmip_version=kmip_version
+        )
 
 
 class Offset(Interval):
@@ -57,15 +65,22 @@ class Offset(Interval):
     specification for more information.
     """
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an Offset object.
 
         Args:
             value (int): An integer representing a positive change in time.
                 Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(Offset, self).__init__(value, Tags.OFFSET)
+        super(Offset, self).__init__(
+            value,
+            Tags.OFFSET,
+            kmip_version=kmip_version
+        )
 
 
 class QueryFunction(Enumeration):
@@ -77,7 +92,7 @@ class QueryFunction(Enumeration):
     specification for more information.
     """
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a QueryFunction object.
 
@@ -85,9 +100,16 @@ class QueryFunction(Enumeration):
             value (QueryFunction enum): A QueryFunction enumeration value,
                 (e.g., QueryFunction.QUERY_OPERATIONS). Optional, default to
                 None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(QueryFunction, self).__init__(
-            QueryFunctionEnum, value, Tags.QUERY_FUNCTION)
+            QueryFunctionEnum,
+            value,
+            Tags.QUERY_FUNCTION,
+            kmip_version=kmip_version
+        )
 
 
 class VendorIdentification(TextString):
@@ -99,16 +121,22 @@ class VendorIdentification(TextString):
     information.
     """
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a VendorIdentification object.
 
         Args:
             value (str): A string describing a KMIP vendor. Optional, defaults
                 to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(VendorIdentification, self).__init__(
-            value, Tags.VENDOR_IDENTIFICATION)
+            value,
+            Tags.VENDOR_IDENTIFICATION,
+            kmip_version=kmip_version
+        )
 
 
 class ServerInformation(Struct):
@@ -130,11 +158,14 @@ class ServerInformation(Struct):
     validate the object's contents.
     """
 
-    def __init__(self):
+    def __init__(self, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a ServerInformation object.
         """
-        super(ServerInformation, self).__init__(Tags.SERVER_INFORMATION)
+        super(ServerInformation, self).__init__(
+            Tags.SERVER_INFORMATION,
+            kmip_version=kmip_version
+        )
 
         self.data = BytearrayStream()
 
@@ -217,7 +248,9 @@ class KeyFormatType(Enumeration):
     4.11, and 9.1.3.2.3 of the KMIP 1.1 specification for more information.
     """
 
-    def __init__(self, value=KeyFormatTypeEnum.RAW):
+    def __init__(self,
+                 value=KeyFormatTypeEnum.RAW,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a KeyFormatType object.
 
@@ -225,6 +258,13 @@ class KeyFormatType(Enumeration):
             value (KeyFormatType): A KeyFormatType enumeration value,
                 (e.g., KeyFormatType.PKCS_1). Optional, default to
                 KeyFormatType.RAW.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(KeyFormatType, self).__init__(
-            KeyFormatTypeEnum, value, Tags.KEY_FORMAT_TYPE)
+            KeyFormatTypeEnum,
+            value,
+            Tags.KEY_FORMAT_TYPE,
+            kmip_version=kmip_version
+        )

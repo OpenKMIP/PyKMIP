@@ -49,7 +49,8 @@ class SignatureVerifyRequestPayload(primitives.Struct):
                  signature_data=None,
                  correlation_value=None,
                  init_indicator=None,
-                 final_indicator=None):
+                 final_indicator=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a SignatureVerify request payload struct.
 
@@ -76,9 +77,13 @@ class SignatureVerifyRequestPayload(primitives.Struct):
             final_indicator (boolean): A boolean value indicating whether or
                 not the payload is the last in a series for a multi-payload
                 operation. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(SignatureVerifyRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -416,7 +421,8 @@ class SignatureVerifyResponsePayload(primitives.Struct):
                  unique_identifier=None,
                  validity_indicator=None,
                  data=None,
-                 correlation_value=None):
+                 correlation_value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a SignatureVerify response payload struct.
 
@@ -432,9 +438,13 @@ class SignatureVerifyResponsePayload(primitives.Struct):
             correlation_value (bytes): The bytes representing a correlation
                 value, allowing the linking together of individual payloads
                 for a single overarching operation. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(SignatureVerifyResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

@@ -40,7 +40,8 @@ class RevokeRequestPayload(Struct):
     def __init__(self,
                  unique_identifier=None,
                  revocation_reason=None,
-                 compromise_occurrence_date=None):
+                 compromise_occurrence_date=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a RevokeRequestPayload object.
         Args:
@@ -50,9 +51,14 @@ class RevokeRequestPayload(Struct):
                 revoked.
             compromise_occurrence_date (DateTime): the datetime when the object
                 was first believed to be compromised.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(RevokeRequestPayload, self).__init__(
-            tag=enums.Tags.REQUEST_PAYLOAD)
+            tag=enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
         self.unique_identifier = unique_identifier
         self.compromise_occurrence_date = compromise_occurrence_date
         self.revocation_reason = revocation_reason
@@ -136,15 +142,21 @@ class RevokeResponsePayload(Struct):
         unique_identifier: The UUID of a managed cryptographic object.
     """
     def __init__(self,
-                 unique_identifier=None):
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a RevokeResponsePayload object.
         Args:
             unique_identifier (UniqueIdentifier): The UUID of a managed
                 cryptographic object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(RevokeResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD)
+            tag=enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
         if unique_identifier is None:
             self.unique_identifier = attributes.UniqueIdentifier()
         else:

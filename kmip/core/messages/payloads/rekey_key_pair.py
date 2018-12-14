@@ -17,6 +17,7 @@ from kmip.core import attributes
 from kmip.core import misc
 from kmip.core import objects
 
+from kmip.core import enums
 from kmip.core.enums import Tags
 from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairResponsePayload
@@ -31,8 +32,12 @@ class RekeyKeyPairRequestPayload(Struct):
                  offset=None,
                  common_template_attribute=None,
                  private_key_template_attribute=None,
-                 public_key_template_attribute=None):
-        super(RekeyKeyPairRequestPayload, self).__init__(Tags.REQUEST_PAYLOAD)
+                 public_key_template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(RekeyKeyPairRequestPayload, self).__init__(
+            Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self.private_key_uuid = private_key_uuid
         self.offset = offset
@@ -147,7 +152,12 @@ class RekeyKeyPairResponsePayload(CreateKeyPairResponsePayload):
                  private_key_uuid=None,
                  public_key_uuid=None,
                  private_key_template_attribute=None,
-                 public_key_template_attribute=None):
+                 public_key_template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(RekeyKeyPairResponsePayload, self).__init__(
-            private_key_uuid, public_key_uuid, private_key_template_attribute,
-            public_key_template_attribute)
+            private_key_uuid,
+            public_key_uuid,
+            private_key_template_attribute,
+            public_key_template_attribute,
+            kmip_version=kmip_version
+        )

@@ -29,16 +29,22 @@ class CancelRequestPayload(primitives.Struct):
             operation to cancel.
     """
 
-    def __init__(self, asynchronous_correlation_value=None):
+    def __init__(self,
+                 asynchronous_correlation_value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Cancel request payload struct.
 
         Args:
             asynchronous_correlation_value (bytes): The ID of a pending
                 operation to cancel, in bytes. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(CancelRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._asynchronous_correlation_value = None
@@ -153,7 +159,8 @@ class CancelResponsePayload(primitives.Struct):
 
     def __init__(self,
                  asynchronous_correlation_value=None,
-                 cancellation_result=None):
+                 cancellation_result=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Cancel response payload struct.
 
@@ -164,9 +171,13 @@ class CancelResponsePayload(primitives.Struct):
             cancellation_result (enum): A CancellationResult enumeration
                 specifying the result of canceling the operation. Optional,
                 defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(CancelResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._asynchronous_correlation_value = None

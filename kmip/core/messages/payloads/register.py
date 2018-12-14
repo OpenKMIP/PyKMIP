@@ -16,6 +16,7 @@
 from kmip.core.factories.secrets import SecretFactory
 
 from kmip.core import attributes
+from kmip.core import enums
 from kmip.core.enums import Tags
 
 from kmip.core.objects import TemplateAttribute
@@ -31,8 +32,12 @@ class RegisterRequestPayload(Struct):
     def __init__(self,
                  object_type=None,
                  template_attribute=None,
-                 secret=None):
-        super(RegisterRequestPayload, self).__init__(Tags.REQUEST_PAYLOAD)
+                 secret=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(RegisterRequestPayload, self).__init__(
+            Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self.secret_factory = SecretFactory()
         self.object_type = object_type
@@ -88,8 +93,12 @@ class RegisterResponsePayload(Struct):
 
     def __init__(self,
                  unique_identifier=None,
-                 template_attribute=None):
-        super(RegisterResponsePayload, self).__init__(Tags.RESPONSE_PAYLOAD)
+                 template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(RegisterResponsePayload, self).__init__(
+            Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self.unique_identifier = unique_identifier
         self.template_attribute = template_attribute

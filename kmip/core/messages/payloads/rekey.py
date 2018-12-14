@@ -32,7 +32,8 @@ class RekeyRequestPayload(primitives.Struct):
     def __init__(self,
                  unique_identifier=None,
                  offset=None,
-                 template_attribute=None):
+                 template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Rekey request payload struct.
 
@@ -46,9 +47,13 @@ class RekeyRequestPayload(primitives.Struct):
                 set of attributes (e.g., cryptographic algorithm,
                 cryptographic length) that should be set on the replacement
                 key. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(RekeyRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None
@@ -214,7 +219,8 @@ class RekeyResponsePayload(primitives.Struct):
     """
     def __init__(self,
                  unique_identifier=None,
-                 template_attribute=None):
+                 template_attribute=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Rekey response payload struct.
 
@@ -225,9 +231,13 @@ class RekeyResponsePayload(primitives.Struct):
                 set of attributes (e.g., cryptographic algorithm,
                 cryptographic length) that were set by the server on the
                 replacement key. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(RekeyResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

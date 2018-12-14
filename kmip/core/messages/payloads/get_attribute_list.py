@@ -33,7 +33,9 @@ class GetAttributeListRequestPayload(primitives.Struct):
             retrieved attributes should be associated.
     """
 
-    def __init__(self, unique_identifier=None):
+    def __init__(self,
+                 unique_identifier=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a GetAttributeList request payload.
 
@@ -41,9 +43,14 @@ class GetAttributeListRequestPayload(primitives.Struct):
             unique_identifier (string): The ID of the managed object with
                 which the retrieved attribute names should be associated.
                 Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(GetAttributeListRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD)
+            enums.Tags.REQUEST_PAYLOAD,
+            kmip_version=kmip_version
+        )
 
         self._unique_identifier = None
 
@@ -147,7 +154,10 @@ class GetAttributeListResponsePayload(primitives.Struct):
             attributes associated with the managed object.
     """
 
-    def __init__(self, unique_identifier=None, attribute_names=None):
+    def __init__(self,
+                 unique_identifier=None,
+                 attribute_names=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a GetAttributeList response payload.
 
@@ -158,10 +168,14 @@ class GetAttributeListResponsePayload(primitives.Struct):
             attribute_names: A list of strings identifying the names of the
                 attributes associated with the managed object. Optional,
                 defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
 
         super(GetAttributeListResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
+            enums.Tags.RESPONSE_PAYLOAD,
+            kmip_version=kmip_version
         )
 
         self._unique_identifier = None

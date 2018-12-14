@@ -38,22 +38,35 @@ from enum import Enum
 # 3.1
 class UniqueIdentifier(TextString):
 
-    def __init__(self, value=None, tag=Tags.UNIQUE_IDENTIFIER):
-        super(UniqueIdentifier, self).__init__(value, tag)
+    def __init__(self,
+                 value=None,
+                 tag=Tags.UNIQUE_IDENTIFIER,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(UniqueIdentifier, self).__init__(
+            value,
+            tag,
+            kmip_version=kmip_version
+        )
 
 
 class PrivateKeyUniqueIdentifier(UniqueIdentifier):
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(PrivateKeyUniqueIdentifier, self).__init__(
-            value, Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER)
+            value,
+            Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER,
+            kmip_version=kmip_version
+        )
 
 
 class PublicKeyUniqueIdentifier(UniqueIdentifier):
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(PublicKeyUniqueIdentifier, self).__init__(
-            value, Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER)
+            value,
+            Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER,
+            kmip_version=kmip_version
+        )
 
 
 # 3.2
@@ -61,8 +74,14 @@ class Name(Struct):
 
     class NameValue(TextString):
 
-        def __init__(self, value=None):
-            super(Name.NameValue, self).__init__(value, Tags.NAME_VALUE)
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
+            super(Name.NameValue, self).__init__(
+                value,
+                Tags.NAME_VALUE,
+                kmip_version=kmip_version
+            )
 
         def __eq__(self, other):
             if isinstance(other, Name.NameValue):
@@ -82,9 +101,15 @@ class Name(Struct):
 
     class NameType(Enumeration):
 
-        def __init__(self, value=None):
+        def __init__(self,
+                     value=None,
+                     kmip_version=enums.KMIPVersion.KMIP_1_0):
             super(Name.NameType, self).__init__(
-                enums.NameType, value, Tags.NAME_TYPE)
+                enums.NameType,
+                value,
+                Tags.NAME_TYPE,
+                kmip_version=kmip_version
+            )
 
         def __eq__(self, other):
             if isinstance(other, Name.NameType):
@@ -102,8 +127,11 @@ class Name(Struct):
         def __str__(self):
             return "{0}".format(self.value)
 
-    def __init__(self, name_value=None, name_type=None):
-        super(Name, self).__init__(tag=Tags.NAME)
+    def __init__(self,
+                 name_value=None,
+                 name_type=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Name, self).__init__(tag=Tags.NAME, kmip_version=kmip_version)
         self.name_value = name_value
         self.name_type = name_type
         self.validate()
@@ -211,25 +239,33 @@ class Name(Struct):
 # 3.3
 class ObjectType(Enumeration):
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(ObjectType, self).__init__(
-            enums.ObjectType, value, Tags.OBJECT_TYPE)
+            enums.ObjectType,
+            value,
+            Tags.OBJECT_TYPE,
+            kmip_version=kmip_version
+        )
 
 
 # 3.4
 class CryptographicAlgorithm(Enumeration):
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(CryptographicAlgorithm, self).__init__(
-            enums.CryptographicAlgorithm, value, Tags.CRYPTOGRAPHIC_ALGORITHM)
+            enums.CryptographicAlgorithm,
+            value,
+            Tags.CRYPTOGRAPHIC_ALGORITHM,
+            kmip_version=kmip_version
+        )
 
 
 # 3.5
 class CryptographicLength(Integer):
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(CryptographicLength, self).__init__(
-            value, Tags.CRYPTOGRAPHIC_LENGTH)
+            value, Tags.CRYPTOGRAPHIC_LENGTH, kmip_version=kmip_version)
 
 
 # 3.6
@@ -242,7 +278,9 @@ class HashingAlgorithm(Enumeration):
     for more information.
     """
 
-    def __init__(self, value=HashingAlgorithmEnum.SHA_256):
+    def __init__(self,
+                 value=HashingAlgorithmEnum.SHA_256,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a HashingAlgorithm object.
 
@@ -250,9 +288,16 @@ class HashingAlgorithm(Enumeration):
             value (HashingAlgorithm): A HashingAlgorithm enumeration value,
                 (e.g., HashingAlgorithm.MD5). Optional, defaults to
                 HashingAlgorithm.SHA_256.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(HashingAlgorithm, self).__init__(
-            enums.HashingAlgorithm, value, Tags.HASHING_ALGORITHM)
+            enums.HashingAlgorithm,
+            value,
+            Tags.HASHING_ALGORITHM,
+            kmip_version=kmip_version
+        )
 
 
 class CryptographicParameters(Struct):
@@ -277,9 +322,12 @@ class CryptographicParameters(Struct):
                  fixed_field_length=None,
                  invocation_field_length=None,
                  counter_length=None,
-                 initial_counter_value=None):
+                 initial_counter_value=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(CryptographicParameters, self).__init__(
-            tag=Tags.CRYPTOGRAPHIC_PARAMETERS)
+            tag=Tags.CRYPTOGRAPHIC_PARAMETERS,
+            kmip_version=kmip_version
+        )
 
         self._block_cipher_mode = None
         self._padding_method = None
@@ -779,7 +827,9 @@ class CertificateType(Enumeration):
     information.
     """
 
-    def __init__(self, value=enums.CertificateType.X_509):
+    def __init__(self,
+                 value=enums.CertificateType.X_509,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a CertificateType object.
 
@@ -787,9 +837,16 @@ class CertificateType(Enumeration):
             value (CertificateType): A CertificateType enumeration
                 value, (e.g., CertificateType.PGP). Optional, defaults to
                 CertificateType.X_509.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(CertificateType, self).__init__(
-            enums.CertificateType, value, Tags.CERTIFICATE_TYPE)
+            enums.CertificateType,
+            value,
+            Tags.CERTIFICATE_TYPE,
+            kmip_version=kmip_version
+        )
 
 
 class DigestValue(ByteString):
@@ -805,15 +862,22 @@ class DigestValue(ByteString):
         value: The bytes of the hash.
     """
 
-    def __init__(self, value=b''):
+    def __init__(self, value=b'', kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a DigestValue object.
 
         Args:
             value (bytes): The bytes of the hash. Optional, defaults to
                 the empty byte string.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(DigestValue, self).__init__(value, Tags.DIGEST_VALUE)
+        super(DigestValue, self).__init__(
+            value,
+            Tags.DIGEST_VALUE,
+            kmip_version=kmip_version
+        )
 
 
 class Digest(Struct):
@@ -834,7 +898,8 @@ class Digest(Struct):
     def __init__(self,
                  hashing_algorithm=None,
                  digest_value=None,
-                 key_format_type=None):
+                 key_format_type=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a Digest object.
 
@@ -846,8 +911,11 @@ class Digest(Struct):
             key_format_type (KeyFormatType): The format type of the key the
                 hash was computed for, if the object in question is a key.
                 Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(Digest, self).__init__(Tags.DIGEST)
+        super(Digest, self).__init__(Tags.DIGEST, kmip_version=kmip_version)
 
         if hashing_algorithm is None:
             self.hashing_algorithm = HashingAlgorithm()
@@ -1006,9 +1074,12 @@ class Digest(Struct):
 # 3.18
 class OperationPolicyName(TextString):
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(OperationPolicyName, self).__init__(
-            value, Tags.OPERATION_POLICY_NAME)
+            value,
+            Tags.OPERATION_POLICY_NAME,
+            kmip_version=kmip_version
+        )
 
 
 # 3.19
@@ -1016,22 +1087,34 @@ class CryptographicUsageMask(Integer):
 
     ENUM_TYPE = enums.CryptographicUsageMask
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(CryptographicUsageMask, self).__init__(
-            value, Tags.CRYPTOGRAPHIC_USAGE_MASK)
+            value,
+            Tags.CRYPTOGRAPHIC_USAGE_MASK,
+            kmip_version=kmip_version
+        )
 
 
 class State(Enumeration):
 
-    def __init__(self, value=None):
-        super(State, self).__init__(enums.State, value, Tags.STATE)
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(State, self).__init__(
+            enums.State,
+            value,
+            Tags.STATE,
+            kmip_version=kmip_version
+        )
 
 
 # 3.33
 class ObjectGroup(TextString):
 
-    def __init__(self, value=None):
-        super(ObjectGroup, self).__init__(value, Tags.OBJECT_GROUP)
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ObjectGroup, self).__init__(
+            value,
+            Tags.OBJECT_GROUP,
+            kmip_version=kmip_version
+        )
 
 
 # 3.36
@@ -1044,16 +1127,22 @@ class ApplicationNamespace(TextString):
     specification for more information.
     """
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an ApplicationNamespace object.
 
         Args:
             value (str): A string representing a namespace. Optional, defaults
                 to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(ApplicationNamespace, self).__init__(
-            value, Tags.APPLICATION_NAMESPACE)
+            value,
+            Tags.APPLICATION_NAMESPACE,
+            kmip_version=kmip_version
+        )
 
 
 class ApplicationData(TextString):
@@ -1064,15 +1153,22 @@ class ApplicationData(TextString):
     specification for more information.
     """
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an ApplicationData object.
 
         Args:
             value (str): A string representing data for a particular namespace.
                 Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
-        super(ApplicationData, self).__init__(value, Tags.APPLICATION_DATA)
+        super(ApplicationData, self).__init__(
+            value,
+            Tags.APPLICATION_DATA,
+            kmip_version=kmip_version
+        )
 
 
 class ApplicationSpecificInformation(Struct):
@@ -1090,7 +1186,10 @@ class ApplicationSpecificInformation(Struct):
     See Section 3.36 of the KMIP v1.1 specification for more information.
     """
 
-    def __init__(self, application_namespace=None, application_data=None):
+    def __init__(self,
+                 application_namespace=None,
+                 application_data=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct an ApplicationSpecificInformation object.
 
@@ -1099,9 +1198,14 @@ class ApplicationSpecificInformation(Struct):
                 namespace supported by the server. Optional, defaults to None.
             application_data (ApplicationData): String data relevant to the
                 specified namespace. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(ApplicationSpecificInformation, self).__init__(
-            Tags.APPLICATION_SPECIFIC_INFORMATION)
+            Tags.APPLICATION_SPECIFIC_INFORMATION,
+            kmip_version=kmip_version
+        )
 
         if application_namespace is None:
             self.application_namespace = ApplicationNamespace()
@@ -1235,9 +1339,12 @@ class ApplicationSpecificInformation(Struct):
 # 3.37
 class ContactInformation(TextString):
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(ContactInformation, self).__init__(
-            value, Tags.CONTACT_INFORMATION)
+            value,
+            Tags.CONTACT_INFORMATION,
+            kmip_version=kmip_version
+        )
 
 
 # 3.39
@@ -1246,8 +1353,12 @@ class ContactInformation(TextString):
 # TODO (peter-hamilton) temporary stopgap.
 class CustomAttribute(TextString):
 
-    def __init__(self, value=None):
-        super(CustomAttribute, self).__init__(value, Tags.ATTRIBUTE_VALUE)
+    def __init__(self, value=None, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(CustomAttribute, self).__init__(
+            value,
+            Tags.ATTRIBUTE_VALUE,
+            kmip_version=kmip_version
+        )
 
 
 class DerivationParameters(Struct):
@@ -1263,7 +1374,8 @@ class DerivationParameters(Struct):
                  initialization_vector=None,
                  derivation_data=None,
                  salt=None,
-                 iteration_count=None):
+                 iteration_count=None,
+                 kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Construct a DerivationParameters struct.
 
@@ -1283,9 +1395,13 @@ class DerivationParameters(Struct):
                 Optional, defaults to None.
             iteration_count (bytes): An iteration count value required by
                 the PBKDF2 algorithm. Optional, defaults to None.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version the object will be used with. Optional, defaults to
+                KMIP 1.0.
         """
         super(DerivationParameters, self).__init__(
-            tag=Tags.DERIVATION_PARAMETERS
+            tag=Tags.DERIVATION_PARAMETERS,
+            kmip_version=kmip_version
         )
 
         self._cryptographic_parameters = None
