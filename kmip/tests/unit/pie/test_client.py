@@ -91,7 +91,7 @@ class TestProxyKmipClient(testtools.TestCase):
         """
         client = ProxyKmipClient()
         args = (client, "kmip_version", None)
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ValueError,
             "KMIP version must be a KMIPVersion enumeration",
             setattr,
