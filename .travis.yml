@@ -232,3 +232,7 @@ script:
   - ./.travis/run.sh
 after_success:
   - codecov
+after_failure:
+  - if [ -f "/tmp/pykmip/server.log" ]; then cat /tmp/pykmip/server.log; fi
+  - if [ -f "/tmp/slugs/access.log"  ]; then cat /tmp/slugs/access.log;  fi
+  - if [ -f "/tmp/slugs/error.log"   ]; then cat /tmp/slugs/error.log;   fi
