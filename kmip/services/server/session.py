@@ -263,6 +263,7 @@ class KmipSession(threading.Thread):
                         self._logger.warning(
                             "Authentication failed."
                         )
+                        self._logger.error(e)
                         self._logger.exception(e)
                     else:
                         self._logger.debug(
