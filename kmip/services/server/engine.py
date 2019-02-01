@@ -1559,7 +1559,7 @@ class KmipEngine(object):
                     if attribute_name == 'Name':
                         names = attr
                         if attribute_value not in names:
-                                break
+                            break
                     # TODO: filtering on other attributes
                 else:
                     managed_objects_filtered.append(managed_object)
@@ -2045,12 +2045,12 @@ class KmipEngine(object):
                 "for encryption."
             )
 
-        if enums.CryptographicUsageMask.ENCRYPT not in \
-           managed_object.cryptographic_usage_masks:
-                raise exceptions.PermissionDenied(
-                    "The Encrypt bit must be set in the encryption key's "
-                    "cryptographic usage mask."
-                )
+        masks = managed_object.cryptographic_usage_masks
+        if enums.CryptographicUsageMask.ENCRYPT not in masks:
+            raise exceptions.PermissionDenied(
+                "The Encrypt bit must be set in the encryption key's "
+                "cryptographic usage mask."
+            )
 
         result = self._cryptography_engine.encrypt(
             cryptographic_parameters.cryptographic_algorithm,
@@ -2108,12 +2108,12 @@ class KmipEngine(object):
                 "for decryption."
             )
 
-        if enums.CryptographicUsageMask.DECRYPT not in \
-           managed_object.cryptographic_usage_masks:
-                raise exceptions.PermissionDenied(
-                    "The Decrypt bit must be set in the decryption key's "
-                    "cryptographic usage mask."
-                )
+        masks = managed_object.cryptographic_usage_masks
+        if enums.CryptographicUsageMask.DECRYPT not in masks:
+            raise exceptions.PermissionDenied(
+                "The Decrypt bit must be set in the decryption key's "
+                "cryptographic usage mask."
+            )
 
         result = self._cryptography_engine.decrypt(
             cryptographic_parameters.cryptographic_algorithm,
@@ -2251,12 +2251,12 @@ class KmipEngine(object):
                 "Object is not in a state that can be used for MACing."
             )
 
-        if enums.CryptographicUsageMask.MAC_GENERATE not in \
-           managed_object.cryptographic_usage_masks:
-                raise exceptions.PermissionDenied(
-                    "MAC Generate must be set in the object's cryptographic "
-                    "usage mask"
-                )
+        masks = managed_object.cryptographic_usage_masks
+        if enums.CryptographicUsageMask.MAC_GENERATE not in masks:
+            raise exceptions.PermissionDenied(
+                "MAC Generate must be set in the object's cryptographic "
+                "usage mask"
+            )
 
         result = self._cryptography_engine.mac(
             algorithm,

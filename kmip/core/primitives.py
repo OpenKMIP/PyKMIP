@@ -215,7 +215,7 @@ class Integer(Base):
         self.value = unpack(self.pack_string, istream.read(self.length))[0]
         pad = unpack(self.pack_string, istream.read(self.padding_length))[0]
 
-        if pad is not 0:
+        if pad != 0:
             raise exceptions.ReadValueError(
                 Integer.__name__,
                 'pad',
@@ -595,7 +595,7 @@ class Enumeration(Base):
         pad = unpack('!I', istream.read(Enumeration.LENGTH))[0]
 
         # Verify that the padding bytes are zero bytes.
-        if pad is not 0:
+        if pad != 0:
             raise exceptions.InvalidPaddingBytes("padding bytes must be zero")
 
         self.validate()
@@ -823,7 +823,7 @@ class TextString(Base):
         if self.padding_length < self.PADDING_SIZE:
             for _ in range(self.padding_length):
                 pad = unpack('!B', istream.read(1))[0]
-                if pad is not 0:
+                if pad != 0:
                     raise exceptions.ReadValueError(
                         TextString.__name__,
                         'pad',
@@ -918,7 +918,7 @@ class ByteString(Base):
         if self.padding_length < self.PADDING_SIZE:
             for _ in range(self.padding_length):
                 pad = unpack('!B', istream.read(1))[0]
-                if pad is not 0:
+                if pad != 0:
                     raise exceptions.ReadValueError(
                         TextString.__name__,
                         'pad',
@@ -1058,7 +1058,7 @@ class Interval(Base):
         pad = unpack('!I', istream.read(Interval.LENGTH))[0]
 
         # Verify that the padding bytes are zero bytes.
-        if pad is not 0:
+        if pad != 0:
             raise exceptions.InvalidPaddingBytes("padding bytes must be zero")
 
         self.validate()

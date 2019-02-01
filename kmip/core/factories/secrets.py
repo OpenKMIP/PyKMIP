@@ -151,44 +151,44 @@ class SecretFactory(object):
         return OpaqueObject()
 
     def _build_key_block(self, value):
-            key_type = value.get('key_format_type')
-            key_compression_type = value.get('key_compression_type')
-            key_value = value.get('key_value')
-            cryptographic_algorithm = value.get('cryptographic_algorithm')
-            cryptographic_length = value.get('cryptographic_length')
-            key_wrapping_data = value.get('key_wrapping_data')
+        key_type = value.get('key_format_type')
+        key_compression_type = value.get('key_compression_type')
+        key_value = value.get('key_value')
+        cryptographic_algorithm = value.get('cryptographic_algorithm')
+        cryptographic_length = value.get('cryptographic_length')
+        key_wrapping_data = value.get('key_wrapping_data')
 
-            key_format_type = KeyFormatType(key_type)
+        key_format_type = KeyFormatType(key_type)
 
-            key_comp_type = None
-            if key_compression_type is not None:
-                key_comp_type = KeyBlock.KeyCompressionType(
-                    key_compression_type)
+        key_comp_type = None
+        if key_compression_type is not None:
+            key_comp_type = KeyBlock.KeyCompressionType(
+                key_compression_type)
 
-            key_material = KeyMaterial(key_value)
-            key_value = KeyValue(key_material)
+        key_material = KeyMaterial(key_value)
+        key_value = KeyValue(key_material)
 
-            crypto_algorithm = None
-            if cryptographic_algorithm is not None:
-                crypto_algorithm = CryptographicAlgorithm(
-                    cryptographic_algorithm
-                )
+        crypto_algorithm = None
+        if cryptographic_algorithm is not None:
+            crypto_algorithm = CryptographicAlgorithm(
+                cryptographic_algorithm
+            )
 
-            crypto_length = None
-            if cryptographic_length is not None:
-                crypto_length = CryptographicLength(cryptographic_length)
+        crypto_length = None
+        if cryptographic_length is not None:
+            crypto_length = CryptographicLength(cryptographic_length)
 
-            key_wrap_data = None
-            if key_wrapping_data:
-                # TODO (peter-hamilton) This currently isn't used in the tests
-                # TODO (peter-hamilton) but needs to be updated to properly
-                # TODO (peter-hamilton) create a KeyWrappingData object.
-                key_wrap_data = KeyWrappingData(**key_wrapping_data)
+        key_wrap_data = None
+        if key_wrapping_data:
+            # TODO (peter-hamilton) This currently isn't used in the tests
+            # TODO (peter-hamilton) but needs to be updated to properly
+            # TODO (peter-hamilton) create a KeyWrappingData object.
+            key_wrap_data = KeyWrappingData(**key_wrapping_data)
 
-            key_block = KeyBlock(key_format_type,
-                                 key_comp_type,
-                                 key_value,
-                                 crypto_algorithm,
-                                 crypto_length,
-                                 key_wrap_data)
-            return key_block
+        key_block = KeyBlock(key_format_type,
+                             key_comp_type,
+                             key_value,
+                             crypto_algorithm,
+                             crypto_length,
+                             key_wrap_data)
+        return key_block
