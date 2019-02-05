@@ -35,29 +35,35 @@ class CreateRequestPayload(Struct):
         self.template_attribute = template_attribute
         self.validate()
 
-    def read(self, istream):
-        super(CreateRequestPayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(CreateRequestPayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         self.object_type = attributes.ObjectType()
         self.template_attribute = TemplateAttribute()
 
-        self.object_type.read(tstream)
-        self.template_attribute.read(tstream)
+        self.object_type.read(tstream, kmip_version=kmip_version)
+        self.template_attribute.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the object type and template attribute of the request payload
-        self.object_type.write(tstream)
-        self.template_attribute.write(tstream)
+        self.object_type.write(tstream, kmip_version=kmip_version)
+        self.template_attribute.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(CreateRequestPayload, self).write(ostream)
+        super(CreateRequestPayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -78,36 +84,42 @@ class CreateResponsePayload(Struct):
         self.template_attribute = template_attribute
         self.validate()
 
-    def read(self, istream):
-        super(CreateResponsePayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(CreateResponsePayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         self.object_type = attributes.ObjectType()
         self.unique_identifier = attributes.UniqueIdentifier()
 
-        self.object_type.read(tstream)
-        self.unique_identifier.read(tstream)
+        self.object_type.read(tstream, kmip_version=kmip_version)
+        self.unique_identifier.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.TEMPLATE_ATTRIBUTE, tstream):
             self.template_attribute = TemplateAttribute()
-            self.template_attribute.read(tstream)
+            self.template_attribute.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the contents of the request payload
-        self.object_type.write(tstream)
-        self.unique_identifier.write(tstream)
+        self.object_type.write(tstream, kmip_version=kmip_version)
+        self.unique_identifier.write(tstream, kmip_version=kmip_version)
 
         if self.template_attribute is not None:
-            self.template_attribute.write(tstream)
+            self.template_attribute.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(CreateResponsePayload, self).write(ostream)
+        super(CreateResponsePayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):

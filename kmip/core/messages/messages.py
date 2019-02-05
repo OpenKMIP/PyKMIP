@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.core import enums
 from kmip.core.enums import Tags
 
 from kmip.core.messages import contents
@@ -48,70 +49,91 @@ class RequestHeader(Struct):
         self.time_stamp = time_stamp
         self.batch_count = batch_count
 
-    def read(self, istream):
-        super(RequestHeader, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(RequestHeader, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         self.protocol_version = contents.ProtocolVersion()
-        self.protocol_version.read(tstream)
+        self.protocol_version.read(tstream, kmip_version=kmip_version)
 
         # Read the maximum response size if it is present
         if self.is_tag_next(Tags.MAXIMUM_RESPONSE_SIZE, tstream):
             self.maximum_response_size = contents.MaximumResponseSize()
-            self.maximum_response_size.read(tstream)
+            self.maximum_response_size.read(tstream, kmip_version=kmip_version)
 
         # Read the asynchronous indicator if it is present
         if self.is_tag_next(Tags.ASYNCHRONOUS_INDICATOR, tstream):
             self.asynchronous_indicator = contents.AsynchronousIndicator()
-            self.asynchronous_indicator.read(tstream)
+            self.asynchronous_indicator.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         # Read the authentication if it is present
         if self.is_tag_next(Tags.AUTHENTICATION, tstream):
             self.authentication = contents.Authentication()
-            self.authentication.read(tstream)
+            self.authentication.read(tstream, kmip_version=kmip_version)
 
         # Read the batch error continuation option if it is present
         if self.is_tag_next(Tags.BATCH_ERROR_CONTINUATION_OPTION, tstream):
             self.batch_error_cont_option = BatchErrorContinuationOption()
-            self.batch_error_cont_option.read(tstream)
+            self.batch_error_cont_option.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         # Read the batch order option if it is present
         if self.is_tag_next(Tags.BATCH_ORDER_OPTION, tstream):
             self.batch_order_option = contents.BatchOrderOption()
-            self.batch_order_option.read(tstream)
+            self.batch_order_option.read(tstream, kmip_version=kmip_version)
 
         # Read the time stamp if it is present
         if self.is_tag_next(Tags.TIME_STAMP, tstream):
             self.time_stamp = contents.TimeStamp()
-            self.time_stamp.read(tstream)
+            self.time_stamp.read(tstream, kmip_version=kmip_version)
 
         self.batch_count = contents.BatchCount()
-        self.batch_count.read(tstream)
+        self.batch_count.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the contents of a request header to the stream
-        self.protocol_version.write(tstream)
+        self.protocol_version.write(tstream, kmip_version=kmip_version)
         if self.maximum_response_size is not None:
-            self.maximum_response_size.write(tstream)
+            self.maximum_response_size.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self.asynchronous_indicator is not None:
-            self.asynchronous_indicator.write(tstream)
+            self.asynchronous_indicator.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self.authentication is not None:
-            self.authentication.write(tstream)
+            self.authentication.write(tstream, kmip_version=kmip_version)
         if self.batch_error_cont_option is not None:
-            self.batch_error_cont_option.write(tstream)
+            self.batch_error_cont_option.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self.batch_order_option is not None:
-            self.batch_order_option.write(tstream)
+            self.batch_order_option.write(tstream, kmip_version=kmip_version)
         if self.time_stamp is not None:
-            self.time_stamp.write(tstream)
-        self.batch_count.write(tstream)
+            self.time_stamp.write(tstream, kmip_version=kmip_version)
+        self.batch_count.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request header
         self.length = tstream.length()
-        super(RequestHeader, self).write(ostream)
+        super(RequestHeader, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
 
@@ -127,33 +149,39 @@ class ResponseHeader(Struct):
         self.batch_count = batch_count
         self.validate()
 
-    def read(self, istream):
-        super(ResponseHeader, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ResponseHeader, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         self.protocol_version = contents.ProtocolVersion()
-        self.protocol_version.read(tstream)
+        self.protocol_version.read(tstream, kmip_version=kmip_version)
 
         self.time_stamp = contents.TimeStamp()
-        self.time_stamp.read(tstream)
+        self.time_stamp.read(tstream, kmip_version=kmip_version)
 
         self.batch_count = contents.BatchCount()
-        self.batch_count.read(tstream)
+        self.batch_count.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the contents of a response header to the stream
-        self.protocol_version.write(tstream)
-        self.time_stamp.write(tstream)
-        self.batch_count.write(tstream)
+        self.protocol_version.write(tstream, kmip_version=kmip_version)
+        self.time_stamp.write(tstream, kmip_version=kmip_version)
+        self.batch_count.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request header
         self.length = tstream.length()
-        super(ResponseHeader, self).write(ostream)
+        super(ResponseHeader, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -181,49 +209,55 @@ class RequestBatchItem(Struct):
         self.request_payload = request_payload
         self.message_extension = message_extension
 
-    def read(self, istream):
-        super(RequestBatchItem, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(RequestBatchItem, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         # Read the batch item operation
         self.operation = contents.Operation()
-        self.operation.read(tstream)
+        self.operation.read(tstream, kmip_version=kmip_version)
 
         # Read the unique batch item ID if it is present
         if self.is_tag_next(Tags.UNIQUE_BATCH_ITEM_ID, tstream):
             self.unique_batch_item_id = contents.UniqueBatchItemID()
-            self.unique_batch_item_id.read(tstream)
+            self.unique_batch_item_id.read(tstream, kmip_version=kmip_version)
 
         # Dynamically create the response payload class that belongs to the
         # operation
         self.request_payload = self.payload_factory.create(
             self.operation.value)
-        self.request_payload.read(tstream)
+        self.request_payload.read(tstream, kmip_version=kmip_version)
 
         # Read the message extension if it is present
         if self.is_tag_next(Tags.MESSAGE_EXTENSION, tstream):
             self.message_extension = contents.MessageExtension()
-            self.message_extension.read(tstream)
+            self.message_extension.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the contents of the batch item to the stream
-        self.operation.write(tstream)
+        self.operation.write(tstream, kmip_version=kmip_version)
 
         if self.unique_batch_item_id is not None:
-            self.unique_batch_item_id.write(tstream)
+            self.unique_batch_item_id.write(tstream, kmip_version=kmip_version)
 
-        self.request_payload.write(tstream)
+        self.request_payload.write(tstream, kmip_version=kmip_version)
 
         if self.message_extension is not None:
-            self.message_extension.write(tstream)
+            self.message_extension.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the batch item
         self.length = tstream.length()
-        super(RequestBatchItem, self).write(ostream)
+        super(RequestBatchItem, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
 
@@ -252,38 +286,44 @@ class ResponseBatchItem(Struct):
         self.message_extension = message_extension
         self.validate()
 
-    def read(self, istream):
-        super(ResponseBatchItem, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ResponseBatchItem, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         # Read the batch item operation if it is present
         if self.is_tag_next(Tags.OPERATION, tstream):
             self.operation = contents.Operation()
-            self.operation.read(tstream)
+            self.operation.read(tstream, kmip_version=kmip_version)
 
         # Read the unique batch item ID if it is present
         if self.is_tag_next(Tags.UNIQUE_BATCH_ITEM_ID, tstream):
             self.unique_batch_item_id = contents.UniqueBatchItemID()
-            self.unique_batch_item_id.read(tstream)
+            self.unique_batch_item_id.read(tstream, kmip_version=kmip_version)
 
         # Read the batch item result status
         self.result_status = contents.ResultStatus()
-        self.result_status.read(tstream)
+        self.result_status.read(tstream, kmip_version=kmip_version)
 
         # Read the batch item result reason if it is present
         if self.is_tag_next(Tags.RESULT_REASON, tstream):
             self.result_reason = contents.ResultReason()
-            self.result_reason.read(tstream)
+            self.result_reason.read(tstream, kmip_version=kmip_version)
 
         # Read the batch item result message if it is present
         if self.is_tag_next(Tags.RESULT_MESSAGE, tstream):
             self.result_message = contents.ResultMessage()
-            self.result_message.read(tstream)
+            self.result_message.read(tstream, kmip_version=kmip_version)
 
         # Read the batch item asynchronous correlation value if it is present
         if self.is_tag_next(Tags.ASYNCHRONOUS_CORRELATION_VALUE, tstream):
             self.async_correlation_value = AsynchronousCorrelationValue()
-            self.async_correlation_value.read(tstream)
+            self.async_correlation_value.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         if (self.operation is not None):
             # Dynamically create the response payload class that belongs to the
@@ -291,41 +331,47 @@ class ResponseBatchItem(Struct):
             expected = self.payload_factory.create(self.operation.value)
             if self.is_tag_next(expected.tag, tstream):
                 self.response_payload = expected
-                self.response_payload.read(tstream)
+                self.response_payload.read(tstream, kmip_version=kmip_version)
 
         # Read the message extension if it is present
         if self.is_tag_next(Tags.MESSAGE_EXTENSION, tstream):
             self.message_extension = contents.MessageExtension()
-            self.message_extension.read(tstream)
+            self.message_extension.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the contents of the batch item to the stream
         if self.operation is not None:
-            self.operation.write(tstream)
+            self.operation.write(tstream, kmip_version=kmip_version)
         if self.unique_batch_item_id is not None:
-            self.unique_batch_item_id.write(tstream)
+            self.unique_batch_item_id.write(tstream, kmip_version=kmip_version)
 
-        self.result_status.write(tstream)
+        self.result_status.write(tstream, kmip_version=kmip_version)
 
         if self.result_reason is not None:
-            self.result_reason.write(tstream)
+            self.result_reason.write(tstream, kmip_version=kmip_version)
         if self.result_message is not None:
-            self.result_message.write(tstream)
+            self.result_message.write(tstream, kmip_version=kmip_version)
         if self.async_correlation_value is not None:
-            self.async_correlation_value.write(tstream)
+            self.async_correlation_value.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self.response_payload is not None:
-            self.response_payload.write(tstream)
+            self.response_payload.write(tstream, kmip_version=kmip_version)
         if self.message_extension is not None:
-            self.message_extension.write(tstream)
+            self.message_extension.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the batch item
         self.length = tstream.length()
-        super(ResponseBatchItem, self).write(ostream)
+        super(ResponseBatchItem, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -339,29 +385,35 @@ class RequestMessage(Struct):
         self.request_header = request_header
         self.batch_items = batch_items
 
-    def read(self, istream):
-        super(RequestMessage, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(RequestMessage, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
 
         self.request_header = RequestHeader()
-        self.request_header.read(istream)
+        self.request_header.read(istream, kmip_version=kmip_version)
 
         self.batch_items = []
         for _ in range(self.request_header.batch_count.value):
             batch_item = RequestBatchItem()
-            batch_item.read(istream)
+            batch_item.read(istream, kmip_version=kmip_version)
             self.batch_items.append(batch_item)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the request header and all batch items
-        self.request_header.write(tstream)
+        self.request_header.write(tstream, kmip_version=kmip_version)
         for batch_item in self.batch_items:
-            batch_item.write(tstream)
+            batch_item.write(tstream, kmip_version=kmip_version)
 
         # Write the TTLV encoding of the request message
         self.length = tstream.length()
-        super(RequestMessage, self).write(ostream)
+        super(RequestMessage, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
 
@@ -373,30 +425,36 @@ class ResponseMessage(Struct):
         self.batch_items = batch_items
         self.validate()
 
-    def read(self, istream):
-        super(ResponseMessage, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ResponseMessage, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
 
         self.response_header = ResponseHeader()
-        self.response_header.read(istream)
+        self.response_header.read(istream, kmip_version=kmip_version)
 
         self.batch_items = []
         for _ in range(self.response_header.batch_count.value):
             batch_item = ResponseBatchItem()
-            batch_item.read(istream)
+            batch_item.read(istream, kmip_version=kmip_version)
             self.batch_items.append(batch_item)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the request header and all batch items
-        self.response_header.write(tstream)
+        self.response_header.write(tstream, kmip_version=kmip_version)
         for batch_item in self.batch_items:
-            batch_item.write(tstream)
+            batch_item.write(tstream, kmip_version=kmip_version)
 
         # Write the TTLV encoding of the request message
         self.length = tstream.length()
-        super(ResponseMessage, self).write(ostream)
+        super(ResponseMessage, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):

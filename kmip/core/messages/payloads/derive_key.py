@@ -195,7 +195,7 @@ class DeriveKeyRequestPayload(primitives.Struct):
                 "template attribute must be a TemplateAttribute struct"
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the DeriveKey request payload and decode it
         into its constituent parts.
@@ -204,12 +204,18 @@ class DeriveKeyRequestPayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(DeriveKeyRequestPayload, self).read(input_stream)
+        super(DeriveKeyRequestPayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_stream):
@@ -217,7 +223,7 @@ class DeriveKeyRequestPayload(primitives.Struct):
                 enums.ObjectType,
                 tag=enums.Tags.OBJECT_TYPE
             )
-            self._object_type.read(local_stream)
+            self._object_type.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "invalid payload missing object type"
@@ -228,7 +234,7 @@ class DeriveKeyRequestPayload(primitives.Struct):
             unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            unique_identifier.read(local_stream)
+            unique_identifier.read(local_stream, kmip_version=kmip_version)
             unique_identifiers.append(unique_identifier)
         if not unique_identifiers:
             raise ValueError("invalid payload missing unique identifiers")
@@ -240,7 +246,10 @@ class DeriveKeyRequestPayload(primitives.Struct):
                 enums.DerivationMethod,
                 tag=enums.Tags.DERIVATION_METHOD
             )
-            self._derivation_method.read(local_stream)
+            self._derivation_method.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing derivation method"
@@ -248,7 +257,10 @@ class DeriveKeyRequestPayload(primitives.Struct):
 
         if self.is_tag_next(enums.Tags.DERIVATION_PARAMETERS, local_stream):
             self._derivation_parameters = attributes.DerivationParameters()
-            self._derivation_parameters.read(local_stream)
+            self._derivation_parameters.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing derivation parameters"
@@ -256,7 +268,10 @@ class DeriveKeyRequestPayload(primitives.Struct):
 
         if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_stream):
             self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(local_stream)
+            self._template_attribute.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing template attribute"
@@ -264,7 +279,7 @@ class DeriveKeyRequestPayload(primitives.Struct):
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the DeriveKey request payload to a stream.
 
@@ -272,6 +287,9 @@ class DeriveKeyRequestPayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -279,33 +297,48 @@ class DeriveKeyRequestPayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._object_type:
-            self._object_type.write(local_stream)
+            self._object_type.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("invalid payload missing object type")
 
         if self._unique_identifiers:
             for unique_identifier in self._unique_identifiers:
-                unique_identifier.write(local_stream)
+                unique_identifier.write(
+                    local_stream,
+                    kmip_version=kmip_version
+                )
         else:
             raise ValueError("invalid payload missing unique identifiers")
 
         if self._derivation_method:
-            self._derivation_method.write(local_stream)
+            self._derivation_method.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError("invalid payload missing derivation method")
 
         if self._derivation_parameters:
-            self._derivation_parameters.write(local_stream)
+            self._derivation_parameters.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError("invalid payload missing derivation parameters")
 
         if self._template_attribute:
-            self._template_attribute.write(local_stream)
+            self._template_attribute.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError("invalid payload missing template attributes")
 
         self.length = local_stream.length()
-        super(DeriveKeyRequestPayload, self).write(output_stream)
+        super(DeriveKeyRequestPayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -427,7 +460,7 @@ class DeriveKeyResponsePayload(primitives.Struct):
                 "template attribute must be a TemplateAttribute struct"
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the DeriveKey response payload and decode it
         into its constituent parts.
@@ -436,19 +469,28 @@ class DeriveKeyResponsePayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(DeriveKeyResponsePayload, self).read(input_stream)
+        super(DeriveKeyResponsePayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing unique identifier"
@@ -456,11 +498,14 @@ class DeriveKeyResponsePayload(primitives.Struct):
 
         if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_stream):
             self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(local_stream)
+            self._template_attribute.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the DeriveKey response payload to a stream.
 
@@ -468,6 +513,9 @@ class DeriveKeyResponsePayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -475,17 +523,26 @@ class DeriveKeyResponsePayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing unique identifier"
             )
 
         if self._template_attribute:
-            self._template_attribute.write(local_stream)
+            self._template_attribute.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(DeriveKeyResponsePayload, self).write(output_stream)
+        super(DeriveKeyResponsePayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

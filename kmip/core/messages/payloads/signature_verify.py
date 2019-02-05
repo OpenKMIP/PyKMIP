@@ -248,7 +248,7 @@ class SignatureVerifyRequestPayload(primitives.Struct):
         else:
             raise TypeError("Final indicator must be a boolean.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the SignatureVerify request payload and decode
         it into its constituent parts.
@@ -257,55 +257,70 @@ class SignatureVerifyRequestPayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(SignatureVerifyRequestPayload, self).read(input_stream)
+        super(SignatureVerifyRequestPayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_PARAMETERS, local_stream):
             self._cryptographic_parameters = \
                 attributes.CryptographicParameters()
-            self._cryptographic_parameters.read(local_stream)
+            self._cryptographic_parameters.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
-            self._data.read(local_stream)
+            self._data.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.DIGESTED_DATA, local_stream):
             self._digested_data = primitives.ByteString(
                 tag=enums.Tags.DIGESTED_DATA
             )
-            self._digested_data.read(local_stream)
+            self._digested_data.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.SIGNATURE_DATA, local_stream):
             self._signature_data = primitives.ByteString(
                 tag=enums.Tags.SIGNATURE_DATA
             )
-            self._signature_data.read(local_stream)
+            self._signature_data.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.CORRELATION_VALUE, local_stream):
             self._correlation_value = primitives.ByteString(
                 tag=enums.Tags.CORRELATION_VALUE
             )
-            self._correlation_value.read(local_stream)
+            self._correlation_value.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(enums.Tags.INIT_INDICATOR, local_stream):
             self._init_indicator = primitives.Boolean(
                 tag=enums.Tags.INIT_INDICATOR
             )
-            self._init_indicator.read(local_stream)
+            self._init_indicator.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.FINAL_INDICATOR, local_stream):
             self._final_indicator = primitives.Boolean(
                 tag=enums.Tags.FINAL_INDICATOR
             )
-            self._final_indicator.read(local_stream)
+            self._final_indicator.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the SignatureVerify request payload to a
         stream.
@@ -314,6 +329,9 @@ class SignatureVerifyRequestPayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -321,24 +339,45 @@ class SignatureVerifyRequestPayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._cryptographic_parameters:
-            self._cryptographic_parameters.write(local_stream)
+            self._cryptographic_parameters.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._data:
-            self._data.write(local_stream)
+            self._data.write(local_stream, kmip_version=kmip_version)
         if self._digested_data:
-            self._digested_data.write(local_stream)
+            self._digested_data.write(local_stream, kmip_version=kmip_version)
         if self._signature_data:
-            self._signature_data.write(local_stream)
+            self._signature_data.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._correlation_value:
-            self._correlation_value.write(local_stream)
+            self._correlation_value.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._init_indicator:
-            self._init_indicator.write(local_stream)
+            self._init_indicator.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._final_indicator:
-            self._final_indicator.write(local_stream)
+            self._final_indicator.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(SignatureVerifyRequestPayload, self).write(output_stream)
+        super(SignatureVerifyRequestPayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -526,7 +565,7 @@ class SignatureVerifyResponsePayload(primitives.Struct):
         else:
             raise TypeError("Correlation value must be bytes.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the SignatureVerify response payload and decode
         it into its constituent parts.
@@ -535,19 +574,28 @@ class SignatureVerifyResponsePayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(SignatureVerifyResponsePayload, self).read(input_stream)
+        super(SignatureVerifyResponsePayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Parsed payload encoding is missing the unique identifier "
@@ -558,7 +606,10 @@ class SignatureVerifyResponsePayload(primitives.Struct):
                 enums.ValidityIndicator,
                 tag=enums.Tags.VALIDITY_INDICATOR
             )
-            self._validity_indicator.read(local_stream)
+            self._validity_indicator.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Parsed payload encoding is missing the validity indicator "
@@ -566,16 +617,19 @@ class SignatureVerifyResponsePayload(primitives.Struct):
             )
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
-            self._data.read(local_stream)
+            self._data.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.CORRELATION_VALUE, local_stream):
             self._correlation_value = primitives.ByteString(
                 tag=enums.Tags.CORRELATION_VALUE
             )
-            self._correlation_value.read(local_stream)
+            self._correlation_value.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the SignatureVerify response payload to a
         stream.
@@ -584,6 +638,9 @@ class SignatureVerifyResponsePayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -591,24 +648,36 @@ class SignatureVerifyResponsePayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Payload is missing the unique identifier field."
             )
         if self._validity_indicator:
-            self._validity_indicator.write(local_stream)
+            self._validity_indicator.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Payload is missing the validity indicator field."
             )
         if self._data:
-            self._data.write(local_stream)
+            self._data.write(local_stream, kmip_version=kmip_version)
         if self._correlation_value:
-            self._correlation_value.write(local_stream)
+            self._correlation_value.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(SignatureVerifyResponsePayload, self).write(output_stream)
+        super(SignatureVerifyResponsePayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

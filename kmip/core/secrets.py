@@ -69,7 +69,7 @@ class Certificate(Struct):
         else:
             self.certificate_value = CertificateValue(certificate_value)
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Certificate object and decode it into its
         constituent parts.
@@ -77,33 +77,39 @@ class Certificate(Struct):
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(Certificate, self).read(istream)
+        super(Certificate, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.certificate_type = CertificateType()
         self.certificate_value = CertificateValue()
 
-        self.certificate_type.read(tstream)
-        self.certificate_value.read(tstream)
+        self.certificate_type.read(tstream, kmip_version=kmip_version)
+        self.certificate_value.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Certificate object to a stream.
 
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
 
-        self.certificate_type.write(tstream)
-        self.certificate_value.write(tstream)
+        self.certificate_type.write(tstream, kmip_version=kmip_version)
+        self.certificate_value.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(Certificate, self).write(ostream)
+        super(Certificate, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def __eq__(self, other):
@@ -141,24 +147,24 @@ class KeyBlockKey(Struct):
         self.key_block = key_block
         self.validate()
 
-    def read(self, istream):
-        super(KeyBlockKey, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(KeyBlockKey, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.key_block = KeyBlock()
-        self.key_block.read(tstream)
+        self.key_block.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
-        self.key_block.write(tstream)
+        self.key_block.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(KeyBlockKey, self).write(ostream)
+        super(KeyBlockKey, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -262,45 +268,45 @@ class SplitKey(Struct):
         self.key_block = key_block
         self.validate()
 
-    def read(self, istream):
-        super(SplitKey, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(SplitKey, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.split_key_parts = SplitKey.SplitKeyParts()
-        self.split_key_parts.read(tstream)
+        self.split_key_parts.read(tstream, kmip_version=kmip_version)
 
         self.key_part_identifier = SplitKey.KeyPartIdentifier()
-        self.key_part_identifier.read(tstream)
+        self.key_part_identifier.read(tstream, kmip_version=kmip_version)
 
         self.split_key_threshold = SplitKey.SplitKeyThreshold()
-        self.split_key_threshold.read(tstream)
+        self.split_key_threshold.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.PRIME_FIELD_SIZE, tstream):
             self.prime_field_size = SplitKey.PrimeFieldSize()
-            self.prime_field_size.read(tstream)
+            self.prime_field_size.read(tstream, kmip_version=kmip_version)
 
         self.key_block = KeyBlock()
-        self.key_block.read(tstream)
+        self.key_block.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
-        self.split_key_parts.write(tstream)
-        self.key_part_identifier.write(tstream)
-        self.split_key_threshold.write(tstream)
-        self.split_key_method.write(tstream)
+        self.split_key_parts.write(tstream, kmip_version=kmip_version)
+        self.key_part_identifier.write(tstream, kmip_version=kmip_version)
+        self.split_key_threshold.write(tstream, kmip_version=kmip_version)
+        self.split_key_method.write(tstream, kmip_version=kmip_version)
 
         if self.prime_field_size is not None:
-            self.prime_field_size.write(tstream)
+            self.prime_field_size.write(tstream, kmip_version=kmip_version)
 
-        self.key_block.write(tstream)
+        self.key_block.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(SplitKey, self).write(ostream)
+        super(SplitKey, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -319,33 +325,33 @@ class Template(Struct):
         self.attributes = attributes
         self.validate()
 
-    def read(self, istream):
-        super(Template, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Template, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.attributes = list()
 
         attribute = Attribute()
-        attribute.read(tstream)
+        attribute.read(tstream, kmip_version=kmip_version)
         self.attributes.append(attribute)
 
         while self.is_tag_next(Tags.ATTRIBUTE, tstream):
             attribute = Attribute()
-            attribute.read(tstream)
+            attribute.read(tstream, kmip_version=kmip_version)
             self.attributes.append(attribute)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         for attribute in self.attributes:
-            attribute.write(tstream)
+            attribute.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(Template, self).write(ostream)
+        super(Template, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -373,28 +379,28 @@ class SecretData(Struct):
         self.key_block = key_block
         self.validate()
 
-    def read(self, istream):
-        super(SecretData, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(SecretData, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.secret_data_type = SecretData.SecretDataType()
         self.key_block = KeyBlock()
 
-        self.secret_data_type.read(tstream)
-        self.key_block.read(tstream)
+        self.secret_data_type.read(tstream, kmip_version=kmip_version)
+        self.key_block.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
-        self.secret_data_type.write(tstream)
-        self.key_block.write(tstream)
+        self.secret_data_type.write(tstream, kmip_version=kmip_version)
+        self.key_block.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(SecretData, self).write(ostream)
+        super(SecretData, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -428,28 +434,28 @@ class OpaqueObject(Struct):
         self.opaque_data_value = opaque_data_value
         self.validate()
 
-    def read(self, istream):
-        super(OpaqueObject, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(OpaqueObject, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.opaque_data_type = OpaqueObject.OpaqueDataType()
         self.opaque_data_value = OpaqueObject.OpaqueDataValue()
 
-        self.opaque_data_type.read(tstream)
-        self.opaque_data_value.read(tstream)
+        self.opaque_data_type.read(tstream, kmip_version=kmip_version)
+        self.opaque_data_value.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
-        self.opaque_data_type.write(tstream)
-        self.opaque_data_value.write(tstream)
+        self.opaque_data_type.write(tstream, kmip_version=kmip_version)
+        self.opaque_data_value.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(OpaqueObject, self).write(ostream)
+        super(OpaqueObject, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):

@@ -15,6 +15,7 @@
 
 import testtools
 
+from kmip.core import enums
 from kmip.core.messages import contents
 from kmip.core import utils
 
@@ -347,3 +348,75 @@ class TestProtocolVersion(testtools.TestCase):
         struct = contents.ProtocolVersion(1, 0)
 
         self.assertEqual("1.0", str(struct))
+
+
+class TestContents(testtools.TestCase):
+
+    def setUp(self):
+        super(TestContents, self).setUp()
+
+    def tearDown(self):
+        super(TestContents, self).tearDown()
+
+    def test_protocol_version_to_kmip_version_kmip_1_0(self):
+        """
+        Test the conversion from ProtocolVersion(1, 0) to KMIPVersion.KMIP_1_0.
+        """
+        result = contents.protocol_version_to_kmip_version(
+            contents.ProtocolVersion(1, 0)
+        )
+        self.assertEqual(result, enums.KMIPVersion.KMIP_1_0)
+
+    def test_protocol_version_to_kmip_version_kmip_1_1(self):
+        """
+        Test the conversion from ProtocolVersion(1, 1) to KMIPVersion.KMIP_1_1.
+        """
+        result = contents.protocol_version_to_kmip_version(
+            contents.ProtocolVersion(1, 1)
+        )
+        self.assertEqual(result, enums.KMIPVersion.KMIP_1_1)
+
+    def test_protocol_version_to_kmip_version_kmip_1_2(self):
+        """
+        Test the conversion from ProtocolVersion(1, 2) to KMIPVersion.KMIP_1_2.
+        """
+        result = contents.protocol_version_to_kmip_version(
+            contents.ProtocolVersion(1, 2)
+        )
+        self.assertEqual(result, enums.KMIPVersion.KMIP_1_2)
+
+    def test_protocol_version_to_kmip_version_kmip_1_3(self):
+        """
+        Test the conversion from ProtocolVersion(1, 3) to KMIPVersion.KMIP_1_3.
+        """
+        result = contents.protocol_version_to_kmip_version(
+            contents.ProtocolVersion(1, 3)
+        )
+        self.assertEqual(result, enums.KMIPVersion.KMIP_1_3)
+
+    def test_protocol_version_to_kmip_version_kmip_1_4(self):
+        """
+        Test the conversion from ProtocolVersion(1, 4) to KMIPVersion.KMIP_1_4.
+        """
+        result = contents.protocol_version_to_kmip_version(
+            contents.ProtocolVersion(1, 4)
+        )
+        self.assertEqual(result, enums.KMIPVersion.KMIP_1_4)
+
+    def test_protocol_version_to_kmip_version_invalid_minor(self):
+        """
+        Test the conversion from invalid ProtocolVersion minor value to None.
+        """
+        result = contents.protocol_version_to_kmip_version(
+            contents.ProtocolVersion(1, 5)
+        )
+        self.assertIsNone(result)
+
+    def test_protocol_version_to_kmip_version_invalid_major(self):
+        """
+        Test the conversion from invalid ProtocolVersion major value to None.
+        """
+        result = contents.protocol_version_to_kmip_version(
+            contents.ProtocolVersion(9, 5)
+        )
+        self.assertIsNone(result)

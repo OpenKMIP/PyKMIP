@@ -115,6 +115,9 @@ class KmipSession(threading.Thread):
         request = messages.RequestMessage()
 
         max_size = self._max_response_size
+        kmip_version = contents.protocol_version_to_kmip_version(
+            self._engine.default_protocol_version
+        )
 
         try:
             if hasattr(self._connection, 'shared_ciphers'):
@@ -154,7 +157,7 @@ class KmipSession(threading.Thread):
                         "client authentication in the client certificate."
                     )
 
-            request.read(request_data)
+            request.read(request_data, kmip_version=kmip_version)
         except exceptions.PermissionDenied as e:
             self._logger.warning("Failure verifying the client certificate.")
             self._logger.exception(e)
@@ -189,10 +192,15 @@ class KmipSession(threading.Thread):
                 )
             else:
                 try:
-                    response, max_response_size = self._engine.process_request(
+                    results = self._engine.process_request(
                         request,
                         client_identity
                     )
+                    response, max_response_size, protocol_version = results
+                    kmip_version = contents.protocol_version_to_kmip_version(
+                        protocol_version
+                    )
+
                     if max_response_size:
                         max_size = max_response_size
                 except exceptions.KmipError as e:
@@ -215,7 +223,7 @@ class KmipSession(threading.Thread):
                     )
 
         response_data = utils.BytearrayStream()
-        response.write(response_data)
+        response.write(response_data, kmip_version=kmip_version)
 
         if len(response_data) > max_size:
             self._logger.warning(
@@ -232,7 +240,7 @@ class KmipSession(threading.Thread):
                 "more information."
             )
             response_data = utils.BytearrayStream()
-            response.write(response_data)
+            response.write(response_data, kmip_version=kmip_version)
 
         self._send_response(response_data.buffer)
 

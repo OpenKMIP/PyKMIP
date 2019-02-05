@@ -98,7 +98,7 @@ class ProtocolVersion(primitives.Struct):
                 "Minor protocol version number must be an integer."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the ProtocolVersion struct and decode it into
         its constituent parts.
@@ -107,19 +107,25 @@ class ProtocolVersion(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if either the major or minor protocol versions
                 are missing from the encoding.
         """
-        super(ProtocolVersion, self).read(input_stream)
+        super(ProtocolVersion, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.PROTOCOL_VERSION_MAJOR, local_stream):
             self._major = primitives.Integer(
                 tag=enums.Tags.PROTOCOL_VERSION_MAJOR
             )
-            self._major.read(local_stream)
+            self._major.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Invalid encoding missing the major protocol version number."
@@ -129,7 +135,7 @@ class ProtocolVersion(primitives.Struct):
             self._minor = primitives.Integer(
                 tag=enums.Tags.PROTOCOL_VERSION_MINOR
             )
-            self._minor.read(local_stream)
+            self._minor.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Invalid encoding missing the minor protocol version number."
@@ -137,7 +143,7 @@ class ProtocolVersion(primitives.Struct):
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the ProtocolVersion struct to a stream.
 
@@ -145,6 +151,9 @@ class ProtocolVersion(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -152,21 +161,24 @@ class ProtocolVersion(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._major:
-            self._major.write(local_stream)
+            self._major.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Invalid struct missing the major protocol version number."
             )
 
         if self._minor:
-            self._minor.write(local_stream)
+            self._minor.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Invalid struct missing the minor protocol version number."
             )
 
         self.length = local_stream.length()
-        super(ProtocolVersion, self).write(output_stream)
+        super(ProtocolVersion, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -235,6 +247,38 @@ class ProtocolVersion(primitives.Struct):
 
     def __str__(self):
         return "{}.{}".format(self.major, self.minor)
+
+
+def protocol_version_to_kmip_version(value):
+    """
+    Convert a ProtocolVersion struct to its KMIPVersion enumeration equivalent.
+
+    Args:
+        value (ProtocolVersion): A ProtocolVersion struct to be converted into
+            a KMIPVersion enumeration.
+
+    Returns:
+        KMIPVersion: The enumeration equivalent of the struct. If the struct
+            cannot be converted to a valid enumeration, None is returned.
+    """
+    if not isinstance(value, ProtocolVersion):
+        return None
+
+    if value.major == 1:
+        if value.minor == 0:
+            return enums.KMIPVersion.KMIP_1_0
+        elif value.minor == 1:
+            return enums.KMIPVersion.KMIP_1_1
+        elif value.minor == 2:
+            return enums.KMIPVersion.KMIP_1_2
+        elif value.minor == 3:
+            return enums.KMIPVersion.KMIP_1_3
+        elif value.minor == 4:
+            return enums.KMIPVersion.KMIP_1_4
+        else:
+            return None
+    else:
+        return None
 
 
 # 6.2
@@ -311,7 +355,7 @@ class Authentication(Struct):
                 "Credentials must be a list of Credential structs."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Authentication struct and decode it into
         its constituent parts.
@@ -320,14 +364,20 @@ class Authentication(Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(Authentication, self).read(input_stream)
+        super(Authentication, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         credentials = []
         while self.is_tag_next(enums.Tags.CREDENTIAL, local_stream):
             credential = objects.Credential()
-            credential.read(local_stream)
+            credential.read(local_stream, kmip_version=kmip_version)
             credentials.append(credential)
         if len(credentials) == 0:
             raise ValueError("Authentication encoding missing credentials.")
@@ -335,7 +385,7 @@ class Authentication(Struct):
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Authentication struct to a stream.
 
@@ -343,16 +393,22 @@ class Authentication(Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         local_stream = utils.BytearrayStream()
 
         if len(self._credentials) == 0:
             raise ValueError("Authentication struct missing credentials.")
         for credential in self._credentials:
-            credential.write(local_stream)
+            credential.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
-        super(Authentication, self).write(output_stream)
+        super(Authentication, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

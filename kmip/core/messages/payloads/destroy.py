@@ -31,26 +31,32 @@ class DestroyRequestPayload(Struct):
         self.unique_identifier = unique_identifier
         self.validate()
 
-    def read(self, istream):
-        super(DestroyRequestPayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(DestroyRequestPayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.UNIQUE_IDENTIFIER, tstream):
             self.unique_identifier = attributes.UniqueIdentifier()
-            self.unique_identifier.read(tstream)
+            self.unique_identifier.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         if self.unique_identifier is not None:
-            self.unique_identifier.write(tstream)
+            self.unique_identifier.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(DestroyRequestPayload, self).write(ostream)
+        super(DestroyRequestPayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -70,24 +76,30 @@ class DestroyResponsePayload(Struct):
         self.unique_identifier = unique_identifier
         self.validate()
 
-    def read(self, istream):
-        super(DestroyResponsePayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(DestroyResponsePayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
-        self.unique_identifier.read(tstream)
+        self.unique_identifier.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
-        self.unique_identifier.write(tstream)
+        self.unique_identifier.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(DestroyResponsePayload, self).write(ostream)
+        super(DestroyResponsePayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):

@@ -117,7 +117,7 @@ class SignRequestPayload(primitives.Struct):
         else:
             raise TypeError("data must be bytes")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Sign request payload and decode it
         into its parts
@@ -125,12 +125,18 @@ class SignRequestPayload(primitives.Struct):
         Args:
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(SignRequestPayload, self).read(input_stream)
+        super(SignRequestPayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
@@ -138,7 +144,10 @@ class SignRequestPayload(primitives.Struct):
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
 
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(
                enums.Tags.CRYPTOGRAPHIC_PARAMETERS,
@@ -146,18 +155,21 @@ class SignRequestPayload(primitives.Struct):
         ):
             self._cryptographic_parameters = \
                 attributes.CryptographicParameters()
-            self._cryptographic_parameters.read(local_stream)
+            self._cryptographic_parameters.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
-            self._data.read(local_stream)
+            self._data.read(local_stream, kmip_version=kmip_version)
 
         else:
             raise ValueError(
                 "invalid payload missing the data attribute"
             )
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Sign request payload to a stream.
 
@@ -165,6 +177,9 @@ class SignRequestPayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -172,17 +187,26 @@ class SignRequestPayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._cryptographic_parameters:
-            self._cryptographic_parameters.write(local_stream)
+            self._cryptographic_parameters.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self._data:
-            self._data.write(local_stream)
+            self._data.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("invalid payload missing the data attribute")
 
         self.length = local_stream.length()
-        super(SignRequestPayload, self).write(output_stream)
+        super(SignRequestPayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -284,7 +308,7 @@ class SignResponsePayload(primitives.Struct):
         else:
             raise TypeError("signature data must be bytes")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Sign response payload and decode it.
 
@@ -292,20 +316,29 @@ class SignResponsePayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the unique_identifier or signature attributes
                 are missing from the encoded payload.
         """
 
-        super(SignResponsePayload, self).read(input_stream)
+        super(SignResponsePayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing the unique identifier attribute"
@@ -315,13 +348,13 @@ class SignResponsePayload(primitives.Struct):
             self._signature_data = primitives.ByteString(
                 tag=enums.Tags.SIGNATURE_DATA
             )
-            self._signature_data.read(local_stream)
+            self._signature_data.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "invalid payload missing the signature data attribute"
             )
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Sign response to a stream.
 
@@ -338,21 +371,30 @@ class SignResponsePayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing the unique identifier attribute"
             )
 
         if self._signature_data:
-            self._signature_data.write(local_stream)
+            self._signature_data.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing the signature attribute"
             )
 
         self.length = local_stream.length()
-        super(SignResponsePayload, self).write(output_stream)
+        super(SignResponsePayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

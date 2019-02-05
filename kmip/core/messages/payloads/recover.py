@@ -62,7 +62,7 @@ class RecoverRequestPayload(primitives.Struct):
         else:
             raise TypeError("Unique identifier must be a string.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Recover request payload and decode it into
         its constituent parts.
@@ -71,23 +71,32 @@ class RecoverRequestPayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(RecoverRequestPayload, self).read(input_stream)
+        super(RecoverRequestPayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Recover request payload to a stream.
 
@@ -95,6 +104,9 @@ class RecoverRequestPayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -102,10 +114,16 @@ class RecoverRequestPayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(RecoverRequestPayload, self).write(output_stream)
+        super(RecoverRequestPayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -175,7 +193,7 @@ class RecoverResponsePayload(primitives.Struct):
         else:
             raise TypeError("Unique identifier must be a string.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Recover response payload and decode it
         into its constituent parts.
@@ -184,23 +202,32 @@ class RecoverResponsePayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(RecoverResponsePayload, self).read(input_stream)
+        super(RecoverResponsePayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Recover response payload to a stream.
 
@@ -208,6 +235,9 @@ class RecoverResponsePayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -215,10 +245,16 @@ class RecoverResponsePayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(RecoverResponsePayload, self).write(output_stream)
+        super(RecoverResponsePayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

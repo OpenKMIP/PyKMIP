@@ -115,7 +115,7 @@ class RekeyRequestPayload(primitives.Struct):
                 "Template attribute must be a TemplateAttribute struct."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Rekey request payload and decode it into
         its constituent parts.
@@ -124,29 +124,41 @@ class RekeyRequestPayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(RekeyRequestPayload, self).read(input_stream)
+        super(RekeyRequestPayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.OFFSET, local_stream):
             self._offset = primitives.Interval(
                 tag=enums.Tags.OFFSET
             )
-            self._offset.read(local_stream)
+            self._offset.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_stream):
             self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(local_stream)
+            self._template_attribute.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Rekey request payload to a stream.
 
@@ -154,18 +166,30 @@ class RekeyRequestPayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier is not None:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._offset is not None:
-            self._offset.write(local_stream)
+            self._offset.write(local_stream, kmip_version=kmip_version)
         if self._template_attribute is not None:
-            self._template_attribute.write(local_stream)
+            self._template_attribute.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(RekeyRequestPayload, self).write(output_stream)
+        super(RekeyRequestPayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -273,7 +297,7 @@ class RekeyResponsePayload(primitives.Struct):
                 "Template attribute must be a TemplateAttribute struct."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Rekey response payload and decode it into
         its constituent parts.
@@ -282,19 +306,28 @@ class RekeyResponsePayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the unique identifier attribute is missing
                 from the encoded payload.
         """
-        super(RekeyResponsePayload, self).read(input_stream)
+        super(RekeyResponsePayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "The Rekey response payload encoding is missing the unique "
@@ -303,11 +336,14 @@ class RekeyResponsePayload(primitives.Struct):
 
         if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_stream):
             self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(local_stream)
+            self._template_attribute.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Rekey request payload to a stream.
 
@@ -315,6 +351,9 @@ class RekeyResponsePayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the payload is missing the unique identifier.
@@ -322,16 +361,25 @@ class RekeyResponsePayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier is not None:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "The Rekey response payload is missing the unique identifier."
             )
         if self._template_attribute is not None:
-            self._template_attribute.write(local_stream)
+            self._template_attribute.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(RekeyResponsePayload, self).write(output_stream)
+        super(RekeyResponsePayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

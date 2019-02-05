@@ -213,7 +213,7 @@ class TestKmipEngine(testtools.TestCase):
             batch_items=batch
         )
 
-        response, max_size = e.process_request(request)
+        response, max_size, protocol_version = e.process_request(request)
 
         e._logger.info.assert_any_call(
             MockRegexString("Received request at time:")

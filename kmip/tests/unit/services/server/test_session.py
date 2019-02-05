@@ -233,7 +233,11 @@ class TestKmipSession(testtools.TestCase):
             ['group A', 'group B']
         )
         kmip_session._engine.process_request = mock.MagicMock(
-            return_value=(message, kmip_session._max_response_size)
+            return_value=(
+                message,
+                kmip_session._max_response_size,
+                contents.ProtocolVersion(1, 2)
+            )
         )
         kmip_session._logger = mock.MagicMock()
         kmip_session._connection = mock.MagicMock()
@@ -424,6 +428,8 @@ class TestKmipSession(testtools.TestCase):
             "Authentication failed."
         )
         kmip_session._engine = mock.MagicMock()
+        kmip_session._engine.default_protocol_version = \
+            kmip_engine.default_protocol_version
         kmip_session._logger = mock.MagicMock()
         kmip_session._connection = mock.MagicMock()
         kmip_session._receive_request = mock.MagicMock(return_value=data)
@@ -450,7 +456,10 @@ class TestKmipSession(testtools.TestCase):
         kmip_session._handle_message_loop()
 
         kmip_session._receive_request.assert_called_once_with()
-        fake_request.read.assert_called_once_with(data)
+        fake_request.read.assert_called_once_with(
+            data,
+            kmip_version=enums.KMIPVersion.KMIP_1_2
+        )
         kmip_session.authenticate.assert_called_once_with(
             "test_certificate",
             fake_request

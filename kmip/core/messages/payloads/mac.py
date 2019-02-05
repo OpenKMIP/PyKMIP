@@ -83,22 +83,28 @@ class MACRequestPayload(Struct):
         else:
             raise TypeError("data must be Data type")
 
-    def read(self, istream):
-        super(MACRequestPayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(MACRequestPayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.UNIQUE_IDENTIFIER, tstream):
             self.unique_identifier = attributes.UniqueIdentifier()
-            self.unique_identifier.read(tstream)
+            self.unique_identifier.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_PARAMETERS, tstream):
             self.cryptographic_parameters = \
                 attributes.CryptographicParameters()
-            self.cryptographic_parameters.read(tstream)
+            self.cryptographic_parameters.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(Tags.DATA, tstream):
             self.data = Data()
-            self.data.read(tstream)
+            self.data.read(tstream, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "expected mac request data not found"
@@ -106,22 +112,28 @@ class MACRequestPayload(Struct):
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         if self._unique_identifier is not None:
-            self._unique_identifier.write(tstream)
+            self._unique_identifier.write(tstream, kmip_version=kmip_version)
         if self._cryptographic_parameters is not None:
-            self._cryptographic_parameters.write(tstream)
+            self._cryptographic_parameters.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self._data is not None:
-            self.data.write(tstream)
+            self.data.write(tstream, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The mac request data is required"
             )
 
         self.length = tstream.length()
-        super(MACRequestPayload, self).write(ostream)
+        super(MACRequestPayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
 
@@ -165,13 +177,16 @@ class MACResponsePayload(Struct):
         else:
             raise TypeError("mac_data must be MACData type")
 
-    def read(self, istream):
-        super(MACResponsePayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(MACResponsePayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.UNIQUE_IDENTIFIER, tstream):
             self._unique_identifier = attributes.UniqueIdentifier()
-            self._unique_identifier.read(tstream)
+            self._unique_identifier.read(tstream, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "expected mac response unique identifier not found"
@@ -179,7 +194,7 @@ class MACResponsePayload(Struct):
 
         if self.is_tag_next(Tags.MAC_DATA, tstream):
             self._mac_data = MACData()
-            self._mac_data.read(tstream)
+            self._mac_data.read(tstream, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "expected mac response mac data not found"
@@ -187,21 +202,24 @@ class MACResponsePayload(Struct):
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         if self._unique_identifier is not None:
-            self._unique_identifier.write(tstream)
+            self._unique_identifier.write(tstream, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The mac response unique identifier is required"
             )
         if self._mac_data is not None:
-            self._mac_data.write(tstream)
+            self._mac_data.write(tstream, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The mac response mac data is required"
             )
         self.length = tstream.length()
-        super(MACResponsePayload, self).write(ostream)
+        super(MACResponsePayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
