@@ -156,7 +156,7 @@ class GetRequestPayload(primitives.Struct):
                 "KeyWrappingSpecification struct."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Get request payload and decode it into its
         constituent parts.
@@ -165,29 +165,44 @@ class GetRequestPayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(GetRequestPayload, self).read(input_stream)
+        super(GetRequestPayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.KEY_FORMAT_TYPE, local_stream):
             self._key_format_type = primitives.Enumeration(
                 enum=enums.KeyFormatType,
                 tag=enums.Tags.KEY_FORMAT_TYPE
             )
-            self._key_format_type.read(local_stream)
+            self._key_format_type.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.KEY_COMPRESSION_TYPE, local_stream):
             self._key_compression_type = primitives.Enumeration(
                 enum=enums.KeyCompressionType,
                 tag=enums.Tags.KEY_COMPRESSION_TYPE
             )
-            self._key_compression_type.read(local_stream)
+            self._key_compression_type.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(
                 enums.Tags.KEY_WRAPPING_SPECIFICATION,
@@ -195,11 +210,14 @@ class GetRequestPayload(primitives.Struct):
         ):
             self._key_wrapping_specification = \
                 objects.KeyWrappingSpecification()
-            self._key_wrapping_specification.read(local_stream)
+            self._key_wrapping_specification.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Get request payload to a stream.
 
@@ -207,20 +225,38 @@ class GetRequestPayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier is not None:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._key_format_type is not None:
-            self._key_format_type.write(local_stream)
+            self._key_format_type.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._key_compression_type is not None:
-            self._key_compression_type.write(local_stream)
+            self._key_compression_type.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._key_wrapping_specification is not None:
-            self._key_wrapping_specification.write(local_stream)
+            self._key_wrapping_specification.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(GetRequestPayload, self).write(output_stream)
+        super(GetRequestPayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -375,7 +411,7 @@ class GetResponsePayload(primitives.Struct):
                 "SymmetricKey, Template"
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Get response payload and decode it
         into its constituent parts.
@@ -384,12 +420,18 @@ class GetResponsePayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the object type, unique identifier, or
                 secret attributes are missing from the encoded payload.
         """
-        super(GetResponsePayload, self).read(input_stream)
+        super(GetResponsePayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_stream):
@@ -397,7 +439,7 @@ class GetResponsePayload(primitives.Struct):
                 enum=enums.ObjectType,
                 tag=enums.Tags.OBJECT_TYPE
             )
-            self._object_type.read(local_stream)
+            self._object_type.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Parsed payload encoding is missing the object type field."
@@ -407,7 +449,10 @@ class GetResponsePayload(primitives.Struct):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Parsed payload encoding is missing the unique identifier "
@@ -416,7 +461,7 @@ class GetResponsePayload(primitives.Struct):
 
         self.secret = self.secret_factory.create(self.object_type)
         if self.is_tag_next(self._secret.tag, local_stream):
-            self._secret.read(local_stream)
+            self._secret.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Parsed payload encoding is missing the secret field."
@@ -424,7 +469,7 @@ class GetResponsePayload(primitives.Struct):
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Get response payload to a stream.
 
@@ -432,6 +477,9 @@ class GetResponsePayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the object type, unique identifier, or
@@ -440,24 +488,30 @@ class GetResponsePayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self.object_type:
-            self._object_type.write(local_stream)
+            self._object_type.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("Payload is missing the object type field.")
 
         if self.unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Payload is missing the unique identifier field."
             )
 
         if self.secret:
-            self._secret.write(local_stream)
+            self._secret.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("Payload is missing the secret field.")
 
         self.length = local_stream.length()
-        super(GetResponsePayload, self).write(output_stream)
+        super(GetResponsePayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

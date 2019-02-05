@@ -15,7 +15,7 @@
 
 from six.moves import xrange
 
-from kmip.core.enums import Tags
+from kmip.core import enums
 
 from kmip.core.messages.contents import ProtocolVersion
 
@@ -28,7 +28,8 @@ class DiscoverVersionsRequestPayload(Struct):
 
     def __init__(self, protocol_versions=None):
         super(DiscoverVersionsRequestPayload, self).__init__(
-            Tags.REQUEST_PAYLOAD)
+            enums.Tags.REQUEST_PAYLOAD
+        )
 
         if protocol_versions is None:
             self.protocol_versions = list()
@@ -37,26 +38,32 @@ class DiscoverVersionsRequestPayload(Struct):
 
         self.validate()
 
-    def read(self, istream):
-        super(DiscoverVersionsRequestPayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(DiscoverVersionsRequestPayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
-        while(self.is_tag_next(Tags.PROTOCOL_VERSION, tstream)):
+        while(self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream)):
             protocol_version = ProtocolVersion()
-            protocol_version.read(tstream)
+            protocol_version.read(tstream, kmip_version=kmip_version)
             self.protocol_versions.append(protocol_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         for protocol_version in self.protocol_versions:
-            protocol_version.write(tstream)
+            protocol_version.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(DiscoverVersionsRequestPayload, self).write(ostream)
+        super(DiscoverVersionsRequestPayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -82,7 +89,8 @@ class DiscoverVersionsResponsePayload(Struct):
 
     def __init__(self, protocol_versions=None):
         super(DiscoverVersionsResponsePayload, self).__init__(
-            Tags.RESPONSE_PAYLOAD)
+            enums.Tags.RESPONSE_PAYLOAD
+        )
 
         if protocol_versions is None:
             self.protocol_versions = list()
@@ -91,26 +99,32 @@ class DiscoverVersionsResponsePayload(Struct):
 
         self.validate()
 
-    def read(self, istream):
-        super(DiscoverVersionsResponsePayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(DiscoverVersionsResponsePayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
-        while(self.is_tag_next(Tags.PROTOCOL_VERSION, tstream)):
+        while(self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream)):
             protocol_version = ProtocolVersion()
-            protocol_version.read(tstream)
+            protocol_version.read(tstream, kmip_version=kmip_version)
             self.protocol_versions.append(protocol_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         for protocol_version in self.protocol_versions:
-            protocol_version.write(tstream)
+            protocol_version.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(DiscoverVersionsResponsePayload, self).write(ostream)
+        super(DiscoverVersionsResponsePayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):

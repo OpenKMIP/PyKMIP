@@ -45,39 +45,51 @@ class ActivateRequestPayload(Struct):
         self.unique_identifier = unique_identifier
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the ActivateRequestPayload object and decode it
         into its constituent parts.
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(ActivateRequestPayload, self).read(istream)
+        super(ActivateRequestPayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
-        self.unique_identifier.read(tstream)
+        self.unique_identifier.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the ActivateRequestPayload object to a stream.
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
 
         # Write the contents of the request payload
         if self.unique_identifier is not None:
-            self.unique_identifier.write(tstream)
+            self.unique_identifier.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(ActivateRequestPayload, self).write(ostream)
+        super(ActivateRequestPayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -118,7 +130,7 @@ class ActivateResponsePayload(Struct):
             self.unique_identifier = unique_identifier
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the ActivateResponsePayload object and decode it
         into its constituent parts.
@@ -126,32 +138,44 @@ class ActivateResponsePayload(Struct):
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(ActivateResponsePayload, self).read(istream)
+        super(ActivateResponsePayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
-        self.unique_identifier.read(tstream)
+        self.unique_identifier.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the ActivateResponsePayload object to a stream.
 
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
 
         # Write the contents of the response payload
-        self.unique_identifier.write(tstream)
+        self.unique_identifier.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(ActivateResponsePayload, self).write(ostream)
+        super(ActivateResponsePayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):

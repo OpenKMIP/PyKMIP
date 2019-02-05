@@ -68,7 +68,7 @@ class GetAttributeListRequestPayload(primitives.Struct):
         else:
             raise TypeError("unique identifier must be a string")
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the GetAttributeList request payload and decode
         it into its constituent parts.
@@ -76,21 +76,27 @@ class GetAttributeListRequestPayload(primitives.Struct):
         Args:
             istream (stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(GetAttributeListRequestPayload, self).read(istream)
+        super(GetAttributeListRequestPayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = utils.BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, tstream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(tstream)
+            self._unique_identifier.read(tstream, kmip_version=kmip_version)
         else:
             self._unique_identifier = None
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the GetAttributeList request payload to a
         stream.
@@ -98,14 +104,20 @@ class GetAttributeListRequestPayload(primitives.Struct):
         Args:
             ostream (stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(tstream)
+            self._unique_identifier.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(GetAttributeListRequestPayload, self).write(ostream)
+        super(GetAttributeListRequestPayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def __repr__(self):
@@ -225,7 +237,7 @@ class GetAttributeListResponsePayload(primitives.Struct):
         else:
             raise TypeError("attribute_names must be a list of strings")
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the GetAttributeList response payload and
         decode it into its constituent parts.
@@ -233,28 +245,34 @@ class GetAttributeListResponsePayload(primitives.Struct):
         Args:
             istream (stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(GetAttributeListResponsePayload, self).read(istream)
+        super(GetAttributeListResponsePayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = utils.BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, tstream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(tstream)
+            self._unique_identifier.read(tstream, kmip_version=kmip_version)
         else:
             self._unique_identifier = None
 
         names = list()
         while self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, tstream):
             name = primitives.TextString(tag=enums.Tags.ATTRIBUTE_NAME)
-            name.read(tstream)
+            name.read(tstream, kmip_version=kmip_version)
             names.append(name)
         self._attribute_names = names
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the GetAttributeList response payload to a
         stream.
@@ -262,17 +280,23 @@ class GetAttributeListResponsePayload(primitives.Struct):
         Args:
             ostream (stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(tstream)
+            self._unique_identifier.write(tstream, kmip_version=kmip_version)
 
         for attribute_name in self._attribute_names:
-            attribute_name.write(tstream)
+            attribute_name.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(GetAttributeListResponsePayload, self).write(ostream)
+        super(GetAttributeListResponsePayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def __repr__(self):

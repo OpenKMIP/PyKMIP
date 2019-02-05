@@ -108,28 +108,28 @@ class Name(Struct):
         self.name_type = name_type
         self.validate()
 
-    def read(self, istream):
-        super(Name, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Name, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         # Read the value and type of the name
         self.name_value = Name.NameValue()
         self.name_type = Name.NameType()
-        self.name_value.read(tstream)
-        self.name_type.read(tstream)
+        self.name_value.read(tstream, kmip_version=kmip_version)
+        self.name_type.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the value and type of the name
-        self.name_value.write(tstream)
-        self.name_type.write(tstream)
+        self.name_value.write(tstream, kmip_version=kmip_version)
+        self.name_type.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(Name, self).write(ostream)
+        super(Name, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -576,8 +576,11 @@ class CryptographicParameters(Struct):
         else:
             raise TypeError("initial counter value must be an integer")
 
-    def read(self, istream):
-        super(CryptographicParameters, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(CryptographicParameters, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.BLOCK_CIPHER_MODE, tstream):
@@ -585,109 +588,136 @@ class CryptographicParameters(Struct):
                 enums.BlockCipherMode,
                 tag=Tags.BLOCK_CIPHER_MODE
             )
-            self._block_cipher_mode.read(tstream)
+            self._block_cipher_mode.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.PADDING_METHOD, tstream):
             self._padding_method = Enumeration(
                 enums.PaddingMethod,
                 tag=Tags.PADDING_METHOD
             )
-            self._padding_method.read(tstream)
+            self._padding_method.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.HASHING_ALGORITHM, tstream):
             self._hashing_algorithm = Enumeration(
                 enums.HashingAlgorithm,
                 tag=Tags.HASHING_ALGORITHM
             )
-            self._hashing_algorithm.read(tstream)
+            self._hashing_algorithm.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.KEY_ROLE_TYPE, tstream):
             self._key_role_type = Enumeration(
                 enums.KeyRoleType,
                 tag=Tags.KEY_ROLE_TYPE
             )
-            self._key_role_type.read(tstream)
+            self._key_role_type.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.DIGITAL_SIGNATURE_ALGORITHM, tstream):
             self._digital_signature_algorithm = Enumeration(
                 enums.DigitalSignatureAlgorithm,
                 tag=Tags.DIGITAL_SIGNATURE_ALGORITHM
             )
-            self._digital_signature_algorithm.read(tstream)
+            self._digital_signature_algorithm.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_ALGORITHM, tstream):
             self._cryptographic_algorithm = Enumeration(
                 enums.CryptographicAlgorithm,
                 tag=Tags.CRYPTOGRAPHIC_ALGORITHM
             )
-            self._cryptographic_algorithm.read(tstream)
+            self._cryptographic_algorithm.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(Tags.RANDOM_IV, tstream):
             self._random_iv = Boolean(tag=Tags.RANDOM_IV)
-            self._random_iv.read(tstream)
+            self._random_iv.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.IV_LENGTH, tstream):
             self._iv_length = Integer(tag=Tags.IV_LENGTH)
-            self._iv_length.read(tstream)
+            self._iv_length.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.TAG_LENGTH, tstream):
             self._tag_length = Integer(tag=Tags.TAG_LENGTH)
-            self._tag_length.read(tstream)
+            self._tag_length.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.FIXED_FIELD_LENGTH, tstream):
             self._fixed_field_length = Integer(tag=Tags.FIXED_FIELD_LENGTH)
-            self._fixed_field_length.read(tstream)
+            self._fixed_field_length.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.INVOCATION_FIELD_LENGTH, tstream):
             self._invocation_field_length = Integer(
                 tag=Tags.INVOCATION_FIELD_LENGTH
             )
-            self._invocation_field_length.read(tstream)
+            self._invocation_field_length.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(Tags.COUNTER_LENGTH, tstream):
             self._counter_length = Integer(tag=Tags.COUNTER_LENGTH)
-            self._counter_length.read(tstream)
+            self._counter_length.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.INITIAL_COUNTER_VALUE, tstream):
             self._initial_counter_value = Integer(
                 tag=Tags.INITIAL_COUNTER_VALUE
             )
-            self._initial_counter_value.read(tstream)
+            self._initial_counter_value.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         if self._block_cipher_mode:
-            self._block_cipher_mode.write(tstream)
+            self._block_cipher_mode.write(tstream, kmip_version=kmip_version)
         if self._padding_method:
-            self._padding_method.write(tstream)
+            self._padding_method.write(tstream, kmip_version=kmip_version)
         if self._hashing_algorithm:
-            self._hashing_algorithm.write(tstream)
+            self._hashing_algorithm.write(tstream, kmip_version=kmip_version)
         if self._key_role_type:
-            self._key_role_type.write(tstream)
+            self._key_role_type.write(tstream, kmip_version=kmip_version)
         if self._digital_signature_algorithm:
-            self._digital_signature_algorithm.write(tstream)
+            self._digital_signature_algorithm.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self._cryptographic_algorithm:
-            self._cryptographic_algorithm.write(tstream)
+            self._cryptographic_algorithm.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self._random_iv:
-            self._random_iv.write(tstream)
+            self._random_iv.write(tstream, kmip_version=kmip_version)
         if self._iv_length:
-            self._iv_length.write(tstream)
+            self._iv_length.write(tstream, kmip_version=kmip_version)
         if self._tag_length:
-            self._tag_length.write(tstream)
+            self._tag_length.write(tstream, kmip_version=kmip_version)
         if self._fixed_field_length:
-            self._fixed_field_length.write(tstream)
+            self._fixed_field_length.write(tstream, kmip_version=kmip_version)
         if self._invocation_field_length:
-            self._invocation_field_length.write(tstream)
+            self._invocation_field_length.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self._counter_length:
-            self._counter_length.write(tstream)
+            self._counter_length.write(tstream, kmip_version=kmip_version)
         if self._initial_counter_value:
-            self._initial_counter_value.write(tstream)
+            self._initial_counter_value.write(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         self.length = tstream.length()
-        super(CryptographicParameters, self).write(ostream)
+        super(CryptographicParameters, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def __eq__(self, other):
@@ -866,7 +896,7 @@ class Digest(Struct):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Digest object and decode it into its
         constituent parts.
@@ -874,33 +904,39 @@ class Digest(Struct):
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(Digest, self).read(istream)
+        super(Digest, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
-        self.hashing_algorithm.read(tstream)
-        self.digest_value.read(tstream)
-        self.key_format_type.read(tstream)
+        self.hashing_algorithm.read(tstream, kmip_version=kmip_version)
+        self.digest_value.read(tstream, kmip_version=kmip_version)
+        self.key_format_type.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Digest object to a stream.
 
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
 
-        self.hashing_algorithm.write(tstream)
-        self.digest_value.write(tstream)
-        self.key_format_type.write(tstream)
+        self.hashing_algorithm.write(tstream, kmip_version=kmip_version)
+        self.digest_value.write(tstream, kmip_version=kmip_version)
+        self.key_format_type.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(Digest, self).write(ostream)
+        super(Digest, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -1115,7 +1151,7 @@ class ApplicationSpecificInformation(Struct):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the ApplicationSpecificInformation object and
         decode it into its constituent parts.
@@ -1123,17 +1159,23 @@ class ApplicationSpecificInformation(Struct):
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(ApplicationSpecificInformation, self).read(istream)
+        super(ApplicationSpecificInformation, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
-        self.application_namespace.read(tstream)
-        self.application_data.read(tstream)
+        self.application_namespace.read(tstream, kmip_version=kmip_version)
+        self.application_data.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the ApplicationSpecificInformation object to a
         stream.
@@ -1141,14 +1183,20 @@ class ApplicationSpecificInformation(Struct):
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
 
-        self.application_namespace.write(tstream)
-        self.application_data.write(tstream)
+        self.application_namespace.write(tstream, kmip_version=kmip_version)
+        self.application_data.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(ApplicationSpecificInformation, self).write(ostream)
+        super(ApplicationSpecificInformation, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -1392,7 +1440,7 @@ class DerivationParameters(Struct):
         else:
             raise TypeError("iteration count must be an integer")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the DerivationParameters struct and decode it
         into its constituent parts.
@@ -1401,8 +1449,14 @@ class DerivationParameters(Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(DerivationParameters, self).read(input_stream)
+        super(DerivationParameters, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(
@@ -1410,29 +1464,35 @@ class DerivationParameters(Struct):
                 local_stream
         ):
             self._cryptographic_parameters = CryptographicParameters()
-            self._cryptographic_parameters.read(local_stream)
+            self._cryptographic_parameters.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.INITIALIZATION_VECTOR, local_stream):
             self._initialization_vector = ByteString(
                 tag=enums.Tags.INITIALIZATION_VECTOR
             )
-            self._initialization_vector.read(local_stream)
+            self._initialization_vector.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.DERIVATION_DATA, local_stream):
             self._derivation_data = ByteString(tag=enums.Tags.DERIVATION_DATA)
-            self._derivation_data.read(local_stream)
+            self._derivation_data.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.SALT, local_stream):
             self._salt = ByteString(tag=enums.Tags.SALT)
-            self._salt.read(local_stream)
+            self._salt.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.ITERATION_COUNT, local_stream):
             self._iteration_count = Integer(tag=Tags.ITERATION_COUNT)
-            self._iteration_count.read(local_stream)
+            self._iteration_count.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the DerivationParameters struct to a stream.
 
@@ -1440,22 +1500,43 @@ class DerivationParameters(Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         local_stream = BytearrayStream()
 
         if self._cryptographic_parameters:
-            self._cryptographic_parameters.write(local_stream)
+            self._cryptographic_parameters.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._initialization_vector:
-            self._initialization_vector.write(local_stream)
+            self._initialization_vector.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._derivation_data:
-            self._derivation_data.write(local_stream)
+            self._derivation_data.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._salt:
-            self._salt.write(local_stream)
+            self._salt.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._iteration_count:
-            self._iteration_count.write(local_stream)
+            self._iteration_count.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(DerivationParameters, self).write(output_stream)
+        super(DerivationParameters, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

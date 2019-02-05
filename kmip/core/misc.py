@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from kmip.core import enums
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
@@ -140,7 +141,7 @@ class ServerInformation(Struct):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the ServerInformation object and decode it into
         its constituent parts.
@@ -148,8 +149,11 @@ class ServerInformation(Struct):
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(ServerInformation, self).read(istream)
+        super(ServerInformation, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.data = BytearrayStream(tstream.read())
@@ -157,19 +161,25 @@ class ServerInformation(Struct):
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the ServerInformation object to a stream.
 
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
         tstream.write(self.data.buffer)
 
         self.length = tstream.length()
-        super(ServerInformation, self).write(ostream)
+        super(ServerInformation, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):

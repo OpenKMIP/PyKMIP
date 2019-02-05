@@ -143,7 +143,7 @@ class CheckRequestPayload(primitives.Struct):
         else:
             raise TypeError("Lease time must be an integer.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Check request payload and decode it into
         its constituent parts.
@@ -152,38 +152,53 @@ class CheckRequestPayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(CheckRequestPayload, self).read(input_stream)
+        super(CheckRequestPayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(enums.Tags.USAGE_LIMITS_COUNT, local_stream):
             self._usage_limits_count = primitives.LongInteger(
                 tag=enums.Tags.USAGE_LIMITS_COUNT
             )
-            self._usage_limits_count.read(local_stream)
+            self._usage_limits_count.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_USAGE_MASK, local_stream):
             self._cryptographic_usage_mask = primitives.Integer(
                 tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
             )
-            self._cryptographic_usage_mask.read(local_stream)
+            self._cryptographic_usage_mask.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(enums.Tags.LEASE_TIME, local_stream):
             self._lease_time = primitives.Interval(
                 tag=enums.Tags.LEASE_TIME
             )
-            self._lease_time.read(local_stream)
+            self._lease_time.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Check request payload to a stream.
 
@@ -191,6 +206,9 @@ class CheckRequestPayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -198,16 +216,31 @@ class CheckRequestPayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._usage_limits_count:
-            self._usage_limits_count.write(local_stream)
+            self._usage_limits_count.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._cryptographic_usage_mask:
-            self._cryptographic_usage_mask.write(local_stream)
+            self._cryptographic_usage_mask.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._lease_time:
-            self._lease_time.write(local_stream)
+            self._lease_time.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(CheckRequestPayload, self).write(output_stream)
+        super(CheckRequestPayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -375,7 +408,7 @@ class CheckResponsePayload(primitives.Struct):
         else:
             raise TypeError("Lease time must be an integer.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Check response payload and decode it into
         its constituent parts.
@@ -384,38 +417,56 @@ class CheckResponsePayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(CheckResponsePayload, self).read(input_stream)
+        super(CheckResponsePayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(enums.Tags.USAGE_LIMITS_COUNT, local_stream):
             self._usage_limits_count = primitives.LongInteger(
                 tag=enums.Tags.USAGE_LIMITS_COUNT
             )
-            self._usage_limits_count.read(local_stream)
+            self._usage_limits_count.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_USAGE_MASK, local_stream):
             self._cryptographic_usage_mask = primitives.Integer(
                 tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
             )
-            self._cryptographic_usage_mask.read(local_stream)
+            self._cryptographic_usage_mask.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(enums.Tags.LEASE_TIME, local_stream):
             self._lease_time = primitives.Interval(
                 tag=enums.Tags.LEASE_TIME
             )
-            self._lease_time.read(local_stream)
+            self._lease_time.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Check response payload to a stream.
 
@@ -423,6 +474,9 @@ class CheckResponsePayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -430,16 +484,31 @@ class CheckResponsePayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._usage_limits_count:
-            self._usage_limits_count.write(local_stream)
+            self._usage_limits_count.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._cryptographic_usage_mask:
-            self._cryptographic_usage_mask.write(local_stream)
+            self._cryptographic_usage_mask.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._lease_time:
-            self._lease_time.write(local_stream)
+            self._lease_time.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(CheckResponsePayload, self).write(output_stream)
+        super(CheckResponsePayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

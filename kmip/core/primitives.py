@@ -101,7 +101,7 @@ class Base(object):
     def read_value(self, istream):
         raise NotImplementedError()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         self.read_tag(istream)
         self.read_type(istream)
         self.read_length(istream)
@@ -135,7 +135,7 @@ class Base(object):
     def write_value(self, ostream):
         raise NotImplementedError()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         self.write_tag(ostream)
         self.write_type(ostream)
         self.write_length(ostream)
@@ -224,17 +224,17 @@ class Integer(Base):
             )
         self.validate()
 
-    def read(self, istream):
-        super(Integer, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Integer, self).read(istream, kmip_version=kmip_version)
         self.read_value(istream)
 
-    def write_value(self, ostream):
+    def write_value(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         ostream.write(pack(self.pack_string, self.value))
         ostream.write(pack(self.pack_string, 0))
 
-    def write(self, ostream):
-        super(Integer, self).write(ostream)
-        self.write_value(ostream)
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Integer, self).write(ostream, kmip_version=kmip_version)
+        self.write_value(ostream, kmip_version=kmip_version)
 
     def validate(self):
         """
@@ -328,19 +328,22 @@ class LongInteger(Base):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the encoding of the LongInteger from the input stream.
 
         Args:
             istream (stream): A buffer containing the encoded bytes of a
                 LongInteger. Usually a BytearrayStream object. Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             InvalidPrimitiveLength: if the long integer encoding read in has
                 an invalid encoded length.
         """
-        super(LongInteger, self).read(istream)
+        super(LongInteger, self).read(istream, kmip_version=kmip_version)
 
         if self.length is not LongInteger.LENGTH:
             raise exceptions.InvalidPrimitiveLength(
@@ -351,15 +354,18 @@ class LongInteger(Base):
         self.value = unpack('!q', istream.read(self.length))[0]
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the encoding of the LongInteger to the output stream.
 
         Args:
             ostream (stream): A buffer to contain the encoded bytes of a
                 LongInteger. Usually a BytearrayStream object. Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(LongInteger, self).write(ostream)
+        super(LongInteger, self).write(ostream, kmip_version=kmip_version)
         ostream.write(pack('!q', self.value))
 
     def validate(self):
@@ -420,7 +426,7 @@ class BigInteger(Base):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the encoding of the BigInteger from the input stream.
 
@@ -428,12 +434,15 @@ class BigInteger(Base):
             istream (stream): A buffer containing the encoded bytes of the
                 value of a BigInteger. Usually a BytearrayStream object.
                 Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             InvalidPrimitiveLength: if the big integer encoding read in has
                 an invalid encoded length.
         """
-        super(BigInteger, self).read(istream)
+        super(BigInteger, self).read(istream, kmip_version=kmip_version)
 
         # Check for a valid length before even trying to parse the value.
         if self.length % 8:
@@ -467,7 +476,7 @@ class BigInteger(Base):
         # Convert the value back to an integer and reapply the sign.
         self.value = int(binary, 2) * sign
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the encoding of the BigInteger to the output stream.
 
@@ -475,6 +484,9 @@ class BigInteger(Base):
             ostream (Stream): A buffer to contain the encoded bytes of a
                 BigInteger object. Usually a BytearrayStream object.
                 Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         # Convert the value to binary and pad it as needed.
         binary = "{0:b}".format(abs(self.value))
@@ -497,7 +509,7 @@ class BigInteger(Base):
             hexadecimal += struct.pack('!B', byte)
 
         self.length = len(hexadecimal)
-        super(BigInteger, self).write(ostream)
+        super(BigInteger, self).write(ostream, kmip_version=kmip_version)
         ostream.write(hexadecimal)
 
     def validate(self):
@@ -568,13 +580,16 @@ class Enumeration(Base):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the encoding of the Enumeration from the input stream.
 
         Args:
             istream (stream): A buffer containing the encoded bytes of an
                 Enumeration. Usually a BytearrayStream object. Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             InvalidPrimitiveLength: if the Enumeration encoding read in has an
@@ -582,7 +597,7 @@ class Enumeration(Base):
             InvalidPaddingBytes: if the Enumeration encoding read in does not
                 use zeroes for its padding bytes.
         """
-        super(Enumeration, self).read(istream)
+        super(Enumeration, self).read(istream, kmip_version=kmip_version)
 
         # Check for a valid length before even trying to parse the value.
         if self.length != Enumeration.LENGTH:
@@ -600,15 +615,18 @@ class Enumeration(Base):
 
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the encoding of the Enumeration to the output stream.
 
         Args:
             ostream (stream): A buffer to contain the encoded bytes of an
                 Enumeration. Usually a BytearrayStream object. Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(Enumeration, self).write(ostream)
+        super(Enumeration, self).write(ostream, kmip_version=kmip_version)
         ostream.write(pack('!I', self.value.value))
         ostream.write(pack('!I', 0))
 
@@ -689,7 +707,7 @@ class Boolean(Base):
 
         self.validate()
 
-    def read_value(self, istream):
+    def read_value(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the value of the Boolean object from the input stream.
 
@@ -697,6 +715,9 @@ class Boolean(Base):
             istream (Stream): A buffer containing the encoded bytes of the
                 value of a Boolean object. Usually a BytearrayStream object.
                 Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: if the read boolean value is not a 0 or 1.
@@ -716,18 +737,21 @@ class Boolean(Base):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the encoding of the Boolean object from the input stream.
 
         Args:
             istream (Stream): A buffer containing the encoded bytes of a
                 Boolean object. Usually a BytearrayStream object. Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(Boolean, self).read(istream)
-        self.read_value(istream)
+        super(Boolean, self).read(istream, kmip_version=kmip_version)
+        self.read_value(istream, kmip_version=kmip_version)
 
-    def write_value(self, ostream):
+    def write_value(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the value of the Boolean object to the output stream.
 
@@ -735,6 +759,9 @@ class Boolean(Base):
             ostream (Stream): A buffer to contain the encoded bytes of the
                 value of a Boolean object. Usually a BytearrayStream object.
                 Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         try:
             ostream.write(pack('!Q', self.value))
@@ -742,16 +769,19 @@ class Boolean(Base):
             self.logger.error("Error writing boolean value to buffer")
             raise
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the encoding of the Boolean object to the output stream.
 
         Args:
             ostream (Stream): A buffer to contain the encoded bytes of a
                 Boolean object. Usually a BytearrayStream object. Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(Boolean, self).write(ostream)
-        self.write_value(ostream)
+        super(Boolean, self).write(ostream, kmip_version=kmip_version)
+        self.write_value(ostream, kmip_version=kmip_version)
 
     def validate(self):
         """
@@ -808,7 +838,7 @@ class TextString(Base):
             self.length = None
             self.padding_length = None
 
-    def read_value(self, istream):
+    def read_value(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         # Read string text
         self.value = ''
         for _ in range(self.length):
@@ -831,12 +861,12 @@ class TextString(Base):
                         pad
                     )
 
-    def read(self, istream):
-        super(TextString, self).read(istream)
-        self.read_value(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(TextString, self).read(istream, kmip_version=kmip_version)
+        self.read_value(istream, kmip_version=kmip_version)
         self.validate()
 
-    def write_value(self, ostream):
+    def write_value(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         # Write string to stream
         for char in self.value:
             ostream.write(pack(self.BYTE_FORMAT, char.encode()))
@@ -845,9 +875,9 @@ class TextString(Base):
         for _ in range(self.padding_length):
             ostream.write(pack('!B', 0))
 
-    def write(self, ostream):
-        super(TextString, self).write(ostream)
-        self.write_value(ostream)
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(TextString, self).write(ostream, kmip_version=kmip_version)
+        self.write_value(ostream, kmip_version=kmip_version)
 
     def validate(self):
         self.__validate()
@@ -902,7 +932,7 @@ class ByteString(Base):
             self.length = None
             self.padding_length = None
 
-    def read_value(self, istream):
+    def read_value(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         # Read bytes into bytearray
         data = bytearray()
         for _ in range(self.length):
@@ -926,11 +956,11 @@ class ByteString(Base):
                         pad
                     )
 
-    def read(self, istream):
-        super(ByteString, self).read(istream)
-        self.read_value(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ByteString, self).read(istream, kmip_version=kmip_version)
+        self.read_value(istream, kmip_version=kmip_version)
 
-    def write_value(self, ostream):
+    def write_value(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         # Write bytes to stream
         data = bytearray(self.value)
         for byte in data:
@@ -940,9 +970,9 @@ class ByteString(Base):
         for _ in range(self.padding_length):
             ostream.write(pack('!B', 0))
 
-    def write(self, ostream):
-        super(ByteString, self).write(ostream)
-        self.write_value(ostream)
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(ByteString, self).write(ostream, kmip_version=kmip_version)
+        self.write_value(ostream, kmip_version=kmip_version)
 
     def validate(self):
         self.__validate()
@@ -1031,7 +1061,7 @@ class Interval(Base):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the encoding of the Interval from the input stream.
 
@@ -1039,6 +1069,9 @@ class Interval(Base):
             istream (stream): A buffer containing the encoded bytes of the
                 value of an Interval. Usually a BytearrayStream object.
                 Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             InvalidPrimitiveLength: if the Interval encoding read in has an
@@ -1046,7 +1079,7 @@ class Interval(Base):
             InvalidPaddingBytes: if the Interval encoding read in does not use
                 zeroes for its padding bytes.
         """
-        super(Interval, self).read(istream)
+        super(Interval, self).read(istream, kmip_version=kmip_version)
 
         # Check for a valid length before even trying to parse the value.
         if self.length != Interval.LENGTH:
@@ -1063,15 +1096,18 @@ class Interval(Base):
 
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the encoding of the Interval to the output stream.
 
         Args:
             ostream (stream): A buffer to contain the encoded bytes of an
                 Interval. Usually a BytearrayStream object. Required.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(Interval, self).write(ostream)
+        super(Interval, self).write(ostream, kmip_version=kmip_version)
         ostream.write(pack('!I', self.value))
         ostream.write(pack('!I', 0))
 

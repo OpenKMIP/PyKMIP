@@ -144,7 +144,7 @@ class EncryptRequestPayload(primitives.Struct):
         else:
             raise TypeError("IV/counter/nonce must be bytes")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Encrypt request payload and decode it
         into its constituent parts.
@@ -153,19 +153,28 @@ class EncryptRequestPayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(EncryptRequestPayload, self).read(input_stream)
+        super(EncryptRequestPayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(
                 enums.Tags.CRYPTOGRAPHIC_PARAMETERS,
@@ -173,11 +182,14 @@ class EncryptRequestPayload(primitives.Struct):
         ):
             self._cryptographic_parameters = \
                 attributes.CryptographicParameters()
-            self._cryptographic_parameters.read(local_stream)
+            self._cryptographic_parameters.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
-            self._data.read(local_stream)
+            self._data.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("invalid payload missing the data attribute")
 
@@ -185,11 +197,14 @@ class EncryptRequestPayload(primitives.Struct):
             self._iv_counter_nonce = primitives.ByteString(
                 tag=enums.Tags.IV_COUNTER_NONCE
             )
-            self._iv_counter_nonce.read(local_stream)
+            self._iv_counter_nonce.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Encrypt request payload to a stream.
 
@@ -197,6 +212,9 @@ class EncryptRequestPayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the data attribute is not defined.
@@ -204,20 +222,32 @@ class EncryptRequestPayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._cryptographic_parameters:
-            self._cryptographic_parameters.write(local_stream)
+            self._cryptographic_parameters.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self._data:
-            self._data.write(local_stream)
+            self._data.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("invalid payload missing the data attribute")
 
         if self._iv_counter_nonce:
-            self._iv_counter_nonce.write(local_stream)
+            self._iv_counter_nonce.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(EncryptRequestPayload, self).write(output_stream)
+        super(EncryptRequestPayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -361,7 +391,7 @@ class EncryptResponsePayload(primitives.Struct):
         else:
             raise TypeError("IV/counter/nonce must be bytes")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Encrypt response payload and decode it
         into its constituent parts.
@@ -370,19 +400,28 @@ class EncryptResponsePayload(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the unique_identifier or data attributes
                 are missing from the encoded payload.
         """
-        super(EncryptResponsePayload, self).read(input_stream)
+        super(EncryptResponsePayload, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing the unique identifier attribute"
@@ -390,7 +429,10 @@ class EncryptResponsePayload(primitives.Struct):
 
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
-            self._data.read(local_stream)
+            self._data.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError("invalid payload missing the data attribute")
 
@@ -398,11 +440,14 @@ class EncryptResponsePayload(primitives.Struct):
             self._iv_counter_nonce = primitives.ByteString(
                 tag=enums.Tags.IV_COUNTER_NONCE
             )
-            self._iv_counter_nonce.read(local_stream)
+            self._iv_counter_nonce.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Encrypt response payload to a stream.
 
@@ -410,6 +455,9 @@ class EncryptResponsePayload(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the unique_identifier or data attributes
@@ -418,22 +466,31 @@ class EncryptResponsePayload(primitives.Struct):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "invalid payload missing the unique identifier attribute"
             )
 
         if self._data:
-            self._data.write(local_stream)
+            self._data.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("invalid payload missing the data attribute")
 
         if self._iv_counter_nonce:
-            self._iv_counter_nonce.write(local_stream)
+            self._iv_counter_nonce.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(EncryptResponsePayload, self).write(output_stream)
+        super(EncryptResponsePayload, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):

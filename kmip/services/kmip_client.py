@@ -1061,7 +1061,7 @@ class KMIPProxy(object):
         self._send_message(message)
         message = messages.ResponseMessage()
         data = self._receive_message()
-        message.read(data)
+        message.read(data, self.kmip_version)
         batch_items = message.batch_items
         batch_item = batch_items[0]
         payload = batch_item.response_payload
@@ -1313,7 +1313,7 @@ class KMIPProxy(object):
         self._send_message(message)
         message = messages.ResponseMessage()
         data = self._receive_message()
-        message.read(data)
+        message.read(data, self.kmip_version)
         batch_items = message.batch_items
         batch_item = batch_items[0]
         payload = batch_item.response_payload
@@ -1350,7 +1350,7 @@ class KMIPProxy(object):
         self._send_message(message)
         message = messages.ResponseMessage()
         data = self._receive_message()
-        message.read(data)
+        message.read(data, self.kmip_version)
         batch_items = message.batch_items
         batch_item = batch_items[0]
         payload = batch_item.response_payload
@@ -1383,7 +1383,7 @@ class KMIPProxy(object):
         self._send_message(message)
         message = messages.ResponseMessage()
         data = self._receive_message()
-        message.read(data)
+        message.read(data, self.kmip_version)
         batch_items = message.batch_items
         batch_item = batch_items[0]
         payload = batch_item.response_payload
@@ -1421,7 +1421,7 @@ class KMIPProxy(object):
         self._send_message(message)
         message = messages.ResponseMessage()
         data = self._receive_message()
-        message.read(data)
+        message.read(data, self.kmip_version)
         batch_items = message.batch_items
         batch_item = batch_items[0]
         payload = batch_item.response_payload
@@ -1458,7 +1458,7 @@ class KMIPProxy(object):
         self._send_message(message)
         message = messages.ResponseMessage()
         data = self._receive_message()
-        message.read(data)
+        message.read(data, self.kmip_version)
         batch_items = message.batch_items
         batch_item = batch_items[0]
         payload = batch_item.response_payload
@@ -1508,7 +1508,7 @@ class KMIPProxy(object):
         message = messages.ResponseMessage()
         data = self._receive_message()
 
-        message.read(data)
+        message.read(data, self.kmip_version)
         batch_items = message.batch_items
         batch_item = batch_items[0]
         payload = batch_item.response_payload
@@ -1542,7 +1542,7 @@ class KMIPProxy(object):
         self._send_message(message)
         message = messages.ResponseMessage()
         data = self._receive_message()
-        message.read(data)
+        message.read(data, self.kmip_version)
         batch_items = message.batch_items
         batch_item = batch_items[0]
         payload = batch_item.response_payload
@@ -1610,7 +1610,7 @@ class KMIPProxy(object):
 
     def _send_message(self, message):
         stream = BytearrayStream()
-        message.write(stream)
+        message.write(stream, self.kmip_version)
         self.protocol.write(stream.buffer)
 
     def _receive_message(self):
@@ -1620,7 +1620,7 @@ class KMIPProxy(object):
         self._send_message(request)
         response = messages.ResponseMessage()
         data = self._receive_message()
-        response.read(data)
+        response.read(data, self.kmip_version)
         return response
 
     def _set_variables(self, host, port, keyfile, certfile,

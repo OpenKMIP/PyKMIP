@@ -87,18 +87,18 @@ class Attribute(Struct):
         if attribute_value is not None:
             attribute_value.tag = Tags.ATTRIBUTE_VALUE
 
-    def read(self, istream):
-        super(Attribute, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Attribute, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         # Read the name of the attribute
         self.attribute_name = Attribute.AttributeName()
-        self.attribute_name.read(tstream)
+        self.attribute_name.read(tstream, kmip_version=kmip_version)
 
         # Read the attribute index if it is next
         if self.is_tag_next(Tags.ATTRIBUTE_INDEX, tstream):
             self.attribute_index = Attribute.AttributeIndex()
-            self.attribute_index.read(tstream)
+            self.attribute_index.read(tstream, kmip_version=kmip_version)
 
         # Lookup the attribute class that belongs to the attribute name
         name = self.attribute_name.value
@@ -116,21 +116,21 @@ class Attribute(Struct):
             raise Exception("No value type for {}".format(enum_name))
         self.attribute_value = value
         self.attribute_value.tag = Tags.ATTRIBUTE_VALUE
-        self.attribute_value.read(tstream)
+        self.attribute_value.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
-        self.attribute_name.write(tstream)
+        self.attribute_name.write(tstream, kmip_version=kmip_version)
         if self.attribute_index is not None:
-            self.attribute_index.write(tstream)
-        self.attribute_value.write(tstream)
+            self.attribute_index.write(tstream, kmip_version=kmip_version)
+        self.attribute_value.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the attribute
         self.length = tstream.length()
-        super(Attribute, self).write(ostream)
+        super(Attribute, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def __repr__(self):
@@ -241,7 +241,7 @@ class Nonce(primitives.Struct):
         else:
             raise TypeError("Nonce value must be bytes.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Nonce struct and decode it into its
         constituent parts.
@@ -250,19 +250,22 @@ class Nonce(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the nonce ID or nonce value is missing from
                 the encoding.
         """
-        super(Nonce, self).read(input_stream)
+        super(Nonce, self).read(input_stream, kmip_version=kmip_version)
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.NONCE_ID, local_stream):
             self._nonce_id = primitives.ByteString(
                 tag=enums.Tags.NONCE_ID
             )
-            self._nonce_id.read(local_stream)
+            self._nonce_id.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Nonce encoding missing the nonce ID."
@@ -272,7 +275,7 @@ class Nonce(primitives.Struct):
             self._nonce_value = primitives.ByteString(
                 tag=enums.Tags.NONCE_VALUE
             )
-            self._nonce_value.read(local_stream)
+            self._nonce_value.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Nonce encoding missing the nonce value."
@@ -280,7 +283,7 @@ class Nonce(primitives.Struct):
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Nonce struct to a stream.
 
@@ -288,6 +291,9 @@ class Nonce(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the nonce ID or nonce value is not defined.
@@ -295,17 +301,17 @@ class Nonce(primitives.Struct):
         local_stream = BytearrayStream()
 
         if self._nonce_id:
-            self._nonce_id.write(local_stream)
+            self._nonce_id.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("Nonce struct is missing the nonce ID.")
 
         if self._nonce_value:
-            self._nonce_value.write(local_stream)
+            self._nonce_value.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("Nonce struct is missing the nonce value.")
 
         self.length = local_stream.length()
-        super(Nonce, self).write(output_stream)
+        super(Nonce, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -415,7 +421,7 @@ class UsernamePasswordCredential(CredentialValue):
         else:
             raise TypeError("Password must be a string.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the UsernamePasswordCredential struct and
         decode it into its constituent parts.
@@ -424,18 +430,24 @@ class UsernamePasswordCredential(CredentialValue):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the username is missing from the encoding.
         """
-        super(UsernamePasswordCredential, self).read(input_stream)
+        super(UsernamePasswordCredential, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.USERNAME, local_stream):
             self._username = primitives.TextString(
                 tag=enums.Tags.USERNAME
             )
-            self._username.read(local_stream)
+            self._username.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Username/password credential encoding missing the username."
@@ -445,11 +457,11 @@ class UsernamePasswordCredential(CredentialValue):
             self._password = primitives.TextString(
                 tag=enums.Tags.PASSWORD
             )
-            self._password.read(local_stream)
+            self._password.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the UsernamePasswordCredential struct to a
         stream.
@@ -458,6 +470,9 @@ class UsernamePasswordCredential(CredentialValue):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if the username is not defined.
@@ -465,17 +480,20 @@ class UsernamePasswordCredential(CredentialValue):
         local_stream = BytearrayStream()
 
         if self._username:
-            self._username.write(local_stream)
+            self._username.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Username/password credential struct missing the username."
             )
 
         if self._password:
-            self._password.write(local_stream)
+            self._password.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
-        super(UsernamePasswordCredential, self).write(output_stream)
+        super(UsernamePasswordCredential, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -676,7 +694,7 @@ class DeviceCredential(CredentialValue):
         else:
             raise TypeError("Media identifier must be a string.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the DeviceCredential struct and decode it into
         its constituent parts.
@@ -684,50 +702,71 @@ class DeviceCredential(CredentialValue):
         Args:
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
-                object..
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(DeviceCredential, self).read(input_stream)
+        super(DeviceCredential, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.DEVICE_SERIAL_NUMBER, local_stream):
             self._device_serial_number = primitives.TextString(
                 tag=enums.Tags.DEVICE_SERIAL_NUMBER
             )
-            self._device_serial_number.read(local_stream)
+            self._device_serial_number.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.PASSWORD, local_stream):
             self._password = primitives.TextString(
                 tag=enums.Tags.PASSWORD
             )
-            self._password.read(local_stream)
+            self._password.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.DEVICE_IDENTIFIER, local_stream):
             self._device_identifier = primitives.TextString(
                 tag=enums.Tags.DEVICE_IDENTIFIER
             )
-            self._device_identifier.read(local_stream)
+            self._device_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.NETWORK_IDENTIFIER, local_stream):
             self._network_identifier = primitives.TextString(
                 tag=enums.Tags.NETWORK_IDENTIFIER
             )
-            self._network_identifier.read(local_stream)
+            self._network_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.MACHINE_IDENTIFIER, local_stream):
             self._machine_identifier = primitives.TextString(
                 tag=enums.Tags.MACHINE_IDENTIFIER
             )
-            self._machine_identifier.read(local_stream)
+            self._machine_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.MEDIA_IDENTIFIER, local_stream):
             self._media_identifier = primitives.TextString(
                 tag=enums.Tags.MEDIA_IDENTIFIER
             )
-            self._media_identifier.read(local_stream)
+            self._media_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the DeviceCredential struct to a stream.
 
@@ -735,24 +774,47 @@ class DeviceCredential(CredentialValue):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         local_stream = BytearrayStream()
 
         if self._device_serial_number is not None:
-            self._device_serial_number.write(local_stream)
+            self._device_serial_number.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._password is not None:
-            self._password.write(local_stream)
+            self._password.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._device_identifier is not None:
-            self._device_identifier.write(local_stream)
+            self._device_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._network_identifier is not None:
-            self._network_identifier.write(local_stream)
+            self._network_identifier.write(
+                local_stream,
+                kmip_version=kmip_version)
         if self._machine_identifier is not None:
-            self._machine_identifier.write(local_stream)
+            self._machine_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._media_identifier is not None:
-            self._media_identifier.write(local_stream)
+            self._media_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(DeviceCredential, self).write(output_stream)
+        super(DeviceCredential, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -920,7 +982,7 @@ class AttestationCredential(CredentialValue):
         else:
             raise TypeError("Attestation assertion must be bytes.")
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the AttestationCredential struct and decode it
         into its constituent parts.
@@ -929,6 +991,9 @@ class AttestationCredential(CredentialValue):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if either the nonce or attestation type are
@@ -937,12 +1002,15 @@ class AttestationCredential(CredentialValue):
                 included in the encoding.
 
         """
-        super(AttestationCredential, self).read(input_stream)
+        super(AttestationCredential, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.NONCE, local_stream):
             self._nonce = Nonce()
-            self._nonce.read(local_stream)
+            self._nonce.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Attestation credential encoding is missing the nonce."
@@ -953,7 +1021,10 @@ class AttestationCredential(CredentialValue):
                 enums.AttestationType,
                 tag=enums.Tags.ATTESTATION_TYPE
             )
-            self._attestation_type.read(local_stream)
+            self._attestation_type.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Attestation credential encoding is missing the attestation "
@@ -965,14 +1036,20 @@ class AttestationCredential(CredentialValue):
             self._attestation_measurement = primitives.ByteString(
                 tag=enums.Tags.ATTESTATION_MEASUREMENT
             )
-            self._attestation_measurement.read(local_stream)
+            self._attestation_measurement.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self._attestation_assertion = None
         if self.is_tag_next(enums.Tags.ATTESTATION_ASSERTION, local_stream):
             self._attestation_assertion = primitives.ByteString(
                 tag=enums.Tags.ATTESTATION_ASSERTION
             )
-            self._attestation_assertion.read(local_stream)
+            self._attestation_assertion.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if ((self._attestation_measurement is None) and
                 (self._attestation_assertion is None)):
@@ -983,7 +1060,7 @@ class AttestationCredential(CredentialValue):
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the AttestationCredential struct to a stream.
 
@@ -991,6 +1068,9 @@ class AttestationCredential(CredentialValue):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if either the nonce or attestation type are
@@ -1000,14 +1080,17 @@ class AttestationCredential(CredentialValue):
         local_stream = BytearrayStream()
 
         if self._nonce:
-            self._nonce.write(local_stream)
+            self._nonce.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Attestation credential struct is missing the nonce."
             )
 
         if self._attestation_type:
-            self._attestation_type.write(local_stream)
+            self._attestation_type.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Attestation credential struct is missing the attestation "
@@ -1015,9 +1098,15 @@ class AttestationCredential(CredentialValue):
             )
 
         if self._attestation_measurement:
-            self._attestation_measurement.write(local_stream)
+            self._attestation_measurement.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._attestation_assertion:
-            self._attestation_assertion.write(local_stream)
+            self._attestation_assertion.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if ((self._attestation_measurement is None) and
                 (self._attestation_assertion is None)):
@@ -1027,7 +1116,10 @@ class AttestationCredential(CredentialValue):
             )
 
         self.length = local_stream.length()
-        super(AttestationCredential, self).write(output_stream)
+        super(AttestationCredential, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -1136,7 +1228,7 @@ class Credential(primitives.Struct):
                 "Credential value must be a CredentialValue struct."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Credential struct and decode it into its
         constituent parts.
@@ -1145,12 +1237,15 @@ class Credential(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if either the credential type or value are
                 missing from the encoding.
         """
-        super(Credential, self).read(input_stream)
+        super(Credential, self).read(input_stream, kmip_version=kmip_version)
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.CREDENTIAL_TYPE, local_stream):
@@ -1158,7 +1253,7 @@ class Credential(primitives.Struct):
                 enum=enums.CredentialType,
                 tag=enums.Tags.CREDENTIAL_TYPE
             )
-            self._credential_type.read(local_stream)
+            self._credential_type.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "Credential encoding missing the credential type."
@@ -1177,7 +1272,10 @@ class Credential(primitives.Struct):
                     "Credential encoding includes unrecognized credential "
                     "type."
                 )
-            self._credential_value.read(local_stream)
+            self._credential_value.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Credential encoding missing the credential value."
@@ -1185,7 +1283,7 @@ class Credential(primitives.Struct):
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the Credential struct to a stream.
 
@@ -1193,6 +1291,9 @@ class Credential(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
         Raises:
             ValueError: Raised if either the credential type or value are not
@@ -1201,21 +1302,30 @@ class Credential(primitives.Struct):
         local_stream = BytearrayStream()
 
         if self._credential_type:
-            self._credential_type.write(local_stream)
+            self._credential_type.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Credential struct missing the credential type."
             )
 
         if self._credential_value:
-            self._credential_value.write(local_stream)
+            self._credential_value.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Credential struct missing the credential value."
             )
 
         self.length = local_stream.length()
-        super(Credential, self).write(output_stream)
+        super(Credential, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -1273,55 +1383,70 @@ class KeyBlock(Struct):
         self.key_wrapping_data = key_wrapping_data
         self.validate()
 
-    def read(self, istream):
-        super(KeyBlock, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(KeyBlock, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.key_format_type = KeyFormatType()
-        self.key_format_type.read(tstream)
+        self.key_format_type.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.KEY_COMPRESSION_TYPE, tstream):
             self.key_compression_type = KeyBlock.KeyCompressionType()
-            self.key_compression_type.read(tstream)
+            self.key_compression_type.read(tstream, kmip_version=kmip_version)
 
         self.key_value = KeyValue()
-        self.key_value.read(tstream)
+        self.key_value.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_ALGORITHM, tstream):
             self.cryptographic_algorithm = attributes.CryptographicAlgorithm()
-            self.cryptographic_algorithm.read(tstream)
+            self.cryptographic_algorithm.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_LENGTH, tstream):
             self.cryptographic_length = attributes.CryptographicLength()
-            self.cryptographic_length.read(tstream)
+            self.cryptographic_length.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.KEY_WRAPPING_DATA, tstream):
             self.key_wrapping_data = KeyWrappingData()
-            self.key_wrapping_data.read(tstream)
+            self.key_wrapping_data.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
-        self.key_format_type.write(tstream)
+        self.key_format_type.write(tstream, kmip_version=kmip_version)
 
         if self.key_compression_type is not None:
-            self.key_compression_type.write(tstream)
+            self.key_compression_type.write(
+                tstream,
+                kmip_version=kmip_version
+            )
 
-        self.key_value.write(tstream)
+        self.key_value.write(tstream, kmip_version=kmip_version)
 
         if self.cryptographic_algorithm is not None:
-            self.cryptographic_algorithm.write(tstream)
+            self.cryptographic_algorithm.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self.cryptographic_length is not None:
-            self.cryptographic_length.write(tstream)
+            self.cryptographic_length.write(
+                tstream,
+                kmip_version=kmip_version
+            )
         if self.key_wrapping_data is not None:
-            self.key_wrapping_data.write(tstream)
+            self.key_wrapping_data.write(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         # Write the length and value of the credential
         self.length = tstream.length()
-        super(KeyBlock, self).write(ostream)
+        super(KeyBlock, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -1359,8 +1484,8 @@ class KeyMaterialStruct(Struct):
 
         self.validate()
 
-    def read(self, istream):
-        super(KeyMaterialStruct, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(KeyMaterialStruct, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.data = BytearrayStream(tstream.read())
@@ -1368,12 +1493,15 @@ class KeyMaterialStruct(Struct):
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
         tstream.write(self.data.buffer)
 
         self.length = tstream.length()
-        super(KeyMaterialStruct, self).write(ostream)
+        super(KeyMaterialStruct, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -1403,36 +1531,36 @@ class KeyValue(Struct):
 
         self.validate()
 
-    def read(self, istream):
-        super(KeyValue, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(KeyValue, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         # TODO (peter-hamilton) Replace this with a KeyMaterial factory.
         if self.is_type_next(Types.STRUCTURE, tstream):
             self.key_material = KeyMaterialStruct()
-            self.key_material.read(tstream)
+            self.key_material.read(tstream, kmip_version=kmip_version)
         else:
             self.key_material = KeyMaterial()
-            self.key_material.read(tstream)
+            self.key_material.read(tstream, kmip_version=kmip_version)
 
         while self.is_tag_next(Tags.ATTRIBUTE, tstream):
             attribute = Attribute()
-            attribute.read(tstream)
+            attribute.read(tstream, kmip_version=kmip_version)
             self.attributes.append(attribute)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
-        self.key_material.write(tstream)
+        self.key_material.write(tstream, kmip_version=kmip_version)
 
         for attribute in self.attributes:
-            attribute.write(tstream)
+            attribute.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(KeyValue, self).write(ostream)
+        super(KeyValue, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -1529,7 +1657,7 @@ class EncryptionKeyInformation(Struct):
                 "struct."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the EncryptionKeyInformation struct and decode
         it into its constituent parts.
@@ -1538,15 +1666,24 @@ class EncryptionKeyInformation(Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(EncryptionKeyInformation, self).read(input_stream)
+        super(EncryptionKeyInformation, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Invalid struct missing the unique identifier attribute."
@@ -1557,11 +1694,14 @@ class EncryptionKeyInformation(Struct):
                 local_stream
         ):
             self._cryptographic_parameters = CryptographicParameters()
-            self._cryptographic_parameters.read(local_stream)
+            self._cryptographic_parameters.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the EncryptionKeyInformation struct to a
         stream.
@@ -1570,21 +1710,33 @@ class EncryptionKeyInformation(Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         local_stream = BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Invalid struct missing the unique identifier attribute."
             )
 
         if self._cryptographic_parameters:
-            self._cryptographic_parameters.write(local_stream)
+            self._cryptographic_parameters.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(EncryptionKeyInformation, self).write(output_stream)
+        super(EncryptionKeyInformation, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -1687,7 +1839,7 @@ class MACSignatureKeyInformation(primitives.Struct):
                 "struct."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the MACSignatureKeyInformation struct and
         decode it into its constituent parts.
@@ -1696,15 +1848,24 @@ class MACSignatureKeyInformation(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(MACSignatureKeyInformation, self).read(input_stream)
+        super(MACSignatureKeyInformation, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(local_stream)
+            self._unique_identifier.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Invalid struct missing the unique identifier attribute."
@@ -1715,11 +1876,14 @@ class MACSignatureKeyInformation(primitives.Struct):
                 local_stream
         ):
             self._cryptographic_parameters = CryptographicParameters()
-            self._cryptographic_parameters.read(local_stream)
+            self._cryptographic_parameters.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the MACSignatureKeyInformation struct to a
         stream.
@@ -1728,21 +1892,33 @@ class MACSignatureKeyInformation(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         local_stream = BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(local_stream)
+            self._unique_identifier.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Invalid struct missing the unique identifier attribute."
             )
 
         if self._cryptographic_parameters:
-            self._cryptographic_parameters.write(local_stream)
+            self._cryptographic_parameters.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(MACSignatureKeyInformation, self).write(output_stream)
+        super(MACSignatureKeyInformation, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -1949,7 +2125,7 @@ class KeyWrappingData(Struct):
                 "Encoding option must be an EncodingOption enumeration."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the KeyWrappingData struct and decode it into
         its constituent parts.
@@ -1958,8 +2134,14 @@ class KeyWrappingData(Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(KeyWrappingData, self).read(input_stream)
+        super(KeyWrappingData, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.WRAPPING_METHOD, local_stream):
@@ -1967,7 +2149,10 @@ class KeyWrappingData(Struct):
                 enum=enums.WrappingMethod,
                 tag=enums.Tags.WRAPPING_METHOD
             )
-            self._wrapping_method.read(local_stream)
+            self._wrapping_method.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Invalid struct missing the wrapping method attribute."
@@ -1978,36 +2163,51 @@ class KeyWrappingData(Struct):
                 local_stream
         ):
             self._encryption_key_information = EncryptionKeyInformation()
-            self._encryption_key_information.read(local_stream)
+            self._encryption_key_information.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(
                 enums.Tags.MAC_SIGNATURE_KEY_INFORMATION,
                 local_stream
         ):
             self._mac_signature_key_information = MACSignatureKeyInformation()
-            self._mac_signature_key_information.read(local_stream)
+            self._mac_signature_key_information.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.MAC_SIGNATURE, local_stream):
             self._mac_signature = primitives.ByteString(
                 tag=enums.Tags.MAC_SIGNATURE
             )
-            self._mac_signature.read(local_stream)
+            self._mac_signature.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.IV_COUNTER_NONCE, local_stream):
             self._iv_counter_nonce = primitives.ByteString(
                 tag=enums.Tags.IV_COUNTER_NONCE
             )
-            self._iv_counter_nonce.read(local_stream)
+            self._iv_counter_nonce.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         if self.is_tag_next(enums.Tags.ENCODING_OPTION, local_stream):
             self._encoding_option = primitives.Enumeration(
                 enum=enums.EncodingOption,
                 tag=enums.Tags.ENCODING_OPTION
             )
-            self._encoding_option.read(local_stream)
+            self._encoding_option.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the KeyWrappingData struct to a stream.
 
@@ -2015,29 +2215,53 @@ class KeyWrappingData(Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         local_stream = BytearrayStream()
 
         if self._wrapping_method:
-            self._wrapping_method.write(local_stream)
+            self._wrapping_method.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Invalid struct missing the wrapping method attribute."
             )
 
         if self._encryption_key_information:
-            self._encryption_key_information.write(local_stream)
+            self._encryption_key_information.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._mac_signature_key_information:
-            self._mac_signature_key_information.write(local_stream)
+            self._mac_signature_key_information.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._mac_signature:
-            self._mac_signature.write(local_stream)
+            self._mac_signature.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._iv_counter_nonce:
-            self._iv_counter_nonce.write(local_stream)
+            self._iv_counter_nonce.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._encoding_option:
-            self._encoding_option.write(local_stream)
+            self._encoding_option.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(KeyWrappingData, self).write(output_stream)
+        super(KeyWrappingData, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -2249,7 +2473,7 @@ class KeyWrappingSpecification(primitives.Struct):
                 "Encoding option must be an EncodingOption enumeration."
             )
 
-    def read(self, input_stream):
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the KeyWrappingSpecification struct and decode
         it into its constituent parts.
@@ -2258,8 +2482,14 @@ class KeyWrappingSpecification(primitives.Struct):
             input_stream (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(KeyWrappingSpecification, self).read(input_stream)
+        super(KeyWrappingSpecification, self).read(
+            input_stream,
+            kmip_version=kmip_version
+        )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.WRAPPING_METHOD, local_stream):
@@ -2267,7 +2497,10 @@ class KeyWrappingSpecification(primitives.Struct):
                 enum=enums.WrappingMethod,
                 tag=enums.Tags.WRAPPING_METHOD
             )
-            self._wrapping_method.read(local_stream)
+            self._wrapping_method.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Invalid struct missing the wrapping method attribute."
@@ -2278,20 +2511,26 @@ class KeyWrappingSpecification(primitives.Struct):
                 local_stream
         ):
             self._encryption_key_information = EncryptionKeyInformation()
-            self._encryption_key_information.read(local_stream)
+            self._encryption_key_information.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self.is_tag_next(
                 enums.Tags.MAC_SIGNATURE_KEY_INFORMATION,
                 local_stream
         ):
             self._mac_signature_key_information = MACSignatureKeyInformation()
-            self._mac_signature_key_information.read(local_stream)
+            self._mac_signature_key_information.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         attribute_names = []
         while self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, local_stream):
             attribute_name = primitives.TextString(
                 tag=enums.Tags.ATTRIBUTE_NAME
             )
-            attribute_name.read(local_stream)
+            attribute_name.read(local_stream, kmip_version=kmip_version)
             attribute_names.append(attribute_name)
         self._attribute_names = attribute_names
 
@@ -2300,11 +2539,14 @@ class KeyWrappingSpecification(primitives.Struct):
                 enum=enums.EncodingOption,
                 tag=enums.Tags.ENCODING_OPTION
             )
-            self._encoding_option.read(local_stream)
+            self._encoding_option.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
-    def write(self, output_stream):
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the KeyWrappingSpecification struct to a
         stream.
@@ -2313,28 +2555,49 @@ class KeyWrappingSpecification(primitives.Struct):
             output_stream (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         local_stream = BytearrayStream()
 
         if self._wrapping_method:
-            self._wrapping_method.write(local_stream)
+            self._wrapping_method.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         else:
             raise ValueError(
                 "Invalid struct missing the wrapping method attribute."
             )
 
         if self._encryption_key_information:
-            self._encryption_key_information.write(local_stream)
+            self._encryption_key_information.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._mac_signature_key_information:
-            self._mac_signature_key_information.write(local_stream)
+            self._mac_signature_key_information.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
         if self._attribute_names:
             for unique_identifier in self._attribute_names:
-                unique_identifier.write(local_stream)
+                unique_identifier.write(
+                    local_stream,
+                    kmip_version=kmip_version
+                )
         if self._encoding_option:
-            self._encoding_option.write(local_stream)
+            self._encoding_option.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
-        super(KeyWrappingSpecification, self).write(output_stream)
+        super(KeyWrappingSpecification, self).write(
+            output_stream,
+            kmip_version=kmip_version
+        )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -2405,8 +2668,11 @@ class TemplateAttribute(Struct):
 
         self.validate()
 
-    def read(self, istream):
-        super(TemplateAttribute, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(TemplateAttribute, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         self.names = list()
@@ -2415,30 +2681,33 @@ class TemplateAttribute(Struct):
         # Read the names of the template attribute, 0 or more
         while self.is_tag_next(Tags.NAME, tstream):
             name = attributes.Name()
-            name.read(tstream)
+            name.read(tstream, kmip_version=kmip_version)
             self.names.append(name)
 
         # Read the attributes of the template attribute, 0 or more
         while self.is_tag_next(Tags.ATTRIBUTE, tstream):
             attribute = Attribute()
-            attribute.read(tstream)
+            attribute.read(tstream, kmip_version=kmip_version)
             self.attributes.append(attribute)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         # Write the names and attributes of the template attribute
         for name in self.names:
-            name.write(tstream)
+            name.write(tstream, kmip_version=kmip_version)
         for attribute in self.attributes:
-            attribute.write(tstream)
+            attribute.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(TemplateAttribute, self).write(ostream)
+        super(TemplateAttribute, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -2612,7 +2881,7 @@ class ExtensionInformation(Struct):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the ExtensionInformation object and decode it
         into its constituent parts.
@@ -2620,41 +2889,53 @@ class ExtensionInformation(Struct):
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(ExtensionInformation, self).read(istream)
+        super(ExtensionInformation, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
-        self.extension_name.read(tstream)
+        self.extension_name.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.EXTENSION_TAG, tstream):
             self.extension_tag = ExtensionTag()
-            self.extension_tag.read(tstream)
+            self.extension_tag.read(tstream, kmip_version=kmip_version)
         if self.is_tag_next(Tags.EXTENSION_TYPE, tstream):
             self.extension_type = ExtensionType()
-            self.extension_type.read(tstream)
+            self.extension_type.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the ExtensionInformation object to a stream.
 
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
 
-        self.extension_name.write(tstream)
+        self.extension_name.write(tstream, kmip_version=kmip_version)
 
         if self.extension_tag is not None:
-            self.extension_tag.write(tstream)
+            self.extension_tag.write(tstream, kmip_version=kmip_version)
         if self.extension_type is not None:
-            self.extension_type.write(tstream)
+            self.extension_type.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(ExtensionInformation, self).write(ostream)
+        super(ExtensionInformation, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -2809,7 +3090,7 @@ class RevocationReason(Struct):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the RevocationReason object and decode it
         into its constituent parts.
@@ -2817,37 +3098,43 @@ class RevocationReason(Struct):
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(RevocationReason, self).read(istream)
+        super(RevocationReason, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.revocation_code = RevocationReasonCode()
-        self.revocation_code.read(tstream)
+        self.revocation_code.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.REVOCATION_MESSAGE, tstream):
             self.revocation_message = TextString()
-            self.revocation_message.read(tstream)
+            self.revocation_message.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the RevocationReason object to a stream.
 
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
 
-        self.revocation_code.write(tstream)
+        self.revocation_code.write(tstream, kmip_version=kmip_version)
         if self.revocation_message is not None:
-            self.revocation_message.write(tstream)
+            self.revocation_message.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value
         self.length = tstream.length()
-        super(RevocationReason, self).write(ostream)
+        super(RevocationReason, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):

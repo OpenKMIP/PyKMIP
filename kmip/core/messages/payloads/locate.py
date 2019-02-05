@@ -56,40 +56,46 @@ class LocateRequestPayload(Struct):
         self.attributes = attributes or []
         self.validate()
 
-    def read(self, istream):
-        super(LocateRequestPayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(LocateRequestPayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
         if self.is_tag_next(Tags.MAXIMUM_ITEMS, tstream):
             self.maximum_items = LocateRequestPayload.MaximumItems()
-            self.maximum_items.read(tstream)
+            self.maximum_items.read(tstream, kmip_version=kmip_version)
         if self.is_tag_next(Tags.STORAGE_STATUS_MASK, tstream):
             self.storage_status_mask = LocateRequestPayload.StorageStatusMask()
-            self.storage_status_mask.read(tstream)
+            self.storage_status_mask.read(tstream, kmip_version=kmip_version)
         if self.is_tag_next(Tags.OBJECT_GROUP_MEMBER, tstream):
             self.object_group_member = LocateRequestPayload.ObjectGroupMember()
-            self.object_group_member.read(tstream)
+            self.object_group_member.read(tstream, kmip_version=kmip_version)
         while self.is_tag_next(Tags.ATTRIBUTE, tstream):
             attr = Attribute()
-            attr.read(tstream)
+            attr.read(tstream, kmip_version=kmip_version)
             self.attributes.append(attr)
 
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
         if self.maximum_items is not None:
-            self.maximum_items.write(tstream)
+            self.maximum_items.write(tstream, kmip_version=kmip_version)
         if self.storage_status_mask is not None:
-            self.storage_status_mask.write(tstream)
+            self.storage_status_mask.write(tstream, kmip_version=kmip_version)
         if self.object_group_member is not None:
-            self.object_group_member.write(tstream)
+            self.object_group_member.write(tstream, kmip_version=kmip_version)
         if self.attributes is not None:
             for a in self.attributes:
-                a.write(tstream)
+                a.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(LocateRequestPayload, self).write(ostream)
+        super(LocateRequestPayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -108,27 +114,33 @@ class LocateResponsePayload(Struct):
         self.unique_identifiers = unique_identifiers or []
         self.validate()
 
-    def read(self, istream):
-        super(LocateResponsePayload, self).read(istream)
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(LocateResponsePayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
         while self.is_tag_next(Tags.UNIQUE_IDENTIFIER, tstream):
             ui = attributes.UniqueIdentifier()
-            ui.read(tstream)
+            ui.read(tstream, kmip_version=kmip_version)
             self.unique_identifiers.append(ui)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         tstream = BytearrayStream()
 
         for ui in self.unique_identifiers:
-            ui.write(tstream)
+            ui.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(LocateResponsePayload, self).write(ostream)
+        super(LocateResponsePayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):

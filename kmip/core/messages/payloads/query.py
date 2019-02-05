@@ -18,7 +18,7 @@ from six.moves import xrange
 from kmip.core.attributes import ApplicationNamespace
 from kmip.core.attributes import ObjectType
 
-from kmip.core.enums import Tags
+from kmip.core import enums
 from kmip.core.messages.contents import Operation
 
 from kmip.core.misc import QueryFunction
@@ -48,7 +48,7 @@ class QueryRequestPayload(Struct):
         Args:
             query_functions (list): A list of QueryFunction enumerations.
         """
-        super(QueryRequestPayload, self).__init__(Tags.REQUEST_PAYLOAD)
+        super(QueryRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
 
         if query_functions is None:
             self.query_functions = list()
@@ -57,7 +57,7 @@ class QueryRequestPayload(Struct):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the QueryRequestPayload object and decode it
         into its constituent parts.
@@ -65,33 +65,45 @@ class QueryRequestPayload(Struct):
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(QueryRequestPayload, self).read(istream)
+        super(QueryRequestPayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
-        while(self.is_tag_next(Tags.QUERY_FUNCTION, tstream)):
+        while(self.is_tag_next(enums.Tags.QUERY_FUNCTION, tstream)):
             query_function = QueryFunction()
-            query_function.read(tstream)
+            query_function.read(tstream, kmip_version=kmip_version)
             self.query_functions.append(query_function)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the QueryRequestPayload object to a stream.
 
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
 
         for query_function in self.query_functions:
-            query_function.write(tstream)
+            query_function.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(QueryRequestPayload, self).write(ostream)
+        super(QueryRequestPayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -155,7 +167,9 @@ class QueryResponsePayload(Struct):
                 objects detailing Objects supported by the server with ItemTag
                 values in the Extensions range.
         """
-        super(QueryResponsePayload, self).__init__(Tags.RESPONSE_PAYLOAD)
+        super(QueryResponsePayload, self).__init__(
+            enums.Tags.RESPONSE_PAYLOAD
+        )
 
         if operations is None:
             self.operations = list()
@@ -182,7 +196,7 @@ class QueryResponsePayload(Struct):
 
         self.validate()
 
-    def read(self, istream):
+    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the QueryResponsePayload object and decode it
         into its constituent parts.
@@ -190,71 +204,89 @@ class QueryResponsePayload(Struct):
         Args:
             istream (Stream): A data stream containing encoded object data,
                 supporting a read method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
         """
-        super(QueryResponsePayload, self).read(istream)
+        super(QueryResponsePayload, self).read(
+            istream,
+            kmip_version=kmip_version
+        )
         tstream = BytearrayStream(istream.read(self.length))
 
-        while(self.is_tag_next(Tags.OPERATION, tstream)):
+        while(self.is_tag_next(enums.Tags.OPERATION, tstream)):
             operation = Operation()
-            operation.read(tstream)
+            operation.read(tstream, kmip_version=kmip_version)
             self.operations.append(operation)
 
-        while(self.is_tag_next(Tags.OBJECT_TYPE, tstream)):
+        while(self.is_tag_next(enums.Tags.OBJECT_TYPE, tstream)):
             object_type = ObjectType()
-            object_type.read(tstream)
+            object_type.read(tstream, kmip_version=kmip_version)
             self.object_types.append(object_type)
 
-        if self.is_tag_next(Tags.VENDOR_IDENTIFICATION, tstream):
+        if self.is_tag_next(enums.Tags.VENDOR_IDENTIFICATION, tstream):
             self.vendor_identification = VendorIdentification()
-            self.vendor_identification.read(tstream)
+            self.vendor_identification.read(
+                tstream,
+                kmip_version=kmip_version
+            )
 
-        if self.is_tag_next(Tags.SERVER_INFORMATION, tstream):
+        if self.is_tag_next(enums.Tags.SERVER_INFORMATION, tstream):
             self.server_information = ServerInformation()
-            self.server_information.read(tstream)
+            self.server_information.read(tstream, kmip_version=kmip_version)
 
-        while(self.is_tag_next(Tags.APPLICATION_NAMESPACE, tstream)):
+        while(self.is_tag_next(enums.Tags.APPLICATION_NAMESPACE, tstream)):
             application_namespace = ApplicationNamespace()
-            application_namespace.read(tstream)
+            application_namespace.read(tstream, kmip_version=kmip_version)
             self.application_namespaces.append(application_namespace)
 
-        while(self.is_tag_next(Tags.EXTENSION_INFORMATION, tstream)):
+        while(self.is_tag_next(enums.Tags.EXTENSION_INFORMATION, tstream)):
             extension_information = ExtensionInformation()
-            extension_information.read(tstream)
+            extension_information.read(tstream, kmip_version=kmip_version)
             self.extension_information.append(extension_information)
 
         self.is_oversized(tstream)
         self.validate()
 
-    def write(self, ostream):
+    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the QueryResponsePayload object to a stream.
 
         Args:
             ostream (Stream): A data stream in which to encode object data,
                 supporting a write method; usually a BytearrayStream object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
         """
         tstream = BytearrayStream()
 
         for operation in self.operations:
-            operation.write(tstream)
+            operation.write(tstream, kmip_version=kmip_version)
 
         for object_type in self.object_types:
-            object_type.write(tstream)
+            object_type.write(tstream, kmip_version=kmip_version)
 
         if self.vendor_identification is not None:
-            self.vendor_identification.write(tstream)
+            self.vendor_identification.write(
+                tstream,
+                kmip_version=kmip_version
+            )
 
         if self.server_information is not None:
-            self.server_information.write(tstream)
+            self.server_information.write(tstream, kmip_version=kmip_version)
 
         for application_namespace in self.application_namespaces:
-            application_namespace.write(tstream)
+            application_namespace.write(tstream, kmip_version=kmip_version)
 
         for extension_information in self.extension_information:
-            extension_information.write(tstream)
+            extension_information.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(QueryResponsePayload, self).write(ostream)
+        super(QueryResponsePayload, self).write(
+            ostream,
+            kmip_version=kmip_version
+        )
         ostream.write(tstream.buffer)
 
     def validate(self):

@@ -116,6 +116,7 @@ class KmipEngine(object):
             contents.ProtocolVersion(1, 0)
         ]
 
+        self.default_protocol_version = self._protocol_versions[2]
         self._protocol_version = self._protocol_versions[2]
 
         self._object_map = {
@@ -308,7 +309,7 @@ class KmipEngine(object):
             response_batch
         )
 
-        return response, max_response_size
+        return response, max_response_size, header.protocol_version
 
     def _build_response(self, version, batch_items):
         header = messages.ResponseHeader(
