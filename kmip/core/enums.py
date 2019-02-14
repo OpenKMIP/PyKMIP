@@ -19,6 +19,13 @@
 import enum
 
 
+class AdjustmentType(enum.Enum):
+    # KMIP 2.0
+    INCREMENT = 0x00000001
+    DECREMENT = 0x00000002
+    NEGATE    = 0x00000003
+
+
 class AlternativeNameType(enum.Enum):
     UNINTERPRETED_TEXT_STRING = 0x00000001
     URI                       = 0x00000002
@@ -27,6 +34,13 @@ class AlternativeNameType(enum.Enum):
     DNS_NAME                  = 0x00000005
     X500_DISTINGUISHED_NAME   = 0x00000006
     IP_ADDRESS                = 0x00000007
+
+
+class AsynchronousIndicator(enum.Enum):
+    # KMIP 2.0
+    MANDATORY  = 0x00000001
+    OPTIONAL   = 0x00000002
+    PROHIBITED = 0x00000003
 
 
 class AttestationType(enum.Enum):
@@ -134,12 +148,12 @@ class CertificateRequestType(enum.Enum):
     CRMF   = 0x00000001
     PKCS10 = 0x00000002
     PEM    = 0x00000003
-    PGP    = 0x00000004  # DEPRECATED
+    PGP    = 0x00000004  # Deprecated, designated '(Reserved)' in KMIP 2.0
 
 
 class CertificateType(enum.Enum):
     X_509 = 0x00000001
-    PGP   = 0x00000002  # Deprecated as of KMIP 1.4
+    PGP   = 0x00000002  # Deprecated in KMIP 1.4, not deprecated in KMIP 2.0
 
 
 class ClientRegistrationMethod(enum.Enum):
@@ -168,6 +182,10 @@ class CredentialType(enum.Enum):
     USERNAME_AND_PASSWORD = 0x00000001
     DEVICE                = 0x00000002
     ATTESTATION           = 0x00000003
+    # KMIP 2.0
+    ONE_TIME_PASSWORD     = 0x00000004
+    HASHED_PASSWORD       = 0x00000005
+    TICKET                = 0x00000006
 
 
 class CryptographicAlgorithm(enum.Enum):
@@ -211,6 +229,23 @@ class CryptographicAlgorithm(enum.Enum):
     HMAC_SHA3_512     = 0x00000026
     SHAKE_128         = 0x00000027
     SHAKE_256         = 0x00000028
+    # KMIP 2.0
+    ARIA              = 0x00000029
+    SEED              = 0x0000002A
+    SM2               = 0x0000002B
+    SM3               = 0x0000002C
+    SM4               = 0x0000002D
+    GOST_R_34_10_2012 = 0x0000002E
+    GOST_R_34_11_2012 = 0x0000002F
+    GOST_R_34_13_2015 = 0x00000030
+    GOST_28147_89     = 0x00000031
+    XMSS              = 0x00000032
+    SPHINCS_256       = 0x00000033
+    MCELIECE          = 0x00000034
+    MCELIECE_6960119  = 0x00000035
+    MCELIECE_8192128  = 0x00000036
+    ED25519           = 0x00000037
+    ED448             = 0x00000038
 
 
 class CryptographicUsageMask(enum.Enum):
@@ -228,23 +263,42 @@ class CryptographicUsageMask(enum.Enum):
     KEY_AGREEMENT       = 0x00000800
     CERTIFICATE_SIGN    = 0x00001000
     CRL_SIGN            = 0x00002000
-    GENERATE_CRYPTOGRAM = 0x00004000
-    VALIDATE_CRYPTOGRAM = 0x00008000
-    TRANSLATE_ENCRYPT   = 0x00010000
-    TRANSLATE_DECRYPT   = 0x00020000
-    TRANSLATE_WRAP      = 0x00040000
-    TRANSLATE_UNWRAP    = 0x00080000
+    GENERATE_CRYPTOGRAM = 0x00004000  # Designated '(Reserved)' in KMIP 2.0
+    VALIDATE_CRYPTOGRAM = 0x00008000  # Designated '(Reserved)' in KMIP 2.0
+    TRANSLATE_ENCRYPT   = 0x00010000  # Designated '(Reserved)' in KMIP 2.0
+    TRANSLATE_DECRYPT   = 0x00020000  # Designated '(Reserved)' in KMIP 2.0
+    TRANSLATE_WRAP      = 0x00040000  # Designated '(Reserved)' in KMIP 2.0
+    TRANSLATE_UNWRAP    = 0x00080000  # Designated '(Reserved)' in KMIP 2.0
+    # KMIP 2.0
+    AUTHENTICATE        = 0x00100000
+    UNRESTRICTED        = 0x00200000
+    FPE_ENCRYPT         = 0x00400000
+    FPE_DECRYPT         = 0x00800000
+
+
+class Data(enum.Enum):
+    # KMIP 2.0
+    DECRYPT             = 0x00000001
+    ENCRYPT             = 0x00000002
+    HASH                = 0x00000003
+    MAC_MAC_DATA        = 0x00000004
+    RNG_RETRIEVE        = 0x00000005
+    SIGN_SIGNATURE_DATA = 0x00000006
+    SIGNATURE_VERIFY    = 0x00000007
 
 
 class DerivationMethod(enum.Enum):
-    PBKDF2          = 0x00000001
-    HASH            = 0x00000002
-    HMAC            = 0x00000003
-    ENCRYPT         = 0x00000004
-    NIST800_108_C   = 0x00000005
-    NIST800_108_F   = 0x00000006
-    NIST800_108_DPI = 0x00000007
-    ASYMMETRIC_KEY  = 0x00000008
+    PBKDF2                  = 0x00000001
+    HASH                    = 0x00000002
+    HMAC                    = 0x00000003
+    ENCRYPT                 = 0x00000004
+    NIST800_108_C           = 0x00000005
+    NIST800_108_F           = 0x00000006
+    NIST800_108_DPI         = 0x00000007
+    ASYMMETRIC_KEY          = 0x00000008
+    # KMIP 2.0
+    AWS_SIGNATURE_VERSION_4 = 0x00000009
+    HKDF                    = 0x0000000A
 
 
 class DestroyAction(enum.Enum):
@@ -292,6 +346,11 @@ class EncodingOption(enum.Enum):
     TTLV_ENCODING = 0x00000002
 
 
+class EndpointRole(enum.Enum):
+    CLIENT = 0x00000001
+    SERVER = 0x00000002
+
+
 class FIPS186Variation(enum.Enum):
     UNSPECIFIED        = 0x00000001
     GP_X_ORIGINAL      = 0x00000002
@@ -322,6 +381,28 @@ class HashingAlgorithm(enum.Enum):
     SHA3_512    = 0x00000011
 
 
+class InteropFunction(enum.Enum):
+    # KMIP 2.0
+    BEGIN = 0x00000001
+    END   = 0x00000002
+    RESET = 0x00000003
+
+
+class ItemType(enum.Enum):
+    # KMIP 2.0
+    STRUCTURE          = 0x00000001
+    INTEGER            = 0x00000002
+    LONG_INTEGER       = 0x00000003
+    BIG_INTEGER        = 0x00000004
+    ENUMERATION        = 0x00000005
+    BOOLEAN            = 0x00000006
+    TEXT_STRING        = 0x00000007
+    BYTE_STRING        = 0x00000008
+    DATE_TIME          = 0x00000009
+    INTERVAL           = 0x0000000A
+    DATE_TIME_EXTENDED = 0x0000000B
+
+
 class KeyCompressionType(enum.Enum):
     EC_PUBLIC_KEY_TYPE_UNCOMPRESSED           = 0x00000001
     EC_PUBLIC_KEY_TYPE_X9_62_COMPRESSED_PRIME = 0x00000002
@@ -343,12 +424,12 @@ class KeyFormatType(enum.Enum):
     TRANSPARENT_RSA_PUBLIC_KEY    = 0x0000000B
     TRANSPARENT_DH_PRIVATE_KEY    = 0x0000000C
     TRANSPARENT_DH_PUBLIC_KEY     = 0x0000000D
-    TRANSPARENT_ECDSA_PRIVATE_KEY = 0x0000000E  # Deprecated as of KMIP 1.4
-    TRANSPARENT_ECDSA_PUBLIC_KEY  = 0x0000000F  # Deprecated as of KMIP 1.4
-    TRANSPARENT_ECDH_PRIVATE_KEY  = 0x00000010  # Deprecated as of KMIP 1.4
-    TRANSPARENT_ECDH_PUBLIC_KEY   = 0x00000011  # Deprecated as of KMIP 1.4
-    TRANSPARENT_ECMQV_PRIVATE_KEY = 0x00000012  # Deprecated as of KMIP 1.4
-    TRANSPARENT_ECMQV_PUBLIC_KEY  = 0x00000013  # Deprecated as of KMIP 1.4
+    TRANSPARENT_ECDSA_PRIVATE_KEY = 0x0000000E  # Deprecated in KMIP 1.4, designated '(Reserved)' in KMIP 2.0
+    TRANSPARENT_ECDSA_PUBLIC_KEY  = 0x0000000F  # Deprecated in KMIP 1.4, designated '(Reserved)' in KMIP 2.0
+    TRANSPARENT_ECDH_PRIVATE_KEY  = 0x00000010  # Deprecated in KMIP 1.4, designated '(Reserved)' in KMIP 2.0
+    TRANSPARENT_ECDH_PUBLIC_KEY   = 0x00000011  # Deprecated in KMIP 1.4, designated '(Reserved)' in KMIP 2.0
+    TRANSPARENT_ECMQV_PRIVATE_KEY = 0x00000012  # Deprecated in KMIP 1.4, designated '(Reserved)' in KMIP 2.0
+    TRANSPARENT_ECMQV_PUBLIC_KEY  = 0x00000013  # Deprecated in KMIP 1.4, designated '(Reserved)' in KMIP 2.0
     TRANSPARENT_EC_PRIVATE_KEY    = 0x00000014
     TRANSPARENT_EC_PUBLIC_KEY     = 0x00000015
     PKCS_12                       = 0x00000016
@@ -413,6 +494,8 @@ class LinkType(enum.Enum):
     NEXT_LINK                   = 0x0000010B
     PKCS12_CERTIFICATE_LINK     = 0x0000010C
     PKCS12_PASSWORD_LINK        = 0x0000010D
+    # KMIP 2.0
+    WRAPPING_KEY_LINK           = 0x0000010E
 
 
 class MaskGenerator(enum.Enum):
@@ -424,21 +507,46 @@ class NameType(enum.Enum):
     URI                       = 0x00000002
 
 
+class NISTKeyType(enum.Enum):
+    # KMIP 2.0
+    PRIVATE_SIGNATURE_KEY                  = 0x00000001
+    PUBLIC_SIGNATURE_VERIFICATION_KEY      = 0x00000002
+    SYMMETRIC_AUTHENTICATION_KEY           = 0x00000003
+    PRIVATE_AUTHENTICATION_KEY             = 0x00000004
+    PUBLIC_AUTHENTICATION_KEY              = 0x00000005
+    SYMMETRIC_DATA_ENCRYPTION_KEY          = 0x00000006
+    SYMMETRIC_KEY_WRAPPING_KEY             = 0x00000007
+    SYMMETRIC_RANDOM_NUMBER_GENERATION_KEY = 0x00000008
+    SYMMETRIC_MASTER_KEY                   = 0x00000009
+    PRIVATE_KEY_TRANSPORT_KEY              = 0x0000000A
+    PUBLIC_KEY_TRANSPORT_KEY               = 0x0000000B
+    SYMMETRIC_KEY_AGREEMENT_KEY            = 0x0000000C
+    PRIVATE_STATIC_KEY_AGREEMENT_KEY       = 0x0000000D
+    PUBLIC_STATIC_KEY_AGREEMENT_KEY        = 0x0000000E
+    PRIVATE_EPHEMERAL_KEY_AGREEMENT_KEY    = 0x0000000F
+    PUBLIC_EPHEMERAL_KEY_AGREEMENT_KEY     = 0x00000010
+    SYMMETRIC_AUTHORIZATION_KEY            = 0x00000011
+    PRIVATE_AUTHORIZATION_KEY              = 0x00000012
+    PUBLIC_AUTHORIZATION_KEY               = 0x00000013
+
+
 class ObjectGroupMember(enum.Enum):
     GROUP_MEMBER_FRESH   = 0x00000001
     GROUP_MEMBER_DEFAULT = 0x00000002
 
 
 class ObjectType(enum.Enum):
-    CERTIFICATE   = 0x00000001
-    SYMMETRIC_KEY = 0x00000002
-    PUBLIC_KEY    = 0x00000003
-    PRIVATE_KEY   = 0x00000004
-    SPLIT_KEY     = 0x00000005
-    TEMPLATE      = 0x00000006  # Deprecated as of KMIP 1.3
-    SECRET_DATA   = 0x00000007
-    OPAQUE_DATA   = 0x00000008
-    PGP_KEY       = 0x00000009
+    CERTIFICATE         = 0x00000001
+    SYMMETRIC_KEY       = 0x00000002
+    PUBLIC_KEY          = 0x00000003
+    PRIVATE_KEY         = 0x00000004
+    SPLIT_KEY           = 0x00000005
+    TEMPLATE            = 0x00000006  # Deprecated in KMIP 1.3, designated '(Reserved)' in KMIP 2.0
+    SECRET_DATA         = 0x00000007
+    OPAQUE_DATA         = 0x00000008
+    PGP_KEY             = 0x00000009
+    # KMIP 2.0
+    CERTIFICATE_REQUEST = 0x0000000A
 
 
 class OpaqueDataType(enum.Enum):
@@ -491,6 +599,17 @@ class Operation(enum.Enum):
     JOIN_SPLIT_KEY       = 0x00000029
     IMPORT               = 0x0000002A
     EXPORT               = 0x0000002B
+    # KMIP 2.0
+    LOG                  = 0x0000002C
+    LOGIN                = 0x0000002D
+    LOGOUT               = 0x0000002E
+    DELEGATED_LOGIN      = 0x0000002F
+    ADJUST_ATTRIBUTE     = 0x00000030
+    SET_ATTRIBUTE        = 0x00000031
+    SET_ENDPOINT_ROLE    = 0x00000032
+    PKCS_11              = 0x00000033
+    INTEROP              = 0x00000034
+    REPROVISION          = 0x00000035
 
 
 class PaddingMethod(enum.Enum):
@@ -504,6 +623,31 @@ class PaddingMethod(enum.Enum):
     PKCS1v15  = 0x00000008
     X931      = 0x00000009
     PSS       = 0x0000000A
+
+
+class PKCS11Function(enum.Enum):
+    # KMIP 2.0
+    #
+    # These values are the 1-based offset count of the function in the
+    # CK_FUNCTION_LIST_3_0 structure as specified in the OASIS PKCS#11
+    # Cryptographic Token Interface Base Specification Version 3.0 document.
+    #
+    # The above document is not currently available, so this set of
+    # enumerations is intentionally left empty as a placeholder. It should
+    # be filled in in a future update.
+    PLACEHOLDER = 'Do not use this.'
+
+
+class PKCS11ReturnCode(enum.Enum):
+    # KMIP 2.0
+    #
+    # These values are specified in the CK_RV values in the OASIS PKCS#11
+    # Cryptographic Token Interface Base Specification Version 3.0 document.
+    #
+    # The above document is not currently available, so this set of
+    # enumerations is intentionally left empty as a placeholder. It should
+    # be filled in in a future update.
+    PLACEHOLDER = 'Do not use this.'
 
 
 class Policy(enum.Enum):
@@ -669,6 +813,72 @@ class ProfileName(enum.Enum):
     JSON_SERVER_KMIPv14                                     = 0x0000009A
     XML_CLIENT_KMIPv14                                      = 0x0000009B
     XML_SERVER_KMIPv14                                      = 0x0000009C
+    # KMIP 2.0 - All of the above are now designated '(Reserved)' in KMIP 2.0
+    COMPLETE_SERVER_BASIC                                   = 0x00000104
+    COMPLETE_SERVER_TLSv12                                  = 0x00000105
+    TAPE_LIBRARY_CLIENT                                     = 0x00000106
+    TAPE_LIBRARY_SERVER                                     = 0x00000107
+    SYMMETRIC_KEY_LIFECYCLE_CLIENT                          = 0x00000108
+    SYMMETRIC_KEY_LIFECYCLE_SERVER                          = 0x00000109
+    ASYMMETRIC_KEY_LIFECYCLE_CLIENT                         = 0x0000010A
+    ASYMMETRIC_KEY_LIFECYCLE_SERVER                         = 0x0000010B
+    BASIC_CRYPTOGRAPHIC_CLIENT                              = 0x0000010C
+    BASIC_CRYPTOGRAPHIC_SERVER                              = 0x0000010D
+    ADVANCED_CRYPTOGRAPHIC_CLIENT                           = 0x0000010E
+    ADVANCED_CRYPTOGRAPHIC_SERVER                           = 0x0000010F
+    RNG_CRYPTOGRAPHIC_CLIENT                                = 0x00000110
+    RNG_CRYPTOGRAPHIC_SERVER                                = 0x00000111
+    BASIC_SYMMETRIC_KEY_FOUNDRY_CLIENT                      = 0x00000112
+    INTERMEDIATE_SYMMETRIC_KEY_FOUNDRY_CLIENT               = 0x00000113
+    ADVANCED_SYMMETRIC_KEY_FOUNDRY_CLIENT                   = 0x00000114
+    SYMMETRIC_KEY_FOUNDRY_SERVER                            = 0x00000115
+    OPAQUE_MANAGED_OBJECT_STORE_CLIENT                      = 0x00000116
+    OPAQUE_MANAGED_OBJECT_STORE_SERVER                      = 0x00000117
+    SUITE_B_MINLOS_128_CLIENT                               = 0x00000118
+    SUITE_B_MINLOS_128_SERVER                               = 0x00000119
+    SUITE_B_MINLOS_192_CLIENT                               = 0x0000011A
+    SUITE_B_MINLOS_192_SERVER                               = 0x0000011B
+    STORAGE_ARRAY_WITH_SELF_ENCRYPTING_DRIVE_CLIENT         = 0x0000011C
+    STORAGE_ARRAY_WITH_SELF_ENCRYPTING_DRIVE_SERVER         = 0x0000011D
+    HTTPS_CLIENT                                            = 0x0000011E
+    HTTPS_SERVER                                            = 0x0000011F
+    JSON_CLIENT                                             = 0x00000120
+    JSON_SERVER                                             = 0x00000121
+    XML_CLIENT                                              = 0x00000122
+    XML_SERVER                                              = 0x00000123
+    AES_XTS_CLIENT                                          = 0x00000124
+    AES_XTS_SERVER                                          = 0x00000125
+    QUANTUM_SAFE_CLIENT                                     = 0x00000126
+    QUANTUM_SAFE_SERVER                                     = 0x00000127
+    PKCS11_CLIENT                                           = 0x00000128
+    PKCS11_SERVER                                           = 0x00000129
+    BASELINE_CLIENT                                         = 0x0000012A
+    BASELINE_SERVER                                         = 0x0000012B
+    COMPLETE_SERVER                                         = 0x0000012C
+
+
+class ProtectionLevel(enum.Enum):
+    # KMIP 2.0
+    HIGH = 0x00000001
+    LOW  = 0x00000002
+
+
+class ProtectionStorageMask(enum.Enum):
+    # KMIP 2.0
+    SOFTWARE          = 0x00000001
+    HARDWARE          = 0x00000002
+    ON_PROCESSOR      = 0x00000004
+    ON_SYSTEM         = 0x00000008
+    OFF_SYSTEM        = 0x00000010
+    HYPERVISOR        = 0x00000020
+    OPERATING_SYSTEM  = 0x00000040
+    CONTAINER         = 0x00000080
+    ON_PREMISES       = 0x00000100
+    OFF_PREMISES      = 0x00000200
+    SELF_MANAGED      = 0x00000400
+    OUTSOURCED        = 0x00000800
+    VALIDATED         = 0x00001000
+    SAME_JURISDICTION = 0x00002000
 
 
 class PutFunction(enum.Enum):
@@ -689,6 +899,9 @@ class QueryFunction(enum.Enum):
     QUERY_PROFILES                    = 0x0000000A
     QUERY_CAPABILITIES                = 0x0000000B
     QUERY_CLIENT_REGISTRATION_METHODS = 0x0000000C
+    # KMIP 2.0
+    QUERY_DEFAULTS_INFORMATION        = 0x0000000D
+    QUERY_STORAGE_PROTECTION_MASKS    = 0x0000000E
 
 
 class RecommendedCurve(enum.Enum):
@@ -760,34 +973,85 @@ class RecommendedCurve(enum.Enum):
     BRAINPOOLP384T1  = 0x00000042
     BRAINPOOLP512R1  = 0x00000043
     BRAINPOOLP512T1  = 0x00000044
+    # KMIP 2.0
+    CURVE25519       = 0x00000045
+    CURVE448         = 0x00000046
 
 
 class ResultReason(enum.Enum):
-    ITEM_NOT_FOUND                      = 0x00000001
-    RESPONSE_TOO_LARGE                  = 0x00000002
-    AUTHENTICATION_NOT_SUCCESSFUL       = 0x00000003
-    INVALID_MESSAGE                     = 0x00000004
-    OPERATION_NOT_SUPPORTED             = 0x00000005
-    MISSING_DATA                        = 0x00000006
-    INVALID_FIELD                       = 0x00000007
-    FEATURE_NOT_SUPPORTED               = 0x00000008
-    OPERATION_CANCELED_BY_REQUESTER     = 0x00000009
-    CRYPTOGRAPHIC_FAILURE               = 0x0000000A
-    ILLEGAL_OPERATION                   = 0x0000000B
-    PERMISSION_DENIED                   = 0x0000000C
-    OBJECT_ARCHIVED                     = 0x0000000D
-    INDEX_OUT_OF_BOUNDS                 = 0x0000000E
-    APPLICATION_NAMESPACE_NOT_SUPPORTED = 0x0000000F
-    KEY_FORMAT_TYPE_NOT_SUPPORTED       = 0x00000010
-    KEY_COMPRESSION_TYPE_NOT_SUPPORTED  = 0x00000011
-    ENCODING_OPTION_ERROR               = 0x00000012
-    KEY_VALUE_NOT_PRESENT               = 0x00000013
-    ATTESTATION_REQUIRED                = 0x00000014
-    ATTESTATION_FAILED                  = 0x00000015
-    SENSITIVE                           = 0x00000016
-    NOT_EXTRACTABLE                     = 0x00000017
-    OBJECT_ALREADY_EXISTS               = 0x00000018
-    GENERAL_FAILURE                     = 0x00000100
+    ITEM_NOT_FOUND                         = 0x00000001
+    RESPONSE_TOO_LARGE                     = 0x00000002
+    AUTHENTICATION_NOT_SUCCESSFUL          = 0x00000003
+    INVALID_MESSAGE                        = 0x00000004
+    OPERATION_NOT_SUPPORTED                = 0x00000005
+    MISSING_DATA                           = 0x00000006
+    INVALID_FIELD                          = 0x00000007
+    FEATURE_NOT_SUPPORTED                  = 0x00000008
+    OPERATION_CANCELED_BY_REQUESTER        = 0x00000009
+    CRYPTOGRAPHIC_FAILURE                  = 0x0000000A
+    ILLEGAL_OPERATION                      = 0x0000000B
+    PERMISSION_DENIED                      = 0x0000000C
+    OBJECT_ARCHIVED                        = 0x0000000D
+    INDEX_OUT_OF_BOUNDS                    = 0x0000000E
+    APPLICATION_NAMESPACE_NOT_SUPPORTED    = 0x0000000F
+    KEY_FORMAT_TYPE_NOT_SUPPORTED          = 0x00000010
+    KEY_COMPRESSION_TYPE_NOT_SUPPORTED     = 0x00000011
+    ENCODING_OPTION_ERROR                  = 0x00000012
+    KEY_VALUE_NOT_PRESENT                  = 0x00000013
+    ATTESTATION_REQUIRED                   = 0x00000014
+    ATTESTATION_FAILED                     = 0x00000015
+    SENSITIVE                              = 0x00000016
+    NOT_EXTRACTABLE                        = 0x00000017
+    OBJECT_ALREADY_EXISTS                  = 0x00000018
+    GENERAL_FAILURE                        = 0x00000100
+    # KMIP 2.0
+    INVALID_TICKET                         = 0x00000019
+    USAGE_LIMIT_EXCEEDED                   = 0x0000001A
+    NUMERIC_RANGE                          = 0x0000001B
+    INVALID_DATA_TYPE                      = 0x0000001C
+    READ_ONLY_ATTRIBUTE                    = 0x0000001D
+    MULTI_VALUED_ATTRIBUTE                 = 0x0000001E
+    UNSUPPORTED_ATTRIBUTE                  = 0x0000001F
+    ATTRIBUTE_INSTANCE_NOT_FOUND           = 0x00000020
+    ATTRIBUTE_NOT_FOUND                    = 0x00000021
+    ATTRIBUTE_READ_ONLY                    = 0x00000022
+    ATTRIBUTE_SINGLE_VALUED                = 0x00000023
+    BAD_CRYPTOGRAPHIC_PARAMETERS           = 0x00000024
+    BAD_PASSWORD                           = 0x00000025
+    CODEC_ERROR                            = 0x00000026
+                                           # 0x00000027 is designated '(Reserved)' in KMIP 2.0
+    ILLEGAL_OBJECT_TYPE                    = 0x00000028
+    INCOMPATIBLE_CRYPTOGRAPHIC_USAGE_MASK  = 0x00000029
+    INTERNAL_SERVER_ERROR                  = 0x0000002A
+    INVALID_ASYNCHRONOUS_CORRELATION_VALUE = 0x0000002B
+    INVALID_ATTRIBUTE                      = 0x0000002C
+    INVALID_ATTRIBUTE_VALUE                = 0x0000002D
+    INVALID_CORRELATION_VALUE              = 0x0000002E
+    INVALID_CSR                            = 0x0000002F
+    INVALID_OBJECT_TYPE                    = 0x00000030
+                                           # 0x00000031 is designated '(Reserved)' in KMIP 2.0
+    KEY_WRAP_TYPE_NOT_SUPPORTED            = 0x00000032
+                                           # 0x00000033 is designated '(Reserved)' in KMIP 2.0
+    MISSING_INITIALIZATION_VECTOR          = 0x00000034
+    NON_UNIQUE_NAME_ATTRIBUTE              = 0x00000035
+    OBJECT_DESTROYED                       = 0x00000036
+    OBJECT_NOT_FOUND                       = 0x00000037
+                                           # 0x00000038 is unassigned
+    NOT_AUTHORISED                         = 0x00000039
+    SERVER_LIMIT_EXCEEDED                  = 0x0000003A
+    UNKNOWN_ENUMERATION                    = 0x0000003B
+    UNKNOWN_MESSAGE_EXTENSION              = 0x0000003C
+    UNKNOWN_TAG                            = 0x0000003D
+    UNSUPPORTED_CRYPTOGRAPHIC_PARAMETERS   = 0x0000003E
+    UNSUPPORTED_PROTOCOL_VERSION           = 0x0000003F
+    WRAPPING_OBJECT_ARCHIVED               = 0x00000040
+    WRAPPING_OBJECT_DESTROYED              = 0x00000041
+    WRAPPING_OBJECT_NOT_FOUND              = 0x00000042
+    WRONG_KEY_LIFECYCLE_STATE              = 0x00000043
+    PROTECTION_STORAGE_UNAVAILABLE         = 0x00000044
+    PKCS11_CODEC_ERROR                     = 0x00000045
+    PKCS11_INVALID_FUNCTION                = 0x00000046
+    PKCS11_INVALID_INTERFACE               = 0x00000047
 
 
 class ResultStatus(enum.Enum):
@@ -849,9 +1113,11 @@ class State(enum.Enum):
     DESTROYED_COMPROMISED = 0x00000006
 
 
-class StorageStatus(enum.Enum):
-    ONLINE_STORAGE   = 0x00000001
-    ARCHIVAL_STORAGE = 0x00000002
+class StorageStatusMask(enum.Enum):
+    ONLINE_STORAGE    = 0x00000001
+    ARCHIVAL_STORAGE  = 0x00000002
+    # KMIP 2.0
+    DESTROYED_STORAGE = 0x00000004
 
 
 class Tags(enum.Enum):
@@ -864,7 +1130,7 @@ class Tags(enum.Enum):
     ASYNCHRONOUS_CORRELATION_VALUE           = 0x420006
     ASYNCHRONOUS_INDICATOR                   = 0x420007
     ATTRIBUTE                                = 0x420008
-    ATTRIBUTE_INDEX                          = 0x420009
+    ATTRIBUTE_INDEX                          = 0x420009  # Designated '(Reserved)' in KMIP 2.0
     ATTRIBUTE_NAME                           = 0x42000A
     ATTRIBUTE_VALUE                          = 0x42000B
     AUTHENTICATION                           = 0x42000C
@@ -875,18 +1141,18 @@ class Tags(enum.Enum):
     BLOCK_CIPHER_MODE                        = 0x420011
     CANCELLATION_RESULT                      = 0x420012
     CERTIFICATE                              = 0x420013
-    CERTIFICATE_IDENTIFIER                   = 0x420014  # DEPRECATED
-    CERTIFICATE_ISSUER                       = 0x420015  # DEPRECATED
-    CERTIFICATE_ISSUER_ALTERNATIVE_NAME      = 0x420016  # DEPRECATED
-    CERTIFICATE_ISSUER_DISTINGUISHED_NAME    = 0x420017  # DEPRECATED
+    CERTIFICATE_IDENTIFIER                   = 0x420014  # Deprecated, designated '(Reserved)' in KMIP 2.0
+    CERTIFICATE_ISSUER                       = 0x420015  # Deprecated, designated '(Reserved)' in KMIP 2.0
+    CERTIFICATE_ISSUER_ALTERNATIVE_NAME      = 0x420016  # Deprecated, designated '(Reserved)' in KMIP 2.0
+    CERTIFICATE_ISSUER_DISTINGUISHED_NAME    = 0x420017  # Deprecated, designated '(Reserved)' in KMIP 2.0
     CERTIFICATE_REQUEST                      = 0x420018
     CERTIFICATE_REQUEST_TYPE                 = 0x420019
-    CERTIFICATE_SUBJECT                      = 0x42001A  # DEPRECATED
-    CERTIFICATE_SUBJECT_ALTERNATIVE_NAME     = 0x42001B  # DEPRECATED
-    CERTIFICATE_SUBJECT_DISTINGUISHED_NAME   = 0x42001C  # DEPRECATED
+    CERTIFICATE_SUBJECT                      = 0x42001A  # Deprecated, designated '(Reserved)' in KMIP 2.0
+    CERTIFICATE_SUBJECT_ALTERNATIVE_NAME     = 0x42001B  # Deprecated, designated '(Reserved)' in KMIP 2.0
+    CERTIFICATE_SUBJECT_DISTINGUISHED_NAME   = 0x42001C  # Deprecated, designated '(Reserved)' in KMIP 2.0
     CERTIFICATE_TYPE                         = 0x42001D
     CERTIFICATE_VALUE                        = 0x42001E
-    COMMON_TEMPLATE_ATTRIBUTE                = 0x42001F
+    COMMON_TEMPLATE_ATTRIBUTE                = 0x42001F  # Designated '(Reserved)' in KMIP 2.0
     COMPROMISE_DATE                          = 0x420020
     COMPROMISE_OCCURRENCE_DATE               = 0x420021
     CONTACT_INFORMATION                      = 0x420022
@@ -900,7 +1166,7 @@ class Tags(enum.Enum):
     CRYPTOGRAPHIC_LENGTH                     = 0x42002A
     CRYPTOGRAPHIC_PARAMETERS                 = 0x42002B
     CRYPTOGRAPHIC_USAGE_MASK                 = 0x42002C
-    CUSTOM_ATTRIBUTE                         = 0x42002D
+    CUSTOM_ATTRIBUTE                         = 0x42002D  # Designated '(Reserved)' in KMIP 2.0
     D                                        = 0x42002E
     DEACTIVATION_DATE                        = 0x42002F
     DERIVATION_DATA                          = 0x420030
@@ -914,7 +1180,7 @@ class Tags(enum.Enum):
     HASHING_ALGORITHM                        = 0x420038
     INITIAL_DATE                             = 0x420039
     INITIALIZATION_VECTOR                    = 0x42003A
-    ISSUER                                   = 0x42003B  # DEPRECATED
+    ISSUER                                   = 0x42003B  # Deprecated, designated '(Reserved)' in KMIP 2.0
     ITERATION_COUNT                          = 0x42003C
     IV_COUNTER_NONCE                         = 0x42003D
     J                                        = 0x42003E
@@ -948,7 +1214,7 @@ class Tags(enum.Enum):
     OPAQUE_DATA_VALUE                        = 0x42005A
     OPAQUE_OBJECT                            = 0x42005B
     OPERATION                                = 0x42005C
-    OPERATION_POLICY_NAME                    = 0x42005D
+    OPERATION_POLICY_NAME                    = 0x42005D  # Designated '(Reserved)' in KMIP 2.0
     P                                        = 0x42005E
     PADDING_METHOD                           = 0x42005F
     PRIME_EXPONENT_P                         = 0x420060
@@ -956,7 +1222,7 @@ class Tags(enum.Enum):
     PRIME_FIELD_SIZE                         = 0x420062
     PRIVATE_EXPONENT                         = 0x420063
     PRIVATE_KEY                              = 0x420064
-    PRIVATE_KEY_TEMPLATE_ATTRIBUTE           = 0x420065
+    PRIVATE_KEY_TEMPLATE_ATTRIBUTE           = 0x420065  # Designated '(Reserved)' in KMIP 2.0
     PRIVATE_KEY_UNIQUE_IDENTIFIER            = 0x420066
     PROCESS_START_DATE                       = 0x420067
     PROTECT_STOP_DATE                        = 0x420068
@@ -965,7 +1231,7 @@ class Tags(enum.Enum):
     PROTOCOL_VERSION_MINOR                   = 0x42006B
     PUBLIC_EXPONENT                          = 0x42006C
     PUBLIC_KEY                               = 0x42006D
-    PUBLIC_KEY_TEMPLATE_ATTRIBUTE            = 0x42006E
+    PUBLIC_KEY_TEMPLATE_ATTRIBUTE            = 0x42006E  # Designated '(Reserved)' in KMIP 2.0
     PUBLIC_KEY_UNIQUE_IDENTIFIER             = 0x42006F
     PUT_FUNCTION                             = 0x420070
     Q                                        = 0x420071
@@ -992,7 +1258,7 @@ class Tags(enum.Enum):
     SALT                                     = 0x420084
     SECRET_DATA                              = 0x420085
     SECRET_DATA_TYPE                         = 0x420086
-    SERIAL_NUMBER                            = 0x420087  # DEPRECATED
+    SERIAL_NUMBER                            = 0x420087  # Deprecated, designated '(Reserved)' in KMIP 2.0
     SERVER_INFORMATION                       = 0x420088
     SPLIT_KEY                                = 0x420089
     SPLIT_KEY_METHOD                         = 0x42008A
@@ -1001,8 +1267,8 @@ class Tags(enum.Enum):
     STATE                                    = 0x42008D
     STORAGE_STATUS_MASK                      = 0x42008E
     SYMMETRIC_KEY                            = 0x42008F
-    TEMPLATE                                 = 0x420090
-    TEMPLATE_ATTRIBUTE                       = 0x420091
+    TEMPLATE                                 = 0x420090  # Designated '(Reserved)' in KMIP 2.0
+    TEMPLATE_ATTRIBUTE                       = 0x420091  # Designated '(Reserved)' in KMIP 2.0
     TIME_STAMP                               = 0x420092
     UNIQUE_BATCH_ITEM_ID                     = 0x420093
     UNIQUE_IDENTIFIER                        = 0x420094
@@ -1150,6 +1416,74 @@ class Tags(enum.Enum):
     EXTRACTABLE                              = 0x420122
     NEVER_EXTRACTABLE                        = 0x420123
     REPLACE_EXISTING                         = 0x420124
+    # KMIP 2.0
+    ATTRIBUTES                               = 0x420125
+    COMMON_ATTRIBUTES                        = 0x420126
+    PRIVATE_KEY_ATTRIBUTES                   = 0x420127
+    PUBLIC_KEY_ATTRIBUTES                    = 0x420128
+    EXTENSION_ENUMERATION                    = 0x420129
+    EXTENSION_ATTRIBUTE                      = 0x42012A
+    EXTENSION_PARENT_STRUCTURE_TAG           = 0x42012B
+    EXTENSION_DESCRIPTION                    = 0x42012C
+    SERVER_NAME                              = 0x42012D
+    SERVER_SERIAL_NUMBER                     = 0x42012E
+    SERVER_VERSION                           = 0x42012F
+    SERVER_LOAD                              = 0x420130
+    PRODUCT_NAME                             = 0x420131
+    BUILD_LEVEL                              = 0x420132
+    BUILD_DATE                               = 0x420133
+    CLUSTER_INFO                             = 0x420134
+    ALTERNATE_FAILOVER_ENDPOINTS             = 0x420135
+    SHORT_UNIQUE_IDENTIFIER                  = 0x420136
+    RESERVED                                 = 0x420137
+    TAG                                      = 0x420138
+    CERTIFICATE_REQUEST_UNIQUE_IDENTIFIER    = 0x420139
+    NIST_KEY_TYPE                            = 0x42013A
+    ATTRIBUTE_REFERENCE                      = 0x42013B
+    CURRENT_ATTRIBUTE                        = 0x42013C
+    NEW_ATTRIBUTE                            = 0x42013D
+                                             # 0x42013E is designated '(Reserved)' in KMIP 2.0
+                                             # 0x42013F is designated '(Reserved)' in KMIP 2.0
+    CERTIFICATE_REQUEST_VALUE                = 0x420140
+    LOG_MESSAGE                              = 0x420141
+    PROFILE_VERSION                          = 0x420142
+    PROFILE_VERSION_MAJOR                    = 0x420143
+    PROFILE_VERSION_MINOR                    = 0x420144
+    PROTECTION_LEVEL                         = 0x420145
+    PROTECTION_PERIOD                        = 0x420146
+    QUANTUM_SAFE                             = 0x420147
+    QUANTUM_SAFE_CAPABILITY                  = 0x420148
+    TICKET                                   = 0x420149
+    TICKET_TYPE                              = 0x42014A
+    TICKET_VALUE                             = 0x42014B
+    REQUEST_COUNT                            = 0x42014C
+    RIGHTS                                   = 0x42014D
+    OBJECTS                                  = 0x42014E
+    OPERATIONS                               = 0x42014F
+    RIGHT                                    = 0x420150
+    ENDPOINT_ROLE                            = 0x420151
+    DEFAULTS_INFORMATION                     = 0x420152
+    OBJECT_DEFAULTS                          = 0x420153
+    EPHEMERAL                                = 0x420154
+    SERVER_HASHED_PASSWORD                   = 0x420155
+    ONE_TIME_PASSWORD                        = 0x420156
+    HASHED_PASSWORD                          = 0x420157
+    ADJUSTMENT_TYPE                          = 0x420158
+    PKCS11_INTERFACE                         = 0x420159
+    PKCS11_FUNCTION                          = 0x42015A
+    PKCS11_INPUT_PARAMETERS                  = 0x42015B
+    PKCS11_OUTPUT_PARAMETERS                 = 0x42015C
+    PKCS11_RETURN_CODE                       = 0x42015D
+    PROTECTION_STORAGE_MASK                  = 0x42015E
+    PROTECTION_STORAGE_MASKS                 = 0x42015F
+    INTEROP_FUNCTION                         = 0x420160
+    INTEROP_IDENTIFIER                       = 0x420161
+    ADJUSTMENT_VALUE                         = 0x420162
+
+
+class TicketType(enum.Enum):
+    # KMIP 2.0
+    LOGIN = 0x00000001
 
 
 class Types(enum.Enum):
@@ -1164,6 +1498,27 @@ class Types(enum.Enum):
     BYTE_STRING  = 0x08
     DATE_TIME    = 0x09
     INTERVAL     = 0x0A
+
+
+class UniqueIdentifier(enum.Enum):
+    # KMIP 2.0
+    ID_PLACEHOLDER              = 0x00000001
+    CERTIFY                     = 0x00000002
+    CREATE                      = 0x00000003
+    CREATE_KEY_PAIR             = 0x00000004
+    CREATE_KEY_PAIR_PRIVATE_KEY = 0x00000005
+    CREATE_KEY_PAIR_PUBLIC_KEY  = 0x00000006
+    CREATE_SPLIT_KEY            = 0x00000007
+    DERIVE_KEY                  = 0x00000008
+    IMPORT                      = 0x00000009
+    JOIN_SPLIT_KEY              = 0x0000000A
+    LOCATE                      = 0x0000000B
+    REGISTER                    = 0x0000000C
+    REKEY                       = 0x0000000D
+    RECERTIFY                   = 0x0000000E
+    REKEY_KEY_PAIR              = 0x0000000F
+    REKEY_KEY_PAIR_PRIVATE_KEY  = 0x00000010
+    REKEY_KEY_PAIR_PUBLIC_KEY   = 0x00000011
 
 
 class UnwrapMode(enum.Enum):
