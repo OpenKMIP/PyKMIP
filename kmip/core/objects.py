@@ -16,6 +16,7 @@
 import abc
 import six
 from six.moves import xrange
+import struct
 
 from kmip.core import attributes
 from kmip.core.attributes import CryptographicParameters
@@ -170,6 +171,183 @@ class Attribute(Struct):
     def __ne__(self, other):
         if isinstance(other, Attribute):
             return not self.__eq__(other)
+        else:
+            return NotImplemented
+
+
+class Attributes(primitives.Struct):
+    """
+    A collection of KMIP attributes.
+
+    This is intended for use with KMIP 2.0+ and replaces the old
+    TemplateAttribute-style used for older KMIP versions.
+
+    Attributes:
+        attributes: A list of attribute objects.
+        tag: A Tags enumeration specifying what type of Attributes structure
+            is in use. Valid values include:
+                * Tags.ATTRIBUTES
+                * Tags.COMMON_ATTRIBUTES
+                * Tags.PRIVATE_KEY_ATTRIBUTES
+                * Tags.PUBLIC_KEY_ATTRIBUTES
+    """
+
+    def __init__(self, attributes=None, tag=enums.Tags.ATTRIBUTES):
+        """
+        Construct an Attributes structure.
+
+        Args:
+            attributes (list): A list of attribute objects. Each object must
+                be some form of primitive, derived from Base. Optional,
+                defaults to None which is interpreted as an empty list.
+            tag (enum): A Tags enumeration specifying what type of Attributes
+                structure is in use. Valid values include:
+                    * Tags.ATTRIBUTES
+                    * Tags.COMMON_ATTRIBUTES
+                    * Tags.PRIVATE_KEY_ATTRIBUTES
+                    * Tags.PUBLIC_KEY_ATTRIBUTES
+                Optional, defaults to Tags.ATTRIBUTES.
+        """
+        super(Attributes, self).__init__(tag=tag)
+
+        self._factory = AttributeValueFactory()
+
+        self._attributes = []
+        self.attributes = attributes
+
+    @property
+    def attributes(self):
+        return self._attributes
+
+    @attributes.setter
+    def attributes(self, value):
+        if (value is None) or (value == []):
+            self._attributes = []
+        elif isinstance(value, list):
+            for i, attribute in enumerate(value):
+                if isinstance(attribute, primitives.Base):
+                    if not enums.is_attribute(attribute.tag):
+                        raise TypeError(
+                            "Item {} must be a supported attribute.".format(
+                                i + 1
+                            )
+                        )
+                else:
+                    raise TypeError(
+                        "Item {} must be a Base object, not a {}.".format(
+                            i + 1,
+                            type(attribute)
+                        )
+                    )
+            self._attributes = value
+        else:
+            raise TypeError("Attributes must be a list of Base objects.")
+
+    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Read the data stream and decode the Attributes structure into its
+        parts.
+
+        Args:
+            input_stream (stream): A data stream containing encoded object
+                data, supporting a read method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            AttributeNotSupported: Raised if an unsupported attribute is
+                encountered while decoding.
+        """
+        super(Attributes, self).read(input_stream, kmip_version=kmip_version)
+        local_stream = BytearrayStream(input_stream.read(self.length))
+
+        while True:
+            if len(local_stream) < 3:
+                break
+            tag = struct.unpack('!I', b'\x00' + local_stream.peek(3))[0]
+            if enums.is_enum_value(enums.Tags, tag):
+                tag = enums.Tags(tag)
+                if not enums.is_attribute(tag, kmip_version=kmip_version):
+                    raise exceptions.AttributeNotSupported(
+                        "Attribute {} is not supported by KMIP {}.".format(
+                            tag.name,
+                            kmip_version.value
+                        )
+                    )
+                value = self._factory.create_attribute_value_by_enum(tag, None)
+                value.read(local_stream, kmip_version=kmip_version)
+                self._attributes.append(value)
+            else:
+                break
+
+        self.is_oversized(local_stream)
+
+    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Write the Attributes structure encoding to the data stream.
+
+        Args:
+            output_stream (stream): A data stream in which to encode
+                Attributes structure data, supporting a write method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            AttributeNotSupported: Raised if an unsupported attribute is
+                found in the attribute list while encoding.
+        """
+        local_stream = BytearrayStream()
+
+        for attribute in self._attributes:
+            tag = attribute.tag
+            if not enums.is_attribute(tag, kmip_version=kmip_version):
+                raise exceptions.AttributeNotSupported(
+                    "Attribute {} is not supported by KMIP {}.".format(
+                        tag.name,
+                        kmip_version.value
+                    )
+                )
+            attribute.write(local_stream, kmip_version=kmip_version)
+
+        self.length = local_stream.length()
+        super(Attributes, self).write(output_stream, kmip_version=kmip_version)
+        output_stream.write(local_stream.buffer)
+
+    def __repr__(self):
+        values = ", ".join([repr(x) for x in self.attributes])
+        return "Attributes(attributes=[{}], tag={})".format(
+            values,
+            self.tag
+        )
+
+    def __str__(self):
+        values = ", ".join([str(x) for x in self.attributes])
+        value = '"attributes": [{}]'.format(values)
+        return '{' + value + '}'
+
+    def __eq__(self, other):
+        if not isinstance(other, Attributes):
+            return NotImplemented
+
+        if len(self.attributes) != len(other.attributes):
+            return False
+
+        # TODO (ph) Allow order independence?
+
+        for i in six.moves.range(len(self.attributes)):
+            a = self.attributes[i]
+            b = other.attributes[i]
+
+            if a != b:
+                return False
+
+        return True
+
+    def __ne__(self, other):
+        if isinstance(other, Attributes):
+            return not (self == other)
         else:
             return NotImplemented
 

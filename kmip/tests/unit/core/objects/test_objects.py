@@ -26,6 +26,8 @@ from kmip.core.enums import KeyRoleType
 from kmip.core.enums import PaddingMethod
 from kmip.core.enums import Tags
 
+from kmip.core import exceptions
+
 from kmip.core.factories.attributes import AttributeValueFactory
 
 from kmip.core import objects
@@ -34,6 +36,8 @@ from kmip.core.objects import ExtensionName
 from kmip.core.objects import ExtensionTag
 from kmip.core.objects import ExtensionType
 from kmip.core.objects import KeyMaterialStruct
+
+from kmip.core import primitives
 
 from kmip.core import utils
 from kmip.core.utils import BytearrayStream
@@ -130,6 +134,609 @@ class TestAttributeClass(TestCase):
 
     def test_not_equal_on_not_equal(self):
         self.assertTrue(self.attributeObj_a != self.attributeObj_b)
+
+
+class TestAttributes(TestCase):
+
+    def setUp(self):
+        super(TestAttributes, self).setUp()
+
+        # This encoding matches the following set of values:
+        # Attributes
+        #     Cryptographic Algorithm - AES
+        #     Cryptographic Length - 128
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x01\x25\x01\x00\x00\x00\x20'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+        )
+
+        self.empty_encoding = utils.BytearrayStream(
+            b'\x42\x01\x25\x01\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        # Attributes
+        #     Cryptographic Algorithm - AES
+        #     Non-existent Tag
+        self.invalid_encoding = utils.BytearrayStream(
+            b'\x42\x01\x25\x01\x00\x00\x00\x20'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\xFF\xFF\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        # Attributes
+        #     Operation Policy Name - b4faee10-aa2a-4446-8ad4-0881f3422959
+        self.unsupported_encoding = utils.BytearrayStream(
+            b'\x42\x01\x25\x01\x00\x00\x00\x30'
+            b'\x42\x00\x5D\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30'
+            b'\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D'
+            b'\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        # Private Key Attributes
+        #     Cryptographic Algorithm - AES
+        #     Cryptographic Length - 128
+        self.alt_encoding = utils.BytearrayStream(
+            b'\x42\x01\x27\x01\x00\x00\x00\x20'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestAttributes, self).tearDown()
+
+    def test_unrecognized_attributes(self):
+        """
+        Test that a TypeError is raised when an unrecognized attribute is
+        included in the attribute list. Note that this unrecognized attribute
+        is a valid PyKMIP object derived from Base, it just isn't an attribute.
+        """
+        kwargs = {
+            'attributes': [
+                primitives.Enumeration(
+                    enums.WrappingMethod,
+                    enums.WrappingMethod.ENCRYPT,
+                    enums.Tags.WRAPPING_METHOD
+                )
+            ]
+        }
+        self.assertRaisesRegex(
+            TypeError,
+            "Item 1 must be a supported attribute.",
+            objects.Attributes,
+            **kwargs
+        )
+
+        attrs = objects.Attributes()
+        args = (
+            attrs,
+            'attributes',
+            [
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                ),
+                primitives.Enumeration(
+                    enums.WrappingMethod,
+                    enums.WrappingMethod.ENCRYPT,
+                    enums.Tags.WRAPPING_METHOD
+                )
+            ]
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "Item 2 must be a supported attribute.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_attributes(self):
+        """
+        Test that a TypeError is raised when an invalid value is included
+        in the attribute list. Note that the value is not a valid PyKMIP
+        object derived from Base and therefore cannot be an attribute.
+        """
+        kwargs = {
+            'attributes': [0]
+        }
+        self.assertRaisesRegex(
+            TypeError,
+            "Item 1 must be a Base object, not a {}.".format(type(0)),
+            objects.Attributes,
+            **kwargs
+        )
+
+        attrs = objects.Attributes()
+        args = (
+            attrs,
+            'attributes',
+            [
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                ),
+                primitives.Enumeration(
+                    enums.KeyFormatType,
+                    enums.KeyFormatType.RAW,
+                    enums.Tags.KEY_FORMAT_TYPE
+                ),
+                1
+            ]
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "Item 3 must be a Base object, not a {}.".format(type(0)),
+            setattr,
+            *args
+        )
+
+    def test_invalid_attributes_list(self):
+        """
+        Test that a TypeError is raised when an invalid attribute list is
+        used with the Attributes structure.
+        """
+        kwargs = {
+            'attributes': 'invalid'
+        }
+        self.assertRaisesRegex(
+            TypeError,
+            "Attributes must be a list of Base objects.",
+            objects.Attributes,
+            **kwargs
+        )
+
+        attrs = objects.Attributes()
+        args = (
+            attrs,
+            'attributes',
+            'invalid'
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "Attributes must be a list of Base objects.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that an Attributes structure can be correctly read in from a data
+        stream.
+        """
+        attrs = objects.Attributes()
+
+        self.assertEqual([], attrs.attributes)
+
+        attrs.read(self.full_encoding)
+
+        self.assertEqual(2, len(attrs.attributes))
+
+        attr_1 = attrs.attributes[0]
+        self.assertIsInstance(attr_1, primitives.Enumeration)
+        self.assertEqual(enums.CryptographicAlgorithm.AES, attr_1.value)
+
+        attr_2 = attrs.attributes[1]
+        self.assertIsInstance(attr_2, primitives.Integer)
+        self.assertEqual(128, attr_2.value)
+
+    def test_read_no_attributes(self):
+        """
+        Test that an empty Attributes structure can be correctly read in from
+        a data stream.
+        """
+        attrs = objects.Attributes()
+
+        self.assertEqual([], attrs.attributes)
+
+        attrs.read(self.empty_encoding)
+
+        self.assertEqual([], attrs.attributes)
+
+    def test_read_invalid_attribute(self):
+        """
+        Test that an unrecognized tag is correctly handled when reading in an
+        Attributes structure from a data stream. Specifically, structure
+        parsing should stop and an error should be raised indicating that more
+        encoding data is available but could not be parsed.
+        """
+        attrs = objects.Attributes()
+
+        self.assertEqual([], attrs.attributes)
+
+        args = (self.invalid_encoding, )
+        self.assertRaisesRegex(
+            exceptions.StreamNotEmptyError,
+            "Invalid length used to read Base, bytes remaining: 16",
+            attrs.read,
+            *args
+        )
+
+    def test_read_unsupported_attribute(self):
+        """
+        Test that an AttributeNotSupported error is raised when an unsupported
+        attribute is parsed while reading in an Attributes structure from a
+        data stream. This can occur when an older attribute is no longer
+        supported by a newer version of KMIP, or vice versa.
+        """
+        attrs = objects.Attributes()
+
+        self.assertEqual([], attrs.attributes)
+
+        args = (self.unsupported_encoding, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
+        self.assertRaisesRegex(
+            exceptions.AttributeNotSupported,
+            "Attribute OPERATION_POLICY_NAME is not supported by KMIP 2.0.",
+            attrs.read,
+            *args,
+            **kwargs
+        )
+
+    def test_read_alternative_tag(self):
+        """
+        Test that an Attributes structure can be correctly read in from a data
+        stream with an alternative tag. This can occur if a variant of the
+        Attributes structure is being used, like the Common Attributes, Public
+        Key Attributes, or Private Key Attributes structures.
+        """
+        attrs = objects.Attributes(tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES)
+
+        self.assertEqual([], attrs.attributes)
+
+        attrs.read(self.alt_encoding)
+
+        self.assertEqual(2, len(attrs.attributes))
+
+        attr_1 = attrs.attributes[0]
+        self.assertIsInstance(attr_1, primitives.Enumeration)
+        self.assertEqual(enums.CryptographicAlgorithm.AES, attr_1.value)
+
+        attr_2 = attrs.attributes[1]
+        self.assertIsInstance(attr_2, primitives.Integer)
+        self.assertEqual(128, attr_2.value)
+
+    def test_write(self):
+        """
+        Test that an Attributes structure can be correctly written to a data
+        stream.
+        """
+        attrs = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+
+        stream = utils.BytearrayStream()
+        attrs.write(stream)
+
+        self.assertEqual(len(self.full_encoding), len(stream))
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_write_no_attributes(self):
+        """
+        Test that an empty Attributes structure can be correctly written to
+        a data stream.
+        """
+        attrs = objects.Attributes()
+
+        stream = utils.BytearrayStream()
+        attrs.write(stream)
+
+        self.assertEqual(len(self.empty_encoding), len(stream))
+        self.assertEqual(str(self.empty_encoding), str(stream))
+
+    def test_write_unsupported_attribute(self):
+        """
+        Test that an AttributeNotSupported error is raised when an unsupported
+        attribute is found while writing an Attributes structure to a data
+        stream. This can occur when an older attribute is no longer supported
+        by a newer version of KMIP, or vice versa.
+        """
+        attrs = objects.Attributes(attributes=[
+            primitives.TextString(
+                "default",
+                tag=enums.Tags.OPERATION_POLICY_NAME
+            )
+        ])
+
+        stream = utils.BytearrayStream()
+        args = (stream, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
+        self.assertRaisesRegex(
+            exceptions.AttributeNotSupported,
+            "Attribute OPERATION_POLICY_NAME is not supported by KMIP 2.0.",
+            attrs.write,
+            *args,
+            **kwargs
+        )
+
+    def test_write_alternative_tag(self):
+        """
+        Test that an Attributes structure can be correctly written to a data
+        stream with an alternative tag. This can occur if a variant of the
+        Attributes structure is being used, like the Common Attributes, Public
+        Key Attributes, or Private Key Attributes structures.
+        """
+        attrs = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                ),
+                primitives.Integer(
+                    128,
+                    enums.Tags.CRYPTOGRAPHIC_LENGTH
+                )
+            ],
+            tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES
+        )
+
+        stream = utils.BytearrayStream()
+        attrs.write(stream)
+
+        self.assertEqual(len(self.alt_encoding), len(stream))
+        self.assertEqual(str(self.alt_encoding), str(stream))
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to an Attributes structure.
+        """
+        attrs = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+        self.assertEqual(
+            "Attributes(attributes=["
+            "Enumeration("
+            "enum=CryptographicAlgorithm, "
+            "value=CryptographicAlgorithm.AES, "
+            "tag=Tags.CRYPTOGRAPHIC_ALGORITHM), "
+            "Integer(value=128)], "
+            "tag=Tags.ATTRIBUTES)",
+            repr(attrs)
+        )
+
+    def test_repr_alternative_tag(self):
+        """
+        Test that repr can be applied to an Attribute structure with an
+        alternative tag. This can occur if a variant of the Attributes
+        structure is being used, like the Common Attributes, Public Key
+        Attributes, or Private Key Attributes structure.
+        """
+        attrs = objects.Attributes(tag=enums.Tags.COMMON_ATTRIBUTES)
+        self.assertEqual(
+            "Attributes(attributes=[], tag=Tags.COMMON_ATTRIBUTES)",
+            repr(attrs)
+        )
+
+    def test_str(self):
+        """
+        Test that str can be applied to an Attributes structure.
+        """
+        attrs = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+        self.assertEqual(
+            '{"attributes": [CryptographicAlgorithm.AES, 128]}',
+            str(attrs)
+        )
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        identical Attributes structures.
+        """
+        a = objects.Attributes()
+        b = objects.Attributes()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+        b = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_attributes(self):
+        """
+        Test that the equality operator returns False when comparing two
+        Attributes structures with different attributes lists.
+        """
+        a = objects.Attributes()
+        b = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+        a = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+        b = objects.Attributes(attributes=[
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            ),
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            )
+        ])
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing an
+        Attributes structure with another type.
+        """
+        a = objects.Attributes()
+        b = 'invalid'
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        identical Attributes structures.
+        """
+        a = objects.Attributes()
+        b = objects.Attributes()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+        b = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_attributes(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Attributes structures with different attributes lists.
+        """
+        a = objects.Attributes()
+        b = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+        a = objects.Attributes(attributes=[
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        ])
+        b = objects.Attributes(attributes=[
+            primitives.Integer(
+                128,
+                enums.Tags.CRYPTOGRAPHIC_LENGTH
+            ),
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            )
+        ])
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing an
+        Attributes structure with another type.
+        """
+        a = objects.Attributes()
+        b = 'invalid'
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
 
 
 class TestKeyMaterialStruct(TestCase):
