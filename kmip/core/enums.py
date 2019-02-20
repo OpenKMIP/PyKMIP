@@ -16,6 +16,7 @@
 # In case of new content, remove the following line to enable flake8 tests
 # flake8: noqa
 
+import copy
 import enum
 
 
@@ -473,11 +474,12 @@ class KeyWrapType(enum.Enum):
 
 
 class KMIPVersion(enum.Enum):
-    KMIP_1_0 = "KMIP 1.0"
-    KMIP_1_1 = "KMIP 1.1"
-    KMIP_1_2 = "KMIP 1.2"
-    KMIP_1_3 = "KMIP 1.3"
-    KMIP_1_4 = "KMIP 1.4"
+    KMIP_1_0 = 1.0
+    KMIP_1_1 = 1.1
+    KMIP_1_2 = 1.2
+    KMIP_1_3 = 1.3
+    KMIP_1_4 = 1.4
+    KMIP_2_0 = 2.0
 
 
 class LinkType(enum.Enum):
@@ -1304,7 +1306,7 @@ class Tags(enum.Enum):
     ISSUER_DISTINGUISHED_NAME                = 0x4200B2
     SUBJECT_ALTERNATIVE_NAME                 = 0x4200B3
     SUBJECT_DISTINGUISHED_NAME               = 0x4200B4
-    X_509_CERTIFICATE_IDENTIFER              = 0x4200B5
+    X_509_CERTIFICATE_IDENTIFIER             = 0x4200B5
     X_509_CERTIFICATE_ISSUER                 = 0x4200B6
     X_509_CERTIFICATE_SUBJECT                = 0x4200B7
     KEY_VALUE_LOCATION                       = 0x4200B8
@@ -1558,3 +1560,168 @@ class WrappingMethod(enum.Enum):
     ENCRYPT_THEN_MAC_SIGN = 0x00000003
     MAC_SIGN_THEN_ENCRYPT = 0x00000004
     TR_31                 = 0x00000005
+
+
+def is_enum_value(enum_class, potential_value):
+    """
+    A utility function that checks if the enumeration class contains the
+    provided value.
+
+    Args:
+        enum_class (class): One of the enumeration classes found in this file.
+        potential_value (int, string): A potential value of the enumeration
+            class.
+
+    Returns:
+        True: if the potential value is a valid value of the enumeration class
+        False: otherwise
+    """
+    try:
+        enum_class(potential_value)
+    except ValueError:
+        return False
+
+    return True
+
+
+def is_attribute(tag, kmip_version=None):
+    """
+    A utility function that checks if the tag is a valid attribute tag.
+
+    Args:
+        tag (enum): A Tags enumeration that may or may not correspond to a
+            KMIP attribute type.
+        kmip_version (enum): The KMIPVersion enumeration that should be used
+            when checking if the tag is a valid attribute tag. Optional,
+            defaults to None. If None, the tag is compared with all possible
+            attribute tags across all KMIP versions. Otherwise, only the
+            attribute tags for a specific KMIP version are checked.
+
+    Returns:
+        True: if the tag is a valid attribute tag
+        False: otherwise
+    """
+    kmip_1_0_attribute_tags = [
+        Tags.UNIQUE_IDENTIFIER,
+        Tags.NAME,
+        Tags.OBJECT_TYPE,
+        Tags.CRYPTOGRAPHIC_ALGORITHM,
+        Tags.CRYPTOGRAPHIC_LENGTH,
+        Tags.CRYPTOGRAPHIC_PARAMETERS,
+        Tags.CRYPTOGRAPHIC_DOMAIN_PARAMETERS,
+        Tags.CERTIFICATE_TYPE,
+        Tags.CERTIFICATE_IDENTIFIER,
+        Tags.CERTIFICATE_SUBJECT,
+        Tags.CERTIFICATE_ISSUER,
+        Tags.DIGEST,
+        Tags.OPERATION_POLICY_NAME,
+        Tags.CRYPTOGRAPHIC_USAGE_MASK,
+        Tags.LEASE_TIME,
+        Tags.USAGE_LIMITS,
+        Tags.STATE,
+        Tags.INITIAL_DATE,
+        Tags.ACTIVATION_DATE,
+        Tags.PROCESS_START_DATE,
+        Tags.PROTECT_STOP_DATE,
+        Tags.DEACTIVATION_DATE,
+        Tags.DESTROY_DATE,
+        Tags.COMPROMISE_OCCURRENCE_DATE,
+        Tags.COMPROMISE_DATE,
+        Tags.REVOCATION_REASON,
+        Tags.ARCHIVE_DATE,
+        Tags.OBJECT_GROUP,
+        Tags.LINK,
+        Tags.APPLICATION_SPECIFIC_INFORMATION,
+        Tags.CONTACT_INFORMATION,
+        Tags.LAST_CHANGE_DATE,
+        Tags.CUSTOM_ATTRIBUTE
+    ]
+    kmip_1_1_attribute_tags = copy.deepcopy(kmip_1_0_attribute_tags) + [
+        Tags.CERTIFICATE_LENGTH,
+        Tags.X_509_CERTIFICATE_IDENTIFIER,
+        Tags.X_509_CERTIFICATE_SUBJECT,
+        Tags.X_509_CERTIFICATE_ISSUER,
+        Tags.DIGITAL_SIGNATURE_ALGORITHM,
+        Tags.FRESH
+    ]
+    kmip_1_2_attribute_tags = copy.deepcopy(kmip_1_1_attribute_tags) + [
+        Tags.ALTERNATIVE_NAME,
+        Tags.KEY_VALUE_PRESENT,
+        Tags.KEY_VALUE_LOCATION,
+        Tags.ORIGINAL_CREATION_DATE
+    ]
+    kmip_1_3_attribute_tags = copy.deepcopy(kmip_1_2_attribute_tags) + [
+        Tags.RANDOM_NUMBER_GENERATOR
+    ]
+    kmip_1_4_attribute_tags = copy.deepcopy(kmip_1_3_attribute_tags) + [
+        Tags.PKCS12_FRIENDLY_NAME,
+        Tags.DESCRIPTION,
+        Tags.COMMENT,
+        Tags.SENSITIVE,
+        Tags.ALWAYS_SENSITIVE,
+        Tags.EXTRACTABLE,
+        Tags.NEVER_EXTRACTABLE
+    ]
+    kmip_2_0_attribute_tags = copy.deepcopy(kmip_1_4_attribute_tags) + [
+        Tags.CERTIFICATE_SUBJECT_CN,
+        Tags.CERTIFICATE_SUBJECT_O,
+        Tags.CERTIFICATE_SUBJECT_OU,
+        Tags.CERTIFICATE_SUBJECT_EMAIL,
+        Tags.CERTIFICATE_SUBJECT_C,
+        Tags.CERTIFICATE_SUBJECT_ST,
+        Tags.CERTIFICATE_SUBJECT_L,
+        Tags.CERTIFICATE_SUBJECT_UID,
+        Tags.CERTIFICATE_SUBJECT_SERIAL_NUMBER,
+        Tags.CERTIFICATE_SUBJECT_TITLE,
+        Tags.CERTIFICATE_SUBJECT_DC,
+        Tags.CERTIFICATE_SUBJECT_DN_QUALIFIER,
+        Tags.CERTIFICATE_ISSUER_CN,
+        Tags.CERTIFICATE_ISSUER_O,
+        Tags.CERTIFICATE_ISSUER_OU,
+        Tags.CERTIFICATE_ISSUER_EMAIL,
+        Tags.CERTIFICATE_ISSUER_C,
+        Tags.CERTIFICATE_ISSUER_ST,
+        Tags.CERTIFICATE_ISSUER_L,
+        Tags.CERTIFICATE_ISSUER_UID,
+        Tags.CERTIFICATE_ISSUER_SERIAL_NUMBER,
+        Tags.CERTIFICATE_ISSUER_TITLE,
+        Tags.CERTIFICATE_ISSUER_DC,
+        Tags.CERTIFICATE_ISSUER_DN_QUALIFIER,
+        Tags.KEY_FORMAT_TYPE,
+        Tags.NIST_KEY_TYPE,
+        Tags.OPAQUE_DATA_TYPE,
+        Tags.PROTECTION_LEVEL,
+        Tags.PROTECTION_PERIOD,
+        Tags.PROTECTION_STORAGE_MASK,
+        Tags.QUANTUM_SAFE,
+        Tags.SHORT_UNIQUE_IDENTIFIER,
+        Tags.ATTRIBUTE
+    ]
+    kmip_2_0_attribute_tags.remove(Tags.CERTIFICATE_IDENTIFIER)
+    kmip_2_0_attribute_tags.remove(Tags.CERTIFICATE_SUBJECT)
+    kmip_2_0_attribute_tags.remove(Tags.CERTIFICATE_ISSUER)
+    kmip_2_0_attribute_tags.remove(Tags.OPERATION_POLICY_NAME)
+    kmip_2_0_attribute_tags.remove(Tags.CUSTOM_ATTRIBUTE)
+
+    if kmip_version == KMIPVersion.KMIP_1_0:
+        return tag in kmip_1_0_attribute_tags
+    elif kmip_version == KMIPVersion.KMIP_1_1:
+        return tag in kmip_1_1_attribute_tags
+    elif kmip_version == KMIPVersion.KMIP_1_2:
+        return tag in kmip_1_2_attribute_tags
+    elif kmip_version == KMIPVersion.KMIP_1_3:
+        return tag in kmip_1_3_attribute_tags
+    elif kmip_version == KMIPVersion.KMIP_1_4:
+        return tag in kmip_1_4_attribute_tags
+    elif kmip_version == KMIPVersion.KMIP_2_0:
+        return tag in kmip_2_0_attribute_tags
+    else:
+        all_attribute_tags = set(
+            kmip_1_0_attribute_tags +
+            kmip_1_1_attribute_tags +
+            kmip_1_2_attribute_tags +
+            kmip_1_3_attribute_tags +
+            kmip_1_4_attribute_tags +
+            kmip_2_0_attribute_tags
+        )
+        return tag in all_attribute_tags

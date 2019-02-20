@@ -110,6 +110,90 @@ class AttributeValueFactory(object):
                 # Custom attribute indicated
                 return attributes.CustomAttribute(value)
 
+    def create_attribute_value_by_enum(self, enum, value):
+        # Switch on the name of the attribute
+        if enum is enums.Tags.UNIQUE_IDENTIFIER:
+            return attributes.UniqueIdentifier(value)
+        elif enum is enums.Tags.NAME:
+            return self._create_name(value)
+        elif enum is enums.Tags.OBJECT_TYPE:
+            return attributes.ObjectType(value)
+        elif enum is enums.Tags.CRYPTOGRAPHIC_ALGORITHM:
+            return attributes.CryptographicAlgorithm(value)
+        elif enum is enums.Tags.CRYPTOGRAPHIC_LENGTH:
+            return self._create_cryptographic_length(value)
+        elif enum is enums.Tags.CRYPTOGRAPHIC_PARAMETERS:
+            return self._create_cryptographic_parameters(value)
+        elif enum is enums.Tags.CRYPTOGRAPHIC_DOMAIN_PARAMETERS:
+            raise NotImplementedError()
+        elif enum is enums.Tags.CERTIFICATE_TYPE:
+            raise NotImplementedError()
+        elif enum is enums.Tags.CERTIFICATE_LENGTH:
+            return primitives.Integer(value, enums.Tags.CERTIFICATE_LENGTH)
+        elif enum is enums.Tags.X_509_CERTIFICATE_IDENTIFIER:
+            raise NotImplementedError()
+        elif enum is enums.Tags.X_509_CERTIFICATE_SUBJECT:
+            raise NotImplementedError()
+        elif enum is enums.Tags.X_509_CERTIFICATE_ISSUER:
+            raise NotImplementedError()
+        elif enum is enums.Tags.CERTIFICATE_IDENTIFIER:
+            raise NotImplementedError()
+        elif enum is enums.Tags.CERTIFICATE_SUBJECT:
+            raise NotImplementedError()
+        elif enum is enums.Tags.CERTIFICATE_ISSUER:
+            raise NotImplementedError()
+        elif enum is enums.Tags.DIGITAL_SIGNATURE_ALGORITHM:
+            raise NotImplementedError()
+        elif enum is enums.Tags.DIGEST:
+            return attributes.Digest()
+        elif enum is enums.Tags.OPERATION_POLICY_NAME:
+            return attributes.OperationPolicyName(value)
+        elif enum is enums.Tags.CRYPTOGRAPHIC_USAGE_MASK:
+            return self._create_cryptographic_usage_mask(value)
+        elif enum is enums.Tags.LEASE_TIME:
+            return primitives.Interval(value, enums.Tags.LEASE_TIME)
+        elif enum is enums.Tags.USAGE_LIMITS:
+            raise NotImplementedError()
+        elif enum is enums.Tags.STATE:
+            return attributes.State(value)
+        elif enum is enums.Tags.INITIAL_DATE:
+            return primitives.DateTime(value, enums.Tags.INITIAL_DATE)
+        elif enum is enums.Tags.ACTIVATION_DATE:
+            return primitives.DateTime(value, enums.Tags.ACTIVATION_DATE)
+        elif enum is enums.Tags.PROCESS_START_DATE:
+            return primitives.DateTime(value, enums.Tags.PROCESS_START_DATE)
+        elif enum is enums.Tags.PROTECT_STOP_DATE:
+            return primitives.DateTime(value, enums.Tags.PROTECT_STOP_DATE)
+        elif enum is enums.Tags.DEACTIVATION_DATE:
+            return primitives.DateTime(value, enums.Tags.DEACTIVATION_DATE)
+        elif enum is enums.Tags.DESTROY_DATE:
+            return primitives.DateTime(value, enums.Tags.DESTROY_DATE)
+        elif enum is enums.Tags.COMPROMISE_OCCURRENCE_DATE:
+            return primitives.DateTime(
+                value, enums.Tags.COMPROMISE_OCCURRENCE_DATE)
+        elif enum is enums.Tags.COMPROMISE_DATE:
+            return primitives.DateTime(value, enums.Tags.COMPROMISE_DATE)
+        elif enum is enums.Tags.REVOCATION_REASON:
+            raise NotImplementedError()
+        elif enum is enums.Tags.ARCHIVE_DATE:
+            return primitives.DateTime(value, enums.Tags.ARCHIVE_DATE)
+        elif enum is enums.Tags.OBJECT_GROUP:
+            return self._create_object_group(value)
+        elif enum is enums.Tags.FRESH:
+            return primitives.Boolean(value, enums.Tags.FRESH)
+        elif enum is enums.Tags.LINK:
+            raise NotImplementedError()
+        elif enum is enums.Tags.APPLICATION_SPECIFIC_INFORMATION:
+            return self._create_application_specific_information(value)
+        elif enum is enums.Tags.CONTACT_INFORMATION:
+            return self._create_contact_information(value)
+        elif enum is enums.Tags.LAST_CHANGE_DATE:
+            return primitives.DateTime(value, enums.Tags.LAST_CHANGE_DATE)
+        elif enum is enums.Tags.CUSTOM_ATTRIBUTE:
+            return attributes.CustomAttribute(value)
+        else:
+            raise ValueError("Unrecognized attribute type: {}".format(enum))
+
     def _create_name(self, name):
         if name is not None:
             if isinstance(name, attributes.Name):

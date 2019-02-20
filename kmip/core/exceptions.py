@@ -264,6 +264,13 @@ class PermissionDenied(KmipError):
         )
 
 
+class AttributeNotSupported(Exception):
+    """
+    An error generated when an unsupported attribute is processed.
+    """
+    pass
+
+
 class ConfigurationError(Exception):
     """
     An error generated when a problem occurs with a client or server
