@@ -258,7 +258,16 @@ class Attributes(primitives.Struct):
         Raises:
             AttributeNotSupported: Raised if an unsupported attribute is
                 encountered while decoding.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the Attributes object.
         """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the Attributes object.".format(
+                    kmip_version.value
+                )
+            )
+
         super(Attributes, self).read(input_stream, kmip_version=kmip_version)
         local_stream = BytearrayStream(input_stream.read(self.length))
 
@@ -297,7 +306,16 @@ class Attributes(primitives.Struct):
         Raises:
             AttributeNotSupported: Raised if an unsupported attribute is
                 found in the attribute list while encoding.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the Attributes object.
         """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the Attributes object.".format(
+                    kmip_version.value
+                )
+            )
+
         local_stream = BytearrayStream()
 
         for attribute in self._attributes:

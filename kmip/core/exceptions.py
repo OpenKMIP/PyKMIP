@@ -324,6 +324,12 @@ class ShutdownError(Exception):
     """
 
 
+class VersionNotSupported(Exception):
+    """
+    An error generated when an unsupported KMIP version is referenced.
+    """
+
+
 class StreamNotEmptyError(Exception):
     def __init__(self, cls, extra):
         super(StreamNotEmptyError, self).__init__()

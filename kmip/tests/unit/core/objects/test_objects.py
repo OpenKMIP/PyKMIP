@@ -400,6 +400,24 @@ class TestAttributes(TestCase):
         self.assertIsInstance(attr_2, primitives.Integer)
         self.assertEqual(128, attr_2.value)
 
+    def test_read_version_not_supported(self):
+        """
+        Test that a VersionNotSupported error is raised when an unsupported
+        KMIP version is provided while reading in an Attributes structure from
+        a data stream. The Attributes structure is only supported in KMIP 2.0+.
+        """
+        attrs = objects.Attributes()
+
+        args = (self.full_encoding, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.2 does not support the Attributes object.",
+            attrs.read,
+            *args,
+            **kwargs
+        )
+
     def test_write(self):
         """
         Test that an Attributes structure can be correctly written to a data
@@ -488,6 +506,30 @@ class TestAttributes(TestCase):
 
         self.assertEqual(len(self.alt_encoding), len(stream))
         self.assertEqual(str(self.alt_encoding), str(stream))
+
+    def test_write_version_not_supported(self):
+        """
+        Test that a VersionNotSupported error is raised when an unsupported
+        KMIP version is provided while writing an Attributes structure to a
+        data stream. The Attributes structure is only supported in KMIP 2.0+.
+        """
+        attrs = objects.Attributes(attributes=[
+            primitives.TextString(
+                "default",
+                tag=enums.Tags.OPERATION_POLICY_NAME
+            )
+        ])
+
+        stream = utils.BytearrayStream()
+        args = (stream, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_1}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.1 does not support the Attributes object.",
+            attrs.write,
+            *args,
+            **kwargs
+        )
 
     def test_repr(self):
         """
