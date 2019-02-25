@@ -1,14 +1,37 @@
 #!/bin/bash
 
+#Global vars ... yes, I Know...
+
+declare -r pythonexe=/cygdrive/c/Python27/python.exe
+declare -r unitspath=/projetos/dinamo/PyKMIP/kmip/demos/units
+declare -r piepath=/projetos/dinamo/PyKMIP/kmip/demos/pie
+declare -r config_session=kmip_test
+declare -r outfile=out.txt
+declare -r tst_pwd=12345678
+
+declare -r conf_session="hs65"
+
+# the \\ bellow is the escape for grep
+
+host=$(grep -A 12 \\[${conf_session}\\] ~/.pykmip/pykmip.conf | grep "host=" | sed "s/host=\(.*\)/\1/" )
+user=$(grep -A 12 \\[${conf_session}\\] ~/.pykmip/pykmip.conf | grep "username=" | sed "s/username=\(.*\)/\1/" )
+pass=$(grep -A 12 \\[${conf_session}\\] ~/.pykmip/pykmip.conf | grep "password=" | sed "s/password=\(.*\)/\1/" )
+
+echo host=${host}
+echo user=${user}
+echo pass=${pass}
+
+
+
 #user that starts the test
 if [ "$#" -eq "3" ] ; then
-    #NOTE: the kmip operations use the ip address of the config session defined in pykmip.conf
+    #NOTE: the kmip operations use the ip address of the config session defined in pykmip.conf (in)
     HSM_ADDR=${1}
     HSM_TEST_USER=${2}
     HSM_TEST_USER_PASSWD=${3}
 else 
-    echo "Usage: $0 hsm_ip hsm_usr(will create a kmip user) hsm_usr_pwd"
-    echo "NOTE: the kmip operations use the ip address of the config session defined in pykmip.conf"
+    echo "Usage: $0 hsm_ip hsm_usr (will create a kmip user) hsm_usr_pwd"
+    echo "NOTE: the kmip operations use the ip address of the config session [${config_session}] defined in pykmip.conf (in user HOME dir)"
     exit 1
 fi
 
@@ -16,16 +39,6 @@ PROG_NAME=hsmutil
 EXEC_TESTER=${PROG_NAME}.exe
 
 EXECLOGFILE=./execlogfile.txt
-
-#Global vars ... yes, I Know...
-
- 
-pythonexe=/cygdrive/c/Python27/python.exe
-unitspath=/projetos/dinamo/PyKMIP/kmip/demos/units
-piepath=/projetos/dinamo/PyKMIP/kmip/demos/pie
-config_session=kmip_test
-outfile=out.txt
-tst_pwd=12345678
 
 #
 # Useful to know all the enums used by kmip:
