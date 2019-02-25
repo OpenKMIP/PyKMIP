@@ -18,6 +18,67 @@ import testtools
 from kmip.core import enums
 
 
+class TestOrderedEnum(testtools.TestCase):
+
+    def setUp(self):
+        super(TestOrderedEnum, self).setUp()
+
+    def tearDown(self):
+        super(TestOrderedEnum, self).tearDown()
+
+    def test_greater_than_or_equal(self):
+        self.assertTrue(
+            enums.KMIPVersion.KMIP_2_0 >= enums.KMIPVersion.KMIP_1_0
+        )
+        self.assertFalse(
+            enums.KMIPVersion.KMIP_1_0 >= enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEquals(
+            NotImplemented,
+            enums.KMIPVersion.KMIP_2_0.__ge__(enums.WrappingMethod.ENCRYPT)
+        )
+
+    def test_greater_than(self):
+        self.assertTrue(
+            enums.KMIPVersion.KMIP_1_3 > enums.KMIPVersion.KMIP_1_1
+        )
+        self.assertFalse(
+            enums.KMIPVersion.KMIP_1_1 > enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEquals(
+            NotImplemented,
+            enums.KMIPVersion.KMIP_2_0.__gt__(enums.WrappingMethod.ENCRYPT)
+        )
+
+    def test_less_than_or_equal(self):
+        self.assertTrue(
+            enums.KMIPVersion.KMIP_1_3 <= enums.KMIPVersion.KMIP_1_4
+        )
+        self.assertFalse(
+            enums.KMIPVersion.KMIP_1_4 <= enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEquals(
+            NotImplemented,
+            enums.KMIPVersion.KMIP_2_0.__le__(enums.WrappingMethod.ENCRYPT)
+        )
+
+    def test_less_than(self):
+        self.assertTrue(
+            enums.KMIPVersion.KMIP_1_3 < enums.KMIPVersion.KMIP_2_0
+        )
+        self.assertFalse(
+            enums.KMIPVersion.KMIP_2_0 < enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEquals(
+            NotImplemented,
+            enums.KMIPVersion.KMIP_2_0.__lt__(enums.WrappingMethod.ENCRYPT)
+        )
+
+
 class TestEnumUtilityFunctions(testtools.TestCase):
 
     def setUp(self):
