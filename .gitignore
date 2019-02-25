@@ -15,3 +15,5 @@ htmlcov
 
 kmip/pykmip.conf
 outfile.txt
+
+tests/kmiptst_*
