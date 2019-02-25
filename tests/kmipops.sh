@@ -54,13 +54,13 @@ function exec_line
     #parameters:
     #1: parameters to execute
     #2: expected result
-    
+
     EXEC_LINE_CMD="$EXEC_TESTER -a $HSM_ADDR -u $HSM_USER -w $HSM_PASSWD" 
 
     exec_full_line="${EXEC_LINE_CMD} $1"
-    
+
     ${exec_full_line} >> $EXECLOGFILE
-  
+
 }
 
 function setup_test
@@ -68,11 +68,11 @@ function setup_test
     # create a specific user to run the tests, this allowS some of the tests be 
     # done on multiple clients simultaneously
     rand_str=`echo $RANDOM`
-    
+
     TEST_WORKING_DIR="kmiptst_${rand_str}"
     mkdir ${TEST_WORKING_DIR}
     cd ${TEST_WORKING_DIR}
-    
+
     #the user that will run the tests
     user_name="kmiptst${rand_str}"
     user_password=${tst_pwd}
@@ -83,20 +83,20 @@ function setup_test
 
     echo -e "creating user ${user_name} for tests..."
     exec_line "-j create_user -usr ${user_name} -pwd ${user_password} -tls 1" 0 
-    
+
     exec_line "-j assignx509 -usr ${user_name} -filein ${kmip_user_cert} -tls 1" 0
-    
+
     sed  "s/username=[^cvu].*/username=${user_name}/" -i ${HOME}/.pykmip/pykmip.conf
-    
+
     #the tests will be done using the just created user
     HSM_USER=${user_name}
     HSM_PASSWD=${user_password}
-    
+
     num_tests_kmip=$((0))
     num_fails_kmip=$((0))
-    
+
     'rm' -f ${EXECLOGFILE} >/dev/null 2>&1
-    
+
 }
 
 function clear_test_setup
@@ -123,7 +123,7 @@ function clear_test_setup
     #echo "testing user: ${user_name}"
 
     #exec_line "-j unassignx509 -usr ${user_name}" 0
-         
+
 }
 
 
@@ -131,17 +131,17 @@ function print_result
 {
     # parameters
     # $1: result: 0:OK, not 0:FAIL
-    
+
     echo -en "\n*** "
 
     if [ ${1} -eq 0 ] ; then
         echo -en "\033[32m  OK  \033[0m"
     else
         echo -en "\033[31m FAIL \033[0m"
-        
+
         num_fails_kmip=$((num_fails_kmip + 1))
     fi
-    
+
     echo -en " ***\n\n"
 }
 
@@ -149,9 +149,9 @@ function test_kmip_output
 {
     # parameters:
     # $1 : test_string
-    
+
     grep ${1} ${outfile}
-    
+
     print_result $?    
 }
 
@@ -159,17 +159,17 @@ function test_activate_revoke
 {
     # parameters:
     # $1: key uuid
-    
+
     # !!! NOTE: the key will be in revoked state after the test !!!
-    
+
     run_kmip_test activate  "-i ${1}"
     run_kmip_test get_attributes "-i ${1}"
     test_kmip_output "State.ACTIVE"
-    
+
     run_kmip_test revoke  "-i ${1}"
     run_kmip_test get_attributes "-i ${1}"
     test_kmip_output "State.DEACTIVATED"
-    
+
 }
 
 function run_kmip_test
@@ -177,11 +177,11 @@ function run_kmip_test
     # parameters
     # $1 : script to run (without extension)
     # $2 : script parameters
-    
+
     kmip_script="${1}"
     shift
     kmip_params="$@"
-      
+
     case ${kmip_script} in
         ( "register_certificate" | "register_opaque_object" | "register_symmetric_key" | \
            "get_attribute_list" | "get_attributes" | "encrypt3" | "decrypt3")
@@ -193,13 +193,15 @@ function run_kmip_test
             kmip_success_text="ResultStatus.SUCCESS"
         ;;
     esac    
-    
+
+    echo ${pythonexe} ${script_path}/${kmip_script}.py -c ${config_session} ${kmip_params} 2>&1 | tee ${outfile}
+
     ${pythonexe} ${script_path}/${kmip_script}.py -c ${config_session} ${kmip_params} 2>&1 | tee ${outfile}
-    
+
     grep ${kmip_success_text} ${outfile}
 
     print_result $?
-    
+
     num_tests_kmip=$((num_tests_kmip + 1))
 }
 
@@ -210,41 +212,41 @@ function test_sym_key
     # $2: len list
     # $3: modes list
     # $4: paddings list
-    
+
     #"        1         2         3          4         5"
     #"12345678901234567890123456789012345678901234567890"
     #"12345678123456781234567812345678"
     #"Mensagem que nao precisa padding"
     #"A message that needs no padding."
     #"A message for kmip encyption/decryption tests."
-    
+
     regex_sym_key="s/.*INFO.*created UUID: \(.*\)/\1/p"    
-    
+
     for l in ${2}
     do
         run_kmip_test create "-a ${1} -l ${l}"
         kuuid=$(sed -n "${regex_sym_key}" ${outfile})
-        
+
         run_kmip_test get_attribute_list "-i ${kuuid}"
         run_kmip_test get "-i ${kuuid} -f RAW"
         run_kmip_test activate "-i ${kuuid}"
         run_kmip_test get_attributes "-i ${kuuid}"
-        
+
         for m in ${3}
         do
             for p in ${4}
             do
                 if [ "${p}" == "NONE" ]; then
                     tst_msg="12345678123456781234567812345678"
-                    
+
                 else
                     tst_msg="123456781234567812345678123456781234."
                 fi
-                
+
                 test_sym_encdec ${kuuid} ${tst_msg} ${m} ${p}
             done
         done
-        
+
         echo "no revoke, no destroy"
         #run_kmip_test revoke  "-i ${kuuid}"
         #run_kmip_test destroy "-i ${kuuid}"
@@ -259,33 +261,33 @@ function test_asym_key_pair
     # $2: len list
     # $3: pri key format list
     # $4: pub key format list
-    
+
     regex_priv_key="s/.*INFO.*private key.*UUID: \(.*\)/\1/p"
     regex_pub_key="s/.*INFO.*public key.*UUID: \(.*\)/\1/p"    
 
     for l in ${2}
     do
         run_kmip_test create_key_pair "-a ${1} -l ${l} -n ${1}${l}"
-        
+
         priv_uuid=$(sed -n "${regex_priv_key}" ${outfile})           
         pub_uuid=$(sed -n "${regex_pub_key}" ${outfile}) 
-    
+
         run_kmip_test get_attribute_list "-i ${priv_uuid}"        
         run_kmip_test get_attribute_list "-i ${pub_uuid}"
-                    
+
         for f in ${3}
         do
             run_kmip_test get "-i ${priv_uuid} -f ${f}"
         done
-        
+
         for f in ${4}
         do
             run_kmip_test get "-i ${pub_uuid} -f ${f}"
         done
-        
+
         test_activate_revoke "${priv_uuid}"
         test_activate_revoke "${pub_uuid}"
-        
+
         run_kmip_test destroy "-i ${priv_uuid}"
         run_kmip_test destroy "-i ${pub_uuid}"
     done
@@ -299,27 +301,27 @@ function test_sym_encdec
     # $2: message
     # $3: mode
     # $4: paddding
-    
+
     regex_cipher_msg="s/.*INFO.*Cipher text.*: \(.*\)/\1/p"
     regex_iv="s/.*INFO.*Autogenerated IV.*: \(.*\)/\1/p"
     regex_clear_msg="s/.*INFO.*Plain text.*: '\(.*\)'/\1/p"    
-   
+
     run_kmip_test encrypt3 "-i ${1} -m ${2} -d ${3} -a ${4}"
-    
+
     cipher_msg=$(sed -n "${regex_cipher_msg}" ${outfile})
     iv=$(sed -n "${regex_iv}" ${outfile})
-    
+
     # note: -m and -v are binaries, so the 'b'
     run_kmip_test decrypt3 "-i ${1} -m b${cipher_msg} -d ${3} -a ${4} -v b${iv}"
-    
+
     clear_msg=$(sed -n "${regex_clear_msg}" ${outfile})    
-    
+
     #debug
     #echo "in:${2}"
     #echo "cm:${clear_msg}"
-    
+
     if [ "${2}" != "${clear_msg}" ] ; then
-    
+
         echo "Symmetric encryption and descryption, comparison fails !"
         print_result 1
     fi
@@ -329,22 +331,22 @@ function test_sym_encdec
 function test_keys
 {
     # parameters:
-      
+
     test_sym_key "DES"          "56"          "ECB CBC"     "NONE ZEROS PKCS5"
-        
+
     test_sym_key "TRIPLE_DES"   "112 168"     "ECB CBC"     "NONE ZEROS PKCS5"
-        
+
     test_sym_key "AES"          "128 192 256" "ECB CBC"     "NONE ZEROS PKCS5"
-    
+
     #testar padds
     # ANSI_X923 : simetrico
     # X931       : assimetrico
-    
+
     test_asym_key_pair "RSA"\
                         "1024 2048"\
                         "PKCS_1 PKCS_8"\
                         "RAW PKCS_1"
-                        
+
     test_asym_key_pair "EC"\
                         "192 224 256 384 521"\
                         "PKCS_8"\
@@ -352,43 +354,43 @@ function test_keys
 
                         # ECC xp/st: "192 224 256 384 521"\
                         # ECC pocket: "192 224"\
-    
+
 }
 
 function register_and_get
 {
     regex_reg_uuid="s/.*INFO.*Successfully.*registered.*ID: \(.*\)/\1/p"
-    
+
     ###### certificate ######
-    
+
     run_kmip_test register_certificate
     kuuid=$(sed -n "${regex_reg_uuid}" ${outfile})
-    
+
     run_kmip_test get_attribute_list "-i ${kuuid}"
-    
+
     for f in X_509
     do
         run_kmip_test get "-i ${kuuid} -f ${f}"
     done
-    
+
     run_kmip_test destroy "-i ${kuuid}"
-    
+
     ###### sym key ######
-    
+
     run_kmip_test register_symmetric_key
     kuuid=$(sed -n "${regex_reg_uuid}" ${outfile})
-    
+
     run_kmip_test get_attribute_list "-i ${kuuid}"
-    
+
     for f in RAW
     do
         run_kmip_test get "-i ${kuuid} -f ${f}"
     done
-    
+
     run_kmip_test destroy "-i ${kuuid}"
 
     ######   ######
-    
+
     return 0  
 }
 
