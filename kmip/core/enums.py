@@ -20,6 +20,34 @@ import copy
 import enum
 
 
+class OrderedEnum(enum.Enum):
+    """
+    An ordered variant of the Enum class that allows for comparisons.
+
+    Taken from: https://docs.python.org/3/library/enum.html#orderedenum
+    """
+
+    def __ge__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value >= other.value
+        return NotImplemented
+
+    def __gt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value > other.value
+        return NotImplemented
+
+    def __le__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value <= other.value
+        return NotImplemented
+
+    def __lt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value < other.value
+        return NotImplemented
+
+
 class AdjustmentType(enum.Enum):
     # KMIP 2.0
     INCREMENT = 0x00000001
@@ -508,7 +536,7 @@ class KeyWrapType(enum.Enum):
     AS_REGISTERED = 0x00000002
 
 
-class KMIPVersion(enum.Enum):
+class KMIPVersion(OrderedEnum):
     KMIP_1_0 = 1.0
     KMIP_1_1 = 1.1
     KMIP_1_2 = 1.2
