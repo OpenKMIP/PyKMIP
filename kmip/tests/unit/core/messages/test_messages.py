@@ -15,6 +15,7 @@
 
 from testtools import TestCase
 import binascii
+import six
 
 from kmip.core.factories.secrets import SecretFactory
 from kmip.core.factories.attributes import AttributeFactory
@@ -245,13 +246,13 @@ class TestRequestMessage(TestCase):
 
         object_type = request_payload.object_type
         msg = "Bad object type type: expected {0}, received {1}"
-        self.assertIsInstance(object_type, attr.ObjectType,
-                              msg.format(attr.ObjectType,
+        self.assertIsInstance(object_type, enums.ObjectType,
+                              msg.format(enums.ObjectType,
                                          type(object_type)))
         msg = "Bad object type value: expected {0}, received {1}"
-        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.value,
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type,
                          msg.format(enums.ObjectType.SYMMETRIC_KEY,
-                                    object_type.value))
+                                    object_type))
 
         template_attribute = request_payload.template_attribute
         msg = "Bad template attribute type: expected {0}, received {1}"
@@ -359,7 +360,7 @@ class TestRequestMessage(TestCase):
                                                 batch_count=batch_count)
 
         operation = contents.Operation(enums.Operation.CREATE)
-        object_type = attr.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
 
         name = AttributeType.CRYPTOGRAPHIC_ALGORITHM
         value = CryptoAlgorithmEnum.AES
@@ -1363,24 +1364,24 @@ class TestResponseMessage(TestCase):
                                                   exp_type, rcv_type))
 
             object_type = response_payload.object_type
-            self.assertIsInstance(object_type, attr.ObjectType,
+            self.assertIsInstance(object_type, enums.ObjectType,
                                   self.msg.format('object type', 'type',
-                                                  attr.ObjectType,
+                                                  enums.ObjectType,
                                                   type(object_type)))
-            self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.value,
+            self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type,
                              self.msg.format('object type', 'value',
                                              enums.ObjectType.SYMMETRIC_KEY,
-                                             object_type.value))
+                                             object_type))
 
             unique_identifier = response_payload.unique_identifier
             value = 'fb4b5b9c-6188-4c63-8142-fe9c328129fc'
-            self.assertIsInstance(unique_identifier, attr.UniqueIdentifier,
+            self.assertIsInstance(unique_identifier, six.string_types,
                                   self.msg.format('unique identifier', 'type',
-                                                  attr.UniqueIdentifier,
+                                                  six.string_types,
                                                   type(unique_identifier)))
-            self.assertEqual(value, unique_identifier.value,
+            self.assertEqual(value, unique_identifier,
                              self.msg.format('unique identifier', 'value',
-                                             unique_identifier.value, value))
+                                             unique_identifier, value))
 
     def test_create_response_write(self):
         prot_ver = contents.ProtocolVersion(1, 1)
@@ -1394,13 +1395,12 @@ class TestResponseMessage(TestCase):
                                                   batch_count=batch_count)
         operation = contents.Operation(enums.Operation.CREATE)
         result_status = contents.ResultStatus(enums.ResultStatus.SUCCESS)
-        object_type = attr.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
 
         uuid = 'fb4b5b9c-6188-4c63-8142-fe9c328129fc'
-        uniq_id = attr.UniqueIdentifier(uuid)
         resp_pl = payloads.CreateResponsePayload(
             object_type=object_type,
-            unique_identifier=uniq_id
+            unique_identifier=uuid
         )
         batch_item = messages.ResponseBatchItem(operation=operation,
                                                 result_status=result_status,

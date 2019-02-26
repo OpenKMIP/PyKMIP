@@ -1017,7 +1017,7 @@ class KmipEngine(object):
     def _process_create(self, payload):
         self._logger.info("Processing operation: Create")
 
-        object_type = payload.object_type.value
+        object_type = payload.object_type
         template_attribute = payload.template_attribute
 
         if object_type != enums.ObjectType.SYMMETRIC_KEY:
@@ -1097,9 +1097,7 @@ class KmipEngine(object):
 
         response_payload = payloads.CreateResponsePayload(
             object_type=payload.object_type,
-            unique_identifier=attributes.UniqueIdentifier(
-                str(managed_object.unique_identifier)
-            ),
+            unique_identifier=str(managed_object.unique_identifier),
             template_attribute=None
         )
 

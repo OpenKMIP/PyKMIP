@@ -104,9 +104,9 @@ class TestKMIPClientIntegration(TestCase):
 
         self._check_result_status(result.result_status.value, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.value, ObjectType,
+        self._check_object_type(result.object_type, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
+        self._check_uuid(result.uuid, str)
 
         # Check the template attribute type
         self._check_template_attribute(result.template_attribute,
@@ -122,7 +122,7 @@ class TestKMIPClientIntegration(TestCase):
         credential = self.cred_factory.create_credential(credential_type,
                                                          credential_value)
         result = self._create_symmetric_key()
-        uuid = result.uuid.value
+        uuid = result.uuid
 
         result = self.client.get(uuid=uuid, credential=credential)
 
@@ -146,7 +146,7 @@ class TestKMIPClientIntegration(TestCase):
         credential = self.cred_factory.create_credential(credential_type,
                                                          credential_value)
         result = self._create_symmetric_key()
-        uuid = result.uuid.value
+        uuid = result.uuid
 
         # Verify the secret was created
         result = self.client.get(uuid=uuid, credential=credential)

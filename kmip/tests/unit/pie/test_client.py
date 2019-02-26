@@ -229,7 +229,8 @@ class TestProxyKmipClient(testtools.TestCase):
         status = enums.ResultStatus.SUCCESS
         result = results.CreateResult(
             contents.ResultStatus(status),
-            uuid=attr.UniqueIdentifier(key_id))
+            uuid=key_id
+        )
 
         with ProxyKmipClient() as client:
             client.proxy.create.return_value = result

@@ -2395,7 +2395,7 @@ class TestKmipEngine(testtools.TestCase):
         attribute_factory = factory.AttributeFactory()
 
         # Build Create request
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
@@ -2439,7 +2439,7 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Create"
         )
 
-        uid = response_payload.unique_identifier.value
+        uid = response_payload.unique_identifier
         self.assertEqual('1', uid)
 
         # Retrieve the stored object and verify all attributes were set
@@ -2487,7 +2487,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session = e._data_store_session_factory()
         e._logger = mock.MagicMock()
 
-        object_type = attributes.ObjectType(enums.ObjectType.PUBLIC_KEY)
+        object_type = enums.ObjectType.PUBLIC_KEY
         payload = payloads.CreateRequestPayload(
             object_type
         )
@@ -2520,7 +2520,7 @@ class TestKmipEngine(testtools.TestCase):
         attribute_factory = factory.AttributeFactory()
 
         # Test the error for omitting the Cryptographic Algorithm
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
@@ -2566,7 +2566,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Test the error for omitting the Cryptographic Length
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
@@ -2612,7 +2612,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Test the error for omitting the Cryptographic Usage Mask
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
@@ -8000,7 +8000,7 @@ class TestKmipEngine(testtools.TestCase):
         attribute_factory = factory.AttributeFactory()
 
         # Build a SymmetricKey for registration.
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
@@ -8042,7 +8042,7 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Create"
         )
 
-        uid = response_payload.unique_identifier.value
+        uid = response_payload.unique_identifier
         self.assertEqual('1', uid)
 
         e._logger.reset_mock()

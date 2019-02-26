@@ -130,8 +130,8 @@ if __name__ == '__main__':
 
     if result.result_status.value == ResultStatus.SUCCESS:
         logger.info('created object type: {0}'.format(
-            result.object_type.value))
-        logger.info('created UUID: {0}'.format(result.uuid.value))
+            result.object_type))
+        logger.info('created UUID: {0}'.format(result.uuid))
         logger.info('created template attribute: {0}'.
                     format(result.template_attribute))
     else:

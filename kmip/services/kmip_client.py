@@ -310,7 +310,6 @@ class KMIPProxy(object):
             self.socket = None
 
     def create(self, object_type, template_attribute, credential=None):
-        object_type = attr.ObjectType(object_type)
         return self._create(object_type=object_type,
                             template_attribute=template_attribute,
                             credential=credential)
