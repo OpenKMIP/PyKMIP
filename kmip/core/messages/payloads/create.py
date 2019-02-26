@@ -13,115 +13,443 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core import attributes
+import six
+
 from kmip.core import enums
-from kmip.core.enums import Tags
-
-from kmip.core.objects import TemplateAttribute
-
-from kmip.core.primitives import Struct
-
-from kmip.core.utils import BytearrayStream
+from kmip.core import exceptions
+from kmip.core import objects
+from kmip.core import primitives
+from kmip.core import utils
 
 
-class CreateRequestPayload(Struct):
+class CreateRequestPayload(primitives.Struct):
+    """
+    A request payload for the Create operation.
+
+    Attributes:
+        object_type: The type of the object to create.
+        template_attribute: A group of attributes to set on the new object.
+    """
 
     def __init__(self,
                  object_type=None,
                  template_attribute=None):
+        """
+        Construct a Create request payload structure.
+
+        Args:
+            object_type (enum): An ObjectType enumeration specifying the type
+                of object to create. Optional, defaults to None. Required for
+                read/write.
+            template_attribute (TemplateAttribute): A TemplateAttribute
+                structure containing a set of attributes to set on the new
+                object. Optional, defaults to None. Required for read/write.
+        """
         super(CreateRequestPayload, self).__init__(
-            tag=enums.Tags.REQUEST_PAYLOAD)
+            tag=enums.Tags.REQUEST_PAYLOAD
+        )
+
+        self._object_type = None
+        self._template_attribute = None
+
         self.object_type = object_type
         self.template_attribute = template_attribute
-        self.validate()
 
-    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    @property
+    def object_type(self):
+        if self._object_type:
+            return self._object_type.value
+        else:
+            return None
+
+    @object_type.setter
+    def object_type(self, value):
+        if value is None:
+            self._object_type = None
+        elif isinstance(value, enums.ObjectType):
+            self._object_type = primitives.Enumeration(
+                enums.ObjectType,
+                value=value,
+                tag=enums.Tags.OBJECT_TYPE
+            )
+        else:
+            raise TypeError(
+                "Object type must be an ObjectType enumeration."
+            )
+
+    @property
+    def template_attribute(self):
+        return self._template_attribute
+
+    @template_attribute.setter
+    def template_attribute(self, value):
+        if value is None:
+            self._template_attribute = None
+        elif isinstance(value, objects.TemplateAttribute):
+            self._template_attribute = value
+        else:
+            raise TypeError(
+                "Template attribute must be a TemplateAttribute structure."
+            )
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Read the data encoding the Create request payload and decode it into
+        its constituent parts.
+
+        Args:
+            input_buffer (stream): A data buffer containing encoded object
+                data, supporting a read method.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the object type or template
+                attribute is missing from the encoded payload.
+        """
         super(CreateRequestPayload, self).read(
-            istream,
+            input_buffer,
             kmip_version=kmip_version
         )
-        tstream = BytearrayStream(istream.read(self.length))
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        self.object_type = attributes.ObjectType()
-        self.template_attribute = TemplateAttribute()
+        if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
+            self._object_type = primitives.Enumeration(
+                enums.ObjectType,
+                tag=enums.Tags.OBJECT_TYPE
+            )
+            self._object_type.read(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The Create request payload encoding is missing the object "
+                "type."
+            )
 
-        self.object_type.read(tstream, kmip_version=kmip_version)
-        self.template_attribute.read(tstream, kmip_version=kmip_version)
+        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
+            self._template_attribute = objects.TemplateAttribute()
+            self._template_attribute.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The Create request payload encoding is missing the template "
+                "attribute."
+            )
 
-        self.is_oversized(tstream)
-        self.validate()
+        self.is_oversized(local_buffer)
 
-    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        tstream = BytearrayStream()
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Write the data encoding the Create request payload to a buffer.
 
-        # Write the object type and template attribute of the request payload
-        self.object_type.write(tstream, kmip_version=kmip_version)
-        self.template_attribute.write(tstream, kmip_version=kmip_version)
+        Args:
+            output_buffer (stream): A data buffer in which to encode object
+                data, supporting a write method.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
-        # Write the length and value of the request payload
-        self.length = tstream.length()
+        Raises:
+            InvalidField: Raised if the object type attribute or template
+                attribute is not defined.
+        """
+        local_buffer = utils.BytearrayStream()
+
+        if self._object_type:
+            self._object_type.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The Create request payload is missing the object type field."
+            )
+
+        if self._template_attribute:
+            self._template_attribute.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The Create request payload is missing the template attribute "
+                "field."
+            )
+
+        self.length = local_buffer.length()
         super(CreateRequestPayload, self).write(
-            ostream,
+            output_buffer,
             kmip_version=kmip_version
         )
-        ostream.write(tstream.buffer)
+        output_buffer.write(local_buffer.buffer)
 
-    def validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+    def __eq__(self, other):
+        if isinstance(other, CreateRequestPayload):
+            if self.object_type != other.object_type:
+                return False
+            elif self.template_attribute != other.template_attribute:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, CreateRequestPayload):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        args = ", ".join([
+            "object_type={}".format(self.object_type),
+            "template_attribute={}".format(repr(self.template_attribute))
+        ])
+        return "CreateRequestPayload({})".format(args)
+
+    def __str__(self):
+        value = ", ".join(
+            [
+                '"object_type": {}'.format(self.object_type),
+                '"template_attribute": {}'.format(self.template_attribute)
+            ]
+        )
+        return '{' + value + '}'
 
 
-class CreateResponsePayload(Struct):
+class CreateResponsePayload(primitives.Struct):
+    """
+    A response payload for the Create operation.
+
+    Attributes:
+        object_type: The type of the object created.
+        unique_identifier: The unique ID of the new object.
+        template_attribute: A group of attributes that were set on the new
+            object.
+    """
 
     def __init__(self,
                  object_type=None,
                  unique_identifier=None,
                  template_attribute=None):
+        """
+        Construct a Create response payload structure.
+
+        Args:
+            object_type (enum): An ObjectType enumeration specifying the type
+                of object created. Optional, defaults to None. Required for
+                read/write.
+            unique_identifier (string): The ID of the new object. Optional,
+                defaults to None. Required for read/write.
+            template_attribute (TemplateAttribute): A TemplateAttribute
+                structure containing a set of attributes that were set on the
+                new object. Optional, defaults to None.
+        """
         super(CreateResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD)
+            tag=enums.Tags.RESPONSE_PAYLOAD
+        )
+
+        self._object_type = None
+        self._unique_identifier = None
+        self._template_attribute = None
+
         self.object_type = object_type
         self.unique_identifier = unique_identifier
         self.template_attribute = template_attribute
-        self.validate()
 
-    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    @property
+    def object_type(self):
+        if self._object_type:
+            return self._object_type.value
+        else:
+            return None
+
+    @object_type.setter
+    def object_type(self, value):
+        if value is None:
+            self._object_type = None
+        elif isinstance(value, enums.ObjectType):
+            self._object_type = primitives.Enumeration(
+                enums.ObjectType,
+                value=value,
+                tag=enums.Tags.OBJECT_TYPE
+            )
+        else:
+            raise TypeError(
+                "Object type must be an ObjectType enumeration."
+            )
+
+    @property
+    def unique_identifier(self):
+        if self._unique_identifier:
+            return self._unique_identifier.value
+        else:
+            return None
+
+    @unique_identifier.setter
+    def unique_identifier(self, value):
+        if value is None:
+            self._unique_identifier = None
+        elif isinstance(value, six.string_types):
+            self._unique_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+        else:
+            raise TypeError("Unique identifier must be a string.")
+
+    @property
+    def template_attribute(self):
+        return self._template_attribute
+
+    @template_attribute.setter
+    def template_attribute(self, value):
+        if value is None:
+            self._template_attribute = None
+        elif isinstance(value, objects.TemplateAttribute):
+            self._template_attribute = value
+        else:
+            raise TypeError(
+                "Template attribute must be a TemplateAttribute structure."
+            )
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Read the data encoding the Create response payload and decode it into
+        its constituent parts.
+
+        Args:
+            input_buffer (stream): A data buffer containing encoded object
+                data, supporting a read method.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the object type or unique
+                identifier is missing from the encoded payload.
+        """
         super(CreateResponsePayload, self).read(
-            istream,
+            input_buffer,
             kmip_version=kmip_version
         )
-        tstream = BytearrayStream(istream.read(self.length))
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        self.object_type = attributes.ObjectType()
-        self.unique_identifier = attributes.UniqueIdentifier()
+        if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
+            self._object_type = primitives.Enumeration(
+                enums.ObjectType,
+                tag=enums.Tags.OBJECT_TYPE
+            )
+            self._object_type.read(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The Create response payload encoding is missing the object "
+                "type."
+            )
 
-        self.object_type.read(tstream, kmip_version=kmip_version)
-        self.unique_identifier.read(tstream, kmip_version=kmip_version)
+        if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_buffer):
+            self._unique_identifier = primitives.TextString(
+                tag=enums.Tags.UNIQUE_IDENTIFIER
+            )
+            self._unique_identifier.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The Create response payload encoding is missing the unique "
+                "identifier."
+            )
 
-        if self.is_tag_next(Tags.TEMPLATE_ATTRIBUTE, tstream):
-            self.template_attribute = TemplateAttribute()
-            self.template_attribute.read(tstream, kmip_version=kmip_version)
+        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
+            self._template_attribute = objects.TemplateAttribute()
+            self._template_attribute.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
 
-        self.is_oversized(tstream)
-        self.validate()
+        self.is_oversized(local_buffer)
 
-    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        tstream = BytearrayStream()
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Write the data encoding the Create response payload to a buffer.
 
-        # Write the contents of the request payload
-        self.object_type.write(tstream, kmip_version=kmip_version)
-        self.unique_identifier.write(tstream, kmip_version=kmip_version)
+        Args:
+            output_buffer (stream): A data buffer in which to encode object
+                data, supporting a write method.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
-        if self.template_attribute is not None:
-            self.template_attribute.write(tstream, kmip_version=kmip_version)
+        Raises:
+            InvalidField: Raised if the object type attribute or unique
+                identifier is not defined.
+        """
+        local_buffer = utils.BytearrayStream()
 
-        # Write the length and value of the request payload
-        self.length = tstream.length()
+        if self._object_type:
+            self._object_type.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The Create response payload is missing the object type field."
+            )
+
+        if self._unique_identifier:
+            self._unique_identifier.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The Create response payload is missing the unique identifier "
+                "field."
+            )
+
+        if self._template_attribute:
+            self._template_attribute.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        self.length = local_buffer.length()
         super(CreateResponsePayload, self).write(
-            ostream,
+            output_buffer,
             kmip_version=kmip_version
         )
-        ostream.write(tstream.buffer)
+        output_buffer.write(local_buffer.buffer)
 
-    def validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+    def __eq__(self, other):
+        if isinstance(other, CreateResponsePayload):
+            if self.object_type != other.object_type:
+                return False
+            elif self.unique_identifier != other.unique_identifier:
+                return False
+            elif self.template_attribute != other.template_attribute:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, CreateResponsePayload):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        args = ", ".join([
+            "object_type={}".format(self.object_type),
+            "unique_identifier='{}'".format(self.unique_identifier),
+            "template_attribute={}".format(repr(self.template_attribute))
+        ])
+        return "CreateResponsePayload({})".format(args)
+
+    def __str__(self):
+        value = ", ".join(
+            [
+                '"object_type": {}'.format(self.object_type),
+                '"unique_identifier": "{}"'.format(self.unique_identifier),
+                '"template_attribute": {}'.format(self.template_attribute)
+            ]
+        )
+        return '{' + value + '}'

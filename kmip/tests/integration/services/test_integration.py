@@ -338,11 +338,11 @@ class TestIntegration(TestCase):
         result = self._create_symmetric_key(key_name=key_name)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.value, ObjectType,
+        self._check_object_type(result.object_type, ObjectType,
                                 ObjectType.SYMMETRIC_KEY)
-        self._check_uuid(result.uuid.value, str)
+        self._check_uuid(result.uuid, str)
 
-        result = self.client.get(uuid=result.uuid.value, credential=None)
+        result = self.client.get(uuid=result.uuid, credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
         self._check_object_type(result.object_type, ObjectType,
@@ -1160,10 +1160,10 @@ class TestIntegration(TestCase):
         """
         key_name = 'Integration Test - Create-GetAttributeList-Destroy Key'
         result = self._create_symmetric_key(key_name=key_name)
-        uid = result.uuid.value
+        uid = result.uuid
 
         self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
-        self.assertEqual(ObjectType.SYMMETRIC_KEY, result.object_type.value)
+        self.assertEqual(ObjectType.SYMMETRIC_KEY, result.object_type)
         self.assertIsInstance(uid, str)
 
         try:
