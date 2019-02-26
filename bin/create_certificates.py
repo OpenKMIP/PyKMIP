@@ -31,6 +31,8 @@ def create_self_signed_certificate(subject_name, private_key, days_valid=365):
         private_key.public_key()
     ).serial_number(
         x509.random_serial_number()
+    ).add_extension(
+        x509.BasicConstraints(ca=True, path_length=None), critical=True
     ).not_valid_before(
         datetime.datetime.utcnow()
     ).not_valid_after(
