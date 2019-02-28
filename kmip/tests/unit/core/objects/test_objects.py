@@ -781,6 +781,301 @@ class TestAttributes(TestCase):
         self.assertTrue(b != a)
 
 
+class TestAttributeUtilities(testtools.TestCase):
+
+    def setUp(self):
+        super(TestAttributeUtilities, self).setUp()
+
+    def tearDown(self):
+        super(TestAttributeUtilities, self).tearDown()
+
+    def test_convert_template_attribute_to_attributes(self):
+        template_attribute = objects.TemplateAttribute(
+            attributes=[
+                objects.Attribute(
+                    attribute_name=objects.Attribute.AttributeName(
+                        "State"
+                    ),
+                    attribute_value=primitives.Enumeration(
+                        enums.State,
+                        value=enums.State.PRE_ACTIVE,
+                        tag=enums.Tags.STATE
+                    )
+                )
+            ]
+        )
+
+        value = objects.convert_template_attribute_to_attributes(
+            template_attribute
+        )
+
+        self.assertIsInstance(value, objects.Attributes)
+        self.assertEqual(enums.Tags.ATTRIBUTES, value.tag)
+        self.assertIsInstance(value.attributes, list)
+        self.assertEqual(1, len(value.attributes))
+        self.assertEqual(
+            primitives.Enumeration(
+                enums.State,
+                value=enums.State.PRE_ACTIVE,
+                tag=enums.Tags.STATE
+            ),
+            value.attributes[0]
+        )
+
+    def test_convert_common_template_attribute_to_attributes(self):
+        template_attribute = objects.CommonTemplateAttribute(
+            attributes=[
+                objects.Attribute(
+                    attribute_name=objects.Attribute.AttributeName(
+                        "Cryptographic Algorithm"
+                    ),
+                    attribute_value=primitives.Enumeration(
+                        enums.CryptographicAlgorithm,
+                        value=enums.CryptographicAlgorithm.AES,
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    )
+                )
+            ]
+        )
+
+        value = objects.convert_template_attribute_to_attributes(
+            template_attribute
+        )
+
+        self.assertIsInstance(value, objects.Attributes)
+        self.assertEqual(enums.Tags.COMMON_ATTRIBUTES, value.tag)
+        self.assertIsInstance(value.attributes, list)
+        self.assertEqual(1, len(value.attributes))
+        self.assertEqual(
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                value=enums.CryptographicAlgorithm.AES,
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            ),
+            value.attributes[0]
+        )
+
+    def test_convert_private_key_template_attribute_to_attributes(self):
+        template_attribute = objects.PrivateKeyTemplateAttribute(
+            attributes=[
+                objects.Attribute(
+                    attribute_name=objects.Attribute.AttributeName(
+                        "Key Format Type"
+                    ),
+                    attribute_value=primitives.Enumeration(
+                        enums.KeyFormatType,
+                        value=enums.KeyFormatType.RAW,
+                        tag=enums.Tags.KEY_FORMAT_TYPE
+                    )
+                )
+            ]
+        )
+
+        value = objects.convert_template_attribute_to_attributes(
+            template_attribute
+        )
+
+        self.assertIsInstance(value, objects.Attributes)
+        self.assertEqual(enums.Tags.PRIVATE_KEY_ATTRIBUTES, value.tag)
+        self.assertIsInstance(value.attributes, list)
+        self.assertEqual(1, len(value.attributes))
+        self.assertEqual(
+            primitives.Enumeration(
+                enums.KeyFormatType,
+                value=enums.KeyFormatType.RAW,
+                tag=enums.Tags.KEY_FORMAT_TYPE
+            ),
+            value.attributes[0]
+        )
+
+    def test_convert_public_key_template_attribute_to_attributes(self):
+        template_attribute = objects.PublicKeyTemplateAttribute(
+            attributes=[
+                objects.Attribute(
+                    attribute_name=objects.Attribute.AttributeName(
+                        "Object Type"
+                    ),
+                    attribute_value=primitives.Enumeration(
+                        enums.ObjectType,
+                        value=enums.ObjectType.PUBLIC_KEY,
+                        tag=enums.Tags.OBJECT_TYPE
+                    )
+                )
+            ]
+        )
+
+        value = objects.convert_template_attribute_to_attributes(
+            template_attribute
+        )
+
+        self.assertIsInstance(value, objects.Attributes)
+        self.assertEqual(enums.Tags.PUBLIC_KEY_ATTRIBUTES, value.tag)
+        self.assertIsInstance(value.attributes, list)
+        self.assertEqual(1, len(value.attributes))
+        self.assertEqual(
+            primitives.Enumeration(
+                enums.ObjectType,
+                value=enums.ObjectType.PUBLIC_KEY,
+                tag=enums.Tags.OBJECT_TYPE
+            ),
+            value.attributes[0]
+        )
+
+    def test_convert_template_attribute_to_attributes_invalid(self):
+        args = ("invalid", )
+        self.assertRaisesRegex(
+            TypeError,
+            "Input must be a TemplateAttribute structure.",
+            objects.convert_template_attribute_to_attributes,
+            *args
+        )
+
+    def test_convert_attributes_to_template_attribute(self):
+        attributes = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.State,
+                    value=enums.State.PRE_ACTIVE,
+                    tag=enums.Tags.STATE
+                )
+            ],
+            tag=enums.Tags.ATTRIBUTES
+        )
+
+        value = objects.convert_attributes_to_template_attribute(attributes)
+
+        self.assertIsInstance(value, objects.TemplateAttribute)
+        self.assertIsInstance(value.attributes, list)
+        self.assertEqual(1, len(value.attributes))
+        self.assertIsInstance(
+            value.attributes[0],
+            objects.Attribute
+        )
+        self.assertEqual(
+            "State",
+            value.attributes[0].attribute_name.value
+        )
+        self.assertEqual(
+            primitives.Enumeration(
+                enums.State,
+                value=enums.State.PRE_ACTIVE,
+                tag=enums.Tags.ATTRIBUTE_VALUE
+            ),
+            value.attributes[0].attribute_value
+        )
+
+    def test_convert_attributes_to_common_template_attribute(self):
+        attributes = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    value=enums.CryptographicAlgorithm.AES,
+                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                )
+            ],
+            tag=enums.Tags.COMMON_ATTRIBUTES
+        )
+
+        value = objects.convert_attributes_to_template_attribute(attributes)
+
+        self.assertIsInstance(value, objects.CommonTemplateAttribute)
+        self.assertIsInstance(value.attributes, list)
+        self.assertEqual(1, len(value.attributes))
+        self.assertIsInstance(
+            value.attributes[0],
+            objects.Attribute
+        )
+        self.assertEqual(
+            "Cryptographic Algorithm",
+            value.attributes[0].attribute_name.value
+        )
+        self.assertEqual(
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                value=enums.CryptographicAlgorithm.AES,
+                tag=enums.Tags.ATTRIBUTE_VALUE
+            ),
+            value.attributes[0].attribute_value
+        )
+
+    def test_convert_attributes_to_private_key_template_attribute(self):
+        attributes = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.KeyFormatType,
+                    value=enums.KeyFormatType.RAW,
+                    tag=enums.Tags.KEY_FORMAT_TYPE
+                )
+            ],
+            tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES
+        )
+
+        value = objects.convert_attributes_to_template_attribute(attributes)
+
+        self.assertIsInstance(value, objects.PrivateKeyTemplateAttribute)
+        self.assertIsInstance(value.attributes, list)
+        self.assertEqual(1, len(value.attributes))
+        self.assertIsInstance(
+            value.attributes[0],
+            objects.Attribute
+        )
+        self.assertEqual(
+            "Key Format Type",
+            value.attributes[0].attribute_name.value
+        )
+        self.assertEqual(
+            primitives.Enumeration(
+                enums.KeyFormatType,
+                value=enums.KeyFormatType.RAW,
+                tag=enums.Tags.ATTRIBUTE_VALUE
+            ),
+            value.attributes[0].attribute_value
+        )
+
+    def test_convert_attributes_to_public_key_template_attribute(self):
+        attributes = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.ObjectType,
+                    value=enums.ObjectType.PUBLIC_KEY,
+                    tag=enums.Tags.OBJECT_TYPE
+                )
+            ],
+            tag=enums.Tags.PUBLIC_KEY_ATTRIBUTES
+        )
+
+        value = objects.convert_attributes_to_template_attribute(attributes)
+
+        self.assertIsInstance(value, objects.PublicKeyTemplateAttribute)
+        self.assertIsInstance(value.attributes, list)
+        self.assertEqual(1, len(value.attributes))
+        self.assertIsInstance(
+            value.attributes[0],
+            objects.Attribute
+        )
+        self.assertEqual(
+            "Object Type",
+            value.attributes[0].attribute_name.value
+        )
+        self.assertEqual(
+            primitives.Enumeration(
+                enums.ObjectType,
+                value=enums.ObjectType.PUBLIC_KEY,
+                tag=enums.Tags.ATTRIBUTE_VALUE
+            ),
+            value.attributes[0].attribute_value
+        )
+
+    def test_convert_attributes_to_template_attribute_invalid(self):
+        args = ("invalid", )
+        self.assertRaisesRegex(
+            TypeError,
+            "Input must be an Attributes structure.",
+            objects.convert_attributes_to_template_attribute,
+            *args
+        )
+
+
 class TestKeyMaterialStruct(TestCase):
     """
     A test suite for the KeyMaterialStruct.
