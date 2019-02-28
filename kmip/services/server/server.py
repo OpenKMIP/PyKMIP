@@ -295,7 +295,7 @@ class KmipServer(object):
             cert_reqs=ssl.CERT_REQUIRED,
             ssl_version=self.auth_suite.protocol,
             ca_certs=self.config.settings.get('ca_path'),
-            do_handshake_on_connect=True,
+            do_handshake_on_connect=False,
             suppress_ragged_eofs=True,
             ciphers=self.auth_suite.ciphers
         )
