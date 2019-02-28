@@ -18,6 +18,7 @@
 
 import copy
 import enum
+import six
 
 
 class OrderedEnum(enum.Enum):
@@ -1667,6 +1668,151 @@ class WrappingMethod(enum.Enum):
     ENCRYPT_THEN_MAC_SIGN = 0x00000003
     MAC_SIGN_THEN_ENCRYPT = 0x00000004
     TR_31                 = 0x00000005
+
+
+attribute_name_tag_table = [
+    ("Activation Date",                   Tags.ACTIVATION_DATE),
+    ("Alternative Name",                  Tags.ALTERNATIVE_NAME),
+    ("Always Sensitive",                  Tags.ALWAYS_SENSITIVE),
+    ("Application Specific Information",  Tags.APPLICATION_SPECIFIC_INFORMATION),
+    ("Archive Date",                      Tags.ARCHIVE_DATE),
+    ("Attribute",                         Tags.ATTRIBUTE),
+    ("Certificate Identifier",            Tags.CERTIFICATE_IDENTIFIER),
+    ("Certificate Issuer",                Tags.CERTIFICATE_ISSUER),
+    ("Certificate Issuer C",              Tags.CERTIFICATE_ISSUER_C),
+    ("Certificate Issuer CN",             Tags.CERTIFICATE_ISSUER_CN),
+    ("Certificate Issuer DC",             Tags.CERTIFICATE_ISSUER_DC),
+    ("Certificate Issuer DN Qualifier",   Tags.CERTIFICATE_ISSUER_DN_QUALIFIER),
+    ("Certificate Issuer Email",          Tags.CERTIFICATE_ISSUER_EMAIL),
+    ("Certificate Issuer L",              Tags.CERTIFICATE_ISSUER_L),
+    ("Certificate Issuer O",              Tags.CERTIFICATE_ISSUER_O),
+    ("Certificate Issuer OU",             Tags.CERTIFICATE_ISSUER_OU),
+    ("Certificate Issuer Serial Number",  Tags.CERTIFICATE_ISSUER_SERIAL_NUMBER),
+    ("Certificate Issuer ST",             Tags.CERTIFICATE_ISSUER_ST),
+    ("Certificate Issuer Title",          Tags.CERTIFICATE_ISSUER_TITLE),
+    ("Certificate Issuer UID",            Tags.CERTIFICATE_ISSUER_UID),
+    ("Certificate Length",                Tags.CERTIFICATE_LENGTH),
+    ("Certificate Subject",               Tags.CERTIFICATE_SUBJECT),
+    ("Certificate Subject C",             Tags.CERTIFICATE_SUBJECT_C),
+    ("Certificate Subject CN",            Tags.CERTIFICATE_SUBJECT_CN),
+    ("Certificate Subject DC",            Tags.CERTIFICATE_SUBJECT_DC),
+    ("Certificate Subject DN Qualifier",  Tags.CERTIFICATE_SUBJECT_DN_QUALIFIER),
+    ("Certificate Subject Email",         Tags.CERTIFICATE_SUBJECT_EMAIL),
+    ("Certificate Subject L",             Tags.CERTIFICATE_SUBJECT_L),
+    ("Certificate Subject O",             Tags.CERTIFICATE_SUBJECT_O),
+    ("Certificate Subject OU",            Tags.CERTIFICATE_SUBJECT_OU),
+    ("Certificate Subject Serial Number", Tags.CERTIFICATE_SUBJECT_SERIAL_NUMBER),
+    ("Certificate Subject ST",            Tags.CERTIFICATE_SUBJECT_ST),
+    ("Certificate Subject Title",         Tags.CERTIFICATE_SUBJECT_TITLE),
+    ("Certificate Subject UID",           Tags.CERTIFICATE_SUBJECT_UID),
+    ("Certificate Type",                  Tags.CERTIFICATE_TYPE),
+    ("Comment",                           Tags.COMMENT),
+    ("Compromise Date",                   Tags.COMPROMISE_DATE),
+    ("Compromise Occurrence Date",        Tags.COMPROMISE_OCCURRENCE_DATE),
+    ("Contact Information",               Tags.CONTACT_INFORMATION),
+    ("Cryptographic Algorithm",           Tags.CRYPTOGRAPHIC_ALGORITHM),
+    ("Cryptographic Domain Parameters",   Tags.CRYPTOGRAPHIC_DOMAIN_PARAMETERS),
+    ("Cryptographic Length",              Tags.CRYPTOGRAPHIC_LENGTH),
+    ("Cryptographic Parameters",          Tags.CRYPTOGRAPHIC_PARAMETERS),
+    ("Cryptographic Usage Mask",          Tags.CRYPTOGRAPHIC_USAGE_MASK),
+    ("Custom Attribute",                  Tags.CUSTOM_ATTRIBUTE),
+    ("Deactivation Date",                 Tags.DEACTIVATION_DATE),
+    ("Description",                       Tags.DESCRIPTION),
+    ("Destroy Date",                      Tags.DESTROY_DATE),
+    ("Digest",                            Tags.DIGEST),
+    ("Digital Signature Algorithm",       Tags.DIGITAL_SIGNATURE_ALGORITHM),
+    ("Extractable",                       Tags.EXTRACTABLE),
+    ("Fresh",                             Tags.FRESH),
+    ("Initial Date",                      Tags.INITIAL_DATE),
+    ("Key Format Type",                   Tags.KEY_FORMAT_TYPE),
+    ("Key Value Location",                Tags.KEY_VALUE_LOCATION),
+    ("Key Value Present",                 Tags.KEY_VALUE_PRESENT),
+    ("Last Change Date",                  Tags.LAST_CHANGE_DATE),
+    ("Lease Time",                        Tags.LEASE_TIME),
+    ("Link",                              Tags.LINK),
+    ("Name",                              Tags.NAME),
+    ("Never Extractable",                 Tags.NEVER_EXTRACTABLE),
+    ("NIST Key Type",                     Tags.NIST_KEY_TYPE),
+    ("Object Group",                      Tags.OBJECT_GROUP),
+    ("Object Type",                       Tags.OBJECT_TYPE),
+    ("Opaque Data Type",                  Tags.OPAQUE_DATA_TYPE),
+    ("Operation Policy Name",             Tags.OPERATION_POLICY_NAME),
+    ("Original Creation Date",            Tags.ORIGINAL_CREATION_DATE),
+    ("PKCS#12 Friendly Name",             Tags.PKCS12_FRIENDLY_NAME),
+    ("Process Start Date",                Tags.PROCESS_START_DATE),
+    ("Protect Stop Date",                 Tags.PROTECT_STOP_DATE),
+    ("Protection Level",                  Tags.PROTECTION_LEVEL),
+    ("Protection Period",                 Tags.PROTECTION_PERIOD),
+    ("Protection Storage Mask",           Tags.PROTECTION_STORAGE_MASK),
+    ("Quantum Safe",                      Tags.QUANTUM_SAFE),
+    ("Random Number Generator",           Tags.RANDOM_NUMBER_GENERATOR),
+    ("Revocation Reason",                 Tags.REVOCATION_REASON),
+    ("Sensitive",                         Tags.SENSITIVE),
+    ("Short Unique Identifier",           Tags.SHORT_UNIQUE_IDENTIFIER),
+    ("State",                             Tags.STATE),
+    ("Unique Identifier",                 Tags.UNIQUE_IDENTIFIER),
+    ("Usage Limits",                      Tags.USAGE_LIMITS),
+    ("X.509 Certificate Identifier",      Tags.X_509_CERTIFICATE_IDENTIFIER),
+    ("X.509 Certificate Issuer",          Tags.X_509_CERTIFICATE_ISSUER),
+    ("X.509 Certificate Subject",         Tags.X_509_CERTIFICATE_SUBJECT)
+]
+
+
+def convert_attribute_name_to_tag(value):
+    """
+    A utility function that converts an attribute name string into the
+    corresponding attribute tag.
+
+    For example: 'State' -> enums.Tags.STATE
+
+    Args:
+        value (string): The string name of the attribute.
+
+    Returns:
+        enum: The Tags enumeration value that corresponds to the attribute
+            name string.
+
+    Raises:
+        ValueError: if the attribute name string is not a string or if it is
+            an unrecognized attribute name
+    """
+    if not isinstance(value, six.string_types):
+        raise ValueError("The attribute name must be a string.")
+
+    for entry in attribute_name_tag_table:
+        if value == entry[0]:
+            return entry[1]
+
+    raise ValueError("Unrecognized attribute name: '{}'".format(value))
+
+
+def convert_attribute_tag_to_name(value):
+    """
+    A utility function that converts an attribute tag into the corresponding
+    attribute name string.
+
+    For example: enums.Tags.STATE -> 'State'
+
+    Args:
+        value (enum): The Tags enumeration value of the attribute.
+
+    Returns:
+        string: The attribute name string that corresponds to the attribute
+            tag.
+
+    Raises:
+        ValueError: if the attribute tag is not a Tags enumeration or if it
+            is unrecognized attribute tag
+    """
+    if not isinstance(value, Tags):
+        raise ValueError("The attribute tag must be a Tags enumeration.")
+
+    for entry in attribute_name_tag_table:
+        if value == entry[1]:
+            return entry[0]
+
+    raise ValueError("Unrecognized attribute tag: {}".format(value))
+
 
 
 def is_enum_value(enum_class, potential_value):

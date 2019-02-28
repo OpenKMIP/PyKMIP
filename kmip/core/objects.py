@@ -2974,6 +2974,56 @@ class PublicKeyTemplateAttribute(TemplateAttribute):
             names, attributes, Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE)
 
 
+def convert_template_attribute_to_attributes(value):
+    if not isinstance(value, TemplateAttribute):
+        raise TypeError("Input must be a TemplateAttribute structure.")
+
+    tag = enums.Tags.ATTRIBUTES
+    if isinstance(value, CommonTemplateAttribute):
+        tag = enums.Tags.COMMON_ATTRIBUTES
+    elif isinstance(value, PrivateKeyTemplateAttribute):
+        tag = enums.Tags.PRIVATE_KEY_ATTRIBUTES
+    elif isinstance(value, PublicKeyTemplateAttribute):
+        tag = enums.Tags.PUBLIC_KEY_ATTRIBUTES
+
+    attribute_values = []
+    for attribute in value.attributes:
+        attribute_tag = enums.convert_attribute_name_to_tag(
+            attribute.attribute_name.value
+        )
+        attribute_value = attribute.attribute_value
+        attribute_value.tag = attribute_tag
+        attribute_values.append(attribute_value)
+
+    return Attributes(attributes=attribute_values, tag=tag)
+
+
+def convert_attributes_to_template_attribute(value):
+    if not isinstance(value, Attributes):
+        raise TypeError("Input must be an Attributes structure.")
+
+    attribute_structures = []
+    for attribute_value in value.attributes:
+        attribute_name = enums.convert_attribute_tag_to_name(
+            attribute_value.tag
+        )
+        attribute_structures.append(
+            Attribute(
+                attribute_name=Attribute.AttributeName(attribute_name),
+                attribute_value=attribute_value
+            )
+        )
+
+    if value.tag == enums.Tags.COMMON_ATTRIBUTES:
+        return CommonTemplateAttribute(attributes=attribute_structures)
+    elif value.tag == enums.Tags.PRIVATE_KEY_ATTRIBUTES:
+        return PrivateKeyTemplateAttribute(attributes=attribute_structures)
+    elif value.tag == enums.Tags.PUBLIC_KEY_ATTRIBUTES:
+        return PublicKeyTemplateAttribute(attributes=attribute_structures)
+    else:
+        return TemplateAttribute(attributes=attribute_structures)
+
+
 # 2.1.9
 class ExtensionName(TextString):
     """

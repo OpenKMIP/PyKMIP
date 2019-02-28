@@ -100,6 +100,50 @@ class TestEnumUtilityFunctions(testtools.TestCase):
         )
         self.assertFalse(result)
 
+    def test_convert_attribute_name_to_tag(self):
+        self.assertEqual(
+            enums.Tags.OBJECT_TYPE,
+            enums.convert_attribute_name_to_tag("Object Type")
+        )
+
+        args = (enums.Tags.COMMON_ATTRIBUTES, )
+        self.assertRaisesRegex(
+            ValueError,
+            "The attribute name must be a string.",
+            enums.convert_attribute_name_to_tag,
+            *args
+        )
+
+        args = ("invalid", )
+        self.assertRaisesRegex(
+            ValueError,
+            "Unrecognized attribute name: 'invalid'".format(args[0]),
+            enums.convert_attribute_name_to_tag,
+            *args
+        )
+
+    def test_convert_attribute_tag_to_name(self):
+        self.assertEqual(
+            "Always Sensitive",
+            enums.convert_attribute_tag_to_name(enums.Tags.ALWAYS_SENSITIVE)
+        )
+
+        args = ("invalid", )
+        self.assertRaisesRegex(
+            ValueError,
+            "The attribute tag must be a Tags enumeration.",
+            enums.convert_attribute_tag_to_name,
+            *args
+        )
+
+        args = (enums.Tags.COMMON_ATTRIBUTES, )
+        self.assertRaisesRegex(
+            ValueError,
+            "Unrecognized attribute tag: {}".format(args[0]),
+            enums.convert_attribute_tag_to_name,
+            *args
+        )
+
     def test_is_attribute(self):
         # Test an attribute introduced in KMIP 1.0
         result = enums.is_attribute(enums.Tags.UNIQUE_IDENTIFIER)
