@@ -97,14 +97,20 @@ class KmipSession(threading.Thread):
         """
         self._logger.info("Starting session: {0}".format(self.name))
 
-        while True:
-            try:
-                self._handle_message_loop()
-            except exceptions.ConnectionClosed as e:
-                break
-            except Exception as e:
-                self._logger.info("Failure handling message loop")
-                self._logger.exception(e)
+        try:
+            self._connection.do_handshake()
+        except Exception as e:
+            self._logger.info("Failure running TLS handshake")
+            self._logger.exception(e)
+        else:
+            while True:
+                try:
+                    self._handle_message_loop()
+                except exceptions.ConnectionClosed as e:
+                    break
+                except Exception as e:
+                    self._logger.info("Failure handling message loop")
+                    self._logger.exception(e)
 
         self._connection.shutdown(socket.SHUT_RDWR)
         self._connection.close()
