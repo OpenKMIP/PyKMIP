@@ -67,6 +67,25 @@ class TestCreateRequestPayload(testtools.TestCase):
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
+        # Section 3.1.1, and manually converted into KMIP 2.0 format.
+        #
+        # This encoding matches the following set of values:
+        # Request Payload
+        #     Object Type - Symmetric Key
+        #     Attributes
+        #         Cryptographic Algorithm - AES
+        #         Cryptographic Length - 128
+        #         Cryptographic Usage Mask - Encrypt | Decrypt
+        self.full_encoding_with_attributes = utils.BytearrayStream(
+            b'\x42\x00\x79\x01\x00\x00\x00\x48'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x01\x25\x01\x00\x00\x00\x30'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+        )
+
+        # Encoding obtained from the KMIP 1.1 testing document,
         # Section 3.1.1.
         #
         # This encoding matches the following set of values:
@@ -219,6 +238,64 @@ class TestCreateRequestPayload(testtools.TestCase):
             payload.template_attribute
         )
 
+    def test_read_kmip_2_0(self):
+        """
+        Test that a Create request payload can be read from a data stream
+        encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.CreateRequestPayload()
+
+        self.assertEqual(None, payload.object_type)
+        self.assertEqual(None, payload.template_attribute)
+
+        payload.read(
+            self.full_encoding_with_attributes,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(
+            enums.ObjectType.SYMMETRIC_KEY,
+            payload.object_type
+        )
+        self.assertEqual(
+            objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Algorithm'
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Length'
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Usage Mask'
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    )
+                ]
+            ),
+            payload.template_attribute
+        )
+
     def test_read_missing_object_type(self):
         """
         Test that an InvalidKmipEncoding error is raised during the decoding
@@ -256,6 +333,28 @@ class TestCreateRequestPayload(testtools.TestCase):
             "attribute.",
             payload.read,
             *args
+        )
+
+    def test_read_missing_attributes(self):
+        """
+        Test that an InvalidKmipEncoding error is raised during the decoding
+        of a Create request payload when the attributes structure is missing
+        from the encoding.
+        """
+        payload = payloads.CreateRequestPayload()
+
+        self.assertIsNone(payload.object_type)
+        self.assertIsNone(payload.template_attribute)
+
+        args = (self.no_template_attribute_encoding, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The Create request payload encoding is missing the attributes "
+            "structure.",
+            payload.read,
+            *args,
+            **kwargs
         )
 
     def test_write(self):
@@ -306,6 +405,56 @@ class TestCreateRequestPayload(testtools.TestCase):
 
         self.assertEqual(len(self.full_encoding), len(stream))
         self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_write_kmip_2_0(self):
+        """
+        Test that a Create request payload can be written to a data stream
+        encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.CreateRequestPayload(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Algorithm'
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Length'
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Usage Mask'
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    )
+                ]
+            )
+        )
+
+        stream = utils.BytearrayStream()
+        payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
+
+        self.assertEqual(len(self.full_encoding_with_attributes), len(stream))
+        self.assertEqual(str(self.full_encoding_with_attributes), str(stream))
 
     def test_write_missing_object_type(self):
         """
@@ -365,6 +514,28 @@ class TestCreateRequestPayload(testtools.TestCase):
             "field.",
             payload.write,
             *args
+        )
+
+    def test_write_missing_attributes(self):
+        """
+        Test that an InvalidField error is raised during the encoding of a
+        Create request payload when the payload is missing the template
+        attribute.
+        """
+        payload = payloads.CreateRequestPayload(
+            object_type=enums.ObjectType.SYMMETRIC_KEY
+        )
+
+        stream = utils.BytearrayStream()
+        args = (stream, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The Create request payload is missing the template attribute "
+            "field.",
+            payload.write,
+            *args,
+            **kwargs
         )
 
     def test_repr(self):
@@ -961,6 +1132,32 @@ class TestCreateResponsePayload(testtools.TestCase):
             payload.template_attribute
         )
 
+    def test_read_kmip_2_0(self):
+        """
+        Test that a Create response payload can be read from a data stream
+        encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.CreateResponsePayload()
+
+        self.assertIsNone(payload.object_type)
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload.template_attribute)
+
+        payload.read(
+            self.no_template_attribute_encoding,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(
+            enums.ObjectType.SYMMETRIC_KEY,
+            payload.object_type
+        )
+        self.assertEqual(
+            'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
+            payload.unique_identifier
+        )
+        self.assertIsNone(payload.template_attribute)
+
     def test_read_missing_object_type(self):
         """
         Test that an InvalidKmipEncoding error is raised during the decoding
@@ -1053,6 +1250,36 @@ class TestCreateResponsePayload(testtools.TestCase):
 
         self.assertEqual(len(self.full_encoding), len(stream))
         self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_write_kmip_2_0(self):
+        """
+        Test that a Create response payload can be written to a data stream
+        encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.CreateResponsePayload(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            unique_identifier="fb4b5b9c-6188-4c63-8142-fe9c328129fc",
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "State"
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.State,
+                            value=enums.State.PRE_ACTIVE,
+                            tag=enums.Tags.STATE
+                        )
+                    )
+                ]
+            )
+        )
+
+        stream = utils.BytearrayStream()
+        payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
+
+        self.assertEqual(len(self.no_template_attribute_encoding), len(stream))
+        self.assertEqual(str(self.no_template_attribute_encoding), str(stream))
 
     def test_write_missing_object_type(self):
         """
