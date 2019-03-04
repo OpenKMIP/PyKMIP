@@ -1285,7 +1285,7 @@ class KmipEngine(object):
     def _process_register(self, payload):
         self._logger.info("Processing operation: Register")
 
-        object_type = payload.object_type.value
+        object_type = payload.object_type
         template_attribute = payload.template_attribute
 
         if self._object_map.get(object_type) is None:
@@ -1298,8 +1298,8 @@ class KmipEngine(object):
                 )
             )
 
-        if payload.secret:
-            secret = payload.secret
+        if payload.managed_object:
+            secret = payload.managed_object
         else:
             # TODO (peterhamilton) It is possible to register 'empty' secrets
             # like Private Keys. For now, that feature is not supported.
@@ -1340,9 +1340,7 @@ class KmipEngine(object):
         )
 
         response_payload = payloads.RegisterResponsePayload(
-            unique_identifier=attributes.UniqueIdentifier(
-                str(managed_object.unique_identifier)
-            )
+            unique_identifier=str(managed_object.unique_identifier)
         )
 
         self._id_placeholder = str(managed_object.unique_identifier)

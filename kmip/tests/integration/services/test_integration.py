@@ -427,10 +427,10 @@ class TestIntegration(TestCase):
                                       credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
-        self._check_uuid(result.uuid.value, str)
+        self._check_uuid(result.uuid, str)
 
         # Check that the returned key bytes match what was provided
-        uuid = result.uuid.value
+        uuid = result.uuid
         result = self.client.get(uuid=uuid, credential=None)
 
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
@@ -654,10 +654,10 @@ class TestIntegration(TestCase):
         self._check_result_status(priv_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_uuid(priv_key_result.uuid.value, str)
+        self._check_uuid(priv_key_result.uuid, str)
 
         # Check that the returned key bytes match what was provided
-        priv_uuid = priv_key_result.uuid.value
+        priv_uuid = priv_key_result.uuid
 
         priv_key_result = self.client.get(uuid=priv_uuid, credential=None)
 
@@ -766,7 +766,7 @@ class TestIntegration(TestCase):
         self._check_result_status(pub_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
         # Check that the returned key bytes match what was provided
-        pub_uuid = pub_key_result.uuid.value
+        pub_uuid = pub_key_result.uuid
         pub_key_result = self.client.get(uuid=pub_uuid, credential=None)
         self._check_result_status(pub_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
@@ -901,10 +901,10 @@ class TestIntegration(TestCase):
         self._check_result_status(cert_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_uuid(cert_result.uuid.value, str)
+        self._check_uuid(cert_result.uuid, str)
 
         # Check that the returned key bytes match what was provided
-        cert_uuid = cert_result.uuid.value
+        cert_uuid = cert_result.uuid
 
         cert_result = self.client.get(uuid=cert_uuid, credential=None)
 
@@ -1008,10 +1008,10 @@ class TestIntegration(TestCase):
         self._check_result_status(pass_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_uuid(pass_result.uuid.value, str)
+        self._check_uuid(pass_result.uuid, str)
 
         # Check that the returned key bytes match what was provided
-        pass_uuid = pass_result.uuid.value
+        pass_uuid = pass_result.uuid
 
         pass_result = self.client.get(uuid=pass_uuid, credential=None)
 
@@ -1102,10 +1102,10 @@ class TestIntegration(TestCase):
         self._check_result_status(opaque_obj_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
-        self._check_uuid(opaque_obj_result.uuid.value, str)
+        self._check_uuid(opaque_obj_result.uuid, str)
 
         # Check that the returned key bytes match what was provided
-        opaque_obj_uuid = opaque_obj_result.uuid.value
+        opaque_obj_uuid = opaque_obj_result.uuid
 
         opaque_obj_result = self.client.get(uuid=opaque_obj_uuid,
                                             credential=None)

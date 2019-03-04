@@ -715,12 +715,12 @@ class TestRequestMessage(TestCase):
 
             object_type = request_payload.object_type
             msg = "Bad object type type: expected {0}, received {1}"
-            self.assertIsInstance(object_type, attr.ObjectType,
-                                  msg.format(attr.ObjectType,
+            self.assertIsInstance(object_type, enums.ObjectType,
+                                  msg.format(enums.ObjectType,
                                              type(object_type)))
             msg = "Bad object type value: expected {0}, received {1}"
             exp_value = enums.ObjectType.TEMPLATE
-            rcv_value = object_type.value
+            rcv_value = object_type
             self.assertEqual(exp_value, rcv_value,
                              msg.format(exp_value, rcv_value))
 
@@ -784,7 +784,7 @@ class TestRequestMessage(TestCase):
 
         operation = contents.Operation(enums.Operation.REGISTER)
 
-        object_type = attr.ObjectType(enums.ObjectType.TEMPLATE)
+        object_type = enums.ObjectType.TEMPLATE
         tmpl_attr = objects.TemplateAttribute()
 
         attributes = []
@@ -833,7 +833,7 @@ class TestRequestMessage(TestCase):
         request_payload = payloads.RegisterRequestPayload(
             object_type=object_type,
             template_attribute=tmpl_attr,
-            secret=template)
+            managed_object=template)
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=request_payload)
         request_message = messages.RequestMessage(request_header=req_header,
@@ -1891,12 +1891,12 @@ class TestResponseMessage(TestCase):
 
             unique_identifier = response_payload.unique_identifier
             msg = "Bad unique identifier type: expected {0}, received {1}"
-            self.assertIsInstance(unique_identifier, attr.UniqueIdentifier,
-                                  msg.format(attr.UniqueIdentifier,
+            self.assertIsInstance(unique_identifier, six.string_types,
+                                  msg.format(six.string_types,
                                              type(unique_identifier)))
             msg = "Bad unique identifier value: expected {0}, received {1}"
             exp_value = '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3'
-            rcv_value = unique_identifier.value
+            rcv_value = unique_identifier
             self.assertEqual(exp_value, rcv_value,
                              msg.format(exp_value, rcv_value))
 
@@ -1914,7 +1914,7 @@ class TestResponseMessage(TestCase):
         operation = contents.Operation(enums.Operation.REGISTER)
         result_status = contents.ResultStatus(enums.ResultStatus.SUCCESS)
 
-        uuid = attr.UniqueIdentifier('5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3')
+        uuid = '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3'
         resp_pl = payloads.RegisterResponsePayload(unique_identifier=uuid)
         batch_item = messages.ResponseBatchItem(operation=operation,
                                                 result_status=result_status,

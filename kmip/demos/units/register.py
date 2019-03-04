@@ -83,7 +83,7 @@ if __name__ == '__main__':
         result.result_status.value))
 
     if result.result_status.value == ResultStatus.SUCCESS:
-        logger.info('registered UUID: {0}'.format(result.uuid.value))
+        logger.info('registered UUID: {0}'.format(result.uuid))
         logger.info('registered template attribute: {0}'.
                     format(result.template_attribute))
     else:

@@ -230,7 +230,7 @@ class TestKMIPClientIntegration(TestCase):
 
         self._check_result_status(result.result_status.value, ResultStatus,
                                   ResultStatus.SUCCESS)
-        self._check_uuid(result.uuid.value, str)
+        self._check_uuid(result.uuid, str)
 
         # Check the template attribute type
         self._check_template_attribute(result.template_attribute,
@@ -238,7 +238,7 @@ class TestKMIPClientIntegration(TestCase):
                                        [[str, 'Unique Identifier', str,
                                          None]])
         # Check that the returned key bytes match what was provided
-        uuid = result.uuid.value
+        uuid = result.uuid
         result = self.client.get(uuid=uuid, credential=credential)
 
         self._check_result_status(result.result_status.value, ResultStatus,
