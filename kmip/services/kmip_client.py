@@ -672,7 +672,6 @@ class KMIPProxy(object):
 
     def register(self, object_type, template_attribute, secret,
                  credential=None):
-        object_type = attr.ObjectType(object_type)
         return self._register(object_type=object_type,
                               template_attribute=template_attribute,
                               secret=secret,
@@ -1449,7 +1448,7 @@ class KMIPProxy(object):
         req_pl = payloads.RegisterRequestPayload(
             object_type=object_type,
             template_attribute=template_attribute,
-            secret=secret)
+            managed_object=secret)
         batch_item = messages.RequestBatchItem(operation=operation,
                                                request_payload=req_pl)
 

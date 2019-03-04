@@ -3357,7 +3357,7 @@ class TestKmipEngine(testtools.TestCase):
         attribute_factory = factory.AttributeFactory()
 
         # Build a SymmetricKey for registration.
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
@@ -3408,7 +3408,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = payloads.RegisterRequestPayload(
             object_type=object_type,
             template_attribute=template_attribute,
-            secret=secret
+            managed_object=secret
         )
 
         response_payload = e._process_register(payload)
@@ -3419,7 +3419,7 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Register"
         )
 
-        uid = response_payload.unique_identifier.value
+        uid = response_payload.unique_identifier
         self.assertEqual('1', uid)
 
         # Retrieve the stored object and verify all attributes were set
@@ -3467,7 +3467,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session = e._data_store_session_factory()
         e._logger = mock.MagicMock()
 
-        object_type = attributes.ObjectType(enums.ObjectType.SPLIT_KEY)
+        object_type = enums.ObjectType.SPLIT_KEY
         payload = payloads.RegisterRequestPayload(object_type=object_type)
 
         args = (payload, )
@@ -3491,7 +3491,7 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session = e._data_store_session_factory()
         e._logger = mock.MagicMock()
 
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
         payload = payloads.RegisterRequestPayload(object_type=object_type)
 
         args = (payload, )
@@ -8337,7 +8337,7 @@ class TestKmipEngine(testtools.TestCase):
         attribute_factory = factory.AttributeFactory()
 
         # Build a SymmetricKey for registration.
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
@@ -8385,7 +8385,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = payloads.RegisterRequestPayload(
             object_type=object_type,
             template_attribute=template_attribute,
-            secret=secret
+            managed_object=secret
         )
 
         response_payload = e._process_register(payload)
@@ -8396,7 +8396,7 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Register"
         )
 
-        uid = response_payload.unique_identifier.value
+        uid = response_payload.unique_identifier
         self.assertEqual('1', uid)
 
         e._logger.reset_mock()
@@ -8479,7 +8479,7 @@ class TestKmipEngine(testtools.TestCase):
         attribute_factory = factory.AttributeFactory()
 
         # Build a SymmetricKey for registration.
-        object_type = attributes.ObjectType(enums.ObjectType.SYMMETRIC_KEY)
+        object_type = enums.ObjectType.SYMMETRIC_KEY
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
@@ -8527,7 +8527,7 @@ class TestKmipEngine(testtools.TestCase):
         payload = payloads.RegisterRequestPayload(
             object_type=object_type,
             template_attribute=template_attribute,
-            secret=secret
+            managed_object=secret
         )
 
         response_payload = e._process_register(payload)
@@ -8538,7 +8538,7 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: Register"
         )
 
-        uuid = response_payload.unique_identifier.value
+        uuid = response_payload.unique_identifier
         self.assertEqual('1', uuid)
 
         e._logger.reset_mock()
