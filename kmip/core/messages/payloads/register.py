@@ -174,17 +174,37 @@ class RegisterRequestPayload(primitives.Struct):
                 "type."
             )
 
-        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
-            self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
+                self._template_attribute = objects.TemplateAttribute()
+                self._template_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            else:
+                raise exceptions.InvalidKmipEncoding(
+                    "The Register request payload encoding is missing the "
+                    "template attribute."
+                )
         else:
-            raise exceptions.InvalidKmipEncoding(
-                "The Register request payload encoding is missing the "
-                "template attribute."
-            )
+            # NOTE (ph) For now, leave attributes natively in TemplateAttribute
+            # form and just convert to the KMIP 2.0 Attributes form as needed
+            # for encoding/decoding purposes. Changing the payload to require
+            # the new Attributes structure will trigger a bunch of second-order
+            # effects across the client and server codebases that is beyond
+            # the scope of updating the Register payloads to support KMIP 2.0.
+            if self.is_tag_next(enums.Tags.ATTRIBUTES, local_buffer):
+                attributes = objects.Attributes()
+                attributes.read(local_buffer, kmip_version=kmip_version)
+                value = objects.convert_attributes_to_template_attribute(
+                    attributes
+                )
+                self._template_attribute = value
+            else:
+                raise exceptions.InvalidKmipEncoding(
+                    "The Register request payload encoding is missing the "
+                    "attributes structure."
+                )
 
         managed_object = self.secret_factory.create(self.object_type)
 
@@ -224,16 +244,34 @@ class RegisterRequestPayload(primitives.Struct):
                 "field."
             )
 
-        if self._template_attribute:
-            self._template_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._template_attribute:
+                self._template_attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            else:
+                raise exceptions.InvalidField(
+                    "The Register request payload is missing the template "
+                    "attribute field."
+                )
         else:
-            raise exceptions.InvalidField(
-                "The Register request payload is missing the template "
-                "attribute field."
-            )
+            # NOTE (ph) For now, leave attributes natively in TemplateAttribute
+            # form and just convert to the KMIP 2.0 Attributes form as needed
+            # for encoding/decoding purposes. Changing the payload to require
+            # the new Attributes structure will trigger a bunch of second-order
+            # effects across the client and server codebases that is beyond
+            # the scope of updating the Register payloads to support KMIP 2.0.
+            if self._template_attribute:
+                attributes = objects.convert_template_attribute_to_attributes(
+                    self._template_attribute
+                )
+                attributes.write(local_buffer, kmip_version=kmip_version)
+            else:
+                raise exceptions.InvalidField(
+                    "The Register request payload is missing the template "
+                    "attribute field."
+                )
 
         if self._managed_object:
             self._managed_object.write(local_buffer, kmip_version=kmip_version)
@@ -391,12 +429,13 @@ class RegisterResponsePayload(primitives.Struct):
                 "identifier."
             )
 
-        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
-            self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
+                self._template_attribute = objects.TemplateAttribute()
+                self._template_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
 
         self.is_oversized(local_buffer)
 
@@ -427,11 +466,12 @@ class RegisterResponsePayload(primitives.Struct):
                 "identifier field."
             )
 
-        if self._template_attribute:
-            self._template_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._template_attribute:
+                self._template_attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
 
         self.length = local_buffer.length()
         super(RegisterResponsePayload, self).write(
