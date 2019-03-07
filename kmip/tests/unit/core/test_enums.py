@@ -87,6 +87,63 @@ class TestEnumUtilityFunctions(testtools.TestCase):
     def tearDown(self):
         super(TestEnumUtilityFunctions, self).tearDown()
 
+    def test_get_bit_mask_from_enumerations(self):
+        self.assertEqual(
+            7,
+            enums.get_bit_mask_from_enumerations(
+                [
+                    enums.StorageStatusMask.ARCHIVAL_STORAGE,
+                    enums.StorageStatusMask.DESTROYED_STORAGE,
+                    enums.StorageStatusMask.ONLINE_STORAGE
+                ]
+            )
+        )
+
+    def test_get_enumerations_from_bit_mask(self):
+        expected = [
+                enums.StorageStatusMask.ARCHIVAL_STORAGE,
+                enums.StorageStatusMask.DESTROYED_STORAGE,
+                enums.StorageStatusMask.ONLINE_STORAGE
+        ]
+        observed = enums.get_enumerations_from_bit_mask(
+            enums.StorageStatusMask,
+            7
+        )
+
+        self.assertEqual(len(expected), len(observed))
+        for x in expected:
+            self.assertIn(x, observed)
+
+    def test_is_bit_mask(self):
+        self.assertTrue(
+            enums.is_bit_mask(
+                enums.StorageStatusMask,
+                enums.StorageStatusMask.ARCHIVAL_STORAGE.value |
+                enums.StorageStatusMask.ONLINE_STORAGE.value
+            )
+        )
+
+        self.assertFalse(
+            enums.is_bit_mask(
+                enums.StorageStatusMask,
+                enums.StorageStatusMask.DESTROYED_STORAGE
+            )
+        )
+
+        self.assertFalse(
+            enums.is_bit_mask(
+                enums.WrappingMethod,
+                enums.WrappingMethod.ENCRYPT.value
+            )
+        )
+
+        self.assertFalse(
+            enums.is_bit_mask(
+                enums.ProtectionStorageMask,
+                0x80000000
+            )
+        )
+
     def test_is_enum_value(self):
         result = enums.is_enum_value(
             enums.CryptographicAlgorithm,

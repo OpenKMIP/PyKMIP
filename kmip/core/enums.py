@@ -18,6 +18,7 @@
 
 import copy
 import enum
+import functools
 import six
 
 
@@ -1814,14 +1815,86 @@ def convert_attribute_tag_to_name(value):
     raise ValueError("Unrecognized attribute tag: {}".format(value))
 
 
+def get_bit_mask_from_enumerations(enumerations):
+    """
+    A utility function that computes a bit mask from a collection of
+    enumeration values.
 
-def is_enum_value(enum_class, potential_value):
+    Args:
+        enumerations (list): A list of enumeration values to be combined in a
+            composite bit mask.
+
+    Returns:
+        int: The composite bit mask.
+    """
+    return functools.reduce(
+        lambda x, y: x | y, [z.value for z in enumerations]
+    )
+
+
+def get_enumerations_from_bit_mask(enumeration, mask):
+    """
+    A utility function that creates a list of enumeration values from a bit
+    mask for a specific mask enumeration class.
+
+    Args:
+        enumeration (class): The enumeration class from which to draw
+            enumeration values.
+        mask (int): The bit mask from which to identify enumeration values.
+
+    Returns:
+        list: A list of enumeration values corresponding to the bit mask.
+    """
+    return [x for x in enumeration if (x.value & mask) == x.value]
+
+
+def is_bit_mask(enumeration, potential_mask):
+    """
+    A utility function that checks if the provided value is a composite bit
+    mask of enumeration values in the specified enumeration class.
+
+    Args:
+        enumeration (class): One of the mask enumeration classes found in this
+            file. These include:
+                * Cryptographic Usage Mask
+                * Protection Storage Mask
+                * Storage Status Mask
+        potential_mask (int): A potential bit mask composed of enumeration
+            values belonging to the enumeration class.
+
+    Returns:
+        True: if the potential mask is a valid bit mask of the mask enumeration
+        False: otherwise
+    """
+    if not isinstance(potential_mask, six.integer_types):
+        return False
+
+    mask_enumerations = (
+        CryptographicUsageMask,
+        ProtectionStorageMask,
+        StorageStatusMask
+    )
+    if enumeration not in mask_enumerations:
+        return False
+
+    mask = 0
+    for value in [e.value for e in enumeration]:
+        if (value & potential_mask) == value:
+            mask |= value
+
+    if mask != potential_mask:
+        return False
+
+    return True
+
+
+def is_enum_value(enumeration, potential_value):
     """
     A utility function that checks if the enumeration class contains the
     provided value.
 
     Args:
-        enum_class (class): One of the enumeration classes found in this file.
+        enumeration (class): One of the enumeration classes found in this file.
         potential_value (int, string): A potential value of the enumeration
             class.
 
@@ -1830,7 +1903,7 @@ def is_enum_value(enum_class, potential_value):
         False: otherwise
     """
     try:
-        enum_class(potential_value)
+        enumeration(potential_value)
     except ValueError:
         return False
 
