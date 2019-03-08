@@ -2700,8 +2700,7 @@ class TestProxyKmipClient(testtools.TestCase):
 
         uuid0 = 'aaaaaaaa-1111-2222-3333-ffffffffffff'
         uuid1 = 'bbbbbbbb-4444-5555-6666-gggggggggggg'
-        unique_identifiers = [attr.UniqueIdentifier(uuid0),
-                              attr.UniqueIdentifier(uuid1)]
+        unique_identifiers = [uuid0, uuid1]
 
         result = results.LocateResult(
             contents.ResultStatus(enums.ResultStatus.SUCCESS),

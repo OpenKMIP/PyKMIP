@@ -1946,7 +1946,7 @@ class TestResponseMessage(TestCase):
 
         operation = contents.Operation(enums.Operation.LOCATE)
         result_status = contents.ResultStatus(enums.ResultStatus.SUCCESS)
-        uuid = attr.UniqueIdentifier('49a1ca88-6bea-4fb2-b450-7e58802c3038')
+        uuid = "49a1ca88-6bea-4fb2-b450-7e58802c3038"
 
         resp_pl = payloads.LocateResponsePayload(unique_identifiers=[uuid])
 
