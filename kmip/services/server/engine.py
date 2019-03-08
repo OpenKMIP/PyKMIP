@@ -1563,9 +1563,9 @@ class KmipEngine(object):
 
             managed_objects = managed_objects_filtered
 
-        unique_identifiers = [attributes.UniqueIdentifier(
-                            str(managed_object.unique_identifier))
-                            for managed_object in managed_objects]
+        unique_identifiers = [
+            str(x.unique_identifier) for x in managed_objects
+        ]
 
         response_payload = payloads.LocateResponsePayload(
             unique_identifiers=unique_identifiers

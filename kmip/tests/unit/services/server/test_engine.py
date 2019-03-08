@@ -4289,7 +4289,7 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(
             id_a,
-            response_payload.unique_identifiers[0].value
+            response_payload.unique_identifiers[0]
         )
 
         # Add the second obj and test the locate
@@ -4315,11 +4315,11 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertIn(
             id_a,
-            [uid.value for uid in response_payload.unique_identifiers]
+            response_payload.unique_identifiers
         )
         self.assertIn(
             id_b,
-            [uid.value for uid in response_payload.unique_identifiers]
+            response_payload.unique_identifiers
         )
 
     def test_locate_with_name(self):
@@ -4381,11 +4381,11 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertIn(
             id_a,
-            [uid.value for uid in response_payload.unique_identifiers]
+            response_payload.unique_identifiers
         )
         self.assertIn(
             id_b,
-            [uid.value for uid in response_payload.unique_identifiers]
+            response_payload.unique_identifiers
         )
 
         # Locate the obj with name 'name1'
@@ -4415,7 +4415,7 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertIn(
             id_c,
-            [uid.value for uid in response_payload.unique_identifiers]
+            response_payload.unique_identifiers
         )
 
     def test_get(self):

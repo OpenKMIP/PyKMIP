@@ -1476,30 +1476,21 @@ class KMIPProxy(object):
         return result
 
     def _locate(self, maximum_items=None, storage_status_mask=None,
-                object_group_member=None, attributes=[], credential=None):
+                object_group_member=None, attributes=None, credential=None):
 
         operation = Operation(OperationEnum.LOCATE)
 
-        mxi = None
-        ssmask = None
-        objgrp = None
+        payload = payloads.LocateRequestPayload(
+            maximum_items=maximum_items,
+            storage_status_mask=storage_status_mask,
+            object_group_member=object_group_member,
+            attributes=attributes
+        )
 
-        if maximum_items is not None:
-            mxi = payloads.LocateRequestPayload.MaximumItems(maximum_items)
-        if storage_status_mask is not None:
-            m = storage_status_mask
-            ssmask = payloads.LocateRequestPayload.StorageStatusMask(m)
-        if object_group_member is not None:
-            o = object_group_member
-            objgrp = payloads.LocateRequestPayload.ObjectGroupMember(o)
-
-        payload = payloads.LocateRequestPayload(maximum_items=mxi,
-                                                storage_status_mask=ssmask,
-                                                object_group_member=objgrp,
-                                                attributes=attributes)
-
-        batch_item = messages.RequestBatchItem(operation=operation,
-                                               request_payload=payload)
+        batch_item = messages.RequestBatchItem(
+            operation=operation,
+            request_payload=payload
+        )
 
         message = self._build_request_message(credential, [batch_item])
         self._send_message(message)

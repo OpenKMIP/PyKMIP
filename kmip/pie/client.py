@@ -707,8 +707,7 @@ class ProxyKmipClient(object):
 
         status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
-            uids = [uuid.value for uuid in result.uuids]
-            return uids
+            return result.uuids
         else:
             reason = result.result_reason.value
             message = result.result_message.value
