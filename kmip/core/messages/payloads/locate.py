@@ -16,6 +16,7 @@
 import six
 
 from kmip.core import enums
+from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
@@ -61,7 +62,8 @@ class LocateRequestPayload(primitives.Struct):
                 objects. Optional, defaults to None.
             attributes (list): A list of Attribute structures containing the
                 attribute values that should be used to filter and match
-                objects. Optional, defaults to None.
+                objects. Optional, defaults to None. Required for read/write
+                for KMIP 2.0+.
         """
         super(LocateRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
 
@@ -198,6 +200,10 @@ class LocateRequestPayload(primitives.Struct):
             kmip_version (KMIPVersion): An enumeration defining the KMIP
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the attributes structure is missing
+                from the encoded payload for KMIP 2.0+ encodings.
         """
         super(LocateRequestPayload, self).read(
             input_buffer,
@@ -242,10 +248,25 @@ class LocateRequestPayload(primitives.Struct):
                 kmip_version=kmip_version
             )
 
-        while self.is_tag_next(enums.Tags.ATTRIBUTE, local_buffer):
-            attribute = objects.Attribute()
-            attribute.read(local_buffer, kmip_version=kmip_version)
-            self._attributes.append(attribute)
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            while self.is_tag_next(enums.Tags.ATTRIBUTE, local_buffer):
+                attribute = objects.Attribute()
+                attribute.read(local_buffer, kmip_version=kmip_version)
+                self._attributes.append(attribute)
+        else:
+            if self.is_tag_next(enums.Tags.ATTRIBUTES, local_buffer):
+                attributes = objects.Attributes()
+                attributes.read(local_buffer, kmip_version=kmip_version)
+                # TODO (ph) Add a new utility to avoid using TemplateAttributes
+                temp_attr = objects.convert_attributes_to_template_attribute(
+                    attributes
+                )
+                self._attributes = temp_attr.attributes
+            else:
+                raise exceptions.InvalidKmipEncoding(
+                    "The Locate request payload encoding is missing the "
+                    "attributes structure."
+                )
 
     def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -278,9 +299,28 @@ class LocateRequestPayload(primitives.Struct):
                 kmip_version=kmip_version
             )
 
-        if self._attributes:
-            for attribute in self.attributes:
-                attribute.write(local_buffer, kmip_version=kmip_version)
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._attributes:
+                for attribute in self.attributes:
+                    attribute.write(
+                        local_buffer,
+                        kmip_version=kmip_version
+                    )
+        else:
+            if self._attributes:
+                # TODO (ph) Add a new utility to avoid using TemplateAttributes
+                template_attribute = objects.TemplateAttribute(
+                    attributes=self.attributes
+                )
+                attributes = objects.convert_template_attribute_to_attributes(
+                    template_attribute
+                )
+                attributes.write(local_buffer, kmip_version=kmip_version)
+            else:
+                raise exceptions.InvalidField(
+                    "The Locate request payload is missing the attributes "
+                    "list."
+                )
 
         self.length = local_buffer.length()
         super(LocateRequestPayload, self).write(
