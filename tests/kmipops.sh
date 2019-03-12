@@ -1,6 +1,35 @@
 #!/bin/bash
 
-#Global vars ... yes, I Know...
+function usage
+{
+    cat 1>&2 <<UsageMessage
+
+Usage: $0 -u OP_USER -p OP_USER_PWD -c config_session
+    -u operator user in HSM (will create a kmip user)
+    -p operator user password
+    -c config session in pykmip.conf to be used in the tests
+    -h this help
+
+UsageMessage
+
+    exit 2
+}
+
+while getopts u:p:c: opt
+do
+    case "$opt" in
+        u) HSM_TEST_USER="$OPTARG";;
+        p) HSM_TEST_USER_PASSWD="$OPTARG";;
+        c) conf_session="$OPTARG";;
+        ?|h) usage
+    esac
+done
+
+[[ -z "$HSM_TEST_USER" ]] && usage
+[[ -z "$HSM_TEST_USER_PASSWD" ]] && usage
+[[ -z "$conf_session" ]] && usage
+
+#Global vars ... read only
 
 declare -r pythonexe=/cygdrive/c/Python27/python.exe
 declare -r unitspath=/projetos/dinamo/PyKMIP/kmip/demos/units
@@ -8,8 +37,7 @@ declare -r piepath=/projetos/dinamo/PyKMIP/kmip/demos/pie
 declare -r config_session=kmip_test
 declare -r outfile=out.txt
 declare -r tst_pwd=12345678
-
-declare -r conf_session="hs65"
+declare -r kmip_user_cert=/projetos/dinamo/PyKMIP/tests/rsa2k_cert.pem
 
 # the \\ bellow is the escape for grep
 
@@ -17,23 +45,11 @@ host=$(grep -A 12 \\[${conf_session}\\] ~/.pykmip/pykmip.conf | grep "host=" | s
 user=$(grep -A 12 \\[${conf_session}\\] ~/.pykmip/pykmip.conf | grep "username=" | sed "s/username=\(.*\)/\1/" )
 pass=$(grep -A 12 \\[${conf_session}\\] ~/.pykmip/pykmip.conf | grep "password=" | sed "s/password=\(.*\)/\1/" )
 
+HSM_ADDR=${host}
+
 echo host=${host}
 echo user=${user}
 echo pass=${pass}
-
-
-
-#user that starts the test
-if [ "$#" -eq "3" ] ; then
-    #NOTE: the kmip operations use the ip address of the config session defined in pykmip.conf (in)
-    HSM_ADDR=${1}
-    HSM_TEST_USER=${2}
-    HSM_TEST_USER_PASSWD=${3}
-else 
-    echo "Usage: $0 hsm_ip hsm_usr (will create a kmip user) hsm_usr_pwd"
-    echo "NOTE: the kmip operations use the ip address of the config session [${config_session}] defined in pykmip.conf (in user HOME dir)"
-    exit 1
-fi
 
 PROG_NAME=hsmutil
 EXEC_TESTER=${PROG_NAME}.exe
@@ -175,9 +191,9 @@ function run_kmip_test
     # $1 : script to run (without extension)
     # $2 : script parameters
 
-    kmip_script="${1}"
-    shift
-    kmip_params="$@"
+    kmip_script=${1}
+    shift 1
+    kmip_params=$@
 
     case ${kmip_script} in
         ( "register_certificate" | "register_opaque_object" | "register_symmetric_key" | \
@@ -189,11 +205,11 @@ function run_kmip_test
             script_path=${unitspath}
             kmip_success_text="ResultStatus.SUCCESS"
         ;;
-    esac    
-
-    echo ${pythonexe} ${script_path}/${kmip_script}.py -c ${config_session} ${kmip_params} 2>&1 | tee ${outfile}
+    esac
 
     ${pythonexe} ${script_path}/${kmip_script}.py -c ${config_session} ${kmip_params} 2>&1 | tee ${outfile}
+
+    sed -i 's/\r//g' "${outfile}"
 
     grep ${kmip_success_text} ${outfile}
 
@@ -217,12 +233,12 @@ function test_sym_key
     #"A message that needs no padding."
     #"A message for kmip encyption/decryption tests."
 
-    regex_sym_key="s/.*INFO.*created UUID: \(.*\)/\1/p"    
+    regex_sym_key='s/.*INFO.*created UUID: \(.*\)/\1/p'
 
     for l in ${2}
     do
         run_kmip_test create "-a ${1} -l ${l}"
-        kuuid=$(sed -n "${regex_sym_key}" ${outfile})
+        kuuid=$(sed -n "${regex_sym_key}" "${outfile}")
 
         run_kmip_test get_attribute_list "-i ${kuuid}"
         run_kmip_test get "-i ${kuuid} -f RAW"
@@ -237,7 +253,7 @@ function test_sym_key
                     tst_msg="12345678123456781234567812345678"
 
                 else
-                    tst_msg="123456781234567812345678123456781234."
+                    tst_msg="123456781234567812345678123456781234"
                 fi
 
                 test_sym_encdec ${kuuid} ${tst_msg} ${m} ${p}
@@ -311,7 +327,8 @@ function test_sym_encdec
     # note: -m and -v are binaries, so the 'b'
     run_kmip_test decrypt3 "-i ${1} -m b${cipher_msg} -d ${3} -a ${4} -v b${iv}"
 
-    clear_msg=$(sed -n "${regex_clear_msg}" ${outfile})    
+    clear_msg=$(sed -n "${regex_clear_msg}" ${outfile})
+    #clear_msg={clear_msg::}
 
     #debug
     #echo "in:${2}"
