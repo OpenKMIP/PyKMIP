@@ -209,6 +209,7 @@ function run_kmip_test
 
     ${pythonexe} ${script_path}/${kmip_script}.py -c ${config_session} ${kmip_params} 2>&1 | tee ${outfile}
 
+    # sed regex will get confused with the \r, so we convert the out file the a unix line ending.
     sed -i 's/\r//g' "${outfile}"
 
     grep ${kmip_success_text} ${outfile}
@@ -260,9 +261,8 @@ function test_sym_key
             done
         done
 
-        echo "no revoke, no destroy"
-        #run_kmip_test revoke  "-i ${kuuid}"
-        #run_kmip_test destroy "-i ${kuuid}"
+        run_kmip_test revoke  "-i ${kuuid}"
+        run_kmip_test destroy "-i ${kuuid}"
 
     done
 }
@@ -328,11 +328,6 @@ function test_sym_encdec
     run_kmip_test decrypt3 "-i ${1} -m b${cipher_msg} -d ${3} -a ${4} -v b${iv}"
 
     clear_msg=$(sed -n "${regex_clear_msg}" ${outfile})
-    #clear_msg={clear_msg::}
-
-    #debug
-    #echo "in:${2}"
-    #echo "cm:${clear_msg}"
 
     if [ "${2}" != "${clear_msg}" ] ; then
 
@@ -403,7 +398,7 @@ function register_and_get
 
     run_kmip_test destroy "-i ${kuuid}"
 
-    ######   ######
+    ############
 
     return 0
 }
@@ -413,19 +408,15 @@ test_begin_time=`date +%s`
 
 setup_test
 
-#commentd for debug
-#run_kmip_test query
+run_kmip_test query
 
-#commentd for debug
-#run_kmip_test discover_versions
+run_kmip_test discover_versions
 
 test_keys
 
-#commentd for debug
-#register_and_get
+register_and_get
 
 ### tests ends here ###
-
 clear_test_setup
 
 echo
