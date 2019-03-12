@@ -4,9 +4,9 @@ function usage
 {
     cat 1>&2 <<UsageMessage
 
-Usage: $0 -u OP_USER -p OP_USER_PWD -c config_session
-    -u operator user in HSM (will create a kmip user)
-    -p operator user password
+Usage: $0 -u OPERATOR -p OPERATOR_PWD -c config_session
+    -u operator in HSM (will create a kmip user)
+    -p operator password
     -c config session in pykmip.conf to be used in the tests
     -h this help
 
