@@ -1222,8 +1222,8 @@ class KMIPProxy(object):
         payload_public_key_template_attribute = None
 
         if payload is not None:
-            payload_private_key_uuid = payload.private_key_uuid
-            payload_public_key_uuid = payload.public_key_uuid
+            payload_private_key_uuid = payload.private_key_unique_identifier
+            payload_public_key_uuid = payload.public_key_unique_identifier
             payload_private_key_template_attribute = \
                 payload.private_key_template_attribute
             payload_public_key_template_attribute = \

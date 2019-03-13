@@ -20,6 +20,7 @@ from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
 from kmip.core.attributes import Name
 
+from kmip.core import enums
 from kmip.core.enums import AttributeType
 from kmip.core.enums import CryptographicAlgorithm as CryptoAlgorithmEnum
 from kmip.core.enums import CryptographicUsageMask
@@ -44,9 +45,6 @@ from kmip.core.objects import KeyBlock
 from kmip.core.objects import KeyMaterial
 from kmip.core.objects import KeyValue
 from kmip.core.objects import TemplateAttribute
-from kmip.core.objects import PrivateKeyTemplateAttribute
-from kmip.core.objects import PublicKeyTemplateAttribute
-from kmip.core.objects import CommonTemplateAttribute
 
 from kmip.core.misc import QueryFunction
 
@@ -149,11 +147,18 @@ class TestIntegration(TestCase):
         private_key_attributes = [priv_name]
         public_key_attributes = [pub_name]
 
-        common = CommonTemplateAttribute(attributes=common_attributes)
-        priv_templ_attr = PrivateKeyTemplateAttribute(
-            attributes=private_key_attributes)
-        pub_templ_attr = PublicKeyTemplateAttribute(
-            attributes=public_key_attributes)
+        common = TemplateAttribute(
+            attributes=common_attributes,
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+        )
+        priv_templ_attr = TemplateAttribute(
+            attributes=private_key_attributes,
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+        )
+        pub_templ_attr = TemplateAttribute(
+            attributes=public_key_attributes,
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+        )
 
         return self.client.\
             create_key_pair(common_template_attribute=common,
@@ -488,12 +493,12 @@ class TestIntegration(TestCase):
         self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
 
         # Check UUID value for Private key
-        self._check_uuid(result.private_key_uuid.value, str)
+        self._check_uuid(result.private_key_uuid, str)
         # Check UUID value for Public key
-        self._check_uuid(result.public_key_uuid.value, str)
+        self._check_uuid(result.public_key_uuid, str)
 
-        priv_key_uuid = result.private_key_uuid.value
-        pub_key_uuid = result.public_key_uuid.value
+        priv_key_uuid = result.private_key_uuid
+        pub_key_uuid = result.public_key_uuid
 
         priv_key_result = self.client.get(uuid=priv_key_uuid, credential=None)
         pub_key_result = self.client.get(uuid=pub_key_uuid, credential=None)
@@ -522,17 +527,17 @@ class TestIntegration(TestCase):
         self.assertIsInstance(pub_secret, pub_expected)
 
         self.logger.debug('Destroying key: ' + key_name + ' Private' +
-                          '\n With UUID: ' + result.private_key_uuid.value)
+                          '\n With UUID: ' + result.private_key_uuid)
         destroy_priv_key_result = self.client.destroy(
-            result.private_key_uuid.value)
+            result.private_key_uuid)
 
         self._check_result_status(destroy_priv_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
         self.logger.debug('Destroying key: ' + key_name + ' Public' +
-                          '\n With UUID: ' + result.public_key_uuid.value)
+                          '\n With UUID: ' + result.public_key_uuid)
         destroy_pub_key_result = self.client.destroy(
-            result.public_key_uuid.value)
+            result.public_key_uuid)
         self._check_result_status(destroy_pub_key_result, ResultStatus,
                                   ResultStatus.SUCCESS)
 
