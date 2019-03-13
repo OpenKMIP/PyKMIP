@@ -313,8 +313,9 @@ class ProxyKmipClient(object):
         )
 
         common_attributes.extend([algorithm_attribute, length_attribute])
-        template = cobjects.CommonTemplateAttribute(
-            attributes=common_attributes
+        template = cobjects.TemplateAttribute(
+            attributes=common_attributes,
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
 
         # Create public / private specific attributes
@@ -331,9 +332,10 @@ class ProxyKmipClient(object):
                 )
             ]
         if names or attrs:
-            public_template = cobjects.PublicKeyTemplateAttribute(
+            public_template = cobjects.TemplateAttribute(
                 names=names,
-                attributes=attrs
+                attributes=attrs,
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
             )
 
         private_template = None
@@ -349,9 +351,10 @@ class ProxyKmipClient(object):
                 )
             ]
         if names or attrs:
-            private_template = cobjects.PrivateKeyTemplateAttribute(
+            private_template = cobjects.TemplateAttribute(
                 names=names,
-                attributes=attrs
+                attributes=attrs,
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
             )
 
         # Create the asymmetric key pair and handle the results
@@ -362,8 +365,8 @@ class ProxyKmipClient(object):
 
         status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
-            public_uid = result.public_key_uuid.value
-            private_uid = result.private_key_uuid.value
+            public_uid = result.public_key_uuid
+            private_uid = result.private_key_uuid
             return public_uid, private_uid
         else:
             reason = result.result_reason.value

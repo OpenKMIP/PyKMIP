@@ -2666,7 +2666,7 @@ class TestKmipEngine(testtools.TestCase):
 
         attribute_factory = factory.AttributeFactory()
 
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -2683,9 +2683,10 @@ class TestKmipEngine(testtools.TestCase):
                     enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
                     2048
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
@@ -2693,9 +2694,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
@@ -2703,7 +2705,8 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.DECRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -2719,9 +2722,9 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: CreateKeyPair"
         )
 
-        public_id = response_payload.public_key_uuid.value
+        public_id = response_payload.public_key_unique_identifier
         self.assertEqual('1', public_id)
-        private_id = response_payload.private_key_uuid.value
+        private_id = response_payload.private_key_unique_identifier
         self.assertEqual('2', private_id)
 
         # Retrieve the stored public key and verify all attributes were set
@@ -2794,7 +2797,7 @@ class TestKmipEngine(testtools.TestCase):
         attribute_factory = factory.AttributeFactory()
 
         # Test that a missing PublicKey CryptographicAlgorithm raises an error
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -2803,9 +2806,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.NameType.UNINTERPRETED_TEXT_STRING
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
@@ -2817,9 +2821,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -2835,7 +2840,8 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.DECRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -2861,7 +2867,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Test that a missing PrivateKey CryptographicAlgorithm raises an error
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -2870,9 +2876,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.NameType.UNINTERPRETED_TEXT_STRING
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -2888,9 +2895,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
@@ -2902,7 +2910,8 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.DECRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -2928,7 +2937,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Test that a missing PublicKey CryptographicLength raises an error
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -2937,9 +2946,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.NameType.UNINTERPRETED_TEXT_STRING
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -2951,9 +2961,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -2969,7 +2980,8 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.DECRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -2995,7 +3007,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Test that a missing PrivateKey CryptographicLength raises an error
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -3004,9 +3016,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.NameType.UNINTERPRETED_TEXT_STRING
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3022,9 +3035,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3036,7 +3050,8 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.DECRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -3062,7 +3077,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Test that a missing PublicKey CryptographicUsageMask raises an error
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -3071,9 +3086,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.NameType.UNINTERPRETED_TEXT_STRING
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3083,9 +3099,10 @@ class TestKmipEngine(testtools.TestCase):
                     enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
                     2048
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3101,7 +3118,8 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.DECRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -3127,7 +3145,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Test that a missing PrivateKey CryptographicUsageMask raises an error
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -3136,9 +3154,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.NameType.UNINTERPRETED_TEXT_STRING
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3154,9 +3173,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3166,7 +3186,8 @@ class TestKmipEngine(testtools.TestCase):
                     enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
                     2048
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -3205,7 +3226,7 @@ class TestKmipEngine(testtools.TestCase):
         attribute_factory = factory.AttributeFactory()
 
         # Test that mismatched CryptographicAlgorithms raise an error.
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -3214,9 +3235,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.NameType.UNINTERPRETED_TEXT_STRING
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3232,9 +3254,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3250,7 +3273,8 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.DECRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -3275,7 +3299,7 @@ class TestKmipEngine(testtools.TestCase):
         e._logger.reset_mock()
 
         # Test that mismatched CryptographicAlgorithms raise an error.
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -3284,9 +3308,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.NameType.UNINTERPRETED_TEXT_STRING
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3302,9 +3327,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
@@ -3320,7 +3346,8 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.DECRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -8125,7 +8152,7 @@ class TestKmipEngine(testtools.TestCase):
 
         attribute_factory = factory.AttributeFactory()
 
-        common_template = objects.CommonTemplateAttribute(
+        common_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
@@ -8142,9 +8169,10 @@ class TestKmipEngine(testtools.TestCase):
                     enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
                     2048
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
-        public_template = objects.PublicKeyTemplateAttribute(
+        public_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
@@ -8152,9 +8180,10 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.ENCRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
-        private_template = objects.PrivateKeyTemplateAttribute(
+        private_template = objects.TemplateAttribute(
             attributes=[
                 attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
@@ -8162,7 +8191,8 @@ class TestKmipEngine(testtools.TestCase):
                         enums.CryptographicUsageMask.DECRYPT
                     ]
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         payload = payloads.CreateKeyPairRequestPayload(
             common_template,
@@ -8178,9 +8208,9 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: CreateKeyPair"
         )
 
-        public_id = response_payload.public_key_uuid.value
+        public_id = response_payload.public_key_unique_identifier
         self.assertEqual('1', public_id)
-        private_id = response_payload.private_key_uuid.value
+        private_id = response_payload.private_key_unique_identifier
         self.assertEqual('2', private_id)
 
         e._logger.reset_mock()

@@ -30,9 +30,7 @@ from kmip.core.factories.credentials import CredentialFactory
 from kmip.core.attributes import Name
 from kmip.core.attributes import CryptographicUsageMask
 
-from kmip.core.objects import CommonTemplateAttribute
-from kmip.core.objects import PrivateKeyTemplateAttribute
-from kmip.core.objects import PublicKeyTemplateAttribute
+from kmip.core.objects import TemplateAttribute
 from kmip.core.objects import Attribute
 
 from kmip.services.kmip_client import KMIPProxy
@@ -117,14 +115,25 @@ if __name__ == '__main__':
         )
         attributes.append(opn)
 
-    common = CommonTemplateAttribute(attributes=attributes)
-    private = PrivateKeyTemplateAttribute(attributes=attributes)
-    public = PublicKeyTemplateAttribute(attributes=attributes)
+    common = TemplateAttribute(
+        attributes=attributes,
+        tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+    )
+    private = TemplateAttribute(
+        attributes=attributes,
+        tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+    )
+    public = TemplateAttribute(
+        attributes=attributes,
+        tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+    )
 
     # Create the SYMMETRIC_KEY object
-    result = client.create_key_pair(common_template_attribute=common,
-                                    private_key_template_attribute=private,
-                                    public_key_template_attribute=public)
+    result = client.create_key_pair(
+        common_template_attribute=common,
+        private_key_template_attribute=private,
+        public_key_template_attribute=public
+    )
     client.close()
 
     # Display operation results

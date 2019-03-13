@@ -13,243 +13,590 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core import attributes
-from kmip.core import objects
+import six
 
 from kmip.core import enums
+from kmip.core import exceptions
+from kmip.core import objects
+from kmip.core import primitives
+from kmip.core import utils
 
-from kmip.core.primitives import Struct
 
-from kmip.core.utils import BytearrayStream
+class CreateKeyPairRequestPayload(primitives.Struct):
+    """
+    A request payload for the CreateKeyPair operation.
 
-
-class CreateKeyPairRequestPayload(Struct):
+    Attributes:
+        common_template_attribute: A group of attributes to set on the new
+            public and private keys.
+        private_key_template_attribute: A group of attributes to set on the new
+            private key.
+        public_key_template_attribute: A group of attributes to set on the new
+            public key.
+    """
 
     def __init__(self,
                  common_template_attribute=None,
                  private_key_template_attribute=None,
                  public_key_template_attribute=None):
+        """
+        Construct a CreateKeyPair request payload structure.
+
+        Args:
+            common_template_attribute (TemplateAttribute): A TemplateAttribute
+                structure with the CommonTemplateAttribute tag containing a set
+                of attributes to set on the new public and private keys.
+                Optional, defaults to None.
+            private_key_template_attribute (TemplateAttribute): A
+                TemplateAttribute structure with the
+                PrivateKeyTemplateAttribute tag containing a set of attributes
+                to set on the new private key. Optional, defaults to None.
+            public_key_template_attribute (TemplateAttribute): A
+                TemplateAttribute structure with the PublicKeyTemplateAttribute
+                tag containing a set of attributes to set on the new public
+                key. Optional, defaults to None.
+        """
         super(CreateKeyPairRequestPayload, self).__init__(
             enums.Tags.REQUEST_PAYLOAD
         )
+
+        self._common_template_attribute = None
+        self._private_key_template_attribute = None
+        self._public_key_template_attribute = None
 
         self.common_template_attribute = common_template_attribute
         self.private_key_template_attribute = private_key_template_attribute
         self.public_key_template_attribute = public_key_template_attribute
 
-        self.validate()
+    @property
+    def common_template_attribute(self):
+        return self._common_template_attribute
 
-    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    @common_template_attribute.setter
+    def common_template_attribute(self, value):
+        if value is None:
+            self._common_template_attribute = None
+        elif isinstance(value, objects.TemplateAttribute):
+            if value.tag == enums.Tags.COMMON_TEMPLATE_ATTRIBUTE:
+                self._common_template_attribute = value
+            else:
+                raise TypeError(
+                    "Common template attribute must be a TemplateAttribute "
+                    "structure with a CommonTemplateAttribute tag."
+                )
+        else:
+            raise TypeError(
+                "Common template attribute must be a TemplateAttribute "
+                "structure."
+            )
+
+    @property
+    def private_key_template_attribute(self):
+        return self._private_key_template_attribute
+
+    @private_key_template_attribute.setter
+    def private_key_template_attribute(self, value):
+        if value is None:
+            self._private_key_template_attribute = None
+        elif isinstance(value, objects.TemplateAttribute):
+            if value.tag == enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE:
+                self._private_key_template_attribute = value
+            else:
+                raise TypeError(
+                    "Private key template attribute must be a "
+                    "TemplateAttribute structure with a "
+                    "PrivateKeyTemplateAttribute tag."
+                )
+        else:
+            raise TypeError(
+                "Private key template attribute must be a TemplateAttribute "
+                "structure."
+            )
+
+    @property
+    def public_key_template_attribute(self):
+        return self._public_key_template_attribute
+
+    @public_key_template_attribute.setter
+    def public_key_template_attribute(self, value):
+        if value is None:
+            self._public_key_template_attribute = None
+        elif isinstance(value, objects.TemplateAttribute):
+            if value.tag == enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE:
+                self._public_key_template_attribute = value
+            else:
+                raise TypeError(
+                    "Public key template attribute must be a "
+                    "TemplateAttribute structure with a "
+                    "PublicKeyTemplateAttribute tag."
+                )
+        else:
+            raise TypeError(
+                "Public key template attribute must be a TemplateAttribute "
+                "structure."
+            )
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Read the data encoding the CreateKeyPair request payload and decode it
+        into its constituent parts.
+
+        Args:
+            input_buffer (stream): A data buffer containing encoded object
+                data, supporting a read method.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
+        """
         super(CreateKeyPairRequestPayload, self).read(
-            istream,
+            input_buffer,
             kmip_version=kmip_version
         )
-        tstream = BytearrayStream(istream.read(self.length))
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        if self.is_tag_next(enums.Tags.COMMON_TEMPLATE_ATTRIBUTE, tstream):
-            self.common_template_attribute = objects.CommonTemplateAttribute()
-            self.common_template_attribute.read(
-                tstream,
+        if self.is_tag_next(
+                enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
+                local_buffer
+        ):
+            self._common_template_attribute = objects.TemplateAttribute(
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+            )
+            self._common_template_attribute.read(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        if self.is_tag_next(enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
-                            tstream):
-            self.private_key_template_attribute = \
-                objects.PrivateKeyTemplateAttribute()
-            self.private_key_template_attribute.read(
-                tstream,
+        if self.is_tag_next(
+                enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
+                local_buffer
+        ):
+            self._private_key_template_attribute = objects.TemplateAttribute(
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+            )
+            self._private_key_template_attribute.read(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        if self.is_tag_next(enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE, tstream):
-            self.public_key_template_attribute = \
-                objects.PublicKeyTemplateAttribute()
-            self.public_key_template_attribute.read(
-                tstream,
+        if self.is_tag_next(
+                enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+                local_buffer
+        ):
+            self._public_key_template_attribute = objects.TemplateAttribute(
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            )
+            self._public_key_template_attribute.read(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        self.is_oversized(tstream)
-        self.validate()
+        self.is_oversized(local_buffer)
 
-    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        tstream = BytearrayStream()
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Write the data encoding the CreateKeyPair request payload to a buffer.
 
-        if self.common_template_attribute is not None:
-            self.common_template_attribute.write(
-                tstream,
+        Args:
+            output_buffer (stream): A data buffer in which to encode object
+                data, supporting a write method.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
+        """
+        local_buffer = utils.BytearrayStream()
+
+        if self._common_template_attribute is not None:
+            self._common_template_attribute.write(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        if self.private_key_template_attribute is not None:
-            self.private_key_template_attribute.write(
-                tstream,
+        if self._private_key_template_attribute is not None:
+            self._private_key_template_attribute.write(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        if self.public_key_template_attribute is not None:
-            self.public_key_template_attribute.write(
-                tstream,
+        if self._public_key_template_attribute is not None:
+            self._public_key_template_attribute.write(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        self.length = tstream.length()
+        self.length = local_buffer.length()
         super(CreateKeyPairRequestPayload, self).write(
-            ostream,
+            output_buffer,
             kmip_version=kmip_version
         )
-        ostream.write(tstream.buffer)
+        output_buffer.write(local_buffer.buffer)
 
-    def validate(self):
-        self.__validate()
+    def __eq__(self, other):
+        if isinstance(other, CreateKeyPairRequestPayload):
+            if self.common_template_attribute != \
+                    other.common_template_attribute:
+                return False
+            elif self.private_key_template_attribute != \
+                    other.private_key_template_attribute:
+                return False
+            elif self.public_key_template_attribute != \
+                    other.public_key_template_attribute:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
 
-    def __validate(self):
-        if self.common_template_attribute is not None:
-            if not isinstance(self.common_template_attribute,
-                              objects.CommonTemplateAttribute):
-                msg = "invalid common template attribute"
-                msg += "; expected {0}, received {1}".format(
-                    objects.CommonTemplateAttribute,
-                    self.common_template_attribute)
-                raise TypeError(msg)
+    def __ne__(self, other):
+        if isinstance(other, CreateKeyPairRequestPayload):
+            return not (self == other)
+        else:
+            return NotImplemented
 
-        if self.private_key_template_attribute is not None:
-            if not isinstance(self.private_key_template_attribute,
-                              objects.PrivateKeyTemplateAttribute):
-                msg = "invalid private key template attribute"
-                msg += "; expected {0}, received {1}".format(
-                    objects.PrivateKeyTemplateAttribute,
-                    self.private_key_template_attribute)
-                raise TypeError(msg)
+    def __repr__(self):
+        args = ", ".join([
+            "common_template_attribute={}".format(
+                self.common_template_attribute
+            ),
+            "private_key_template_attribute={}".format(
+                self.private_key_template_attribute
+            ),
+            "public_key_template_attribute={}".format(
+                self.public_key_template_attribute
+            )
+        ])
+        return "CreateKeyPairRequestPayload({})".format(args)
 
-        if self.public_key_template_attribute is not None:
-            if not isinstance(self.public_key_template_attribute,
-                              objects.PublicKeyTemplateAttribute):
-                msg = "invalid public key template attribute"
-                msg += "; expected {0}, received {1}".format(
-                    objects.PublicKeyTemplateAttribute,
-                    self.public_key_template_attribute)
-                raise TypeError(msg)
+    def __str__(self):
+        value = ", ".join(
+            [
+                '"common_template_attribute": {}'.format(
+                    self.common_template_attribute
+                ),
+                '"private_key_template_attribute": {}'.format(
+                    self.private_key_template_attribute
+                ),
+                '"public_key_template_attribute": {}'.format(
+                    self.public_key_template_attribute
+                )
+            ]
+        )
+        return '{' + value + '}'
 
 
-class CreateKeyPairResponsePayload(Struct):
+class CreateKeyPairResponsePayload(primitives.Struct):
+    """
+    A response payload for the CreateKeyPair operation.
+
+    Attributes:
+        private_key_unique_identifier: The ID of the new private key.
+        public_key_unique_identifier: The ID of the new public key.
+        private_key_template_attribute: A group of attributes to set on the new
+            private key.
+        public_key_template_attribute: A group of attributes to set on the new
+            public key.
+    """
 
     def __init__(self,
-                 private_key_uuid=None,
-                 public_key_uuid=None,
+                 private_key_unique_identifier=None,
+                 public_key_unique_identifier=None,
                  private_key_template_attribute=None,
                  public_key_template_attribute=None):
         super(CreateKeyPairResponsePayload, self).__init__(
             enums.Tags.RESPONSE_PAYLOAD
         )
 
-        # Private and public UUIDs are required so make defaults as backup
-        if private_key_uuid is None:
-            self.private_key_uuid = attributes.PrivateKeyUniqueIdentifier('')
-        else:
-            self.private_key_uuid = private_key_uuid
+        self._private_key_unique_identifier = None
+        self._public_key_unique_identifier = None
+        self._private_key_template_attribute = None
+        self._public_key_template_attribute = None
 
-        if public_key_uuid is None:
-            self.public_key_uuid = attributes.PublicKeyUniqueIdentifier('')
-        else:
-            self.public_key_uuid = public_key_uuid
-
+        self.private_key_unique_identifier = private_key_unique_identifier
+        self.public_key_unique_identifier = public_key_unique_identifier
         self.private_key_template_attribute = private_key_template_attribute
         self.public_key_template_attribute = public_key_template_attribute
 
-        self.validate()
+    @property
+    def private_key_unique_identifier(self):
+        if self._private_key_unique_identifier:
+            return self._private_key_unique_identifier.value
+        else:
+            return None
 
-    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    @private_key_unique_identifier.setter
+    def private_key_unique_identifier(self, value):
+        if value is None:
+            self._private_key_unique_identifier = None
+        elif isinstance(value, six.string_types):
+            self._private_key_unique_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER
+            )
+        else:
+            raise TypeError("Private key unique identifier must be a string.")
+
+    @property
+    def public_key_unique_identifier(self):
+        if self._public_key_unique_identifier:
+            return self._public_key_unique_identifier.value
+        else:
+            return None
+
+    @public_key_unique_identifier.setter
+    def public_key_unique_identifier(self, value):
+        if value is None:
+            self._public_key_unique_identifier = None
+        elif isinstance(value, six.string_types):
+            self._public_key_unique_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER
+            )
+        else:
+            raise TypeError("Public key unique identifier must be a string.")
+
+    @property
+    def private_key_template_attribute(self):
+        return self._private_key_template_attribute
+
+    @private_key_template_attribute.setter
+    def private_key_template_attribute(self, value):
+        if value is None:
+            self._private_key_template_attribute = None
+        elif isinstance(value, objects.TemplateAttribute):
+            if value.tag == enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE:
+                self._private_key_template_attribute = value
+            else:
+                raise TypeError(
+                    "Private key template attribute must be a "
+                    "TemplateAttribute structure with a "
+                    "PrivateKeyTemplateAttribute tag."
+                )
+        else:
+            raise TypeError(
+                "Private key template attribute must be a TemplateAttribute "
+                "structure."
+            )
+
+    @property
+    def public_key_template_attribute(self):
+        return self._public_key_template_attribute
+
+    @public_key_template_attribute.setter
+    def public_key_template_attribute(self, value):
+        if value is None:
+            self._public_key_template_attribute = None
+        elif isinstance(value, objects.TemplateAttribute):
+            if value.tag == enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE:
+                self._public_key_template_attribute = value
+            else:
+                raise TypeError(
+                    "Public key template attribute must be a "
+                    "TemplateAttribute structure with a "
+                    "PublicKeyTemplateAttribute tag."
+                )
+        else:
+            raise TypeError(
+                "Public key template attribute must be a TemplateAttribute "
+                "structure."
+            )
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Read the data encoding the CreateKeyPair response payload and decode it
+        into its constituent parts.
+
+        Args:
+            input_buffer (stream): A data buffer containing encoded object
+                data, supporting a read method.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the private key unique identifier or
+                the public key unique identifier is missing from the encoded
+                payload.
+        """
         super(CreateKeyPairResponsePayload, self).read(
-            istream,
+            input_buffer,
             kmip_version=kmip_version
         )
-        tstream = BytearrayStream(istream.read(self.length))
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        self.private_key_uuid.read(tstream, kmip_version=kmip_version)
-        self.public_key_uuid.read(tstream, kmip_version=kmip_version)
+        if self.is_tag_next(
+                enums.Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER,
+                local_buffer
+        ):
+            self._private_key_unique_identifier = primitives.TextString(
+                tag=enums.Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER
+            )
+            self._private_key_unique_identifier.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The CreateKeyPair response payload encoding is missing the "
+                "private key unique identifier."
+            )
 
-        if self.is_tag_next(enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
-                            tstream):
-            self.private_key_template_attribute = \
-                objects.PrivateKeyTemplateAttribute()
-            self.private_key_template_attribute.read(
-                tstream,
+        if self.is_tag_next(
+                enums.Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER,
+                local_buffer
+        ):
+            self._public_key_unique_identifier = primitives.TextString(
+                tag=enums.Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER
+            )
+            self._public_key_unique_identifier.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The CreateKeyPair response payload encoding is missing the "
+                "public key unique identifier."
+            )
+
+        if self.is_tag_next(
+                enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
+                local_buffer
+        ):
+            self._private_key_template_attribute = objects.TemplateAttribute(
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+            )
+            self._private_key_template_attribute.read(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        if self.is_tag_next(enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
-                            tstream):
-            self.public_key_template_attribute = \
-                objects.PublicKeyTemplateAttribute()
-            self.public_key_template_attribute.read(
-                tstream,
+        if self.is_tag_next(
+                enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+                local_buffer
+        ):
+            self._public_key_template_attribute = objects.TemplateAttribute(
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            )
+            self._public_key_template_attribute.read(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        self.is_oversized(tstream)
-        self.validate()
+        self.is_oversized(local_buffer)
 
-    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        tstream = BytearrayStream()
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Write the data encoding the CreateKeyPair response payload to a buffer.
 
-        self.private_key_uuid.write(tstream, kmip_version=kmip_version)
-        self.public_key_uuid.write(tstream, kmip_version=kmip_version)
+        Args:
+            output_buffer (stream): A data buffer in which to encode object
+                data, supporting a write method.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
 
-        if self.private_key_template_attribute is not None:
-            self.private_key_template_attribute.write(
-                tstream,
+        Raises:
+            InvalidField: Raised if the private key unique identifier or the
+                public key unique identifier is not defined.
+        """
+        local_buffer = utils.BytearrayStream()
+
+        if self._private_key_unique_identifier:
+            self._private_key_unique_identifier.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The CreateKeyPair response payload is missing the private "
+                "key unique identifier field."
+            )
+
+        if self._public_key_unique_identifier:
+            self._public_key_unique_identifier.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The CreateKeyPair response payload is missing the public "
+                "key unique identifier field."
+            )
+
+        if self._private_key_template_attribute:
+            self._private_key_template_attribute.write(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        if self.public_key_template_attribute is not None:
-            self.public_key_template_attribute.write(
-                tstream,
+        if self._public_key_template_attribute:
+            self._public_key_template_attribute.write(
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        self.length = tstream.length()
+        self.length = local_buffer.length()
         super(CreateKeyPairResponsePayload, self).write(
-            ostream,
+            output_buffer,
             kmip_version=kmip_version
         )
-        ostream.write(tstream.buffer)
+        output_buffer.write(local_buffer.buffer)
 
-    def validate(self):
-        self.__validate()
+    def __eq__(self, other):
+        if isinstance(other, CreateKeyPairResponsePayload):
+            if self.private_key_unique_identifier != \
+                    other.private_key_unique_identifier:
+                return False
+            elif self.public_key_unique_identifier != \
+                    other.public_key_unique_identifier:
+                return False
+            elif self.private_key_template_attribute != \
+                    other.private_key_template_attribute:
+                return False
+            elif self.public_key_template_attribute != \
+                    other.public_key_template_attribute:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
 
-    def __validate(self):
-        if not isinstance(self.private_key_uuid,
-                          attributes.PrivateKeyUniqueIdentifier):
-            msg = "invalid private key unique identifier"
-            msg += "; expected {0}, received {1}".format(
-                attributes.PrivateKeyUniqueIdentifier,
-                self.private_key_uuid)
-            raise TypeError(msg)
+    def __ne__(self, other):
+        if isinstance(other, CreateKeyPairResponsePayload):
+            return not (self == other)
+        else:
+            return NotImplemented
 
-        if not isinstance(self.public_key_uuid,
-                          attributes.PublicKeyUniqueIdentifier):
-            msg = "invalid public key unique identifier"
-            msg += "; expected {0}, received {1}".format(
-                attributes.PublicKeyUniqueIdentifier,
-                self.public_key_uuid)
-            raise TypeError(msg)
+    def __repr__(self):
+        args = ", ".join([
+            "private_key_unique_identifier='{}'".format(
+                self.private_key_unique_identifier
+            ),
+            "public_key_unique_identifier='{}'".format(
+                self.public_key_unique_identifier
+            ),
+            "private_key_template_attribute={}".format(
+                self.private_key_template_attribute
+            ),
+            "public_key_template_attribute={}".format(
+                self.public_key_template_attribute
+            )
+        ])
+        return "CreateKeyPairResponsePayload({})".format(args)
 
-        if self.private_key_template_attribute is not None:
-            if not isinstance(self.private_key_template_attribute,
-                              objects.PrivateKeyTemplateAttribute):
-                msg = "invalid private key template attribute"
-                msg += "; expected {0}, received {1}".format(
-                    objects.PrivateKeyTemplateAttribute,
-                    self.private_key_template_attribute)
-                raise TypeError(msg)
-
-        if self.public_key_template_attribute is not None:
-            if not isinstance(self.public_key_template_attribute,
-                              objects.PublicKeyTemplateAttribute):
-                msg = "invalid public key template attribute"
-                msg += "; expected {0}, received {1}".format(
-                    objects.PublicKeyTemplateAttribute,
-                    self.public_key_template_attribute)
-                raise TypeError(msg)
+    def __str__(self):
+        value = ", ".join(
+            [
+                '"private_key_unique_identifier": "{}"'.format(
+                    self.private_key_unique_identifier
+                ),
+                '"public_key_unique_identifier": "{}"'.format(
+                    self.public_key_unique_identifier
+                ),
+                '"private_key_template_attribute": {}'.format(
+                    self.private_key_template_attribute
+                ),
+                '"public_key_template_attribute": {}'.format(
+                    self.public_key_template_attribute
+                )
+            ]
+        )
+        return '{' + value + '}'

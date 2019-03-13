@@ -187,23 +187,11 @@ class TestRekeyKeyPairRequestPayload(TestCase):
         self._test_write(stream, payload, self.encoding_full)
 
 
+# TODO (ph) Replicate CreateKeyPairResponsePayload test suite here
 class TestRekeyKeyPairResponsePayload(TestCase):
 
     def setUp(self):
         super(TestRekeyKeyPairResponsePayload, self).setUp()
-
-        self.uuid = '00000000-0000-0000-0000-000000000000'
-        self.private_key_uuid = attributes.PrivateKeyUniqueIdentifier(
-            self.uuid)
-        self.public_key_uuid = attributes.PublicKeyUniqueIdentifier(
-            self.uuid)
-        self.empty_private_key_uuid = attributes.PrivateKeyUniqueIdentifier('')
-        self.empty_public_key_uuid = attributes.PublicKeyUniqueIdentifier('')
-
-        self.private_key_template_attribute = \
-            objects.PrivateKeyTemplateAttribute()
-        self.public_key_template_attribute = \
-            objects.PublicKeyTemplateAttribute()
 
         self.encoding_empty = utils.BytearrayStream((
             b'\x42\x00\x7C\x01\x00\x00\x00\x10\x42\x00\x66\x07\x00\x00\x00\x00'
@@ -220,127 +208,3 @@ class TestRekeyKeyPairResponsePayload(TestCase):
 
     def tearDown(self):
         super(TestRekeyKeyPairResponsePayload, self).tearDown()
-
-    def test_init_with_none(self):
-        payloads.RekeyKeyPairResponsePayload()
-
-    def test_init_with_args(self):
-        payloads.RekeyKeyPairResponsePayload(
-            self.private_key_uuid, self.public_key_uuid,
-            self.private_key_template_attribute,
-            self.public_key_template_attribute)
-
-    def test_validate_with_invalid_private_key_unique_identifier(self):
-        kwargs = {'private_key_uuid': 'invalid',
-                  'public_key_uuid': None,
-                  'private_key_template_attribute': None,
-                  'public_key_template_attribute': None}
-        self.assertRaisesRegex(
-            TypeError, "invalid private key unique identifier",
-            payloads.RekeyKeyPairResponsePayload, **kwargs)
-
-    def test_validate_with_invalid_public_key_unique_identifier(self):
-        kwargs = {'private_key_uuid': None,
-                  'public_key_uuid': 'invalid',
-                  'private_key_template_attribute': None,
-                  'public_key_template_attribute': None}
-        self.assertRaisesRegex(
-            TypeError, "invalid public key unique identifier",
-            payloads.RekeyKeyPairResponsePayload, **kwargs)
-
-    def test_validate_with_invalid_private_key_template_attribute(self):
-        kwargs = {'private_key_uuid': None,
-                  'public_key_uuid': None,
-                  'private_key_template_attribute': 'invalid',
-                  'public_key_template_attribute': None}
-        self.assertRaisesRegex(
-            TypeError, "invalid private key template attribute",
-            payloads.RekeyKeyPairResponsePayload, **kwargs)
-
-    def test_validate_with_invalid_public_key_template_attribute(self):
-        kwargs = {'private_key_uuid': None,
-                  'public_key_uuid': None,
-                  'private_key_template_attribute': None,
-                  'public_key_template_attribute': 'invalid'}
-        self.assertRaisesRegex(
-            TypeError, "invalid public key template attribute",
-            payloads.RekeyKeyPairResponsePayload, **kwargs)
-
-    def _test_read(self, stream, payload, private_key_uuid, public_key_uuid,
-                   private_key_template_attribute,
-                   public_key_template_attribute):
-        payload.read(stream)
-
-        msg = "private_key_uuid decoding mismatch"
-        msg += "; expected {0}, received {1}".format(
-            private_key_uuid, payload.private_key_uuid)
-        self.assertEqual(private_key_uuid, payload.private_key_uuid, msg)
-
-        msg = "public_key_uuid decoding mismatch"
-        msg += "; expected {0}, received {1}".format(
-            public_key_uuid, payload.public_key_uuid)
-        self.assertEqual(public_key_uuid, payload.public_key_uuid, msg)
-
-        msg = "private_key_template_attribute decoding mismatch"
-        msg += "; expected {0}, received {1}".format(
-            private_key_template_attribute,
-            payload.private_key_template_attribute)
-        self.assertEqual(private_key_template_attribute,
-                         payload.private_key_template_attribute, msg)
-
-        msg = "public_key_template_attribute decoding mismatch"
-        msg += "; expected {0}, received {1}".format(
-            public_key_template_attribute,
-            payload.public_key_template_attribute)
-        self.assertEqual(public_key_template_attribute,
-                         payload.public_key_template_attribute, msg)
-
-    def test_read_with_none(self):
-        stream = self.encoding_empty
-        payload = payloads.RekeyKeyPairResponsePayload()
-
-        self._test_read(stream, payload, self.empty_private_key_uuid,
-                        self.empty_public_key_uuid, None, None)
-
-    def test_read_with_args(self):
-        stream = self.encoding_full
-        payload = payloads.RekeyKeyPairResponsePayload(
-            self.private_key_uuid, self.public_key_uuid,
-            self.private_key_template_attribute,
-            self.public_key_template_attribute)
-
-        self._test_read(stream, payload, self.private_key_uuid,
-                        self.public_key_uuid,
-                        self.private_key_template_attribute,
-                        self.public_key_template_attribute)
-
-    def _test_write(self, stream, payload, expected):
-        payload.write(stream)
-
-        length_expected = len(expected)
-        length_received = len(stream)
-
-        msg = "encoding lengths not equal"
-        msg += "; expected {0}, received {1}".format(
-            length_expected, length_received)
-        self.assertEqual(length_expected, length_received, msg)
-
-        msg = "encoding mismatch"
-        msg += ";\nexpected:\n{0}\nreceived:\n{1}".format(expected, stream)
-
-        self.assertEqual(expected, stream, msg)
-
-    def test_write_with_none(self):
-        stream = utils.BytearrayStream()
-        payload = payloads.RekeyKeyPairResponsePayload()
-
-        self._test_write(stream, payload, self.encoding_empty)
-
-    def test_write_with_args(self):
-        stream = utils.BytearrayStream()
-        payload = payloads.RekeyKeyPairResponsePayload(
-            self.private_key_uuid, self.public_key_uuid,
-            self.private_key_template_attribute,
-            self.public_key_template_attribute)
-
-        self._test_write(stream, payload, self.encoding_full)

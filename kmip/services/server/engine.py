@@ -1270,12 +1270,8 @@ class KmipEngine(object):
         )
 
         response_payload = payloads.CreateKeyPairResponsePayload(
-            private_key_uuid=attributes.PrivateKeyUniqueIdentifier(
-                str(private_key.unique_identifier)
-            ),
-            public_key_uuid=attributes.PublicKeyUniqueIdentifier(
-                str(public_key.unique_identifier)
-            )
+            private_key_unique_identifier=str(private_key.unique_identifier),
+            public_key_unique_identifier=str(public_key.unique_identifier)
         )
 
         self._id_placeholder = str(private_key.unique_identifier)

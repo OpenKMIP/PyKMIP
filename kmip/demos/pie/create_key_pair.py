@@ -51,7 +51,9 @@ if __name__ == '__main__':
             public_uid, private_uid = client.create_key_pair(
                 algorithm,
                 length,
-                operation_policy_name=opts.operation_policy_name
+                operation_policy_name=opts.operation_policy_name,
+                public_usage_mask=[enums.CryptographicUsageMask.VERIFY],
+                private_usage_mask=[enums.CryptographicUsageMask.SIGN]
             )
             logger.info("Successfully created public key with ID: {0}".format(
                 public_uid))

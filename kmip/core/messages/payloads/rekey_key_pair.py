@@ -168,6 +168,7 @@ class RekeyKeyPairRequestPayload(Struct):
                 raise TypeError(msg)
 
 
+# TODO (ph) Remove the dependency on the CreateKeyPairResponsePayload
 class RekeyKeyPairResponsePayload(CreateKeyPairResponsePayload):
 
     def __init__(self,
