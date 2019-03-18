@@ -2979,11 +2979,11 @@ def convert_template_attribute_to_attributes(value):
         raise TypeError("Input must be a TemplateAttribute structure.")
 
     tag = enums.Tags.ATTRIBUTES
-    if isinstance(value, CommonTemplateAttribute):
+    if value.tag == enums.Tags.COMMON_TEMPLATE_ATTRIBUTE:
         tag = enums.Tags.COMMON_ATTRIBUTES
-    elif isinstance(value, PrivateKeyTemplateAttribute):
+    elif value.tag == enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE:
         tag = enums.Tags.PRIVATE_KEY_ATTRIBUTES
-    elif isinstance(value, PublicKeyTemplateAttribute):
+    elif value.tag == enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE:
         tag = enums.Tags.PUBLIC_KEY_ATTRIBUTES
 
     attribute_values = []
@@ -3014,14 +3014,18 @@ def convert_attributes_to_template_attribute(value):
             )
         )
 
+    template_tag = enums.Tags.TEMPLATE_ATTRIBUTE
     if value.tag == enums.Tags.COMMON_ATTRIBUTES:
-        return CommonTemplateAttribute(attributes=attribute_structures)
+        template_tag = enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
     elif value.tag == enums.Tags.PRIVATE_KEY_ATTRIBUTES:
-        return PrivateKeyTemplateAttribute(attributes=attribute_structures)
+        template_tag = enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
     elif value.tag == enums.Tags.PUBLIC_KEY_ATTRIBUTES:
-        return PublicKeyTemplateAttribute(attributes=attribute_structures)
-    else:
-        return TemplateAttribute(attributes=attribute_structures)
+        template_tag = enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+
+    return TemplateAttribute(
+        attributes=attribute_structures,
+        tag=template_tag
+    )
 
 
 # 2.1.9

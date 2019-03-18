@@ -823,7 +823,7 @@ class TestAttributeUtilities(testtools.TestCase):
         )
 
     def test_convert_common_template_attribute_to_attributes(self):
-        template_attribute = objects.CommonTemplateAttribute(
+        template_attribute = objects.TemplateAttribute(
             attributes=[
                 objects.Attribute(
                     attribute_name=objects.Attribute.AttributeName(
@@ -835,7 +835,8 @@ class TestAttributeUtilities(testtools.TestCase):
                         tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
 
         value = objects.convert_template_attribute_to_attributes(
@@ -856,7 +857,7 @@ class TestAttributeUtilities(testtools.TestCase):
         )
 
     def test_convert_private_key_template_attribute_to_attributes(self):
-        template_attribute = objects.PrivateKeyTemplateAttribute(
+        template_attribute = objects.TemplateAttribute(
             attributes=[
                 objects.Attribute(
                     attribute_name=objects.Attribute.AttributeName(
@@ -868,7 +869,8 @@ class TestAttributeUtilities(testtools.TestCase):
                         tag=enums.Tags.KEY_FORMAT_TYPE
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
 
         value = objects.convert_template_attribute_to_attributes(
@@ -889,7 +891,7 @@ class TestAttributeUtilities(testtools.TestCase):
         )
 
     def test_convert_public_key_template_attribute_to_attributes(self):
-        template_attribute = objects.PublicKeyTemplateAttribute(
+        template_attribute = objects.TemplateAttribute(
             attributes=[
                 objects.Attribute(
                     attribute_name=objects.Attribute.AttributeName(
@@ -901,7 +903,8 @@ class TestAttributeUtilities(testtools.TestCase):
                         tag=enums.Tags.OBJECT_TYPE
                     )
                 )
-            ]
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
 
         value = objects.convert_template_attribute_to_attributes(
@@ -945,6 +948,7 @@ class TestAttributeUtilities(testtools.TestCase):
         value = objects.convert_attributes_to_template_attribute(attributes)
 
         self.assertIsInstance(value, objects.TemplateAttribute)
+        self.assertEqual(value.tag, enums.Tags.TEMPLATE_ATTRIBUTE)
         self.assertIsInstance(value.attributes, list)
         self.assertEqual(1, len(value.attributes))
         self.assertIsInstance(
@@ -978,7 +982,8 @@ class TestAttributeUtilities(testtools.TestCase):
 
         value = objects.convert_attributes_to_template_attribute(attributes)
 
-        self.assertIsInstance(value, objects.CommonTemplateAttribute)
+        self.assertIsInstance(value, objects.TemplateAttribute)
+        self.assertEqual(value.tag, enums.Tags.COMMON_TEMPLATE_ATTRIBUTE)
         self.assertIsInstance(value.attributes, list)
         self.assertEqual(1, len(value.attributes))
         self.assertIsInstance(
@@ -1012,7 +1017,8 @@ class TestAttributeUtilities(testtools.TestCase):
 
         value = objects.convert_attributes_to_template_attribute(attributes)
 
-        self.assertIsInstance(value, objects.PrivateKeyTemplateAttribute)
+        self.assertIsInstance(value, objects.TemplateAttribute)
+        self.assertEqual(value.tag, enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE)
         self.assertIsInstance(value.attributes, list)
         self.assertEqual(1, len(value.attributes))
         self.assertIsInstance(
@@ -1046,7 +1052,8 @@ class TestAttributeUtilities(testtools.TestCase):
 
         value = objects.convert_attributes_to_template_attribute(attributes)
 
-        self.assertIsInstance(value, objects.PublicKeyTemplateAttribute)
+        self.assertIsInstance(value, objects.TemplateAttribute)
+        self.assertEqual(value.tag, enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE)
         self.assertIsInstance(value.attributes, list)
         self.assertEqual(1, len(value.attributes))
         self.assertIsInstance(
