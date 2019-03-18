@@ -154,41 +154,82 @@ class CreateKeyPairRequestPayload(primitives.Struct):
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        if self.is_tag_next(
-                enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
-                local_buffer
-        ):
-            self._common_template_attribute = objects.TemplateAttribute(
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
-            )
-            self._common_template_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(
+                    enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
+                    local_buffer
+            ):
+                self._common_template_attribute = objects.TemplateAttribute(
+                    tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                )
+                self._common_template_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+        else:
+            if self.is_tag_next(enums.Tags.COMMON_ATTRIBUTES, local_buffer):
+                attributes = objects.Attributes(
+                    tag=enums.Tags.COMMON_ATTRIBUTES
+                )
+                attributes.read(local_buffer, kmip_version=kmip_version)
+                self._common_template_attribute = \
+                    objects.convert_attributes_to_template_attribute(
+                        attributes
+                    )
 
-        if self.is_tag_next(
-                enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
-                local_buffer
-        ):
-            self._private_key_template_attribute = objects.TemplateAttribute(
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
-            )
-            self._private_key_template_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(
+                    enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
+                    local_buffer
+            ):
+                self._private_key_template_attribute = \
+                    objects.TemplateAttribute(
+                        tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                    )
+                self._private_key_template_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+        else:
+            if self.is_tag_next(
+                    enums.Tags.PRIVATE_KEY_ATTRIBUTES,
+                    local_buffer
+            ):
+                attributes = objects.Attributes(
+                    tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES
+                )
+                attributes.read(local_buffer, kmip_version=kmip_version)
+                self._private_key_template_attribute = \
+                    objects.convert_attributes_to_template_attribute(
+                        attributes
+                    )
 
-        if self.is_tag_next(
-                enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
-                local_buffer
-        ):
-            self._public_key_template_attribute = objects.TemplateAttribute(
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
-            self._public_key_template_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(
+                    enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+                    local_buffer
+            ):
+                self._public_key_template_attribute = \
+                    objects.TemplateAttribute(
+                        tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                    )
+                self._public_key_template_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+        else:
+            if self.is_tag_next(
+                    enums.Tags.PUBLIC_KEY_ATTRIBUTES,
+                    local_buffer
+            ):
+                attributes = objects.Attributes(
+                    tag=enums.Tags.PUBLIC_KEY_ATTRIBUTES
+                )
+                attributes.read(local_buffer, kmip_version=kmip_version)
+                self._public_key_template_attribute = \
+                    objects.convert_attributes_to_template_attribute(
+                        attributes
+                    )
 
         self.is_oversized(local_buffer)
 
@@ -205,23 +246,44 @@ class CreateKeyPairRequestPayload(primitives.Struct):
         """
         local_buffer = utils.BytearrayStream()
 
-        if self._common_template_attribute is not None:
-            self._common_template_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._common_template_attribute is not None:
+                self._common_template_attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+        else:
+            if self._common_template_attribute is not None:
+                attributes = objects.convert_template_attribute_to_attributes(
+                    self._common_template_attribute
+                )
+                attributes.write(local_buffer, kmip_version=kmip_version)
 
-        if self._private_key_template_attribute is not None:
-            self._private_key_template_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._private_key_template_attribute is not None:
+                self._private_key_template_attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+        else:
+            if self._private_key_template_attribute is not None:
+                attributes = objects.convert_template_attribute_to_attributes(
+                    self._private_key_template_attribute
+                )
+                attributes.write(local_buffer, kmip_version=kmip_version)
 
-        if self._public_key_template_attribute is not None:
-            self._public_key_template_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._public_key_template_attribute is not None:
+                self._public_key_template_attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+        else:
+            if self._public_key_template_attribute is not None:
+                attributes = objects.convert_template_attribute_to_attributes(
+                    self._public_key_template_attribute
+                )
+                attributes.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(CreateKeyPairRequestPayload, self).write(
@@ -301,6 +363,26 @@ class CreateKeyPairResponsePayload(primitives.Struct):
                  public_key_unique_identifier=None,
                  private_key_template_attribute=None,
                  public_key_template_attribute=None):
+        """
+        Construct a CreateKeyPair response payload structure.
+
+        Args:
+            private_key_unique_identifier (string): A string specifying the
+                ID of the new private key. Optional, defaults to None. Required
+                for read/write.
+            public_key_unique_identifier (string): A string specifying the
+                ID of the new public key. Optional, defaults to None. Required
+                for read/write.
+            private_key_template_attribute (TemplateAttribute): A
+                TemplateAttribute structure with the
+                PrivateKeyTemplateAttribute tag containing the set of
+                attributes that were set on the new private key. Optional,
+                defaults to None.
+            public_key_template_attribute (TemplateAttribute): A
+                TemplateAttribute structure with the PublicKeyTemplateAttribute
+                tag containing the set of attributes that were set on the new
+                public key. Optional, defaults to None.
+        """
         super(CreateKeyPairResponsePayload, self).__init__(
             enums.Tags.RESPONSE_PAYLOAD
         )
@@ -456,29 +538,32 @@ class CreateKeyPairResponsePayload(primitives.Struct):
                 "public key unique identifier."
             )
 
-        if self.is_tag_next(
-                enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
-                local_buffer
-        ):
-            self._private_key_template_attribute = objects.TemplateAttribute(
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
-            )
-            self._private_key_template_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(
+                    enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
+                    local_buffer
+            ):
+                self._private_key_template_attribute = \
+                    objects.TemplateAttribute(
+                        tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                    )
+                self._private_key_template_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
 
-        if self.is_tag_next(
-                enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
-                local_buffer
-        ):
-            self._public_key_template_attribute = objects.TemplateAttribute(
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
-            self._public_key_template_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            if self.is_tag_next(
+                    enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+                    local_buffer
+            ):
+                self._public_key_template_attribute = \
+                    objects.TemplateAttribute(
+                        tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                    )
+                self._public_key_template_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
 
         self.is_oversized(local_buffer)
 
