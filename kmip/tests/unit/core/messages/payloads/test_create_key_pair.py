@@ -101,6 +101,43 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
+        # Manually converted to the KMIP 2.0 format.
+        #
+        # This encoding matches the following set of values:
+        # Request Payload
+        #     Common Attributes
+        #         Cryptographic Algorithm - RSA
+        #         Cryptographic Length - 1024
+        #     Private Key Attributes
+        #         Name
+        #             Name Value - PrivateKey1
+        #             Name Type - Uninterpreted Text String
+        #         Cryptographic Usage Mask - Sign
+        #     Public Key Attributes
+        #         Name
+        #             Name Value - PublicKey1
+        #             Name Type - Uninterpreted Text String
+        #         Cryptographic Usage Mask - Verify
+        self.full_encoding_with_attributes = utils.BytearrayStream(
+            b'\x42\x00\x79\x01\x00\x00\x00\xB8'
+            b'\x42\x01\x26\x01\x00\x00\x00\x20'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00'
+            b'\x42\x01\x27\x01\x00\x00\x00\x40'
+            b'\x42\x00\x53\x01\x00\x00\x00\x28'
+            b'\x42\x00\x55\x07\x00\x00\x00\x0B'
+            b'\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00'
+            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x01\x28\x01\x00\x00\x00\x40'
+            b'\x42\x00\x53\x01\x00\x00\x00\x28'
+            b'\x42\x00\x55\x07\x00\x00\x00\x0A'
+            b'\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+        )
+
+        # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
         #
         # This encoding matches the following set of values:
         # Request Payload
@@ -510,6 +547,106 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
             payload.public_key_template_attribute
         )
 
+    def test_read_kmip_2_0(self):
+        """
+        Test that a CreateKeyPair request payload can be read from a data
+        stream encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.CreateKeyPairRequestPayload()
+
+        self.assertIsNone(payload.common_template_attribute)
+        self.assertIsNone(payload.private_key_template_attribute)
+        self.assertIsNone(payload.public_key_template_attribute)
+
+        payload.read(
+            self.full_encoding_with_attributes,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(
+            objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Algorithm'
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.RSA,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Length'
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=1024,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    )
+                ],
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+            ),
+            payload.common_template_attribute
+        )
+        self.assertEqual(
+            objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName("Name"),
+                        attribute_value=attributes.Name(
+                            name_value=attributes.Name.NameValue(
+                                "PrivateKey1"
+                            ),
+                            name_type=attributes.Name.NameType(
+                                enums.NameType.UNINTERPRETED_TEXT_STRING
+                            )
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Usage Mask"
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=enums.CryptographicUsageMask.SIGN.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    )
+                ],
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            payload.private_key_template_attribute
+        )
+        self.assertEqual(
+            objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName("Name"),
+                        attribute_value=attributes.Name(
+                            name_value=attributes.Name.NameValue(
+                                "PublicKey1"
+                            ),
+                            name_type=attributes.Name.NameType(
+                                enums.NameType.UNINTERPRETED_TEXT_STRING
+                            )
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Usage Mask"
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    )
+                ],
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            payload.public_key_template_attribute
+        )
+
     def test_read_missing_common_template_attribute(self):
         """
         Test that a CreateKeyPair request payload can be read from a data
@@ -825,6 +962,94 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
 
         self.assertEqual(len(self.full_encoding), len(stream))
         self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_write_kmip_2_0(self):
+        """
+        Test that a CreateKeyPair request payload can be written to a data
+        stream encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.CreateKeyPairRequestPayload(
+            common_template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Algorithm'
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.RSA,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Length'
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=1024,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    )
+                ],
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+            ),
+            private_key_template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName("Name"),
+                        attribute_value=attributes.Name(
+                            name_value=attributes.Name.NameValue(
+                                "PrivateKey1"
+                            ),
+                            name_type=attributes.Name.NameType(
+                                enums.NameType.UNINTERPRETED_TEXT_STRING
+                            )
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Usage Mask"
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=enums.CryptographicUsageMask.SIGN.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    )
+                ],
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            public_key_template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName("Name"),
+                        attribute_value=attributes.Name(
+                            name_value=attributes.Name.NameValue(
+                                "PublicKey1"
+                            ),
+                            name_type=attributes.Name.NameType(
+                                enums.NameType.UNINTERPRETED_TEXT_STRING
+                            )
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Usage Mask"
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    )
+                ],
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            )
+        )
+
+        stream = utils.BytearrayStream()
+        payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
+
+        self.assertEqual(len(self.full_encoding_with_attributes), len(stream))
+        self.assertEqual(str(self.full_encoding_with_attributes), str(stream))
 
     def test_write_missing_common_template_attribute(self):
         """
