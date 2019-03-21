@@ -17,6 +17,7 @@ import six
 
 from kmip.core import attributes
 from kmip.core import enums
+from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
@@ -48,26 +49,24 @@ class DeriveKeyRequestPayload(primitives.Struct):
         Construct a DeriveKey request payload struct.
 
         Args:
-            object_type (ObjectType): An enumeration specifying the type of
-                the object to derive. Optional, defaults to None. Required
-                for encoding and decoding.
+            object_type (enum): An ObjectType enumeration specifying the type
+                of the object to derive. Optional, defaults to None. Required
+                for read/write.
             unique_identifiers (list): A list of strings representing the IDs
                 of managed objects (e.g., symmetric keys) to be used for
                 derivation. Optional, defaults to None. At least one value is
-                required for encoding and decoding.
-            derivation_method (DerivationMethod): An enumeration specifying
-                the type of derivation function to use (e.g., PBKDF2).
-                Optional, defaults to None. Required for encoding and
-                decoding.
+                required for read/write.
+            derivation_method (enum): A DerivationMethod enumeration
+                specifying the type of derivation function to use (e.g.,
+                PBKDF2). Optional, defaults to None. Required for read/write.
             derivation_parameters (DerivationParameters): A structure
                 containing cryptographic settings relevant for the derivation
-                method. Optional, defaults to None. Required for encoding and
-                decoding.
+                method. Optional, defaults to None. Required for read/write.
             template_attribute (TemplateAttribute): A structure containing a
                 set of attributes (e.g., cryptographic algorithm,
                 cryptographic length) that should be set on the newly derived
                 cryptographic object. Optional, defaults to None. Required
-                for encoding and decoding.
+                for read/write.
         """
         super(DeriveKeyRequestPayload, self).__init__(
             enums.Tags.REQUEST_PAYLOAD
@@ -103,7 +102,7 @@ class DeriveKeyRequestPayload(primitives.Struct):
                 tag=enums.Tags.OBJECT_TYPE
             )
         else:
-            raise TypeError("object type must be an ObjectType enumeration")
+            raise TypeError("Object type must be an ObjectType enumeration.")
 
     @property
     def unique_identifiers(self):
@@ -131,11 +130,11 @@ class DeriveKeyRequestPayload(primitives.Struct):
                     )
                 else:
                     raise TypeError(
-                        "unique identifiers must be a list of strings"
+                        "Unique identifiers must be a list of strings."
                     )
             self._unique_identifiers = unique_identifiers
         else:
-            raise TypeError("unique identifiers must be a list of strings")
+            raise TypeError("Unique identifiers must be a list of strings.")
 
     @property
     def derivation_method(self):
@@ -156,7 +155,7 @@ class DeriveKeyRequestPayload(primitives.Struct):
             )
         else:
             raise TypeError(
-                "derivation method must be a DerivationMethod enumeration"
+                "Derivation method must be a DerivationMethod enumeration."
             )
 
     @property
@@ -174,7 +173,8 @@ class DeriveKeyRequestPayload(primitives.Struct):
             self._derivation_parameters = value
         else:
             raise TypeError(
-                "derivation parameters must be a DerivationParameters struct"
+                "Derivation parameters must be a DerivationParameters "
+                "structure."
             )
 
     @property
@@ -192,16 +192,16 @@ class DeriveKeyRequestPayload(primitives.Struct):
             self._template_attribute = value
         else:
             raise TypeError(
-                "template attribute must be a TemplateAttribute struct"
+                "Template attribute must be a TemplateAttribute structure."
             )
 
-    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the DeriveKey request payload and decode it
         into its constituent parts.
 
         Args:
-            input_stream (stream): A data stream containing encoded object
+            input_buffer (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
             kmip_version (KMIPVersion): An enumeration defining the KMIP
@@ -213,78 +213,85 @@ class DeriveKeyRequestPayload(primitives.Struct):
                 encoded payload.
         """
         super(DeriveKeyRequestPayload, self).read(
-            input_stream,
+            input_buffer,
             kmip_version=kmip_version
         )
-        local_stream = utils.BytearrayStream(input_stream.read(self.length))
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_stream):
+        if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
             self._object_type = primitives.Enumeration(
                 enums.ObjectType,
                 tag=enums.Tags.OBJECT_TYPE
             )
-            self._object_type.read(local_stream, kmip_version=kmip_version)
+            self._object_type.read(local_buffer, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "invalid payload missing object type"
+            raise exceptions.InvalidKmipEncoding(
+                "The DeriveKey request payload encoding is missing the object "
+                "type."
             )
 
         unique_identifiers = []
-        while self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
+        while self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_buffer):
             unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            unique_identifier.read(local_stream, kmip_version=kmip_version)
+            unique_identifier.read(local_buffer, kmip_version=kmip_version)
             unique_identifiers.append(unique_identifier)
         if not unique_identifiers:
-            raise ValueError("invalid payload missing unique identifiers")
+            raise exceptions.InvalidKmipEncoding(
+                "The DeriveKey request payload encoding is missing the unique "
+                "identifiers."
+            )
         else:
             self._unique_identifiers = unique_identifiers
 
-        if self.is_tag_next(enums.Tags.DERIVATION_METHOD, local_stream):
+        if self.is_tag_next(enums.Tags.DERIVATION_METHOD, local_buffer):
             self._derivation_method = primitives.Enumeration(
                 enums.DerivationMethod,
                 tag=enums.Tags.DERIVATION_METHOD
             )
             self._derivation_method.read(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
         else:
-            raise ValueError(
-                "invalid payload missing derivation method"
+            raise exceptions.InvalidKmipEncoding(
+                "The DeriveKey request payload encoding is missing the "
+                "derivation method."
             )
 
-        if self.is_tag_next(enums.Tags.DERIVATION_PARAMETERS, local_stream):
+        if self.is_tag_next(enums.Tags.DERIVATION_PARAMETERS, local_buffer):
             self._derivation_parameters = attributes.DerivationParameters()
             self._derivation_parameters.read(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
         else:
-            raise ValueError(
-                "invalid payload missing derivation parameters"
+            raise exceptions.InvalidKmipEncoding(
+                "The DeriveKey request payload encoding is missing the "
+                "derivation parameters."
             )
 
-        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_stream):
+        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
             self._template_attribute = objects.TemplateAttribute()
             self._template_attribute.read(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
         else:
-            raise ValueError(
-                "invalid payload missing template attribute"
+            raise exceptions.InvalidKmipEncoding(
+                "The DeriveKey request payload encoding is missing the "
+                "template attribute."
             )
 
-        self.is_oversized(local_stream)
+        self.is_oversized(local_buffer)
 
-    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the DeriveKey request payload to a stream.
 
         Args:
-            output_stream (stream): A data stream in which to encode object
+            output_buffer (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
             kmip_version (KMIPVersion): An enumeration defining the KMIP
@@ -294,52 +301,67 @@ class DeriveKeyRequestPayload(primitives.Struct):
         Raises:
             ValueError: Raised if the data attribute is not defined.
         """
-        local_stream = utils.BytearrayStream()
+        local_buffer = utils.BytearrayStream()
 
         if self._object_type:
-            self._object_type.write(local_stream, kmip_version=kmip_version)
+            self._object_type.write(local_buffer, kmip_version=kmip_version)
         else:
-            raise ValueError("invalid payload missing object type")
+            raise exceptions.InvalidField(
+                "The DeriveKey request payload is missing the object type "
+                "field."
+            )
 
         if self._unique_identifiers:
             for unique_identifier in self._unique_identifiers:
                 unique_identifier.write(
-                    local_stream,
+                    local_buffer,
                     kmip_version=kmip_version
                 )
         else:
-            raise ValueError("invalid payload missing unique identifiers")
+            raise exceptions.InvalidField(
+                "The DeriveKey request payload is missing the unique "
+                "identifiers field."
+            )
 
         if self._derivation_method:
             self._derivation_method.write(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
         else:
-            raise ValueError("invalid payload missing derivation method")
+            raise exceptions.InvalidField(
+                "The DeriveKey request payload is missing the derivation "
+                "method field."
+            )
 
         if self._derivation_parameters:
             self._derivation_parameters.write(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
         else:
-            raise ValueError("invalid payload missing derivation parameters")
+            raise exceptions.InvalidField(
+                "The DeriveKey request payload is missing the derivation "
+                "parameters field."
+            )
 
         if self._template_attribute:
             self._template_attribute.write(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
         else:
-            raise ValueError("invalid payload missing template attributes")
+            raise exceptions.InvalidField(
+                "The DeriveKey request payload is missing the template "
+                "attribute field."
+            )
 
-        self.length = local_stream.length()
+        self.length = local_buffer.length()
         super(DeriveKeyRequestPayload, self).write(
-            output_stream,
+            output_buffer,
             kmip_version=kmip_version
         )
-        output_stream.write(local_stream.buffer)
+        output_buffer.write(local_buffer.buffer)
 
     def __eq__(self, other):
         if isinstance(other, DeriveKeyRequestPayload):
@@ -378,11 +400,11 @@ class DeriveKeyRequestPayload(primitives.Struct):
 
     def __str__(self):
         return str({
-            'object_type': self.object_type,
-            'unique_identifiers': self.unique_identifiers,
-            'derivation_method': self.derivation_method,
-            'derivation_parameters': self.derivation_parameters,
-            'template_attribute': self.template_attribute
+            "object_type": self.object_type,
+            "unique_identifiers": self.unique_identifiers,
+            "derivation_method": self.derivation_method,
+            "derivation_parameters": self.derivation_parameters,
+            "template_attribute": self.template_attribute
         })
 
 
@@ -440,7 +462,7 @@ class DeriveKeyResponsePayload(primitives.Struct):
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
-            raise TypeError("unique identifier must be a string")
+            raise TypeError("Unique identifier must be a string.")
 
     @property
     def template_attribute(self):
@@ -457,16 +479,16 @@ class DeriveKeyResponsePayload(primitives.Struct):
             self._template_attribute = value
         else:
             raise TypeError(
-                "template attribute must be a TemplateAttribute struct"
+                "Template attribute must be a TemplateAttribute structure."
             )
 
-    def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the DeriveKey response payload and decode it
         into its constituent parts.
 
         Args:
-            input_stream (stream): A data stream containing encoded object
+            input_buffer (stream): A data stream containing encoded object
                 data, supporting a read method; usually a BytearrayStream
                 object.
             kmip_version (KMIPVersion): An enumeration defining the KMIP
@@ -478,39 +500,40 @@ class DeriveKeyResponsePayload(primitives.Struct):
                 encoded payload.
         """
         super(DeriveKeyResponsePayload, self).read(
-            input_stream,
+            input_buffer,
             kmip_version=kmip_version
         )
-        local_stream = utils.BytearrayStream(input_stream.read(self.length))
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
+        if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_buffer):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
             self._unique_identifier.read(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
         else:
-            raise ValueError(
-                "invalid payload missing unique identifier"
+            raise exceptions.InvalidKmipEncoding(
+                "The DeriveKey response payload encoding is missing the "
+                "unique identifier."
             )
 
-        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_stream):
+        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
             self._template_attribute = objects.TemplateAttribute()
             self._template_attribute.read(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        self.is_oversized(local_stream)
+        self.is_oversized(local_buffer)
 
-    def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the DeriveKey response payload to a stream.
 
         Args:
-            output_stream (stream): A data stream in which to encode object
+            output_buffer (stream): A data stream in which to encode object
                 data, supporting a write method; usually a BytearrayStream
                 object.
             kmip_version (KMIPVersion): An enumeration defining the KMIP
@@ -520,30 +543,31 @@ class DeriveKeyResponsePayload(primitives.Struct):
         Raises:
             ValueError: Raised if the data attribute is not defined.
         """
-        local_stream = utils.BytearrayStream()
+        local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
             self._unique_identifier.write(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
         else:
-            raise ValueError(
-                "invalid payload missing unique identifier"
+            raise exceptions.InvalidField(
+                "The DeriveKey response payload is missing the unique "
+                "identifier field."
             )
 
         if self._template_attribute:
             self._template_attribute.write(
-                local_stream,
+                local_buffer,
                 kmip_version=kmip_version
             )
 
-        self.length = local_stream.length()
+        self.length = local_buffer.length()
         super(DeriveKeyResponsePayload, self).write(
-            output_stream,
+            output_buffer,
             kmip_version=kmip_version
         )
-        output_stream.write(local_stream.buffer)
+        output_buffer.write(local_buffer.buffer)
 
     def __eq__(self, other):
         if isinstance(other, DeriveKeyResponsePayload):
@@ -571,6 +595,6 @@ class DeriveKeyResponsePayload(primitives.Struct):
 
     def __str__(self):
         return str({
-            'unique_identifier': self.unique_identifier,
-            'template_attribute': self.template_attribute
+            "unique_identifier": self.unique_identifier,
+            "template_attribute": self.template_attribute
         })
