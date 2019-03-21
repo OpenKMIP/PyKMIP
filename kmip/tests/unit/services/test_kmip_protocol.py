@@ -18,9 +18,9 @@ from testtools import TestCase
 
 import binascii
 
-from kmip.services.server.kmip_protocol import KMIPProtocol
-from kmip.services.server.kmip_protocol import RequestLengthMismatch
-from kmip.services.server.kmip_protocol import KMIPProtocolFactory
+from kmip.services.kmip_protocol import KMIPProtocol
+from kmip.services.kmip_protocol import RequestLengthMismatch
+from kmip.services.kmip_protocol import KMIPProtocolFactory
 
 
 class TestKMIPProtocol(TestCase):

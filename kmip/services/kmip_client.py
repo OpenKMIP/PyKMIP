@@ -52,7 +52,7 @@ from kmip.core.messages import messages
 
 from kmip.core.messages import payloads
 
-from kmip.services.server.kmip_protocol import KMIPProtocol
+from kmip.services.kmip_protocol import KMIPProtocol
 
 from kmip.core.config_helper import ConfigHelper
 
