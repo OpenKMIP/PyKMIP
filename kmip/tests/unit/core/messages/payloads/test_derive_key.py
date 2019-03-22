@@ -86,6 +86,50 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
             b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
         )
 
+        # Encoding obtained in part from the KMIP 1.1 testing document. The
+        # rest of the encoding is a manual construction, since DeriveKey is
+        # not specifically detailed by the testing document. Manually converted
+        # to the KMIP 2.0 format.
+        #
+        # This encoding matches the following set of values:
+        # Object Type - SymmetricKey
+        # Unique Identifiers
+        #     fb4b5b9c-6188-4c63-8142-fe9c328129fc
+        #     5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3
+        #     1703250b-4d40-4de2-93a0-c494a1d4ae40
+        # Derivation Method - HMAC
+        # Derivation Parameters
+        #     Cryptographic Parameters
+        #         Hashing Algorithm - SHA-256
+        #     Initialization Vector - 0x39487432492834A3
+        #     Derivation Data - 0xFAD98B6ACA6D87DD
+        # Attributes
+        #     Cryptographic Algorithm - AES
+        #     Cryptographic Length - 128
+
+        self.full_encoding_with_attributes = utils.BytearrayStream(
+            b'\x42\x00\x79\x01\x00\x00\x01\x18'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24\x66\x62\x34\x62\x35\x62\x39\x63'
+            b'\x2D\x36\x31\x38\x38\x2D\x34\x63\x36\x33\x2D\x38\x31\x34\x32\x2D'
+            b'\x66\x65\x39\x63\x33\x32\x38\x31\x32\x39\x66\x63\x00\x00\x00\x00'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24\x35\x63\x39\x62\x38\x31\x65\x66'
+            b'\x2D\x34\x65\x65\x35\x2D\x34\x32\x63\x64\x2D\x62\x61\x32\x64\x2D'
+            b'\x63\x30\x30\x32\x66\x64\x64\x30\x63\x37\x62\x33\x00\x00\x00\x00'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24\x31\x37\x30\x33\x32\x35\x30\x62'
+            b'\x2D\x34\x64\x34\x30\x2D\x34\x64\x65\x32\x2D\x39\x33\x61\x30\x2D'
+            b'\x63\x34\x39\x34\x61\x31\x64\x34\x61\x65\x34\x30\x00\x00\x00\x00'
+            b'\x42\x00\x31\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\x32\x01\x00\x00\x00\x38'
+            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
+            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
+            b'\x42\x00\x3A\x08\x00\x00\x00\x08\x39\x48\x74\x32\x49\x28\x34\xA3'
+            b'\x42\x00\x30\x08\x00\x00\x00\x08\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+            b'\x42\x01\x25\x01\x00\x00\x00\x20'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+        )
+
         # All of the following partial encodings are trimmed versions of the
         # above full encoding.
 
@@ -343,10 +387,72 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
             payload.template_attribute
         )
 
+    def test_read_kmip_2_0(self):
+        """
+        Test that a DeriveKey request payload can be read from a data stream
+        encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.DeriveKeyRequestPayload()
+
+        payload.read(
+            self.full_encoding_with_attributes,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, payload.object_type)
+        self.assertEqual(
+            [
+                "fb4b5b9c-6188-4c63-8142-fe9c328129fc",
+                "5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3",
+                "1703250b-4d40-4de2-93a0-c494a1d4ae40"
+            ],
+            payload.unique_identifiers
+        )
+        self.assertEqual(
+            enums.DerivationMethod.HASH,
+            payload.derivation_method
+        )
+        self.assertEqual(
+            attributes.DerivationParameters(
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    hashing_algorithm=enums.HashingAlgorithm.SHA_256
+                ),
+                initialization_vector=b'\x39\x48\x74\x32\x49\x28\x34\xA3',
+                derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+            ),
+            payload.derivation_parameters
+        )
+        self.assertEqual(
+            objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Algorithm"
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Length"
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    )
+                ]
+            ),
+            payload.template_attribute
+        )
+
     def test_read_missing_object_type(self):
         """
-        Test that a ValueError gets raised when decoding a DeriveKey request
-        payload encoding missing the object type.
+        Test that an InvalidKmipEncoding error gets raised when decoding a
+        DeriveKey request payload encoding missing the object type.
         """
         payload = payloads.DeriveKeyRequestPayload()
 
@@ -377,8 +483,8 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
 
     def test_read_missing_derivation_method(self):
         """
-        Test that a ValueError gets raised when decoding a DeriveKey request
-        payload encoding missing the derivation method.
+        Test that an InvalidKmipEncoding error gets raised when decoding a
+        DeriveKey request payload encoding missing the derivation method.
         """
         payload = payloads.DeriveKeyRequestPayload()
 
@@ -393,8 +499,8 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
 
     def test_read_missing_derivation_parameters(self):
         """
-        Test that a ValueError gets raised when decoding a DeriveKey request
-        payload encoding missing the derivation parameters.
+        Test that an InvalidKmipEncoding error gets raised when decoding a
+        DeriveKey request payload encoding missing the derivation parameters.
         """
         payload = payloads.DeriveKeyRequestPayload()
 
@@ -409,8 +515,8 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
 
     def test_read_missing_template_attribute(self):
         """
-        Test that a ValueError gets raised when decoding a DeriveKey request
-        payload encoding missing the template attribute.
+        Test that an InvalidKmipEncoding error gets raised when decoding a
+        DeriveKey request payload encoding missing the template attribute.
         """
         payload = payloads.DeriveKeyRequestPayload()
 
@@ -421,6 +527,25 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
             "attribute.",
             payload.read,
             *args
+        )
+
+    def test_read_missing_attributes(self):
+        """
+        Test that an InvalidKmipEncoding error is raised during the decoding
+        of a DeriveKey request payload when the attributes structure is missing
+        from the encoding.
+        """
+        payload = payloads.DeriveKeyRequestPayload()
+
+        args = (self.partial_encoding_no_template_attribute, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The DeriveKey request payload encoding is missing the attributes "
+            "structure.",
+            payload.read,
+            *args,
+            **kwargs
         )
 
     def test_write(self):
@@ -472,10 +597,60 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
         self.assertEqual(len(self.full_encoding), len(stream))
         self.assertEqual(str(self.full_encoding), str(stream))
 
+    def test_write_kmip_2_0(self):
+        """
+        Test that a DeriveKey request payload can be written to a data stream
+        encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.DeriveKeyRequestPayload(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            unique_identifiers=[
+                "fb4b5b9c-6188-4c63-8142-fe9c328129fc",
+                "5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3",
+                "1703250b-4d40-4de2-93a0-c494a1d4ae40"
+            ],
+            derivation_method=enums.DerivationMethod.HASH,
+            derivation_parameters=attributes.DerivationParameters(
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    hashing_algorithm=enums.HashingAlgorithm.SHA_256
+                ),
+                initialization_vector=b'\x39\x48\x74\x32\x49\x28\x34\xA3',
+                derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+            ),
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Algorithm"
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Length"
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    )
+                ]
+            )
+        )
+        stream = utils.BytearrayStream()
+        payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
+
+        self.assertEqual(len(self.full_encoding_with_attributes), len(stream))
+        self.assertEqual(str(self.full_encoding_with_attributes), str(stream))
+
     def test_write_missing_object_type(self):
         """
-        Test that a ValueError gets raised when encoding a DeriveKey request
-        payload missing the object type.
+        Test that an InvalidField error gets raised when encoding a DeriveKey
+        request payload missing the object type.
         """
         payload = payloads.DeriveKeyRequestPayload()
 
@@ -489,8 +664,8 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
 
     def test_write_missing_unique_identifiers(self):
         """
-        Test that a ValueError gets raised when encoding a DeriveKey request
-        payload missing the unique identifiers.
+        Test that an InvalidField error gets raised when encoding a DeriveKey
+        request payload missing the unique identifiers.
         """
         payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY
@@ -506,8 +681,8 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
 
     def test_write_missing_derivation_method(self):
         """
-        Test that a ValueError gets raised when encoding a DeriveKey request
-        payload missing the derivation method.
+        Test that an InvalidField error gets raised when encoding a DeriveKey
+        request payload missing the derivation method.
         """
         payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
@@ -528,8 +703,8 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
 
     def test_write_missing_derivation_parameters(self):
         """
-        Test that a ValueError gets raised when encoding a DeriveKey request
-        payload missing the derivation parameters.
+        Test that an InvalidField error gets raised when encoding a DeriveKey
+        request payload missing the derivation parameters.
         """
         payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
@@ -552,8 +727,8 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
 
     def test_write_missing_template_attribute(self):
         """
-        Test that a ValueError gets raised when encoding a DeriveKey request
-        payload missing the template attribute.
+        Test that an InvalidField error gets raised when encoding a DeriveKey
+        request payload missing the template attribute.
         """
         payload = payloads.DeriveKeyRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
@@ -578,6 +753,39 @@ class TestDeriveKeyRequestPayload(testtools.TestCase):
             "The DeriveKey request payload is missing the template attribute.",
             payload.write,
             *args
+        )
+
+    def test_write_missing_attributes(self):
+        """
+        Test that an InvalidField error gets raised when encoding a DeriveKey
+        request payload missing the template attribute.
+        """
+        payload = payloads.DeriveKeyRequestPayload(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            unique_identifiers=[
+                "fb4b5b9c-6188-4c63-8142-fe9c328129fc",
+                "5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3",
+                "1703250b-4d40-4de2-93a0-c494a1d4ae40"
+            ],
+            derivation_method=enums.DerivationMethod.HASH,
+            derivation_parameters=attributes.DerivationParameters(
+                cryptographic_parameters=attributes.CryptographicParameters(
+                    hashing_algorithm=enums.HashingAlgorithm.SHA_256
+                ),
+                initialization_vector=b'\x39\x48\x74\x32\x49\x28\x34\xA3',
+                derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+            )
+        )
+
+        args = (utils.BytearrayStream(), )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The DeriveKey request payload is missing the template attribute "
+            "field.",
+            payload.write,
+            *args,
+            **kwargs
         )
 
     def test_equal_on_equal(self):
@@ -1577,10 +1785,31 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
             payload.template_attribute
         )
 
+    def test_read_kmip_2_0(self):
+        """
+        Test that a DeriveKey response payload can be read from a data stream
+        encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.DeriveKeyResponsePayload()
+
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload.template_attribute)
+
+        payload.read(
+            self.partial_encoding_no_template_attribute,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(
+            "fb4b5b9c-6188-4c63-8142-fe9c328129fc",
+            payload.unique_identifier
+        )
+        self.assertIsNone(payload.template_attribute)
+
     def test_read_missing_unique_identifier(self):
         """
-        Test that a ValueError gets raised when decoding a DeriveKey response
-        payload encoding missing the unique identifier.
+        Test that an InvalidKmipEncoding error gets raised when decoding a
+        DeriveKey response payload encoding missing the unique identifier.
         """
         payload = payloads.DeriveKeyResponsePayload()
 
@@ -1645,10 +1874,53 @@ class TestDeriveKeyResponsePayload(testtools.TestCase):
         self.assertEqual(len(self.full_encoding), len(stream))
         self.assertEqual(str(self.full_encoding), str(stream))
 
+    def test_write_kmip_2_0(self):
+        """
+        Test that a DeriveKey response payload can be written to a data stream
+        encoded with the KMIP 2.0 format.
+        """
+        payload = payloads.DeriveKeyResponsePayload(
+            unique_identifier="fb4b5b9c-6188-4c63-8142-fe9c328129fc",
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Algorithm"
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Length"
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    )
+                ]
+            )
+        )
+        stream = utils.BytearrayStream()
+        payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
+
+        self.assertEqual(
+            len(self.partial_encoding_no_template_attribute),
+            len(stream)
+        )
+        self.assertEqual(
+            str(self.partial_encoding_no_template_attribute),
+            str(stream)
+        )
+
     def test_write_missing_unique_identifier(self):
         """
-        Test that a ValueError gets raised when encoding a DeriveKey response
-        payload missing the unique identifier.
+        Test that an InvalidField error gets raised when encoding a DeriveKey
+        response payload missing the unique identifier.
         """
         payload = payloads.DeriveKeyResponsePayload()
 
