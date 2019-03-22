@@ -272,17 +272,31 @@ class DeriveKeyRequestPayload(primitives.Struct):
                 "derivation parameters."
             )
 
-        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
-            self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
+                self._template_attribute = objects.TemplateAttribute()
+                self._template_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            else:
+                raise exceptions.InvalidKmipEncoding(
+                    "The DeriveKey request payload encoding is missing the "
+                    "template attribute."
+                )
         else:
-            raise exceptions.InvalidKmipEncoding(
-                "The DeriveKey request payload encoding is missing the "
-                "template attribute."
-            )
+            if self.is_tag_next(enums.Tags.ATTRIBUTES, local_buffer):
+                attrs = objects.Attributes()
+                attrs.read(local_buffer, kmip_version=kmip_version)
+                value = objects.convert_attributes_to_template_attribute(
+                    attrs
+                )
+                self._template_attribute = value
+            else:
+                raise exceptions.InvalidKmipEncoding(
+                    "The DeriveKey request payload encoding is missing the "
+                    "attributes structure."
+                )
 
         self.is_oversized(local_buffer)
 
@@ -345,16 +359,28 @@ class DeriveKeyRequestPayload(primitives.Struct):
                 "parameters field."
             )
 
-        if self._template_attribute:
-            self._template_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._template_attribute:
+                self._template_attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            else:
+                raise exceptions.InvalidField(
+                    "The DeriveKey request payload is missing the template "
+                    "attribute field."
+                )
         else:
-            raise exceptions.InvalidField(
-                "The DeriveKey request payload is missing the template "
-                "attribute field."
-            )
+            if self._template_attribute:
+                attrs = objects.convert_template_attribute_to_attributes(
+                    self._template_attribute
+                )
+                attrs.write(local_buffer, kmip_version=kmip_version)
+            else:
+                raise exceptions.InvalidField(
+                    "The DeriveKey request payload is missing the template "
+                    "attribute field."
+                )
 
         self.length = local_buffer.length()
         super(DeriveKeyRequestPayload, self).write(
@@ -519,12 +545,13 @@ class DeriveKeyResponsePayload(primitives.Struct):
                 "unique identifier."
             )
 
-        if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
-            self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
+                self._template_attribute = objects.TemplateAttribute()
+                self._template_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
 
         self.is_oversized(local_buffer)
 
@@ -556,11 +583,12 @@ class DeriveKeyResponsePayload(primitives.Struct):
                 "identifier field."
             )
 
-        if self._template_attribute:
-            self._template_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._template_attribute:
+                self._template_attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
 
         self.length = local_buffer.length()
         super(DeriveKeyResponsePayload, self).write(
