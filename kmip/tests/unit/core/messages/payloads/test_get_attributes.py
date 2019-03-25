@@ -124,7 +124,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegex(
             TypeError,
-            "unique identifier must be a string",
+            "Unique identifier must be a string.",
             setattr,
             *args
         )
@@ -172,7 +172,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         args = (payload, 'attribute_names', 0)
         self.assertRaisesRegex(
             TypeError,
-            "attribute_names must be a list of strings",
+            "Attribute names must be a list of strings.",
             setattr,
             *args
         )
@@ -191,8 +191,8 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         )
         self.assertRaisesRegex(
             TypeError,
-            "attribute_names must be a list of strings; "
-            "item 2 has type {0}".format(type(0)),
+            "Attribute names must be a list of strings; "
+            "item 2 has type {0}.".format(type(0)),
             setattr,
             *args
         )
@@ -833,7 +833,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegex(
             TypeError,
-            "unique identifier must be a string",
+            "Unique identifier must be a string.",
             setattr,
             *args
         )
@@ -867,7 +867,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         args = (payload, 'attributes', 0)
         self.assertRaisesRegex(
             TypeError,
-            "attributes must be a list of attribute objects",
+            "Attributes must be a list of attribute objects.",
             setattr,
             *args
         )
@@ -886,8 +886,8 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         )
         self.assertRaisesRegex(
             TypeError,
-            "attributes must be a list of attribute objects; "
-            "item 2 has type {0}".format(type(0)),
+            "Attributes must be a list of attribute objects; "
+            "item 2 has type {0}.".format(type(0)),
             setattr,
             *args
         )
@@ -935,7 +935,8 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         args = (self.encoding_sans_unique_identifier, )
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "expected GetAttributes response unique identifier not found",
+            "The GetAttributes response payload encoding is missing the "
+            "unique identifier.",
             payload.read,
             *args
         )
@@ -992,7 +993,8 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         args = (stream, )
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The GetAttributes response unique identifier is required.",
+            "The GetAttributes response payload is missing the unique "
+            "identifier field.",
             payload.write,
             *args
         )
