@@ -175,6 +175,236 @@ class Attribute(Struct):
             return NotImplemented
 
 
+class AttributeReference(primitives.Struct):
+    """
+    A structure containing reference information for an attribute.
+
+    This is intended for use with KMIP 2.0+.
+
+    Attributes:
+        vendor_identification: A string identifying the vendor associated
+            with the attribute.
+        attribute_name: A string containing the attribute name.
+    """
+
+    def __init__(self, vendor_identification=None, attribute_name=None):
+        """
+        Construct an AttributeReference structure.
+
+        Args:
+            vendor_identification (string): A string identifying the vendor
+                associated with the attribute. Optional, defaults to None.
+                Required for read/write.
+            attribute_name (string): A string containing the attribute name.
+                Optional, defaults to None. Required for read/write.
+        """
+        super(AttributeReference, self).__init__(
+            tag=enums.Tags.ATTRIBUTE_REFERENCE
+        )
+
+        self._vendor_identification = None
+        self._attribute_name = None
+
+        self.vendor_identification = vendor_identification
+        self.attribute_name = attribute_name
+
+    @property
+    def vendor_identification(self):
+        if self._vendor_identification:
+            return self._vendor_identification.value
+        else:
+            return None
+
+    @vendor_identification.setter
+    def vendor_identification(self, value):
+        if value is None:
+            self._vendor_identification = None
+        elif isinstance(value, six.string_types):
+            self._vendor_identification = primitives.TextString(
+                value,
+                tag=enums.Tags.VENDOR_IDENTIFICATION
+            )
+        else:
+            raise TypeError("Vendor identification must be a string.")
+
+    @property
+    def attribute_name(self):
+        if self._attribute_name:
+            return self._attribute_name.value
+        else:
+            return None
+
+    @attribute_name.setter
+    def attribute_name(self, value):
+        if value is None:
+            self._attribute_name = None
+        elif isinstance(value, six.string_types):
+            self._attribute_name = primitives.TextString(
+                value,
+                tag=enums.Tags.ATTRIBUTE_NAME
+            )
+        else:
+            raise TypeError("Attribute name must be a string.")
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Read the data stream and decode the AttributeReference structure into
+        its parts.
+
+        Args:
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the vendor identification or
+                attribute name is missing from the encoding.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the AttributeReference structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the AttributeReference "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        super(AttributeReference, self).read(
+            input_buffer,
+            kmip_version=kmip_version
+        )
+        local_buffer = BytearrayStream(input_buffer.read(self.length))
+
+        if self.is_tag_next(enums.Tags.VENDOR_IDENTIFICATION, local_buffer):
+            self._vendor_identification = primitives.TextString(
+                tag=enums.Tags.VENDOR_IDENTIFICATION
+            )
+            self._vendor_identification.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The AttributeReference encoding is missing the vendor "
+                "identification string."
+            )
+
+        if self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, local_buffer):
+            self._attribute_name = primitives.TextString(
+                tag=enums.Tags.ATTRIBUTE_NAME
+            )
+            self._attribute_name.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The AttributeReference encoding is missing the attribute "
+                "name string."
+            )
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Write the AttributeReference structure encoding to the data stream.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode
+                Attributes structure data, supporting a write method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidField: Raised if the vendor identification or attribute name
+                fields are not defined.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the AttributeReference structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the AttributeReference "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        local_buffer = BytearrayStream()
+
+        if self._vendor_identification:
+            self._vendor_identification.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The AttributeReference is missing the vendor identification "
+                "field."
+            )
+
+        if self._attribute_name:
+            self._attribute_name.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The AttributeReference is missing the attribute name field."
+            )
+
+        self.length = local_buffer.length()
+        super(AttributeReference, self).write(
+            output_buffer,
+            kmip_version=kmip_version
+        )
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        v = "vendor_identification={}".format(
+            '"{}"'.format(
+                self.vendor_identification
+            ) if self.vendor_identification else None
+        )
+        a = "attribute_name={}".format(
+            '"{}"'.format(self.attribute_name) if self.attribute_name else None
+        )
+        values = ", ".join([v, a])
+        return "AttributeReference({})".format(values)
+
+    def __str__(self):
+        v = '"vendor_identification": "{}"'.format(
+            "{}".format(
+                self.vendor_identification
+            ) if self.vendor_identification else None
+        )
+        a = '"attribute_name": "{}"'.format(
+            "{}".format(self.attribute_name) if self.attribute_name else None
+        )
+        values = ", ".join([v, a])
+        return '{' + values + '}'
+
+    def __eq__(self, other):
+        if isinstance(other, AttributeReference):
+            if self.vendor_identification != other.vendor_identification:
+                return False
+            elif self.attribute_name != other.attribute_name:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, AttributeReference):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+
 class Attributes(primitives.Struct):
     """
     A collection of KMIP attributes.
