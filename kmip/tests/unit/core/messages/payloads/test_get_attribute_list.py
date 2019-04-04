@@ -16,6 +16,7 @@
 import testtools
 
 from kmip.core import enums
+from kmip.core import exceptions
 from kmip.core import primitives
 from kmip.core import utils
 
@@ -93,7 +94,7 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegex(
             TypeError,
-            "unique identifier must be a string",
+            "Unique identifier must be a string.",
             setattr,
             *args
         )
@@ -441,7 +442,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         args = (payload, 'unique_identifier', 0)
         self.assertRaisesRegex(
             TypeError,
-            "unique identifier must be a string",
+            "Unique identifier must be a string.",
             setattr,
             *args
         )
@@ -489,7 +490,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         args = (payload, 'attribute_names', 0)
         self.assertRaisesRegex(
             TypeError,
-            "attribute_names must be a list of strings",
+            "Attribute names must be a list of strings.",
             setattr,
             *args
         )
@@ -508,7 +509,7 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
         )
         self.assertRaisesRegex(
             TypeError,
-            "attribute_names must be a list of strings; "
+            "Attribute names must be a list of strings; "
             "item 2 has type {0}".format(type(0)),
             setattr,
             *args
@@ -584,70 +585,43 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
 
     def test_read_with_no_unique_identifier(self):
         """
-        Test that a GetAttributeList response payload with no ID can be read
-        from a data stream.
+        Test that an InvalidKmipEncoding error is raised when a
+        GetAttributeList response payload is read from a data stream with no
+        unique identifier.
         """
         payload = payloads.GetAttributeListResponsePayload()
 
         self.assertEqual(None, payload._unique_identifier)
         self.assertEqual(list(), payload._attribute_names)
 
-        payload.read(self.encoding_sans_unique_identifier)
-
-        self.assertEqual(None, payload.unique_identifier)
-        self.assertEqual(None, payload._unique_identifier)
-        self.assertEqual(
-            set(self.attribute_names),
-            set(payload.attribute_names)
+        args = (self.encoding_sans_unique_identifier, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The GetAttributeList response payload encoding is missing the "
+            "unique identifier.",
+            payload.read,
+            *args
         )
-        for attribute_name in self.attribute_names:
-            self.assertIn(
-                primitives.TextString(
-                    value=attribute_name,
-                    tag=enums.Tags.ATTRIBUTE_NAME
-                ),
-                payload._attribute_names
-            )
 
     def test_read_with_no_attribute_names(self):
         """
-        Test that a GetAttributeList response payload with no attribute names
-        can be read from a data stream.
+        Test that an InvalidKmipEncoding error is raised when a
+        GetAttributeList response payload is read from a data stream with no
+        attribute names.
         """
         payload = payloads.GetAttributeListResponsePayload()
 
         self.assertEqual(None, payload._unique_identifier)
         self.assertEqual(list(), payload._attribute_names)
 
-        payload.read(self.encoding_sans_attribute_names)
-
-        self.assertEqual(self.unique_identifier, payload.unique_identifier)
-        self.assertEqual(
-            primitives.TextString(
-                value=self.unique_identifier,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
-            ),
-            payload._unique_identifier
+        args = (self.encoding_sans_attribute_names, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The GetAttributeList response payload encoding is missing the "
+            "attribute names.",
+            payload.read,
+            *args
         )
-        self.assertEqual(list(), payload.attribute_names)
-        self.assertEqual(list(), payload._attribute_names)
-
-    def test_read_with_no_content(self):
-        """
-        Test that a GetAttributeList response payload with no ID or attribute
-        names can be read from a data stream.
-        """
-        payload = payloads.GetAttributeListResponsePayload()
-
-        self.assertEqual(None, payload._unique_identifier)
-        self.assertEqual(list(), payload._attribute_names)
-
-        payload.read(self.empty_encoding)
-
-        self.assertEqual(None, payload.unique_identifier)
-        self.assertEqual(None, payload._unique_identifier)
-        self.assertEqual(list(), payload.attribute_names)
-        self.assertEqual(list(), payload._attribute_names)
 
     def test_write(self):
         """
@@ -666,51 +640,39 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
 
     def test_write_with_no_unique_identifier(self):
         """
-        Test that a GetAttributeList response payload with no ID can be
-        written to a data stream.
+        Test that an InvalidField error is raised when a GetAttributeList
+        response payload is written to a data stream with no unique identifier.
         """
         payload = payloads.GetAttributeListResponsePayload(
             None,
             self.attribute_names
         )
-        stream = utils.BytearrayStream()
-        payload.write(stream)
-
-        self.assertEqual(
-            len(self.encoding_sans_unique_identifier),
-            len(stream)
-        )
-        self.assertEqual(
-            str(self.encoding_sans_unique_identifier),
-            str(stream)
+        args = (utils.BytearrayStream(), )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The GetAttributeList response payload is missing the unique "
+            "identifier field.",
+            payload.write,
+            *args
         )
 
     def test_write_with_no_attribute_names(self):
         """
-        Test that a GetAttributeList response payload with no attribute names
-        can be written to a data stream.
+        Test that an InvalidField error is raised when a GetAttributeList
+        response payload is written to a data stream with no attribute names.
         """
         payload = payloads.GetAttributeListResponsePayload(
             self.unique_identifier,
             None
         )
-        stream = utils.BytearrayStream()
-        payload.write(stream)
-
-        self.assertEqual(len(self.encoding_sans_attribute_names), len(stream))
-        self.assertEqual(str(self.encoding_sans_attribute_names), str(stream))
-
-    def test_write_with_no_content(self):
-        """
-        Test that a GetAttributeList response payload with no ID or attribute
-        names can be written to a data stream.
-        """
-        payload = payloads.GetAttributeListResponsePayload()
-        stream = utils.BytearrayStream()
-        payload.write(stream)
-
-        self.assertEqual(len(self.empty_encoding), len(stream))
-        self.assertEqual(str(self.empty_encoding), str(stream))
+        args = (utils.BytearrayStream(), )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The GetAttributeList response payload is missing the attribute "
+            "names field.",
+            payload.write,
+            *args
+        )
 
     def test_repr(self):
         """
