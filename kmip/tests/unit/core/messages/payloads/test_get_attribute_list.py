@@ -33,12 +33,20 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
 
         # Encodings taken from Sections 3.1.4 of the KMIP 1.1 testing
         # documentation.
+        #
+        # This encoding matches the following set of values:
+        # Request Payload
+        #     Unique Identifier - b4faee10-aa2a-4446-8ad4-0881f3422959
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x42\x00\x79\x01\x00\x00\x00\x30'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24'
             b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
             b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
             b'\x32\x39\x35\x39\x00\x00\x00\x00'
         )
+
+        # This encoding matches the following set of values:
+        # Request Payload
         self.empty_encoding = utils.BytearrayStream(
             b'\x42\x00\x79\x01\x00\x00\x00\x00'
         )
@@ -318,59 +326,190 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
 
         # Encodings taken from Sections 3.1.4 of the KMIP 1.1 testing
         # documentation.
+        #
+        # This encoding matches the following set of values:
+        # Response Payload
+        #     Unique Identifier - b4faee10-aa2a-4446-8ad4-0881f3422959
+        #     Attribute Name - Cryptographic Length
+        #     Attribute Name - Cryptographic Algorithm
+        #     Attribute Name - State
+        #     Attribute Name - Digest
+        #     Attribute Name - Lease Time
+        #     Attribute Name - Initial Date
+        #     Attribute Name - Unique Identifier
+        #     Attribute Name - Name
+        #     Attribute Name - Cryptographic Usage Mask
+        #     Attribute Name - Object Type
+        #     Attribute Name - Contact Information
+        #     Attribute Name - Last Change Date
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x01\x60\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x42\x00\x7C\x01\x00\x00\x01\x60'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24'
             b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
             b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x14'
+            b'\x32\x39\x35\x39\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x14'
             b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65'
-            b'\x6E\x67\x74\x68\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x17'
+            b'\x6E\x67\x74\x68\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x17'
             b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C'
-            b'\x67\x6F\x72\x69\x74\x68\x6D\x00\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x06'
-            b'\x44\x69\x67\x65\x73\x74\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x0A'
+            b'\x67\x6F\x72\x69\x74\x68\x6D\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x05\x53\x74\x61\x74\x65\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x06\x44\x69\x67\x65\x73\x74\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x0A'
             b'\x4C\x65\x61\x73\x65\x20\x54\x69\x6D\x65\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C\x49\x6E\x69\x74\x69\x61\x6C\x20'
-            b'\x44\x61\x74\x65\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x11'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
+            b'\x49\x6E\x69\x74\x69\x61\x6C\x20\x44\x61\x74\x65\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x11'
             b'\x55\x6E\x69\x71\x75\x65\x20\x49\x64\x65\x6E\x74\x69\x66\x69\x65'
-            b'\x72\x00\x00\x00\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x04'
-            b'\x4E\x61\x6D\x65\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x18'
+            b'\x72\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x04\x4E\x61\x6D\x65\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
             b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B\x42\x00\x0A\x07\x00\x00\x00\x0B'
+            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x0B'
             b'\x4F\x62\x6A\x65\x63\x74\x20\x54\x79\x70\x65\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x13\x43\x6F\x6E\x74\x61\x63\x74\x20'
-            b'\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x10\x4C\x61\x73\x74\x20\x43\x68\x61'
-            b'\x6E\x67\x65\x20\x44\x61\x74\x65'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x13'
+            b'\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74'
+            b'\x69\x6F\x6E\x00\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x10'
+            b'\x4C\x61\x73\x74\x20\x43\x68\x61\x6E\x67\x65\x20\x44\x61\x74\x65'
         )
+
+        # Encodings taken from Sections 3.1.4 of the KMIP 1.1 testing
+        # documentation.
+        #
+        # This encoding matches the following set of values:
+        # Response Payload
+        #     Attribute Name - Cryptographic Length
+        #     Attribute Name - Cryptographic Algorithm
+        #     Attribute Name - State
+        #     Attribute Name - Digest
+        #     Attribute Name - Lease Time
+        #     Attribute Name - Initial Date
+        #     Attribute Name - Unique Identifier
+        #     Attribute Name - Name
+        #     Attribute Name - Cryptographic Usage Mask
+        #     Attribute Name - Object Type
+        #     Attribute Name - Contact Information
+        #     Attribute Name - Last Change Date
         self.encoding_sans_unique_identifier = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x01\x30\x42\x00\x0A\x07\x00\x00\x00\x14'
+            b'\x42\x00\x7C\x01\x00\x00\x01\x30'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x14'
             b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65'
-            b'\x6E\x67\x74\x68\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x17'
+            b'\x6E\x67\x74\x68\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x17'
             b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C'
-            b'\x67\x6F\x72\x69\x74\x68\x6D\x00\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x06'
-            b'\x44\x69\x67\x65\x73\x74\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x0A'
+            b'\x67\x6F\x72\x69\x74\x68\x6D\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x05\x53\x74\x61\x74\x65\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x06\x44\x69\x67\x65\x73\x74\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x0A'
             b'\x4C\x65\x61\x73\x65\x20\x54\x69\x6D\x65\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C\x49\x6E\x69\x74\x69\x61\x6C\x20'
-            b'\x44\x61\x74\x65\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x11'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
+            b'\x49\x6E\x69\x74\x69\x61\x6C\x20\x44\x61\x74\x65\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x11'
             b'\x55\x6E\x69\x71\x75\x65\x20\x49\x64\x65\x6E\x74\x69\x66\x69\x65'
-            b'\x72\x00\x00\x00\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x04'
-            b'\x4E\x61\x6D\x65\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x18'
+            b'\x72\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x04\x4E\x61\x6D\x65\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
             b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B\x42\x00\x0A\x07\x00\x00\x00\x0B'
+            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x0B'
             b'\x4F\x62\x6A\x65\x63\x74\x20\x54\x79\x70\x65\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x13\x43\x6F\x6E\x74\x61\x63\x74\x20'
-            b'\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x10\x4C\x61\x73\x74\x20\x43\x68\x61'
-            b'\x6E\x67\x65\x20\x44\x61\x74\x65'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x13'
+            b'\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74'
+            b'\x69\x6F\x6E\x00\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x10'
+            b'\x4C\x61\x73\x74\x20\x43\x68\x61\x6E\x67\x65\x20\x44\x61\x74\x65'
         )
+
+        # Encodings taken from Sections 3.1.4 of the KMIP 1.1 testing
+        # documentation.
+        #
+        # This encoding matches the following set of values:
+        # Response Payload
+        #     Unique Identifier - b4faee10-aa2a-4446-8ad4-0881f3422959
         self.encoding_sans_attribute_names = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24'
             b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
             b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
             b'\x32\x39\x35\x39\x00\x00\x00\x00'
         )
+
+        # Encodings adapted from Sections 3.1.2 of the KMIP 1.1 testing
+        # documentation. Manually converted to the KMIP 2.0 format.
+        #
+        # This encoding matches the following set of values:
+        # Response Payload
+        #     Unique Identifier - 1703250b-4d40-4de2-93a0-c494a1d4ae40
+        #     Attribute Reference - Object Group
+        #     Attribute Reference - Application Specific Information
+        #     Attribute Reference - Contact Information
+        self.full_encoding_with_reference_enums = utils.BytearrayStream(
+            b'\x42\x00\x7C\x01\x00\x00\x00\x60'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
+            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
+            b'\x61\x65\x34\x30\x00\x00\x00\x00'
+            b'\x42\x01\x3B\x05\x00\x00\x00\x04\x00\x42\x00\x56\x00\x00\x00\x00'
+            b'\x42\x01\x3B\x05\x00\x00\x00\x04\x00\x42\x00\x04\x00\x00\x00\x00'
+            b'\x42\x01\x3B\x05\x00\x00\x00\x04\x00\x42\x00\x22\x00\x00\x00\x00'
+        )
+
+        # Encodings adapted from Sections 3.1.2 of the KMIP 1.1 testing
+        # documentation. Manually converted to the KMIP 2.0 format.
+        #
+        # This encoding matches the following set of values:
+        # Response Payload
+        #     Unique Identifier - 1703250b-4d40-4de2-93a0-c494a1d4ae40
+        #     Attribute Reference
+        #         Vendor Identification -
+        #         Attribute Name - Object Group
+        #     Attribute Reference
+        #         Vendor Identification -
+        #         Attribute Name - Application Specific Information
+        #     Attribute Reference
+        #         Vendor Identification -
+        #         Attribute Name - Contact Information
+        self.full_encoding_with_reference_structs = utils.BytearrayStream(
+            b'\x42\x00\x7C\x01\x00\x00\x00\xD0'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
+            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
+            b'\x61\x65\x34\x30\x00\x00\x00\x00'
+            b'\x42\x01\x3B\x01\x00\x00\x00\x20'
+            b'\x42\x00\x9D\x07\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
+            b'\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00'
+            b'\x42\x01\x3B\x01\x00\x00\x00\x30'
+            b'\x42\x00\x9D\x07\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x20'
+            b'\x41\x70\x70\x6C\x69\x63\x61\x74\x69\x6F\x6E\x20\x53\x70\x65\x63'
+            b'\x69\x66\x69\x63\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E'
+            b'\x42\x01\x3B\x01\x00\x00\x00\x28'
+            b'\x42\x00\x9D\x07\x00\x00\x00\x00'
+            b'\x42\x00\x0A\x07\x00\x00\x00\x13'
+            b'\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74'
+            b'\x69\x6F\x6E\x00\x00\x00\x00\x00'
+        )
+
+        # Encodings adapted from Sections 3.1.2 of the KMIP 1.1 testing
+        # documentation. Manually converted to the KMIP 2.0 format.
+        #
+        # This encoding matches the following set of values:
+        # Response Payload
+        #     Unique Identifier - 1703250b-4d40-4de2-93a0-c494a1d4ae40
+        #     Attribute Reference - Object Group --> "encoded" as a ByteString
+        self.invalid_attribute_reference_encoding = utils.BytearrayStream(
+            b'\x42\x00\x7C\x01\x00\x00\x00\x40'
+            b'\x42\x00\x94\x07\x00\x00\x00\x24'
+            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
+            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
+            b'\x61\x65\x34\x30\x00\x00\x00\x00'
+            b'\x42\x01\x3B\x08\x00\x00\x00\x04\x00\x42\x00\x56\x00\x00\x00\x00'
+        )
+
         self.empty_encoding = utils.BytearrayStream(
             b'\x42\x00\x7C\x01\x00\x00\x00\x00'
         )
@@ -583,6 +722,85 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
                 payload._attribute_names
             )
 
+    def test_read_kmip_2_0_enums(self):
+        """
+        Test that a GetAttributeList response payload can be read from a data
+        stream encoded with the KMIP 2.0 format using AttributeReference
+        enumerations.
+        """
+        payload = payloads.GetAttributeListResponsePayload()
+
+        self.assertEqual(None, payload.unique_identifier)
+        self.assertEqual(list(), payload.attribute_names)
+
+        payload.read(
+            self.full_encoding_with_reference_enums,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(
+            "1703250b-4d40-4de2-93a0-c494a1d4ae40",
+            payload.unique_identifier
+        )
+        self.assertEqual(3, len(payload.attribute_names))
+        self.assertEqual(
+            [
+                "Object Group",
+                "Application Specific Information",
+                "Contact Information"
+            ],
+            payload.attribute_names
+        )
+
+    def test_read_kmip_2_0_structs(self):
+        """
+        Test that a GetAttributeList response payload can be read from a data
+        stream encoded with the KMIP 2.0 format using AttributeReference
+        structures.
+        """
+        payload = payloads.GetAttributeListResponsePayload()
+
+        self.assertEqual(None, payload.unique_identifier)
+        self.assertEqual(list(), payload.attribute_names)
+
+        payload.read(
+            self.full_encoding_with_reference_structs,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(
+            "1703250b-4d40-4de2-93a0-c494a1d4ae40",
+            payload.unique_identifier
+        )
+        self.assertEqual(3, len(payload.attribute_names))
+        self.assertEqual(
+            [
+                "Object Group",
+                "Application Specific Information",
+                "Contact Information"
+            ],
+            payload.attribute_names
+        )
+
+    def test_read_kmip_2_0_invalid_attribute_reference(self):
+        """
+        Test that an InvalidKmipEncoding error is raised during the decoding
+        of a GetAttributeList response payload when the wrong type is found
+        for the AttributeReference structure.
+        """
+        payload = payloads.GetAttributeListResponsePayload()
+
+        args = (self.invalid_attribute_reference_encoding, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The GetAttributeList response payload encoding contains an "
+            "invalid AttributeReference type.",
+            payload.read,
+            *args,
+            **kwargs
+        )
+
     def test_read_with_no_unique_identifier(self):
         """
         Test that an InvalidKmipEncoding error is raised when a
@@ -637,6 +855,32 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
 
         self.assertEqual(len(self.full_encoding), len(stream))
         self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_write_kmip_2_0_enums(self):
+        """
+        Test that a GetAttributeList response payload can be written to a data
+        stream encoded in the KMIP 2.0 format using AttributeReference
+        enumerations.
+        """
+        payload = payloads.GetAttributeListResponsePayload(
+            "1703250b-4d40-4de2-93a0-c494a1d4ae40",
+            [
+                "Object Group",
+                "Application Specific Information",
+                "Contact Information"
+            ]
+        )
+        stream = utils.BytearrayStream()
+        payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
+
+        self.assertEqual(
+            len(self.full_encoding_with_reference_enums),
+            len(stream)
+        )
+        self.assertEqual(
+            str(self.full_encoding_with_reference_enums),
+            str(stream)
+        )
 
     def test_write_with_no_unique_identifier(self):
         """

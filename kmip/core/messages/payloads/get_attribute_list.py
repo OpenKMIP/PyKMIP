@@ -17,6 +17,7 @@ import six
 
 from kmip.core import enums
 from kmip.core import exceptions
+from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
 
@@ -284,16 +285,50 @@ class GetAttributeListResponsePayload(primitives.Struct):
             )
 
         names = list()
-        while self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, local_buffer):
-            name = primitives.TextString(tag=enums.Tags.ATTRIBUTE_NAME)
-            name.read(local_buffer, kmip_version=kmip_version)
-            names.append(name)
-        if len(names) == 0:
-            raise exceptions.InvalidKmipEncoding(
-                "The GetAttributeList response payload encoding is missing "
-                "the attribute names."
-            )
-        self._attribute_names = names
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            while self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, local_buffer):
+                name = primitives.TextString(tag=enums.Tags.ATTRIBUTE_NAME)
+                name.read(local_buffer, kmip_version=kmip_version)
+                names.append(name)
+            if len(names) == 0:
+                raise exceptions.InvalidKmipEncoding(
+                    "The GetAttributeList response payload encoding is "
+                    "missing the attribute names."
+                )
+            self._attribute_names = names
+        else:
+            while self.is_tag_next(
+                    enums.Tags.ATTRIBUTE_REFERENCE,
+                    local_buffer
+            ):
+                if self.is_type_next(enums.Types.STRUCTURE, local_buffer):
+                    reference = objects.AttributeReference()
+                    reference.read(local_buffer, kmip_version=kmip_version)
+                    names.append(
+                        primitives.TextString(
+                            value=reference.attribute_name,
+                            tag=enums.Tags.ATTRIBUTE_NAME
+                        )
+                    )
+                elif self.is_type_next(enums.Types.ENUMERATION, local_buffer):
+                    reference = primitives.Enumeration(
+                        enums.Tags,
+                        tag=enums.Tags.ATTRIBUTE_REFERENCE
+                    )
+                    reference.read(local_buffer, kmip_version=kmip_version)
+                    name = enums.convert_attribute_tag_to_name(reference.value)
+                    names.append(
+                        primitives.TextString(
+                            value=name,
+                            tag=enums.Tags.ATTRIBUTE_NAME
+                        )
+                    )
+                else:
+                    raise exceptions.InvalidKmipEncoding(
+                        "The GetAttributeList response payload encoding "
+                        "contains an invalid AttributeReference type."
+                    )
+            self._attribute_names = names
 
         self.is_oversized(local_buffer)
 
@@ -328,8 +363,32 @@ class GetAttributeListResponsePayload(primitives.Struct):
             )
 
         if self._attribute_names:
-            for attribute_name in self._attribute_names:
-                attribute_name.write(local_buffer, kmip_version=kmip_version)
+            if kmip_version < enums.KMIPVersion.KMIP_2_0:
+                for attribute_name in self._attribute_names:
+                    attribute_name.write(
+                        local_buffer,
+                        kmip_version=kmip_version
+                    )
+            else:
+                # NOTE (ph) This approach simplifies backwards compatible
+                #           issues but limits easy support for Attribute
+                #           Reference structures going forward, specifically
+                #           limiting the use of VendorIdentification for
+                #           custom attributes. If custom attributes need to
+                #           be retrieved using the GetAttributeList operation
+                #           for KMIP 2.0 applications this code will need to
+                #           change.
+                for attribute_name in self._attribute_names:
+                    t = enums.convert_attribute_name_to_tag(
+                        attribute_name.value
+                    )
+                    e = primitives.Enumeration(
+                        enums.Tags,
+                        value=t,
+                        tag=enums.Tags.ATTRIBUTE_REFERENCE
+                    )
+                    e.write(local_buffer, kmip_version=kmip_version)
+
         else:
             raise exceptions.InvalidField(
                 "The GetAttributeList response payload is missing the "
