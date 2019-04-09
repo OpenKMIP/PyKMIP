@@ -39,6 +39,7 @@ from kmip.core.primitives import ByteString
 from kmip.core.primitives import Integer
 from kmip.core.primitives import Enumeration
 
+from kmip.core import utils
 from kmip.core.utils import BytearrayStream
 
 
@@ -3628,3 +3629,214 @@ class RevocationReason(Struct):
             if not isinstance(self.revocation_message, TextString):
                 msg = "TextString expect"
                 raise TypeError(msg)
+
+
+class ObjectDefaults(primitives.Struct):
+    """
+    A structure containing default object values used by the server.
+
+    This is intended for use with KMIP 2.0+.
+
+    Attributes:
+        object_type: An ObjectType enumeration identifying the type to which
+            the defaults pertain.
+        attributes: An Attributes structure containing attribute values that
+            are defaults for an object type.
+    """
+
+    def __init__(self, object_type=None, attributes=None):
+        """
+        Construct an ObjectDefaults structure.
+
+        Args:
+            object_type (enum): An ObjectType enumeration identifying the type
+                to which the defaults pertain. Optional, defaults to None.
+                Required for read/write.
+            attributes (structure): An Attributes structure containing
+                attribute values that are defaults for an object type.
+                Optional, defaults to None. Required for read/write.
+        """
+        super(ObjectDefaults, self).__init__(tag=enums.Tags.OBJECT_DEFAULTS)
+
+        self._object_type = None
+        self._attributes = None
+
+        self.object_type = object_type
+        self.attributes = attributes
+
+    @property
+    def object_type(self):
+        if self._object_type:
+            return self._object_type.value
+        else:
+            return None
+
+    @object_type.setter
+    def object_type(self, value):
+        if value is None:
+            self._object_type = None
+        elif isinstance(value, enums.ObjectType):
+            self._object_type = primitives.Enumeration(
+                enums.ObjectType,
+                value=value,
+                tag=enums.Tags.OBJECT_TYPE
+            )
+        else:
+            raise TypeError("Object type must be an ObjectType enumeration.")
+
+    @property
+    def attributes(self):
+        return self._attributes
+
+    @attributes.setter
+    def attributes(self, value):
+        if value is None:
+            self._attributes = None
+        elif isinstance(value, Attributes):
+            self._attributes = value
+        else:
+            raise TypeError("Attributes must be an Attributes structure.")
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Read the data encoding the ObjectDefaults structure and decode it into
+        its constituent parts.
+
+        Args:
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the object type or attributes are
+                missing from the encoding.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the ObjectDefaults structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the ObjectDefaults object.".format(
+                    kmip_version.value
+                )
+            )
+
+        super(ObjectDefaults, self).read(
+            input_buffer,
+            kmip_version=kmip_version
+        )
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
+
+        if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
+            self._object_type = primitives.Enumeration(
+                enums.ObjectType,
+                tag=enums.Tags.OBJECT_TYPE
+            )
+            self._object_type.read(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The ObjectDefaults encoding is missing the object type "
+                "enumeration."
+            )
+
+        if self.is_tag_next(enums.Tags.ATTRIBUTES, local_buffer):
+            self._attributes = Attributes()
+            self._attributes.read(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The ObjectDefaults encoding is missing the attributes "
+                "structure."
+            )
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Write the ObjectDefaults structure encoding to the data stream.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode
+                Attributes structure data, supporting a write method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidField: Raised if the object type or attributes fields are
+                not defined.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the ObjectDefaults structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the ObjectDefaults object.".format(
+                    kmip_version.value
+                )
+            )
+
+        local_buffer = BytearrayStream()
+
+        if self._object_type:
+            self._object_type.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The ObjectDefaults structure is missing the object type "
+                "field."
+            )
+
+        if self._attributes:
+            self._attributes.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The ObjectDefaults structure is missing the attributes field."
+            )
+
+        self.length = local_buffer.length()
+        super(ObjectDefaults, self).write(
+            output_buffer,
+            kmip_version=kmip_version
+        )
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        o = "object_type={}".format(
+            '{}'.format(
+                self.object_type
+            ) if self.object_type else None
+        )
+        a = "attributes={}".format(
+            '{}'.format(repr(self.attributes)) if self.attributes else None
+        )
+        values = ", ".join([o, a])
+        return "ObjectDefaults({})".format(values)
+
+    def __str__(self):
+        o = '"object_type": {}'.format(
+            "{}".format(
+                self.object_type
+            ) if self.object_type else None
+        )
+        a = '"attributes": {}'.format(
+            "{}".format(str(self.attributes)) if self.attributes else None
+        )
+        values = ", ".join([o, a])
+        return '{' + values + '}'
+
+    def __eq__(self, other):
+        if isinstance(other, ObjectDefaults):
+            if self.object_type != other.object_type:
+                return False
+            elif self.attributes != other.attributes:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ObjectDefaults):
+            return not (self == other)
+        else:
+            return NotImplemented
