@@ -5143,3 +5143,582 @@ class TestObjectDefaults(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+
+class TestDefaultsInformation(testtools.TestCase):
+
+    def setUp(self):
+        super(TestDefaultsInformation, self).setUp()
+
+        # This encoding matches the following set of values:
+        #
+        # DefaultsInformation
+        #     ObjectDefaults
+        #         Object Type - Symmetric Key
+        #         Attributes
+        #             Cryptographic Algorithm - AES
+        #             Cryptographic Length - 128
+        #             Cryptographic Usage Mask - Encrypt | Decrypt
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x01\x52\x01\x00\x00\x00\x50'
+            b'\x42\x01\x53\x01\x00\x00\x00\x48'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x01\x25\x01\x00\x00\x00\x30'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # DefaultsInformation
+        self.no_object_defaults_encoding = utils.BytearrayStream(
+            b'\x42\x01\x52\x01\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestDefaultsInformation, self).tearDown()
+
+    def test_invalid_object_defaults(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the object defaults of an DefaultsInformation structure.
+        """
+        kwargs = {"object_defaults": [0]}
+        self.assertRaisesRegex(
+            TypeError,
+            "Object defaults must be a list of ObjectDefaults structures.",
+            objects.DefaultsInformation,
+            **kwargs
+        )
+
+        args = (objects.DefaultsInformation(), "object_defaults", 0)
+        self.assertRaisesRegex(
+            TypeError,
+            "Object defaults must be a list of ObjectDefaults structures.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_object_defaults_list(self):
+        """
+        Test that a TypeError is raised when an invalid object defaults list
+        is used with the DefaultsInformation structure.
+        """
+        kwargs = {"object_defaults": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "Object defaults must be a list of ObjectDefaults structures.",
+            objects.DefaultsInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.DefaultsInformation(),
+            "object_defaults",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "Object defaults must be a list of ObjectDefaults structures.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that a DefaultsInformation structure can be correctly read in
+        from a data stream.
+        """
+        defaults_information = objects.DefaultsInformation()
+
+        self.assertIsNone(defaults_information.object_defaults)
+
+        defaults_information.read(
+            self.full_encoding,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        expected = [
+            objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        ),
+                        primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                        primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    ]
+                )
+            )
+        ]
+        self.assertEqual(
+            expected,
+            defaults_information.object_defaults
+        )
+
+    def test_read_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the decoding of
+        a DefaultsInformation structure when the structure is read for an
+        unsupported KMIP version.
+        """
+        defaults_information = objects.DefaultsInformation()
+
+        args = (self.full_encoding, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_4}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.4 does not support the DefaultsInformation object.",
+            defaults_information.read,
+            *args,
+            **kwargs
+        )
+
+    def test_read_missing_object_defaults(self):
+        """
+        Test that an InvalidKmipEncoding error is raised during the decoding
+        of a DefaultsInformation structure when the object type is missing
+        from the encoding.
+        """
+        defaults_information = objects.DefaultsInformation()
+
+        self.assertIsNone(defaults_information.object_defaults)
+
+        args = (self.no_object_defaults_encoding, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The DefaultsInformation encoding is missing the object defaults "
+            "structure.",
+            defaults_information.read,
+            *args
+        )
+
+    def test_write(self):
+        """
+        Test that a DefaultsInformation structure can be written to a data
+        stream.
+        """
+        object_defaults = [
+            objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        ),
+                        primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                        primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    ]
+                )
+            )
+        ]
+        defaults_information = objects.DefaultsInformation(
+            object_defaults=object_defaults
+        )
+
+        buffer = utils.BytearrayStream()
+        defaults_information.write(
+            buffer,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(len(self.full_encoding), len(buffer))
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_write_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the encoding of
+        a DefaultsInformation structure when the structure is written for an
+        unsupported KMIP version.
+        """
+        object_defaults = objects.ObjectDefaults(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            attributes=objects.Attributes(
+                attributes=[
+                    primitives.Enumeration(
+                        enums.CryptographicAlgorithm,
+                        value=enums.CryptographicAlgorithm.AES,
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    ),
+                    primitives.Integer(
+                        value=128,
+                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                    ),
+                    primitives.Integer(
+                        value=(
+                            enums.CryptographicUsageMask.ENCRYPT.value |
+                            enums.CryptographicUsageMask.DECRYPT.value
+                        ),
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                    )
+                ]
+            )
+        )
+        defaults_information = objects.DefaultsInformation(
+            object_defaults=[object_defaults]
+        )
+
+        args = (utils.BytearrayStream(), )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_4}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.4 does not support the DefaultsInformation object.",
+            defaults_information.write,
+            *args,
+            **kwargs
+        )
+
+    def test_write_missing_object_defaults(self):
+        """
+        Test that an InvalidField error is raised during the encoding of an
+        DefaultsInformation structure when the structure is missing the object
+        defaults field.
+        """
+        defaults_information = objects.DefaultsInformation()
+
+        args = (utils.BytearrayStream(), )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The DefaultsInformation structure is missing the object defaults "
+            "field.",
+            defaults_information.write,
+            *args
+        )
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to a DefaultsInformation structure.
+        """
+        object_defaults = objects.ObjectDefaults(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            attributes=objects.Attributes(
+                attributes=[
+                    primitives.Enumeration(
+                        enums.CryptographicAlgorithm,
+                        value=enums.CryptographicAlgorithm.AES,
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    ),
+                    primitives.Integer(
+                        value=128,
+                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                    ),
+                    primitives.Integer(
+                        value=(
+                            enums.CryptographicUsageMask.ENCRYPT.value |
+                            enums.CryptographicUsageMask.DECRYPT.value
+                        ),
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                    )
+                ]
+            )
+        )
+        defaults_information = objects.DefaultsInformation(
+            object_defaults=[object_defaults]
+        )
+        o = "object_type=ObjectType.SYMMETRIC_KEY"
+        a1e = "enum=CryptographicAlgorithm"
+        a1v = "value=CryptographicAlgorithm.AES"
+        a1t = "tag=Tags.CRYPTOGRAPHIC_ALGORITHM"
+        a1a = ", ".join([a1e, a1v, a1t])
+        a1 = "Enumeration({})".format(a1a)
+        a2 = "Integer(value=128)"
+        a3 = "Integer(value=12)"
+        aa = ", ".join([a1, a2, a3])
+        t = "tag=Tags.ATTRIBUTES"
+        a = "attributes=Attributes(attributes=[{}], {})".format(aa, t)
+        r = "ObjectDefaults({}, {})".format(o, a)
+        d = "DefaultsInformation(object_defaults=[{}])".format(r)
+
+        self.assertEqual(d, repr(defaults_information))
+
+    def test_str(self):
+        """
+        Test that str can be applied to a DefaultsInformation structure.
+        """
+        object_defaults = objects.ObjectDefaults(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            attributes=objects.Attributes(
+                attributes=[
+                    primitives.Enumeration(
+                        enums.CryptographicAlgorithm,
+                        value=enums.CryptographicAlgorithm.AES,
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    ),
+                    primitives.Integer(
+                        value=128,
+                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                    ),
+                    primitives.Integer(
+                        value=(
+                            enums.CryptographicUsageMask.ENCRYPT.value |
+                            enums.CryptographicUsageMask.DECRYPT.value
+                        ),
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                    )
+                ]
+            )
+        )
+        defaults_information = objects.DefaultsInformation(
+            object_defaults=[object_defaults]
+        )
+        o = '"object_type": ObjectType.SYMMETRIC_KEY'
+        aa = '{"attributes": [CryptographicAlgorithm.AES, 128, 12]}'
+        a = '"attributes": {}'.format(aa)
+        r = "{" + "{}, {}".format(o, a) + "}"
+        d = "{" + '"object_defaults": [' + r + "]}"
+
+        self.assertEqual(d, str(defaults_information))
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        DefaultsInformation structures with the same data.
+        """
+        a = objects.DefaultsInformation()
+        b = objects.DefaultsInformation()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = objects.DefaultsInformation(
+            object_defaults=[objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        ),
+                        primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                        primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    ]
+                )
+            )]
+        )
+        b = objects.DefaultsInformation(
+            object_defaults=[objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        ),
+                        primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                        primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    ]
+                )
+            )]
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_object_defaults(self):
+        """
+        Test that the equality operator returns False when comparing two
+        DefaultsInformation structures with different object defaults fields.
+        """
+        a = objects.DefaultsInformation(
+            object_defaults=[objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ]
+                )
+            )]
+        )
+        b = objects.DefaultsInformation(
+            object_defaults=[objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    ]
+                )
+            )]
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing two
+        DefaultsInformation structures with different types.
+        """
+        a = objects.DefaultsInformation()
+        b = "invalid"
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        DefaultsInformation structures with the same data.
+        """
+        a = objects.DefaultsInformation()
+        b = objects.DefaultsInformation()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = objects.DefaultsInformation(
+            object_defaults=[objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        ),
+                        primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                        primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    ]
+                )
+            )]
+        )
+        b = objects.DefaultsInformation(
+            object_defaults=[objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        ),
+                        primitives.Integer(
+                            value=128,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                        primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    ]
+                )
+            )]
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_object_defaults(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        DefaultsInformation structures with different object defaults fields.
+        """
+        a = objects.DefaultsInformation(
+            object_defaults=[objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ]
+                )
+            )]
+        )
+        b = objects.DefaultsInformation(
+            object_defaults=[objects.ObjectDefaults(
+                object_type=enums.ObjectType.SYMMETRIC_KEY,
+                attributes=objects.Attributes(
+                    attributes=[
+                        primitives.Integer(
+                            value=(
+                                enums.CryptographicUsageMask.ENCRYPT.value |
+                                enums.CryptographicUsageMask.DECRYPT.value
+                            ),
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    ]
+                )
+            )]
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        DefaultsInformation structures with different types.
+        """
+        a = objects.DefaultsInformation()
+        b = "invalid"
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)

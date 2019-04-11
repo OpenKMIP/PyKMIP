@@ -3840,3 +3840,165 @@ class ObjectDefaults(primitives.Struct):
             return not (self == other)
         else:
             return NotImplemented
+
+
+class DefaultsInformation(primitives.Struct):
+    """
+    """
+
+    def __init__(self, object_defaults=None):
+        """
+        """
+        super(DefaultsInformation, self).__init__(
+            tag=enums.Tags.DEFAULTS_INFORMATION
+        )
+
+        self._object_defaults = None
+
+        self.object_defaults = object_defaults
+
+    @property
+    def object_defaults(self):
+        return self._object_defaults
+
+    @object_defaults.setter
+    def object_defaults(self, value):
+        if value is None:
+            self._object_defaults = None
+        elif isinstance(value, list):
+            object_defaults = []
+            for v in value:
+                if not isinstance(v, ObjectDefaults):
+                    raise TypeError(
+                        "Object defaults must be a list of ObjectDefaults "
+                        "structures."
+                    )
+                else:
+                    object_defaults.append(v)
+            self._object_defaults = object_defaults
+        else:
+            raise TypeError(
+                "Object defaults must be a list of ObjectDefaults structures."
+            )
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Read the data encoding the DefaultsInformation structure and decode it
+        into its constituent parts.
+
+        Args:
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the object defaults are missing
+                from the encoding.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the DefaultsInformation structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the DefaultsInformation "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        super(DefaultsInformation, self).read(
+            input_buffer,
+            kmip_version=kmip_version
+        )
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
+
+        object_defaults = []
+        while self.is_tag_next(enums.Tags.OBJECT_DEFAULTS, local_buffer):
+            object_default = ObjectDefaults()
+            object_default.read(local_buffer, kmip_version=kmip_version)
+            object_defaults.append(object_default)
+
+        if len(object_defaults) == 0:
+            raise exceptions.InvalidKmipEncoding(
+                "The DefaultsInformation encoding is missing the object "
+                "defaults structure."
+            )
+        else:
+            self._object_defaults = object_defaults
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Write the DefaultsInformation structure encoding to the data stream.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode
+                Attributes structure data, supporting a write method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidField: Raised if the object defaults field is not defined.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the DefaultsInformation structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the DefaultsInformation "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        local_buffer = BytearrayStream()
+
+        if self._object_defaults:
+            for object_default in self._object_defaults:
+                object_default.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The DefaultsInformation structure is missing the object "
+                "defaults field."
+            )
+
+        self.length = local_buffer.length()
+        super(DefaultsInformation, self).write(
+            output_buffer,
+            kmip_version=kmip_version
+        )
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        d = "object_defaults={}".format(
+            '{}'.format(
+                repr(self.object_defaults)
+            ) if self.object_defaults else None
+        )
+        return "DefaultsInformation({})".format(d)
+
+    def __str__(self):
+        d = '"object_defaults": {}'.format(
+            "[{}]".format(
+                ", ".join([str(x) for x in self.object_defaults])
+            ) if self.object_defaults else None
+        )
+        return '{' + d + '}'
+
+    def __eq__(self, other):
+        if isinstance(other, DefaultsInformation):
+            if self.object_defaults == other.object_defaults:
+                return True
+            else:
+                return False
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, DefaultsInformation):
+            return not (self == other)
+        else:
+            return NotImplemented
