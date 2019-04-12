@@ -4002,3 +4002,501 @@ class DefaultsInformation(primitives.Struct):
             return not (self == other)
         else:
             return NotImplemented
+
+
+class RNGParameters(primitives.Struct):
+    """
+    A structure containing parameters for a random number generator.
+
+    This is intended for use with KMIP 1.3+.
+
+    Attributes:
+        rng_algorithm: An RNGAlgorithm enumeration identifying the type of
+            random number generator to which the parameters pertain.
+        cryptographic_algorithm: A CryptographicAlgorithm enumeration
+            identifying the cryptographic algorithm used by the RNG.
+        cryptographic_length: An integer specifying the length to be used
+            with the cryptographic algorithm.
+        hashing_algorithm: A HashingAlgorithm enumeration identifying the
+            hashing algorithm used by the RNG.
+        drbg_algorithm: A DRBGAlgorithm enumeration identifying the DRBG
+            algorithm used by the RNG.
+        recommended_curve: A RecommendedCurve enumeration identifying the
+            recommended curve used by the RNG.
+        fips186_variation: A FIPS186Variation enumeration identifying the
+            FIPS186 variation used by the RNG.
+        prediction_resistance: A boolean indicating whether or not
+            prediction resistance is leveraged by the RNG.
+    """
+
+    def __init__(self,
+                 rng_algorithm=None,
+                 cryptographic_algorithm=None,
+                 cryptographic_length=None,
+                 hashing_algorithm=None,
+                 drbg_algorithm=None,
+                 recommended_curve=None,
+                 fips186_variation=None,
+                 prediction_resistance=None):
+        """
+        Construct an RNGParameters structure.
+
+        Args:
+            rng_algorithm (enum): An RNGAlgorithm enumeration identifying the
+                type of random number generator to which the parameters
+                pertain. Optional, defaults to None. Required for read/write.
+            cryptographic_algorithm (enum): A CryptographicAlgorithm
+                enumeration identifying the cryptographic algorithm used by
+                the RNG. Optional, defaults to None.
+            cryptographic_length (int): An integer specifying the length to be
+                used with the cryptographic algorithm. Optional, defaults to
+                None.
+            hashing_algorithm (enum): A HashingAlgorithm enumeration
+                identifying the hashing algorithm used by the RNG. Optional,
+                defaults to None.
+            drbg_algorithm (enum): A DRBGAlgorithm enumeration identifying the
+                DRBG algorithm used by the RNG. Optional, defaults to None.
+            recommended_curve (enum): A RecommendedCurve enumeration
+                identifying the recommended curve used by the RNG. Optional,
+                defaults to None.
+            fips186_variation (enum): A FIPS186Variation enumeration
+                identifying the FIPS186 variation used by the RNG. Optional,
+                defaults to None.
+            prediction_resistance (bool): A boolean indicating whether or not
+                prediction resistance is leveraged by the RNG. Optional,
+                defaults to None.
+        """
+        super(RNGParameters, self).__init__(tag=enums.Tags.RNG_PARAMETERS)
+
+        self._rng_algorithm = None
+        self._cryptographic_algorithm = None
+        self._cryptographic_length = None
+        self._hashing_algorithm = None
+        self._drbg_algorithm = None
+        self._recommended_curve = None
+        self._fips186_variation = None
+        self._prediction_resistance = None
+
+        self.rng_algorithm = rng_algorithm
+        self.cryptographic_algorithm = cryptographic_algorithm
+        self.cryptographic_length = cryptographic_length
+        self.hashing_algorithm = hashing_algorithm
+        self.drbg_algorithm = drbg_algorithm
+        self.recommended_curve = recommended_curve
+        self.fips186_variation = fips186_variation
+        self.prediction_resistance = prediction_resistance
+
+    @property
+    def rng_algorithm(self):
+        return self._rng_algorithm.value if self._rng_algorithm else None
+
+    @rng_algorithm.setter
+    def rng_algorithm(self, value):
+        if value is None:
+            self._rng_algorithm = None
+        elif isinstance(value, enums.RNGAlgorithm):
+            self._rng_algorithm = primitives.Enumeration(
+                enums.RNGAlgorithm,
+                value=value,
+                tag=enums.Tags.RNG_ALGORITHM
+            )
+        else:
+            raise TypeError(
+                "The RNG algorithm must be an RNGAlgorithm enumeration."
+            )
+
+    @property
+    def cryptographic_algorithm(self):
+        if self._cryptographic_algorithm:
+            return self._cryptographic_algorithm.value
+        else:
+            return None
+
+    @cryptographic_algorithm.setter
+    def cryptographic_algorithm(self, value):
+        if value is None:
+            self._cryptographic_algorithm = None
+        elif isinstance(value, enums.CryptographicAlgorithm):
+            self._cryptographic_algorithm = primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                value=value,
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            )
+        else:
+            raise TypeError(
+                "The cryptographic algorithm must be a "
+                "CryptographicAlgorithm enumeration."
+            )
+
+    @property
+    def cryptographic_length(self):
+        if self._cryptographic_length:
+            return self._cryptographic_length.value
+        else:
+            return None
+
+    @cryptographic_length.setter
+    def cryptographic_length(self, value):
+        if value is None:
+            self._cryptographic_length = None
+        elif isinstance(value, six.integer_types):
+            self._cryptographic_length = primitives.Integer(
+                value=value,
+                tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        else:
+            raise TypeError("The cryptographic length must be an integer.")
+
+    @property
+    def hashing_algorithm(self):
+        if self._hashing_algorithm:
+            return self._hashing_algorithm.value
+        else:
+            return None
+
+    @hashing_algorithm.setter
+    def hashing_algorithm(self, value):
+        if value is None:
+            self._hashing_algorithm = None
+        elif isinstance(value, enums.HashingAlgorithm):
+            self._hashing_algorithm = primitives.Enumeration(
+                enums.HashingAlgorithm,
+                value=value,
+                tag=enums.Tags.HASHING_ALGORITHM
+            )
+        else:
+            raise TypeError(
+                "The hashing algorithm must be a HashingAlgorithm "
+                "enumeration."
+            )
+
+    @property
+    def drbg_algorithm(self):
+        return self._drbg_algorithm.value if self._drbg_algorithm else None
+
+    @drbg_algorithm.setter
+    def drbg_algorithm(self, value):
+        if value is None:
+            self._drbg_algorithm = None
+        elif isinstance(value, enums.DRBGAlgorithm):
+            self._drbg_algorithm = primitives.Enumeration(
+                enums.DRBGAlgorithm,
+                value=value,
+                tag=enums.Tags.DRBG_ALGORITHM
+            )
+        else:
+            raise TypeError(
+                "The DRBG algorithm must be a DRBGAlgorithm enumeration."
+            )
+
+    @property
+    def recommended_curve(self):
+        if self._recommended_curve:
+            return self._recommended_curve.value
+        else:
+            return None
+
+    @recommended_curve.setter
+    def recommended_curve(self, value):
+        if value is None:
+            self._recommended_curve = None
+        elif isinstance(value, enums.RecommendedCurve):
+            self._recommended_curve = primitives.Enumeration(
+                enums.RecommendedCurve,
+                value=value,
+                tag=enums.Tags.RECOMMENDED_CURVE
+            )
+        else:
+            raise TypeError(
+                "The recommended curve must be a RecommendedCurve "
+                "enumeration."
+            )
+
+    @property
+    def fips186_variation(self):
+        if self._fips186_variation:
+            return self._fips186_variation.value
+        else:
+            return None
+
+    @fips186_variation.setter
+    def fips186_variation(self, value):
+        if value is None:
+            self._fips186_variation = None
+        elif isinstance(value, enums.FIPS186Variation):
+            self._fips186_variation = primitives.Enumeration(
+                enums.FIPS186Variation,
+                value=value,
+                tag=enums.Tags.FIPS186_VARIATION
+            )
+        else:
+            raise TypeError(
+                "The FIPS186 variation must be a FIPS186Variation "
+                "enumeration."
+            )
+
+    @property
+    def prediction_resistance(self):
+        if self._prediction_resistance:
+            return self._prediction_resistance.value
+        else:
+            return None
+
+    @prediction_resistance.setter
+    def prediction_resistance(self, value):
+        if value is None:
+            self._prediction_resistance = None
+        elif isinstance(value, bool):
+            self._prediction_resistance = primitives.Boolean(
+                value=value,
+                tag=enums.Tags.PREDICTION_RESISTANCE
+            )
+        else:
+            raise TypeError("The prediction resistance must be a boolean.")
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_3):
+        """
+        Read the data encoding the RNGParameters structure and decode it
+        into its constituent parts.
+
+        Args:
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the RNG algorithm is missing from
+                the encoding.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the RNGParameters structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_1_3:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the RNGParameters object.".format(
+                    kmip_version.value
+                )
+            )
+
+        super(RNGParameters, self).read(
+            input_buffer,
+            kmip_version=kmip_version
+        )
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
+
+        if self.is_tag_next(enums.Tags.RNG_ALGORITHM, local_buffer):
+            rng_algorithm = primitives.Enumeration(
+                enums.RNGAlgorithm,
+                tag=enums.Tags.RNG_ALGORITHM
+            )
+            rng_algorithm.read(local_buffer, kmip_version=kmip_version)
+            self._rng_algorithm = rng_algorithm
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The RNGParameters encoding is missing the RNG algorithm."
+            )
+
+        if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_ALGORITHM, local_buffer):
+            cryptographic_algorithm = primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            )
+            cryptographic_algorithm.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._cryptographic_algorithm = cryptographic_algorithm
+
+        if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_LENGTH, local_buffer):
+            cryptographic_length = primitives.Integer(
+                tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+            cryptographic_length.read(local_buffer, kmip_version=kmip_version)
+            self._cryptographic_length = cryptographic_length
+
+        if self.is_tag_next(enums.Tags.HASHING_ALGORITHM, local_buffer):
+            hashing_algorithm = primitives.Enumeration(
+                enums.HashingAlgorithm,
+                tag=enums.Tags.HASHING_ALGORITHM
+            )
+            hashing_algorithm.read(local_buffer, kmip_version=kmip_version)
+            self._hashing_algorithm = hashing_algorithm
+
+        if self.is_tag_next(enums.Tags.DRBG_ALGORITHM, local_buffer):
+            drbg_algorithm = primitives.Enumeration(
+                enums.DRBGAlgorithm,
+                tag=enums.Tags.DRBG_ALGORITHM
+            )
+            drbg_algorithm.read(local_buffer, kmip_version=kmip_version)
+            self._drbg_algorithm = drbg_algorithm
+
+        if self.is_tag_next(enums.Tags.RECOMMENDED_CURVE, local_buffer):
+            recommended_curve = primitives.Enumeration(
+                enums.RecommendedCurve,
+                tag=enums.Tags.RECOMMENDED_CURVE
+            )
+            recommended_curve.read(local_buffer, kmip_version=kmip_version)
+            self._recommended_curve = recommended_curve
+
+        if self.is_tag_next(enums.Tags.FIPS186_VARIATION, local_buffer):
+            fips186_variation = primitives.Enumeration(
+                enums.FIPS186Variation,
+                tag=enums.Tags.FIPS186_VARIATION
+            )
+            fips186_variation.read(local_buffer, kmip_version=kmip_version)
+            self._fips186_variation = fips186_variation
+
+        if self.is_tag_next(enums.Tags.PREDICTION_RESISTANCE, local_buffer):
+            prediction_resistance = primitives.Boolean(
+                tag=enums.Tags.PREDICTION_RESISTANCE
+            )
+            prediction_resistance.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._prediction_resistance = prediction_resistance
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_3):
+        """
+        Write the RNGParameters structure encoding to the data stream.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode
+                Attributes structure data, supporting a write method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidField: Raised if the RNG algorithm field is not defined.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the RNGParameters structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_1_3:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the RNGParameters object.".format(
+                    kmip_version.value
+                )
+            )
+
+        local_buffer = BytearrayStream()
+
+        if self._rng_algorithm:
+            self._rng_algorithm.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The RNGParameters structure is missing the RNG algorithm "
+                "field."
+            )
+
+        if self._cryptographic_algorithm:
+            self._cryptographic_algorithm.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._cryptographic_length:
+            self._cryptographic_length.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._hashing_algorithm:
+            self._hashing_algorithm.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._drbg_algorithm:
+            self._drbg_algorithm.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._recommended_curve:
+            self._recommended_curve.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._fips186_variation:
+            self._fips186_variation.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._prediction_resistance:
+            self._prediction_resistance.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        self.length = local_buffer.length()
+        super(RNGParameters, self).write(
+            output_buffer,
+            kmip_version=kmip_version
+        )
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        a = "rng_algorithm={}".format(self.rng_algorithm)
+        c = "cryptographic_algorithm={}".format(self.cryptographic_algorithm)
+        e = "cryptographic_length={}".format(self.cryptographic_length)
+        h = "hashing_algorithm={}".format(self.hashing_algorithm)
+        d = "drbg_algorithm={}".format(self.drbg_algorithm)
+        r = "recommended_curve={}".format(self.recommended_curve)
+        f = "fips186_variation={}".format(self.fips186_variation)
+        p = "prediction_resistance={}".format(self.prediction_resistance)
+
+        v = ", ".join([a, c, e, h, d, r, f, p])
+
+        return "RNGParameters({})".format(v)
+
+    def __str__(self):
+        a = '"rng_algorithm": {}'.format(self.rng_algorithm)
+        c = '"cryptographic_algorithm": {}'.format(
+            self.cryptographic_algorithm
+        )
+        e = '"cryptographic_length": {}'.format(self.cryptographic_length)
+        h = '"hashing_algorithm": {}'.format(self.hashing_algorithm)
+        d = '"drbg_algorithm": {}'.format(self.drbg_algorithm)
+        r = '"recommended_curve": {}'.format(self.recommended_curve)
+        f = '"fips186_variation": {}'.format(self.fips186_variation)
+        p = '"prediction_resistance": {}'.format(self.prediction_resistance)
+
+        v = ", ".join([a, c, e, h, d, r, f, p])
+
+        return '{' + v + '}'
+
+    def __eq__(self, other):
+        if isinstance(other, RNGParameters):
+            if self.rng_algorithm != other.rng_algorithm:
+                return False
+            elif self.cryptographic_algorithm != other.cryptographic_algorithm:
+                return False
+            elif self.cryptographic_length != other.cryptographic_length:
+                return False
+            elif self.hashing_algorithm != other.hashing_algorithm:
+                return False
+            elif self.drbg_algorithm != other.drbg_algorithm:
+                return False
+            elif self.recommended_curve != other.recommended_curve:
+                return False
+            elif self.fips186_variation != other.fips186_variation:
+                return False
+            elif self.prediction_resistance != other.prediction_resistance:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, RNGParameters):
+            return not (self == other)
+        else:
+            return NotImplemented

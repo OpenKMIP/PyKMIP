@@ -5722,3 +5722,794 @@ class TestDefaultsInformation(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+
+class TestRNGParameters(testtools.TestCase):
+
+    def setUp(self):
+        super(TestRNGParameters, self).setUp()
+
+        # This encoding matches the following set of values:
+        #
+        # RNGParameters
+        #     RNG Algorithm - FIPS 186-2
+        #     Cryptographic Algorithm - AES
+        #     Cryptographic Length - 256
+        #     Hashing Algorithm - SHA256
+        #     DRBG Algorithm - Hash
+        #     Recommended Curve - P-192
+        #     FIPS186 Variation - GP x-Original
+        #     Prediction Resistance - True
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x00\xD9\x01\x00\x00\x00\x80'
+            b'\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00'
+            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
+            b'\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # RNGParameters
+        #     Cryptographic Algorithm - AES
+        #     Cryptographic Length - 256
+        #     Hashing Algorithm - SHA256
+        #     DRBG Algorithm - Hash
+        #     Recommended Curve - P-192
+        #     FIPS186 Variation - GP x-Original
+        #     Prediction Resistance - True
+        self.no_rng_algorithm_encoding = utils.BytearrayStream(
+            b'\x42\x00\xD9\x01\x00\x00\x00\x70'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00'
+            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
+            b'\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # RNGParameters
+        #     RNG Algorithm - FIPS 186-2
+        self.only_rng_algorithm_encoding = utils.BytearrayStream(
+            b'\x42\x00\xD9\x01\x00\x00\x00\x10'
+            b'\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestRNGParameters, self).tearDown()
+
+    def test_invalid_rng_algorithm(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the RNG algorithm of an RNGParameters structure.
+        """
+        kwargs = {"rng_algorithm": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The RNG algorithm must be an RNGAlgorithm enumeration.",
+            objects.RNGParameters,
+            **kwargs
+        )
+
+        args = (objects.RNGParameters(), "rng_algorithm", "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The RNG algorithm must be an RNGAlgorithm enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_cryptographic_algorithm(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the cryptographic algorithm of an RNGParameters structure.
+        """
+        kwargs = {"cryptographic_algorithm": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The cryptographic algorithm must be a CryptographicAlgorithm "
+            "enumeration.",
+            objects.RNGParameters,
+            **kwargs
+        )
+
+        args = (objects.RNGParameters(), "cryptographic_algorithm", "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The cryptographic algorithm must be a CryptographicAlgorithm "
+            "enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_cryptographic_length(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the cryptographic length of an RNGParameters structure.
+        """
+        kwargs = {"cryptographic_length": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The cryptographic length must be an integer.",
+            objects.RNGParameters,
+            **kwargs
+        )
+
+        args = (objects.RNGParameters(), "cryptographic_length", "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The cryptographic length must be an integer.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_hashing_algorithm(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the hashing algorithm of an RNGParameters structure.
+        """
+        kwargs = {"hashing_algorithm": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The hashing algorithm must be a HashingAlgorithm enumeration.",
+            objects.RNGParameters,
+            **kwargs
+        )
+
+        args = (objects.RNGParameters(), "hashing_algorithm", "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The hashing algorithm must be a HashingAlgorithm enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_drbg_algorithm(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the DRBG algorithm of an RNGParameters structure.
+        """
+        kwargs = {"drbg_algorithm": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The DRBG algorithm must be a DRBGAlgorithm enumeration.",
+            objects.RNGParameters,
+            **kwargs
+        )
+
+        args = (objects.RNGParameters(), "drbg_algorithm", "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The DRBG algorithm must be a DRBGAlgorithm enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_recommended_curve(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the recommended curve of an RNGParameters structure.
+        """
+        kwargs = {"recommended_curve": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The recommended curve must be a RecommendedCurve enumeration.",
+            objects.RNGParameters,
+            **kwargs
+        )
+
+        args = (objects.RNGParameters(), "recommended_curve", "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The recommended curve must be a RecommendedCurve enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_fips186_variation(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the FIPS186 variation of an RNGParameters structure.
+        """
+        kwargs = {"fips186_variation": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The FIPS186 variation must be a FIPS186Variation enumeration.",
+            objects.RNGParameters,
+            **kwargs
+        )
+
+        args = (objects.RNGParameters(), "fips186_variation", "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The FIPS186 variation must be a FIPS186Variation enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_prediction_resistance(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the prediction resistance of an RNGParameters structure.
+        """
+        kwargs = {"prediction_resistance": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The prediction resistance must be a boolean.",
+            objects.RNGParameters,
+            **kwargs
+        )
+
+        args = (objects.RNGParameters(), "prediction_resistance", "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The prediction resistance must be a boolean.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that a RNGParameters structure can be correctly read in from a
+        data stream.
+        """
+        rng_parameters = objects.RNGParameters()
+
+        self.assertIsNone(rng_parameters.rng_algorithm)
+        self.assertIsNone(rng_parameters.cryptographic_algorithm)
+        self.assertIsNone(rng_parameters.cryptographic_length)
+        self.assertIsNone(rng_parameters.hashing_algorithm)
+        self.assertIsNone(rng_parameters.drbg_algorithm)
+        self.assertIsNone(rng_parameters.recommended_curve)
+        self.assertIsNone(rng_parameters.fips186_variation)
+        self.assertIsNone(rng_parameters.prediction_resistance)
+
+        rng_parameters.read(
+            self.full_encoding,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(
+            enums.RNGAlgorithm.FIPS186_2,
+            rng_parameters.rng_algorithm
+        )
+        self.assertEqual(
+            enums.CryptographicAlgorithm.AES,
+            rng_parameters.cryptographic_algorithm
+        )
+        self.assertEqual(256, rng_parameters.cryptographic_length)
+        self.assertEqual(
+            enums.HashingAlgorithm.SHA_256,
+            rng_parameters.hashing_algorithm
+        )
+        self.assertEqual(
+            enums.DRBGAlgorithm.HASH,
+            rng_parameters.drbg_algorithm
+        )
+        self.assertEqual(
+            enums.RecommendedCurve.P_192,
+            rng_parameters.recommended_curve
+        )
+        self.assertEqual(
+            enums.FIPS186Variation.GP_X_ORIGINAL,
+            rng_parameters.fips186_variation
+        )
+        self.assertTrue(rng_parameters.prediction_resistance)
+
+    def test_read_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the decoding of
+        an RNGParameters structure when the structure is read for an
+        unsupported KMIP version.
+        """
+        rng_parameters = objects.RNGParameters()
+
+        args = (self.full_encoding, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.2 does not support the RNGParameters object.",
+            rng_parameters.read,
+            *args,
+            **kwargs
+        )
+
+    def test_read_missing_rng_algorithm(self):
+        """
+        Test that an InvalidKmipEncoding error is raised during the decoding
+        of an RNGParameters structure when the RNG algorithm is missing
+        from the encoding.
+        """
+        rng_parameters = objects.RNGParameters()
+
+        args = (self.no_rng_algorithm_encoding, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The RNGParameters encoding is missing the RNG algorithm.",
+            rng_parameters.read,
+            *args
+        )
+
+    def test_read_only_rng_algorithm(self):
+        """
+        Test that a RNGParameters structure can be correctly read in from a
+        data stream even when missing all fields except the RNG algorithm.
+        """
+        rng_parameters = objects.RNGParameters()
+
+        self.assertIsNone(rng_parameters.rng_algorithm)
+        self.assertIsNone(rng_parameters.cryptographic_algorithm)
+        self.assertIsNone(rng_parameters.cryptographic_length)
+        self.assertIsNone(rng_parameters.hashing_algorithm)
+        self.assertIsNone(rng_parameters.drbg_algorithm)
+        self.assertIsNone(rng_parameters.recommended_curve)
+        self.assertIsNone(rng_parameters.fips186_variation)
+        self.assertIsNone(rng_parameters.prediction_resistance)
+
+        rng_parameters.read(
+            self.only_rng_algorithm_encoding,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(
+            enums.RNGAlgorithm.FIPS186_2,
+            rng_parameters.rng_algorithm
+        )
+        self.assertIsNone(rng_parameters.cryptographic_algorithm)
+        self.assertIsNone(rng_parameters.cryptographic_length)
+        self.assertIsNone(rng_parameters.hashing_algorithm)
+        self.assertIsNone(rng_parameters.drbg_algorithm)
+        self.assertIsNone(rng_parameters.recommended_curve)
+        self.assertIsNone(rng_parameters.fips186_variation)
+        self.assertIsNone(rng_parameters.prediction_resistance)
+
+    def test_write(self):
+        """
+        Test that an RNGParameters structure can be written to a data
+        stream.
+        """
+        rng_parameters = objects.RNGParameters(
+            rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=256,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            drbg_algorithm=enums.DRBGAlgorithm.HASH,
+            recommended_curve=enums.RecommendedCurve.P_192,
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+            prediction_resistance=True
+        )
+
+        buffer = utils.BytearrayStream()
+        rng_parameters.write(
+            buffer,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(len(self.full_encoding), len(buffer))
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_write_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the encoding of
+        an RNGParameters structure when the structure is written for an
+        unsupported KMIP version.
+        """
+        rng_parameters = objects.RNGParameters(
+            rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=256,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            drbg_algorithm=enums.DRBGAlgorithm.HASH,
+            recommended_curve=enums.RecommendedCurve.P_192,
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+            prediction_resistance=True
+        )
+
+        args = (utils.BytearrayStream(), )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.2 does not support the RNGParameters object.",
+            rng_parameters.write,
+            *args,
+            **kwargs
+        )
+
+    def test_write_missing_rng_algorithm(self):
+        """
+        Test that an InvalidField error is raised during the encoding of an
+        RNGParameters structure when the structure is missing the RNG
+        algorithm field.
+        """
+        rng_parameters = objects.RNGParameters()
+
+        args = (utils.BytearrayStream(), )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The RNGParameters structure is missing the RNG algorithm field.",
+            rng_parameters.write,
+            *args
+        )
+
+    def test_write_only_rng_algorithm(self):
+        """
+        Test that an RNGParameters structure can be written to a data
+        stream even when missing all fields except the RNG algorithm.
+        """
+        rng_parameters = objects.RNGParameters(
+            rng_algorithm=enums.RNGAlgorithm.FIPS186_2
+        )
+
+        buffer = utils.BytearrayStream()
+        rng_parameters.write(
+            buffer,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(len(self.only_rng_algorithm_encoding), len(buffer))
+        self.assertEqual(str(self.only_rng_algorithm_encoding), str(buffer))
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to an RNGParameters structure.
+        """
+        rng_parameters = objects.RNGParameters(
+            rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=256,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            drbg_algorithm=enums.DRBGAlgorithm.HASH,
+            recommended_curve=enums.RecommendedCurve.P_192,
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+            prediction_resistance=True
+        )
+
+        a = "rng_algorithm=RNGAlgorithm.FIPS186_2"
+        c = "cryptographic_algorithm=CryptographicAlgorithm.AES"
+        e = "cryptographic_length=256"
+        h = "hashing_algorithm=HashingAlgorithm.SHA_256"
+        d = "drbg_algorithm=DRBGAlgorithm.HASH"
+        r = "recommended_curve=RecommendedCurve.P_192"
+        f = "fips186_variation=FIPS186Variation.GP_X_ORIGINAL"
+        p = "prediction_resistance=True"
+
+        v = ", ".join([a, c, e, h, d, r, f, p])
+
+        self.assertEqual(
+            "RNGParameters({})".format(v),
+            repr(rng_parameters)
+        )
+
+    def test_str(self):
+        """
+        Test that str can be applied to an RNGParameters structure.
+        """
+        rng_parameters = objects.RNGParameters(
+            rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=256,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            drbg_algorithm=enums.DRBGAlgorithm.HASH,
+            recommended_curve=enums.RecommendedCurve.P_192,
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+            prediction_resistance=True
+        )
+
+        a = '"rng_algorithm": RNGAlgorithm.FIPS186_2'
+        c = '"cryptographic_algorithm": CryptographicAlgorithm.AES'
+        e = '"cryptographic_length": 256'
+        h = '"hashing_algorithm": HashingAlgorithm.SHA_256'
+        d = '"drbg_algorithm": DRBGAlgorithm.HASH'
+        r = '"recommended_curve": RecommendedCurve.P_192'
+        f = '"fips186_variation": FIPS186Variation.GP_X_ORIGINAL'
+        p = '"prediction_resistance": True'
+
+        v = ", ".join([a, c, e, h, d, r, f, p])
+
+        self.assertEqual(
+            "{" + v + "}",
+            str(rng_parameters)
+        )
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        RNGParameters structures with the same data.
+        """
+        a = objects.RNGParameters()
+        b = objects.RNGParameters()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = objects.RNGParameters(
+            rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=256,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            drbg_algorithm=enums.DRBGAlgorithm.HASH,
+            recommended_curve=enums.RecommendedCurve.P_192,
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+            prediction_resistance=True
+        )
+        b = objects.RNGParameters(
+            rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=256,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            drbg_algorithm=enums.DRBGAlgorithm.HASH,
+            recommended_curve=enums.RecommendedCurve.P_192,
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+            prediction_resistance=True
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_rng_algorithm(self):
+        """
+        Test that the equality operator returns False when comparing two
+        RNGParameters structures with different RNG algorithm fields.
+        """
+        a = objects.RNGParameters(rng_algorithm=enums.RNGAlgorithm.FIPS186_2)
+        b = objects.RNGParameters(rng_algorithm=enums.RNGAlgorithm.UNSPECIFIED)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_cryptographic_algorithm(self):
+        """
+        Test that the equality operator returns False when comparing two
+        RNGParameters structures with different cryptographic algorithm fields.
+        """
+        a = objects.RNGParameters(
+            cryptographic_algorithm=enums.CryptographicAlgorithm.DES
+        )
+        b = objects.RNGParameters(
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_cryptographic_length(self):
+        """
+        Test that the equality operator returns False when comparing two
+        RNGParameters structures with different cryptographic length fields.
+        """
+        a = objects.RNGParameters(cryptographic_length=128)
+        b = objects.RNGParameters(cryptographic_length=256)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_hashing_algorithm(self):
+        """
+        Test that the equality operator returns False when comparing two
+        RNGParameters structures with different hashing algorithm fields.
+        """
+        a = objects.RNGParameters(hashing_algorithm=enums.HashingAlgorithm.MD2)
+        b = objects.RNGParameters(hashing_algorithm=enums.HashingAlgorithm.MD4)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_drbg_algorithm(self):
+        """
+        Test that the equality operator returns False when comparing two
+        RNGParameters structures with different DRBG algorithm fields.
+        """
+        a = objects.RNGParameters(drbg_algorithm=enums.DRBGAlgorithm.HASH)
+        b = objects.RNGParameters(
+            drbg_algorithm=enums.DRBGAlgorithm.UNSPECIFIED
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_recommended_curve(self):
+        """
+        Test that the equality operator returns False when comparing two
+        RNGParameters structures with different recommended curve fields.
+        """
+        a = objects.RNGParameters(
+            recommended_curve=enums.RecommendedCurve.P_192
+        )
+        b = objects.RNGParameters(
+            recommended_curve=enums.RecommendedCurve.K_163
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_fips186_variation(self):
+        """
+        Test that the equality operator returns False when comparing two
+        RNGParameters structures with different FIPS186 variation fields.
+        """
+        a = objects.RNGParameters(
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL
+        )
+        b = objects.RNGParameters(
+            fips186_variation=enums.FIPS186Variation.X_ORIGINAL
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_prediction_resistance(self):
+        """
+        Test that the equality operator returns False when comparing two
+        RNGParameters structures with different prediction resistance fields.
+        """
+        a = objects.RNGParameters(prediction_resistance=True)
+        b = objects.RNGParameters(prediction_resistance=False)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing two
+        RNGParameters structures with different types.
+        """
+        a = objects.RNGParameters()
+        b = "invalid"
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        RNGParameters structures with the same data.
+        """
+        a = objects.RNGParameters()
+        b = objects.RNGParameters()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = objects.RNGParameters(
+            rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=256,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            drbg_algorithm=enums.DRBGAlgorithm.HASH,
+            recommended_curve=enums.RecommendedCurve.P_192,
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+            prediction_resistance=True
+        )
+        b = objects.RNGParameters(
+            rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=256,
+            hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+            drbg_algorithm=enums.DRBGAlgorithm.HASH,
+            recommended_curve=enums.RecommendedCurve.P_192,
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+            prediction_resistance=True
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_rng_algorithm(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        RNGParameters structures with different RNG algorithm fields.
+        """
+        a = objects.RNGParameters(rng_algorithm=enums.RNGAlgorithm.FIPS186_2)
+        b = objects.RNGParameters(rng_algorithm=enums.RNGAlgorithm.UNSPECIFIED)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_cryptographic_algorithm(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        RNGParameters structures with different cryptographic algorithm fields.
+        """
+        a = objects.RNGParameters(
+            cryptographic_algorithm=enums.CryptographicAlgorithm.DES
+        )
+        b = objects.RNGParameters(
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_cryptographic_length(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        RNGParameters structures with different cryptographic length fields.
+        """
+        a = objects.RNGParameters(cryptographic_length=128)
+        b = objects.RNGParameters(cryptographic_length=256)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_hashing_algorithm(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        RNGParameters structures with different hashing algorithm fields.
+        """
+        a = objects.RNGParameters(hashing_algorithm=enums.HashingAlgorithm.MD2)
+        b = objects.RNGParameters(hashing_algorithm=enums.HashingAlgorithm.MD4)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_drbg_algorithm(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        RNGParameters structures with different DRBG algorithm fields.
+        """
+        a = objects.RNGParameters(drbg_algorithm=enums.DRBGAlgorithm.HASH)
+        b = objects.RNGParameters(
+            drbg_algorithm=enums.DRBGAlgorithm.UNSPECIFIED
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_recommended_curve(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        RNGParameters structures with different recommended curve fields.
+        """
+        a = objects.RNGParameters(
+            recommended_curve=enums.RecommendedCurve.P_192
+        )
+        b = objects.RNGParameters(
+            recommended_curve=enums.RecommendedCurve.K_163
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_fips186_variation(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        RNGParameters structures with different FIPS186 variation fields.
+        """
+        a = objects.RNGParameters(
+            fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL
+        )
+        b = objects.RNGParameters(
+            fips186_variation=enums.FIPS186Variation.X_ORIGINAL
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_prediction_resistance(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        RNGParameters structures with different prediction resistance fields.
+        """
+        a = objects.RNGParameters(prediction_resistance=True)
+        b = objects.RNGParameters(prediction_resistance=False)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        RNGParameters structures with different types.
+        """
+        a = objects.RNGParameters()
+        b = "invalid"
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
