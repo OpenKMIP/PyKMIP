@@ -4500,3 +4500,244 @@ class RNGParameters(primitives.Struct):
             return not (self == other)
         else:
             return NotImplemented
+
+
+class ProfileInformation(primitives.Struct):
+    """
+    A structure containing details of supported KMIP profiles.
+
+    This is intended for use with KMIP 1.3+.
+
+    Attributes:
+        profile_name: A ProfileName enumeration identifying the specific
+            profile supported.
+        server_uri: A string specifying a Uniform Resource Identifier that
+            points to the location of the server supporting the profile.
+        server_port: An integer specifying the port number to use when
+            accessing the server supporting the profile.
+    """
+
+    def __init__(self, profile_name=None, server_uri=None, server_port=None):
+        """
+        Construct a ProfileInformation structure.
+
+        Args:
+            profile_name (enum): A ProfileName enumeration identifying the
+                specific profile supported. Optional, defaults to None.
+                Required for read/write.
+            server_uri (string): A string specifying a Uniform Resource
+                Identifier that points to the location of the server
+                supporting the profile. Optional, defaults to None.
+            server_port (int): An integer specifying the port number to use
+                when accessing the server supporting the profile. Optional,
+                defaults to None.
+        """
+        super(ProfileInformation, self).__init__(
+            tag=enums.Tags.PROFILE_INFORMATION
+        )
+
+        self._profile_name = None
+        self._server_uri = None
+        self._server_port = None
+
+        self.profile_name = profile_name
+        self.server_uri = server_uri
+        self.server_port = server_port
+
+    @property
+    def profile_name(self):
+        if self._profile_name:
+            return self._profile_name.value
+        return None
+
+    @profile_name.setter
+    def profile_name(self, value):
+        if value is None:
+            self._profile_name = None
+        elif isinstance(value, enums.ProfileName):
+            self._profile_name = primitives.Enumeration(
+                enums.ProfileName,
+                value=value,
+                tag=enums.Tags.PROFILE_NAME
+            )
+        else:
+            raise TypeError(
+                "The profile name must be a ProfileName enumeration."
+            )
+
+    @property
+    def server_uri(self):
+        if self._server_uri:
+            return self._server_uri.value
+        return None
+
+    @server_uri.setter
+    def server_uri(self, value):
+        if value is None:
+            self._server_uri = None
+        elif isinstance(value, six.string_types):
+            self._server_uri = primitives.TextString(
+                value=value,
+                tag=enums.Tags.SERVER_URI
+            )
+        else:
+            raise TypeError("The server URI must be a string.")
+
+    @property
+    def server_port(self):
+        if self._server_port:
+            return self._server_port.value
+        return None
+
+    @server_port.setter
+    def server_port(self, value):
+        if value is None:
+            self._server_port = None
+        elif isinstance(value, six.integer_types):
+            self._server_port = primitives.Integer(
+                value=value,
+                tag=enums.Tags.SERVER_PORT
+            )
+        else:
+            raise TypeError("The server port must be an integer.")
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_3):
+        """
+        Read the data encoding the ProfileInformation structure and decode it
+        into its constituent parts.
+
+        Args:
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the profile name is missing from
+                the encoding.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the ProfileInformation structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_1_3:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the ProfileInformation "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        super(ProfileInformation, self).read(
+            input_buffer,
+            kmip_version=kmip_version
+        )
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
+
+        if self.is_tag_next(enums.Tags.PROFILE_NAME, local_buffer):
+            profile_name = primitives.Enumeration(
+                enums.ProfileName,
+                tag=enums.Tags.PROFILE_NAME
+            )
+            profile_name.read(local_buffer, kmip_version=kmip_version)
+            self._profile_name = profile_name
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The ProfileInformation encoding is missing the profile name."
+            )
+
+        if self.is_tag_next(enums.Tags.SERVER_URI, local_buffer):
+            server_uri = primitives.TextString(tag=enums.Tags.SERVER_URI)
+            server_uri.read(local_buffer, kmip_version=kmip_version)
+            self._server_uri = server_uri
+
+        if self.is_tag_next(enums.Tags.SERVER_PORT, local_buffer):
+            server_port = primitives.Integer(tag=enums.Tags.SERVER_PORT)
+            server_port.read(local_buffer, kmip_version=kmip_version)
+            self._server_port = server_port
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_3):
+        """
+        Write the ProfileInformation structure encoding to the data stream.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode
+                ProfileInformation structure data, supporting a write method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidField: Raised if the profile name field is not defined.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the ProfileInformation structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_1_3:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the ProfileInformation "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        local_buffer = BytearrayStream()
+
+        if self._profile_name:
+            self._profile_name.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The ProfileInformation structure is missing the profile "
+                "name field."
+            )
+
+        if self._server_uri:
+            self._server_uri.write(local_buffer, kmip_version=kmip_version)
+
+        if self._server_port:
+            self._server_port.write(local_buffer, kmip_version=kmip_version)
+
+        self.length = local_buffer.length()
+        super(ProfileInformation, self).write(
+            output_buffer,
+            kmip_version=kmip_version
+        )
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        n = "profile_name={}".format(self.profile_name)
+        u = 'server_uri="{}"'.format(self.server_uri)
+        p = "server_port={}".format(self.server_port)
+
+        v = ", ".join([n, u, p])
+
+        return "ProfileInformation({})".format(v)
+
+    def __str__(self):
+        n = '"profile_name": {}'.format(self.profile_name)
+        u = '"server_uri": "{}"'.format(self.server_uri)
+        p = '"server_port": {}'.format(self.server_port)
+
+        v = ", ".join([n, u, p])
+
+        return '{' + v + '}'
+
+    def __eq__(self, other):
+        if isinstance(other, ProfileInformation):
+            if self.profile_name != other.profile_name:
+                return False
+            elif self.server_uri != other.server_uri:
+                return False
+            elif self.server_port != other.server_port:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ProfileInformation):
+            return not (self == other)
+        else:
+            return NotImplemented
