@@ -6968,3 +6968,1479 @@ class TestProfileInformation(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+
+class TestValidationInformation(testtools.TestCase):
+
+    def setUp(self):
+        super(TestValidationInformation, self).setUp()
+
+        # This encoding matches the following set of values:
+        #
+        # Validation Information
+        #     Validation Authority Type - COMMON_CRITERIA
+        #     Validation Authority Country - US
+        #     Validation Authority URI - https://example.com
+        #     Validation Version Major - 1
+        #     Validation Version Minor - 0
+        #     Validation Type - HYBRID
+        #     Validation Level - 5
+        #     Validation Certificate Identifier -
+        #         c005d39e-604f-11e9-99df-080027fc1396
+        #     Validation Certificate URI - https://test.com
+        #     Validation Vendor URI - https://vendor.com
+        #     Validation Profiles -
+        #         Profile 1
+        #         Profile 2
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x00\xDF\x01\x00\x00\x01\x18'
+            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
+            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
+            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
+            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
+            b'\x31\x33\x39\x36\x00\x00\x00\x00'
+            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
+            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
+            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # Validation Information
+        #     Validation Authority Country - US
+        #     Validation Authority URI - https://example.com
+        #     Validation Version Major - 1
+        #     Validation Version Minor - 0
+        #     Validation Type - HYBRID
+        #     Validation Level - 5
+        #     Validation Certificate Identifier -
+        #         c005d39e-604f-11e9-99df-080027fc1396
+        #     Validation Certificate URI - https://test.com
+        #     Validation Vendor URI - https://vendor.com
+        #     Validation Profiles -
+        #         Profile 1
+        #         Profile 2
+        self.no_validation_authority_type_encoding = utils.BytearrayStream(
+            b'\x42\x00\xDF\x01\x00\x00\x01\x08'
+            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
+            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
+            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
+            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
+            b'\x31\x33\x39\x36\x00\x00\x00\x00'
+            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
+            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
+            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # Validation Information
+        #     Validation Authority Type - COMMON_CRITERIA
+        #     Validation Authority Country - US
+        #     Validation Authority URI - https://example.com
+        #     Validation Version Minor - 0
+        #     Validation Type - HYBRID
+        #     Validation Level - 5
+        #     Validation Certificate Identifier -
+        #         c005d39e-604f-11e9-99df-080027fc1396
+        #     Validation Certificate URI - https://test.com
+        #     Validation Vendor URI - https://vendor.com
+        #     Validation Profiles -
+        #         Profile 1
+        #         Profile 2
+        self.no_validation_version_major_encoding = utils.BytearrayStream(
+            b'\x42\x00\xDF\x01\x00\x00\x01\x08'
+            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
+            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
+            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
+            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
+            b'\x31\x33\x39\x36\x00\x00\x00\x00'
+            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
+            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
+            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # Validation Information
+        #     Validation Authority Type - COMMON_CRITERIA
+        #     Validation Authority Country - US
+        #     Validation Authority URI - https://example.com
+        #     Validation Version Major - 1
+        #     Validation Version Minor - 0
+        #     Validation Level - 5
+        #     Validation Certificate Identifier -
+        #         c005d39e-604f-11e9-99df-080027fc1396
+        #     Validation Certificate URI - https://test.com
+        #     Validation Vendor URI - https://vendor.com
+        #     Validation Profiles -
+        #         Profile 1
+        #         Profile 2
+        self.no_validation_type_encoding = utils.BytearrayStream(
+            b'\x42\x00\xDF\x01\x00\x00\x01\x08'
+            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
+            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
+            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
+            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
+            b'\x31\x33\x39\x36\x00\x00\x00\x00'
+            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
+            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
+            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # Validation Information
+        #     Validation Authority Type - COMMON_CRITERIA
+        #     Validation Authority Country - US
+        #     Validation Authority URI - https://example.com
+        #     Validation Version Major - 1
+        #     Validation Version Minor - 0
+        #     Validation Type - HYBRID
+        #     Validation Certificate Identifier -
+        #         c005d39e-604f-11e9-99df-080027fc1396
+        #     Validation Certificate URI - https://test.com
+        #     Validation Vendor URI - https://vendor.com
+        #     Validation Profiles -
+        #         Profile 1
+        #         Profile 2
+        self.no_validation_level_encoding = utils.BytearrayStream(
+            b'\x42\x00\xDF\x01\x00\x00\x01\x08'
+            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
+            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
+            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
+            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
+            b'\x31\x33\x39\x36\x00\x00\x00\x00'
+            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
+            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
+            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # Validation Information
+        #     Validation Authority Type - COMMON_CRITERIA
+        #     Validation Version Major - 1
+        #     Validation Type - HYBRID
+        #     Validation Level - 5
+        self.only_essentials_encoding = utils.BytearrayStream(
+            b'\x42\x00\xDF\x01\x00\x00\x00\x40'
+            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestValidationInformation, self).tearDown()
+
+    def test_invalid_validation_authority_type(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation authority type of a ValidationInformation structure.
+        """
+        kwargs = {"validation_authority_type": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation authority type must be a ValidationAuthorityType "
+            "enumeration.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_authority_type",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation authority type must be a ValidationAuthorityType "
+            "enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_authority_country(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation authority country of a ValidationInformation structure.
+        """
+        kwargs = {"validation_authority_country": 0}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation authority country must be a string.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_authority_country",
+            0
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation authority country must be a string.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_authority_uri(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation authority URI of a ValidationInformation structure.
+        """
+        kwargs = {"validation_authority_uri": 0}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation authority URI must be a string.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_authority_uri",
+            0
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation authority URI must be a string.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_version_major(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation version major of a ValidationInformation structure.
+        """
+        kwargs = {"validation_version_major": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation version major must be an integer.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_version_major",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation version major must be an integer.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_version_minor(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation version minor of a ValidationInformation structure.
+        """
+        kwargs = {"validation_version_minor": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation version minor must be an integer.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_version_minor",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation version minor must be an integer.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_type(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation type of a ValidationInformation structure.
+        """
+        kwargs = {"validation_type": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation type must be a ValidationType enumeration.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_type",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation type must be a ValidationType enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_level(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation level of a ValidationInformation structure.
+        """
+        kwargs = {"validation_level": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation level must be an integer.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_level",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation level must be an integer.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_certificate_identifier(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation certificate identifier of a ValidationInformation
+        structure.
+        """
+        kwargs = {"validation_certificate_identifier": 0}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation certificate identifier must be a string.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_certificate_identifier",
+            0
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation certificate identifier must be a string.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_certificate_uri(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation certificate URI of a ValidationInformation structure.
+        """
+        kwargs = {"validation_certificate_uri": 0}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation certificate URI must be a string.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_certificate_uri",
+            0
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation certificate URI must be a string.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_vendor_uri(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation vendor URI of a ValidationInformation structure.
+        """
+        kwargs = {"validation_vendor_uri": 0}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation vendor URI must be a string.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_vendor_uri",
+            0
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation vendor URI must be a string.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_validation_profiles(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the validation profiles of a ValidationInformation structure.
+        """
+        kwargs = {"validation_profiles": 0}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation profiles must be a list of strings.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+        kwargs = {"validation_profiles": ["valid", 0]}
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation profiles must be a list of strings.",
+            objects.ValidationInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.ValidationInformation(),
+            "validation_profiles",
+            0
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation profiles must be a list of strings.",
+            setattr,
+            *args
+        )
+        args = (
+            objects.ValidationInformation(),
+            "validation_profiles",
+            ["valid", 0]
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The validation profiles must be a list of strings.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that a ValidationInformation structure can be correctly read in
+        from a data stream.
+        """
+        validation_information = objects.ValidationInformation()
+
+        self.assertIsNone(validation_information.validation_authority_type)
+        self.assertIsNone(validation_information.validation_authority_country)
+        self.assertIsNone(validation_information.validation_authority_uri)
+        self.assertIsNone(validation_information.validation_version_major)
+        self.assertIsNone(validation_information.validation_version_minor)
+        self.assertIsNone(validation_information.validation_type)
+        self.assertIsNone(validation_information.validation_level)
+        self.assertIsNone(
+            validation_information.validation_certificate_identifier
+        )
+        self.assertIsNone(validation_information.validation_certificate_uri)
+        self.assertIsNone(validation_information.validation_vendor_uri)
+        self.assertIsNone(
+            validation_information.validation_profiles
+        )
+
+        validation_information.read(
+            self.full_encoding,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(
+            enums.ValidationAuthorityType.COMMON_CRITERIA,
+            validation_information.validation_authority_type
+        )
+        self.assertEqual(
+            "US",
+            validation_information.validation_authority_country
+        )
+        self.assertEqual(
+            "https://example.com",
+            validation_information.validation_authority_uri
+        )
+        self.assertEqual(1, validation_information.validation_version_major)
+        self.assertEqual(0, validation_information.validation_version_minor)
+        self.assertEqual(
+            enums.ValidationType.HYBRID,
+            validation_information.validation_type
+        )
+        self.assertEqual(5, validation_information.validation_level)
+        self.assertEqual(
+            "c005d39e-604f-11e9-99df-080027fc1396",
+            validation_information.validation_certificate_identifier
+        )
+        self.assertEqual(
+            "https://test.com",
+            validation_information.validation_certificate_uri
+        )
+        self.assertEqual(
+            "https://vendor.com",
+            validation_information.validation_vendor_uri
+        )
+        self.assertEqual(
+            [
+                "Profile 1",
+                "Profile 2"
+            ],
+            validation_information.validation_profiles
+        )
+
+    def test_read_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the decoding of
+        a ValidationInformation structure when the structure is read for an
+        unsupported KMIP version.
+        """
+        validation_information = objects.ValidationInformation()
+
+        args = (self.full_encoding, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.2 does not support the ValidationInformation object.",
+            validation_information.read,
+            *args,
+            **kwargs
+        )
+
+    def test_read_missing_validation_authority_type(self):
+        """
+        Test that an InvalidKmipEncoding error is raised during the decoding
+        of a ValidationInformation structure when the validation authority
+        type is missing from the encoding.
+        """
+        validation_information = objects.ValidationInformation()
+
+        args = (self.no_validation_authority_type_encoding, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The ValidationInformation encoding is missing the validation "
+            "authority type.",
+            validation_information.read,
+            *args
+        )
+
+    def test_read_missing_validation_version_major(self):
+        """
+        Test that an InvalidKmipEncoding error is raised during the decoding
+        of a ValidationInformation structure when the validation version major
+        is missing from the encoding.
+        """
+        validation_information = objects.ValidationInformation()
+
+        args = (self.no_validation_version_major_encoding, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The ValidationInformation encoding is missing the validation "
+            "version major.",
+            validation_information.read,
+            *args
+        )
+
+    def test_read_missing_validation_type(self):
+        """
+        Test that an InvalidKmipEncoding error is raised during the decoding
+        of a ValidationInformation structure when the validation type is
+        missing from the encoding.
+        """
+        validation_information = objects.ValidationInformation()
+
+        args = (self.no_validation_type_encoding, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The ValidationInformation encoding is missing the validation "
+            "type.",
+            validation_information.read,
+            *args
+        )
+
+    def test_read_missing_validation_level(self):
+        """
+        Test that an InvalidKmipEncoding error is raised during the decoding
+        of a ValidationInformation structure when the validation level is
+        missing from the encoding.
+        """
+        validation_information = objects.ValidationInformation()
+
+        args = (self.no_validation_level_encoding, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The ValidationInformation encoding is missing the validation "
+            "level.",
+            validation_information.read,
+            *args
+        )
+
+    def test_read_only_essential_fields(self):
+        """
+        Test that a ProfileInformation structure can be correctly read in
+        from a data stream even when missing all fields except the profile
+        name.
+        """
+        validation_information = objects.ValidationInformation()
+
+        self.assertIsNone(validation_information.validation_authority_type)
+        self.assertIsNone(validation_information.validation_authority_country)
+        self.assertIsNone(validation_information.validation_authority_uri)
+        self.assertIsNone(validation_information.validation_version_major)
+        self.assertIsNone(validation_information.validation_version_minor)
+        self.assertIsNone(validation_information.validation_type)
+        self.assertIsNone(validation_information.validation_level)
+        self.assertIsNone(
+            validation_information.validation_certificate_identifier
+        )
+        self.assertIsNone(validation_information.validation_certificate_uri)
+        self.assertIsNone(validation_information.validation_vendor_uri)
+        self.assertIsNone(
+            validation_information.validation_profiles
+        )
+
+        validation_information.read(
+            self.only_essentials_encoding,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(
+            enums.ValidationAuthorityType.COMMON_CRITERIA,
+            validation_information.validation_authority_type
+        )
+        self.assertIsNone(validation_information.validation_authority_country)
+        self.assertIsNone(validation_information.validation_authority_uri)
+        self.assertEqual(1, validation_information.validation_version_major)
+        self.assertIsNone(validation_information.validation_version_minor)
+        self.assertEqual(
+            enums.ValidationType.HYBRID,
+            validation_information.validation_type
+        )
+        self.assertEqual(5, validation_information.validation_level)
+        self.assertIsNone(
+            validation_information.validation_certificate_identifier
+        )
+        self.assertIsNone(validation_information.validation_certificate_uri)
+        self.assertIsNone(validation_information.validation_vendor_uri)
+        self.assertIsNone(
+            validation_information.validation_profiles
+        )
+
+    def test_write(self):
+        """
+        Test that a ValidationInformation structure can be written to a data
+        stream.
+        """
+        validation_information = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        buffer = utils.BytearrayStream()
+        validation_information.write(
+            buffer,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(len(self.full_encoding), len(buffer))
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_write_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the encoding of
+        a ValidationInformation structure when the structure is written for an
+        unsupported KMIP version.
+        """
+        validation_information = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        args = (utils.BytearrayStream(), )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.2 does not support the ValidationInformation object.",
+            validation_information.write,
+            *args,
+            **kwargs
+        )
+
+    def test_write_missing_validation_authority_type(self):
+        """
+        Test that an InvalidField error is raised during the encoding of an
+        ValidationInformation structure when the structure is missing the
+        validation authority type field.
+        """
+        validation_information = objects.ValidationInformation(
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        args = (utils.BytearrayStream(), )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The ValidationInformation structure is missing the validation "
+            "authority type field.",
+            validation_information.write,
+            *args
+        )
+
+    def test_write_missing_validation_version_major(self):
+        """
+        Test that an InvalidField error is raised during the encoding of an
+        ValidationInformation structure when the structure is missing the
+        validation version major field.
+        """
+        validation_information = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        args = (utils.BytearrayStream(), )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The ValidationInformation structure is missing the validation "
+            "version major field.",
+            validation_information.write,
+            *args
+        )
+
+    def test_write_missing_validation_type(self):
+        """
+        Test that an InvalidField error is raised during the encoding of an
+        ValidationInformation structure when the structure is missing the
+        validation type field.
+        """
+        validation_information = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        args = (utils.BytearrayStream(), )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The ValidationInformation structure is missing the validation "
+            "type field.",
+            validation_information.write,
+            *args
+        )
+
+    def test_write_missing_validation_level(self):
+        """
+        Test that an InvalidField error is raised during the encoding of an
+        ValidationInformation structure when the structure is missing the
+        validation level field.
+        """
+        validation_information = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        args = (utils.BytearrayStream(), )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The ValidationInformation structure is missing the validation "
+            "level field.",
+            validation_information.write,
+            *args
+        )
+
+    def test_write_only_essentials(self):
+        """
+        Test that a ValidationInformation structure can be written to a data
+        stream when only containing essential required fields.
+        """
+        validation_information = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_version_major=1,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+        )
+
+        buffer = utils.BytearrayStream()
+        validation_information.write(
+            buffer,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(len(self.only_essentials_encoding), len(buffer))
+        self.assertEqual(str(self.only_essentials_encoding), str(buffer))
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to a ValidationInformation structure.
+        """
+        validation_information = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        vat = "validation_authority_type=" + \
+              "ValidationAuthorityType.COMMON_CRITERIA"
+        vac = 'validation_authority_country="US"'
+        vau = 'validation_authority_uri="https://example.com"'
+        vvj = "validation_version_major=1"
+        vvn = "validation_version_minor=0"
+        vt = "validation_type=ValidationType.HYBRID"
+        vl = "validation_level=5"
+        vci = 'validation_certificate_identifier=' + \
+              '"c005d39e-604f-11e9-99df-080027fc1396"'
+        vcu = 'validation_certificate_uri="https://test.com"'
+        vvu = 'validation_vendor_uri="https://vendor.com"'
+        vp = 'validation_profiles=["Profile 1", "Profile 2"]'
+
+        v = ", ".join([vat, vac, vau, vvj, vvn, vt, vl, vci, vcu, vvu, vp])
+
+        self.assertEqual(
+            "ValidationInformation({})".format(v),
+            repr(validation_information)
+        )
+
+    def test_str(self):
+        """
+        Test that str can be applied to a ValidationInformation structure.
+        """
+        validation_information = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        vat = '"validation_authority_type": ' + \
+              'ValidationAuthorityType.COMMON_CRITERIA'
+        vac = '"validation_authority_country": "US"'
+        vau = '"validation_authority_uri": "https://example.com"'
+        vvj = '"validation_version_major": 1'
+        vvn = '"validation_version_minor": 0'
+        vt = '"validation_type": ValidationType.HYBRID'
+        vl = '"validation_level": 5'
+        vci = '"validation_certificate_identifier": ' + \
+              '"c005d39e-604f-11e9-99df-080027fc1396"'
+        vcu = '"validation_certificate_uri": "https://test.com"'
+        vvu = '"validation_vendor_uri": "https://vendor.com"'
+        vp = '"validation_profiles": ["Profile 1", "Profile 2"]'
+
+        v = ", ".join([vat, vac, vau, vvj, vvn, vt, vl, vci, vcu, vvu, vp])
+
+        self.assertEqual(
+            "{" + v + "}",
+            str(validation_information)
+        )
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        ValidationInformation structures with the same data.
+        """
+        a = objects.ValidationInformation()
+        b = objects.ValidationInformation()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+        b = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_validation_authority_type(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation authority
+        type fields.
+        """
+        a = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            )
+        )
+        b = objects.ValidationInformation(
+            validation_authority_type=enums.ValidationAuthorityType.UNSPECIFIED
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_authority_country(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation authority
+        country fields.
+        """
+        a = objects.ValidationInformation(validation_authority_country="US")
+        b = objects.ValidationInformation(validation_authority_country="UK")
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_authority_uri(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation authority
+        URI fields.
+        """
+        a = objects.ValidationInformation(
+            validation_authority_uri="https://a.com"
+        )
+        b = objects.ValidationInformation(
+            validation_authority_uri="https://b.com"
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_version_major(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation version
+        major fields.
+        """
+        a = objects.ValidationInformation(validation_version_major=1)
+        b = objects.ValidationInformation(validation_version_major=2)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_version_minor(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation version
+        minor fields.
+        """
+        a = objects.ValidationInformation(validation_version_minor=1)
+        b = objects.ValidationInformation(validation_version_minor=2)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_type(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation type
+        fields.
+        """
+        a = objects.ValidationInformation(
+            validation_type=enums.ValidationType.HARDWARE
+        )
+        b = objects.ValidationInformation(
+            validation_type=enums.ValidationType.SOFTWARE
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_level(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation level
+        fields.
+        """
+        a = objects.ValidationInformation(validation_level=1)
+        b = objects.ValidationInformation(validation_level=2)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_certificate_identifier(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation certificate
+        identifier fields.
+        """
+        a = objects.ValidationInformation(
+            validation_certificate_identifier="1"
+        )
+        b = objects.ValidationInformation(
+            validation_certificate_identifier="2"
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_certificate_uri(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation certificate
+        URI fields.
+        """
+        a = objects.ValidationInformation(
+            validation_certificate_uri="https://a.com"
+        )
+        b = objects.ValidationInformation(
+            validation_certificate_uri="https://b.com"
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_vendor_uri(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation vendor URI
+        fields.
+        """
+        a = objects.ValidationInformation(
+            validation_vendor_uri="https://a.com"
+        )
+        b = objects.ValidationInformation(
+            validation_vendor_uri="https://b.com"
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_validation_profiles(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different validation profiles
+        fields.
+        """
+        a = objects.ValidationInformation(
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+        b = objects.ValidationInformation(
+            validation_profiles=["Profile 2", "Profile 1"]
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ValidationInformation structures with different types.
+        """
+        a = objects.ValidationInformation()
+        b = "invalid"
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        ValidationInformation structures with the same data.
+        """
+        a = objects.ValidationInformation()
+        b = objects.ValidationInformation()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+        b = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            ),
+            validation_authority_country="US",
+            validation_authority_uri="https://example.com",
+            validation_version_major=1,
+            validation_version_minor=0,
+            validation_type=enums.ValidationType.HYBRID,
+            validation_level=5,
+            validation_certificate_identifier=(
+                "c005d39e-604f-11e9-99df-080027fc1396"
+            ),
+            validation_certificate_uri="https://test.com",
+            validation_vendor_uri="https://vendor.com",
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_validation_authority_type(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation authority
+        type fields.
+        """
+        a = objects.ValidationInformation(
+            validation_authority_type=(
+                enums.ValidationAuthorityType.COMMON_CRITERIA
+            )
+        )
+        b = objects.ValidationInformation(
+            validation_authority_type=enums.ValidationAuthorityType.UNSPECIFIED
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_authority_country(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation authority
+        country fields.
+        """
+        a = objects.ValidationInformation(validation_authority_country="US")
+        b = objects.ValidationInformation(validation_authority_country="UK")
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_authority_uri(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation authority
+        URI fields.
+        """
+        a = objects.ValidationInformation(
+            validation_authority_uri="https://a.com"
+        )
+        b = objects.ValidationInformation(
+            validation_authority_uri="https://b.com"
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_version_major(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation version
+        major fields.
+        """
+        a = objects.ValidationInformation(validation_version_major=1)
+        b = objects.ValidationInformation(validation_version_major=2)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_version_minor(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation version
+        minor fields.
+        """
+        a = objects.ValidationInformation(validation_version_minor=1)
+        b = objects.ValidationInformation(validation_version_minor=2)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_type(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation type
+        fields.
+        """
+        a = objects.ValidationInformation(
+            validation_type=enums.ValidationType.HARDWARE
+        )
+        b = objects.ValidationInformation(
+            validation_type=enums.ValidationType.SOFTWARE
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_level(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation level
+        fields.
+        """
+        a = objects.ValidationInformation(validation_level=1)
+        b = objects.ValidationInformation(validation_level=2)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_certificate_identifier(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation certificate
+        identifier fields.
+        """
+        a = objects.ValidationInformation(
+            validation_certificate_identifier="1"
+        )
+        b = objects.ValidationInformation(
+            validation_certificate_identifier="2"
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_certificate_uri(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation certificate
+        URI fields.
+        """
+        a = objects.ValidationInformation(
+            validation_certificate_uri="https://a.com"
+        )
+        b = objects.ValidationInformation(
+            validation_certificate_uri="https://b.com"
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_vendor_uri(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation vendor URI
+        fields.
+        """
+        a = objects.ValidationInformation(
+            validation_vendor_uri="https://a.com"
+        )
+        b = objects.ValidationInformation(
+            validation_vendor_uri="https://b.com"
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_validation_profiles(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different validation profiles
+        fields.
+        """
+        a = objects.ValidationInformation(
+            validation_profiles=["Profile 1", "Profile 2"]
+        )
+        b = objects.ValidationInformation(
+            validation_profiles=["Profile 2", "Profile 1"]
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ValidationInformation structures with different types.
+        """
+        a = objects.ValidationInformation()
+        b = "invalid"
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)

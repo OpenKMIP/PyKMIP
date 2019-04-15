@@ -4741,3 +4741,761 @@ class ProfileInformation(primitives.Struct):
             return not (self == other)
         else:
             return NotImplemented
+
+
+class ValidationInformation(primitives.Struct):
+    """
+    A structure containing details of a formal validation.
+
+    This is intended for use with KMIP 1.3+.
+
+    Attributes:
+        validation_authority_type: A ValidationAuthorityType enumeration
+            identifying the type of the validation authority authorizing
+            the validation event.
+        validation_authority_country: A string specifying the country of
+            the validation authority authorizing the validation event.
+        validation_authority_uri: A string specifying a Uniform Resource
+            Identifier that points to the validation authority authorizing
+            the validation event.
+        validation_version_major: An integer identifying the major version
+            number of the validation event.
+        validation_version_minor: An integer identifying the minor version
+            number of the validation event.
+        validation_type: A ValidationType enumeration identifying the type
+            of validation taking place.
+        validation_level: An integer identifying the level of the validation
+            taking place.
+        validation_certificate_identifier: A string identifying the
+            certificate being used for the validation event.
+        validation_certificate_uri: A string specifying a Uniform Resource
+            Identifier that points to the certificate being used for the
+            validation event.
+        validation_vendor_uri: A string specifying a Uniform Resource
+            Identifier that points to the vendor being used for the validation
+            event.
+        validation_profiles: A list of string specifying the profiles in
+            use or associated with the validation event.
+    """
+
+    def __init__(self,
+                 validation_authority_type=None,
+                 validation_authority_country=None,
+                 validation_authority_uri=None,
+                 validation_version_major=None,
+                 validation_version_minor=None,
+                 validation_type=None,
+                 validation_level=None,
+                 validation_certificate_identifier=None,
+                 validation_certificate_uri=None,
+                 validation_vendor_uri=None,
+                 validation_profiles=None):
+        """
+        Construct a ValidationInformation structure.
+
+        Args:
+            validation_authority_type (enum): A ValidationAuthorityType
+                enumeration identifying the type of the validation authority
+                authorizing the validation event. Optional, defaults to None.
+                Required for read/write.
+            validation_authority_country (string): A string specifying the
+                country of the validation authority authorizing the validation
+                event. Optional, defaults to None.
+            validation_authority_uri (string): A string specifying a Uniform
+                Resource Identifier that points to the validation authority
+                authorizing the validation event. Optional, defaults to None.
+            validation_version_major (int): An integer identifying the major
+                version number of the validation event. Optional, defaults to
+                None. Required for read/write.
+            validation_version_minor (int): An integer identifying the minor
+                version number of the validation event. Optional, defaults to
+                None.
+            validation_type (enum): A ValidationType enumeration identifying
+                the type of validation taking place. Optional, defaults to
+                None. Required for read/write.
+            validation_level (int): An integer identifying the level of the
+                validation taking place. Optional, defaults to None. Required
+                for read/write.
+            validation_certificate_identifier (string): A string identifying
+                the certificate being used for the validation event. Optional,
+                defaults to None.
+            validation_certificate_uri (string): A string specifying a Uniform
+                Resource Identifier that points to the certificate being used
+                for the validation event. Optional, defaults to None.
+            validation_vendor_uri (string): A string specifying a Uniform
+                Resource Identifier that points to the vendor being used for
+                the validation event. Optional, defaults to None.
+            validation_profiles (string): A list of string specifying the
+                profiles in use or associated with the validation event.
+                Optional, defaults to None.
+        """
+        super(ValidationInformation, self).__init__(
+            tag=enums.Tags.VALIDATION_INFORMATION
+        )
+
+        self._validation_authority_type = None
+        self._validation_authority_country = None
+        self._validation_authority_uri = None
+        self._validation_version_major = None
+        self._validation_version_minor = None
+        self._validation_type = None
+        self._validation_level = None
+        self._validation_certificate_identifier = None
+        self._validation_certificate_uri = None
+        self._validation_vendor_uri = None
+        self._validation_profiles = None
+
+        self.validation_authority_type = validation_authority_type
+        self.validation_authority_country = validation_authority_country
+        self.validation_authority_uri = validation_authority_uri
+        self.validation_version_major = validation_version_major
+        self.validation_version_minor = validation_version_minor
+        self.validation_type = validation_type
+        self.validation_level = validation_level
+        self.validation_certificate_identifier = \
+            validation_certificate_identifier
+        self.validation_certificate_uri = validation_certificate_uri
+        self.validation_vendor_uri = validation_vendor_uri
+        self.validation_profiles = validation_profiles
+
+    @property
+    def validation_authority_type(self):
+        if self._validation_authority_type:
+            return self._validation_authority_type.value
+        return None
+
+    @validation_authority_type.setter
+    def validation_authority_type(self, value):
+        if value is None:
+            self._validation_authority_type = None
+        elif isinstance(value, enums.ValidationAuthorityType):
+            self._validation_authority_type = primitives.Enumeration(
+                enums.ValidationAuthorityType,
+                value=value,
+                tag=enums.Tags.VALIDATION_AUTHORITY_TYPE
+            )
+        else:
+            raise TypeError(
+                "The validation authority type must be a "
+                "ValidationAuthorityType enumeration."
+            )
+
+    @property
+    def validation_authority_country(self):
+        if self._validation_authority_country:
+            return self._validation_authority_country.value
+        return None
+
+    @validation_authority_country.setter
+    def validation_authority_country(self, value):
+        if value is None:
+            self._validation_authority_country = None
+        elif isinstance(value, six.string_types):
+            self._validation_authority_country = primitives.TextString(
+                value=value,
+                tag=enums.Tags.VALIDATION_AUTHORITY_COUNTRY
+            )
+        else:
+            raise TypeError(
+                "The validation authority country must be a string."
+            )
+
+    @property
+    def validation_authority_uri(self):
+        if self._validation_authority_uri:
+            return self._validation_authority_uri.value
+        return None
+
+    @validation_authority_uri.setter
+    def validation_authority_uri(self, value):
+        if value is None:
+            self._validation_authority_uri = None
+        elif isinstance(value, six.string_types):
+            self._validation_authority_uri = primitives.TextString(
+                value=value,
+                tag=enums.Tags.VALIDATION_AUTHORITY_URI
+            )
+        else:
+            raise TypeError("The validation authority URI must be a string.")
+
+    @property
+    def validation_version_major(self):
+        if self._validation_version_major:
+            return self._validation_version_major.value
+        return None
+
+    @validation_version_major.setter
+    def validation_version_major(self, value):
+        if value is None:
+            self._validation_version_major = None
+        elif isinstance(value, six.integer_types):
+            self._validation_version_major = primitives.Integer(
+                value=value,
+                tag=enums.Tags.VALIDATION_VERSION_MAJOR
+            )
+        else:
+            raise TypeError("The validation version major must be an integer.")
+
+    @property
+    def validation_version_minor(self):
+        if self._validation_version_minor:
+            return self._validation_version_minor.value
+        return None
+
+    @validation_version_minor.setter
+    def validation_version_minor(self, value):
+        if value is None:
+            self._validation_version_minor = None
+        elif isinstance(value, six.integer_types):
+            self._validation_version_minor = primitives.Integer(
+                value=value,
+                tag=enums.Tags.VALIDATION_VERSION_MINOR
+            )
+        else:
+            raise TypeError("The validation version minor must be an integer.")
+
+    @property
+    def validation_type(self):
+        if self._validation_type:
+            return self._validation_type.value
+        return None
+
+    @validation_type.setter
+    def validation_type(self, value):
+        if value is None:
+            self._validation_type = None
+        elif isinstance(value, enums.ValidationType):
+            self._validation_type = primitives.Enumeration(
+                enums.ValidationType,
+                value=value,
+                tag=enums.Tags.VALIDATION_TYPE
+            )
+        else:
+            raise TypeError(
+                "The validation type must be a ValidationType enumeration."
+            )
+
+    @property
+    def validation_level(self):
+        if self._validation_level:
+            return self._validation_level.value
+        return None
+
+    @validation_level.setter
+    def validation_level(self, value):
+        if value is None:
+            self._validation_level = None
+        elif isinstance(value, six.integer_types):
+            self._validation_level = primitives.Integer(
+                value=value,
+                tag=enums.Tags.VALIDATION_LEVEL
+            )
+        else:
+            raise TypeError("The validation level must be an integer.")
+
+    @property
+    def validation_certificate_identifier(self):
+        if self._validation_certificate_identifier:
+            return self._validation_certificate_identifier.value
+        return None
+
+    @validation_certificate_identifier.setter
+    def validation_certificate_identifier(self, value):
+        if value is None:
+            self._validation_certificate_identifier = None
+        elif isinstance(value, six.string_types):
+            self._validation_certificate_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER
+            )
+        else:
+            raise TypeError(
+                "The validation certificate identifier must be a string."
+            )
+
+    @property
+    def validation_certificate_uri(self):
+        if self._validation_certificate_uri:
+            return self._validation_certificate_uri.value
+        return None
+
+    @validation_certificate_uri.setter
+    def validation_certificate_uri(self, value):
+        if value is None:
+            self._validation_certificate_uri = None
+        elif isinstance(value, six.string_types):
+            self._validation_certificate_uri = primitives.TextString(
+                value=value,
+                tag=enums.Tags.VALIDATION_CERTIFICATE_URI
+            )
+        else:
+            raise TypeError("The validation certificate URI must be a string.")
+
+    @property
+    def validation_vendor_uri(self):
+        if self._validation_vendor_uri:
+            return self._validation_vendor_uri.value
+        return None
+
+    @validation_vendor_uri.setter
+    def validation_vendor_uri(self, value):
+        if value is None:
+            self._validation_vendor_uri = None
+        elif isinstance(value, six.string_types):
+            self._validation_vendor_uri = primitives.TextString(
+                value=value,
+                tag=enums.Tags.VALIDATION_VENDOR_URI
+            )
+        else:
+            raise TypeError("The validation vendor URI must be a string.")
+
+    @property
+    def validation_profiles(self):
+        if self._validation_profiles:
+            return [x.value for x in self._validation_profiles]
+        return None
+
+    @validation_profiles.setter
+    def validation_profiles(self, value):
+        if value is None:
+            self._validation_profiles = None
+        elif isinstance(value, list):
+            validation_profiles = []
+            for v in value:
+                if isinstance(v, six.string_types):
+                    validation_profiles.append(
+                        primitives.TextString(
+                            value=v,
+                            tag=enums.Tags.VALIDATION_PROFILE
+                        )
+                    )
+                else:
+                    raise TypeError(
+                        "The validation profiles must be a list of strings."
+                    )
+            self._validation_profiles = validation_profiles
+        else:
+            raise TypeError(
+                "The validation profiles must be a list of strings."
+            )
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_3):
+        """
+        Read the data encoding the ValidationInformation structure and decode
+        it into its constituent parts.
+
+        Args:
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidKmipEncoding: Raised if the validation authority type,
+                validation version major, validation type, and/or validation
+                level are missing from the encoding.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the ValidationInformation structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_1_3:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the ValidationInformation "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        super(ValidationInformation, self).read(
+            input_buffer,
+            kmip_version=kmip_version
+        )
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
+
+        if self.is_tag_next(
+            enums.Tags.VALIDATION_AUTHORITY_TYPE,
+            local_buffer
+        ):
+            validation_authority_type = primitives.Enumeration(
+                enums.ValidationAuthorityType,
+                tag=enums.Tags.VALIDATION_AUTHORITY_TYPE
+            )
+            validation_authority_type.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._validation_authority_type = validation_authority_type
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The ValidationInformation encoding is missing the "
+                "validation authority type."
+            )
+
+        if self.is_tag_next(
+            enums.Tags.VALIDATION_AUTHORITY_COUNTRY,
+            local_buffer
+        ):
+            validation_authority_country = primitives.TextString(
+                tag=enums.Tags.VALIDATION_AUTHORITY_COUNTRY
+            )
+            validation_authority_country.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._validation_authority_country = validation_authority_country
+
+        if self.is_tag_next(enums.Tags.VALIDATION_AUTHORITY_URI, local_buffer):
+            validation_authority_uri = primitives.TextString(
+                tag=enums.Tags.VALIDATION_AUTHORITY_URI
+                )
+            validation_authority_uri.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._validation_authority_uri = validation_authority_uri
+
+        if self.is_tag_next(
+            enums.Tags.VALIDATION_VERSION_MAJOR,
+            local_buffer
+        ):
+            validation_version_major = primitives.Integer(
+                tag=enums.Tags.VALIDATION_VERSION_MAJOR
+            )
+            validation_version_major.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._validation_version_major = validation_version_major
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The ValidationInformation encoding is missing the "
+                "validation version major."
+            )
+
+        if self.is_tag_next(
+            enums.Tags.VALIDATION_VERSION_MINOR,
+            local_buffer
+        ):
+            validation_version_minor = primitives.Integer(
+                tag=enums.Tags.VALIDATION_VERSION_MINOR
+            )
+            validation_version_minor.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._validation_version_minor = validation_version_minor
+
+        if self.is_tag_next(enums.Tags.VALIDATION_TYPE, local_buffer):
+            validation_type = primitives.Enumeration(
+                enums.ValidationType,
+                tag=enums.Tags.VALIDATION_TYPE
+            )
+            validation_type.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._validation_type = validation_type
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The ValidationInformation encoding is missing the "
+                "validation type."
+            )
+
+        if self.is_tag_next(enums.Tags.VALIDATION_LEVEL, local_buffer):
+            validation_level = primitives.Integer(
+                tag=enums.Tags.VALIDATION_LEVEL
+            )
+            validation_level.read(local_buffer, kmip_version=kmip_version)
+            self._validation_level = validation_level
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The ValidationInformation encoding is missing the "
+                "validation level."
+            )
+
+        if self.is_tag_next(
+            enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER,
+            local_buffer
+        ):
+            validation_certificate_identifier = primitives.TextString(
+                tag=enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER
+            )
+            validation_certificate_identifier.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._validation_certificate_identifier = \
+                validation_certificate_identifier
+
+        if self.is_tag_next(
+            enums.Tags.VALIDATION_CERTIFICATE_URI,
+            local_buffer
+        ):
+            validation_certificate_uri = primitives.TextString(
+                tag=enums.Tags.VALIDATION_CERTIFICATE_URI
+            )
+            validation_certificate_uri.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            self._validation_certificate_uri = validation_certificate_uri
+
+        if self.is_tag_next(enums.Tags.VALIDATION_VENDOR_URI, local_buffer):
+            validation_vendor_uri = primitives.TextString(
+                tag=enums.Tags.VALIDATION_VENDOR_URI
+            )
+            validation_vendor_uri.read(local_buffer, kmip_version=kmip_version)
+            self._validation_vendor_uri = validation_vendor_uri
+
+        validation_profiles = []
+        while self.is_tag_next(enums.Tags.VALIDATION_PROFILE, local_buffer):
+            validation_profile = primitives.TextString(
+                tag=enums.Tags.VALIDATION_PROFILE
+            )
+            validation_profile.read(local_buffer, kmip_version=kmip_version)
+            validation_profiles.append(validation_profile)
+        self._validation_profiles = validation_profiles
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_3):
+        """
+        Write the ValidationInformation structure encoding to the data stream.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode
+                ValidationInformation structure data, supporting a write
+                method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            InvalidField: Raised if the validation authority type, validation
+                version major, validation type, and/or validation level fields
+                are not defined.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the ValidationInformation structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_1_3:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the ValidationInformation "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        local_buffer = BytearrayStream()
+
+        if self._validation_authority_type:
+            self._validation_authority_type.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The ValidationInformation structure is missing the "
+                "validation authority type field."
+            )
+
+        if self._validation_authority_country:
+            self._validation_authority_country.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._validation_authority_uri:
+            self._validation_authority_uri.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._validation_version_major:
+            self._validation_version_major.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The ValidationInformation structure is missing the "
+                "validation version major field."
+            )
+
+        if self._validation_version_minor:
+            self._validation_version_minor.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._validation_type:
+            self._validation_type.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The ValidationInformation structure is missing the "
+                "validation type field."
+            )
+
+        if self._validation_level:
+            self._validation_level.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The ValidationInformation structure is missing the "
+                "validation level field."
+            )
+
+        if self._validation_certificate_identifier:
+            self._validation_certificate_identifier.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._validation_certificate_uri:
+            self._validation_certificate_uri.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._validation_vendor_uri:
+            self._validation_vendor_uri.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+
+        if self._validation_profiles:
+            for validation_profile in self._validation_profiles:
+                validation_profile.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+
+        self.length = local_buffer.length()
+        super(ValidationInformation, self).write(
+            output_buffer,
+            kmip_version=kmip_version
+        )
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        vat = "validation_authority_type={}".format(
+            self.validation_authority_type
+        )
+        vac = 'validation_authority_country="{}"'.format(
+            self.validation_authority_country
+        )
+        vau = 'validation_authority_uri="{}"'.format(
+            self.validation_authority_uri
+        )
+        vvj = "validation_version_major={}".format(
+            self.validation_version_major
+        )
+        vvn = "validation_version_minor={}".format(
+            self.validation_version_minor
+        )
+        vt = "validation_type={}".format(self.validation_type)
+        vl = "validation_level={}".format(self.validation_level)
+        vci = 'validation_certificate_identifier="{}"'.format(
+            self.validation_certificate_identifier
+        )
+        vcu = 'validation_certificate_uri="{}"'.format(
+            self.validation_certificate_uri
+        )
+        vvu = 'validation_vendor_uri="{}"'.format(
+            self.validation_vendor_uri
+        )
+        vp = 'validation_profiles={}'.format(
+            '[{}]'.format(
+                ", ".join(['"{}"'.format(x) for x in self.validation_profiles])
+            ) if self.validation_profiles else None
+        )
+
+        v = ", ".join([vat, vac, vau, vvj, vvn, vt, vl, vci, vcu, vvu, vp])
+
+        return "ValidationInformation({})".format(v)
+
+    def __str__(self):
+        vat = '"validation_authority_type": {}'.format(
+            self.validation_authority_type
+        )
+        vac = '"validation_authority_country": "{}"'.format(
+            self.validation_authority_country
+        )
+        vau = '"validation_authority_uri": "{}"'.format(
+            self.validation_authority_uri
+        )
+        vvj = '"validation_version_major": {}'.format(
+            self.validation_version_major
+        )
+        vvn = '"validation_version_minor": {}'.format(
+            self.validation_version_minor
+        )
+        vt = '"validation_type": {}'.format(self.validation_type)
+        vl = '"validation_level": {}'.format(self.validation_level)
+        vci = '"validation_certificate_identifier": "{}"'.format(
+            self.validation_certificate_identifier
+        )
+        vcu = '"validation_certificate_uri": "{}"'.format(
+            self.validation_certificate_uri
+        )
+        vvu = '"validation_vendor_uri": "{}"'.format(
+            self.validation_vendor_uri
+        )
+        vp = '"validation_profiles": {}'.format(
+            '[{}]'.format(
+                ', '.join(
+                    ['"{}"'.format(x) for x in self.validation_profiles]
+                )
+            ) if self.validation_profiles else None
+        )
+
+        v = ", ".join([vat, vac, vau, vvj, vvn, vt, vl, vci, vcu, vvu, vp])
+
+        return '{' + v + '}'
+
+    def __eq__(self, other):
+        if isinstance(other, ValidationInformation):
+            if self.validation_authority_type != \
+                    other.validation_authority_type:
+                return False
+            elif self.validation_authority_country != \
+                    other.validation_authority_country:
+                return False
+            elif self.validation_authority_uri != \
+                    other.validation_authority_uri:
+                return False
+            elif self.validation_version_major != \
+                    other.validation_version_major:
+                return False
+            elif self.validation_version_minor != \
+                    other.validation_version_minor:
+                return False
+            elif self.validation_type != other.validation_type:
+                return False
+            elif self.validation_level != other.validation_level:
+                return False
+            elif self.validation_certificate_identifier != \
+                    other.validation_certificate_identifier:
+                return False
+            elif self.validation_certificate_uri != \
+                    other.validation_certificate_uri:
+                return False
+            elif self.validation_vendor_uri != other.validation_vendor_uri:
+                return False
+            elif self.validation_profiles != other.validation_profiles:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ValidationInformation):
+            return not (self == other)
+        else:
+            return NotImplemented
