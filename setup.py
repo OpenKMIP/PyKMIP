@@ -44,6 +44,7 @@ setuptools.setup(
     install_requires=[
         "cryptography",
         "enum34",
+        "requests",
         "six",
         "sqlalchemy"
     ],
