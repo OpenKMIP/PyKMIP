@@ -8444,3 +8444,930 @@ class TestValidationInformation(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+
+class TestCapabilityInformation(testtools.TestCase):
+
+    def setUp(self):
+        super(TestCapabilityInformation, self).setUp()
+
+        # This encoding matches the following set of values:
+        #
+        # Capability Information
+        #     Streaming Capability - False
+        #     Asynchronous Capability - True
+        #     Attestation Capability - True
+        #     Batch Undo Capability - False
+        #     Batch Continue Capability - True
+        #     Unwrap Mode - PROCESSED
+        #     Destroy Action - SHREDDED
+        #     Shredding Algorithm - CRYPTOGRAPHIC
+        #     RNG Mode - NON_SHARED_INSTANTIATION
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x00\xF7\x01\x00\x00\x00\x90'
+            b'\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b'\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b'\x42\x00\xF9\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xFA\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b'\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
+            b'\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # Capability Information
+        #     Streaming Capability - False
+        #     Asynchronous Capability - True
+        #     Attestation Capability - True
+        #     Unwrap Mode - PROCESSED
+        #     Destroy Action - SHREDDED
+        #     Shredding Algorithm - CRYPTOGRAPHIC
+        #     RNG Mode - NON_SHARED_INSTANTIATION
+        self.full_encoding_kmip_1_3 = utils.BytearrayStream(
+            b'\x42\x00\xF7\x01\x00\x00\x00\x70'
+            b'\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b'\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b'\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
+            b'\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # Capability Information
+        self.empty_encoding = utils.BytearrayStream(
+            b'\x42\x00\xF7\x01\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestCapabilityInformation, self).tearDown()
+
+    def test_invalid_streaming_capability(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the streaming capability of a CapabilityInformation structure.
+        """
+        kwargs = {"streaming_capability": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The streaming capability must be a boolean.",
+            objects.CapabilityInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.CapabilityInformation(),
+            "streaming_capability",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The streaming capability must be a boolean.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_asynchronous_capability(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the asynchronous capability of a CapabilityInformation structure.
+        """
+        kwargs = {"asynchronous_capability": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The asynchronous capability must be a boolean.",
+            objects.CapabilityInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.CapabilityInformation(),
+            "asynchronous_capability",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The asynchronous capability must be a boolean.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_attestation_capability(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the attestation capability of a CapabilityInformation structure.
+        """
+        kwargs = {"attestation_capability": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The attestation capability must be a boolean.",
+            objects.CapabilityInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.CapabilityInformation(),
+            "attestation_capability",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The attestation capability must be a boolean.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_batch_undo_capability(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the batch undo capability of a CapabilityInformation structure.
+        """
+        kwargs = {"batch_undo_capability": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The batch undo capability must be a boolean.",
+            objects.CapabilityInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.CapabilityInformation(),
+            "batch_undo_capability",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The batch undo capability must be a boolean.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_batch_continue_capability(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the batch continue capability of a CapabilityInformation structure.
+        """
+        kwargs = {"batch_continue_capability": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The batch continue capability must be a boolean.",
+            objects.CapabilityInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.CapabilityInformation(),
+            "batch_continue_capability",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The batch continue capability must be a boolean.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_unwrap_mode(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the unwrap mode of a CapabilityInformation structure.
+        """
+        kwargs = {"unwrap_mode": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The unwrap mode must be an UnwrapMode enumeration.",
+            objects.CapabilityInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.CapabilityInformation(),
+            "unwrap_mode",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The unwrap mode must be an UnwrapMode enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_destroy_action(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the destroy action of a CapabilityInformation structure.
+        """
+        kwargs = {"destroy_action": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The destroy action must be a DestroyAction enumeration.",
+            objects.CapabilityInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.CapabilityInformation(),
+            "destroy_action",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The destroy action must be a DestroyAction enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_shredding_algorithm(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the shredding algorithm of a CapabilityInformation structure.
+        """
+        kwargs = {"shredding_algorithm": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The shredding algorithm must be a ShreddingAlgorithm "
+            "enumeration.",
+            objects.CapabilityInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.CapabilityInformation(),
+            "shredding_algorithm",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The shredding algorithm must be a ShreddingAlgorithm "
+            "enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_rng_mode(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the RNG mode of a CapabilityInformation structure.
+        """
+        kwargs = {"rng_mode": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The RNG mode must be an RNGMode enumeration.",
+            objects.CapabilityInformation,
+            **kwargs
+        )
+
+        args = (
+            objects.CapabilityInformation(),
+            "rng_mode",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The RNG mode must be an RNGMode enumeration.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that a CapabilityInformation structure can be correctly read in
+        from a data stream.
+        """
+        capability_information = objects.CapabilityInformation()
+
+        self.assertIsNone(capability_information.streaming_capability)
+        self.assertIsNone(capability_information.asynchronous_capability)
+        self.assertIsNone(capability_information.attestation_capability)
+        self.assertIsNone(capability_information.batch_undo_capability)
+        self.assertIsNone(capability_information.batch_continue_capability)
+        self.assertIsNone(capability_information.unwrap_mode)
+        self.assertIsNone(capability_information.destroy_action)
+        self.assertIsNone(capability_information.shredding_algorithm)
+        self.assertIsNone(capability_information.rng_mode)
+
+        capability_information.read(
+            self.full_encoding,
+            kmip_version=enums.KMIPVersion.KMIP_1_4
+        )
+
+        self.assertFalse(capability_information.streaming_capability)
+        self.assertTrue(capability_information.asynchronous_capability)
+        self.assertTrue(capability_information.attestation_capability)
+        self.assertFalse(capability_information.batch_undo_capability)
+        self.assertTrue(capability_information.batch_continue_capability)
+        self.assertEqual(
+            enums.UnwrapMode.PROCESSED,
+            capability_information.unwrap_mode
+        )
+        self.assertEqual(
+            enums.DestroyAction.SHREDDED,
+            capability_information.destroy_action
+        )
+        self.assertEqual(
+            enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            capability_information.shredding_algorithm
+        )
+        self.assertEqual(
+            enums.RNGMode.NON_SHARED_INSTANTIATION,
+            capability_information.rng_mode
+        )
+
+    def test_read_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the decoding of
+        a CapabilityInformation structure when the structure is read for an
+        unsupported KMIP version.
+        """
+        capability_information = objects.CapabilityInformation()
+
+        args = (self.full_encoding, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.2 does not support the CapabilityInformation object.",
+            capability_information.read,
+            *args,
+            **kwargs
+        )
+
+    def test_read_kmip_1_3(self):
+        """
+        Test that a CapabilityInformation structure can be correctly read in
+        from a data stream with only KMIP 1.3 features.
+        """
+        capability_information = objects.CapabilityInformation()
+
+        self.assertIsNone(capability_information.streaming_capability)
+        self.assertIsNone(capability_information.asynchronous_capability)
+        self.assertIsNone(capability_information.attestation_capability)
+        self.assertIsNone(capability_information.batch_undo_capability)
+        self.assertIsNone(capability_information.batch_continue_capability)
+        self.assertIsNone(capability_information.unwrap_mode)
+        self.assertIsNone(capability_information.destroy_action)
+        self.assertIsNone(capability_information.shredding_algorithm)
+        self.assertIsNone(capability_information.rng_mode)
+
+        capability_information.read(
+            self.full_encoding_kmip_1_3,
+            kmip_version=enums.KMIPVersion.KMIP_1_4
+        )
+
+        self.assertFalse(capability_information.streaming_capability)
+        self.assertTrue(capability_information.asynchronous_capability)
+        self.assertTrue(capability_information.attestation_capability)
+        self.assertIsNone(capability_information.batch_undo_capability)
+        self.assertIsNone(capability_information.batch_continue_capability)
+        self.assertEqual(
+            enums.UnwrapMode.PROCESSED,
+            capability_information.unwrap_mode
+        )
+        self.assertEqual(
+            enums.DestroyAction.SHREDDED,
+            capability_information.destroy_action
+        )
+        self.assertEqual(
+            enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            capability_information.shredding_algorithm
+        )
+        self.assertEqual(
+            enums.RNGMode.NON_SHARED_INSTANTIATION,
+            capability_information.rng_mode
+        )
+
+    def test_read_empty(self):
+        """
+        Test that a CapabilityInformation structure can be correctly read in
+        from an empty data stream.
+        """
+        capability_information = objects.CapabilityInformation()
+
+        self.assertIsNone(capability_information.streaming_capability)
+        self.assertIsNone(capability_information.asynchronous_capability)
+        self.assertIsNone(capability_information.attestation_capability)
+        self.assertIsNone(capability_information.batch_undo_capability)
+        self.assertIsNone(capability_information.batch_continue_capability)
+        self.assertIsNone(capability_information.unwrap_mode)
+        self.assertIsNone(capability_information.destroy_action)
+        self.assertIsNone(capability_information.shredding_algorithm)
+        self.assertIsNone(capability_information.rng_mode)
+
+        capability_information.read(
+            self.empty_encoding,
+            kmip_version=enums.KMIPVersion.KMIP_1_4
+        )
+
+        self.assertIsNone(capability_information.streaming_capability)
+        self.assertIsNone(capability_information.asynchronous_capability)
+        self.assertIsNone(capability_information.attestation_capability)
+        self.assertIsNone(capability_information.batch_undo_capability)
+        self.assertIsNone(capability_information.batch_continue_capability)
+        self.assertIsNone(capability_information.unwrap_mode)
+        self.assertIsNone(capability_information.destroy_action)
+        self.assertIsNone(capability_information.shredding_algorithm)
+        self.assertIsNone(capability_information.rng_mode)
+
+    def test_write(self):
+        """
+        Test that a CapabilityInformation structure can be written to a data
+        stream.
+        """
+        capability_information = objects.CapabilityInformation(
+            streaming_capability=False,
+            asynchronous_capability=True,
+            attestation_capability=True,
+            batch_undo_capability=False,
+            batch_continue_capability=True,
+            unwrap_mode=enums.UnwrapMode.PROCESSED,
+            destroy_action=enums.DestroyAction.SHREDDED,
+            shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+
+        buffer = utils.BytearrayStream()
+        capability_information.write(
+            buffer,
+            kmip_version=enums.KMIPVersion.KMIP_1_4
+        )
+
+        self.assertEqual(len(self.full_encoding), len(buffer))
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_write_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the encoding of
+        a CapabilityInformation structure when the structure is written for an
+        unsupported KMIP version.
+        """
+        capability_information = objects.CapabilityInformation(
+            streaming_capability=False,
+            asynchronous_capability=True,
+            attestation_capability=True,
+            batch_undo_capability=False,
+            batch_continue_capability=True,
+            unwrap_mode=enums.UnwrapMode.PROCESSED,
+            destroy_action=enums.DestroyAction.SHREDDED,
+            shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+
+        args = (utils.BytearrayStream(), )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.2 does not support the CapabilityInformation object.",
+            capability_information.write,
+            *args,
+            **kwargs
+        )
+
+    def test_write_kmip_1_3(self):
+        """
+        Test that a CapabilityInformation structure can be written to a data
+        stream with only KMIP 1.3 features.
+        """
+        capability_information = objects.CapabilityInformation(
+            streaming_capability=False,
+            asynchronous_capability=True,
+            attestation_capability=True,
+            batch_undo_capability=False,
+            batch_continue_capability=True,
+            unwrap_mode=enums.UnwrapMode.PROCESSED,
+            destroy_action=enums.DestroyAction.SHREDDED,
+            shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+
+        buffer = utils.BytearrayStream()
+        capability_information.write(
+            buffer,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(len(self.full_encoding_kmip_1_3), len(buffer))
+        self.assertEqual(str(self.full_encoding_kmip_1_3), str(buffer))
+
+    def test_write_empty(self):
+        """
+        Test that an empty CapabilityInformation structure can be correctly
+        written to a data stream.
+        """
+        capability_information = objects.CapabilityInformation()
+
+        buffer = utils.BytearrayStream()
+        capability_information.write(
+            buffer,
+            kmip_version=enums.KMIPVersion.KMIP_1_3
+        )
+
+        self.assertEqual(len(self.empty_encoding), len(buffer))
+        self.assertEqual(str(self.empty_encoding), str(buffer))
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to a CapabilityInformation structure.
+        """
+        capability_information = objects.CapabilityInformation(
+            streaming_capability=False,
+            asynchronous_capability=True,
+            attestation_capability=True,
+            batch_undo_capability=False,
+            batch_continue_capability=True,
+            unwrap_mode=enums.UnwrapMode.PROCESSED,
+            destroy_action=enums.DestroyAction.SHREDDED,
+            shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+
+        sc = "streaming_capability=False"
+        rc = "asynchronous_capability=True"
+        tc = "attestation_capability=True"
+        buc = "batch_undo_capability=False"
+        bcc = "batch_continue_capability=True"
+        um = "unwrap_mode=UnwrapMode.PROCESSED"
+        da = "destroy_action=DestroyAction.SHREDDED"
+        sa = "shredding_algorithm=ShreddingAlgorithm.CRYPTOGRAPHIC"
+        rm = "rng_mode=RNGMode.NON_SHARED_INSTANTIATION"
+
+        v = ", ".join([sc, rc, tc, buc, bcc, um, da, sa, rm])
+
+        self.assertEqual(
+            "CapabilityInformation({})".format(v),
+            repr(capability_information)
+        )
+
+    def test_str(self):
+        """
+        Test that str can be applied to a CapabilityInformation structure.
+        """
+        capability_information = objects.CapabilityInformation(
+            streaming_capability=False,
+            asynchronous_capability=True,
+            attestation_capability=True,
+            batch_undo_capability=False,
+            batch_continue_capability=True,
+            unwrap_mode=enums.UnwrapMode.PROCESSED,
+            destroy_action=enums.DestroyAction.SHREDDED,
+            shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+
+        sc = '"streaming_capability": False'
+        rc = '"asynchronous_capability": True'
+        tc = '"attestation_capability": True'
+        buc = '"batch_undo_capability": False'
+        bcc = '"batch_continue_capability": True'
+        um = '"unwrap_mode": UnwrapMode.PROCESSED'
+        da = '"destroy_action": DestroyAction.SHREDDED'
+        sa = '"shredding_algorithm": ShreddingAlgorithm.CRYPTOGRAPHIC'
+        rm = '"rng_mode": RNGMode.NON_SHARED_INSTANTIATION'
+
+        v = ", ".join([sc, rc, tc, buc, bcc, um, da, sa, rm])
+
+        self.assertEqual(
+            "{" + v + "}",
+            str(capability_information)
+        )
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        CapabilityInformation structures with the same data.
+        """
+        a = objects.CapabilityInformation()
+        b = objects.CapabilityInformation()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = objects.CapabilityInformation(
+            streaming_capability=False,
+            asynchronous_capability=True,
+            attestation_capability=True,
+            batch_undo_capability=False,
+            batch_continue_capability=True,
+            unwrap_mode=enums.UnwrapMode.PROCESSED,
+            destroy_action=enums.DestroyAction.SHREDDED,
+            shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+        b = objects.CapabilityInformation(
+            streaming_capability=False,
+            asynchronous_capability=True,
+            attestation_capability=True,
+            batch_undo_capability=False,
+            batch_continue_capability=True,
+            unwrap_mode=enums.UnwrapMode.PROCESSED,
+            destroy_action=enums.DestroyAction.SHREDDED,
+            shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_streaming_capability(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different streaming capability
+        fields.
+        """
+        a = objects.CapabilityInformation(streaming_capability=True)
+        b = objects.CapabilityInformation(streaming_capability=False)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_asynchronous_capability(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different asynchronous
+        capability fields.
+        """
+        a = objects.CapabilityInformation(asynchronous_capability=True)
+        b = objects.CapabilityInformation(asynchronous_capability=False)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_attestation_capability(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different attestation capability
+        fields.
+        """
+        a = objects.CapabilityInformation(attestation_capability=True)
+        b = objects.CapabilityInformation(attestation_capability=False)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_batch_undo_capability(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different batch undo capability
+        fields.
+        """
+        a = objects.CapabilityInformation(batch_undo_capability=True)
+        b = objects.CapabilityInformation(batch_undo_capability=False)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_batch_continue_capability(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different batch continue
+        capability fields.
+        """
+        a = objects.CapabilityInformation(batch_continue_capability=True)
+        b = objects.CapabilityInformation(batch_continue_capability=False)
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_unwrap_mode(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different unwrap mode fields.
+        """
+        a = objects.CapabilityInformation(
+            unwrap_mode=enums.UnwrapMode.PROCESSED
+        )
+        b = objects.CapabilityInformation(
+            unwrap_mode=enums.UnwrapMode.NOT_PROCESSED
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_destroy_action(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different destroy action fields.
+        """
+        a = objects.CapabilityInformation(
+            destroy_action=enums.DestroyAction.DELETED
+        )
+        b = objects.CapabilityInformation(
+            destroy_action=enums.DestroyAction.SHREDDED
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_shredding_algorithm(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different shredding algorithm
+        fields.
+        """
+        a = objects.CapabilityInformation(
+            shredding_algorithm=enums.ShreddingAlgorithm.UNSPECIFIED
+        )
+        b = objects.CapabilityInformation(
+            shredding_algorithm=enums.ShreddingAlgorithm.UNSUPPORTED
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_rng_mode(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different RNG mode fields.
+        """
+        a = objects.CapabilityInformation(
+            rng_mode=enums.RNGMode.SHARED_INSTANTIATION
+        )
+        b = objects.CapabilityInformation(
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CapabilityInformation structures with different types.
+        """
+        a = objects.CapabilityInformation()
+        b = "invalid"
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        CapabilityInformation structures with the same data.
+        """
+        a = objects.CapabilityInformation()
+        b = objects.CapabilityInformation()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = objects.CapabilityInformation(
+            streaming_capability=False,
+            asynchronous_capability=True,
+            attestation_capability=True,
+            batch_undo_capability=False,
+            batch_continue_capability=True,
+            unwrap_mode=enums.UnwrapMode.PROCESSED,
+            destroy_action=enums.DestroyAction.SHREDDED,
+            shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+        b = objects.CapabilityInformation(
+            streaming_capability=False,
+            asynchronous_capability=True,
+            attestation_capability=True,
+            batch_undo_capability=False,
+            batch_continue_capability=True,
+            unwrap_mode=enums.UnwrapMode.PROCESSED,
+            destroy_action=enums.DestroyAction.SHREDDED,
+            shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_streaming_capability(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different streaming capability
+        fields.
+        """
+        a = objects.CapabilityInformation(streaming_capability=True)
+        b = objects.CapabilityInformation(streaming_capability=False)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_asynchronous_capability(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different asynchronous
+        capability fields.
+        """
+        a = objects.CapabilityInformation(asynchronous_capability=True)
+        b = objects.CapabilityInformation(asynchronous_capability=False)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_attestation_capability(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different attestation capability
+        fields.
+        """
+        a = objects.CapabilityInformation(attestation_capability=True)
+        b = objects.CapabilityInformation(attestation_capability=False)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_batch_undo_capability(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different batch undo capability
+        fields.
+        """
+        a = objects.CapabilityInformation(batch_undo_capability=True)
+        b = objects.CapabilityInformation(batch_undo_capability=False)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_batch_continue_capability(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different batch continue
+        capability fields.
+        """
+        a = objects.CapabilityInformation(batch_continue_capability=True)
+        b = objects.CapabilityInformation(batch_continue_capability=False)
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_unwrap_mode(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different unwrap mode fields.
+        """
+        a = objects.CapabilityInformation(
+            unwrap_mode=enums.UnwrapMode.PROCESSED
+        )
+        b = objects.CapabilityInformation(
+            unwrap_mode=enums.UnwrapMode.NOT_PROCESSED
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_destroy_action(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different destroy action fields.
+        """
+        a = objects.CapabilityInformation(
+            destroy_action=enums.DestroyAction.DELETED
+        )
+        b = objects.CapabilityInformation(
+            destroy_action=enums.DestroyAction.SHREDDED
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_shredding_algorithm(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different shredding algorithm
+        fields.
+        """
+        a = objects.CapabilityInformation(
+            shredding_algorithm=enums.ShreddingAlgorithm.UNSPECIFIED
+        )
+        b = objects.CapabilityInformation(
+            shredding_algorithm=enums.ShreddingAlgorithm.UNSUPPORTED
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_rng_mode(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different RNG mode fields.
+        """
+        a = objects.CapabilityInformation(
+            rng_mode=enums.RNGMode.SHARED_INSTANTIATION
+        )
+        b = objects.CapabilityInformation(
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CapabilityInformation structures with different types.
+        """
+        a = objects.CapabilityInformation()
+        b = "invalid"
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
