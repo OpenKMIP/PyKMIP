@@ -39,8 +39,6 @@ from kmip.core.messages import messages
 
 from kmip.core.messages import payloads
 
-from kmip.core import misc
-
 from kmip.pie import factory
 from kmip.pie import objects
 from kmip.pie import sqltypes
@@ -1917,7 +1915,7 @@ class KmipEngine(object):
     def _process_query(self, payload):
         self._logger.info("Processing operation: Query")
 
-        queries = [x.value for x in payload.query_functions]
+        queries = payload.query_functions
 
         operations = list()
         objects = list()
@@ -1928,38 +1926,38 @@ class KmipEngine(object):
 
         if enums.QueryFunction.QUERY_OPERATIONS in queries:
             operations = list([
-                contents.Operation(enums.Operation.CREATE),
-                contents.Operation(enums.Operation.CREATE_KEY_PAIR),
-                contents.Operation(enums.Operation.REGISTER),
-                contents.Operation(enums.Operation.DERIVE_KEY),
-                contents.Operation(enums.Operation.LOCATE),
-                contents.Operation(enums.Operation.GET),
-                contents.Operation(enums.Operation.GET_ATTRIBUTES),
-                contents.Operation(enums.Operation.GET_ATTRIBUTE_LIST),
-                contents.Operation(enums.Operation.ACTIVATE),
-                contents.Operation(enums.Operation.REVOKE),
-                contents.Operation(enums.Operation.DESTROY),
-                contents.Operation(enums.Operation.QUERY)
+                enums.Operation.CREATE,
+                enums.Operation.CREATE_KEY_PAIR,
+                enums.Operation.REGISTER,
+                enums.Operation.DERIVE_KEY,
+                enums.Operation.LOCATE,
+                enums.Operation.GET,
+                enums.Operation.GET_ATTRIBUTES,
+                enums.Operation.GET_ATTRIBUTE_LIST,
+                enums.Operation.ACTIVATE,
+                enums.Operation.REVOKE,
+                enums.Operation.DESTROY,
+                enums.Operation.QUERY
             ])
 
             if self._protocol_version >= contents.ProtocolVersion(1, 1):
                 operations.extend([
-                    contents.Operation(enums.Operation.DISCOVER_VERSIONS)
+                    enums.Operation.DISCOVER_VERSIONS
                 ])
             if self._protocol_version >= contents.ProtocolVersion(1, 2):
                 operations.extend([
-                    contents.Operation(enums.Operation.ENCRYPT),
-                    contents.Operation(enums.Operation.DECRYPT),
-                    contents.Operation(enums.Operation.SIGN),
-                    contents.Operation(enums.Operation.SIGNATURE_VERIFY),
-                    contents.Operation(enums.Operation.MAC)
+                    enums.Operation.ENCRYPT,
+                    enums.Operation.DECRYPT,
+                    enums.Operation.SIGN,
+                    enums.Operation.SIGNATURE_VERIFY,
+                    enums.Operation.MAC
                 ])
 
         if enums.QueryFunction.QUERY_OBJECTS in queries:
             objects = list()
         if enums.QueryFunction.QUERY_SERVER_INFORMATION in queries:
-            vendor_identification = misc.VendorIdentification(
-                "PyKMIP {0} Software Server".format(kmip.__version__)
+            vendor_identification = "PyKMIP {0} Software Server".format(
+                kmip.__version__
             )
             server_information = None
         if enums.QueryFunction.QUERY_APPLICATION_NAMESPACES in queries:

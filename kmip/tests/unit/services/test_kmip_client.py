@@ -45,9 +45,7 @@ from kmip.core.messages.contents import ProtocolVersion
 from kmip.core.messages import payloads
 
 from kmip.core.misc import Offset
-from kmip.core.misc import QueryFunction
 from kmip.core.misc import ServerInformation
-from kmip.core.misc import VendorIdentification
 
 from kmip.core import objects
 from kmip.core.objects import TemplateAttribute
@@ -375,9 +373,6 @@ class TestKMIPClient(TestCase):
 
         payload = batch_item.request_payload
 
-        if query_functions is None:
-            query_functions = list()
-
         msg = base.format(payloads.QueryRequestPayload, payload)
         self.assertIsInstance(payload, payloads.QueryRequestPayload, msg)
 
@@ -386,7 +381,8 @@ class TestKMIPClient(TestCase):
 
     def test_build_query_batch_item_with_input(self):
         self._test_build_query_batch_item(
-            [QueryFunction(QueryFunctionEnum.QUERY_OBJECTS)])
+            [QueryFunctionEnum.QUERY_OBJECTS]
+        )
 
     def test_build_query_batch_item_without_input(self):
         self._test_build_query_batch_item(None)
@@ -630,7 +626,7 @@ class TestKMIPClient(TestCase):
         self._test_process_query_batch_item(
             list(),
             list(),
-            VendorIdentification(),
+            "",
             ServerInformation(),
             list(),
             list())

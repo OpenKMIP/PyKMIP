@@ -32,7 +32,7 @@ from kmip.core.enums import OpaqueDataType
 from kmip.core.enums import SecretDataType
 from kmip.core.enums import ResultStatus
 from kmip.core.enums import ResultReason
-from kmip.core.enums import QueryFunction as QueryFunctionEnum
+from kmip.core.enums import QueryFunction
 
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.factories.credentials import CredentialFactory
@@ -45,8 +45,6 @@ from kmip.core.objects import KeyBlock
 from kmip.core.objects import KeyMaterial
 from kmip.core.objects import KeyValue
 from kmip.core.objects import TemplateAttribute
-
-from kmip.core.misc import QueryFunction
 
 from kmip.core.secrets import SymmetricKey
 from kmip.core.secrets import PrivateKey
@@ -314,19 +312,16 @@ class TestIntegration(TestCase):
 
     def test_query(self):
         # Build query function list, asking for all server data.
-        query_functions = list()
-        query_functions.append(
-            QueryFunction(QueryFunctionEnum.QUERY_OPERATIONS))
-        query_functions.append(
-            QueryFunction(QueryFunctionEnum.QUERY_OBJECTS))
-        query_functions.append(
-            QueryFunction(QueryFunctionEnum.QUERY_SERVER_INFORMATION))
-        query_functions.append(
-            QueryFunction(QueryFunctionEnum.QUERY_APPLICATION_NAMESPACES))
-        query_functions.append(
-            QueryFunction(QueryFunctionEnum.QUERY_EXTENSION_LIST))
-        query_functions.append(
-            QueryFunction(QueryFunctionEnum.QUERY_EXTENSION_MAP))
+        query_functions = list(
+            [
+                QueryFunction.QUERY_OPERATIONS,
+                QueryFunction.QUERY_OBJECTS,
+                QueryFunction.QUERY_SERVER_INFORMATION,
+                QueryFunction.QUERY_APPLICATION_NAMESPACES,
+                QueryFunction.QUERY_EXTENSION_LIST,
+                QueryFunction.QUERY_EXTENSION_MAP
+            ]
+        )
 
         result = self.client.query(query_functions=query_functions)
 
