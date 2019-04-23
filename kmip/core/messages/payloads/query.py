@@ -204,20 +204,29 @@ class QueryResponsePayload(primitives.Struct):
             the server.
         extension_information: A list of ExtensionInformation objects
             detailing Objects supported by the server with ItemTag values in
-            the Extensions range.
+            the Extensions range. Added in KMIP 1.1.
         attestation_types: A list of AttestationType enumerations detailing
-            the attestation methods supported by the server.
+            the attestation methods supported by the server. Added in KMIP 1.2.
         rng_parameters: A list of RNGParameters structures detailing the types
-            of random number generators supported by the server.
+            of random number generators supported by the server. Added in
+            KMIP 1.3.
         profile_information: A list of ProfileInformation structures detailing
-            the different profiles supported by the server.
+            the different profiles supported by the server. Added in KMIP 1.3.
         validation_information: A list of ValidationInformation structures
             detailing the types of formal validation supported by the server.
+            Added in KMIP 1.3.
         capability_information: A list of CapabilityInformation structures
             detailing the different capabilities supported by the server.
+            Added in KMIP 1.3.
         client_registration_methods: A list of ClientRegistrationMethod
             enumerations detailing the different client registration methods
-            supported by the server.
+            supported by the server. Added in KMIP 1.3.
+        defaults_information: A DefaultsInformation structure detailing the
+            default attribute values used by the server for new managed
+            objects. Added in KMIP 2.0.
+        storage_protection_mask: A list of integers representing combined sets
+            of ProtectionStorageMask enumerations detailing the storage
+            protections supported by the server. Added in KMIP 2.0.
     """
     def __init__(self,
                  operations=None,
@@ -231,7 +240,9 @@ class QueryResponsePayload(primitives.Struct):
                  profile_information=None,
                  validation_information=None,
                  capability_information=None,
-                 client_registration_methods=None):
+                 client_registration_methods=None,
+                 defaults_information=None,
+                 storage_protection_masks=None):
         """
         Construct a QueryResponsePayload object.
 
@@ -250,25 +261,34 @@ class QueryResponsePayload(primitives.Struct):
             extension_information (list): A list of ExtensionInformation
                 objects detailing Objects supported by the server with ItemTag
                 values in the Extensions range. Optional, defaults to None.
+                Added in KMIP 1.1.
             attestation_types (list): A list of AttestationType enumerations
                 detailing the attestation methods supported by the server.
-                Optional, defaults to None.
+                Optional, defaults to None. Added in KMIP 1.2.
             rng_parameters (list): A list of RNGParameters structures detailing
                 the types of random number generators supported by the server.
-                Optional, defaults to None.
+                Optional, defaults to None. Added in KMIP 1.3.
             profile_information (list): A list of ProfileInformation structures
                 detailing the different profiles supported by the server.
-                Optional, defaults to None.
+                Optional, defaults to None. Added in KMIP 1.3.
             validation_information (list): A list of ValidationInformation
                 structures detailing the types of formal validation supported
-                by the server. Optional, defaults to None.
+                by the server. Optional, defaults to None. Added in KMIP 1.3.
             capability_information (list): A list of CapabilityInformation
                 structures detailing the different capabilities supported by
-                the server. Optional, defaults to None.
+                the server. Optional, defaults to None. Added in KMIP 1.3.
             client_registration_methods (list): A list of
                 ClientRegistrationMethod enumerations detailing the different
                 client registration methods supported by the server. Optional,
-                defaults to None.
+                defaults to None. Added in KMIP 1.3.
+            defaults_information (structure): A DefaultsInformation structure
+                detailing the default attribute values used by the server for
+                new managed objects. Optional, defaults to None. Added in
+                KMIP 2.0.
+            storage_protection_mask (list): A list of integers representing
+                combined sets of ProtectionStorageMask enumerations detailing
+                the storage protections supported by the server. Optional,
+                defaults to None. Added in KMIP 2.0.
         """
         super(QueryResponsePayload, self).__init__(
             enums.Tags.RESPONSE_PAYLOAD
@@ -286,6 +306,8 @@ class QueryResponsePayload(primitives.Struct):
         self._validation_information = None
         self._capability_information = None
         self._client_registration_methods = None
+        self._defaults_information = None
+        self._storage_protection_masks = None
 
         self.operations = operations
         self.object_types = object_types
@@ -299,6 +321,8 @@ class QueryResponsePayload(primitives.Struct):
         self.validation_information = validation_information
         self.capability_information = capability_information
         self.client_registration_methods = client_registration_methods
+        self.defaults_information = defaults_information
+        self.storage_protection_masks = storage_protection_masks
 
     @property
     def operations(self):
@@ -620,6 +644,53 @@ class QueryResponsePayload(primitives.Struct):
                 "ClientRegistrationMethod enumerations."
             )
 
+    @property
+    def defaults_information(self):
+        return self._defaults_information
+
+    @defaults_information.setter
+    def defaults_information(self, value):
+        if value is None:
+            self._defaults_information = None
+        elif isinstance(value, objects.DefaultsInformation):
+            self._defaults_information = value
+        else:
+            raise TypeError(
+                "The defaults information must be a DefaultsInformation "
+                "structure."
+            )
+
+    @property
+    def storage_protection_masks(self):
+        if self._storage_protection_masks:
+            return [x.value for x in self._storage_protection_masks]
+        return None
+
+    @storage_protection_masks.setter
+    def storage_protection_masks(self, value):
+        if value is None:
+            self._storage_protection_masks = None
+        elif isinstance(value, list):
+            storage_protection_masks = []
+            for i in value:
+                if isinstance(i, six.integer_types):
+                    storage_protection_masks.append(
+                        primitives.Integer(
+                            value=i,
+                            tag=enums.Tags.PROTECTION_STORAGE_MASK
+                        )
+                    )
+                else:
+                    raise TypeError(
+                        "The storage protection masks must be a list of "
+                        "integers."
+                    )
+            self._storage_protection_masks = storage_protection_masks
+        else:
+            raise TypeError(
+                "The storage protection masks must be a list of integers."
+            )
+
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the QueryResponsePayload object and decode it
@@ -783,6 +854,31 @@ class QueryResponsePayload(primitives.Struct):
                 client_registration_methods.append(client_registration_method)
             self._client_registration_methods = client_registration_methods
 
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(enums.Tags.DEFAULTS_INFORMATION, local_buffer):
+                defaults_information = objects.DefaultsInformation()
+                defaults_information.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+                self._defaults_information = defaults_information
+
+            storage_protection_masks = []
+            while(self.is_tag_next(
+                    enums.Tags.PROTECTION_STORAGE_MASK,
+                    local_buffer
+                )
+            ):
+                storage_protection_mask = primitives.Integer(
+                    tag=enums.Tags.PROTECTION_STORAGE_MASK
+                )
+                storage_protection_mask.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+                storage_protection_masks.append(storage_protection_mask)
+            self._storage_protection_masks = storage_protection_masks
+
         self.is_oversized(local_buffer)
 
     def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -874,6 +970,19 @@ class QueryResponsePayload(primitives.Struct):
                         kmip_version=kmip_version
                     )
 
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self._defaults_information:
+                self._defaults_information.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            if self._storage_protection_masks:
+                for storage_protection_mask in self._storage_protection_masks:
+                    storage_protection_mask.write(
+                        local_buffer,
+                        kmip_version=kmip_version
+                    )
+
         self.length = local_buffer.length()
         super(QueryResponsePayload, self).write(
             output_buffer,
@@ -936,8 +1045,20 @@ class QueryResponsePayload(primitives.Struct):
                 ", ".join([str(x) for x in self.client_registration_methods])
             ) if self.client_registration_methods else None
         )
+        di = "defaults_information={}".format(
+            "{}".format(
+                repr(self._defaults_information)
+            ) if self._defaults_information else None
+        )
+        spm = "storage_protection_masks={}".format(
+            "[{}]".format(
+                ", ".join([str(x) for x in self.storage_protection_masks])
+            ) if self._storage_protection_masks else None
+        )
 
-        v = ", ".join([o, ot, vi, si, an, ei, at, rp, pi, vai, ci, crm])
+        v = ", ".join(
+            [o, ot, vi, si, an, ei, at, rp, pi, vai, ci, crm, di, spm]
+        )
 
         return "QueryResponsePayload({})".format(v)
 
@@ -996,8 +1117,20 @@ class QueryResponsePayload(primitives.Struct):
                 ", ".join([str(x) for x in self.client_registration_methods])
             ) if self.client_registration_methods else None
         )
+        di = '"defaults_information": {}'.format(
+            "{}".format(
+                str(self.defaults_information)
+            ) if self._defaults_information else None
+        )
+        spm = '"storage_protection_masks": {}'.format(
+            "[{}]".format(
+                ", ".join([str(x) for x in self.storage_protection_masks])
+            ) if self._storage_protection_masks else None
+        )
 
-        v = ", ".join([o, ot, vi, si, an, ei, at, rp, pi, vai, ci, crm])
+        v = ", ".join(
+            [o, ot, vi, si, an, ei, at, rp, pi, vai, ci, crm, di, spm]
+        )
 
         return '{' + v + '}'
 
@@ -1027,6 +1160,11 @@ class QueryResponsePayload(primitives.Struct):
                 return False
             elif self.client_registration_methods != \
                     other.client_registration_methods:
+                return False
+            elif self.defaults_information != other.defaults_information:
+                return False
+            elif self.storage_protection_masks != \
+                    other.storage_protection_masks:
                 return False
             else:
                 return True

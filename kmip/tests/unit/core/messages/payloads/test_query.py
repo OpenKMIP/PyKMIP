@@ -19,6 +19,7 @@ from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core import misc
 from kmip.core import objects
+from kmip.core import primitives
 from kmip.core import utils
 
 from kmip.core.messages import payloads
@@ -861,6 +862,229 @@ class TestQueryResponsePayload(testtools.TestCase):
             b'\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
         )
 
+        # Encoding obtained from the KMIP 1.1 testing document,
+        # Section 12.1.0. Modified to include the Application
+        # Namespaces, Extension Information, Attestation Types,
+        # RNG Parameters, Profile Information, Validation
+        # Information, Capability Information, Client
+        # Registration Methods, Defaults Information, and Storage
+        # Protection Masks.
+        #
+        # This encoding matches the following set of values:
+        # Response Payload
+        #     Operations
+        #         Create
+        #         Create Key Pair
+        #         Register
+        #         Rekey
+        #         Certify
+        #         Recertify
+        #         Locate
+        #         Check
+        #         Get
+        #         Get Attributes
+        #         Get Attribute List
+        #         Add Attribute
+        #         Modify Attribute
+        #         Delete Attribute
+        #         Obtain Lease
+        #         Get Usage Allocation
+        #         Activate
+        #         Revoke
+        #         Destroy
+        #         Archive
+        #         Recover
+        #         Query
+        #         Cancel
+        #         Poll
+        #         Rekey Key Pair
+        #         Discover Versions
+        #     Object Types
+        #         Certificate
+        #         Symmetric Key
+        #         Public Key
+        #         Private Key
+        #         Template
+        #         Secret Data
+        #     Vendor Identification -
+        #         IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1
+        #     Server Information - empty
+        #     Application Namespaces
+        #         Namespace 1
+        #         Namespace 2
+        #     Extension Information
+        #         Extension Name - ACME LOCATION
+        #         Extension Tag - 0x0054AA01
+        #         Extension Type - 7
+        #     Extension Information
+        #         Extension Name - ACME ZIP CODE
+        #         Extension Tag - 0x0054AA02
+        #         Extension Type - 2
+        #     Attestation Types
+        #         TPM Quote
+        #         TCG Integrity Report
+        #         SAML Assertion
+        #     RNGParameters
+        #         RNG Algorithm - FIPS 186-2
+        #         Cryptographic Algorithm - AES
+        #         Cryptographic Length - 256
+        #         Hashing Algorithm - SHA256
+        #         DRBG Algorithm - Hash
+        #         Recommended Curve - P-192
+        #         FIPS186 Variation - GP x-Original
+        #         Prediction Resistance - True
+        #     Profile Information
+        #         Profile Name - BASELINE_SERVER_BASIC_KMIPv12
+        #         Server URI - https://example.com
+        #         Server Port - 5696
+        #     Validation Information
+        #         Validation Authority Type - COMMON_CRITERIA
+        #         Validation Authority Country - US
+        #         Validation Authority URI - https://example.com
+        #         Validation Version Major - 1
+        #         Validation Version Minor - 0
+        #         Validation Type - HYBRID
+        #         Validation Level - 5
+        #         Validation Certificate Identifier -
+        #             c005d39e-604f-11e9-99df-080027fc1396
+        #         Validation Certificate URI - https://test.com
+        #         Validation Vendor URI - https://vendor.com
+        #         Validation Profiles -
+        #             Profile 1
+        #             Profile 2
+        #     Capability Information
+        #         Streaming Capability - False
+        #         Asynchronous Capability - True
+        #         Attestation Capability - True
+        #         Unwrap Mode - PROCESSED
+        #         Destroy Action - SHREDDED
+        #         Shredding Algorithm - CRYPTOGRAPHIC
+        #         RNG Mode - NON_SHARED_INSTANTIATION
+        #     Client Registration Methods
+        #         Client Generated
+        #         Client Registered
+        #     DefaultsInformation
+        #         ObjectDefaults
+        #             Object Type - Symmetric Key
+        #             Attributes
+        #                 Cryptographic Algorithm - AES
+        #                 Cryptographic Length - 128
+        #                 Cryptographic Usage Mask - Encrypt | Decrypt
+        #     Storage Status Mask - Software | Hardware
+        self.full_encoding_kmip_2_0 = utils.BytearrayStream(
+            b'\x42\x00\x7C\x01\x00\x00\x06\x10'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00'
+            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
+            b'\x42\x00\x9D\x07\x00\x00\x00\x2E'
+            b'\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C'
+            b'\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E'
+            b'\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00'
+            b'\x42\x00\x88\x01\x00\x00\x00\x00'
+            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
+            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00'
+            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
+            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00'
+            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
+            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
+            b'\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00'
+            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00'
+            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
+            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
+            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
+            b'\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00'
+            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00'
+            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\xD9\x01\x00\x00\x00\x80'
+            b'\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00'
+            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
+            b'\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b'\x42\x00\xEB\x01\x00\x00\x00\x40'
+            b'\x42\x00\xEC\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xED\x07\x00\x00\x00\x13'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
+            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEE\x02\x00\x00\x00\x04\x00\x00\x16\x40\x00\x00\x00\x00'
+            b'\x42\x00\xDF\x01\x00\x00\x01\x18'
+            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
+            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
+            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
+            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
+            b'\x31\x33\x39\x36\x00\x00\x00\x00'
+            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
+            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
+            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
+            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
+            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xF7\x01\x00\x00\x00\x70'
+            b'\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b'\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b'\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
+            b'\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b'\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b'\x42\x01\x52\x01\x00\x00\x00\x50'
+            b'\x42\x01\x53\x01\x00\x00\x00\x48'
+            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x01\x25\x01\x00\x00\x00\x30'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+        )
+
         # This encoding matches the following set of values:
         # Response Payload
         self.empty_encoding = utils.BytearrayStream(
@@ -1374,6 +1598,76 @@ class TestQueryResponsePayload(testtools.TestCase):
             *args
         )
 
+    def test_invalid_defaults_information(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the defaults information of a Query response payload.
+        """
+        kwargs = {"defaults_information": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The defaults information must be a DefaultsInformation "
+            "structure.",
+            payloads.QueryResponsePayload,
+            **kwargs
+        )
+
+        args = (
+            payloads.QueryResponsePayload(),
+            "defaults_information",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The defaults information must be a DefaultsInformation "
+            "structure.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_storage_protection_masks(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the storage protection masks of a Query response payload.
+        """
+        kwargs = {"storage_protection_masks": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The storage protection masks must be a list of integers.",
+            payloads.QueryResponsePayload,
+            **kwargs
+        )
+        kwargs = {"storage_protection_masks": ["invalid"]}
+        self.assertRaisesRegex(
+            TypeError,
+            "The storage protection masks must be a list of integers.",
+            payloads.QueryResponsePayload,
+            **kwargs
+        )
+
+        args = (
+            payloads.QueryResponsePayload(),
+            "storage_protection_masks",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The storage protection masks must be a list of integers.",
+            setattr,
+            *args
+        )
+        args = (
+            payloads.QueryResponsePayload(),
+            "storage_protection_masks",
+            ["invalid"]
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The storage protection masks must be a list of integers.",
+            setattr,
+            *args
+        )
+
     def test_read(self):
         """
         Test that a QueryResponsePayload structure can be correctly read in
@@ -1816,6 +2110,217 @@ class TestQueryResponsePayload(testtools.TestCase):
             payload.client_registration_methods
         )
 
+    def test_read_kmip_2_0(self):
+        """
+        Test that a QueryResponsePayload structure can be correctly read in
+        from a data stream with KMIP 2.0 features.
+        """
+        payload = payloads.QueryResponsePayload()
+
+        self.assertIsNone(payload.operations)
+        self.assertIsNone(payload.object_types)
+        self.assertIsNone(payload.vendor_identification)
+        self.assertIsNone(payload.server_information)
+        self.assertIsNone(payload.application_namespaces)
+        self.assertIsNone(payload.extension_information)
+        self.assertIsNone(payload.attestation_types)
+        self.assertIsNone(payload.rng_parameters)
+        self.assertIsNone(payload.profile_information)
+        self.assertIsNone(payload.validation_information)
+        self.assertIsNone(payload.capability_information)
+        self.assertIsNone(payload.client_registration_methods)
+        self.assertIsNone(payload.defaults_information)
+        self.assertIsNone(payload.storage_protection_masks)
+
+        payload.read(
+            self.full_encoding_kmip_2_0,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(
+            [
+                enums.Operation.CREATE,
+                enums.Operation.CREATE_KEY_PAIR,
+                enums.Operation.REGISTER,
+                enums.Operation.REKEY,
+                enums.Operation.CERTIFY,
+                enums.Operation.RECERTIFY,
+                enums.Operation.LOCATE,
+                enums.Operation.CHECK,
+                enums.Operation.GET,
+                enums.Operation.GET_ATTRIBUTES,
+                enums.Operation.GET_ATTRIBUTE_LIST,
+                enums.Operation.ADD_ATTRIBUTE,
+                enums.Operation.MODIFY_ATTRIBUTE,
+                enums.Operation.DELETE_ATTRIBUTE,
+                enums.Operation.OBTAIN_LEASE,
+                enums.Operation.GET_USAGE_ALLOCATION,
+                enums.Operation.ACTIVATE,
+                enums.Operation.REVOKE,
+                enums.Operation.DESTROY,
+                enums.Operation.ARCHIVE,
+                enums.Operation.RECOVER,
+                enums.Operation.QUERY,
+                enums.Operation.CANCEL,
+                enums.Operation.POLL,
+                enums.Operation.REKEY_KEY_PAIR,
+                enums.Operation.DISCOVER_VERSIONS
+            ],
+            payload.operations
+        )
+        self.assertEqual(
+            [
+                enums.ObjectType.CERTIFICATE,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY,
+                enums.ObjectType.TEMPLATE,
+                enums.ObjectType.SECRET_DATA
+            ],
+            payload.object_types
+        )
+        self.assertEqual(
+            "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1",
+            payload.vendor_identification
+        )
+        self.assertEqual(
+            misc.ServerInformation(),
+            payload.server_information
+        )
+        self.assertEqual(
+            [
+                "Namespace 1",
+                "Namespace 2"
+            ],
+            payload.application_namespaces
+        )
+        self.assertEqual(
+            [
+                objects.ExtensionInformation(
+                    extension_name=objects.ExtensionName("ACME LOCATION"),
+                    extension_tag=objects.ExtensionTag(0x0054AA01),
+                    extension_type=objects.ExtensionType(7)
+                ),
+                objects.ExtensionInformation(
+                    extension_name=objects.ExtensionName("ACME ZIP CODE"),
+                    extension_tag=objects.ExtensionTag(0x0054AA02),
+                    extension_type=objects.ExtensionType(2)
+                )
+            ],
+            payload.extension_information
+        )
+        self.assertEqual(
+            [
+                enums.AttestationType.TPM_QUOTE,
+                enums.AttestationType.TCG_INTEGRITY_REPORT,
+                enums.AttestationType.SAML_ASSERTION
+            ],
+            payload.attestation_types
+        )
+        self.assertEqual(
+            [
+                objects.RNGParameters(
+                    rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+                    cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+                    cryptographic_length=256,
+                    hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+                    drbg_algorithm=enums.DRBGAlgorithm.HASH,
+                    recommended_curve=enums.RecommendedCurve.P_192,
+                    fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+                    prediction_resistance=True
+                )
+            ],
+            payload.rng_parameters
+        )
+        self.assertEqual(
+            [
+                objects.ProfileInformation(
+                    profile_name=(
+                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
+                    ),
+                    server_uri="https://example.com",
+                    server_port=5696
+                )
+            ],
+            payload.profile_information
+        )
+        self.assertEqual(
+            [
+                objects.ValidationInformation(
+                    validation_authority_type=(
+                        enums.ValidationAuthorityType.COMMON_CRITERIA
+                    ),
+                    validation_authority_country="US",
+                    validation_authority_uri="https://example.com",
+                    validation_version_major=1,
+                    validation_version_minor=0,
+                    validation_type=enums.ValidationType.HYBRID,
+                    validation_level=5,
+                    validation_certificate_identifier=(
+                        "c005d39e-604f-11e9-99df-080027fc1396"
+                    ),
+                    validation_certificate_uri="https://test.com",
+                    validation_vendor_uri="https://vendor.com",
+                    validation_profiles=["Profile 1", "Profile 2"]
+                )
+            ],
+            payload.validation_information
+        )
+        self.assertEqual(
+            [
+                objects.CapabilityInformation(
+                    streaming_capability=False,
+                    asynchronous_capability=True,
+                    attestation_capability=True,
+                    unwrap_mode=enums.UnwrapMode.PROCESSED,
+                    destroy_action=enums.DestroyAction.SHREDDED,
+                    shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                )
+            ],
+            payload.capability_information
+        )
+        self.assertEqual(
+            [
+                enums.ClientRegistrationMethod.CLIENT_GENERATED,
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+            ],
+            payload.client_registration_methods
+        )
+        self.assertEqual(
+            objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            ),
+            payload.defaults_information
+        )
+        self.assertEqual([3], payload.storage_protection_masks)
+
     def test_read_empty(self):
         """
         Test that an empty QueryResponsePayload structure can be correctly read
@@ -2170,6 +2675,166 @@ class TestQueryResponsePayload(testtools.TestCase):
         self.assertEqual(len(self.full_encoding_kmip_1_3), len(buffer))
         self.assertEqual(str(self.full_encoding_kmip_1_3), str(buffer))
 
+    def test_write_kmip_2_0(self):
+        """
+        Test that a QueryResponsePayload structure can be written to a data
+        stream with KMIP 2.0 features.
+        """
+        payload = payloads.QueryResponsePayload(
+            operations=[
+                enums.Operation.CREATE,
+                enums.Operation.CREATE_KEY_PAIR,
+                enums.Operation.REGISTER,
+                enums.Operation.REKEY,
+                enums.Operation.CERTIFY,
+                enums.Operation.RECERTIFY,
+                enums.Operation.LOCATE,
+                enums.Operation.CHECK,
+                enums.Operation.GET,
+                enums.Operation.GET_ATTRIBUTES,
+                enums.Operation.GET_ATTRIBUTE_LIST,
+                enums.Operation.ADD_ATTRIBUTE,
+                enums.Operation.MODIFY_ATTRIBUTE,
+                enums.Operation.DELETE_ATTRIBUTE,
+                enums.Operation.OBTAIN_LEASE,
+                enums.Operation.GET_USAGE_ALLOCATION,
+                enums.Operation.ACTIVATE,
+                enums.Operation.REVOKE,
+                enums.Operation.DESTROY,
+                enums.Operation.ARCHIVE,
+                enums.Operation.RECOVER,
+                enums.Operation.QUERY,
+                enums.Operation.CANCEL,
+                enums.Operation.POLL,
+                enums.Operation.REKEY_KEY_PAIR,
+                enums.Operation.DISCOVER_VERSIONS
+            ],
+            object_types=[
+                enums.ObjectType.CERTIFICATE,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY,
+                enums.ObjectType.TEMPLATE,
+                enums.ObjectType.SECRET_DATA
+            ],
+            vendor_identification=(
+                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
+            ),
+            server_information=misc.ServerInformation(),
+            application_namespaces=[
+                "Namespace 1",
+                "Namespace 2"
+            ],
+            extension_information=[
+                objects.ExtensionInformation(
+                    extension_name=objects.ExtensionName("ACME LOCATION"),
+                    extension_tag=objects.ExtensionTag(0x0054AA01),
+                    extension_type=objects.ExtensionType(7)
+                ),
+                objects.ExtensionInformation(
+                    extension_name=objects.ExtensionName("ACME ZIP CODE"),
+                    extension_tag=objects.ExtensionTag(0x0054AA02),
+                    extension_type=objects.ExtensionType(2)
+                )
+            ],
+            attestation_types=[
+                enums.AttestationType.TPM_QUOTE,
+                enums.AttestationType.TCG_INTEGRITY_REPORT,
+                enums.AttestationType.SAML_ASSERTION
+            ],
+            rng_parameters=[
+                objects.RNGParameters(
+                    rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
+                    cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+                    cryptographic_length=256,
+                    hashing_algorithm=enums.HashingAlgorithm.SHA_256,
+                    drbg_algorithm=enums.DRBGAlgorithm.HASH,
+                    recommended_curve=enums.RecommendedCurve.P_192,
+                    fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
+                    prediction_resistance=True
+                )
+            ],
+            profile_information=[
+                objects.ProfileInformation(
+                    profile_name=(
+                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
+                    ),
+                    server_uri="https://example.com",
+                    server_port=5696
+                )
+            ],
+            validation_information=[
+                objects.ValidationInformation(
+                    validation_authority_type=(
+                        enums.ValidationAuthorityType.COMMON_CRITERIA
+                    ),
+                    validation_authority_country="US",
+                    validation_authority_uri="https://example.com",
+                    validation_version_major=1,
+                    validation_version_minor=0,
+                    validation_type=enums.ValidationType.HYBRID,
+                    validation_level=5,
+                    validation_certificate_identifier=(
+                        "c005d39e-604f-11e9-99df-080027fc1396"
+                    ),
+                    validation_certificate_uri="https://test.com",
+                    validation_vendor_uri="https://vendor.com",
+                    validation_profiles=["Profile 1", "Profile 2"]
+                )
+            ],
+            capability_information=[
+                objects.CapabilityInformation(
+                    streaming_capability=False,
+                    asynchronous_capability=True,
+                    attestation_capability=True,
+                    unwrap_mode=enums.UnwrapMode.PROCESSED,
+                    destroy_action=enums.DestroyAction.SHREDDED,
+                    shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                )
+            ],
+            client_registration_methods=[
+                enums.ClientRegistrationMethod.CLIENT_GENERATED,
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+            ],
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            ),
+            storage_protection_masks=[3]
+        )
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer, kmip_version=enums.KMIPVersion.KMIP_2_0)
+
+        self.assertEqual(len(self.full_encoding_kmip_2_0), len(buffer))
+        self.assertEqual(str(self.full_encoding_kmip_2_0), str(buffer))
+
     def test_write_empty(self):
         """
         Test that an empty QueryResponsePayload structure can be written to a
@@ -2303,7 +2968,37 @@ class TestQueryResponsePayload(testtools.TestCase):
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
                 enums.ClientRegistrationMethod.CLIENT_REGISTERED
-            ]
+            ],
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            ),
+            storage_protection_masks=[3]
         )
 
         operations = [
@@ -2427,15 +3122,34 @@ class TestQueryResponsePayload(testtools.TestCase):
         sa = "shredding_algorithm=ShreddingAlgorithm.CRYPTOGRAPHIC"
         rm = "rng_mode=RNGMode.NON_SHARED_INSTANTIATION"
 
+        v = ", ".join([sc, rc, tc, buc, bcc, um, da, sa, rm])
+        ci = "capability_information=[CapabilityInformation({})]".format(v)
+
         m1 = "ClientRegistrationMethod.CLIENT_GENERATED"
         m2 = "ClientRegistrationMethod.CLIENT_REGISTERED"
         v = ", ".join([m1, m2])
         crm = "client_registration_methods=[{}]".format(v)
 
-        v = ", ".join([sc, rc, tc, buc, bcc, um, da, sa, rm])
-        ci = "capability_information=[CapabilityInformation({})]".format(v)
+        o = "object_type=ObjectType.SYMMETRIC_KEY"
+        a1e = "enum=CryptographicAlgorithm"
+        a1v = "value=CryptographicAlgorithm.AES"
+        a1t = "tag=Tags.CRYPTOGRAPHIC_ALGORITHM"
+        a1a = ", ".join([a1e, a1v, a1t])
+        a1 = "Enumeration({})".format(a1a)
+        a2 = "Integer(value=128)"
+        a3 = "Integer(value=12)"
+        aa = ", ".join([a1, a2, a3])
+        t = "tag=Tags.ATTRIBUTES"
+        a = "attributes=Attributes(attributes=[{}], {})".format(aa, t)
+        r = "ObjectDefaults({}, {})".format(o, a)
+        d = "DefaultsInformation(object_defaults=[{}])".format(r)
+        di = "defaults_information={}".format(d)
 
-        v = ", ".join([ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm])
+        spm = "storage_protection_masks=[3]"
+
+        v = ", ".join(
+            [ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, spm]
+        )
 
         self.assertEqual(
             "QueryResponsePayload({})".format(v),
@@ -2562,7 +3276,37 @@ class TestQueryResponsePayload(testtools.TestCase):
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
                 enums.ClientRegistrationMethod.CLIENT_REGISTERED
-            ]
+            ],
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            ),
+            storage_protection_masks=[3]
         )
 
         operations = [
@@ -2698,7 +3442,18 @@ class TestQueryResponsePayload(testtools.TestCase):
         v = ", ".join([m1, m2])
         crm = '"client_registration_methods": [{}]'.format(v)
 
-        v = ", ".join([ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm])
+        o = '"object_type": ObjectType.SYMMETRIC_KEY'
+        aa = '{"attributes": [CryptographicAlgorithm.AES, 128, 12]}'
+        a = '"attributes": {}'.format(aa)
+        r = "{" + "{}, {}".format(o, a) + "}"
+        d = "{" + '"object_defaults": [' + r + "]}"
+        di = '"defaults_information": {}'.format(d)
+
+        spm = '"storage_protection_masks": [3]'
+
+        v = ", ".join(
+            [ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, spm]
+        )
 
         self.assertEqual("{" + v + "}", str(payload))
 
@@ -2829,7 +3584,37 @@ class TestQueryResponsePayload(testtools.TestCase):
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
                 enums.ClientRegistrationMethod.CLIENT_REGISTERED
-            ]
+            ],
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            ),
+            storage_protection_masks=[3]
         )
         b = payloads.QueryResponsePayload(
             operations=[
@@ -2947,7 +3732,37 @@ class TestQueryResponsePayload(testtools.TestCase):
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
                 enums.ClientRegistrationMethod.CLIENT_REGISTERED
-            ]
+            ],
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            ),
+            storage_protection_masks=[3]
         )
 
         self.assertTrue(a == b)
@@ -3314,6 +4129,88 @@ class TestQueryResponsePayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
+    def test_equal_on_not_equal_defaults_information(self):
+        """
+        Test that the equality operator returns False when comparing two
+        QueryResponsePayload structures with different defaults information
+        fields.
+        """
+        a = payloads.QueryResponsePayload(
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            )
+        )
+        b = payloads.QueryResponsePayload(
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.PUBLIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.RSA,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=1024,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_storage_protection_masks(self):
+        """
+        Test that the equality operator returns False when comparing two
+        QueryResponsePayload structures with different storage protection
+        masks fields.
+        """
+        a = payloads.QueryResponsePayload(storage_protection_masks=[3, 1])
+        b = payloads.QueryResponsePayload(storage_protection_masks=[1, 2])
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
     def test_equal_on_type_mismatch(self):
         """
         Test that the equality operator returns False when comparing two
@@ -3452,7 +4349,37 @@ class TestQueryResponsePayload(testtools.TestCase):
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
                 enums.ClientRegistrationMethod.CLIENT_REGISTERED
-            ]
+            ],
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            ),
+            storage_protection_masks=[3]
         )
         b = payloads.QueryResponsePayload(
             operations=[
@@ -3570,7 +4497,37 @@ class TestQueryResponsePayload(testtools.TestCase):
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
                 enums.ClientRegistrationMethod.CLIENT_REGISTERED
-            ]
+            ],
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            ),
+            storage_protection_masks=[3]
         )
 
         self.assertFalse(a != b)
@@ -3933,6 +4890,88 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ClientRegistrationMethod.CLIENT_GENERATED
             ]
         )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_defaults_information(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        QueryResponsePayload structures with different defaults information
+        fields.
+        """
+        a = payloads.QueryResponsePayload(
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.SYMMETRIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.AES,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=128,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value |
+                                        enums.CryptographicUsageMask.DECRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            )
+        )
+        b = payloads.QueryResponsePayload(
+            defaults_information=objects.DefaultsInformation(
+                object_defaults=[
+                    objects.ObjectDefaults(
+                        object_type=enums.ObjectType.PUBLIC_KEY,
+                        attributes=objects.Attributes(
+                            attributes=[
+                                primitives.Enumeration(
+                                    enums.CryptographicAlgorithm,
+                                    value=enums.CryptographicAlgorithm.RSA,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                ),
+                                primitives.Integer(
+                                    value=1024,
+                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                ),
+                                primitives.Integer(
+                                    value=(
+                                        enums.CryptographicUsageMask.ENCRYPT.
+                                        value
+                                    ),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                                )
+                            ]
+                        )
+                    )
+                ]
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_storage_protection_masks(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        QueryResponsePayload structures with different storage protection
+        masks fields.
+        """
+        a = payloads.QueryResponsePayload(storage_protection_masks=[3, 1])
+        b = payloads.QueryResponsePayload(storage_protection_masks=[1, 2])
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
