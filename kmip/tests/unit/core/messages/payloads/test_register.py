@@ -156,8 +156,9 @@ class TestRegisterRequestPayload(testtools.TestCase):
         #     Certificate
         #         Certificate Type - X.509
         #         Certificate Value - See comment for the full encoding.
+        #     Protection Storage Masks - Software | Hardware
         self.full_encoding_with_attributes = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x03\x60'
+            b'\x42\x00\x79\x01\x00\x00\x03\x70'
             b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
             b'\x42\x01\x25\x01\x00\x00\x00\x10'
             b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
@@ -165,6 +166,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
             b'\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
             b'\x42\x00\x1E\x08\x00\x00\x03\x16' + self.certificate_value +
             b'\x00\x00'
+            b'\x42\x01\x5F\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.2.2.
@@ -313,6 +315,31 @@ class TestRegisterRequestPayload(testtools.TestCase):
             *args
         )
 
+    def test_invalid_protection_storage_masks(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the protection storage masks of a Register request payload.
+        """
+        kwargs = {"protection_storage_masks": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be an integer.",
+            payloads.RegisterRequestPayload,
+            **kwargs
+        )
+
+        args = (
+            payloads.RegisterRequestPayload(),
+            "protection_storage_masks",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be an integer.",
+            setattr,
+            *args
+        )
+
     def test_read(self):
         """
         Test that a Register request payload can be read from a data stream.
@@ -322,6 +349,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.object_type)
         self.assertIsNone(payload.template_attribute)
         self.assertIsNone(payload.managed_object)
+        self.assertIsNone(payload.protection_storage_masks)
 
         payload.read(self.full_encoding)
 
@@ -350,6 +378,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
             ),
             payload.managed_object
         )
+        self.assertIsNone(payload.protection_storage_masks)
 
     def test_read_kmip_2_0(self):
         """
@@ -361,6 +390,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.object_type)
         self.assertIsNone(payload.template_attribute)
         self.assertIsNone(payload.managed_object)
+        self.assertIsNone(payload.protection_storage_masks)
 
         payload.read(
             self.full_encoding_with_attributes,
@@ -392,6 +422,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
             ),
             payload.managed_object
         )
+        self.assertEqual(3, payload.protection_storage_masks)
 
     def test_read_missing_object_type(self):
         """
@@ -519,6 +550,10 @@ class TestRegisterRequestPayload(testtools.TestCase):
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
 
@@ -680,13 +715,18 @@ class TestRegisterRequestPayload(testtools.TestCase):
                         )
                     )
                 )
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
         self.assertEqual(
             "RegisterRequestPayload("
             "object_type=ObjectType.SECRET_DATA, "
             "template_attribute=Struct(), "
-            "managed_object=Struct())",
+            "managed_object=Struct(), "
+            "protection_storage_masks=3)",
             repr(payload)
         )
 
@@ -728,13 +768,18 @@ class TestRegisterRequestPayload(testtools.TestCase):
                         )
                     )
                 )
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
         self.assertEqual(
             '{'
             '"object_type": ObjectType.SECRET_DATA, '
             '"template_attribute": Struct(), '
-            '"managed_object": Struct()'
+            '"managed_object": Struct(), '
+            '"protection_storage_masks": 3'
             '}',
             str(payload)
         )
@@ -769,6 +814,10 @@ class TestRegisterRequestPayload(testtools.TestCase):
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
         b = payloads.RegisterRequestPayload(
@@ -790,6 +839,10 @@ class TestRegisterRequestPayload(testtools.TestCase):
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
 
@@ -871,6 +924,27 @@ class TestRegisterRequestPayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
+    def test_equal_on_not_equal_protection_storage_masks(self):
+        """
+        Test that the equality operator returns False when comparing two Create
+        request payloads with different protection storage masks.
+        """
+        a = payloads.RegisterRequestPayload(
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
+            )
+        )
+        b = payloads.RegisterRequestPayload(
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.ON_SYSTEM.value |
+                enums.ProtectionStorageMask.OFF_SYSTEM.value
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
     def test_equal_on_type_mismatch(self):
         """
         Test that the equality operator returns False when comparing two
@@ -912,6 +986,10 @@ class TestRegisterRequestPayload(testtools.TestCase):
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
         b = payloads.RegisterRequestPayload(
@@ -933,6 +1011,10 @@ class TestRegisterRequestPayload(testtools.TestCase):
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
 
@@ -1008,6 +1090,27 @@ class TestRegisterRequestPayload(testtools.TestCase):
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.PGP,
                 certificate_value=self.certificate_value
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_protection_storage_masks(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Register request payloads with different protection storage masks.
+        """
+        a = payloads.RegisterRequestPayload(
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
+            )
+        )
+        b = payloads.RegisterRequestPayload(
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.ON_SYSTEM.value |
+                enums.ProtectionStorageMask.OFF_SYSTEM.value
             )
         )
 
