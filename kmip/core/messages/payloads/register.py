@@ -33,12 +33,16 @@ class RegisterRequestPayload(primitives.Struct):
         object_type: The type of the object to register.
         template_attribute: A group of attributes to set on the new object.
         managed_object: The object to register.
+        protection_storage_masks: An integer representing all of the
+            protection storage mask selections for the new object. Added in
+            KMIP 2.0.
     """
 
     def __init__(self,
                  object_type=None,
                  template_attribute=None,
-                 managed_object=None):
+                 managed_object=None,
+                 protection_storage_masks=None):
         """
         Construct a Register request payload structure.
 
@@ -60,6 +64,9 @@ class RegisterRequestPayload(primitives.Struct):
                     * secrets.SymmetricKey
                     * secrets.Template
                 Optional, defaults to None. Required for read/write.
+            protection_storage_masks (int): An integer representing all of
+                the protection storage mask selections for the new object.
+                Optional, defaults to None. Added in KMIP 2.0.
         """
 
         super(RegisterRequestPayload, self).__init__(
@@ -71,10 +78,12 @@ class RegisterRequestPayload(primitives.Struct):
         self._object_type = None
         self._template_attribute = None
         self._secret = None
+        self._protection_storage_masks = None
 
         self.object_type = object_type
         self.template_attribute = template_attribute
         self.managed_object = managed_object
+        self.protection_storage_masks = protection_storage_masks
 
     @property
     def object_type(self):
@@ -138,6 +147,26 @@ class RegisterRequestPayload(primitives.Struct):
         else:
             raise TypeError(
                 "Managed object must be a supported managed object structure."
+            )
+
+    @property
+    def protection_storage_masks(self):
+        if self._protection_storage_masks:
+            return self._protection_storage_masks.value
+        return None
+
+    @protection_storage_masks.setter
+    def protection_storage_masks(self, value):
+        if value is None:
+            self._protection_storage_masks = None
+        elif isinstance(value, six.integer_types):
+            self._protection_storage_masks = primitives.Integer(
+                value=value,
+                tag=enums.Tags.PROTECTION_STORAGE_MASKS
+            )
+        else:
+            raise TypeError(
+                "The protection storage masks must be an integer."
             )
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -217,6 +246,20 @@ class RegisterRequestPayload(primitives.Struct):
                 "object."
             )
 
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(
+                enums.Tags.PROTECTION_STORAGE_MASKS,
+                local_buffer
+            ):
+                protection_storage_masks = primitives.Integer(
+                    tag=enums.Tags.PROTECTION_STORAGE_MASKS
+                )
+                protection_storage_masks.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+                self._protection_storage_masks = protection_storage_masks
+
         self.is_oversized(local_buffer)
 
     def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -281,6 +324,13 @@ class RegisterRequestPayload(primitives.Struct):
                 "field."
             )
 
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self._protection_storage_masks:
+                self._protection_storage_masks.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+
         self.length = local_buffer.length()
         super(RegisterRequestPayload, self).write(
             output_buffer,
@@ -295,6 +345,9 @@ class RegisterRequestPayload(primitives.Struct):
             elif self.template_attribute != other.template_attribute:
                 return False
             elif self.managed_object != other.managed_object:
+                return False
+            elif self.protection_storage_masks != \
+                    other.protection_storage_masks:
                 return False
             else:
                 return True
@@ -311,7 +364,12 @@ class RegisterRequestPayload(primitives.Struct):
         args = ", ".join([
             "object_type={}".format(self.object_type),
             "template_attribute={}".format(repr(self.template_attribute)),
-            "managed_object={}".format(repr(self.managed_object))
+            "managed_object={}".format(repr(self.managed_object)),
+            "protection_storage_masks={}".format(
+                "{}".format(
+                    repr(self.protection_storage_masks)
+                ) if self._protection_storage_masks else None
+            )
         ])
         return "RegisterRequestPayload({})".format(args)
 
@@ -320,7 +378,12 @@ class RegisterRequestPayload(primitives.Struct):
             [
                 '"object_type": {}'.format(self.object_type),
                 '"template_attribute": {}'.format(self.template_attribute),
-                '"managed_object": {}'.format(self.managed_object)
+                '"managed_object": {}'.format(self.managed_object),
+                '"protection_storage_masks": {}'.format(
+                    "{}".format(
+                        str(self.protection_storage_masks)
+                    ) if self._protection_storage_masks else None
+                )
             ]
         )
         return '{' + value + '}'
