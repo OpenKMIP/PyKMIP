@@ -29,11 +29,15 @@ class CreateRequestPayload(primitives.Struct):
     Attributes:
         object_type: The type of the object to create.
         template_attribute: A group of attributes to set on the new object.
+        protection_storage_masks: An integer representing all of the
+            protection storage mask selections for the new object. Added in
+            KMIP 2.0.
     """
 
     def __init__(self,
                  object_type=None,
-                 template_attribute=None):
+                 template_attribute=None,
+                 protection_storage_masks=None):
         """
         Construct a Create request payload structure.
 
@@ -44,6 +48,9 @@ class CreateRequestPayload(primitives.Struct):
             template_attribute (TemplateAttribute): A TemplateAttribute
                 structure containing a set of attributes to set on the new
                 object. Optional, defaults to None. Required for read/write.
+            protection_storage_masks (int): An integer representing all of
+                the protection storage mask selections for the new object.
+                Optional, defaults to None. Added in KMIP 2.0.
         """
         super(CreateRequestPayload, self).__init__(
             tag=enums.Tags.REQUEST_PAYLOAD
@@ -51,9 +58,11 @@ class CreateRequestPayload(primitives.Struct):
 
         self._object_type = None
         self._template_attribute = None
+        self._protection_storage_masks = None
 
         self.object_type = object_type
         self.template_attribute = template_attribute
+        self.protection_storage_masks = protection_storage_masks
 
     @property
     def object_type(self):
@@ -90,6 +99,26 @@ class CreateRequestPayload(primitives.Struct):
         else:
             raise TypeError(
                 "Template attribute must be a TemplateAttribute structure."
+            )
+
+    @property
+    def protection_storage_masks(self):
+        if self._protection_storage_masks:
+            return self._protection_storage_masks.value
+        return None
+
+    @protection_storage_masks.setter
+    def protection_storage_masks(self, value):
+        if value is None:
+            self._protection_storage_masks = None
+        elif isinstance(value, six.integer_types):
+            self._protection_storage_masks = primitives.Integer(
+                value=value,
+                tag=enums.Tags.PROTECTION_STORAGE_MASKS
+            )
+        else:
+            raise TypeError(
+                "The protection storage masks must be an integer."
             )
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -158,6 +187,19 @@ class CreateRequestPayload(primitives.Struct):
                     "attributes structure."
                 )
 
+            if self.is_tag_next(
+                enums.Tags.PROTECTION_STORAGE_MASKS,
+                local_buffer
+            ):
+                protection_storage_masks = primitives.Integer(
+                    tag=enums.Tags.PROTECTION_STORAGE_MASKS
+                )
+                protection_storage_masks.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+                self._protection_storage_masks = protection_storage_masks
+
         self.is_oversized(local_buffer)
 
     def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -213,6 +255,12 @@ class CreateRequestPayload(primitives.Struct):
                     "attribute field."
                 )
 
+            if self._protection_storage_masks:
+                self._protection_storage_masks.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+
         self.length = local_buffer.length()
         super(CreateRequestPayload, self).write(
             output_buffer,
@@ -225,6 +273,9 @@ class CreateRequestPayload(primitives.Struct):
             if self.object_type != other.object_type:
                 return False
             elif self.template_attribute != other.template_attribute:
+                return False
+            elif self.protection_storage_masks != \
+                    other.protection_storage_masks:
                 return False
             else:
                 return True
@@ -240,7 +291,12 @@ class CreateRequestPayload(primitives.Struct):
     def __repr__(self):
         args = ", ".join([
             "object_type={}".format(self.object_type),
-            "template_attribute={}".format(repr(self.template_attribute))
+            "template_attribute={}".format(repr(self.template_attribute)),
+            "protection_storage_masks={}".format(
+                "{}".format(
+                    repr(self.protection_storage_masks)
+                ) if self._protection_storage_masks else None
+            )
         ])
         return "CreateRequestPayload({})".format(args)
 
@@ -248,7 +304,12 @@ class CreateRequestPayload(primitives.Struct):
         value = ", ".join(
             [
                 '"object_type": {}'.format(self.object_type),
-                '"template_attribute": {}'.format(self.template_attribute)
+                '"template_attribute": {}'.format(self.template_attribute),
+                '"protection_storage_masks": {}'.format(
+                    "{}".format(
+                        str(self.protection_storage_masks)
+                    ) if self._protection_storage_masks else None
+                )
             ]
         )
         return '{' + value + '}'

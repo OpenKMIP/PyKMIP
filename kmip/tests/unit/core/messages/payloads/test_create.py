@@ -76,13 +76,15 @@ class TestCreateRequestPayload(testtools.TestCase):
         #         Cryptographic Algorithm - AES
         #         Cryptographic Length - 128
         #         Cryptographic Usage Mask - Encrypt | Decrypt
+        #     Protection Storage Masks - Software | Hardware
         self.full_encoding_with_attributes = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x48'
+            b'\x42\x00\x79\x01\x00\x00\x00\x58'
             b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
             b'\x42\x01\x25\x01\x00\x00\x00\x30'
             b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
             b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
             b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+            b'\x42\x01\x5F\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
@@ -184,14 +186,40 @@ class TestCreateRequestPayload(testtools.TestCase):
             *args
         )
 
+    def test_invalid_protection_storage_masks(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the protection storage masks of a Create request payload.
+        """
+        kwargs = {"protection_storage_masks": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be an integer.",
+            payloads.CreateRequestPayload,
+            **kwargs
+        )
+
+        args = (
+            payloads.CreateRequestPayload(),
+            "protection_storage_masks",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be an integer.",
+            setattr,
+            *args
+        )
+
     def test_read(self):
         """
         Test that a Create request payload can be read from a data stream.
         """
         payload = payloads.CreateRequestPayload()
 
-        self.assertEqual(None, payload.object_type)
-        self.assertEqual(None, payload.template_attribute)
+        self.assertIsNone(payload.object_type)
+        self.assertIsNone(payload.template_attribute)
+        self.assertIsNone(payload.protection_storage_masks)
 
         payload.read(self.full_encoding)
 
@@ -237,6 +265,7 @@ class TestCreateRequestPayload(testtools.TestCase):
             ),
             payload.template_attribute
         )
+        self.assertIsNone(payload.protection_storage_masks)
 
     def test_read_kmip_2_0(self):
         """
@@ -245,8 +274,9 @@ class TestCreateRequestPayload(testtools.TestCase):
         """
         payload = payloads.CreateRequestPayload()
 
-        self.assertEqual(None, payload.object_type)
-        self.assertEqual(None, payload.template_attribute)
+        self.assertIsNone(payload.object_type)
+        self.assertIsNone(payload.template_attribute)
+        self.assertIsNone(payload.protection_storage_masks)
 
         payload.read(
             self.full_encoding_with_attributes,
@@ -295,6 +325,7 @@ class TestCreateRequestPayload(testtools.TestCase):
             ),
             payload.template_attribute
         )
+        self.assertEqual(3, payload.protection_storage_masks)
 
     def test_read_missing_object_type(self):
         """
@@ -447,6 +478,10 @@ class TestCreateRequestPayload(testtools.TestCase):
                         )
                     )
                 ]
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
 
@@ -566,12 +601,17 @@ class TestCreateRequestPayload(testtools.TestCase):
                         )
                     )
                 ]
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
         self.assertEqual(
             "CreateRequestPayload("
             "object_type=ObjectType.SYMMETRIC_KEY, "
-            "template_attribute=Struct())",
+            "template_attribute=Struct(), "
+            "protection_storage_masks=3)",
             repr(payload)
         )
 
@@ -603,12 +643,17 @@ class TestCreateRequestPayload(testtools.TestCase):
                         )
                     )
                 ]
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
         self.assertEqual(
             '{'
             '"object_type": ObjectType.SYMMETRIC_KEY, '
-            '"template_attribute": Struct()'
+            '"template_attribute": Struct(), '
+            '"protection_storage_masks": 3'
             '}',
             str(payload)
         )
@@ -660,6 +705,10 @@ class TestCreateRequestPayload(testtools.TestCase):
                         )
                     )
                 ]
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
         b = payloads.CreateRequestPayload(
@@ -698,6 +747,10 @@ class TestCreateRequestPayload(testtools.TestCase):
                         )
                     )
                 ]
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
 
@@ -753,6 +806,27 @@ class TestCreateRequestPayload(testtools.TestCase):
                         )
                     )
                 ]
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_protection_storage_masks(self):
+        """
+        Test that the equality operator returns False when comparing two Create
+        request payloads with different protection storage masks.
+        """
+        a = payloads.CreateRequestPayload(
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
+            )
+        )
+        b = payloads.CreateRequestPayload(
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.ON_SYSTEM.value |
+                enums.ProtectionStorageMask.OFF_SYSTEM.value
             )
         )
 
@@ -817,6 +891,10 @@ class TestCreateRequestPayload(testtools.TestCase):
                         )
                     )
                 ]
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
         b = payloads.CreateRequestPayload(
@@ -855,6 +933,10 @@ class TestCreateRequestPayload(testtools.TestCase):
                         )
                     )
                 ]
+            ),
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
             )
         )
 
@@ -910,6 +992,27 @@ class TestCreateRequestPayload(testtools.TestCase):
                         )
                     )
                 ]
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_protection_storage_masks(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Create request payloads with different protection storage masks.
+        """
+        a = payloads.CreateRequestPayload(
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.SOFTWARE.value |
+                enums.ProtectionStorageMask.HARDWARE.value
+            )
+        )
+        b = payloads.CreateRequestPayload(
+            protection_storage_masks=(
+                enums.ProtectionStorageMask.ON_SYSTEM.value |
+                enums.ProtectionStorageMask.OFF_SYSTEM.value
             )
         )
 
