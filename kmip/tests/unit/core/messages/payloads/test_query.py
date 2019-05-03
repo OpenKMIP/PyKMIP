@@ -970,7 +970,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         #                 Cryptographic Algorithm - AES
         #                 Cryptographic Length - 128
         #                 Cryptographic Usage Mask - Encrypt | Decrypt
-        #     Storage Status Mask - Software | Hardware
+        #     Protection Storage Mask - Software | Hardware
         self.full_encoding_kmip_2_0 = utils.BytearrayStream(
             b'\x42\x00\x7C\x01\x00\x00\x06\x10'
             b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
@@ -1625,45 +1625,45 @@ class TestQueryResponsePayload(testtools.TestCase):
             *args
         )
 
-    def test_invalid_storage_protection_masks(self):
+    def test_invalid_protection_storage_masks(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
-        the storage protection masks of a Query response payload.
+        the protection storage masks of a Query response payload.
         """
-        kwargs = {"storage_protection_masks": "invalid"}
+        kwargs = {"protection_storage_masks": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "The storage protection masks must be a list of integers.",
+            "The protection storage masks must be a list of integers.",
             payloads.QueryResponsePayload,
             **kwargs
         )
-        kwargs = {"storage_protection_masks": ["invalid"]}
+        kwargs = {"protection_storage_masks": ["invalid"]}
         self.assertRaisesRegex(
             TypeError,
-            "The storage protection masks must be a list of integers.",
+            "The protection storage masks must be a list of integers.",
             payloads.QueryResponsePayload,
             **kwargs
         )
 
         args = (
             payloads.QueryResponsePayload(),
-            "storage_protection_masks",
+            "protection_storage_masks",
             "invalid"
         )
         self.assertRaisesRegex(
             TypeError,
-            "The storage protection masks must be a list of integers.",
+            "The protection storage masks must be a list of integers.",
             setattr,
             *args
         )
         args = (
             payloads.QueryResponsePayload(),
-            "storage_protection_masks",
+            "protection_storage_masks",
             ["invalid"]
         )
         self.assertRaisesRegex(
             TypeError,
-            "The storage protection masks must be a list of integers.",
+            "The protection storage masks must be a list of integers.",
             setattr,
             *args
         )
@@ -2130,7 +2130,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.capability_information)
         self.assertIsNone(payload.client_registration_methods)
         self.assertIsNone(payload.defaults_information)
-        self.assertIsNone(payload.storage_protection_masks)
+        self.assertIsNone(payload.protection_storage_masks)
 
         payload.read(
             self.full_encoding_kmip_2_0,
@@ -2319,7 +2319,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             ),
             payload.defaults_information
         )
-        self.assertEqual([3], payload.storage_protection_masks)
+        self.assertEqual([3], payload.protection_storage_masks)
 
     def test_read_empty(self):
         """
@@ -2826,7 +2826,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     )
                 ]
             ),
-            storage_protection_masks=[3]
+            protection_storage_masks=[3]
         )
 
         buffer = utils.BytearrayStream()
@@ -2998,7 +2998,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     )
                 ]
             ),
-            storage_protection_masks=[3]
+            protection_storage_masks=[3]
         )
 
         operations = [
@@ -3145,10 +3145,10 @@ class TestQueryResponsePayload(testtools.TestCase):
         d = "DefaultsInformation(object_defaults=[{}])".format(r)
         di = "defaults_information={}".format(d)
 
-        spm = "storage_protection_masks=[3]"
+        psm = "protection_storage_masks=[3]"
 
         v = ", ".join(
-            [ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, spm]
+            [ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, psm]
         )
 
         self.assertEqual(
@@ -3306,7 +3306,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     )
                 ]
             ),
-            storage_protection_masks=[3]
+            protection_storage_masks=[3]
         )
 
         operations = [
@@ -3449,10 +3449,10 @@ class TestQueryResponsePayload(testtools.TestCase):
         d = "{" + '"object_defaults": [' + r + "]}"
         di = '"defaults_information": {}'.format(d)
 
-        spm = '"storage_protection_masks": [3]'
+        psm = '"protection_storage_masks": [3]'
 
         v = ", ".join(
-            [ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, spm]
+            [ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, psm]
         )
 
         self.assertEqual("{" + v + "}", str(payload))
@@ -3614,7 +3614,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     )
                 ]
             ),
-            storage_protection_masks=[3]
+            protection_storage_masks=[3]
         )
         b = payloads.QueryResponsePayload(
             operations=[
@@ -3762,7 +3762,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     )
                 ]
             ),
-            storage_protection_masks=[3]
+            protection_storage_masks=[3]
         )
 
         self.assertTrue(a == b)
@@ -4199,14 +4199,14 @@ class TestQueryResponsePayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-    def test_equal_on_not_equal_storage_protection_masks(self):
+    def test_equal_on_not_equal_protection_storage_masks(self):
         """
         Test that the equality operator returns False when comparing two
-        QueryResponsePayload structures with different storage protection
+        QueryResponsePayload structures with different protection storage
         masks fields.
         """
-        a = payloads.QueryResponsePayload(storage_protection_masks=[3, 1])
-        b = payloads.QueryResponsePayload(storage_protection_masks=[1, 2])
+        a = payloads.QueryResponsePayload(protection_storage_masks=[3, 1])
+        b = payloads.QueryResponsePayload(protection_storage_masks=[1, 2])
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -4379,7 +4379,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     )
                 ]
             ),
-            storage_protection_masks=[3]
+            protection_storage_masks=[3]
         )
         b = payloads.QueryResponsePayload(
             operations=[
@@ -4527,7 +4527,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     )
                 ]
             ),
-            storage_protection_masks=[3]
+            protection_storage_masks=[3]
         )
 
         self.assertFalse(a != b)
@@ -4964,14 +4964,14 @@ class TestQueryResponsePayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-    def test_not_equal_on_not_equal_storage_protection_masks(self):
+    def test_not_equal_on_not_equal_protection_storage_masks(self):
         """
         Test that the inequality operator returns True when comparing two
-        QueryResponsePayload structures with different storage protection
+        QueryResponsePayload structures with different protection storage
         masks fields.
         """
-        a = payloads.QueryResponsePayload(storage_protection_masks=[3, 1])
-        b = payloads.QueryResponsePayload(storage_protection_masks=[1, 2])
+        a = payloads.QueryResponsePayload(protection_storage_masks=[3, 1])
+        b = payloads.QueryResponsePayload(protection_storage_masks=[1, 2])
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
