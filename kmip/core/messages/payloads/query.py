@@ -224,7 +224,7 @@ class QueryResponsePayload(primitives.Struct):
         defaults_information: A DefaultsInformation structure detailing the
             default attribute values used by the server for new managed
             objects. Added in KMIP 2.0.
-        storage_protection_mask: A list of integers representing combined sets
+        protection__storage_mask: A list of integers representing combined sets
             of ProtectionStorageMask enumerations detailing the storage
             protections supported by the server. Added in KMIP 2.0.
     """
@@ -242,7 +242,7 @@ class QueryResponsePayload(primitives.Struct):
                  capability_information=None,
                  client_registration_methods=None,
                  defaults_information=None,
-                 storage_protection_masks=None):
+                 protection_storage_masks=None):
         """
         Construct a QueryResponsePayload object.
 
@@ -285,7 +285,7 @@ class QueryResponsePayload(primitives.Struct):
                 detailing the default attribute values used by the server for
                 new managed objects. Optional, defaults to None. Added in
                 KMIP 2.0.
-            storage_protection_mask (list): A list of integers representing
+            protection__storage_masks (list): A list of integers representing
                 combined sets of ProtectionStorageMask enumerations detailing
                 the storage protections supported by the server. Optional,
                 defaults to None. Added in KMIP 2.0.
@@ -322,7 +322,7 @@ class QueryResponsePayload(primitives.Struct):
         self.capability_information = capability_information
         self.client_registration_methods = client_registration_methods
         self.defaults_information = defaults_information
-        self.storage_protection_masks = storage_protection_masks
+        self.protection_storage_masks = protection_storage_masks
 
     @property
     def operations(self):
@@ -661,20 +661,20 @@ class QueryResponsePayload(primitives.Struct):
             )
 
     @property
-    def storage_protection_masks(self):
-        if self._storage_protection_masks:
-            return [x.value for x in self._storage_protection_masks]
+    def protection_storage_masks(self):
+        if self._protection_storage_masks:
+            return [x.value for x in self._protection_storage_masks]
         return None
 
-    @storage_protection_masks.setter
-    def storage_protection_masks(self, value):
+    @protection_storage_masks.setter
+    def protection_storage_masks(self, value):
         if value is None:
-            self._storage_protection_masks = None
+            self._protection_storage_masks = None
         elif isinstance(value, list):
-            storage_protection_masks = []
+            protection_storage_masks = []
             for i in value:
                 if isinstance(i, six.integer_types):
-                    storage_protection_masks.append(
+                    protection_storage_masks.append(
                         primitives.Integer(
                             value=i,
                             tag=enums.Tags.PROTECTION_STORAGE_MASK
@@ -682,13 +682,13 @@ class QueryResponsePayload(primitives.Struct):
                     )
                 else:
                     raise TypeError(
-                        "The storage protection masks must be a list of "
+                        "The protection storage masks must be a list of "
                         "integers."
                     )
-            self._storage_protection_masks = storage_protection_masks
+            self._protection_storage_masks = protection_storage_masks
         else:
             raise TypeError(
-                "The storage protection masks must be a list of integers."
+                "The protection storage masks must be a list of integers."
             )
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -863,21 +863,21 @@ class QueryResponsePayload(primitives.Struct):
                 )
                 self._defaults_information = defaults_information
 
-            storage_protection_masks = []
+            protection_storage_masks = []
             while(self.is_tag_next(
                     enums.Tags.PROTECTION_STORAGE_MASK,
                     local_buffer
                 )
             ):
-                storage_protection_mask = primitives.Integer(
+                protection_storage_mask = primitives.Integer(
                     tag=enums.Tags.PROTECTION_STORAGE_MASK
                 )
-                storage_protection_mask.read(
+                protection_storage_mask.read(
                     local_buffer,
                     kmip_version=kmip_version
                 )
-                storage_protection_masks.append(storage_protection_mask)
-            self._storage_protection_masks = storage_protection_masks
+                protection_storage_masks.append(protection_storage_mask)
+            self._protection_storage_masks = protection_storage_masks
 
         self.is_oversized(local_buffer)
 
@@ -976,9 +976,9 @@ class QueryResponsePayload(primitives.Struct):
                     local_buffer,
                     kmip_version=kmip_version
                 )
-            if self._storage_protection_masks:
-                for storage_protection_mask in self._storage_protection_masks:
-                    storage_protection_mask.write(
+            if self._protection_storage_masks:
+                for protection_storage_mask in self._protection_storage_masks:
+                    protection_storage_mask.write(
                         local_buffer,
                         kmip_version=kmip_version
                     )
@@ -1050,10 +1050,10 @@ class QueryResponsePayload(primitives.Struct):
                 repr(self._defaults_information)
             ) if self._defaults_information else None
         )
-        spm = "storage_protection_masks={}".format(
+        spm = "protection_storage_masks={}".format(
             "[{}]".format(
-                ", ".join([str(x) for x in self.storage_protection_masks])
-            ) if self._storage_protection_masks else None
+                ", ".join([str(x) for x in self.protection_storage_masks])
+            ) if self._protection_storage_masks else None
         )
 
         v = ", ".join(
@@ -1122,10 +1122,10 @@ class QueryResponsePayload(primitives.Struct):
                 str(self.defaults_information)
             ) if self._defaults_information else None
         )
-        spm = '"storage_protection_masks": {}'.format(
+        spm = '"protection_storage_masks": {}'.format(
             "[{}]".format(
-                ", ".join([str(x) for x in self.storage_protection_masks])
-            ) if self._storage_protection_masks else None
+                ", ".join([str(x) for x in self.protection_storage_masks])
+            ) if self._protection_storage_masks else None
         )
 
         v = ", ".join(
@@ -1163,8 +1163,8 @@ class QueryResponsePayload(primitives.Struct):
                 return False
             elif self.defaults_information != other.defaults_information:
                 return False
-            elif self.storage_protection_masks != \
-                    other.storage_protection_masks:
+            elif self.protection_storage_masks != \
+                    other.protection_storage_masks:
                 return False
             else:
                 return True
