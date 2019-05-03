@@ -6046,3 +6046,199 @@ class CapabilityInformation(primitives.Struct):
             return not (self == other)
         else:
             return NotImplemented
+
+
+class ProtectionStorageMasks(primitives.Struct):
+    """
+    A structure containing a list of protection storage masks.
+
+    This is intended for use with KMIP 2.0+.
+
+    Attributes:
+        protection_storage_masks: A list of integers representing
+            combined sets of ProtectionStorageMask enumerations detailing
+            the storage protections supported by the server.
+    """
+
+    def __init__(self,
+                 protection_storage_masks=None,
+                 tag=enums.Tags.PROTECTION_STORAGE_MASKS):
+        """
+        Construct a ProtectionStorageMasks structure.
+
+        Args:
+            protection_storage_masks (list): A list of integers representing
+                combined sets of ProtectionStorageMask enumerations detailing
+                the storage protections supported by the server. Optional,
+                defaults to None.
+            tag (enum): A Tags enumeration specifying which type of collection
+                this of protection storage masks this object represents.
+                Optional, defaults to Tags.PROTECTION_STORAGE_MASKS.
+        """
+        super(ProtectionStorageMasks, self).__init__(tag=tag)
+
+        self._protection_storage_masks = None
+
+        self.protection_storage_masks = protection_storage_masks
+
+    @property
+    def protection_storage_masks(self):
+        if self._protection_storage_masks:
+            return [x.value for x in self._protection_storage_masks]
+        return None
+
+    @protection_storage_masks.setter
+    def protection_storage_masks(self, value):
+        if value is None:
+            self._protection_storage_masks = None
+        elif isinstance(value, list):
+            protection_storage_masks = []
+            for x in value:
+                if isinstance(x, six.integer_types):
+                    if enums.is_bit_mask(enums.ProtectionStorageMask, x):
+                        protection_storage_masks.append(
+                            primitives.Integer(
+                                value=x,
+                                tag=enums.Tags.PROTECTION_STORAGE_MASK
+                            )
+                        )
+                    else:
+                        raise TypeError(
+                            "The protection storage masks must be a list of "
+                            "integers representing combinations of "
+                            "ProtectionStorageMask enumerations."
+                        )
+                else:
+                    raise TypeError(
+                        "The protection storage masks must be a list of "
+                        "integers representing combinations of "
+                        "ProtectionStorageMask enumerations."
+                    )
+            self._protection_storage_masks = protection_storage_masks
+        else:
+            raise TypeError(
+                "The protection storage masks must be a list of "
+                "integers representing combinations of "
+                "ProtectionStorageMask enumerations."
+            )
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Read the data encoding the ProtectionStorageMasks structure and decode
+        it into its constituent parts.
+
+        Args:
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the ProtectionStorageMasks structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the ProtectionStorageMasks "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        super(ProtectionStorageMasks, self).read(
+            input_buffer,
+            kmip_version=kmip_version
+        )
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
+
+        protection_storage_masks = []
+        while self.is_tag_next(
+            enums.Tags.PROTECTION_STORAGE_MASK,
+            local_buffer
+        ):
+            protection_storage_mask = primitives.Integer(
+                tag=enums.Tags.PROTECTION_STORAGE_MASK
+            )
+            protection_storage_mask.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+            protection_storage_masks.append(protection_storage_mask)
+        self._protection_storage_masks = protection_storage_masks
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Write the ProtectionStorageMasks structure encoding to the data stream.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode
+                CapabilityInformation structure data, supporting a write
+                method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the ProtectionStorageMasks structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the ProtectionStorageMasks "
+                "object.".format(
+                    kmip_version.value
+                )
+            )
+
+        local_buffer = BytearrayStream()
+
+        if self._protection_storage_masks:
+            for protection_storage_mask in self._protection_storage_masks:
+                protection_storage_mask.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+
+        self.length = local_buffer.length()
+        super(ProtectionStorageMasks, self).write(
+            output_buffer,
+            kmip_version=kmip_version
+        )
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        v = "protection_storage_masks={}".format(
+            "[{}]".format(
+                ", ".join(str(x) for x in self.protection_storage_masks)
+            ) if self._protection_storage_masks else None
+        )
+
+        return "ProtectionStorageMasks({})".format(v)
+
+    def __str__(self):
+        v = '"protection_storage_masks": {}'.format(
+            "[{}]".format(
+                ", ".join(str(x) for x in self.protection_storage_masks)
+            ) if self._protection_storage_masks else None
+        )
+
+        return '{' + v + '}'
+
+    def __eq__(self, other):
+        if isinstance(other, ProtectionStorageMasks):
+            if self.protection_storage_masks != other.protection_storage_masks:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ProtectionStorageMasks):
+            return not (self == other)
+        else:
+            return NotImplemented
