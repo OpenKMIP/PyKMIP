@@ -9371,3 +9371,424 @@ class TestCapabilityInformation(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+
+class TestProtectionStorageMasks(testtools.TestCase):
+
+    def setUp(self):
+        super(TestProtectionStorageMasks, self).setUp()
+
+        # This encoding matches the following set of values:
+        #
+        # Protection Storage Masks
+        #     Protection Storage Mask - Software | Hardware
+        #     Protection Storage Mask - On Premises | Off Premises
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x01\x5F\x01\x00\x00\x00\x20'
+            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x03\x00\x00\x00\x00\x00'
+        )
+
+        # This encoding matches the following set of values:
+        #
+        # Protection Storage Masks
+        self.empty_encoding = utils.BytearrayStream(
+            b'\x42\x01\x5F\x01\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestProtectionStorageMasks, self).tearDown()
+
+    def test_invalid_protection_storage_masks(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the protection storage masks of a ProtectionStorageMasks structure.
+        """
+        kwargs = {"protection_storage_masks": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a list of integers "
+            "representing combinations of ProtectionStorageMask enumerations.",
+            objects.ProtectionStorageMasks,
+            **kwargs
+        )
+        kwargs = {"protection_storage_masks": ["invalid"]}
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a list of integers "
+            "representing combinations of ProtectionStorageMask enumerations.",
+            objects.ProtectionStorageMasks,
+            **kwargs
+        )
+        kwargs = {"protection_storage_masks": [0x10000000]}
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a list of integers "
+            "representing combinations of ProtectionStorageMask enumerations.",
+            objects.ProtectionStorageMasks,
+            **kwargs
+        )
+
+        args = (
+            objects.ProtectionStorageMasks(),
+            "protection_storage_masks",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a list of integers "
+            "representing combinations of ProtectionStorageMask enumerations.",
+            setattr,
+            *args
+        )
+        args = (
+            objects.ProtectionStorageMasks(),
+            "protection_storage_masks",
+            ["invalid"]
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a list of integers "
+            "representing combinations of ProtectionStorageMask enumerations.",
+            setattr,
+            *args
+        )
+        args = (
+            objects.ProtectionStorageMasks(),
+            "protection_storage_masks",
+            [0x10000000]
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a list of integers "
+            "representing combinations of ProtectionStorageMask enumerations.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
+        """
+        Test that a ProtectionStorageMasks structure can be correctly read in
+        from a data stream.
+        """
+        protection_storage_masks = objects.ProtectionStorageMasks()
+
+        self.assertIsNone(protection_storage_masks.protection_storage_masks)
+
+        protection_storage_masks.read(self.full_encoding)
+
+        self.assertEqual(
+            [0x03, 0x0300],
+            protection_storage_masks.protection_storage_masks
+        )
+
+    def test_read_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the decoding of
+        a ProtectionStorageMasks structure when the structure is read for an
+        unsupported KMIP version.
+        """
+        protection_storage_masks = objects.ProtectionStorageMasks()
+
+        args = (self.full_encoding, )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.2 does not support the ProtectionStorageMasks object.",
+            protection_storage_masks.read,
+            *args,
+            **kwargs
+        )
+
+    def test_read_empty(self):
+        """
+        Test that a ProtectionStorageMasks structure can be correctly read in
+        from an empty data stream.
+        """
+        protection_storage_masks = objects.ProtectionStorageMasks()
+
+        self.assertIsNone(protection_storage_masks.protection_storage_masks)
+
+        protection_storage_masks.read(self.empty_encoding)
+
+        self.assertIsNone(protection_storage_masks.protection_storage_masks)
+
+    def test_write(self):
+        """
+        Test that a ProtectionStorageMasks structure can be written to a data
+        stream.
+        """
+        protection_storage_masks = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+
+        buffer = utils.BytearrayStream()
+        protection_storage_masks.write(buffer)
+
+        self.assertEqual(len(self.full_encoding), len(buffer))
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_write_unsupported_kmip_version(self):
+        """
+        Test that a VersionNotSupported error is raised during the encoding of
+        a ProtectionStorageMasks structure when the structure is written for an
+        unsupported KMIP version.
+        """
+        protection_storage_masks = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+
+        args = (utils.BytearrayStream(), )
+        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
+        self.assertRaisesRegex(
+            exceptions.VersionNotSupported,
+            "KMIP 1.2 does not support the ProtectionStorageMasks object.",
+            protection_storage_masks.write,
+            *args,
+            **kwargs
+        )
+
+    def test_write_empty(self):
+        """
+        Test that an empty ProtectionStorageMasks structure can be correctly
+        written to a data stream.
+        """
+        protection_storage_masks = objects.ProtectionStorageMasks()
+
+        buffer = utils.BytearrayStream()
+        protection_storage_masks.write(buffer)
+
+        self.assertEqual(len(self.empty_encoding), len(buffer))
+        self.assertEqual(str(self.empty_encoding), str(buffer))
+
+    def test_repr(self):
+        """
+        Test that repr can be applied to a ProtectionStorageMasks structure.
+        """
+        protection_storage_masks = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+
+        v = "protection_storage_masks=[3, 768]"
+
+        self.assertEqual(
+            "ProtectionStorageMasks({})".format(v),
+            repr(protection_storage_masks)
+        )
+
+    def test_str(self):
+        """
+        Test that str can be applied to a ProtectionStorageMasks structure.
+        """
+        protection_storage_masks = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+
+        v = '"protection_storage_masks": [3, 768]'
+
+        self.assertEqual(
+            "{" + v + "}",
+            str(protection_storage_masks)
+        )
+
+    def test_equal_on_equal(self):
+        """
+        Test that the equality operator returns True when comparing two
+        ProtectionStorageMasks structures with the same data.
+        """
+        a = objects.ProtectionStorageMasks()
+        b = objects.ProtectionStorageMasks()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+        a = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+        b = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+
+    def test_equal_on_not_equal_protection_storage_masks(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ProtectionStorageMasks structures with different protection storage
+        masks fields.
+        """
+        a = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+        b = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                )
+            ]
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_type_mismatch(self):
+        """
+        Test that the equality operator returns False when comparing two
+        ProtectionStorageMasks structures with different types.
+        """
+        a = objects.ProtectionStorageMasks()
+        b = "invalid"
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_not_equal_on_equal(self):
+        """
+        Test that the inequality operator returns False when comparing two
+        ProtectionStorageMasks structures with the same data.
+        """
+        a = objects.ProtectionStorageMasks()
+        b = objects.ProtectionStorageMasks()
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+        b = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+    def test_not_equal_on_not_equal_protection_storage_masks(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ProtectionStorageMasks structures with different protection storage
+        masks fields.
+        """
+        a = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value |
+                    enums.ProtectionStorageMask.OFF_PREMISES.value
+                )
+            ]
+        )
+        b = objects.ProtectionStorageMasks(
+            protection_storage_masks=[
+                (
+                    enums.ProtectionStorageMask.SOFTWARE.value |
+                    enums.ProtectionStorageMask.HARDWARE.value
+                ),
+                (
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                )
+            ]
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_type_mismatch(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        ProtectionStorageMasks structures with different types.
+        """
+        a = objects.ProtectionStorageMasks()
+        b = "invalid"
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
