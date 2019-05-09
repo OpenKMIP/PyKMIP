@@ -23,6 +23,7 @@ from kmip.core.messages.contents import BatchErrorContinuationOption
 from kmip.core.factories.payloads.request import RequestPayloadFactory
 from kmip.core.factories.payloads.response import ResponsePayloadFactory
 
+from kmip.core import primitives
 from kmip.core.primitives import Struct
 
 from kmip.core.utils import BytearrayStream
@@ -199,7 +200,8 @@ class RequestBatchItem(Struct):
                  operation=None,
                  unique_batch_item_id=None,
                  request_payload=None,
-                 message_extension=None):
+                 message_extension=None,
+                 ephemeral=None):
         super(RequestBatchItem, self).__init__(tag=Tags.REQUEST_BATCH_ITEM)
 
         self.payload_factory = RequestPayloadFactory()
@@ -208,6 +210,26 @@ class RequestBatchItem(Struct):
         self.unique_batch_item_id = unique_batch_item_id
         self.request_payload = request_payload
         self.message_extension = message_extension
+        self.ephemeral = ephemeral
+
+    @property
+    def ephemeral(self):
+        if self._ephemeral:
+            return self._ephemeral.value
+        return None
+
+    @ephemeral.setter
+    def ephemeral(self, value):
+        if value is None:
+            self._ephemeral = None
+        elif isinstance(value, bool):
+            ephemeral = primitives.Boolean(
+                value=value,
+                tag=enums.Tags.EPHEMERAL
+            )
+            self._ephemeral = ephemeral
+        else:
+            raise TypeError("The ephemeral value must be a boolean.")
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(RequestBatchItem, self).read(
@@ -219,6 +241,12 @@ class RequestBatchItem(Struct):
         # Read the batch item operation
         self.operation = contents.Operation()
         self.operation.read(tstream, kmip_version=kmip_version)
+
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(enums.Tags.EPHEMERAL, tstream):
+                ephemeral = primitives.Boolean(tag=enums.Tags.EPHEMERAL)
+                ephemeral.read(tstream, kmip_version=kmip_version)
+                self._ephemeral = ephemeral
 
         # Read the unique batch item ID if it is present
         if self.is_tag_next(Tags.UNIQUE_BATCH_ITEM_ID, tstream):
@@ -243,6 +271,10 @@ class RequestBatchItem(Struct):
 
         # Write the contents of the batch item to the stream
         self.operation.write(tstream, kmip_version=kmip_version)
+
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self._ephemeral:
+                self._ephemeral.write(tstream, kmip_version=kmip_version)
 
         if self.unique_batch_item_id is not None:
             self.unique_batch_item_id.write(tstream, kmip_version=kmip_version)
