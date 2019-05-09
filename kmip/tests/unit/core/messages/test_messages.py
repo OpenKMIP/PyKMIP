@@ -126,16 +126,12 @@ class TestRequestBatchItem(testtools.TestCase):
             request_batch_item.operation.value
         )
         self.assertTrue(request_batch_item.ephemeral)
-        # self.assertEqual(
-        #     payloads.DestroyRequestPayload(
-        #         unique_identifier=attr.UniqueIdentifier(
-        #             value="fb4b5b9c-6188-4c63-8142-fe9c328129fc"
-        #         )
-        #     ),
-        #     request_batch_item.request_payload
-        # )
 
     def test_write_kmip_2_0(self):
+        """
+        Test that a RequestBatchItem structure can be written to a data
+        stream when including KMIP 2.0 fields.
+        """
         request_batch_item = messages.RequestBatchItem(
             operation=contents.Operation(enums.Operation.DESTROY),
             ephemeral=True,
@@ -148,6 +144,125 @@ class TestRequestBatchItem(testtools.TestCase):
 
         buffer = utils.BytearrayStream()
         request_batch_item.write(
+            buffer,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(len(self.encoding_kmip_2_0), len(buffer))
+        self.assertEqual(str(self.encoding_kmip_2_0), str(buffer))
+
+
+class TestResponseHeader(testtools.TestCase):
+
+    def setUp(self):
+        super(TestResponseHeader, self).setUp()
+
+        # Encoding obtained from the KMIP 1.1 testing document,
+        # Section 3.1.1. Modified manually to include the server hashed
+        # password.
+        #
+        # This encoding matches the following set of values:
+        # Response Header
+        #     Protocol Version
+        #         Protocol Version Major - 1
+        #         Protocol Version Minor - 1
+        #     Time Stamp - 0x4F9A54E5 (Fri Apr 27 10:12:21 CEST 2012)
+        #     Server Hashed Password -
+        #         d3c3bf31b8bfbbef53120fd0951be538341a3fffbd75cb7076e556ab0129
+        #         0f6b
+        #     Batch Count - 1
+        self.encoding_kmip_2_0 = utils.BytearrayStream(
+            b'\x42\x00\x7A\x01\x00\x00\x00\x70'
+            b'\x42\x00\x69\x01\x00\x00\x00\x20'
+            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x92\x09\x00\x00\x00\x08\x00\x00\x00\x00\x4F\x9A\x54\xE5'
+            b'\x42\x01\x55\x08\x00\x00\x00\x20'
+            b'\xD3\xC3\xBF\x31\xB8\xBF\xBB\xEF\x53\x12\x0F\xD0\x95\x1B\xE5\x38'
+            b'\x34\x1A\x3F\xFF\xBD\x75\xCB\x70\x76\xE5\x56\xAB\x01\x29\x0F\x6B'
+            b'\x42\x00\x0D\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+        )
+
+    def tearDown(self):
+        super(TestResponseHeader, self).tearDown()
+
+    def test_invalid_server_hashed_password(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the server hashed password of a ResponseHeader.
+        """
+        kwargs = {"server_hashed_password": []}
+        self.assertRaisesRegex(
+            TypeError,
+            "The server hashed password must be a binary string.",
+            messages.ResponseHeader,
+            **kwargs
+        )
+
+        args = (
+            messages.ResponseHeader(),
+            "server_hashed_password",
+            []
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The server hashed password must be a binary string.",
+            setattr,
+            *args
+        )
+
+    def test_read_kmip_2_0(self):
+        """
+        Test that a ResponseHeader structure can be correctly read in
+        from a data stream when including KMIP 2.0 fields.
+        """
+        response_header = messages.ResponseHeader()
+
+        self.assertIsNone(response_header.protocol_version)
+        self.assertIsNone(response_header.time_stamp)
+        self.assertIsNone(response_header.server_hashed_password)
+        self.assertIsNone(response_header.batch_count)
+
+        response_header.read(
+            self.encoding_kmip_2_0,
+            kmip_version=enums.KMIPVersion.KMIP_2_0
+        )
+
+        self.assertEqual(
+            contents.ProtocolVersion(major=1, minor=1),
+            response_header.protocol_version
+        )
+        self.assertEqual(0x4F9A54E5, response_header.time_stamp.value)
+        self.assertEqual(
+            (
+                b'\xD3\xC3\xBF\x31\xB8\xBF\xBB\xEF'
+                b'\x53\x12\x0F\xD0\x95\x1B\xE5\x38'
+                b'\x34\x1A\x3F\xFF\xBD\x75\xCB\x70'
+                b'\x76\xE5\x56\xAB\x01\x29\x0F\x6B'
+            ),
+            response_header.server_hashed_password
+        )
+        self.assertEqual(1, response_header.batch_count.value)
+
+    def test_write_kmip_2_0(self):
+        """
+        Test that a ResponseHeader structure can be written to a data
+        stream when including KMIP 2.0 fields.
+        """
+        response_header = messages.ResponseHeader(
+            protocol_version=contents.ProtocolVersion(major=1, minor=1),
+            time_stamp=contents.TimeStamp(value=0x4F9A54E5),
+            server_hashed_password=(
+                b'\xD3\xC3\xBF\x31\xB8\xBF\xBB\xEF'
+                b'\x53\x12\x0F\xD0\x95\x1B\xE5\x38'
+                b'\x34\x1A\x3F\xFF\xBD\x75\xCB\x70'
+                b'\x76\xE5\x56\xAB\x01\x29\x0F\x6B'
+            ),
+            batch_count=contents.BatchCount(value=1)
+        )
+
+        buffer = utils.BytearrayStream()
+        response_header.write(
             buffer,
             kmip_version=enums.KMIPVersion.KMIP_2_0
         )

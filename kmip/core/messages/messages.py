@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import six
+
 from kmip.core import enums
 from kmip.core.enums import Tags
 
@@ -143,12 +145,35 @@ class ResponseHeader(Struct):
     def __init__(self,
                  protocol_version=None,
                  time_stamp=None,
-                 batch_count=None):
+                 batch_count=None,
+                 server_hashed_password=None):
         super(ResponseHeader, self).__init__(tag=Tags.RESPONSE_HEADER)
         self.protocol_version = protocol_version
         self.time_stamp = time_stamp
         self.batch_count = batch_count
+        self.server_hashed_password = server_hashed_password
+
         self.validate()
+
+    @property
+    def server_hashed_password(self):
+        if self._server_hashed_password:
+            return self._server_hashed_password.value
+        return None
+
+    @server_hashed_password.setter
+    def server_hashed_password(self, value):
+        if value is None:
+            self._server_hashed_password = None
+        elif isinstance(value, six.binary_type):
+            self._server_hashed_password = primitives.ByteString(
+                value=value,
+                tag=enums.Tags.SERVER_HASHED_PASSWORD
+            )
+        else:
+            raise TypeError(
+                "The server hashed password must be a binary string."
+            )
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(ResponseHeader, self).read(
@@ -163,6 +188,14 @@ class ResponseHeader(Struct):
         self.time_stamp = contents.TimeStamp()
         self.time_stamp.read(tstream, kmip_version=kmip_version)
 
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(enums.Tags.SERVER_HASHED_PASSWORD, tstream):
+                server_hashed_password = primitives.ByteString(
+                    tag=enums.Tags.SERVER_HASHED_PASSWORD
+                )
+                server_hashed_password.read(tstream, kmip_version=kmip_version)
+                self._server_hashed_password = server_hashed_password
+
         self.batch_count = contents.BatchCount()
         self.batch_count.read(tstream, kmip_version=kmip_version)
 
@@ -175,6 +208,14 @@ class ResponseHeader(Struct):
         # Write the contents of a response header to the stream
         self.protocol_version.write(tstream, kmip_version=kmip_version)
         self.time_stamp.write(tstream, kmip_version=kmip_version)
+
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self._server_hashed_password:
+                self._server_hashed_password.write(
+                    tstream,
+                    kmip_version=kmip_version
+                )
+
         self.batch_count.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request header
