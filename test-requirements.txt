@@ -6,4 +6,4 @@ fixtures
 mock
 slugs
 sphinx
-bandit
+bandit==1.5.1
