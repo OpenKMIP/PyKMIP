@@ -76,15 +76,17 @@ class TestCreateRequestPayload(testtools.TestCase):
         #         Cryptographic Algorithm - AES
         #         Cryptographic Length - 128
         #         Cryptographic Usage Mask - Encrypt | Decrypt
-        #     Protection Storage Masks - Software | Hardware
+        #     Protection Storage Masks
+        #         Protection Storage Mask - Software | Hardware
         self.full_encoding_with_attributes = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x58'
+            b'\x42\x00\x79\x01\x00\x00\x00\x60'
             b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
             b'\x42\x01\x25\x01\x00\x00\x00\x30'
             b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
             b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
             b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x01\x5F\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x01\x5F\x01\x00\x00\x00\x10'
+            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
@@ -194,7 +196,20 @@ class TestCreateRequestPayload(testtools.TestCase):
         kwargs = {"protection_storage_masks": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "The protection storage masks must be an integer.",
+            "The protection storage masks must be a ProtectionStorageMasks "
+            "structure.",
+            payloads.CreateRequestPayload,
+            **kwargs
+        )
+        kwargs = {
+            "protection_storage_masks": objects.ProtectionStorageMasks(
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            )
+        }
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a ProtectionStorageMasks "
+            "structure with a ProtectionStorageMasks tag.",
             payloads.CreateRequestPayload,
             **kwargs
         )
@@ -206,7 +221,22 @@ class TestCreateRequestPayload(testtools.TestCase):
         )
         self.assertRaisesRegex(
             TypeError,
-            "The protection storage masks must be an integer.",
+            "The protection storage masks must be a ProtectionStorageMasks "
+            "structure.",
+            setattr,
+            *args
+        )
+        args = (
+            payloads.CreateRequestPayload(),
+            "protection_storage_masks",
+            objects.ProtectionStorageMasks(
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            )
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a ProtectionStorageMasks "
+            "structure with a ProtectionStorageMasks tag.",
             setattr,
             *args
         )
@@ -325,7 +355,10 @@ class TestCreateRequestPayload(testtools.TestCase):
             ),
             payload.template_attribute
         )
-        self.assertEqual(3, payload.protection_storage_masks)
+        self.assertEqual(
+            objects.ProtectionStorageMasks(protection_storage_masks=[3]),
+            payload.protection_storage_masks
+        )
 
     def test_read_missing_object_type(self):
         """
@@ -479,9 +512,13 @@ class TestCreateRequestPayload(testtools.TestCase):
                     )
                 ]
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
 
@@ -602,16 +639,21 @@ class TestCreateRequestPayload(testtools.TestCase):
                     )
                 ]
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         self.assertEqual(
             "CreateRequestPayload("
             "object_type=ObjectType.SYMMETRIC_KEY, "
             "template_attribute=Struct(), "
-            "protection_storage_masks=3)",
+            "protection_storage_masks=ProtectionStorageMasks("
+            "protection_storage_masks=[3]))",
             repr(payload)
         )
 
@@ -644,16 +686,20 @@ class TestCreateRequestPayload(testtools.TestCase):
                     )
                 ]
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         self.assertEqual(
             '{'
             '"object_type": ObjectType.SYMMETRIC_KEY, '
             '"template_attribute": Struct(), '
-            '"protection_storage_masks": 3'
+            '"protection_storage_masks": {"protection_storage_masks": [3]}'
             '}',
             str(payload)
         )
@@ -706,9 +752,13 @@ class TestCreateRequestPayload(testtools.TestCase):
                     )
                 ]
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         b = payloads.CreateRequestPayload(
@@ -748,9 +798,13 @@ class TestCreateRequestPayload(testtools.TestCase):
                     )
                 ]
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
 
@@ -818,15 +872,23 @@ class TestCreateRequestPayload(testtools.TestCase):
         request payloads with different protection storage masks.
         """
         a = payloads.CreateRequestPayload(
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         b = payloads.CreateRequestPayload(
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.ON_SYSTEM.value |
-                enums.ProtectionStorageMask.OFF_SYSTEM.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.ON_SYSTEM.value |
+                        enums.ProtectionStorageMask.OFF_SYSTEM.value
+                    )
+                ]
             )
         )
 
@@ -892,9 +954,13 @@ class TestCreateRequestPayload(testtools.TestCase):
                     )
                 ]
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         b = payloads.CreateRequestPayload(
@@ -934,9 +1000,13 @@ class TestCreateRequestPayload(testtools.TestCase):
                     )
                 ]
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
 
@@ -1004,15 +1074,23 @@ class TestCreateRequestPayload(testtools.TestCase):
         Create request payloads with different protection storage masks.
         """
         a = payloads.CreateRequestPayload(
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         b = payloads.CreateRequestPayload(
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.ON_SYSTEM.value |
-                enums.ProtectionStorageMask.OFF_SYSTEM.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.ON_SYSTEM.value |
+                        enums.ProtectionStorageMask.OFF_SYSTEM.value
+                    )
+                ]
             )
         )
 
