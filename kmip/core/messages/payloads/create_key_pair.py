@@ -33,12 +33,24 @@ class CreateKeyPairRequestPayload(primitives.Struct):
             private key.
         public_key_template_attribute: A group of attributes to set on the new
             public key.
+        common_protection_storage_masks: A ProtectionStorageMasks structure
+            containing the storage masks permissible for both new public and
+            private keys. Added in KMIP 2.0.
+        private_protection_storage_masks: A ProtectionStorageMasks structure
+            containing the storage masks permissible for the new private key.
+            Added in KMIP 2.0.
+        public_protection_storage_masks: A ProtectionStorageMasks structure
+            containing the storage masks permissible for the new public key.
+            Added in KMIP 2.0.
     """
 
     def __init__(self,
                  common_template_attribute=None,
                  private_key_template_attribute=None,
-                 public_key_template_attribute=None):
+                 public_key_template_attribute=None,
+                 common_protection_storage_masks=None,
+                 private_protection_storage_masks=None,
+                 public_protection_storage_masks=None):
         """
         Construct a CreateKeyPair request payload structure.
 
@@ -55,6 +67,18 @@ class CreateKeyPairRequestPayload(primitives.Struct):
                 TemplateAttribute structure with the PublicKeyTemplateAttribute
                 tag containing a set of attributes to set on the new public
                 key. Optional, defaults to None.
+            common_protection_storage_masks (structure): A
+                ProtectionStorageMasks structure containing the storage masks
+                permissible for both new public and private keys. Added in KMIP
+                2.0. Optional, defaults to None.
+            private_protection_storage_masks (structure): A
+                ProtectionStorageMasks structure containing the storage masks
+                permissible for the new private key. Added in KMIP 2.0.
+                Optional, defaults to None.
+            public_protection_storage_masks (structure): A
+                ProtectionStorageMasks structure containing the storage masks
+                permissible for the new public key. Added in KMIP 2.0.
+                Optional, defaults to None.
         """
         super(CreateKeyPairRequestPayload, self).__init__(
             enums.Tags.REQUEST_PAYLOAD
@@ -63,10 +87,17 @@ class CreateKeyPairRequestPayload(primitives.Struct):
         self._common_template_attribute = None
         self._private_key_template_attribute = None
         self._public_key_template_attribute = None
+        self._common_protection_storage_masks = None
+        self._private_protection_storage_masks = None
+        self._public_protection_storage_masks = None
 
         self.common_template_attribute = common_template_attribute
         self.private_key_template_attribute = private_key_template_attribute
         self.public_key_template_attribute = public_key_template_attribute
+        self.common_protection_storage_masks = common_protection_storage_masks
+        self.private_protection_storage_masks = \
+            private_protection_storage_masks
+        self.public_protection_storage_masks = public_protection_storage_masks
 
     @property
     def common_template_attribute(self):
@@ -134,6 +165,75 @@ class CreateKeyPairRequestPayload(primitives.Struct):
             raise TypeError(
                 "Public key template attribute must be a TemplateAttribute "
                 "structure."
+            )
+
+    @property
+    def common_protection_storage_masks(self):
+        return self._common_protection_storage_masks
+
+    @common_protection_storage_masks.setter
+    def common_protection_storage_masks(self, value):
+        if value is None:
+            self._common_protection_storage_masks = None
+        elif isinstance(value, objects.ProtectionStorageMasks):
+            if value.tag == enums.Tags.COMMON_PROTECTION_STORAGE_MASKS:
+                self._common_protection_storage_masks = value
+            else:
+                raise TypeError(
+                    "The common protection storage masks must be a "
+                    "ProtectionStorageMasks structure with a "
+                    "CommonProtectionStorageMasks tag."
+                )
+        else:
+            raise TypeError(
+                "The common protection storage masks must be a "
+                "ProtectionStorageMasks structure."
+            )
+
+    @property
+    def private_protection_storage_masks(self):
+        return self._private_protection_storage_masks
+
+    @private_protection_storage_masks.setter
+    def private_protection_storage_masks(self, value):
+        if value is None:
+            self._private_protection_storage_masks = None
+        elif isinstance(value, objects.ProtectionStorageMasks):
+            if value.tag == enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS:
+                self._private_protection_storage_masks = value
+            else:
+                raise TypeError(
+                    "The private protection storage masks must be a "
+                    "ProtectionStorageMasks structure with a "
+                    "PrivateProtectionStorageMasks tag."
+                )
+        else:
+            raise TypeError(
+                "The private protection storage masks must be a "
+                "ProtectionStorageMasks structure."
+            )
+
+    @property
+    def public_protection_storage_masks(self):
+        return self._public_protection_storage_masks
+
+    @public_protection_storage_masks.setter
+    def public_protection_storage_masks(self, value):
+        if value is None:
+            self._public_protection_storage_masks = None
+        elif isinstance(value, objects.ProtectionStorageMasks):
+            if value.tag == enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS:
+                self._public_protection_storage_masks = value
+            else:
+                raise TypeError(
+                    "The public protection storage masks must be a "
+                    "ProtectionStorageMasks structure with a "
+                    "PublicProtectionStorageMasks tag."
+                )
+        else:
+            raise TypeError(
+                "The public protection storage masks must be a "
+                "ProtectionStorageMasks structure."
             )
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -231,6 +331,35 @@ class CreateKeyPairRequestPayload(primitives.Struct):
                         attributes
                     )
 
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(
+                enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
+                local_buffer
+            ):
+                storage_masks = objects.ProtectionStorageMasks(
+                    tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                )
+                storage_masks.read(local_buffer, kmip_version=kmip_version)
+                self._common_protection_storage_masks = storage_masks
+            if self.is_tag_next(
+                enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
+                local_buffer
+            ):
+                storage_masks = objects.ProtectionStorageMasks(
+                    tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                )
+                storage_masks.read(local_buffer, kmip_version=kmip_version)
+                self._private_protection_storage_masks = storage_masks
+            if self.is_tag_next(
+                enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
+                local_buffer
+            ):
+                storage_masks = objects.ProtectionStorageMasks(
+                    tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+                )
+                storage_masks.read(local_buffer, kmip_version=kmip_version)
+                self._public_protection_storage_masks = storage_masks
+
         self.is_oversized(local_buffer)
 
     def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -285,6 +414,23 @@ class CreateKeyPairRequestPayload(primitives.Struct):
                 )
                 attributes.write(local_buffer, kmip_version=kmip_version)
 
+        if kmip_version >= enums.KMIPVersion.KMIP_2_0:
+            if self._common_protection_storage_masks:
+                self._common_protection_storage_masks.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            if self._private_protection_storage_masks:
+                self._private_protection_storage_masks.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            if self._public_protection_storage_masks:
+                self._public_protection_storage_masks.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+
         self.length = local_buffer.length()
         super(CreateKeyPairRequestPayload, self).write(
             output_buffer,
@@ -302,6 +448,15 @@ class CreateKeyPairRequestPayload(primitives.Struct):
                 return False
             elif self.public_key_template_attribute != \
                     other.public_key_template_attribute:
+                return False
+            elif self.common_protection_storage_masks != \
+                    other.common_protection_storage_masks:
+                return False
+            elif self.private_protection_storage_masks != \
+                    other.private_protection_storage_masks:
+                return False
+            elif self.public_protection_storage_masks != \
+                    other.public_protection_storage_masks:
                 return False
             else:
                 return True
@@ -324,6 +479,15 @@ class CreateKeyPairRequestPayload(primitives.Struct):
             ),
             "public_key_template_attribute={}".format(
                 self.public_key_template_attribute
+            ),
+            "common_protection_storage_masks={}".format(
+                repr(self.common_protection_storage_masks)
+            ),
+            "private_protection_storage_masks={}".format(
+                repr(self.private_protection_storage_masks)
+            ),
+            "public_protection_storage_masks={}".format(
+                repr(self.public_protection_storage_masks)
             )
         ])
         return "CreateKeyPairRequestPayload({})".format(args)
@@ -339,6 +503,15 @@ class CreateKeyPairRequestPayload(primitives.Struct):
                 ),
                 '"public_key_template_attribute": {}'.format(
                     self.public_key_template_attribute
+                ),
+                '"common_protection_storage_masks": {}'.format(
+                    str(self.common_protection_storage_masks)
+                ),
+                '"private_protection_storage_masks": {}'.format(
+                    str(self.private_protection_storage_masks)
+                ),
+                '"public_protection_storage_masks": {}'.format(
+                    str(self.public_protection_storage_masks)
                 )
             ]
         )
