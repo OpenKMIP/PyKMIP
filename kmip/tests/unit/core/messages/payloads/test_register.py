@@ -156,9 +156,10 @@ class TestRegisterRequestPayload(testtools.TestCase):
         #     Certificate
         #         Certificate Type - X.509
         #         Certificate Value - See comment for the full encoding.
-        #     Protection Storage Masks - Software | Hardware
+        #     Protection Storage Masks
+        #         Protection Storage Mask - Software | Hardware
         self.full_encoding_with_attributes = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x03\x70'
+            b'\x42\x00\x79\x01\x00\x00\x03\x78'
             b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
             b'\x42\x01\x25\x01\x00\x00\x00\x10'
             b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
@@ -166,7 +167,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
             b'\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
             b'\x42\x00\x1E\x08\x00\x00\x03\x16' + self.certificate_value +
             b'\x00\x00'
-            b'\x42\x01\x5F\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x01\x5F\x01\x00\x00\x00\x10'
+            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.2.2.
@@ -323,7 +325,20 @@ class TestRegisterRequestPayload(testtools.TestCase):
         kwargs = {"protection_storage_masks": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "The protection storage masks must be an integer.",
+            "The protection storage masks must be a ProtectionStorageMasks "
+            "structure.",
+            payloads.RegisterRequestPayload,
+            **kwargs
+        )
+        kwargs = {
+            "protection_storage_masks": objects.ProtectionStorageMasks(
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            )
+        }
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a ProtectionStorageMasks "
+            "structure with a ProtectionStorageMasks tag.",
             payloads.RegisterRequestPayload,
             **kwargs
         )
@@ -335,7 +350,22 @@ class TestRegisterRequestPayload(testtools.TestCase):
         )
         self.assertRaisesRegex(
             TypeError,
-            "The protection storage masks must be an integer.",
+            "The protection storage masks must be a ProtectionStorageMasks "
+            "structure.",
+            setattr,
+            *args
+        )
+        args = (
+            payloads.RegisterRequestPayload(),
+            "protection_storage_masks",
+            objects.ProtectionStorageMasks(
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            )
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a ProtectionStorageMasks "
+            "structure with a ProtectionStorageMasks tag.",
             setattr,
             *args
         )
@@ -422,7 +452,10 @@ class TestRegisterRequestPayload(testtools.TestCase):
             ),
             payload.managed_object
         )
-        self.assertEqual(3, payload.protection_storage_masks)
+        self.assertEqual(
+            objects.ProtectionStorageMasks(protection_storage_masks=[3]),
+            payload.protection_storage_masks
+        )
 
     def test_read_missing_object_type(self):
         """
@@ -551,9 +584,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
 
@@ -716,9 +753,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
                     )
                 )
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         self.assertEqual(
@@ -726,7 +767,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
             "object_type=ObjectType.SECRET_DATA, "
             "template_attribute=Struct(), "
             "managed_object=Struct(), "
-            "protection_storage_masks=3)",
+            "protection_storage_masks=ProtectionStorageMasks("
+            "protection_storage_masks=[3]))",
             repr(payload)
         )
 
@@ -769,9 +811,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
                     )
                 )
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         self.assertEqual(
@@ -779,7 +825,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
             '"object_type": ObjectType.SECRET_DATA, '
             '"template_attribute": Struct(), '
             '"managed_object": Struct(), '
-            '"protection_storage_masks": 3'
+            '"protection_storage_masks": {"protection_storage_masks": [3]}'
             '}',
             str(payload)
         )
@@ -815,9 +861,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         b = payloads.RegisterRequestPayload(
@@ -840,9 +890,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
 
@@ -930,15 +984,23 @@ class TestRegisterRequestPayload(testtools.TestCase):
         request payloads with different protection storage masks.
         """
         a = payloads.RegisterRequestPayload(
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         b = payloads.RegisterRequestPayload(
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.ON_SYSTEM.value |
-                enums.ProtectionStorageMask.OFF_SYSTEM.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.ON_SYSTEM.value |
+                        enums.ProtectionStorageMask.OFF_SYSTEM.value
+                    )
+                ]
             )
         )
 
@@ -987,9 +1049,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         b = payloads.RegisterRequestPayload(
@@ -1012,9 +1078,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
                 certificate_type=enums.CertificateType.X_509,
                 certificate_value=self.certificate_value
             ),
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
 
@@ -1102,15 +1172,23 @@ class TestRegisterRequestPayload(testtools.TestCase):
         Register request payloads with different protection storage masks.
         """
         a = payloads.RegisterRequestPayload(
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.SOFTWARE.value |
-                enums.ProtectionStorageMask.HARDWARE.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
             )
         )
         b = payloads.RegisterRequestPayload(
-            protection_storage_masks=(
-                enums.ProtectionStorageMask.ON_SYSTEM.value |
-                enums.ProtectionStorageMask.OFF_SYSTEM.value
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.ON_SYSTEM.value |
+                        enums.ProtectionStorageMask.OFF_SYSTEM.value
+                    )
+                ]
             )
         )
 
