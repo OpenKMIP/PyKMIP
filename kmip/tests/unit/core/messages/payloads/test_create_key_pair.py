@@ -138,6 +138,57 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
+        # Manually converted to the KMIP 2.0 format.
+        #
+        # This encoding matches the following set of values:
+        # Request Payload
+        #     Common Attributes
+        #         Cryptographic Algorithm - RSA
+        #         Cryptographic Length - 1024
+        #     Private Key Attributes
+        #         Name
+        #             Name Value - PrivateKey1
+        #             Name Type - Uninterpreted Text String
+        #         Cryptographic Usage Mask - Sign
+        #     Public Key Attributes
+        #         Name
+        #             Name Value - PublicKey1
+        #             Name Type - Uninterpreted Text String
+        #         Cryptographic Usage Mask - Verify
+        #     Common Protection Storage Masks
+        #         Protection Storage Mask - Software | Hardware
+        #         Protection Storage Mask - On Premises | Off Premises
+        #     Private Protection Storage Masks
+        #         Protection Storage Mask - On Premises | Off Premises
+        #     Public Protection Storage Masks
+        #         Protection Storage Mask - Software | Hardware
+        self.full_encoding_with_protection_masks = utils.BytearrayStream(
+            b'\x42\x00\x79\x01\x00\x00\x01\x10'
+            b'\x42\x01\x26\x01\x00\x00\x00\x20'
+            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00'
+            b'\x42\x01\x27\x01\x00\x00\x00\x40'
+            b'\x42\x00\x53\x01\x00\x00\x00\x28'
+            b'\x42\x00\x55\x07\x00\x00\x00\x0B'
+            b'\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00'
+            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x01\x28\x01\x00\x00\x00\x40'
+            b'\x42\x00\x53\x01\x00\x00\x00\x28'
+            b'\x42\x00\x55\x07\x00\x00\x00\x0A'
+            b'\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x01\x63\x01\x00\x00\x00\x20'
+            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x03\x00\x00\x00\x00\x00'
+            b'\x42\x01\x64\x01\x00\x00\x00\x10'
+            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x03\x00\x00\x00\x00\x00'
+            b'\x42\x01\x65\x01\x00\x00\x00\x10'
+            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+        )
+
+        # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
         #
         # This encoding matches the following set of values:
         # Request Payload
@@ -450,6 +501,162 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
             *args
         )
 
+    def test_invalid_common_protection_storage_masks(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the common protection storage masks of a CreateKeyPair request payload.
+        """
+        kwargs = {"common_protection_storage_masks": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The common protection storage masks must be a "
+            "ProtectionStorageMasks structure.",
+            payloads.CreateKeyPairRequestPayload,
+            **kwargs
+        )
+        kwargs = {
+            "common_protection_storage_masks": objects.ProtectionStorageMasks()
+        }
+        self.assertRaisesRegex(
+            TypeError,
+            "The common protection storage masks must be a "
+            "ProtectionStorageMasks structure with a "
+            "CommonProtectionStorageMasks tag.",
+            payloads.CreateKeyPairRequestPayload,
+            **kwargs
+        )
+
+        args = (
+            payloads.CreateKeyPairRequestPayload(),
+            "common_protection_storage_masks",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The common protection storage masks must be a "
+            "ProtectionStorageMasks structure.",
+            setattr,
+            *args
+        )
+        args = (
+            payloads.CreateKeyPairRequestPayload(),
+            "common_protection_storage_masks",
+            objects.ProtectionStorageMasks()
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The common protection storage masks must be a "
+            "ProtectionStorageMasks structure with a "
+            "CommonProtectionStorageMasks tag.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_private_protection_storage_masks(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the private protection storage masks of a CreateKeyPair request
+        payload.
+        """
+        kwargs = {"private_protection_storage_masks": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The private protection storage masks must be a "
+            "ProtectionStorageMasks structure.",
+            payloads.CreateKeyPairRequestPayload,
+            **kwargs
+        )
+        kwargs = {
+            "private_protection_storage_masks":
+            objects.ProtectionStorageMasks()
+        }
+        self.assertRaisesRegex(
+            TypeError,
+            "The private protection storage masks must be a "
+            "ProtectionStorageMasks structure with a "
+            "PrivateProtectionStorageMasks tag.",
+            payloads.CreateKeyPairRequestPayload,
+            **kwargs
+        )
+
+        args = (
+            payloads.CreateKeyPairRequestPayload(),
+            "private_protection_storage_masks",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The private protection storage masks must be a "
+            "ProtectionStorageMasks structure.",
+            setattr,
+            *args
+        )
+        args = (
+            payloads.CreateKeyPairRequestPayload(),
+            "private_protection_storage_masks",
+            objects.ProtectionStorageMasks()
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The private protection storage masks must be a "
+            "ProtectionStorageMasks structure with a "
+            "PrivateProtectionStorageMasks tag.",
+            setattr,
+            *args
+        )
+
+    def test_invalid_public_protection_storage_masks(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the public protection storage masks of a CreateKeyPair request
+        payload.
+        """
+        kwargs = {"public_protection_storage_masks": "invalid"}
+        self.assertRaisesRegex(
+            TypeError,
+            "The public protection storage masks must be a "
+            "ProtectionStorageMasks structure.",
+            payloads.CreateKeyPairRequestPayload,
+            **kwargs
+        )
+        kwargs = {
+            "public_protection_storage_masks": objects.ProtectionStorageMasks()
+        }
+        self.assertRaisesRegex(
+            TypeError,
+            "The public protection storage masks must be a "
+            "ProtectionStorageMasks structure with a "
+            "PublicProtectionStorageMasks tag.",
+            payloads.CreateKeyPairRequestPayload,
+            **kwargs
+        )
+
+        args = (
+            payloads.CreateKeyPairRequestPayload(),
+            "public_protection_storage_masks",
+            "invalid"
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The public protection storage masks must be a "
+            "ProtectionStorageMasks structure.",
+            setattr,
+            *args
+        )
+        args = (
+            payloads.CreateKeyPairRequestPayload(),
+            "public_protection_storage_masks",
+            objects.ProtectionStorageMasks()
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The public protection storage masks must be a "
+            "ProtectionStorageMasks structure with a "
+            "PublicProtectionStorageMasks tag.",
+            setattr,
+            *args
+        )
+
     def test_read(self):
         """
         Test that a CreateKeyPair request payload can be read from a data
@@ -557,9 +764,12 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.common_template_attribute)
         self.assertIsNone(payload.private_key_template_attribute)
         self.assertIsNone(payload.public_key_template_attribute)
+        self.assertIsNone(payload.common_protection_storage_masks)
+        self.assertIsNone(payload.private_protection_storage_masks)
+        self.assertIsNone(payload.public_protection_storage_masks)
 
         payload.read(
-            self.full_encoding_with_attributes,
+            self.full_encoding_with_protection_masks,
             kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
@@ -645,6 +855,27 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
             ),
             payload.public_key_template_attribute
+        )
+        self.assertEqual(
+            objects.ProtectionStorageMasks(
+                protection_storage_masks=[3, 768],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            ),
+            payload.common_protection_storage_masks
+        )
+        self.assertEqual(
+            objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            ),
+            payload.private_protection_storage_masks
+        )
+        self.assertEqual(
+            objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+            ),
+            payload.public_protection_storage_masks
         )
 
     def test_read_missing_common_template_attribute(self):
@@ -1042,14 +1273,32 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     )
                 ],
                 tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            common_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3, 768],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            ),
+            private_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            ),
+            public_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
             )
         )
 
         stream = utils.BytearrayStream()
         payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
 
-        self.assertEqual(len(self.full_encoding_with_attributes), len(stream))
-        self.assertEqual(str(self.full_encoding_with_attributes), str(stream))
+        self.assertEqual(
+            len(self.full_encoding_with_protection_masks),
+            len(stream)
+        )
+        self.assertEqual(
+            str(self.full_encoding_with_protection_masks),
+            str(stream)
+        )
 
     def test_write_missing_common_template_attribute(self):
         """
@@ -1357,7 +1606,10 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
             "CreateKeyPairRequestPayload("
             "common_template_attribute=Struct(), "
             "private_key_template_attribute=Struct(), "
-            "public_key_template_attribute=Struct())",
+            "public_key_template_attribute=Struct(), "
+            "common_protection_storage_masks=None, "
+            "private_protection_storage_masks=None, "
+            "public_protection_storage_masks=None)",
             repr(payload)
         )
 
@@ -1446,7 +1698,10 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
             '{'
             '"common_template_attribute": Struct(), '
             '"private_key_template_attribute": Struct(), '
-            '"public_key_template_attribute": Struct()'
+            '"public_key_template_attribute": Struct(), '
+            '"common_protection_storage_masks": None, '
+            '"private_protection_storage_masks": None, '
+            '"public_protection_storage_masks": None'
             '}',
             str(payload)
         )
@@ -1536,6 +1791,18 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     )
                 ],
                 tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            common_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3, 768],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            ),
+            private_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            ),
+            public_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
@@ -1612,6 +1879,18 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     )
                 ],
                 tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            common_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3, 768],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            ),
+            private_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            ),
+            public_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
             )
         )
 
@@ -1749,6 +2028,72 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
+    def test_equal_on_not_equal_common_protection_storage_masks(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CreateKeyPair request payloads with different common protection
+        storage masks.
+        """
+        a = payloads.CreateKeyPairRequestPayload(
+            common_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            )
+        )
+        b = payloads.CreateKeyPairRequestPayload(
+            common_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_private_protection_storage_masks(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CreateKeyPair request payloads with different private protection
+        storage masks.
+        """
+        a = payloads.CreateKeyPairRequestPayload(
+            private_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            )
+        )
+        b = payloads.CreateKeyPairRequestPayload(
+            private_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_public_protection_storage_masks(self):
+        """
+        Test that the equality operator returns False when comparing two
+        CreateKeyPair request payloads with different public protection
+        storage masks.
+        """
+        a = payloads.CreateKeyPairRequestPayload(
+            public_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+            )
+        )
+        b = payloads.CreateKeyPairRequestPayload(
+            public_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+            )
+        )
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
     def test_equal_on_type_mismatch(self):
         """
         Test that the equality operator returns False when comparing two
@@ -1845,6 +2190,18 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     )
                 ],
                 tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            common_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3, 768],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            ),
+            private_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            ),
+            public_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
@@ -1921,6 +2278,18 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     )
                 ],
                 tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            common_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3, 768],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            ),
+            private_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            ),
+            public_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
             )
         )
 
@@ -2052,6 +2421,72 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     )
                 ],
                 tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_common_protection_storage_masks(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CreateKeyPair request payloads with different common protection
+        storage masks.
+        """
+        a = payloads.CreateKeyPairRequestPayload(
+            common_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            )
+        )
+        b = payloads.CreateKeyPairRequestPayload(
+            common_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_private_protection_storage_masks(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CreateKeyPair request payloads with different private protection
+        storage masks.
+        """
+        a = payloads.CreateKeyPairRequestPayload(
+            private_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            )
+        )
+        b = payloads.CreateKeyPairRequestPayload(
+            private_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+            )
+        )
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_public_protection_storage_masks(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        CreateKeyPair request payloads with different public protection
+        storage masks.
+        """
+        a = payloads.CreateKeyPairRequestPayload(
+            public_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[3],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+            )
+        )
+        b = payloads.CreateKeyPairRequestPayload(
+            public_protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[768],
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
             )
         )
 
