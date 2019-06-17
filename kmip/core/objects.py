@@ -27,7 +27,6 @@ from kmip.core import enums
 from kmip.core.enums import AttributeType
 from kmip.core.enums import Tags
 from kmip.core.enums import Types
-from kmip.core.enums import RevocationReasonCode as RevocationReasonCodeEnum
 from kmip.core import exceptions
 
 from kmip.core.misc import KeyFormatType
@@ -3529,9 +3528,9 @@ class MACData(ByteString):
 # 3.31, 9.1.3.2.19
 class RevocationReasonCode(Enumeration):
 
-    def __init__(self, value=RevocationReasonCodeEnum.UNSPECIFIED):
+    def __init__(self, value=enums.RevocationReasonCode.UNSPECIFIED):
         super(RevocationReasonCode, self).__init__(
-            RevocationReasonCodeEnum, value=value,
+            enums.RevocationReasonCode, value=value,
             tag=Tags.REVOCATION_REASON_CODE)
 
 
@@ -3590,7 +3589,7 @@ class RevocationReason(Struct):
         self.revocation_code.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.REVOCATION_MESSAGE, tstream):
-            self.revocation_message = TextString()
+            self.revocation_message = TextString(tag=Tags.REVOCATION_MESSAGE)
             self.revocation_message.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)

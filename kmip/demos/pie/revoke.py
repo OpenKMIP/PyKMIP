@@ -13,52 +13,44 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core import enums
-from kmip.core.enums import Operation
-from kmip.core.enums import ResultStatus
-
-from kmip.demos import utils
-
-from kmip.services.kmip_client import KMIPProxy
-
 import logging
 import sys
+import time
+
+from kmip.core import enums
+from kmip.demos import utils
+from kmip.pie import client
 
 
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
-    parser = utils.build_cli_parser(Operation.REVOKE)
+    parser = utils.build_cli_parser(enums.Operation.REVOKE)
     opts, args = parser.parse_args(sys.argv[1:])
 
     config = opts.config
-    uuid = opts.uuid
+    uid = opts.uuid
 
     # Exit early if the UUID is not specified
-    if uuid is None:
+    if uid is None:
         logger.error('No UUID provided, exiting early from demo')
         sys.exit()
 
     # Build the client and connect to the server
-    client = KMIPProxy(config=config, config_file=opts.config_file)
-    client.open()
-
-    # Activate the object
-    result = client.revoke(
-        enums.RevocationReasonCode.KEY_COMPROMISE,
-        uuid,
-        'Demo revocation message')
-    client.close()
-
-    # Display operation results
-    logger.info('revoke() result status: {0}'.format(
-        result.result_status.value))
-
-    if result.result_status.value == ResultStatus.SUCCESS:
-        logger.info('revoked UUID: {0}'.format(result.unique_identifier.value))
-    else:
-        logger.info('revoke() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('revoke() result message: {0}'.format(
-            result.result_message.value))
+    with client.ProxyKmipClient(
+            config=config,
+            config_file=opts.config_file
+    ) as client:
+        try:
+            client.revoke(
+                enums.RevocationReasonCode.KEY_COMPROMISE,
+                uid=uid,
+                revocation_message="I want to revoke this secret.",
+                compromise_occurrence_date=int(time.time())
+            )
+            logger.info(
+                "Successfully revoked secret with ID: {0}".format(uid)
+            )
+        except Exception as e:
+            logger.error(e)
