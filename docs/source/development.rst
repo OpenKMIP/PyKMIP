@@ -104,9 +104,10 @@ PyKMIP, up to and including ``master``.
 
 Running Tests
 -------------
-PyKMIP uses ``tox`` to manage testing across multiple Python versions. Test
-infrastructure currently supports Python 2.7, 3.4, 3.5, and 3.6. Additional
-test environments are provided for security, style, and documentation checks.
+PyKMIP uses ``tox`` to manage testing across multiple Python versions. ``tox``
+in turn uses ``pytest`` to run individual tests. Test infrastructure currently
+supports Python 2.7, 3.4, 3.5, 3.6, and 3.7. Additional test environments are
+provided for security, style, and documentation checks.
 
 .. note::
 
@@ -154,6 +155,16 @@ To test against a specific Python version (e.g., Python 2.7), run:
 
     $ tox -e py27
 
+To run an individual test suite method or class, use the ``pytest`` ``-k``
+flag to specify the name of the method or class to execute. For example, to
+run the ``TestProxyKmipClient`` test suite class under Python 2.7, run:
+
+.. code-block:: console
+
+    $ tox -e py27 -- -k TestProxyKmipClient
+
+For more information on the ``-k`` flag, see the `pytest`_ documentation.
+
 Integration Tests
 ~~~~~~~~~~~~~~~~~
 The integration test suite tests the functionality of the PyKMIP clients
@@ -184,6 +195,13 @@ following ``tox`` command will set up and execute the integration tests:
 
     $ tox -r -e integration -- --config server_1
 
+Like the unit tests, use the ``-k`` flag to specify a specific test suite
+method or class.
+
+.. code-block:: console
+
+    $ tox -r -e integration -- --config server_1 -k TestProxyKmipClientIntegration
+
 Functional Tests
 ~~~~~~~~~~~~~~~~
 The functional test suite tests capabilities and functionality specific to
@@ -213,6 +231,13 @@ will set up and execute the functional tests:
 
     $ tox -r -e functional -- --config-file /tmp/pykmip/client.conf
 
+Like the unit and integration tests, use the ``-k`` flag to specify a specific
+test suite method or class.
+
+.. code-block:: console
+
+    $ tox -r -e functional -- --config-file /tmp/pykmip/client.conf -k test_policy_caching
+
 For more information on the testing tools used here, see the following
 resources:
 
@@ -228,3 +253,4 @@ resources:
 .. _`flake8`: https://pypi.python.org/pypi/flake8
 .. _`bandit`: https://pypi.python.org/pypi/bandit
 .. _`SLUGS`: https://github.com/OpenKMIP/SLUGS
+.. _`pytest`: https://docs.pytest.org/en/latest/usage.html

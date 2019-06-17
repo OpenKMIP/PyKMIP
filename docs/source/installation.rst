@@ -35,4 +35,4 @@ Replace ``python-dev`` with ``python3-dev`` if you are using Python 3.0+.
 
 .. code-block:: console
 
-    $ sudo apt-get install python-dev libff-dev libssl-dev libsqlite3-dev
+    $ sudo apt-get install python-dev libffi-dev libssl-dev libsqlite3-dev

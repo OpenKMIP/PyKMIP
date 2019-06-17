@@ -29,29 +29,6 @@ The configuration file can contain multiple settings blocks. Only one,
 blocks by simply providing the name of the block as the ``config``
 parameter (see below).
 
-The client can also be configured manually via Python. The following example
-shows how to create the ``ProxyKmipClient`` in Python code, directly
-specifying the different configuration values:
-
-.. code-block:: python
-
-    >>> import ssl
-    >>> from kmip.pie.client import ProxyKmipClient
-    >>> client = ProxyKmipClient(
-    ...     hostname='127.0.0.1',
-    ...     port=5696,
-    ...     cert='/path/to/certificate/file',
-    ...     key='/path/to/certificate/key/file',
-    ...     ca='/path/to/ca/certificate/file',
-    ...     ssl_version=ssl.PROTOCOL_SSLv23,
-    ...     username='example_username',
-    ...     password='example_password'
-    ...     config='client'
-    ... )
-
-Settings specified at runtime, as in the above example, will take precedence
-over the default values found in the configuration file.
-
 The different configuration options are defined below:
 
 * ``host``
@@ -109,6 +86,31 @@ The different configuration options are defined below:
     A string representing the password to use for KMIP requests. Optional
     depending on server access policies. Leave blank if not needed.
 
+The client can also be configured manually via Python. The following example
+shows how to create the ``ProxyKmipClient`` in Python code, directly
+specifying the different configuration values:
+
+.. code-block:: python
+
+    >>> import ssl
+    >>> from kmip.pie.client import ProxyKmipClient
+    >>> client = ProxyKmipClient(
+    ...     hostname='127.0.0.1',
+    ...     port=5696,
+    ...     cert='/path/to/certificate/file',
+    ...     key='/path/to/certificate/key/file',
+    ...     ca='/path/to/ca/certificate/file',
+    ...     ssl_version=ssl.PROTOCOL_SSLv23,
+    ...     username='example_username',
+    ...     password='example_password'
+    ...     config='client',
+    ...     config_file='/etc/pykmip/pykmip.conf',
+    ...     kmip_version=enums.KMIPVersion.KMIP_1_2
+    ... )
+
+Settings specified at runtime, as in the above example, will take precedence
+over the default values found in the configuration file.
+
 Usage
 -----
 
@@ -120,7 +122,7 @@ Class Documentation
 -------------------
 .. py:module:: kmip.pie.client
 
-.. py:class:: ProxyKmipClient(hostname=None, port=None, cert=None, key=None, ca=None, ssl_version=None, username=None, password=None, config='client')
+.. py:class:: ProxyKmipClient(hostname=None, port=None, cert=None, key=None, ca=None, ssl_version=None, username=None, password=None, config='client', config_file=None, kmip_version=None)
 
     A simplified KMIP client for conducting KMIP operations.
 
@@ -153,6 +155,18 @@ Class Documentation
         file. Use to load a specific set of configuration settings from the
         configuration file, instead of specifying them manually. Optional,
         defaults to the default client section, 'client'.
+    :param string config_file: The path to the PyKMIP client configuration
+        file. Optional, defaults to None.
+    :param enum kmip_version: A KMIPVersion enumeration specifying which KMIP
+        version should be used to encode/decode request/response messages.
+        Optional, defaults to None. If no value is specified, at request
+        encoding time the client will default to KMIP 1.2.
+
+    .. py:attribute:: kmip_version
+
+        The KMIP version that should be used to encode/decode request/response
+        messages. Must be a KMIPVersion enumeration. Can be accessed and
+        modified at any time.
 
     .. py:method:: open()
 

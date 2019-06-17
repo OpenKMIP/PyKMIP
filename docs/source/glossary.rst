@@ -127,6 +127,7 @@ Glossary
         ...     'rng_mode': enums.RNGMode.SHARED_INSTANTIATION,
         ...     'batch_undo_capability': False,
         ...     'batch_continue_capability': False
+        ...     'quantum_safe_capability': False
         ... }
 
         =================================  =======  ============
@@ -141,6 +142,7 @@ Glossary
         :term:`rng_mode`                   enum     1.3
         batch_undo_capability              bool     1.4
         batch_continue_capability          bool     1.4
+        quantum_safe_capability            bool     2.0
         =================================  =======  ============
 
     certificate_request_type
@@ -208,6 +210,9 @@ Glossary
         USERNAME_AND_PASSWORD  0x00000001  1.0
         DEVICE                 0x00000002  1.1
         ATTESTATION            0x00000003  1.2
+        ONE_TIME_PASSWORD      0x00000004  2.0
+        HASHED_PASSWORD        0x00000005  2.0
+        TICKET                 0x00000006  2.0
         =====================  ==========  ============
 
     cryptographic_algorithm
@@ -262,6 +267,22 @@ Glossary
         HMAC_SHA3_512      0x00000026  1.4
         SHAKE_128          0x00000027  1.4
         SHAKE_256          0x00000028  1.4
+        ARIA               0x00000029  2.0
+        SEED               0x0000002A  2.0
+        SM2                0x0000002B  2.0
+        SM3                0x0000002C  2.0
+        SM4                0x0000002D  2.0
+        GOST_R_34_10_2012  0x0000002E  2.0
+        GOST_R_34_11_2012  0x0000002F  2.0
+        GOST_R_34_13_2015  0x00000030  2.0
+        GOST_28147_89      0x00000031  2.0
+        XMSS               0x00000032  2.0
+        SPHINCS_256        0x00000033  2.0
+        MCELIECE           0x00000034  2.0
+        MCELIECE_6960119   0x00000035  2.0
+        MCELIECE_8192128   0x00000036  2.0
+        ED25519            0x00000037  2.0
+        ED448              0x00000038  2.0
         =================  ==========  ============
 
     cryptographic_length
@@ -338,6 +359,10 @@ Glossary
         TRANSLATE_DECRYPT    0x00020000  1.0
         TRANSLATE_WRAP       0x00040000  1.0
         TRANSLATE_UNWRAP     0x00080000  1.0
+        AUTHENTICATE         0x00100000  2.0
+        UNRESTRICTED         0x00200000  2.0
+        FPE_ENCRYPT          0x00400000  2.0
+        FPE_DECRYPT          0x00800000  2.0
         ===================  ==========  ============
 
     derivation_parameters
@@ -364,24 +389,6 @@ Glossary
         iteration_count           int      1.0
         ========================  =======  ============
 
-    drbg_algorithm
-        (enum) (1.3) An enumeration specifying a deterministic random bit
-        generator. Used often to describe a random number generator.
-
-        >>> from kmip import enums
-        >>> enums.DRBGAlgorithm.DUAL_EC
-        <DRBGAlgorithm.DUAL_EC: 2>
-
-        ===========  ==========  ============
-        Name         Value       KMIP Version
-        ===========  ==========  ============
-        UNSPECIFIED  0x00000001  1.3
-        DUAL_EC      0x00000002  1.3
-        HASH         0x00000003  1.3
-        HMAC         0x00000004  1.3
-        CTR          0x00000005  1.3
-        ===========  ==========  ============
-
     derivation_method
         (enum) (1.0) An enumeration specifying a key derivation method to be
         used to derive a new key. Used as a parameter to the DeriveKey
@@ -391,18 +398,20 @@ Glossary
         >>> enums.DerivationMethod.PBKDF2
         <DerivationMethod.PBKDF2: 1>
 
-        ===============  ==========  ============
-        Name             Value       KMIP Version
-        ===============  ==========  ============
-        PBKDF2           0x00000001  1.0
-        HASH             0x00000002  1.0
-        HMAC             0x00000003  1.0
-        ENCRYPT          0x00000004  1.0
-        NIST800_108_C    0x00000005  1.0
-        NIST800_108_F    0x00000006  1.0
-        NIST800_108_DPI  0x00000007  1.0
-        ASYMMETRIC_KEY   0x00000008  1.4
-        ===============  ==========  ============
+        =======================  ==========  ============
+        Name                     Value       KMIP Version
+        =======================  ==========  ============
+        PBKDF2                   0x00000001  1.0
+        HASH                     0x00000002  1.0
+        HMAC                     0x00000003  1.0
+        ENCRYPT                  0x00000004  1.0
+        NIST800_108_C            0x00000005  1.0
+        NIST800_108_F            0x00000006  1.0
+        NIST800_108_DPI          0x00000007  1.0
+        ASYMMETRIC_KEY           0x00000008  1.4
+        AWS_SIGNATURE_VERSION_4  0x00000009  2.0
+        HKDF                     0x0000000A  2.0
+        =======================  ==========  ============
 
     destroy_action
         (enum) (1.3) An enumeration specifying methods of data disposal used
@@ -458,6 +467,24 @@ Glossary
         SHA3_512_WITH_RSA_ENCRYPTION  0x00000013  1.4
         ============================  ==========  ============
 
+    drbg_algorithm
+        (enum) (1.3) An enumeration specifying a deterministic random bit
+        generator. Used often to describe a random number generator.
+
+        >>> from kmip import enums
+        >>> enums.DRBGAlgorithm.DUAL_EC
+        <DRBGAlgorithm.DUAL_EC: 2>
+
+        ===========  ==========  ============
+        Name         Value       KMIP Version
+        ===========  ==========  ============
+        UNSPECIFIED  0x00000001  1.3
+        DUAL_EC      0x00000002  1.3
+        HASH         0x00000003  1.3
+        HMAC         0x00000004  1.3
+        CTR          0x00000005  1.3
+        ===========  ==========  ============
+
     encoding_option
         (enum) (1.1) An enumeration specifying the encoding of an object
         before it is cryptographically wrapped. Used in various key wrapping
@@ -484,12 +511,12 @@ Glossary
         ...     'cryptographic_parameters': {...}
         ... }
 
-        ========================  =======  ============
-        Key                       Value    KMIP Version
-        ========================  =======  ============
-        unique_identifier         string   1.0
-        cryptographic_parameters  dict     1.0
-        ========================  =======  ============
+        ================================  =======  ============
+        Key                               Value    KMIP Version
+        ================================  =======  ============
+        unique_identifier                 string   1.0
+        :term:`cryptographic_parameters`  dict     1.0
+        ================================  =======  ============
 
     extension_information
         (dict) (1.1) A dictionary containing information on a specific KMIP
@@ -502,14 +529,26 @@ Glossary
         ...     'extension_tag': 0x0054aa01,
         ...     'extension_type': 0x00000007
         ... }
+        >>> extension_information = {
+        ...     'extension_name': 'ACME LOCATION',
+        ...     'extension_tag': 0x0054aa01,
+        ...     'extension_type': enums.ItemType.TEXT_STRING,
+        ...     'extension_attribute': True,
+        ...     'extension_parent_structure_tag': 0x0054aa02,
+        ...     'extension_description': 'Example description.'
+        ... }
 
-        ========================  =======  ============
-        Key                       Value    KMIP Version
-        ========================  =======  ============
-        extension_name            string   1.1
-        extension_tag             int      1.1
-        extension_type            int      1.1
-        ========================  =======  ============
+        ==============================  ==========  ============
+        Key                             Value       KMIP Version
+        ==============================  ==========  ============
+        extension_name                  string      1.1
+        extension_tag                   int         1.1
+        extension_type                  int / enum  1.1 / 2.0
+        extension_enumeration           int         2.0
+        extension_attribute             bool        2.0
+        extension_parent_structure_tag  int         2.0
+        extension_description           string      2.0
+        ==============================  ==========  ============
 
     fips186_variation
         (enum) (1.3) An enumeration specifying a FIPS 186 variation. Used
@@ -568,6 +607,31 @@ Glossary
         state. This occurs when the object is first created or registered
         with the key management appliance. This value is set by the server
         on every managed object and cannot be changed.
+
+    item_type
+        (enum) (2.0) An enumeration specifying the type of an object. Only
+        the least significant byte of the enumeration value is used in KMIP
+        object encodings.
+
+        >>> from kmip import enums
+        >>> enums.ItemType.STRUCTURE
+        <ItemType.STRUCTURE: 1>
+
+        ==================  ==========  ============
+        Name                Value       KMIP Version
+        ==================  ==========  ============
+        STRUCTURE           0x00000001  2.0
+        INTEGER             0x00000002  2.0
+        LONG_INTEGER        0x00000003  2.0
+        BIG_INTEGER         0x00000004  2.0
+        ENUMERATION         0x00000005  2.0
+        BOOLEAN             0x00000006  2.0
+        TEXT_STRING         0x00000007  2.0
+        BYTE_STRING         0x00000008  2.0
+        DATE_TIME           0x00000009  2.0
+        INTERVAL            0x0000000A  2.0
+        DATE_TIME_EXTENDED  0x0000000B  2.0
+        ==================  ==========  ============
 
     key_compression_type
         (enum) (1.0) An enumeration specifying the key compression used for
@@ -741,6 +805,26 @@ Glossary
         :term:`encoding_option`        enum     1.1
         =============================  =======  ============
 
+    kmip_version
+        (enum) (-) An enumeration specifying the KMIP version to use for the
+        client and/or server. Defined independently of any individual KMIP
+        specification version.
+
+        >>> from kmip import enums
+        >>> enums.KMIPVersion.KMIP_1_1
+        <KMIPVersion.KMIP_1_1: 1.1>
+
+        ========  ==========
+        Name      Value
+        ========  ==========
+        KMIP_1_0  1.0
+        KMIP_1_1  1.1
+        KMIP_1_2  1.2
+        KMIP_1_3  1.3
+        KMIP_1_4  1.4
+        KMIP_2_0  2.0
+        ========  ==========
+
     link_type
         (enum) (1.0) An enumeration specifying the type of link connecting two
         managed objects. Used often as an object attribute.
@@ -765,6 +849,7 @@ Glossary
         NEXT_LINK                    0x0000010b  1.2
         PKCS12_CERTIFICATE_LINK      0x0000010c  1.4
         PKCS12_PASSWORD_LINK         0x0000010d  1.4
+        WRAPPING_KEY_LINK            0x0000010E  2.0
         ===========================  ==========  ============
 
     mac_signature_key_information
@@ -847,19 +932,20 @@ Glossary
         >>> enums.ObjectType.SYMMETRIC_KEY
         <ObjectType.SYMMETRIC_KEY: 2>
 
-        =============  ==========  ============
-        Name           Value       KMIP Version
-        =============  ==========  ============
-        CERTIFICATE    0x00000001  1.0
-        SYMMETRIC_KEY  0x00000002  1.0
-        PUBLIC_KEY     0x00000003  1.0
-        PRIVATE_KEY    0x00000004  1.0
-        SPLIT_KEY      0x00000005  1.0
-        TEMPLATE       0x00000006  1.0
-        SECRET_DATA    0x00000007  1.0
-        OPAQUE_DATA    0x00000008  1.0
-        PGP_KEY        0x00000009  1.2
-        =============  ==========  ============
+        ===================  ==========  ============
+        Name                 Value       KMIP Version
+        ===================  ==========  ============
+        CERTIFICATE          0x00000001  1.0
+        SYMMETRIC_KEY        0x00000002  1.0
+        PUBLIC_KEY           0x00000003  1.0
+        PRIVATE_KEY          0x00000004  1.0
+        SPLIT_KEY            0x00000005  1.0
+        TEMPLATE             0x00000006  1.0
+        SECRET_DATA          0x00000007  1.0
+        OPAQUE_DATA          0x00000008  1.0
+        PGP_KEY              0x00000009  1.2
+        CERTIFICATE_REQUEST  0x0000000A  2.0
+        ===================  ==========  ============
 
     opaque_data_type
         (enum) (1.0) An enumeration specifying the type of the associated
@@ -932,6 +1018,16 @@ Glossary
         JOIN_SPLIT_KEY        0x00000029  1.2
         IMPORT                0x0000002a  1.4
         EXPORT                0x0000002b  1.4
+        LOG                   0x0000002C  2.0
+        LOGIN                 0x0000002D  2.0
+        LOGOUT                0x0000002E  2.0
+        DELEGATED_LOGIN       0x0000002F  2.0
+        ADJUST_ATTRIBUTE      0x00000030  2.0
+        SET_ATTRIBUTE         0x00000031  2.0
+        SET_ENDPOINT_ROLE     0x00000032  2.0
+        PKCS_11               0x00000033  2.0
+        INTEROP               0x00000034  2.0
+        REPROVISION           0x00000035  2.0
         ====================  ==========  ============
 
     operation_policy_name
@@ -963,6 +1059,31 @@ Glossary
         X931       0x00000009  1.0
         PSS        0x0000000A  1.0
         =========  ==========  ============
+
+    profile_information
+        (dict) (1.3) A dictionary containing information about a KMIP profile
+        supported by a KMIP server. Often obtained from the Query operation
+        response.
+
+        >>> from kmip import enums
+        >>> profile_information = {
+        ...     'profile_name': enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
+        ...     'server_uri': 'https://127.0.0.1',
+        ...     'server_port': 5696,
+        ...     'profile_version': {
+        ...         'profile_version_major': 1,
+        ...         'profile_version_minor': 0
+        ...     }
+        ... }
+
+        =======================  =======  ============
+        Key                      Value    KMIP Version
+        =======================  =======  ============
+        :term:`profile_name`     enum     1.3
+        server_uri               string   1.3
+        server_port              int      1.3
+        :term:`profile_version`  dict     2.0
+        =======================  =======  ============
 
     profile_name
         (enum) (1.3) An enumeration specifying a profile supported by the
@@ -1132,27 +1253,65 @@ Glossary
         JSON_SERVER_KMIPv14                                      0x0000009a  1.4
         XML_CLIENT_KMIPv14                                       0x0000009b  1.4
         XML_SERVER_KMIPv14                                       0x0000009c  1.4
+        COMPLETE_SERVER_BASIC                                    0x00000104  2.0
+        COMPLETE_SERVER_TLSv12                                   0x00000105  2.0
+        TAPE_LIBRARY_CLIENT                                      0x00000106  2.0
+        TAPE_LIBRARY_SERVER                                      0x00000107  2.0
+        SYMMETRIC_KEY_LIFECYCLE_CLIENT                           0x00000108  2.0
+        SYMMETRIC_KEY_LIFECYCLE_SERVER                           0x00000109  2.0
+        ASYMMETRIC_KEY_LIFECYCLE_CLIENT                          0x0000010A  2.0
+        ASYMMETRIC_KEY_LIFECYCLE_SERVER                          0x0000010B  2.0
+        BASIC_CRYPTOGRAPHIC_CLIENT                               0x0000010C  2.0
+        BASIC_CRYPTOGRAPHIC_SERVER                               0x0000010D  2.0
+        ADVANCED_CRYPTOGRAPHIC_CLIENT                            0x0000010E  2.0
+        ADVANCED_CRYPTOGRAPHIC_SERVER                            0x0000010F  2.0
+        RNG_CRYPTOGRAPHIC_CLIENT                                 0x00000110  2.0
+        RNG_CRYPTOGRAPHIC_SERVER                                 0x00000111  2.0
+        BASIC_SYMMETRIC_KEY_FOUNDRY_CLIENT                       0x00000112  2.0
+        INTERMEDIATE_SYMMETRIC_KEY_FOUNDRY_CLIENT                0x00000113  2.0
+        ADVANCED_SYMMETRIC_KEY_FOUNDRY_CLIENT                    0x00000114  2.0
+        SYMMETRIC_KEY_FOUNDRY_SERVER                             0x00000115  2.0
+        OPAQUE_MANAGED_OBJECT_STORE_CLIENT                       0x00000116  2.0
+        OPAQUE_MANAGED_OBJECT_STORE_SERVER                       0x00000117  2.0
+        SUITE_B_MINLOS_128_CLIENT                                0x00000118  2.0
+        SUITE_B_MINLOS_128_SERVER                                0x00000119  2.0
+        SUITE_B_MINLOS_192_CLIENT                                0x0000011A  2.0
+        SUITE_B_MINLOS_192_SERVER                                0x0000011B  2.0
+        STORAGE_ARRAY_WITH_SELF_ENCRYPTING_DRIVE_CLIENT          0x0000011C  2.0
+        STORAGE_ARRAY_WITH_SELF_ENCRYPTING_DRIVE_SERVER          0x0000011D  2.0
+        HTTPS_CLIENT                                             0x0000011E  2.0
+        HTTPS_SERVER                                             0x0000011F  2.0
+        JSON_CLIENT                                              0x00000120  2.0
+        JSON_SERVER                                              0x00000121  2.0
+        XML_CLIENT                                               0x00000122  2.0
+        XML_SERVER                                               0x00000123  2.0
+        AES_XTS_CLIENT                                           0x00000124  2.0
+        AES_XTS_SERVER                                           0x00000125  2.0
+        QUANTUM_SAFE_CLIENT                                      0x00000126  2.0
+        QUANTUM_SAFE_SERVER                                      0x00000127  2.0
+        PKCS11_CLIENT                                            0x00000128  2.0
+        PKCS11_SERVER                                            0x00000129  2.0
+        BASELINE_CLIENT                                          0x0000012A  2.0
+        BASELINE_SERVER                                          0x0000012B  2.0
+        COMPLETE_SERVER                                          0x0000012C  2.0
         =======================================================  ==========  ============
 
-    profile_information
-        (dict) (1.3) A dictionary containing information about a KMIP profile
-        supported by a KMIP server. Often obtained from the Query operation
-        response.
+    profile_version
+        (dict) (2.0) A dictionary containing the major and minor version
+        numbers of a KMIP profile. Often used with the :term:`profile_information`
+        structure.
 
-        >>> from kmip import enums
-        >>> profile_information = {
-        ...     'profile_name': enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
-        ...     'server_uri': 'https://127.0.0.1',
-        ...     'server_port': 5696
+        >>> profile_version = {
+        ...     'profile_version_major': 1,
+        ...     'profile_version_minor': 0
         ... }
 
-        ====================  =======  ============
-        Key                   Value    KMIP Version
-        ====================  =======  ============
-        :term:`profile_name`  enum     1.3
-        server_uri            string   1.3
-        server_port           int      1.3
-        ====================  =======  ============
+        =====================  =======  ============
+        Key                    Value    KMIP Version
+        =====================  =======  ============
+        profile_version_major  int      2.0
+        profile_version_minor  int      2.0
+        =====================  =======  ============
 
     put_function
         (enum) (1.0) An enumeration specifying the state of an object being
@@ -1192,6 +1351,8 @@ Glossary
         QUERY_PROFILES                     0x0000000a  1.3
         QUERY_CAPABILITIES                 0x0000000b  1.3
         QUERY_CLIENT_REGISTRATION_METHODS  0x0000000c  1.3
+        QUERY_DEFAULTS_INFORMATION         0x0000000D  2.0
+        QUERY_STORAGE_PROTECTION_MASKS     0x0000000E  2.0
         =================================  ==========  ============
 
     recommended_curve
@@ -1274,6 +1435,8 @@ Glossary
         BRAINPOOLP384T1   0x00000042  1.2
         BRAINPOOLP512R1   0x00000043  1.2
         BRAINPOOLP512T1   0x00000044  1.2
+        CURVE25519        0x00000045  2.0
+        CURVE448          0x00000046  2.0
         ================  ==========  ============
 
     result_reason
@@ -1285,35 +1448,78 @@ Glossary
         >>> enums.ResultReason.ITEM_NOT_FOUND
         <ResultReason.ITEM_NOT_FOUND: 1>
 
-        ===================================  ==========  ============
-        Name                                 Value       KMIP Version
-        ===================================  ==========  ============
-        ITEM_NOT_FOUND                       0x00000001  1.0
-        RESPONSE_TOO_LARGE                   0x00000002  1.0
-        AUTHENTICATION_NOT_SUCCESSFUL        0x00000003  1.0
-        INVALID_MESSAGE                      0x00000004  1.0
-        OPERATION_NOT_SUPPORTED              0x00000005  1.0
-        MISSING_DATA                         0x00000006  1.0
-        INVALID_FIELD                        0x00000007  1.0
-        FEATURE_NOT_SUPPORTED                0x00000008  1.0
-        OPERATION_CANCELED_BY_REQUESTER      0x00000009  1.0
-        CRYPTOGRAPHIC_FAILURE                0x0000000a  1.0
-        ILLEGAL_OPERATION                    0x0000000b  1.0
-        PERMISSION_DENIED                    0x0000000c  1.0
-        OBJECT_ARCHIVED                      0x0000000d  1.0
-        INDEX_OUT_OF_BOUNDS                  0x0000000e  1.0
-        APPLICATION_NAMESPACE_NOT_SUPPORTED  0x0000000f  1.0
-        KEY_FORMAT_TYPE_NOT_SUPPORTED        0x00000010  1.0
-        KEY_COMPRESSION_TYPE_NOT_SUPPORTED   0x00000011  1.0
-        ENCODING_OPTION_ERROR                0x00000012  1.1
-        KEY_VALUE_NOT_PRESENT                0x00000013  1.2
-        ATTESTATION_REQUIRED                 0x00000014  1.2
-        ATTESTATION_FAILED                   0x00000015  1.2
-        SENSITIVE                            0x00000016  1.4
-        NOT_EXTRACTABLE                      0x00000017  1.4
-        OBJECT_ALREADY_EXISTS                0x00000018  1.4
-        GENERAL_FAILURE                      0x00000100  1.0
-        ===================================  ==========  ============
+        ======================================  ==========  ============
+        Name                                    Value       KMIP Version
+        ======================================  ==========  ============
+        ITEM_NOT_FOUND                          0x00000001  1.0
+        RESPONSE_TOO_LARGE                      0x00000002  1.0
+        AUTHENTICATION_NOT_SUCCESSFUL           0x00000003  1.0
+        INVALID_MESSAGE                         0x00000004  1.0
+        OPERATION_NOT_SUPPORTED                 0x00000005  1.0
+        MISSING_DATA                            0x00000006  1.0
+        INVALID_FIELD                           0x00000007  1.0
+        FEATURE_NOT_SUPPORTED                   0x00000008  1.0
+        OPERATION_CANCELED_BY_REQUESTER         0x00000009  1.0
+        CRYPTOGRAPHIC_FAILURE                   0x0000000a  1.0
+        ILLEGAL_OPERATION                       0x0000000b  1.0
+        PERMISSION_DENIED                       0x0000000c  1.0
+        OBJECT_ARCHIVED                         0x0000000d  1.0
+        INDEX_OUT_OF_BOUNDS                     0x0000000e  1.0
+        APPLICATION_NAMESPACE_NOT_SUPPORTED     0x0000000f  1.0
+        KEY_FORMAT_TYPE_NOT_SUPPORTED           0x00000010  1.0
+        KEY_COMPRESSION_TYPE_NOT_SUPPORTED      0x00000011  1.0
+        ENCODING_OPTION_ERROR                   0x00000012  1.1
+        KEY_VALUE_NOT_PRESENT                   0x00000013  1.2
+        ATTESTATION_REQUIRED                    0x00000014  1.2
+        ATTESTATION_FAILED                      0x00000015  1.2
+        SENSITIVE                               0x00000016  1.4
+        NOT_EXTRACTABLE                         0x00000017  1.4
+        OBJECT_ALREADY_EXISTS                   0x00000018  1.4
+        INVALID_TICKET                          0x00000019  2.0
+        USAGE_LIMIT_EXCEEDED                    0x0000001A  2.0
+        NUMERIC_RANGE                           0x0000001B  2.0
+        INVALID_DATA_TYPE                       0x0000001C  2.0
+        READ_ONLY_ATTRIBUTE                     0x0000001D  2.0
+        MULTI_VALUED_ATTRIBUTE                  0x0000001E  2.0
+        UNSUPPORTED_ATTRIBUTE                   0x0000001F  2.0
+        ATTRIBUTE_INSTANCE_NOT_FOUND            0x00000020  2.0
+        ATTRIBUTE_NOT_FOUND                     0x00000021  2.0
+        ATTRIBUTE_READ_ONLY                     0x00000022  2.0
+        ATTRIBUTE_SINGLE_VALUED                 0x00000023  2.0
+        BAD_CRYPTOGRAPHIC_PARAMETERS            0x00000024  2.0
+        BAD_PASSWORD                            0x00000025  2.0
+        CODEC_ERROR                             0x00000026  2.0
+        ILLEGAL_OBJECT_TYPE                     0x00000028  2.0
+        INCOMPATIBLE_CRYPTOGRAPHIC_USAGE_MASK   0x00000029  2.0
+        INTERNAL_SERVER_ERROR                   0x0000002A  2.0
+        INVALID_ASYNCHRONOUS_CORRELATION_VALUE  0x0000002B  2.0
+        INVALID_ATTRIBUTE                       0x0000002C  2.0
+        INVALID_ATTRIBUTE_VALUE                 0x0000002D  2.0
+        INVALID_CORRELATION_VALUE               0x0000002E  2.0
+        INVALID_CSR                             0x0000002F  2.0
+        INVALID_OBJECT_TYPE                     0x00000030  2.0
+        KEY_WRAP_TYPE_NOT_SUPPORTED             0x00000032  2.0
+        MISSING_INITIALIZATION_VECTOR           0x00000034  2.0
+        NON_UNIQUE_NAME_ATTRIBUTE               0x00000035  2.0
+        OBJECT_DESTROYED                        0x00000036  2.0
+        OBJECT_NOT_FOUND                        0x00000037  2.0
+        NOT_AUTHORISED                          0x00000039  2.0
+        SERVER_LIMIT_EXCEEDED                   0x0000003A  2.0
+        UNKNOWN_ENUMERATION                     0x0000003B  2.0
+        UNKNOWN_MESSAGE_EXTENSION               0x0000003C  2.0
+        UNKNOWN_TAG                             0x0000003D  2.0
+        UNSUPPORTED_CRYPTOGRAPHIC_PARAMETERS    0x0000003E  2.0
+        UNSUPPORTED_PROTOCOL_VERSION            0x0000003F  2.0
+        WRAPPING_OBJECT_ARCHIVED                0x00000040  2.0
+        WRAPPING_OBJECT_DESTROYED               0x00000041  2.0
+        WRAPPING_OBJECT_NOT_FOUND               0x00000042  2.0
+        WRONG_KEY_LIFECYCLE_STATE               0x00000043  2.0
+        PROTECTION_STORAGE_UNAVAILABLE          0x00000044  2.0
+        PKCS11_CODEC_ERROR                      0x00000045  2.0
+        PKCS11_INVALID_FUNCTION                 0x00000046  2.0
+        PKCS11_INVALID_INTERFACE                0x00000047  2.0
+        GENERAL_FAILURE                         0x00000100  1.0
+        ======================================  ==========  ============
 
     result_status
         (enum) (1.0) An enumeration specifying the result of an operation.
@@ -1499,12 +1705,13 @@ Glossary
         >>> enums.StorageStatus.ARCHIVAL_STORAGE
         <StorageStatus.ARCHIVAL_STORAGE: 2>
 
-        ================  ==========  ============
-        Name              Value       KMIP Version
-        ================  ==========  ============
-        ONLINE_STORAGE    0x00000001  1.0
-        ARCHIVAL_STORAGE  0x00000002  1.0
-        ================  ==========  ============
+        =================  ==========  ============
+        Name               Value       KMIP Version
+        =================  ==========  ============
+        ONLINE_STORAGE     0x00000001  1.0
+        ARCHIVAL_STORAGE   0x00000002  1.0
+        DESTROYED_STORAGE  0x00000004  2.0
+        =================  ==========  ============
 
     unique_identifier
         (str) (1.0) A string representing a unique, global identifier for a
