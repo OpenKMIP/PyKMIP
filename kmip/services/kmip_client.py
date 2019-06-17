@@ -1576,8 +1576,10 @@ class KMIPProxy(object):
             return ProtocolVersion(1, 2)
         elif self.kmip_version == enums.KMIPVersion.KMIP_1_3:
             return ProtocolVersion(1, 3)
-        else:
+        elif self.kmip_version == enums.KMIPVersion.KMIP_1_4:
             return ProtocolVersion(1, 4)
+        else:
+            return ProtocolVersion(2, 0)
 
     def _build_request_message(self, credential, batch_items):
         protocol_version = self._build_protocol_version()

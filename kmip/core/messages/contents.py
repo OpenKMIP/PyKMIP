@@ -277,6 +277,11 @@ def protocol_version_to_kmip_version(value):
             return enums.KMIPVersion.KMIP_1_4
         else:
             return None
+    elif value.major == 2:
+        if value.minor == 0:
+            return enums.KMIPVersion.KMIP_2_0
+        else:
+            return None
     else:
         return None
 

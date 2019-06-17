@@ -62,6 +62,10 @@ class RequestHeader(Struct):
         self.protocol_version = contents.ProtocolVersion()
         self.protocol_version.read(tstream, kmip_version=kmip_version)
 
+        kmip_version = contents.protocol_version_to_kmip_version(
+            self.protocol_version
+        )
+
         # Read the maximum response size if it is present
         if self.is_tag_next(Tags.MAXIMUM_RESPONSE_SIZE, tstream):
             self.maximum_response_size = contents.MaximumResponseSize()
@@ -184,6 +188,10 @@ class ResponseHeader(Struct):
 
         self.protocol_version = contents.ProtocolVersion()
         self.protocol_version.read(tstream, kmip_version=kmip_version)
+
+        kmip_version = contents.protocol_version_to_kmip_version(
+            self.protocol_version
+        )
 
         self.time_stamp = contents.TimeStamp()
         self.time_stamp.read(tstream, kmip_version=kmip_version)
@@ -467,6 +475,10 @@ class RequestMessage(Struct):
         self.request_header = RequestHeader()
         self.request_header.read(istream, kmip_version=kmip_version)
 
+        kmip_version = contents.protocol_version_to_kmip_version(
+            self.request_header.protocol_version
+        )
+
         self.batch_items = []
         for _ in range(self.request_header.batch_count.value):
             batch_item = RequestBatchItem()
@@ -506,6 +518,10 @@ class ResponseMessage(Struct):
 
         self.response_header = ResponseHeader()
         self.response_header.read(istream, kmip_version=kmip_version)
+
+        kmip_version = contents.protocol_version_to_kmip_version(
+            self.response_header.protocol_version
+        )
 
         self.batch_items = []
         for _ in range(self.response_header.batch_count.value):
