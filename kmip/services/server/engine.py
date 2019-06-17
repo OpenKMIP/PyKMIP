@@ -107,6 +107,7 @@ class KmipEngine(object):
         self._id_placeholder = None
 
         self._protocol_versions = [
+            contents.ProtocolVersion(2, 0),
             contents.ProtocolVersion(1, 4),
             contents.ProtocolVersion(1, 3),
             contents.ProtocolVersion(1, 2),
@@ -114,8 +115,8 @@ class KmipEngine(object):
             contents.ProtocolVersion(1, 0)
         ]
 
-        self.default_protocol_version = self._protocol_versions[2]
-        self._protocol_version = self._protocol_versions[2]
+        self.default_protocol_version = self._protocol_versions[3]
+        self._protocol_version = self._protocol_versions[3]
 
         self._object_map = {
             enums.ObjectType.CERTIFICATE: objects.X509Certificate,
