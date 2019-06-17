@@ -213,6 +213,11 @@ class KmipEngine(object):
 
         # Process the protocol version
         self._set_protocol_version(header.protocol_version)
+        self._logger.debug(
+            "Request specified KMIP version: {0}".format(
+                header.protocol_version
+            )
+        )
 
         # Process the maximum response size
         max_response_size = None

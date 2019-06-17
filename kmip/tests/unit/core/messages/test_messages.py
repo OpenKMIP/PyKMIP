@@ -174,8 +174,8 @@ class TestResponseHeader(testtools.TestCase):
         self.encoding_kmip_2_0 = utils.BytearrayStream(
             b'\x42\x00\x7A\x01\x00\x00\x00\x70'
             b'\x42\x00\x69\x01\x00\x00\x00\x20'
-            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
             b'\x42\x00\x92\x09\x00\x00\x00\x08\x00\x00\x00\x00\x4F\x9A\x54\xE5'
             b'\x42\x01\x55\x08\x00\x00\x00\x20'
             b'\xD3\xC3\xBF\x31\xB8\xBF\xBB\xEF\x53\x12\x0F\xD0\x95\x1B\xE5\x38'
@@ -229,7 +229,7 @@ class TestResponseHeader(testtools.TestCase):
         )
 
         self.assertEqual(
-            contents.ProtocolVersion(major=1, minor=1),
+            contents.ProtocolVersion(major=2, minor=0),
             response_header.protocol_version
         )
         self.assertEqual(0x4F9A54E5, response_header.time_stamp.value)
@@ -250,7 +250,7 @@ class TestResponseHeader(testtools.TestCase):
         stream when including KMIP 2.0 fields.
         """
         response_header = messages.ResponseHeader(
-            protocol_version=contents.ProtocolVersion(major=1, minor=1),
+            protocol_version=contents.ProtocolVersion(major=2, minor=0),
             time_stamp=contents.TimeStamp(value=0x4F9A54E5),
             server_hashed_password=(
                 b'\xD3\xC3\xBF\x31\xB8\xBF\xBB\xEF'
