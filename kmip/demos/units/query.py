@@ -18,11 +18,7 @@ import sys
 
 from six.moves import xrange
 
-from kmip.core.enums import Operation
-from kmip.core.enums import QueryFunction as QueryFunctionEnum
-from kmip.core.enums import ResultStatus
-
-from kmip.core.misc import QueryFunction
+from kmip.core import enums
 
 from kmip.demos import utils
 
@@ -33,7 +29,7 @@ if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
-    parser = utils.build_cli_parser(Operation.QUERY)
+    parser = utils.build_cli_parser(enums.Operation.QUERY)
     opts, args = parser.parse_args(sys.argv[1:])
 
     username = opts.username
@@ -42,21 +38,18 @@ if __name__ == '__main__':
 
     # Build query function list.
     query_functions = list()
-    query_functions.append(
-        QueryFunction(QueryFunctionEnum.QUERY_OPERATIONS))
-    query_functions.append(
-        QueryFunction(QueryFunctionEnum.QUERY_OBJECTS))
-    query_functions.append(
-        QueryFunction(QueryFunctionEnum.QUERY_SERVER_INFORMATION))
-    query_functions.append(
-        QueryFunction(QueryFunctionEnum.QUERY_APPLICATION_NAMESPACES))
-    query_functions.append(
-        QueryFunction(QueryFunctionEnum.QUERY_EXTENSION_LIST))
-    query_functions.append(
-        QueryFunction(QueryFunctionEnum.QUERY_EXTENSION_MAP))
+    query_functions.append(enums.QueryFunction.QUERY_OPERATIONS)
+    query_functions.append(enums.QueryFunction.QUERY_OBJECTS)
+    query_functions.append(enums.QueryFunction.QUERY_SERVER_INFORMATION)
+    query_functions.append(enums.QueryFunction.QUERY_APPLICATION_NAMESPACES)
+    query_functions.append(enums.QueryFunction.QUERY_EXTENSION_LIST)
+    query_functions.append(enums.QueryFunction.QUERY_EXTENSION_MAP)
 
     # Build the client and connect to the server
-    client = KMIPProxy(config=config, config_file=opts.config_file)
+    client = KMIPProxy(
+        config=config,
+        config_file=opts.config_file
+    )
     client.open()
 
     result = client.query(query_functions=query_functions)
@@ -66,7 +59,7 @@ if __name__ == '__main__':
     logger.info('query() result status: {0}'.format(
         result.result_status.value))
 
-    if result.result_status.value == ResultStatus.SUCCESS:
+    if result.result_status.value == enums.ResultStatus.SUCCESS:
         operations = result.operations
         object_types = result.object_types
         vendor_identification = result.vendor_identification
