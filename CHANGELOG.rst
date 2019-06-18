@@ -4,10 +4,34 @@ Changelog
 
 .. _v0.9:
 
-0.9 - `master`_
-~~~~~~~~~~~~~~~
-
-.. note:: This version is not yet released and is under active development.
+0.9 - June 18, 2019
+~~~~~~~~~~~~~~~~~~~
+* Add support for Python 3.7
+* Add KMIP 2.0 enumerations
+* Add a new OrderedEnum subclass to handle sortable enumerations
+* Add KMIP 2.0-style attribute handling
+* Add utilities to convert between TemplateAttributes and Attributes
+* Add utilities to handle bit mask style enumerations
+* Add positional argument handling for pytest calls when using tox
+* Update the library documentation to include KMIP 2.0 information
+* Update client exception handling and logging to simplify debugging
+* Update library logging defaults to log at INFO but still support DEBUG
+* Update the Travis CI configuration to support testing on Ubuntu 16.04
+* Update the Travis CI configuration to output log files on test failures
+* Update the server to support KMIP 1.3, 1.4, and 2.0
+* Update the PyKMIP clients to support changing their KMIP version
+* Update server session logging for authentication failures
+* Update the PyKMIP object hierarchy to propagate the KMIP version
+* Update the server TLS handshake handling to avoid thread hanging
+* Update the Create and Register payloads to support KMIP 2.0
+* Update the Locate and CreateKeyPair payloads to support KMIP 2.0
+* Update the DeriveKey and GetAttributes payloads to support KMIP 2.0
+* Update the GetAttributeList and Query payloads to support KMIP 2.0
+* Update server attribute policy to handle KMIP 2.0 deprecated attributes
+* Remove escape sequences to comply with Python 3.6 style deprecations
+* Fix various deprecation warnings caused by dependency upgrades
+* Fix a bug with decoding revocation messages for the Revoke operation
+* Fix a bug with specifying the function list in the Query demo script
 
 .. _v0.8:
 

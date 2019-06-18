@@ -27,7 +27,7 @@ with open(version_path, 'r') as version_file:
 setuptools.setup(
     name='PyKMIP',
     version=__version__,
-    description='KMIP v1.1 library',
+    description='KMIP library',
     keywords='KMIP',
     author='Peter Hamilton',
     author_email='peter.hamilton@jhuapl.edu',
