@@ -18,11 +18,18 @@ import re
 import setuptools
 
 # Dynamically set __version__
-version_path = os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), 'kmip', 'version.py')
-with open(version_path, 'r') as version_file:
-    mo = re.search(r"^.*= '(\d\.\d\..*)'$", version_file.read(), re.MULTILINE)
-    __version__ = mo.group(1)
+version_path = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    "kmip",
+    "version.py"
+)
+with open(version_path, 'r') as f:
+    m = re.search(
+        r"^__version__ = \"(\d+\.\d+\..*)\"$",
+        f.read(),
+        re.MULTILINE
+    )
+    __version__ = m.group(1)
 
 setuptools.setup(
     name='PyKMIP',
