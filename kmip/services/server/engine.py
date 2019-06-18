@@ -593,9 +593,13 @@ class KmipEngine(object):
         for attribute_name in attr_names:
             object_type = managed_object._object_type
 
+            # TODO (ph) Create the policy once and just pass these calls the
+            #           KMIP version for the current request.
             if not self._attribute_policy.is_attribute_supported(
                     attribute_name
             ):
+                continue
+            if self._attribute_policy.is_attribute_deprecated(attribute_name):
                 continue
 
             if self._attribute_policy.is_attribute_applicable_to_object_type(

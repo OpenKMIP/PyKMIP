@@ -521,7 +521,8 @@ class AttributePolicy(object):
                     enums.ObjectType.SECRET_DATA,
                     enums.ObjectType.OPAQUE_DATA
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
+                contents.ProtocolVersion(2, 0)
             ),
             'Cryptographic Usage Mask': AttributeRuleSet(
                 True,
