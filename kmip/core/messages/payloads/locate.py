@@ -16,7 +16,6 @@
 import six
 
 from kmip.core import enums
-from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
@@ -262,11 +261,6 @@ class LocateRequestPayload(primitives.Struct):
                     attributes
                 )
                 self._attributes = temp_attr.attributes
-            else:
-                raise exceptions.InvalidKmipEncoding(
-                    "The Locate request payload encoding is missing the "
-                    "attributes structure."
-                )
 
     def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -316,11 +310,6 @@ class LocateRequestPayload(primitives.Struct):
                     template_attribute
                 )
                 attributes.write(local_buffer, kmip_version=kmip_version)
-            else:
-                raise exceptions.InvalidField(
-                    "The Locate request payload is missing the attributes "
-                    "list."
-                )
 
         self.length = local_buffer.length()
         super(LocateRequestPayload, self).write(
