@@ -9,6 +9,12 @@ Changelog
 
 .. note:: This version is not yet released and is under active development.
 
+.. _v0.9.1:
+
+0.9.1 - June 21, 2019
+~~~~~~~~~~~~~~~~~~~~~
+* Fix a bug with Locate attribute handling for KMIP 2.0 clients
+
 .. _v0.9:
 
 0.9 - June 18, 2019
