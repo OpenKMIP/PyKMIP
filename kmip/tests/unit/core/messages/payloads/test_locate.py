@@ -16,7 +16,6 @@
 import testtools
 
 from kmip.core import enums
-from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
@@ -637,25 +636,6 @@ class TestLocateRequestPayload(testtools.TestCase):
         )
         self.assertEqual([], payload.attributes)
 
-    def test_read_missing_attributes_kmip_2_0(self):
-        """
-        Test that an InvalidKmipEncoding error is raised during the decoding
-        of a Locate request payload when the attributes structure is missing
-        from the encoding.
-        """
-        payload = payloads.LocateRequestPayload()
-
-        args = (self.no_attributes_encoding, )
-        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
-        self.assertRaisesRegex(
-            exceptions.InvalidKmipEncoding,
-            "The Locate request payload encoding is missing the attributes "
-            "structure.",
-            payload.read,
-            *args,
-            **kwargs
-        )
-
     def test_read_missing_everything(self):
         """
         Test that a Locate request payload can be read from a data stream
@@ -876,28 +856,6 @@ class TestLocateRequestPayload(testtools.TestCase):
 
         self.assertEqual(len(self.no_attributes_encoding), len(stream))
         self.assertEqual(str(self.no_attributes_encoding), str(stream))
-
-    def test_write_missing_attributes_kmip_2_0(self):
-        """
-        Test that an InvalidField error is raised during the encoding of a
-        Locate request payload when the payload is missing the attributes list.
-        """
-        payload = payloads.LocateRequestPayload(
-            maximum_items=1,
-            offset_items=1,
-            storage_status_mask=3,
-            object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT
-        )
-
-        args = (utils.BytearrayStream(), )
-        kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
-        self.assertRaisesRegex(
-            exceptions.InvalidField,
-            "The Locate request payload is missing the attributes list.",
-            payload.write,
-            *args,
-            **kwargs
-        )
 
     def test_write_missing_everything(self):
         """
