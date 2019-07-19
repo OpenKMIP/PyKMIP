@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import binascii
 import logging
 import socket
 import struct
@@ -345,8 +346,14 @@ class KmipSession(threading.Thread):
                 "does not match the advertised header length."
             )
         else:
+            self._logger.debug(
+                "Request encoding: {}".format(binascii.hexlify(message))
+            )
             return message
 
     def _send_response(self, data):
         if len(data) > 0:
+            self._logger.debug(
+                "Response encoding: {}".format(binascii.hexlify(bytes(data)))
+            )
             self._connection.sendall(bytes(data))
