@@ -252,6 +252,14 @@ def build_cli_parser(operation=None):
                 "'Tue Jul 23 18:39:01 2019'"
             )
         )
+        parser.add_option(
+            "--state",
+            action="store",
+            type="str",
+            default=None,
+            dest="state",
+            help="The state of the secret (e.g., PRE_ACTIVE, ACTIVE)"
+        )
     elif operation is Operation.REGISTER:
         parser.add_option(
             "-f",
