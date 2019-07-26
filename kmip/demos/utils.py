@@ -238,6 +238,20 @@ def build_cli_parser(operation=None):
             default=None,
             dest="name",
             help="Name of secret to retrieve from the KMIP server")
+        parser.add_option(
+            "--initial-date",
+            action="append",
+            type="str",
+            default=[],
+            dest="initial_dates",
+            help=(
+                "Initial date(s) in UTC of the secret to retrieve from the "
+                "KMIP server. Use once to perform an exact date match. Use "
+                "twice to create a date range that the secret's date should "
+                "be within. The value format should look like this: "
+                "'Tue Jul 23 18:39:01 2019'"
+            )
+        )
     elif operation is Operation.REGISTER:
         parser.add_option(
             "-f",

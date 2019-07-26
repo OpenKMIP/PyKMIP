@@ -4263,6 +4263,155 @@ class TestKmipEngine(testtools.TestCase):
             *args
         )
 
+    def test_is_valid_date(self):
+        """
+        Test that object date checking yields the correct results.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        # If the date range isn't fully defined, the value is implicitly valid.
+        self.assertTrue(
+            e._is_valid_date(
+                enums.AttributeType.INITIAL_DATE,
+                1563564520,
+                None,
+                None
+            )
+        )
+        self.assertTrue(
+            e._is_valid_date(
+                enums.AttributeType.INITIAL_DATE,
+                1563564520,
+                None,
+                1563564521
+            )
+        )
+
+        # Verify the value is valid for a fully defined, encompassing range.
+        self.assertTrue(
+            e._is_valid_date(
+                enums.AttributeType.INITIAL_DATE,
+                1563564520,
+                1563564519,
+                1563564521
+            )
+        )
+
+        # Verify the value is valid for a specific date value.
+        self.assertTrue(
+            e._is_valid_date(
+                enums.AttributeType.INITIAL_DATE,
+                1563564520,
+                1563564520,
+                None
+            )
+        )
+
+        # Verify the value is invalid for a specific date value.
+        self.assertFalse(
+            e._is_valid_date(
+                enums.AttributeType.INITIAL_DATE,
+                1563564520,
+                1563564519,
+                None
+            )
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "object's initial date (Fri Jul 19 19:28:40 2019) does not match "
+            "the specified initial date (Fri Jul 19 19:28:39 2019)."
+        )
+        e._logger.reset_mock()
+
+        # Verify the value is invalid below a specific date range.
+        self.assertFalse(
+            e._is_valid_date(
+                enums.AttributeType.INITIAL_DATE,
+                1563564519,
+                1563564520,
+                1563564521
+            )
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "object's initial date (Fri Jul 19 19:28:39 2019) is less than "
+            "the starting initial date (Fri Jul 19 19:28:40 2019)."
+        )
+        e._logger.reset_mock()
+
+        # Verify the value is invalid above a specific date range.
+        self.assertFalse(
+            e._is_valid_date(
+                enums.AttributeType.INITIAL_DATE,
+                1563564521,
+                1563564519,
+                1563564520
+            )
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "object's initial date (Fri Jul 19 19:28:41 2019) is greater than "
+            "the ending initial date (Fri Jul 19 19:28:40 2019)."
+        )
+
+    def test_track_date_attributes(self):
+        """
+        Test date attribute value tracking with a simple dictionary.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        date_values = {}
+
+        # Verify the first date given is considered the starting range value.
+        e._track_date_attributes(
+            enums.AttributeType.INITIAL_DATE,
+            date_values,
+            1563564519
+        )
+        self.assertEqual(1563564519, date_values["start"])
+
+        # Verify the second date given is considered the ending range value.
+        e._track_date_attributes(
+            enums.AttributeType.INITIAL_DATE,
+            date_values,
+            1563564521
+        )
+        self.assertEqual(1563564519, date_values["start"])
+        self.assertEqual(1563564521, date_values["end"])
+
+        # Verify that the third date given triggers an exception.
+        args = (enums.AttributeType.INITIAL_DATE, date_values, 1563564520)
+        six.assertRaisesRegex(
+            self,
+            exceptions.InvalidField,
+            "Too many Initial Date attributes provided. "
+            "Include one for an exact match. "
+            "Include two for a ranged match.",
+            e._track_date_attributes,
+            *args
+        )
+
+        # Verify that a lower second date is interpreted as the new start date.
+        date_values = {}
+        date_values["start"] = 1563564521
+        e._track_date_attributes(
+            enums.AttributeType.INITIAL_DATE,
+            date_values,
+            1563564519
+        )
+        self.assertEqual(1563564519, date_values["start"])
+        self.assertEqual(1563564521, date_values["end"])
+
     def test_locate(self):
         """
         Test that a Locate request can be processed correctly.
@@ -4285,13 +4434,8 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_any_call(
-            "Processing operation: Locate"
-        )
-        self.assertEqual(
-           len(response_payload.unique_identifiers),
-           0
-        )
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        self.assertEqual(len(response_payload.unique_identifiers), 0)
 
         # Add the first obj and test the locate
         e._data_session.add(obj_a)
@@ -4306,18 +4450,10 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_any_call(
-            "Processing operation: Locate"
-        )
+        e._logger.info.assert_any_call("Processing operation: Locate")
 
-        self.assertEqual(
-           len(response_payload.unique_identifiers),
-           1
-        )
-        self.assertEqual(
-            id_a,
-            response_payload.unique_identifiers[0]
-        )
+        self.assertEqual(len(response_payload.unique_identifiers), 1)
+        self.assertEqual(id_a, response_payload.unique_identifiers[0])
 
         # Add the second obj and test the locate
         e._data_session.add(obj_b)
@@ -4332,22 +4468,11 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_any_call(
-            "Processing operation: Locate"
-        )
+        e._logger.info.assert_any_call("Processing operation: Locate")
 
-        self.assertEqual(
-           len(response_payload.unique_identifiers),
-           2
-        )
-        self.assertIn(
-            id_a,
-            response_payload.unique_identifiers
-        )
-        self.assertIn(
-            id_b,
-            response_payload.unique_identifiers
-        )
+        self.assertEqual(len(response_payload.unique_identifiers), 2)
+        self.assertIn(id_a, response_payload.unique_identifiers)
+        self.assertIn(id_b, response_payload.unique_identifiers)
 
     def test_locate_with_name(self):
         """
@@ -4360,14 +4485,27 @@ class TestKmipEngine(testtools.TestCase):
         e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
         e._logger = mock.MagicMock()
 
-        key = (b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-               b'\x00\x00\x00\x00\x00')
+        key = (
+            b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
         obj_a = pie_objects.SymmetricKey(
-            enums.CryptographicAlgorithm.AES, 128, key, name='name0')
+            enums.CryptographicAlgorithm.AES,
+            128,
+            key,
+            name='name0'
+        )
         obj_b = pie_objects.SymmetricKey(
-            enums.CryptographicAlgorithm.DES, 128, key, name='name0')
+            enums.CryptographicAlgorithm.DES,
+            128,
+            key,
+            name='name0'
+        )
         obj_c = pie_objects.SymmetricKey(
-            enums.CryptographicAlgorithm.AES, 128, key, name='name1')
+            enums.CryptographicAlgorithm.AES,
+            128,
+            key,
+            name='name1'
+        )
 
         e._data_session.add(obj_a)
         e._data_session.add(obj_b)
@@ -4383,13 +4521,13 @@ class TestKmipEngine(testtools.TestCase):
 
         # Locate the obj with name 'name0'
         attrs = [
-                attribute_factory.create_attribute(
-                    enums.AttributeType.NAME,
-                    attributes.Name.create(
-                        'name0',
-                        enums.NameType.UNINTERPRETED_TEXT_STRING
-                    )
-                ),
+            attribute_factory.create_attribute(
+                enums.AttributeType.NAME,
+                attributes.Name.create(
+                    'name0',
+                    enums.NameType.UNINTERPRETED_TEXT_STRING
+                )
+            )
         ]
 
         payload = payloads.LocateRequestPayload(attributes=attrs)
@@ -4398,32 +4536,21 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_any_call(
-            "Processing operation: Locate"
-        )
+        e._logger.info.assert_any_call("Processing operation: Locate")
 
-        self.assertEqual(
-           len(response_payload.unique_identifiers),
-           2
-        )
-        self.assertIn(
-            id_a,
-            response_payload.unique_identifiers
-        )
-        self.assertIn(
-            id_b,
-            response_payload.unique_identifiers
-        )
+        self.assertEqual(len(response_payload.unique_identifiers), 2)
+        self.assertIn(id_a, response_payload.unique_identifiers)
+        self.assertIn(id_b, response_payload.unique_identifiers)
 
         # Locate the obj with name 'name1'
         attrs = [
-                attribute_factory.create_attribute(
-                    enums.AttributeType.NAME,
-                    attributes.Name.create(
-                        'name1',
-                        enums.NameType.UNINTERPRETED_TEXT_STRING
-                    )
-                ),
+            attribute_factory.create_attribute(
+                enums.AttributeType.NAME,
+                attributes.Name.create(
+                    'name1',
+                    enums.NameType.UNINTERPRETED_TEXT_STRING
+                )
+            )
         ]
 
         payload = payloads.LocateRequestPayload(attributes=attrs)
@@ -4432,18 +4559,128 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session.commit()
         e._data_session = e._data_store_session_factory()
 
-        e._logger.info.assert_any_call(
-            "Processing operation: Locate"
+        e._logger.info.assert_any_call("Processing operation: Locate")
+
+        self.assertEqual(len(response_payload.unique_identifiers), 1)
+        self.assertIn(id_c, response_payload.unique_identifiers)
+
+    def test_locate_with_initial_date(self):
+        """
+        Test the Locate operation when 'Initial Date' attributes are given.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        key = (
+            b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
         )
 
-        self.assertEqual(
-           len(response_payload.unique_identifiers),
-           1
+        obj_a = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            key,
+            name='name1'
         )
-        self.assertIn(
-            id_c,
-            response_payload.unique_identifiers
+        obj_a.initial_date = int(time.time())
+        obj_a_time_str = time.strftime(
+            "%a %b %d %H:%M:%S %Y",
+            time.gmtime(obj_a.initial_date)
         )
+
+        time.sleep(2)
+        mid_time = int(time.time())
+        mid_time_str = time.strftime(
+            "%a %b %d %H:%M:%S %Y",
+            time.gmtime(mid_time)
+        )
+        time.sleep(2)
+
+        obj_b = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.DES,
+            128,
+            key,
+            name='name2'
+        )
+        obj_b.initial_date = int(time.time())
+        obj_b_time_str = time.strftime(
+            "%a %b %d %H:%M:%S %Y",
+            time.gmtime(obj_b.initial_date)
+        )
+
+        time.sleep(2)
+        end_time = int(time.time())
+
+        e._data_session.add(obj_a)
+        e._data_session.add(obj_b)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+        id_b = str(obj_b.unique_identifier)
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Locate the object with a specific timestamp
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.INITIAL_DATE,
+                obj_a.initial_date
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Failed match: object's initial date ({}) does not match "
+            "the specified initial date ({}).".format(
+                obj_b_time_str,
+                obj_a_time_str
+            )
+        )
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_a)
+        )
+        self.assertEqual(len(response_payload.unique_identifiers), 1)
+        self.assertIn(id_a, response_payload.unique_identifiers)
+
+        # Locate an object with a timestamp range
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.INITIAL_DATE,
+                mid_time
+            ),
+            attribute_factory.create_attribute(
+                enums.AttributeType.INITIAL_DATE,
+                end_time
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Failed match: object's initial date ({}) is less than "
+            "the starting initial date ({}).".format(
+                obj_a_time_str,
+                mid_time_str
+            )
+        )
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_b)
+        )
+        self.assertEqual(len(response_payload.unique_identifiers), 1)
+        self.assertIn(id_b, response_payload.unique_identifiers)
 
     def test_get(self):
         """

@@ -13,42 +13,30 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kmip.core.enums import CredentialType
-from kmip.core.enums import NameType
-from kmip.core.enums import Operation
-from kmip.core.enums import ResultStatus
-
-from kmip.core.attributes import Name
-
-from kmip.core.factories.attributes import AttributeFactory
-from kmip.core.factories.credentials import CredentialFactory
-
-from kmip.core.objects import Attribute
-
-from kmip.demos import utils
-
-from kmip.services.kmip_client import KMIPProxy
-
+import calendar
 import logging
 import sys
+import time
+
+from kmip.core import enums
+from kmip.core.factories.attributes import AttributeFactory
+from kmip.core.factories.credentials import CredentialFactory
+from kmip.demos import utils
+from kmip.services import kmip_client
 
 
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
-    parser = utils.build_cli_parser(Operation.LOCATE)
+    parser = utils.build_cli_parser(enums.Operation.LOCATE)
     opts, args = parser.parse_args(sys.argv[1:])
 
     username = opts.username
     password = opts.password
     config = opts.config
     name = opts.name
-
-    # Exit early if the UUID is not specified
-    if name is None:
-        logger.error('No name provided, exiting early from demo')
-        sys.exit()
+    initial_dates = opts.initial_dates
 
     attribute_factory = AttributeFactory()
     credential_factory = CredentialFactory()
@@ -58,34 +46,63 @@ if __name__ == '__main__':
     if (username is None) and (password is None):
         credential = None
     else:
-        credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': username,
-                            'Password': password}
-        credential = credential_factory.create_credential(credential_type,
-                                                          credential_value)
+        credential_type = enums.CredentialType.USERNAME_AND_PASSWORD
+        credential_value = {
+            "Username": username,
+            "Password": password
+        }
+        credential = credential_factory.create_credential(
+            credential_type,
+            credential_value
+        )
+
     # Build the client and connect to the server
-    client = KMIPProxy(config=config, config_file=opts.config_file)
+    client = kmip_client.KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
 
-    # Build name attribute
-    # TODO (peter-hamilton) Push this into the AttributeFactory
-    attribute_name = Attribute.AttributeName('Name')
-    name_value = Name.NameValue(name)
-    name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
-    value = Name.create(name_value=name_value, name_type=name_type)
-    name_obj = Attribute(attribute_name=attribute_name, attribute_value=value)
-    attributes = [name_obj]
+    # Build attributes if any are specified
+    attributes = []
+    if name:
+        attributes.append(
+            attribute_factory.create_attribute(enums.AttributeType.NAME, name)
+        )
+    for initial_date in initial_dates:
+        try:
+            t = time.strptime(initial_date)
+        except ValueError:
+            logger.error(
+                "Invalid initial date provided: {}".format(initial_date)
+            )
+            logger.info(
+                "Date values should be formatted like this: "
+                "'Tue Jul 23 18:39:01 2019'"
+            )
+            sys.exit(-1)
 
-    # Locate UUID of specified SYMMETRIC_KEY object
-    result = client.locate(attributes=attributes,
-                           credential=credential)
+        try:
+            t = calendar.timegm(t)
+        except Exception:
+            logger.error(
+                "Failed to convert initial date time tuple "
+                "to an integer: {}".format(t)
+            )
+            sys.exit(-2)
+
+        attributes.append(
+            attribute_factory.create_attribute(
+                enums.AttributeType.INITIAL_DATE,
+                t
+            )
+        )
+
+    result = client.locate(attributes=attributes, credential=credential)
     client.close()
 
     # Display operation results
     logger.info('locate() result status: {0}'.format(
         result.result_status.value))
 
-    if result.result_status.value == ResultStatus.SUCCESS:
+    if result.result_status.value == enums.ResultStatus.SUCCESS:
         logger.info('located UUIDs:')
         for uuid in result.uuids:
             logger.info('{0}'.format(uuid))

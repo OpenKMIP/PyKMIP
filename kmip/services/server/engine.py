@@ -652,7 +652,7 @@ class KmipEngine(object):
                 names.append(name)
             return names
         elif attr_name == 'Object Type':
-            return managed_object._object_type
+            return managed_object.object_type
         elif attr_name == 'Cryptographic Algorithm':
             return managed_object.cryptographic_algorithm
         elif attr_name == 'Cryptographic Length':
@@ -925,6 +925,63 @@ class KmipEngine(object):
             return False
         else:
             return False
+
+    def _is_valid_date(self, date_type, value, start, end):
+        date_type = date_type.value.lower()
+
+        if start is not None:
+            if end is not None:
+                if value < start:
+                    self._logger.debug(
+                        "Failed match: object's {} ({}) is less than "
+                        "the starting {} ({}).".format(
+                            date_type,
+                            time.asctime(time.gmtime(value)),
+                            date_type,
+                            time.asctime(time.gmtime(start))
+                        )
+                    )
+                    return False
+                elif value > end:
+                    self._logger.debug(
+                        "Failed match: object's {} ({}) is greater than "
+                        "the ending {} ({}).".format(
+                            date_type,
+                            time.asctime(time.gmtime(value)),
+                            date_type,
+                            time.asctime(time.gmtime(end))
+                        )
+                    )
+                    return False
+            else:
+                if start != value:
+                    self._logger.debug(
+                        "Failed match: object's {} ({}) does not match "
+                        "the specified {} ({}).".format(
+                            date_type,
+                            time.asctime(time.gmtime(value)),
+                            date_type,
+                            time.asctime(time.gmtime(start))
+                        )
+                    )
+                    return False
+        return True
+
+    def _track_date_attributes(self, date_type, date_values, value):
+        if date_values.get("start") is None:
+            date_values["start"] = value
+        elif date_values.get("end") is None:
+            if value > date_values.get("start"):
+                date_values["end"] = value
+            else:
+                date_values["end"] = date_values.get("start")
+                date_values["start"] = value
+        else:
+            raise exceptions.InvalidField(
+                "Too many {} attributes provided. "
+                "Include one for an exact match. "
+                "Include two for a ranged match.".format(date_type.value)
+            )
 
     def _get_object_with_access_controls(
             self,
@@ -1549,20 +1606,63 @@ class KmipEngine(object):
             managed_objects_filtered = []
 
             # Filter the objects based on given attributes.
-            # TODO: Currently will only filter for 'Name'.
-            #       Needs to add other attributes.
             for managed_object in managed_objects:
-                for attribute in payload.attributes:
-                    attribute_name = attribute.attribute_name.value
-                    attribute_value = attribute.attribute_value
-                    attr = self._get_attribute_from_managed_object(
-                            managed_object, attribute_name)
-                    if attribute_name == 'Name':
-                        names = attr
-                        if attribute_value not in names:
+                self._logger.debug(
+                    "Evaluating object: {}".format(
+                        managed_object.unique_identifier
+                    )
+                )
+
+                add_object = True
+                initial_date = {}
+
+                for payload_attribute in payload.attributes:
+                    name = payload_attribute.attribute_name.value
+                    value = payload_attribute.attribute_value
+                    attribute = self._get_attribute_from_managed_object(
+                        managed_object,
+                        name
+                    )
+                    if attribute is None:
+                        continue
+                    elif name == "Name":
+                        if value not in attribute:
+                            self._logger.debug(
+                                "Failed match: "
+                                "the specified name ({}) does not match "
+                                "any of the object's names ({}).".format(
+                                    value,
+                                    attribute
+                                )
+                            )
+                            add_object = False
                             break
-                    # TODO: filtering on other attributes
-                else:
+                    elif name == enums.AttributeType.INITIAL_DATE.value:
+                        initial_date["value"] = attribute
+                        self._track_date_attributes(
+                            enums.AttributeType.INITIAL_DATE,
+                            initial_date,
+                            value.value
+                        )
+                    else:
+                        if value != attribute:
+                            add_object = False
+                            break
+
+                if initial_date.get("value"):
+                    add_object &= self._is_valid_date(
+                        enums.AttributeType.INITIAL_DATE,
+                        initial_date.get("value"),
+                        initial_date.get("start"),
+                        initial_date.get("end")
+                    )
+
+                if add_object:
+                    self._logger.debug(
+                        "Locate filter matched object: {}".format(
+                            managed_object.unique_identifier
+                        )
+                    )
                     managed_objects_filtered.append(managed_object)
 
             managed_objects = managed_objects_filtered
