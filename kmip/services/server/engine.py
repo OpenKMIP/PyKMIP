@@ -1601,6 +1601,10 @@ class KmipEngine(object):
         managed_objects = self._list_objects_with_access_controls(
                                 enums.Operation.LOCATE)
 
+        # TODO (ph) Do a single pass on the provided attributes and preprocess
+        # them as needed (e.g., tracking multiple 'Initial Date' values, etc).
+        # Locate needs to be able to error out if multiple singleton attributes
+        # like 'State' are provided in the same request.
         if payload.attributes:
 
             managed_objects_filtered = []
@@ -1633,6 +1637,19 @@ class KmipEngine(object):
                                 "any of the object's names ({}).".format(
                                     value,
                                     attribute
+                                )
+                            )
+                            add_object = False
+                            break
+                    elif name == enums.AttributeType.STATE.value:
+                        value = value.value
+                        if value != attribute:
+                            self._logger.debug(
+                                "Failed match: "
+                                "the specified state ({}) does not match "
+                                "the object's state ({}).".format(
+                                    value.name,
+                                    attribute.name
                                 )
                             )
                             add_object = False

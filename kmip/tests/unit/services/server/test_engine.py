@@ -4682,6 +4682,101 @@ class TestKmipEngine(testtools.TestCase):
         self.assertEqual(len(response_payload.unique_identifiers), 1)
         self.assertIn(id_b, response_payload.unique_identifiers)
 
+    def test_locate_with_state(self):
+        """
+        Test the Locate operation when the 'State' attribute is given.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        key = (
+            b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        obj_a = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            key,
+            name='name1'
+        )
+        obj_a.state = enums.State.PRE_ACTIVE
+        obj_b = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.DES,
+            128,
+            key,
+            name='name2'
+        )
+        obj_b.state = enums.State.ACTIVE
+
+        e._data_session.add(obj_a)
+        e._data_session.add(obj_b)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+        id_b = str(obj_b.unique_identifier)
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Locate the object with a specific state
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.STATE,
+                enums.State.PRE_ACTIVE
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_a)
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified state ({}) does not match "
+            "the object's state ({}).".format(
+                enums.State.PRE_ACTIVE.name,
+                enums.State.ACTIVE.name
+            )
+        )
+        self.assertEqual(len(response_payload.unique_identifiers), 1)
+        self.assertIn(id_a, response_payload.unique_identifiers)
+
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.STATE,
+                enums.State.ACTIVE
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified state ({}) does not match "
+            "the object's state ({}).".format(
+                enums.State.ACTIVE.name,
+                enums.State.PRE_ACTIVE.name
+            )
+        )
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_b)
+        )
+        self.assertEqual(len(response_payload.unique_identifiers), 1)
+        self.assertIn(id_b, response_payload.unique_identifiers)
+
     def test_get(self):
         """
         Test that a Get request can be processed correctly.

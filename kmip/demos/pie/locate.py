@@ -34,6 +34,7 @@ if __name__ == '__main__':
     config = opts.config
     name = opts.name
     initial_dates = opts.initial_dates
+    state = opts.state
 
     attribute_factory = AttributeFactory()
 
@@ -71,6 +72,18 @@ if __name__ == '__main__':
                 t
             )
         )
+    if state:
+        state = getattr(enums.State, state, None)
+        if state:
+            attributes.append(
+                attribute_factory.create_attribute(
+                    enums.AttributeType.STATE,
+                    state
+                )
+            )
+        else:
+            logger.error("Invalid state provided: {}".format(opts.state))
+            sys.exit(-3)
 
     # Build the client and connect to the server
     with client.ProxyKmipClient(
