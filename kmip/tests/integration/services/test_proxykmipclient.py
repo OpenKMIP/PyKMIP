@@ -15,9 +15,11 @@
 
 import six
 import testtools
+import time
 import pytest
 
 from kmip.core import enums
+from kmip.core.factories import attributes as attribute_factory
 
 from kmip.pie import exceptions
 from kmip.pie import factory
@@ -30,9 +32,14 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
     def setUp(self):
         super(TestProxyKmipClientIntegration, self).setUp()
         self.object_factory = factory.ObjectFactory()
+        self.attribute_factory = attribute_factory.AttributeFactory()
 
     def tearDown(self):
         super(TestProxyKmipClientIntegration, self).tearDown()
+
+        uuids = self.client.locate()
+        for uuid in uuids:
+            self.client.destroy(uid=uuid)
 
     def test_symmetric_key_create_get_destroy(self):
         """
@@ -860,3 +867,123 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         )
         self.client.destroy(public_key_id)
         self.client.destroy(private_key_id)
+
+    def test_create_getattributes_locate_destroy(self):
+        """
+        Test that the ProxyKmipClient can create symmetric keys and then
+        locate those keys using their attributes.
+        """
+        start_time = int(time.time())
+        time.sleep(2)
+
+        # Create some symmetric keys
+        a_id = self.client.create(enums.CryptographicAlgorithm.AES, 256)
+
+        time.sleep(2)
+        mid_time = int(time.time())
+        time.sleep(2)
+
+        b_id = self.client.create(enums.CryptographicAlgorithm.AES, 128)
+
+        time.sleep(2)
+        end_time = int(time.time())
+
+        self.assertIsInstance(a_id, str)
+        self.assertIsInstance(b_id, str)
+
+        # Get the "Initial Date" attributes for each key
+        result_id, result_attributes = self.client.get_attributes(
+            uid=a_id,
+            attribute_names=["Initial Date"]
+        )
+        self.assertEqual(1, len(result_attributes))
+        self.assertEqual(
+            "Initial Date",
+            result_attributes[0].attribute_name.value
+        )
+        initial_date_a = result_attributes[0].attribute_value.value
+
+        result_id, result_attributes = self.client.get_attributes(
+            uid=b_id,
+            attribute_names=["Initial Date"]
+        )
+        self.assertEqual(1, len(result_attributes))
+        self.assertEqual(
+            "Initial Date",
+            result_attributes[0].attribute_name.value
+        )
+        initial_date_b = result_attributes[0].attribute_value.value
+
+        # Test locating each key by its exact "Initial Date" value
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.INITIAL_DATE,
+                    initial_date_a
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertEqual(a_id, result[0])
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.INITIAL_DATE,
+                    initial_date_b
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertEqual(b_id, result[0])
+
+        # Test locating each key by a range around its "Initial Date" value
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.INITIAL_DATE,
+                    start_time
+                ),
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.INITIAL_DATE,
+                    mid_time
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertEqual(a_id, result[0])
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.INITIAL_DATE,
+                    mid_time
+                ),
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.INITIAL_DATE,
+                    end_time
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertEqual(b_id, result[0])
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.INITIAL_DATE,
+                    start_time
+                ),
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.INITIAL_DATE,
+                    end_time
+                )
+            ]
+        )
+        self.assertEqual(2, len(result))
+        self.assertIn(a_id, result)
+        self.assertIn(b_id, result)
+
+        # Clean up the keys
+        self.client.destroy(a_id)
+        self.client.destroy(b_id)
