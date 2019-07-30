@@ -883,7 +883,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         mid_time = int(time.time())
         time.sleep(2)
 
-        b_id = self.client.create(enums.CryptographicAlgorithm.AES, 128)
+        b_id = self.client.create(enums.CryptographicAlgorithm.IDEA, 128)
 
         time.sleep(2)
         end_time = int(time.time())
@@ -1009,6 +1009,39 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         self.assertEqual(2, len(result))
         self.assertIn(a_id, result)
         self.assertIn(b_id, result)
+
+        # Test locating each key by its cryptographic algorithm.
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.AES
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertIn(a_id, result)
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.IDEA
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertIn(b_id, result)
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                )
+            ]
+        )
+        self.assertEqual(0, len(result))
 
         # Clean up the keys
         self.client.destroy(a_id)

@@ -1623,6 +1623,26 @@ class KmipEngine(object):
                 for payload_attribute in payload.attributes:
                     name = payload_attribute.attribute_name.value
                     value = payload_attribute.attribute_value
+
+                    # Verify that the attribute is applicable to the current
+                    # object. If not, the object doesn't match, so skip it.
+                    policy = self._attribute_policy
+                    if not policy.is_attribute_applicable_to_object_type(
+                        name,
+                        managed_object.object_type
+                    ):
+                        self._logger.debug(
+                            "Failed match: "
+                            "the specified attribute ({}) is not applicable "
+                            "for the object's object type ({}).".format(
+                                name,
+                                managed_object.object_type.name)
+                        )
+                        add_object = False
+                        break
+
+                    # Fetch the attribute from the object and check if it
+                    # matches. If not, the object doesn't match, so skip it.
                     attribute = self._get_attribute_from_managed_object(
                         managed_object,
                         name
@@ -1661,6 +1681,20 @@ class KmipEngine(object):
                                 "Failed match: "
                                 "the specified object type ({}) does not "
                                 "match the object's object type ({}).".format(
+                                    value.name,
+                                    attribute.name
+                                )
+                            )
+                            add_object = False
+                            break
+                    elif name == "Cryptographic Algorithm":
+                        value = value.value
+                        if value != attribute:
+                            self._logger.debug(
+                                "Failed match: "
+                                "the specified cryptographic algorithm ({}) "
+                                "does not match the object's cryptographic "
+                                "algorithm ({}).".format(
                                     value.name,
                                     attribute.name
                                 )

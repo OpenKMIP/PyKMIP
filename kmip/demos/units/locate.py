@@ -39,6 +39,7 @@ if __name__ == '__main__':
     initial_dates = opts.initial_dates
     state = opts.state
     object_type = opts.object_type
+    cryptographic_algorithm = opts.cryptographic_algorithm
 
     attribute_factory = AttributeFactory()
     credential_factory = CredentialFactory()
@@ -124,6 +125,27 @@ if __name__ == '__main__':
             )
             client.close()
             sys.exit(-4)
+    if cryptographic_algorithm:
+        cryptographic_algorithm = getattr(
+            enums.CryptographicAlgorithm,
+            cryptographic_algorithm,
+            None
+        )
+        if cryptographic_algorithm:
+            attributes.append(
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    cryptographic_algorithm
+                )
+            )
+        else:
+            logger.error(
+                "Invalid cryptographic algorithm provided: {}".format(
+                    opts.cryptographic_algorithm
+                )
+            )
+            client.close()
+            sys.exit(-5)
 
     result = client.locate(attributes=attributes, credential=credential)
     client.close()
