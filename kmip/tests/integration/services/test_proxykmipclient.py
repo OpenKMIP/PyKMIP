@@ -997,6 +997,19 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         self.assertIn(a_id, result)
         self.assertIn(b_id, result)
 
+        # Test locating each key by its object type.
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.OBJECT_TYPE,
+                    enums.ObjectType.SYMMETRIC_KEY
+                )
+            ]
+        )
+        self.assertEqual(2, len(result))
+        self.assertIn(a_id, result)
+        self.assertIn(b_id, result)
+
         # Clean up the keys
         self.client.destroy(a_id)
         self.client.destroy(b_id)

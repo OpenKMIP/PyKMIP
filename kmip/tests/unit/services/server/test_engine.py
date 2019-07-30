@@ -4777,6 +4777,118 @@ class TestKmipEngine(testtools.TestCase):
         self.assertEqual(len(response_payload.unique_identifiers), 1)
         self.assertIn(id_b, response_payload.unique_identifiers)
 
+    def test_locate_with_object_type(self):
+        """
+        Test the Locate operation when the 'Object Type' attribute is given.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        key = (
+            b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        obj_a = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            key,
+            name='name1'
+        )
+        obj_b = pie_objects.SecretData(
+            key,
+            enums.SecretDataType.PASSWORD
+        )
+
+        e._data_session.add(obj_a)
+        e._data_session.add(obj_b)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+        id_b = str(obj_b.unique_identifier)
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Locate the secret data object based on its type.
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.OBJECT_TYPE,
+                enums.ObjectType.SECRET_DATA
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_b)
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified object type (SECRET_DATA) does not "
+            "match the object's object type (SYMMETRIC_KEY)."
+        )
+        self.assertEqual(1, len(response_payload.unique_identifiers))
+        self.assertIn(id_b, response_payload.unique_identifiers)
+
+        # Locate the symmetric key object based on its type.
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.OBJECT_TYPE,
+                enums.ObjectType.SYMMETRIC_KEY
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_a)
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified object type (SYMMETRIC_KEY) does not "
+            "match the object's object type (SECRET_DATA)."
+        )
+        self.assertEqual(1, len(response_payload.unique_identifiers))
+        self.assertIn(id_a, response_payload.unique_identifiers)
+
+        # Try to locate a non-existent object by its type.
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.OBJECT_TYPE,
+                enums.ObjectType.PUBLIC_KEY
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified object type (PUBLIC_KEY) does not "
+            "match the object's object type (SYMMETRIC_KEY)."
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified object type (PUBLIC_KEY) does not "
+            "match the object's object type (SECRET_DATA)."
+        )
+        self.assertEqual(0, len(response_payload.unique_identifiers))
+
     def test_get(self):
         """
         Test that a Get request can be processed correctly.

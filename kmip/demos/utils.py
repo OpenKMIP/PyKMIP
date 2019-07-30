@@ -260,6 +260,17 @@ def build_cli_parser(operation=None):
             dest="state",
             help="The state of the secret (e.g., PRE_ACTIVE, ACTIVE)"
         )
+        parser.add_option(
+            "--object-type",
+            action="store",
+            type="str",
+            default=None,
+            dest="object_type",
+            help=(
+                "The object type of the secret "
+                "(e.g., CERTIFICATE, SYMMETRIC_KEY)"
+            )
+        )
     elif operation is Operation.REGISTER:
         parser.add_option(
             "-f",
