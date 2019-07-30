@@ -38,6 +38,7 @@ if __name__ == '__main__':
     name = opts.name
     initial_dates = opts.initial_dates
     state = opts.state
+    object_type = opts.object_type
 
     attribute_factory = AttributeFactory()
     credential_factory = CredentialFactory()
@@ -107,7 +108,22 @@ if __name__ == '__main__':
         else:
             logger.error("Invalid state provided: {}".format(opts.state))
             client.close()
-            sys.exit(-1)
+            sys.exit(-3)
+    if object_type:
+        object_type = getattr(enums.ObjectType, object_type, None)
+        if object_type:
+            attributes.append(
+                attribute_factory.create_attribute(
+                    enums.AttributeType.OBJECT_TYPE,
+                    object_type
+                )
+            )
+        else:
+            logger.error(
+                "Invalid object type provided: {}".format(opts.object_type)
+            )
+            client.close()
+            sys.exit(-4)
 
     result = client.locate(attributes=attributes, credential=credential)
     client.close()
