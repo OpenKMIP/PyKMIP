@@ -36,6 +36,7 @@ if __name__ == '__main__':
     initial_dates = opts.initial_dates
     state = opts.state
     object_type = opts.object_type
+    cryptographic_algorithm = opts.cryptographic_algorithm
 
     attribute_factory = AttributeFactory()
 
@@ -99,6 +100,26 @@ if __name__ == '__main__':
                 "Invalid object type provided: {}".format(opts.object_type)
             )
             sys.exit(-4)
+    if cryptographic_algorithm:
+        cryptographic_algorithm = getattr(
+            enums.CryptographicAlgorithm,
+            cryptographic_algorithm,
+            None
+        )
+        if cryptographic_algorithm:
+            attributes.append(
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    cryptographic_algorithm
+                )
+            )
+        else:
+            logger.error(
+                "Invalid cryptographic algorithm provided: {}".format(
+                    opts.cryptographic_algorithm
+                )
+            )
+            sys.exit(-5)
 
     # Build the client and connect to the server
     with client.ProxyKmipClient(

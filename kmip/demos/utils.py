@@ -271,6 +271,14 @@ def build_cli_parser(operation=None):
                 "(e.g., CERTIFICATE, SYMMETRIC_KEY)"
             )
         )
+        parser.add_option(
+            "--cryptographic-algorithm",
+            action="store",
+            type="str",
+            default=None,
+            dest="cryptographic_algorithm",
+            help="The cryptographic algorithm of the secret (e.g., AES, RSA)"
+        )
     elif operation is Operation.REGISTER:
         parser.add_option(
             "-f",

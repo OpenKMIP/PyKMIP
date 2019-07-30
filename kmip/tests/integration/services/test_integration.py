@@ -1373,6 +1373,31 @@ class TestIntegration(testtools.TestCase):
         self.assertIn(uid_a, result.uuids)
         self.assertIn(uid_b, result.uuids)
 
+        # Test locating each key by its cryptographic algorithm.
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.AES
+                )
+            ]
+        )
+        self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
+        self.assertEqual(2, len(result.uuids))
+        self.assertIn(uid_a, result.uuids)
+        self.assertIn(uid_b, result.uuids)
+
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.IDEA
+                )
+            ]
+        )
+        self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
+        self.assertEqual(0, len(result.uuids))
+
         # Clean up keys
         result = self.client.destroy(uid_a)
         self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
