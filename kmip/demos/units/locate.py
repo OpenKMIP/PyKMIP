@@ -41,6 +41,7 @@ if __name__ == '__main__':
     object_type = opts.object_type
     cryptographic_algorithm = opts.cryptographic_algorithm
     cryptographic_length = opts.cryptographic_length
+    unique_identifier = opts.unique_identifier
 
     attribute_factory = AttributeFactory()
     credential_factory = CredentialFactory()
@@ -163,6 +164,13 @@ if __name__ == '__main__':
             )
             client.close()
             sys.exit(-6)
+    if unique_identifier:
+        attributes.append(
+            attribute_factory.create_attribute(
+                enums.AttributeType.UNIQUE_IDENTIFIER,
+                unique_identifier
+            )
+        )
 
     result = client.locate(attributes=attributes, credential=credential)
     client.close()
