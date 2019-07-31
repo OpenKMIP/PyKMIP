@@ -39,6 +39,7 @@ if __name__ == '__main__':
     cryptographic_algorithm = opts.cryptographic_algorithm
     cryptographic_length = opts.cryptographic_length
     unique_identifier = opts.unique_identifier
+    operation_policy_name = opts.operation_policy_name
 
     attribute_factory = AttributeFactory()
 
@@ -142,6 +143,13 @@ if __name__ == '__main__':
             attribute_factory.create_attribute(
                 enums.AttributeType.UNIQUE_IDENTIFIER,
                 unique_identifier
+            )
+        )
+    if operation_policy_name:
+        attributes.append(
+            attribute_factory.create_attribute(
+                enums.AttributeType.OPERATION_POLICY_NAME,
+                operation_policy_name
             )
         )
 

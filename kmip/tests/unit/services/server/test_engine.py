@@ -5178,6 +5178,119 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(0, len(response_payload.unique_identifiers))
 
+    def test_locate_with_operation_policy_name(self):
+        """
+        Test the Locate operation when the 'Operation Policy Name' attribute
+        is given.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        key = (
+            b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        obj_a = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            key,
+            name='name1'
+        )
+        obj_a.operation_policy_name = "default"
+        obj_b = pie_objects.SecretData(
+            key,
+            enums.SecretDataType.PASSWORD
+        )
+        obj_b.operation_policy_name = "custom"
+
+        e._data_session.add(obj_a)
+        e._data_session.add(obj_b)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+        id_b = str(obj_b.unique_identifier)
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Locate the symmetric key object based on its unique identifier.
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.OPERATION_POLICY_NAME,
+                "default"
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_a)
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified operation policy name (default) does not match "
+            "the object's operation policy name (custom)."
+        )
+        self.assertEqual(1, len(response_payload.unique_identifiers))
+        self.assertIn(id_a, response_payload.unique_identifiers)
+
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.OPERATION_POLICY_NAME,
+                "custom"
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_b)
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified operation policy name (custom) does not match "
+            "the object's operation policy name (default)."
+        )
+        self.assertEqual(1, len(response_payload.unique_identifiers))
+        self.assertIn(id_b, response_payload.unique_identifiers)
+
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.OPERATION_POLICY_NAME,
+                "unknown"
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified operation policy name (unknown) does not match "
+            "the object's operation policy name (default)."
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified operation policy name (unknown) does not match "
+            "the object's operation policy name (custom)."
+        )
+        self.assertEqual(0, len(response_payload.unique_identifiers))
+
     def test_get(self):
         """
         Test that a Get request can be processed correctly.

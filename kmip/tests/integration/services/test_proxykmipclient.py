@@ -1109,6 +1109,29 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         )
         self.assertEqual(0, len(result))
 
+        # Test locating each key by its operation policy name.
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.OPERATION_POLICY_NAME,
+                    "default"
+                )
+            ]
+        )
+        self.assertEqual(2, len(result))
+        self.assertIn(a_id, result)
+        self.assertIn(b_id, result)
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.OPERATION_POLICY_NAME,
+                    "unknown"
+                )
+            ]
+        )
+        self.assertEqual(0, len(result))
+
         # Clean up the keys
         self.client.destroy(a_id)
         self.client.destroy(b_id)
