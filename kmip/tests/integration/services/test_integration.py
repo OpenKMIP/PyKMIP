@@ -1454,6 +1454,29 @@ class TestIntegration(testtools.TestCase):
         )
         self.assertEqual(0, len(result.uuids))
 
+        # Test locating each key by its operation policy name.
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.OPERATION_POLICY_NAME,
+                    "default"
+                )
+            ]
+        )
+        self.assertEqual(2, len(result.uuids))
+        self.assertIn(uid_a, result.uuids)
+        self.assertIn(uid_b, result.uuids)
+
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.OPERATION_POLICY_NAME,
+                    "unknown"
+                )
+            ]
+        )
+        self.assertEqual(0, len(result.uuids))
+
         # Clean up keys
         result = self.client.destroy(uid_a)
         self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)

@@ -1729,6 +1729,20 @@ class KmipEngine(object):
                             )
                             add_object = False
                             break
+                    elif name == "Operation Policy Name":
+                        value = value.value
+                        if value != attribute:
+                            self._logger.debug(
+                                "Failed match: "
+                                "the specified operation policy name ({}) "
+                                "does not match the object's operation policy "
+                                "name ({}).".format(
+                                    value,
+                                    attribute
+                                )
+                            )
+                            add_object = False
+                            break
                     elif name == enums.AttributeType.INITIAL_DATE.value:
                         initial_date["value"] = attribute
                         self._track_date_attributes(

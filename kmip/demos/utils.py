@@ -296,6 +296,14 @@ def build_cli_parser(operation=None):
             dest="unique_identifier",
             help="The unique identifier of the secret (e.g., 1, 2, 3)"
         )
+        parser.add_option(
+            "--operation-policy-name",
+            action="store",
+            type="str",
+            default=None,
+            dest="operation_policy_name",
+            help="The operation policy name of the secret (e.g., default)"
+        )
     elif operation is Operation.REGISTER:
         parser.add_option(
             "-f",
