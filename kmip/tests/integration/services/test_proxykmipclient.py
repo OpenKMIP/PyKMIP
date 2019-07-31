@@ -1043,6 +1043,39 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         )
         self.assertEqual(0, len(result))
 
+        # Test locating each key by its cryptographic length.
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    128
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertIn(b_id, result)
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    256
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertIn(a_id, result)
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                )
+            ]
+        )
+        self.assertEqual(0, len(result))
+
         # Clean up the keys
         self.client.destroy(a_id)
         self.client.destroy(b_id)

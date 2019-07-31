@@ -37,6 +37,7 @@ if __name__ == '__main__':
     state = opts.state
     object_type = opts.object_type
     cryptographic_algorithm = opts.cryptographic_algorithm
+    cryptographic_length = opts.cryptographic_length
 
     attribute_factory = AttributeFactory()
 
@@ -120,6 +121,21 @@ if __name__ == '__main__':
                 )
             )
             sys.exit(-5)
+    if cryptographic_length:
+        if cryptographic_length > 0:
+            attributes.append(
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    cryptographic_length
+                )
+            )
+        else:
+            logger.error(
+                "Invalid cryptographic length provided: {}".format(
+                    opts.cryptographic_length
+                )
+            )
+            sys.exit(-6)
 
     # Build the client and connect to the server
     with client.ProxyKmipClient(
