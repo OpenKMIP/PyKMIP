@@ -279,6 +279,14 @@ def build_cli_parser(operation=None):
             dest="cryptographic_algorithm",
             help="The cryptographic algorithm of the secret (e.g., AES, RSA)"
         )
+        parser.add_option(
+            "--cryptographic-length",
+            action="store",
+            type="int",
+            default=None,
+            dest="cryptographic_length",
+            help="The cryptographic length of the secret (e.g., 128, 2048)"
+        )
     elif operation is Operation.REGISTER:
         parser.add_option(
             "-f",

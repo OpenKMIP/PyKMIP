@@ -1701,6 +1701,20 @@ class KmipEngine(object):
                             )
                             add_object = False
                             break
+                    elif name == "Cryptographic Length":
+                        value = value.value
+                        if value != attribute:
+                            self._logger.debug(
+                                "Failed match: "
+                                "the specified cryptographic length ({}) "
+                                "does not match the object's cryptographic "
+                                "length ({}).".format(
+                                    value,
+                                    attribute
+                                )
+                            )
+                            add_object = False
+                            break
                     elif name == enums.AttributeType.INITIAL_DATE.value:
                         initial_date["value"] = attribute
                         self._track_date_attributes(
