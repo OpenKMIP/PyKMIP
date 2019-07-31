@@ -287,6 +287,15 @@ def build_cli_parser(operation=None):
             dest="cryptographic_length",
             help="The cryptographic length of the secret (e.g., 128, 2048)"
         )
+        parser.add_option(
+            "-i",
+            "--unique-identifier",
+            action="store",
+            type="str",
+            default=None,
+            dest="unique_identifier",
+            help="The unique identifier of the secret (e.g., 1, 2, 3)"
+        )
     elif operation is Operation.REGISTER:
         parser.add_option(
             "-f",

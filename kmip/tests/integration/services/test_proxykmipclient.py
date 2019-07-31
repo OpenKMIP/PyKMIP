@@ -1076,6 +1076,39 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         )
         self.assertEqual(0, len(result))
 
+        # Test locating each key by its unique identifier.
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.UNIQUE_IDENTIFIER,
+                    a_id
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertIn(a_id, result)
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.UNIQUE_IDENTIFIER,
+                    b_id
+                )
+            ]
+        )
+        self.assertEqual(1, len(result))
+        self.assertIn(b_id, result)
+
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.UNIQUE_IDENTIFIER,
+                    "unknown"
+                )
+            ]
+        )
+        self.assertEqual(0, len(result))
+
         # Clean up the keys
         self.client.destroy(a_id)
         self.client.destroy(b_id)
