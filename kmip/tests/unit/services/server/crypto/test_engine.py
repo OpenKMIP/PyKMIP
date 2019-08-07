@@ -1331,6 +1331,34 @@ class TestCryptographyEngine(testtools.TestCase):
              b'\x6a\xcc\x04\x14\x2e\x10\x0a\x65'
              b'\xf5\x1b\x97\xad\xf5\x17\x2c\x41'
          )},
+        {'algorithm': enums.CryptographicAlgorithm.AES,
+         'cipher_mode': enums.BlockCipherMode.GCM,
+         'key': (
+             b'\x6e\xd7\x6d\x2d\x97\xc6\x9f\xd1'
+             b'\x33\x95\x89\x52\x39\x31\xf2\xa6'
+             b'\xcf\xf5\x54\xb1\x5f\x73\x8f\x21'
+             b'\xec\x72\xdd\x97\xa7\x33\x09\x07'
+         ),
+         'iv_nonce': (
+             b'\x85\x1e\x87\x64\x77\x6e\x67\x96'
+             b'\xaa\xb7\x22\xdb\xb6\x44\xac\xe8'
+         ),
+         'plain_text': (
+             b'\x62\x82\xb8\xc0\x5c\x5c\x15\x30'
+             b'\xb9\x7d\x48\x16\xca\x43\x47\x62'
+         ),
+         'auth_additional_data': (
+             b'\x61\x75\x74\x68\x2d\x74\x65\x73\x74'
+         ),
+         'auth_tag_length': 16,
+         'cipher_text': (
+             b'\x09\x45\x1b\x14\xf9\x25\x68\x24'
+             b'\x55\x50\x13\xb5\x09\xe9\xd6\x63'
+         ),
+         'auth_tag': (
+             b'\xbe\x9f\xef\x78\x5f\x9e\xe6\x16'
+             b'\x90\xe9\x44\x59\xc1\x84\x44\x7f'
+         )},
         {'algorithm': enums.CryptographicAlgorithm.BLOWFISH,
          'cipher_mode': enums.BlockCipherMode.OFB,
          'key': (
@@ -1441,7 +1469,9 @@ def test_encrypt_symmetric(symmetric_parameters):
         symmetric_parameters.get('key'),
         symmetric_parameters.get('plain_text'),
         cipher_mode=symmetric_parameters.get('cipher_mode'),
-        iv_nonce=symmetric_parameters.get('iv_nonce')
+        iv_nonce=symmetric_parameters.get('iv_nonce'),
+        auth_additional_data=symmetric_parameters.get('auth_additional_data'),
+        auth_tag_length=symmetric_parameters.get('auth_tag_length')
     )
 
     if engine._handle_symmetric_padding.called:
@@ -1454,6 +1484,7 @@ def test_encrypt_symmetric(symmetric_parameters):
         )
 
     assert symmetric_parameters.get('cipher_text') == result.get('cipher_text')
+    assert symmetric_parameters.get('auth_tag') == result.get('auth_tag')
 
 
 def test_decrypt_symmetric(symmetric_parameters):
@@ -1472,7 +1503,9 @@ def test_decrypt_symmetric(symmetric_parameters):
         symmetric_parameters.get('key'),
         symmetric_parameters.get('cipher_text'),
         cipher_mode=symmetric_parameters.get('cipher_mode'),
-        iv_nonce=symmetric_parameters.get('iv_nonce')
+        iv_nonce=symmetric_parameters.get('iv_nonce'),
+        auth_additional_data=symmetric_parameters.get('auth_additional_data'),
+        auth_tag=symmetric_parameters.get('auth_tag')
     )
 
     if engine._handle_symmetric_padding.called:

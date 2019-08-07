@@ -2272,13 +2272,16 @@ class KmipEngine(object):
             payload.data,
             cipher_mode=cryptographic_parameters.block_cipher_mode,
             padding_method=cryptographic_parameters.padding_method,
-            iv_nonce=payload.iv_counter_nonce
+            iv_nonce=payload.iv_counter_nonce,
+            auth_additional_data=payload.auth_additional_data,
+            auth_tag_length=cryptographic_parameters.tag_length
         )
 
         response_payload = payloads.EncryptResponsePayload(
             unique_identifier,
             result.get('cipher_text'),
-            result.get('iv_nonce')
+            result.get('iv_nonce'),
+            result.get('auth_tag')
         )
         return response_payload
 
@@ -2335,7 +2338,9 @@ class KmipEngine(object):
             payload.data,
             cipher_mode=cryptographic_parameters.block_cipher_mode,
             padding_method=cryptographic_parameters.padding_method,
-            iv_nonce=payload.iv_counter_nonce
+            iv_nonce=payload.iv_counter_nonce,
+            auth_additional_data=payload.auth_additional_data,
+            auth_tag=payload.auth_tag
         )
 
         response_payload = payloads.DecryptResponsePayload(

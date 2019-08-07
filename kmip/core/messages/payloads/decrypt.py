@@ -33,13 +33,22 @@ class DecryptRequestPayload(primitives.Struct):
         data: The data to be decrypted in the form of a binary string.
         iv_counter_nonce: An IV/counter/nonce to be used with the decryption
             algorithm. Comes in the form of a binary string.
+        auth_additional_data: Any additional data to be authenticated via the
+            Authenticated Encryption Tag. Added in KMIP 1.4.
+        auth_tag: Specifies the tag that will be needed to
+            authenticate the decrypted data. Only returned on completion
+            of the encryption of the last of the plaintext by an
+            authenticated encryption cipher. Optional, defaults to None.
+            Added in KMIP 1.4.
     """
 
     def __init__(self,
                  unique_identifier=None,
                  cryptographic_parameters=None,
                  data=None,
-                 iv_counter_nonce=None):
+                 iv_counter_nonce=None,
+                 auth_additional_data=None,
+                 auth_tag=None):
         """
         Construct a Decrypt request payload struct.
 
@@ -56,6 +65,14 @@ class DecryptRequestPayload(primitives.Struct):
                 encoding and decoding.
             iv_counter_nonce (bytes): The IV/counter/nonce value to be used
                 with the decryption algorithm. Optional, defaults to None.
+            auth_additional_data (bytes): Any additional data to be
+                authenticated via the Authenticated Encryption Tag.
+                Added in KMIP 1.4.
+            auth_tag (bytes): Specifies the tag that will be needed to
+                authenticate the decrypted data. Only returned on completion
+                of the encryption of the last of the plaintext by an
+                authenticated encryption cipher. Optional, defaults to None.
+                Added in KMIP 1.4.
         """
         super(DecryptRequestPayload, self).__init__(
             enums.Tags.REQUEST_PAYLOAD
@@ -65,11 +82,15 @@ class DecryptRequestPayload(primitives.Struct):
         self._cryptographic_parameters = None
         self._data = None
         self._iv_counter_nonce = None
+        self._auth_additional_data = None
+        self._auth_tag = None
 
         self.unique_identifier = unique_identifier
         self.cryptographic_parameters = cryptographic_parameters
         self.data = data
         self.iv_counter_nonce = iv_counter_nonce
+        self.auth_additional_data = auth_additional_data
+        self.auth_tag = auth_tag
 
     @property
     def unique_identifier(self):
@@ -144,6 +165,44 @@ class DecryptRequestPayload(primitives.Struct):
         else:
             raise TypeError("IV/counter/nonce must be bytes")
 
+    @property
+    def auth_additional_data(self):
+        if self._auth_additional_data:
+            return self._auth_additional_data.value
+        else:
+            return None
+
+    @auth_additional_data.setter
+    def auth_additional_data(self, value):
+        if value is None:
+            self._auth_additional_data = None
+        elif isinstance(value, six.binary_type):
+            self._auth_additional_data = primitives.ByteString(
+                value=value,
+                tag=enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA
+            )
+        else:
+            raise TypeError("authenticated additional data must be bytes")
+
+    @property
+    def auth_tag(self):
+        if self._auth_tag:
+            return self._auth_tag.value
+        else:
+            return None
+
+    @auth_tag.setter
+    def auth_tag(self, value):
+        if value is None:
+            self._auth_tag = None
+        elif isinstance(value, six.binary_type):
+            self._auth_tag = primitives.ByteString(
+                value=value,
+                tag=enums.Tags.AUTHENTICATED_ENCRYPTION_TAG
+            )
+        else:
+            raise TypeError("authenticated encryption tag must be bytes")
+
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Read the data encoding the Decrypt request payload and decode it
@@ -202,6 +261,29 @@ class DecryptRequestPayload(primitives.Struct):
                 kmip_version=kmip_version
             )
 
+        if kmip_version >= enums.KMIPVersion.KMIP_1_4:
+            if self.is_tag_next(
+                    enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA,
+                    local_stream
+            ):
+                self._auth_additional_data = primitives.ByteString(
+                    tag=enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA
+                )
+                self._auth_additional_data.read(
+                    local_stream,
+                    kmip_version=kmip_version
+                )
+            if self.is_tag_next(
+                    enums.Tags.AUTHENTICATED_ENCRYPTION_TAG, local_stream
+            ):
+                self._auth_tag = primitives.ByteString(
+                    tag=enums.Tags.AUTHENTICATED_ENCRYPTION_TAG
+                )
+                self._auth_tag.read(
+                    local_stream,
+                    kmip_version=kmip_version
+                )
+
         self.is_oversized(local_stream)
 
     def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -243,6 +325,18 @@ class DecryptRequestPayload(primitives.Struct):
                 kmip_version=kmip_version
             )
 
+        if kmip_version >= enums.KMIPVersion.KMIP_1_4:
+            if self._auth_additional_data:
+                self._auth_additional_data.write(
+                    local_stream,
+                    kmip_version=kmip_version
+                )
+            if self._auth_tag:
+                self._auth_tag.write(
+                    local_stream,
+                    kmip_version=kmip_version
+                )
+
         self.length = local_stream.length()
         super(DecryptRequestPayload, self).write(
             output_stream,
@@ -260,6 +354,10 @@ class DecryptRequestPayload(primitives.Struct):
             elif self.data != other.data:
                 return False
             elif self.iv_counter_nonce != other.iv_counter_nonce:
+                return False
+            elif self.auth_additional_data != other.auth_additional_data:
+                return False
+            elif self.auth_tag != other.auth_tag:
                 return False
             else:
                 return True
@@ -279,7 +377,9 @@ class DecryptRequestPayload(primitives.Struct):
                 repr(self.cryptographic_parameters)
             ),
             "data={0}".format(self.data),
-            "iv_counter_nonce={0}".format(self.iv_counter_nonce)
+            "iv_counter_nonce={0}".format(self.iv_counter_nonce),
+            "auth_additional_data={0}".format(self.auth_additional_data),
+            "auth_tag={0}".format(self.auth_tag)
         ])
         return "DecryptRequestPayload({0})".format(args)
 
@@ -288,7 +388,9 @@ class DecryptRequestPayload(primitives.Struct):
             'unique_identifier': self.unique_identifier,
             'cryptographic_parameters': self.cryptographic_parameters,
             'data': self.data,
-            'iv_counter_nonce': self.iv_counter_nonce
+            'iv_counter_nonce': self.iv_counter_nonce,
+            'auth_additional_data': self.auth_additional_data,
+            'auth_tag': self.auth_tag
         })
 
 
