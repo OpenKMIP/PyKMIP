@@ -53,9 +53,11 @@ class TestDecryptRequestPayload(testtools.TestCase):
         #     Initial Counter Value - 1
         # Data - 0x0123456789ABCDEF
         # IV/Counter/Nonce - 0x01
+        # Authenticated Encryption Additional Data - 0x011080ff
+        # Authenticated Encryption Tag - 0x0190FE
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x01\x28'
+            b'\x42\x00\x79\x01\x00\x00\x01\x48'
             b'\x42\x00\x94\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30'
             b'\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D'
             b'\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00'
@@ -75,6 +77,8 @@ class TestDecryptRequestPayload(testtools.TestCase):
             b'\x42\x00\xD1\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
             b'\x42\x00\xC2\x08\x00\x00\x00\x08\x01\x23\x45\x67\x89\xAB\xCD\xEF'
             b'\x42\x00\x3D\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+            b'\x42\x00\xFE\x08\x00\x00\x00\x04\x01\x10\x80\xFF\x00\x00\x00\x00'
+            b'\x42\x00\xFF\x08\x00\x00\x00\x03\x01\x90\xFE\x00\x00\x00\x00\x00'
         )
 
         # Adapted from the full encoding above. This encoding matches the
@@ -104,6 +108,8 @@ class TestDecryptRequestPayload(testtools.TestCase):
         self.assertEqual(None, payload.cryptographic_parameters)
         self.assertEqual(None, payload.data)
         self.assertEqual(None, payload.iv_counter_nonce)
+        self.assertEqual(None, payload.auth_additional_data)
+        self.assertEqual(None, payload.auth_tag)
 
     def test_init_with_args(self):
         """
@@ -114,7 +120,9 @@ class TestDecryptRequestPayload(testtools.TestCase):
             unique_identifier='00000000-1111-2222-3333-444444444444',
             cryptographic_parameters=attributes.CryptographicParameters(),
             data=b'\x01\x02\x03',
-            iv_counter_nonce=b'\x01'
+            iv_counter_nonce=b'\x01',
+            auth_additional_data=b'\x01\x10\x80\xFF',
+            auth_tag=b'\x01\x90\xFE'
         )
 
         self.assertEqual(
@@ -127,6 +135,8 @@ class TestDecryptRequestPayload(testtools.TestCase):
         )
         self.assertEqual(b'\x01\x02\x03', payload.data)
         self.assertEqual(b'\x01', payload.iv_counter_nonce)
+        self.assertEqual(b'\x01\x10\x80\xFF', payload.auth_additional_data)
+        self.assertEqual(b'\x01\x90\xFE', payload.auth_tag)
 
     def test_invalid_unique_identifier(self):
         """
@@ -185,6 +195,34 @@ class TestDecryptRequestPayload(testtools.TestCase):
             *args
         )
 
+    def test_invalid_auth_additional_data(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the authenticated additional data of an Decrypt request payload.
+        """
+        payload = payloads.DecryptRequestPayload()
+        args = (payload, 'auth_additional_data', 0)
+        self.assertRaisesRegex(
+            TypeError,
+            "authenticated additional data must be bytes",
+            setattr,
+            *args
+        )
+
+    def test_invalid_auth_tag(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the authenticated encryption tag of an Decrypt request payload.
+        """
+        payload = payloads.DecryptRequestPayload()
+        args = (payload, 'auth_tag', 0)
+        self.assertRaisesRegex(
+            TypeError,
+            "authenticated encryption tag must be bytes",
+            setattr,
+            *args
+        )
+
     def test_read(self):
         """
         Test that a Decrypt request payload can be read from a data stream.
@@ -195,8 +233,10 @@ class TestDecryptRequestPayload(testtools.TestCase):
         self.assertEqual(None, payload.cryptographic_parameters)
         self.assertEqual(None, payload.data)
         self.assertEqual(None, payload.iv_counter_nonce)
+        self.assertEqual(None, payload.auth_additional_data)
+        self.assertEqual(None, payload.auth_tag)
 
-        payload.read(self.full_encoding)
+        payload.read(self.full_encoding, enums.KMIPVersion.KMIP_1_4)
 
         self.assertEqual(
             'b4faee10-aa2a-4446-8ad4-0881f3422959',
@@ -245,6 +285,8 @@ class TestDecryptRequestPayload(testtools.TestCase):
         )
         self.assertEqual(b'\x01\x23\x45\x67\x89\xAB\xCD\xEF', payload.data)
         self.assertEqual(b'\x01', payload.iv_counter_nonce)
+        self.assertEqual(b'\x01\x10\x80\xFF', payload.auth_additional_data)
+        self.assertEqual(b'\x01\x90\xFE', payload.auth_tag)
 
     def test_read_partial(self):
         """
@@ -302,10 +344,12 @@ class TestDecryptRequestPayload(testtools.TestCase):
                 initial_counter_value=1
             ),
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            iv_counter_nonce=b'\x01'
+            iv_counter_nonce=b'\x01',
+            auth_additional_data=b'\x01\x10\x80\xFF',
+            auth_tag=b'\x01\x90\xFE'
         )
         stream = utils.BytearrayStream()
-        payload.write(stream)
+        payload.write(stream, enums.KMIPVersion.KMIP_1_4)
 
         self.assertEqual(len(self.full_encoding), len(stream))
         self.assertEqual(str(self.full_encoding), str(stream))
@@ -369,7 +413,9 @@ class TestDecryptRequestPayload(testtools.TestCase):
                 initial_counter_value=1
             ),
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            iv_counter_nonce=b'\x01'
+            iv_counter_nonce=b'\x01',
+            auth_additional_data=b'\x01\x10\x80\xFF',
+            auth_tag=b'\x01\x90\xFE'
         )
         b = payloads.DecryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
@@ -390,7 +436,9 @@ class TestDecryptRequestPayload(testtools.TestCase):
                 initial_counter_value=1
             ),
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            iv_counter_nonce=b'\x01'
+            iv_counter_nonce=b'\x01',
+            auth_additional_data=b'\x01\x10\x80\xFF',
+            auth_tag=b'\x01\x90\xFE'
         )
 
         self.assertTrue(a == b)
@@ -452,6 +500,30 @@ class TestDecryptRequestPayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
+    def test_equal_on_not_equal_auth_additional_data(self):
+        """
+        Test that the equality operator returns False when comparing two
+        Decrypt request payloads with different authenticated additional data
+        values.
+        """
+        a = payloads.DecryptRequestPayload(auth_additional_data=b'\x22')
+        b = payloads.DecryptRequestPayload(auth_additional_data=b'\xAA')
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
+    def test_equal_on_not_equal_auth_tag(self):
+        """
+        Test that the equality operator returns False when comparing two
+        Decrypt request payloads with different authenticated encryption tag
+        values.
+        """
+        a = payloads.DecryptRequestPayload(auth_tag=b'\x22')
+        b = payloads.DecryptRequestPayload(auth_tag=b'\xAA')
+
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
+
     def test_equal_on_type_mismatch(self):
         """
         Test that the equality operator returns False when comparing two
@@ -493,7 +565,9 @@ class TestDecryptRequestPayload(testtools.TestCase):
                 initial_counter_value=1
             ),
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            iv_counter_nonce=b'\x01'
+            iv_counter_nonce=b'\x01',
+            auth_additional_data=b'\x01\x10\x80\xFF',
+            auth_tag=b'\x01\x90\xFE'
         )
         b = payloads.DecryptRequestPayload(
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
@@ -514,7 +588,9 @@ class TestDecryptRequestPayload(testtools.TestCase):
                 initial_counter_value=1
             ),
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            iv_counter_nonce=b'\x01'
+            iv_counter_nonce=b'\x01',
+            auth_additional_data=b'\x01\x10\x80\xFF',
+            auth_tag=b'\x01\x90\xFE'
         )
 
         self.assertFalse(a != b)
@@ -576,6 +652,30 @@ class TestDecryptRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
+    def test_not_equal_on_not_equal_auth_additional_data(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Decrypt request payloads with different authenticated additional data
+        values.
+        """
+        a = payloads.DecryptRequestPayload(auth_additional_data=b'\x22')
+        b = payloads.DecryptRequestPayload(auth_additional_data=b'\xAA')
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
+    def test_not_equal_on_not_equal_auth_tag(self):
+        """
+        Test that the inequality operator returns True when comparing two
+        Decrypt request payloads with different authenticated encryption tag
+        values.
+        """
+        a = payloads.DecryptRequestPayload(auth_tag=b'\x22')
+        b = payloads.DecryptRequestPayload(auth_tag=b'\xAA')
+
+        self.assertTrue(a != b)
+        self.assertTrue(b != a)
+
     def test_not_equal_on_type_mismatch(self):
         """
         Test that the inequality operator returns True when comparing two
@@ -610,7 +710,9 @@ class TestDecryptRequestPayload(testtools.TestCase):
                 initial_counter_value=1
             ),
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            iv_counter_nonce=b'\x01'
+            iv_counter_nonce=b'\x01',
+            auth_additional_data=b'\x01\x10\x80\xFF',
+            auth_tag=b'\x01\x90\xFE'
         )
         expected = (
             "DecryptRequestPayload("
@@ -631,7 +733,9 @@ class TestDecryptRequestPayload(testtools.TestCase):
             "counter_length=0, "
             "initial_counter_value=1), "
             "data=" + str(b'\x01\x23\x45\x67\x89\xAB\xCD\xEF') + ", "
-            "iv_counter_nonce=" + str(b'\x01') + ")"
+            "iv_counter_nonce=" + str(b'\x01') + ", "
+            "auth_additional_data=" + str(b'\x01\x10\x80\xFF') + ", "
+            "auth_tag=" + str(b'\x01\x90\xFE') + ")"
         )
         observed = repr(payload)
 
@@ -661,14 +765,18 @@ class TestDecryptRequestPayload(testtools.TestCase):
             unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
             cryptographic_parameters=cryptographic_parameters,
             data=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            iv_counter_nonce=b'\x01'
+            iv_counter_nonce=b'\x01',
+            auth_additional_data=b'\x01\x10\x80\xFF',
+            auth_tag=b'\x01\x90\xFE'
         )
 
         expected = str({
             'unique_identifier': 'b4faee10-aa2a-4446-8ad4-0881f3422959',
             'cryptographic_parameters': cryptographic_parameters,
             'data': b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            'iv_counter_nonce': b'\x01'
+            'iv_counter_nonce': b'\x01',
+            'auth_additional_data': b'\x01\x10\x80\xFF',
+            'auth_tag': b'\x01\x90\xFE'
         })
         observed = str(payload)
 
