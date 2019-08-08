@@ -1773,6 +1773,13 @@ class KmipEngine(object):
 
             managed_objects = managed_objects_filtered
 
+        # Sort the matching results by their creation date.
+        managed_objects = sorted(
+            managed_objects,
+            key=lambda x: x.initial_date,
+            reverse=True
+        )
+
         unique_identifiers = [
             str(x.unique_identifier) for x in managed_objects
         ]
