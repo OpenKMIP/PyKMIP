@@ -231,6 +231,22 @@ def build_cli_parser(operation=None):
                  "attributes")
     elif operation is Operation.LOCATE:
         parser.add_option(
+            "--offset-items",
+            action="store",
+            type="int",
+            default=None,
+            dest="offset_items",
+            help="The number of matching secrets to skip."
+        )
+        parser.add_option(
+            "--maximum-items",
+            action="store",
+            type="int",
+            default=None,
+            dest="maximum_items",
+            help="The maximum number of matching secrets to return."
+        )
+        parser.add_option(
             "-n",
             "--name",
             action="store",

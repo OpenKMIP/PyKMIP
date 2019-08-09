@@ -4474,6 +4474,104 @@ class TestKmipEngine(testtools.TestCase):
         self.assertIn(id_a, response_payload.unique_identifiers)
         self.assertIn(id_b, response_payload.unique_identifiers)
 
+    def test_locate_with_offset_and_maximum_items(self):
+        """
+        Test locate operation with specified offset and maximum item limits.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        key = (
+            b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
+        obj_a = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            key,
+            name='name1'
+        )
+        obj_a.initial_date = int(time.time())
+        time.sleep(2)
+        obj_b = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.DES,
+            128,
+            key,
+            name='name2'
+        )
+        obj_b.initial_date = int(time.time())
+        time.sleep(2)
+        obj_c = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            key,
+            name='name3'
+        )
+        obj_c.initial_date = int(time.time())
+
+        e._data_session.add(obj_a)
+        e._data_session.add(obj_b)
+        e._data_session.add(obj_c)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+        id_b = str(obj_b.unique_identifier)
+        id_c = str(obj_c.unique_identifier)
+
+        # Locate all objects.
+        payload = payloads.LocateRequestPayload()
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+
+        self.assertEqual(
+            [id_c, id_b, id_a],
+            response_payload.unique_identifiers
+        )
+
+        # Locate by skipping the first object and only returning one object.
+        payload = payloads.LocateRequestPayload(
+            offset_items=1,
+            maximum_items=1
+        )
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+
+        self.assertEqual([id_b], response_payload.unique_identifiers)
+
+        # Locate by skipping the first two objects.
+        payload = payloads.LocateRequestPayload(offset_items=2)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+
+        self.assertEqual([id_a], response_payload.unique_identifiers)
+
+        # Locate by only returning two objects.
+        payload = payloads.LocateRequestPayload(maximum_items=2)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+
+        self.assertEqual([id_c, id_b], response_payload.unique_identifiers)
+
     def test_locate_with_name(self):
         """
         Test locate operation when 'Name' attribute is given.

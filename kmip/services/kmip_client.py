@@ -694,11 +694,13 @@ class KMIPProxy(object):
             return results[0]
 
     def locate(self, maximum_items=None, storage_status_mask=None,
-               object_group_member=None, attributes=None, credential=None):
+               object_group_member=None, attributes=None, credential=None,
+               offset_items=None):
         return self._locate(maximum_items=maximum_items,
                             storage_status_mask=storage_status_mask,
                             object_group_member=object_group_member,
-                            attributes=attributes, credential=credential)
+                            attributes=attributes, credential=credential,
+                            offset_items=offset_items)
 
     def query(self, batch=False, query_functions=None, credential=None):
         """
@@ -1476,12 +1478,14 @@ class KMIPProxy(object):
         return result
 
     def _locate(self, maximum_items=None, storage_status_mask=None,
-                object_group_member=None, attributes=None, credential=None):
+                object_group_member=None, attributes=None, credential=None,
+                offset_items=None):
 
         operation = Operation(OperationEnum.LOCATE)
 
         payload = payloads.LocateRequestPayload(
             maximum_items=maximum_items,
+            offset_items=offset_items,
             storage_status_mask=storage_status_mask,
             object_group_member=object_group_member,
             attributes=attributes
