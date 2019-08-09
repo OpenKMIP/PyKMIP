@@ -4587,14 +4587,14 @@ class TestKmipEngine(testtools.TestCase):
         )
         obj_a.initial_date = int(time.time())
         obj_a_time_str = time.strftime(
-            "%a %b %d %H:%M:%S %Y",
+            "%a %b %-2d %H:%M:%S %Y",
             time.gmtime(obj_a.initial_date)
         )
 
         time.sleep(2)
         mid_time = int(time.time())
         mid_time_str = time.strftime(
-            "%a %b %d %H:%M:%S %Y",
+            "%a %b %-2d %H:%M:%S %Y",
             time.gmtime(mid_time)
         )
         time.sleep(2)
@@ -4607,7 +4607,7 @@ class TestKmipEngine(testtools.TestCase):
         )
         obj_b.initial_date = int(time.time())
         obj_b_time_str = time.strftime(
-            "%a %b %d %H:%M:%S %Y",
+            "%a %b %-2d %H:%M:%S %Y",
             time.gmtime(obj_b.initial_date)
         )
 
