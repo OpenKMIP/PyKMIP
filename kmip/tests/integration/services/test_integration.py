@@ -1477,6 +1477,22 @@ class TestIntegration(testtools.TestCase):
         )
         self.assertEqual(0, len(result.uuids))
 
+        # Test locating keys using offset and maximum item constraints.
+        result = self.client.locate(offset_items=1)
+
+        self.assertEqual(1, len(result.uuids))
+        self.assertIn(uid_a, result.uuids)
+
+        result = self.client.locate(maximum_items=1)
+
+        self.assertEqual(1, len(result.uuids))
+        self.assertIn(uid_b, result.uuids)
+
+        result = self.client.locate(offset_items=1, maximum_items=1)
+
+        self.assertEqual(1, len(result.uuids))
+        self.assertIn(uid_a, result.uuids)
+
         # Clean up keys
         result = self.client.destroy(uid_a)
         self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)

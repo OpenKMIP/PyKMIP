@@ -32,6 +32,8 @@ if __name__ == '__main__':
     opts, args = parser.parse_args(sys.argv[1:])
 
     config = opts.config
+    offset_items = opts.offset_items
+    maximum_items = opts.maximum_items
     name = opts.name
     initial_dates = opts.initial_dates
     state = opts.state
@@ -42,6 +44,13 @@ if __name__ == '__main__':
     operation_policy_name = opts.operation_policy_name
 
     attribute_factory = AttributeFactory()
+
+    if offset_items and (offset_items < 0):
+        logger.error("Invalid offset items value provided.")
+        sys.exit(-1)
+    if maximum_items and (maximum_items < 0):
+        logger.error("Invalid maximum items value provided.")
+        sys.exit(-1)
 
     # Build attributes if any are specified
     attributes = []
@@ -159,7 +168,11 @@ if __name__ == '__main__':
             config_file=opts.config_file
     ) as client:
         try:
-            uuids = client.locate(attributes=attributes)
+            uuids = client.locate(
+                attributes=attributes,
+                offset_items=offset_items,
+                maximum_items=maximum_items
+            )
             logger.info("Located uuids: {0}".format(uuids))
         except Exception as e:
             logger.error(e)

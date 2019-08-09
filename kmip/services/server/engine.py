@@ -1780,6 +1780,22 @@ class KmipEngine(object):
             reverse=True
         )
 
+        # Skip the requested offset items and keep the requested maximum items
+        if payload.offset_items is not None:
+            if payload.maximum_items is not None:
+                managed_objects = managed_objects[
+                    payload.offset_items:(
+                        payload.offset_items + payload.maximum_items
+                    )
+                ]
+            else:
+                managed_objects = managed_objects[payload.offset_items:]
+        else:
+            if payload.maximum_items is not None:
+                managed_objects = managed_objects[:payload.maximum_items]
+            else:
+                pass
+
         unique_identifiers = [
             str(x.unique_identifier) for x in managed_objects
         ]

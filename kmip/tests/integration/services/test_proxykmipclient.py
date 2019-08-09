@@ -1132,6 +1132,22 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         )
         self.assertEqual(0, len(result))
 
+        # Test locating keys using offset and maximum item constraints.
+        result = self.client.locate(offset_items=1)
+
+        self.assertEqual(1, len(result))
+        self.assertIn(a_id, result)
+
+        result = self.client.locate(maximum_items=1)
+
+        self.assertEqual(1, len(result))
+        self.assertIn(b_id, result)
+
+        result = self.client.locate(offset_items=1, maximum_items=1)
+
+        self.assertEqual(1, len(result))
+        self.assertIn(a_id, result)
+
         # Clean up the keys
         self.client.destroy(a_id)
         self.client.destroy(b_id)

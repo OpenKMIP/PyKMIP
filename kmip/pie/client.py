@@ -661,7 +661,7 @@ class ProxyKmipClient(object):
 
     @is_connected
     def locate(self, maximum_items=None, storage_status_mask=None,
-               object_group_member=None, attributes=None):
+               object_group_member=None, attributes=None, offset_items=None):
         """
         Search for managed objects, depending on the attributes specified in
         the request.
@@ -669,6 +669,8 @@ class ProxyKmipClient(object):
         Args:
             maximum_items (integer): Maximum number of object identifiers the
                 server MAY return.
+            offset_items (integer): Number of object identifiers the server
+                should skip before returning results.
             storage_status_mask (integer): A bit mask that indicates whether
                 on-line or archived objects are to be searched.
             object_group_member (ObjectGroupMember): An enumeration that
@@ -688,6 +690,9 @@ class ProxyKmipClient(object):
         if maximum_items is not None:
             if not isinstance(maximum_items, six.integer_types):
                 raise TypeError("maximum_items must be an integer")
+        if offset_items is not None:
+            if not isinstance(offset_items, six.integer_types):
+                raise TypeError("offset items must be an integer")
         if storage_status_mask is not None:
             if not isinstance(storage_status_mask, six.integer_types):
                 raise TypeError("storage_status_mask must be an integer")
@@ -705,8 +710,12 @@ class ProxyKmipClient(object):
 
         # Search for managed objects and handle the results
         result = self.proxy.locate(
-                    maximum_items, storage_status_mask,
-                    object_group_member, attributes)
+            maximum_items=maximum_items,
+            offset_items=offset_items,
+            storage_status_mask=storage_status_mask,
+            object_group_member=object_group_member,
+            attributes=attributes
+        )
 
         status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:

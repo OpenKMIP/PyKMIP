@@ -35,6 +35,8 @@ if __name__ == '__main__':
     username = opts.username
     password = opts.password
     config = opts.config
+    offset_items = opts.offset_items
+    maximum_items = opts.maximum_items
     name = opts.name
     initial_dates = opts.initial_dates
     state = opts.state
@@ -61,6 +63,13 @@ if __name__ == '__main__':
             credential_type,
             credential_value
         )
+
+    if offset_items and (offset_items < 0):
+        logger.error("Invalid offset items value provided.")
+        sys.exit(-1)
+    if maximum_items and (maximum_items < 0):
+        logger.error("Invalid maximum items value provided.")
+        sys.exit(-1)
 
     # Build the client and connect to the server
     client = kmip_client.KMIPProxy(config=config, config_file=opts.config_file)
@@ -180,7 +189,12 @@ if __name__ == '__main__':
             )
         )
 
-    result = client.locate(attributes=attributes, credential=credential)
+    result = client.locate(
+        attributes=attributes,
+        offset_items=offset_items,
+        maximum_items=maximum_items,
+        credential=credential
+    )
     client.close()
 
     # Display operation results
