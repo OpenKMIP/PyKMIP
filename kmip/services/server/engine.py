@@ -1743,6 +1743,25 @@ class KmipEngine(object):
                             )
                             add_object = False
                             break
+                    elif name == "Cryptographic Usage Mask":
+                        value = value.value
+                        mask_values = enums.get_enumerations_from_bit_mask(
+                            enums.CryptographicUsageMask,
+                            value
+                        )
+                        for mask_value in mask_values:
+                            if mask_value not in attribute:
+                                self._logger.debug(
+                                    "Failed match: "
+                                    "the specified cryptographic usage mask "
+                                    "({}) is not set on the object.".format(
+                                        mask_value.name
+                                    )
+                                )
+                                add_object = False
+                                break
+                        if not add_object:
+                            break
                     elif name == enums.AttributeType.INITIAL_DATE.value:
                         initial_date["value"] = attribute
                         self._track_date_attributes(

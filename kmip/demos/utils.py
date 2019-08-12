@@ -304,6 +304,20 @@ def build_cli_parser(operation=None):
             help="The cryptographic length of the secret (e.g., 128, 2048)"
         )
         parser.add_option(
+            "--cryptographic-usage-mask",
+            action="append",
+            type="str",
+            default=[],
+            dest="cryptographic_usage_masks",
+            help=(
+                "The cryptographic usage mask(s) the secret should have set "
+                "(e.g., ENCRYPT, DECRYPT). Use multiple times to specify "
+                "multiple cryptographic usage mask enumeration values. All "
+                "values will get combined into a single mask when sent to the "
+                "server."
+            )
+        )
+        parser.add_option(
             "-i",
             "--unique-identifier",
             action="store",

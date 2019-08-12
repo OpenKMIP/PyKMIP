@@ -40,6 +40,7 @@ if __name__ == '__main__':
     object_type = opts.object_type
     cryptographic_algorithm = opts.cryptographic_algorithm
     cryptographic_length = opts.cryptographic_length
+    cryptographic_usage_masks = opts.cryptographic_usage_masks
     unique_identifier = opts.unique_identifier
     operation_policy_name = opts.operation_policy_name
 
@@ -147,6 +148,29 @@ if __name__ == '__main__':
                 )
             )
             sys.exit(-6)
+    if cryptographic_usage_masks:
+        masks = []
+        for cryptographic_usage_mask in cryptographic_usage_masks:
+            mask = getattr(
+                enums.CryptographicUsageMask,
+                cryptographic_usage_mask,
+                None
+            )
+            if mask:
+                masks.append(mask)
+            else:
+                logger.error(
+                    "Invalid cryptographic usage mask provided: {}".format(
+                        cryptographic_usage_mask
+                    )
+                )
+                sys.exit(-7)
+        attributes.append(
+            attribute_factory.create_attribute(
+                enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                masks
+            )
+        )
     if unique_identifier:
         attributes.append(
             attribute_factory.create_attribute(
