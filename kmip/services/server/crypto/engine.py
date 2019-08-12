@@ -493,7 +493,7 @@ class CryptographyEngine(api.CryptographicEngine):
                     iv_nonce = os.urandom(algorithm.block_size // 8)
                     return_iv_nonce = True
                 if is_gcm_mode:
-                    mode = mode(iv_nonce, None, auth_tag_length)
+                    mode = mode(iv_nonce, None, min_tag_length=auth_tag_length)
                 else:
                     mode = mode(iv_nonce)
             else:
@@ -835,7 +835,7 @@ class CryptographyEngine(api.CryptographicEngine):
                         "IV/nonce is required."
                     )
                 if is_gcm_mode:
-                    mode = mode(iv_nonce, auth_tag)
+                    mode = mode(iv_nonce, tag=auth_tag)
                 else:
                     mode = mode(iv_nonce)
             else:
