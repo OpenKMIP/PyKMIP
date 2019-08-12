@@ -1148,6 +1148,55 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         self.assertEqual(1, len(result))
         self.assertIn(a_id, result)
 
+        # Test locating keys using their cryptographic usage masks
+        mask = [enums.CryptographicUsageMask.ENCRYPT]
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    mask
+                )
+            ]
+        )
+        self.assertEqual(2, len(result))
+        self.assertIn(a_id, result)
+        self.assertIn(b_id, result)
+
+        mask.append(enums.CryptographicUsageMask.DECRYPT)
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    mask
+                )
+            ]
+        )
+        self.assertEqual(2, len(result))
+        self.assertIn(a_id, result)
+        self.assertIn(b_id, result)
+
+        mask.append(enums.CryptographicUsageMask.SIGN)
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    mask
+                )
+            ]
+        )
+        self.assertEqual(0, len(result))
+
+        mask = [enums.CryptographicUsageMask.EXPORT]
+        result = self.client.locate(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    mask
+                )
+            ]
+        )
+        self.assertEqual(0, len(result))
+
         # Clean up the keys
         self.client.destroy(a_id)
         self.client.destroy(b_id)

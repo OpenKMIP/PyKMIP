@@ -1493,6 +1493,55 @@ class TestIntegration(testtools.TestCase):
         self.assertEqual(1, len(result.uuids))
         self.assertIn(uid_a, result.uuids)
 
+        # Test locating keys using their cryptographic usage masks
+        mask = [enums.CryptographicUsageMask.ENCRYPT]
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    mask
+                )
+            ]
+        )
+        self.assertEqual(2, len(result.uuids))
+        self.assertIn(uid_a, result.uuids)
+        self.assertIn(uid_b, result.uuids)
+
+        mask.append(enums.CryptographicUsageMask.DECRYPT)
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    mask
+                )
+            ]
+        )
+        self.assertEqual(2, len(result.uuids))
+        self.assertIn(uid_a, result.uuids)
+        self.assertIn(uid_b, result.uuids)
+
+        mask.append(enums.CryptographicUsageMask.SIGN)
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    mask
+                )
+            ]
+        )
+        self.assertEqual(0, len(result.uuids))
+
+        mask = [enums.CryptographicUsageMask.EXPORT]
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    mask
+                )
+            ]
+        )
+        self.assertEqual(0, len(result.uuids))
+
         # Clean up keys
         result = self.client.destroy(uid_a)
         self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
