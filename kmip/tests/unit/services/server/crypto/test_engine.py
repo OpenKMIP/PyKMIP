@@ -1387,6 +1387,34 @@ class TestCryptographyEngine(testtools.TestCase):
              b'\xbd\x9b\x6f\x23\xc9\x39\xa7\xd4'
              b'\xf5\xbe\xb0\x9d\x92\xf0\x17\x56'
          )},
+        {'algorithm': enums.CryptographicAlgorithm.AES,
+         'cipher_mode': enums.BlockCipherMode.GCM,
+         'key': (
+             b'\x2c\xd6\xfd\x85\xf1\x30\x28\x38'
+             b'\x63\x53\xff\xa1\x52\x1d\x8d\x7b'
+             b'\xc8\xeb\xed\x26\xb1\x6d\x94\x40'
+             b'\x5f\x03\xf6\xda\x5d\xef\x2d\xa8'
+         ),
+         'iv_nonce': (
+             b'\xba\x7a\x97\x67\x0f\xbb\x02\x62'
+             b'\x24\x36\x92\x9d'
+         ),
+         'plain_text': (
+             b'\x8b\x4f\x7e\x75\x16\x31\xe7\x65'
+             b'\xdc\x13\xfa\x63\xf0\x2f\x63\x4b'
+         ),
+         'auth_additional_data': (
+             b'\x90\xee\x7e\x56\xf9\x59\x34\x76'
+             b'\x1c\x39\xab\x75\x37\x2a\xc2\xc6'
+         ),
+         'auth_tag_length': 8,
+         'cipher_text': (
+             b'\x8c\xdc\x3f\x57\x48\xb1\x59\x36'
+             b'\x6c\x94\xaf\x48\xe2\xcf\xa0\x98'
+         ),
+         'auth_tag': (
+             b'\xfe\xb3\x8e\x85\x4e\xdf\x4d\x79'
+         )},
         {'algorithm': enums.CryptographicAlgorithm.BLOWFISH,
          'cipher_mode': enums.BlockCipherMode.OFB,
          'key': (

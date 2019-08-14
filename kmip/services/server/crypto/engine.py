@@ -521,7 +521,7 @@ class CryptographyEngine(api.CryptographicEngine):
         if return_iv_nonce:
             result['iv_nonce'] = iv_nonce
         if is_gcm_mode:
-            result['auth_tag'] = encryptor.tag
+            result['auth_tag'] = encryptor.tag[:auth_tag_length]
         return result
 
     def _encrypt_asymmetric(self,
@@ -875,7 +875,7 @@ class CryptographyEngine(api.CryptographicEngine):
             padding_method,
             hashing_algorithm=None):
         """
-        Encrypt data using asymmetric decryption.
+        Decrypt data using asymmetric decryption.
 
         Args:
             decryption_algorithm (CryptographicAlgorithm): An enumeration
