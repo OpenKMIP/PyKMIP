@@ -835,7 +835,11 @@ class CryptographyEngine(api.CryptographicEngine):
                         "IV/nonce is required."
                     )
                 if is_gcm_mode:
-                    mode = mode(iv_nonce, tag=auth_tag)
+                    mode = mode(
+                        iv_nonce,
+                        tag=auth_tag,
+                        min_tag_length=len(auth_tag)
+                    )
                 else:
                     mode = mode(iv_nonce)
             else:
