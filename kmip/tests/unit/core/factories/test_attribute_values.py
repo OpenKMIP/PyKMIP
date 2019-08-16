@@ -156,10 +156,13 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a CertificateType attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.CERTIFICATE_TYPE,
-                  'value': None}
-        self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+        certificate_type = self.factory.create_attribute_value(
+            name=enums.AttributeType.CERTIFICATE_TYPE,
+            value=enums.CertificateType.X_509
+        )
+        self.assertIsInstance(certificate_type, primitives.Enumeration)
+        self.assertEqual(enums.CertificateType.X_509, certificate_type.value)
+        self.assertEqual(enums.Tags.CERTIFICATE_TYPE, certificate_type.tag)
 
     def test_create_certificate_length(self):
         """

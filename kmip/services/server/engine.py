@@ -1762,6 +1762,20 @@ class KmipEngine(object):
                                 break
                         if not add_object:
                             break
+                    elif name == "Certificate Type":
+                        value = value.value
+                        if value != attribute:
+                            self._logger.debug(
+                                "Failed match: "
+                                "the specified certificate type ({}) "
+                                "does not match the object's certificate "
+                                "type ({}).".format(
+                                    value.name,
+                                    attribute.name
+                                )
+                            )
+                            add_object = False
+                            break
                     elif name == enums.AttributeType.INITIAL_DATE.value:
                         initial_date["value"] = attribute
                         self._track_date_attributes(

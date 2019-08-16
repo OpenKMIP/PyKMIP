@@ -38,7 +38,11 @@ class AttributeValueFactory(object):
         elif name is enums.AttributeType.CRYPTOGRAPHIC_DOMAIN_PARAMETERS:
             raise NotImplementedError()
         elif name is enums.AttributeType.CERTIFICATE_TYPE:
-            raise NotImplementedError()
+            return primitives.Enumeration(
+                enums.CertificateType,
+                value=value,
+                tag=enums.Tags.CERTIFICATE_TYPE
+            )
         elif name is enums.AttributeType.CERTIFICATE_LENGTH:
             return primitives.Integer(value, enums.Tags.CERTIFICATE_LENGTH)
         elif name is enums.AttributeType.X_509_CERTIFICATE_IDENTIFIER:

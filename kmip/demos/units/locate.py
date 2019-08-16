@@ -41,6 +41,7 @@ if __name__ == '__main__':
     initial_dates = opts.initial_dates
     state = opts.state
     object_type = opts.object_type
+    certificate_type = opts.certificate_type
     cryptographic_algorithm = opts.cryptographic_algorithm
     cryptographic_length = opts.cryptographic_length
     cryptographic_usage_masks = opts.cryptographic_usage_masks
@@ -198,6 +199,27 @@ if __name__ == '__main__':
                 masks
             )
         )
+    if certificate_type:
+        certificate_type = getattr(
+            enums.CertificateType,
+            certificate_type,
+            None
+        )
+        if certificate_type:
+            attributes.append(
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CERTIFICATE_TYPE,
+                    certificate_type
+                )
+            )
+        else:
+            logger.error(
+                "Invalid certificate type provided: {}".format(
+                    opts.certificate_type
+                )
+            )
+            client.close()
+            sys.exit(-8)
     if unique_identifier:
         attributes.append(
             attribute_factory.create_attribute(
