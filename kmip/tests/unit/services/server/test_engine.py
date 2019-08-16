@@ -5286,6 +5286,93 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(0, len(response_payload.unique_identifiers))
 
+    def test_locate_with_certificate_type(self):
+        """
+        Test the Locate operation when the 'Certificate Type' attribute is
+        given.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        key = (
+            b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        obj_a = pie_objects.Certificate(
+            enums.CertificateType.X_509,
+            b'',
+            name='certificate1'
+        )
+        obj_b = pie_objects.SecretData(
+            key,
+            enums.SecretDataType.PASSWORD
+        )
+
+        e._data_session.add(obj_a)
+        e._data_session.add(obj_b)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Locate the certificate object based on its certificate type.
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.CERTIFICATE_TYPE,
+                enums.CertificateType.X_509
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_a)
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified attribute (Certificate Type) is not "
+            "applicable for the object's object type (SECRET_DATA)."
+        )
+        self.assertEqual(1, len(response_payload.unique_identifiers))
+        self.assertIn(id_a, response_payload.unique_identifiers)
+
+        # Try to locate a non-existent object based on its certificate
+        # type.
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.CERTIFICATE_TYPE,
+                enums.CertificateType.PGP
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified certificate type (PGP) does not match "
+            "the object's certificate type (X_509)."
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified attribute (Certificate Type) is not "
+            "applicable for the object's object type (SECRET_DATA)."
+        )
+        self.assertEqual(0, len(response_payload.unique_identifiers))
+
     def test_locate_with_unique_identifier(self):
         """
         Test the Locate operation when the 'Unique Identifier' attribute

@@ -288,6 +288,14 @@ def build_cli_parser(operation=None):
             )
         )
         parser.add_option(
+            "--certificate-type",
+            action="store",
+            type="str",
+            default=None,
+            dest="certificate_type",
+            help="The certificate type of the secret (e.g., X_509)"
+        )
+        parser.add_option(
             "--cryptographic-algorithm",
             action="store",
             type="str",
