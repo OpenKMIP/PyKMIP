@@ -1373,7 +1373,7 @@ class TestCryptographyEngine(testtools.TestCase):
              b'\xd3\xc6\x2d\xa2\x77\x97\xba\x8e\x16'
              b'\x82\x1a\x1b\xe2\x47\x8a\x6f'
          ),
-         'auth_tag_length': 128,
+         'auth_tag_length': 16,
          'cipher_text': (
              b'\xfb\x10\xfa\x35\x45\x92\x53\xab'
              b'\x7a\x87\xb3\x27\x32\x63\x56\x05'
