@@ -238,7 +238,14 @@ class ProxyKmipClient(object):
         key_attributes.extend(common_attributes)
 
         if name:
-            key_attributes.extend(self._build_name_attribute(name))
+            key_attributes.extend(
+                [
+                    self.attribute_factory.create_attribute(
+                        enums.AttributeType.NAME,
+                        name
+                    )
+                ]
+            )
 
         template = cobjects.TemplateAttribute(attributes=key_attributes)
 
@@ -320,39 +327,45 @@ class ProxyKmipClient(object):
 
         # Create public / private specific attributes
         public_template = None
-        names = None
-        if public_name:
-            names = self._build_name_attribute(name=public_name)
         attrs = []
+        if public_name:
+            attrs.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    public_name
+                )
+            )
         if public_usage_mask:
-            attrs = [
+            attrs.append(
                 self.attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
                     public_usage_mask
                 )
-            ]
-        if names or attrs:
+            )
+        if attrs:
             public_template = cobjects.TemplateAttribute(
-                names=names,
                 attributes=attrs,
                 tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
             )
 
         private_template = None
-        names = None
-        if private_name:
-            names = self._build_name_attribute(name=private_name)
         attrs = []
+        if private_name:
+            attrs.append(
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    private_name
+                )
+            )
         if private_usage_mask:
-            attrs = [
+            attrs.append(
                 self.attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
                     private_usage_mask
                 )
-            ]
-        if names or attrs:
+            )
+        if attrs:
             private_template = cobjects.TemplateAttribute(
-                names=names,
                 attributes=attrs,
                 tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
             )
@@ -1603,19 +1616,6 @@ class ProxyKmipClient(object):
             )
 
         return common_attributes
-
-    def _build_name_attribute(self, name=None):
-        '''
-        Build a name attribute, returned in a list for ease
-        of use in the caller
-        '''
-        name_list = []
-        if name:
-            name_list.append(self.attribute_factory.create_attribute(
-                enums.AttributeType.NAME,
-                name)
-            )
-        return name_list
 
     def __enter__(self):
         self.open()
