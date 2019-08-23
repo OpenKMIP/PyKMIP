@@ -573,34 +573,35 @@ class TestProxyKmipClient(testtools.TestCase):
         specifically testing that the private / public names are correctly
         sent with the request
         """
-        # Create the template to test the create key pair call
-        algorithm = enums.CryptographicAlgorithm.RSA
-        length = 2048
-        algorithm_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm)
-        length_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length)
-
-        private_name_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.NAME, "private")
-        public_name_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.NAME, "public")
-
-        pair_attributes = [
-            algorithm_attribute,
-            length_attribute
-        ]
-
-        template = obj.TemplateAttribute(
-            attributes=pair_attributes,
+        common_template = obj.TemplateAttribute(
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                )
+            ],
             tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
         private_template = obj.TemplateAttribute(
-            names=[private_name_attribute],
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    "Test_Private_Key"
+                )
+            ],
             tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
         )
         public_template = obj.TemplateAttribute(
-            names=[public_name_attribute],
+            attributes=[
+                self.attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    "Test_Public_Key"
+                )
+            ],
             tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
         )
 
@@ -617,12 +618,12 @@ class TestProxyKmipClient(testtools.TestCase):
             public_uid, private_uid = client.create_key_pair(
                 enums.CryptographicAlgorithm.RSA,
                 2048,
-                public_name="public",
-                private_name="private"
+                public_name="Test_Public_Key",
+                private_name="Test_Private_Key"
             )
 
             kwargs = {
-                "common_template_attribute": template,
+                "common_template_attribute": common_template,
                 "private_key_template_attribute": private_template,
                 "public_key_template_attribute": public_template
             }
