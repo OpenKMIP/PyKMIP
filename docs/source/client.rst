@@ -102,7 +102,7 @@ specifying the different configuration values:
     ...     ca='/path/to/ca/certificate/file',
     ...     ssl_version=ssl.PROTOCOL_SSLv23,
     ...     username='example_username',
-    ...     password='example_password'
+    ...     password='example_password',
     ...     config='client',
     ...     config_file='/etc/pykmip/pykmip.conf',
     ...     kmip_version=enums.KMIPVersion.KMIP_1_2
