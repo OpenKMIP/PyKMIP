@@ -93,7 +93,7 @@ specifying the different configuration values:
 .. code-block:: python
 
     >>> import ssl
-    >>> from kmip.pie.client import ProxyKmipClient
+    >>> from kmip.pie.client import ProxyKmipClient, enums
     >>> client = ProxyKmipClient(
     ...     hostname='127.0.0.1',
     ...     port=5696,
