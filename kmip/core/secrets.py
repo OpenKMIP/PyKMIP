@@ -13,22 +13,26 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import six
+
 from kmip.core.attributes import CertificateType
 
 from kmip.core import enums
 from kmip.core.enums import Tags
+from kmip.core import exceptions
 
 from kmip.core.misc import CertificateValue
 
+from kmip.core import objects
 from kmip.core.objects import Attribute
 from kmip.core.objects import KeyBlock
 
+from kmip.core import primitives
 from kmip.core.primitives import Struct
-from kmip.core.primitives import Integer
 from kmip.core.primitives import Enumeration
-from kmip.core.primitives import BigInteger
 from kmip.core.primitives import ByteString
 
+from kmip.core import utils
 from kmip.core.utils import BytearrayStream
 
 
@@ -219,38 +223,25 @@ class PrivateKey(KeyBlockKey):
         pass
 
 
-# 2.2.5
-class SplitKey(Struct):
+class SplitKey(primitives.Struct):
+    """
+    A split key cryptographic object.
 
-    class SplitKeyParts(Integer):
+    This object represents a symmetric or private key that has been split into
+    multiple parts. The fields of this object specify how the key was split
+    and how it can be reassembled.
 
-        def __init__(self, value=None):
-            super(SplitKey.SplitKeyParts, self).__init__(
-                value, Tags.SPLIT_KEY_PARTS)
-
-    class KeyPartIdentifier(Integer):
-
-        def __init__(self, value=None):
-            super(SplitKey.KeyPartIdentifier, self).__init__(
-                value, Tags.KEY_PART_IDENTIFIER)
-
-    class SplitKeyThreshold(Integer):
-
-        def __init__(self, value=None):
-            super(SplitKey.SplitKeyThreshold, self).__init__(
-                value, Tags.SPLIT_KEY_THRESHOLD)
-
-    class SplitKeyMethod(Enumeration):
-
-        def __init__(self, value=None):
-            super(SplitKey.SplitKeyMethod, self).__init__(
-                enums.SplitKeyMethod, value, Tags.SPLIT_KEY_METHOD)
-
-    class PrimeFieldSize(BigInteger):
-
-        def __init__(self, value=None):
-            super(SplitKey.PrimeFieldSize, self).__init__(
-                value, Tags.PRIME_FIELD_SIZE)
+    Attributes:
+        split_key_parts: The total number of parts of the split key.
+        key_part_identifier: The ID specifying the part of the key in the key
+            block.
+        split_key_threshold: The minimum number of parts needed to reconstruct
+            the key.
+        split_key_method: The method by which the key was split.
+        prime_field_size: The prime field size used for the Polynomial Sharing
+            Prime Field split key method.
+        key_block: The split key part held by this object.
+    """
 
     def __init__(self,
                  split_key_parts=None,
@@ -259,62 +250,374 @@ class SplitKey(Struct):
                  split_key_method=None,
                  prime_field_size=None,
                  key_block=None):
-        super(SplitKey, self).__init__(Tags.SPLIT_KEY)
+        """
+        Construct a SplitKey object.
+
+        Args:
+            split_key_parts (int): An integer specifying the total number of
+                parts of the split key. Optional, defaults to None. Required
+                for read/write.
+            key_part_identifier (int): An integer specifying which key part is
+                contained in the key block. Optional, defaults to None.
+                Required for read/write.
+            split_key_threshold (int): An integer specifying the minimum number
+                of key parts required to reconstruct the split key. Optional,
+                defaults to None. Required for read/write.
+            split_key_method (enum): A SplitKeyMethod enumeration specifying
+                the method by which the key was split. Optional, defaults to
+                None. Required for read/write.
+            prime_field_size (int): A big integer specifying the prime field
+                size used for the Polynomial Sharing Prime Field split key
+                method. Optional, defaults to None. Required for read/write
+                only if the split key method is Polynomial Sharing Prime Field.
+            key_block (struct): A KeyBlock structure containing the split key
+                part identified by the key part identifier. Optional, defaults
+                to None. Required for read/write.
+
+        """
+        super(SplitKey, self).__init__(enums.Tags.SPLIT_KEY)
+
+        self._split_key_parts = None
+        self._key_part_identifier = None
+        self._split_key_threshold = None
+        self._split_key_method = None
+        self._prime_field_size = None
+        self._key_block = None
+
         self.split_key_parts = split_key_parts
         self.key_part_identifier = key_part_identifier
         self.split_key_threshold = split_key_threshold
         self.split_key_method = split_key_method
         self.prime_field_size = prime_field_size
         self.key_block = key_block
-        self.validate()
 
-    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(SplitKey, self).read(istream, kmip_version=kmip_version)
-        tstream = BytearrayStream(istream.read(self.length))
+    @property
+    def split_key_parts(self):
+        if self._split_key_parts is not None:
+            return self._split_key_parts.value
+        return None
 
-        self.split_key_parts = SplitKey.SplitKeyParts()
-        self.split_key_parts.read(tstream, kmip_version=kmip_version)
+    @split_key_parts.setter
+    def split_key_parts(self, value):
+        if value is None:
+            self._split_key_parts = None
+        elif isinstance(value, six.integer_types):
+            self._split_key_parts = primitives.Integer(
+                value=value,
+                tag=enums.Tags.SPLIT_KEY_PARTS
+            )
+        else:
+            raise TypeError("The split key parts must be an integer.")
 
-        self.key_part_identifier = SplitKey.KeyPartIdentifier()
-        self.key_part_identifier.read(tstream, kmip_version=kmip_version)
+    @property
+    def key_part_identifier(self):
+        if self._key_part_identifier is not None:
+            return self._key_part_identifier.value
+        return None
 
-        self.split_key_threshold = SplitKey.SplitKeyThreshold()
-        self.split_key_threshold.read(tstream, kmip_version=kmip_version)
+    @key_part_identifier.setter
+    def key_part_identifier(self, value):
+        if value is None:
+            self._key_part_identifier = None
+        elif isinstance(value, six.integer_types):
+            self._key_part_identifier = primitives.Integer(
+                value=value,
+                tag=enums.Tags.KEY_PART_IDENTIFIER
+            )
+        else:
+            raise TypeError("The key part identifier must be an integer.")
 
-        if self.is_tag_next(Tags.PRIME_FIELD_SIZE, tstream):
-            self.prime_field_size = SplitKey.PrimeFieldSize()
-            self.prime_field_size.read(tstream, kmip_version=kmip_version)
+    @property
+    def split_key_threshold(self):
+        if self._split_key_threshold is not None:
+            return self._split_key_threshold.value
+        return None
 
-        self.key_block = KeyBlock()
-        self.key_block.read(tstream, kmip_version=kmip_version)
+    @split_key_threshold.setter
+    def split_key_threshold(self, value):
+        if value is None:
+            self._split_key_threshold = None
+        elif isinstance(value, six.integer_types):
+            self._split_key_threshold = primitives.Integer(
+                value=value,
+                tag=enums.Tags.SPLIT_KEY_THRESHOLD
+            )
+        else:
+            raise TypeError("The split key threshold must be an integer.")
 
-        self.is_oversized(tstream)
-        self.validate()
+    @property
+    def split_key_method(self):
+        if self._split_key_method is not None:
+            return self._split_key_method.value
+        return None
 
-    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        tstream = BytearrayStream()
+    @split_key_method.setter
+    def split_key_method(self, value):
+        if value is None:
+            self._split_key_method = None
+        elif isinstance(value, enums.SplitKeyMethod):
+            self._split_key_method = primitives.Enumeration(
+                enums.SplitKeyMethod,
+                value=value,
+                tag=enums.Tags.SPLIT_KEY_METHOD
+            )
+        else:
+            raise TypeError(
+                "The split key method must be a SplitKeyMethod enumeration."
+            )
 
-        self.split_key_parts.write(tstream, kmip_version=kmip_version)
-        self.key_part_identifier.write(tstream, kmip_version=kmip_version)
-        self.split_key_threshold.write(tstream, kmip_version=kmip_version)
-        self.split_key_method.write(tstream, kmip_version=kmip_version)
+    @property
+    def prime_field_size(self):
+        if self._prime_field_size is not None:
+            return self._prime_field_size.value
+        return None
 
-        if self.prime_field_size is not None:
-            self.prime_field_size.write(tstream, kmip_version=kmip_version)
+    @prime_field_size.setter
+    def prime_field_size(self, value):
+        if value is None:
+            self._prime_field_size = None
+        elif isinstance(value, six.integer_types):
+            self._prime_field_size = primitives.BigInteger(
+                value=value,
+                tag=enums.Tags.PRIME_FIELD_SIZE
+            )
+        else:
+            raise TypeError("The prime field size must be an integer.")
 
-        self.key_block.write(tstream, kmip_version=kmip_version)
+    @property
+    def key_block(self):
+        if self._key_block is not None:
+            return self._key_block
+        return None
 
-        # Write the length and value of the template attribute
-        self.length = tstream.length()
-        super(SplitKey, self).write(ostream, kmip_version=kmip_version)
-        ostream.write(tstream.buffer)
+    @key_block.setter
+    def key_block(self, value):
+        if value is None:
+            self._key_block = None
+        elif isinstance(value, objects.KeyBlock):
+            self._key_block = value
+        else:
+            raise TypeError("The key block must be a KeyBlock structure.")
 
-    def validate(self):
-        self.__validate()
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Read the data encoding the SplitKey object and decode it.
 
-    def __validate(self):
-        # TODO (peter-hamilton) Finish implementation.
-        pass
+        Args:
+            input_buffer (stream): A data stream containing the encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
+        """
+        super(SplitKey, self).read(input_buffer, kmip_version=kmip_version)
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
+
+        if self.is_tag_next(enums.Tags.SPLIT_KEY_PARTS, local_buffer):
+            self._split_key_parts = primitives.Integer(
+                tag=enums.Tags.SPLIT_KEY_PARTS
+            )
+            self._split_key_parts.read(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The SplitKey encoding is missing the SplitKeyParts field."
+            )
+
+        if self.is_tag_next(enums.Tags.KEY_PART_IDENTIFIER, local_buffer):
+            self._key_part_identifier = primitives.Integer(
+                tag=enums.Tags.KEY_PART_IDENTIFIER
+            )
+            self._key_part_identifier.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The SplitKey encoding is missing the KeyPartIdentifier field."
+            )
+
+        if self.is_tag_next(enums.Tags.SPLIT_KEY_THRESHOLD, local_buffer):
+            self._split_key_threshold = primitives.Integer(
+                tag=enums.Tags.SPLIT_KEY_THRESHOLD
+            )
+            self._split_key_threshold.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The SplitKey encoding is missing the SplitKeyThreshold field."
+            )
+
+        if self.is_tag_next(enums.Tags.SPLIT_KEY_METHOD, local_buffer):
+            self._split_key_method = primitives.Enumeration(
+                enums.SplitKeyMethod,
+                tag=enums.Tags.SPLIT_KEY_METHOD
+            )
+            self._split_key_method.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The SplitKey encoding is missing the SplitKeyMethod field."
+            )
+
+        if self.is_tag_next(enums.Tags.PRIME_FIELD_SIZE, local_buffer):
+            self._prime_field_size = primitives.BigInteger(
+                tag=enums.Tags.PRIME_FIELD_SIZE
+            )
+            self._prime_field_size.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            corner_case = enums.SplitKeyMethod.POLYNOMIAL_SHARING_PRIME_FIELD
+            if self.split_key_method == corner_case:
+                raise exceptions.InvalidKmipEncoding(
+                    "The SplitKey encoding is missing the PrimeFieldSize "
+                    "field. This field is required when the SplitKeyMethod is "
+                    "PolynomialSharingPrimeField."
+                )
+
+        if self.is_tag_next(enums.Tags.KEY_BLOCK, local_buffer):
+            self._key_block = objects.KeyBlock()
+            self._key_block.read(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The SplitKey encoding is missing the KeyBlock field."
+            )
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Write the data encoding the SplitKey object to a buffer.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode object
+                data, supporting a write method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
+        """
+        local_buffer = utils.BytearrayStream()
+
+        if self._split_key_parts:
+            self._split_key_parts.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The SplitKey object is missing the SplitKeyParts field."
+            )
+
+        if self._key_part_identifier:
+            self._key_part_identifier.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The SplitKey object is missing the KeyPartIdentifier field."
+            )
+
+        if self._split_key_threshold:
+            self._split_key_threshold.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The SplitKey object is missing the SplitKeyThreshold field."
+            )
+
+        if self._split_key_method:
+            self._split_key_method.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The SplitKey object is missing the SplitKeyMethod field."
+            )
+
+        if self._prime_field_size:
+            self._prime_field_size.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            corner_case = enums.SplitKeyMethod.POLYNOMIAL_SHARING_PRIME_FIELD
+            if self.split_key_method == corner_case:
+                raise exceptions.InvalidField(
+                    "The SplitKey object is missing the PrimeFieldSize field. "
+                    "This field is required when the SplitKeyMethod is "
+                    "PolynomialSharingPrimeField."
+                )
+
+        if self._key_block:
+            self._key_block.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The SplitKey object is missing the KeyBlock field."
+            )
+
+        self.length = local_buffer.length()
+        super(SplitKey, self).write(output_buffer, kmip_version=kmip_version)
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        args = [
+            "split_key_parts={}".format(repr(self.split_key_parts)),
+            "key_part_identifier={}".format(repr(self.key_part_identifier)),
+            "split_key_threshold={}".format(repr(self.split_key_threshold)),
+            "split_key_method={}".format(self.split_key_method),
+            "prime_field_size={}".format(repr(self.prime_field_size)),
+            "key_block={}".format(repr(self.key_block))
+        ]
+        return "SplitKey({})".format(", ".join(args))
+
+    def __str__(self):
+        # TODO (peter-hamilton) Replace str() call below with a dict() call.
+        value = ", ".join(
+            [
+                '"split_key_parts": {}'.format(self.split_key_parts),
+                '"key_part_identifier": {}'.format(self.key_part_identifier),
+                '"split_key_threshold": {}'.format(self.split_key_threshold),
+                '"split_key_method": {}'.format(self.split_key_method),
+                '"prime_field_size": {}'.format(self.prime_field_size),
+                '"key_block": {}'.format(str(self.key_block))
+            ]
+        )
+        return "{" + value + "}"
+
+    def __eq__(self, other):
+        if isinstance(other, SplitKey):
+            if self.split_key_parts != other.split_key_parts:
+                return False
+            elif self.key_part_identifier != other.key_part_identifier:
+                return False
+            elif self.split_key_threshold != other.split_key_threshold:
+                return False
+            elif self.split_key_method != other.split_key_method:
+                return False
+            elif self.prime_field_size != other.prime_field_size:
+                return False
+#            elif self.key_block != other.key_block:
+#                return False
+            return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, SplitKey):
+            return not self.__eq__(other)
+        else:
+            return NotImplemented
 
 
 # 2.2.6
