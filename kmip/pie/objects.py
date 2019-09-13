@@ -14,6 +14,7 @@
 # under the License.
 
 from abc import abstractmethod
+import sqlalchemy
 from sqlalchemy import Column, event, ForeignKey, Integer, String, VARBINARY
 from sqlalchemy import Boolean
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -1049,6 +1050,264 @@ class PrivateKey(Key):
 
 event.listen(PrivateKey._names, 'append',
              sql.attribute_append_factory("name_index"), retval=False)
+
+
+class SplitKey(Key):
+    """
+    """
+
+    __mapper_args__ = {"polymorphic_identity": "SplitKey"}
+    __table_args__ = {"sqlite_autoincrement": True}
+    __tablename__ = "split_keys"
+
+    unique_identifier = sqlalchemy.Column(
+        "uid",
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey("keys.uid"),
+        primary_key=True
+    )
+
+    # Split Key object fields
+    _split_key_parts = sqlalchemy.Column(
+        "_split_key_parts",
+        sqlalchemy.Integer,
+        default=None
+    )
+    _key_part_identifier = sqlalchemy.Column(
+        "_key_part_identifier",
+        sqlalchemy.Integer,
+        default=None
+    )
+    _split_key_threshold = sqlalchemy.Column(
+        "_split_key_threshold",
+        sqlalchemy.Integer,
+        default=None
+    )
+    _split_key_method = sqlalchemy.Column(
+        "_split_key_method",
+        sql.EnumType(enums.SplitKeyMethod),
+        default=None
+    )
+    _prime_field_size = sqlalchemy.Column(
+        "_prime_field_size",
+        sqlalchemy.BigInteger,
+        default=None
+    )
+
+    def __init__(self,
+                 cryptographic_algorithm=None,
+                 cryptographic_length=None,
+                 key_value=None,
+                 cryptographic_usage_masks=None,
+                 name="Split Key",
+                 key_format_type=enums.KeyFormatType.RAW,
+                 key_wrapping_data=None,
+                 split_key_parts=None,
+                 key_part_identifier=None,
+                 split_key_threshold=None,
+                 split_key_method=None,
+                 prime_field_size=None):
+        """
+        Create a SplitKey.
+
+        Args:
+            cryptographic_algorithm(enum): A CryptographicAlgorithm enumeration
+                identifying the type of algorithm for the split key. Required.
+            cryptographic_length(int): The length in bits of the split key.
+                Required.
+            key_value(bytes): The bytes representing the split key. Required.
+            cryptographic_usage_masks(list): A list of CryptographicUsageMask
+                enumerations defining how the split key will be used. Optional,
+                defaults to None.
+            name(string): The string name of the split key. Optional, defaults
+                to "Split Key".
+            key_format_type (enum): A KeyFormatType enumeration specifying the
+                format of the split key. Optional, defaults to Raw.
+            key_wrapping_data(dict): A dictionary containing key wrapping data
+                settings, describing how the split key has been wrapped.
+                Optional, defaults to None.
+            split_key_parts (int): An integer specifying the total number of
+                parts of the split key. Required.
+            key_part_identifier (int): An integer specifying which key part
+                of the split key this key object represents. Required.
+            split_key_threshold (int): An integer specifying the minimum
+                number of key parts required to reconstruct the split key.
+                Required.
+            split_key_method (enum): A SplitKeyMethod enumeration specifying
+                how the key was split. Required.
+            prime_field_size (int): A big integer specifying the prime field
+                size used for the Polynomial Sharing Prime Field split key
+                method. Optional, defaults to None.
+        """
+        super(SplitKey, self).__init__(key_wrapping_data=key_wrapping_data)
+
+        self._object_type = enums.ObjectType.SPLIT_KEY
+
+        self.key_format_type = key_format_type
+        self.value = key_value
+        self.cryptographic_algorithm = cryptographic_algorithm
+        self.cryptographic_length = cryptographic_length
+        self.names = [name]
+
+        if cryptographic_usage_masks:
+            self.cryptographic_usage_masks.extend(cryptographic_usage_masks)
+
+        self.split_key_parts = split_key_parts
+        self.key_part_identifier = key_part_identifier
+        self.split_key_threshold = split_key_threshold
+        self.split_key_method = split_key_method
+        self.prime_field_size = prime_field_size
+
+    @property
+    def split_key_parts(self):
+        return self._split_key_parts
+
+    @split_key_parts.setter
+    def split_key_parts(self, value):
+        if (value is None) or (isinstance(value, six.integer_types)):
+            self._split_key_parts = value
+        else:
+            raise TypeError("The split key parts must be an integer.")
+
+    @property
+    def key_part_identifier(self):
+        return self._key_part_identifier
+
+    @key_part_identifier.setter
+    def key_part_identifier(self, value):
+        if (value is None) or (isinstance(value, six.integer_types)):
+            self._key_part_identifier = value
+        else:
+            raise TypeError("The key part identifier must be an integer.")
+
+    @property
+    def split_key_threshold(self):
+        return self._split_key_threshold
+
+    @split_key_threshold.setter
+    def split_key_threshold(self, value):
+        if (value is None) or (isinstance(value, six.integer_types)):
+            self._split_key_threshold = value
+        else:
+            raise TypeError("The split key threshold must be an integer.")
+
+    @property
+    def split_key_method(self):
+        return self._split_key_method
+
+    @split_key_method.setter
+    def split_key_method(self, value):
+        if (value is None) or (isinstance(value, enums.SplitKeyMethod)):
+            self._split_key_method = value
+        else:
+            raise TypeError(
+                "The split key method must be a SplitKeyMethod enumeration."
+            )
+
+    @property
+    def prime_field_size(self):
+        return self._prime_field_size
+
+    @prime_field_size.setter
+    def prime_field_size(self, value):
+        if (value is None) or (isinstance(value, six.integer_types)):
+            self._prime_field_size = value
+        else:
+            raise TypeError("The prime field size must be an integer.")
+
+    def __repr__(self):
+        cryptographic_algorithm = "cryptographic_algorithm={0}".format(
+            self.cryptographic_algorithm
+        )
+        cryptographic_length = "cryptographic_length={0}".format(
+            self.cryptographic_length
+        )
+        key_value = "key_value={0}".format(binascii.hexlify(self.value))
+        key_format_type = "key_format_type={0}".format(self.key_format_type)
+        key_wrapping_data = "key_wrapping_data={0}".format(
+            self.key_wrapping_data
+        )
+        cryptographic_usage_masks = "cryptographic_usage_masks={0}".format(
+            self.cryptographic_usage_masks
+        )
+        names = "name={0}".format(self.names)
+        split_key_parts = "split_key_parts={0}".format(self.split_key_parts)
+        key_part_identifier = "key_part_identifier={0}".format(
+            self.key_part_identifier
+        )
+        split_key_threshold = "split_key_threshold={0}".format(
+            self.split_key_threshold
+        )
+        split_key_method = "split_key_method={0}".format(self.split_key_method)
+        prime_field_size = "prime_field_size={0}".format(self.prime_field_size)
+
+        return "SplitKey({0})".format(
+            ", ".join(
+                [
+                    cryptographic_algorithm,
+                    cryptographic_length,
+                    key_value,
+                    key_format_type,
+                    key_wrapping_data,
+                    cryptographic_usage_masks,
+                    names,
+                    split_key_parts,
+                    key_part_identifier,
+                    split_key_threshold,
+                    split_key_method,
+                    prime_field_size
+                ]
+            )
+        )
+
+    def __str__(self):
+        return str(binascii.hexlify(self.value))
+
+    def __eq__(self, other):
+        if isinstance(other, SplitKey):
+            if self.value != other.value:
+                return False
+            elif self.key_format_type != other.key_format_type:
+                return False
+            elif self.cryptographic_algorithm != other.cryptographic_algorithm:
+                return False
+            elif self.cryptographic_length != other.cryptographic_length:
+                return False
+            elif self.key_wrapping_data != other.key_wrapping_data:
+                return False
+            elif self.cryptographic_usage_masks != \
+                    other.cryptographic_usage_masks:
+                return False
+            elif self.names != other.names:
+                return False
+            elif self.split_key_parts != other.split_key_parts:
+                return False
+            elif self.key_part_identifier != other.key_part_identifier:
+                return False
+            elif self.split_key_threshold != other.split_key_threshold:
+                return False
+            elif self.split_key_method != other.split_key_method:
+                return False
+            elif self.prime_field_size != other.prime_field_size:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, SplitKey):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+
+event.listen(
+    SplitKey._names,
+    "append",
+    sql.attribute_append_factory("name_index"),
+    retval=False
+)
 
 
 class Certificate(CryptographicObject):
