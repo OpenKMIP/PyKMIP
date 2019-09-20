@@ -430,6 +430,88 @@ class TestObjectFactory(testtools.TestCase):
         self.assertEqual(enums.OpaqueDataType.NONE, pie_obj.opaque_type)
         self.assertEqual(self.opaque_bytes, pie_obj.value)
 
+    def test_convert_split_key_pie_to_core(self):
+        """
+        Test that a Pie split key object can be converted into a core split
+        key object.
+        """
+        pie_split_key = pobjects.SplitKey(
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=128,
+            key_value=self.symmetric_bytes,
+            cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
+            name="Split Key",
+            key_format_type=enums.KeyFormatType.RAW,
+            key_wrapping_data=None,
+            split_key_parts=3,
+            key_part_identifier=1,
+            split_key_threshold=2,
+            split_key_method=enums.SplitKeyMethod.XOR,
+            prime_field_size=None
+        )
+        core_split_key = self.factory.convert(pie_split_key)
+
+        self.assertIsInstance(core_split_key, secrets.SplitKey)
+        self._test_core_key(
+            core_split_key,
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.symmetric_bytes,
+            enums.KeyFormatType.RAW
+        )
+        self.assertEqual(3, core_split_key.split_key_parts)
+        self.assertEqual(1, core_split_key.key_part_identifier)
+        self.assertEqual(2, core_split_key.split_key_threshold)
+        self.assertEqual(
+            enums.SplitKeyMethod.XOR,
+            core_split_key.split_key_method
+        )
+        self.assertIsNone(core_split_key.prime_field_size)
+
+    def test_convert_split_key_core_to_pie(self):
+        """
+        Test that a core split key object can be converted into a Pie split
+        key object.
+        """
+        key_block = cobjects.KeyBlock(
+            key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
+            key_compression_type=None,
+            key_value=cobjects.KeyValue(
+                cobjects.KeyMaterial(self.symmetric_bytes)
+            ),
+            cryptographic_algorithm=attributes.CryptographicAlgorithm(
+                enums.CryptographicAlgorithm.AES
+            ),
+            cryptographic_length=attributes.CryptographicLength(128),
+            key_wrapping_data=None
+        )
+        core_split_key = secrets.SplitKey(
+            split_key_parts=3,
+            key_part_identifier=1,
+            split_key_threshold=2,
+            split_key_method=enums.SplitKeyMethod.XOR,
+            prime_field_size=None,
+            key_block=key_block
+        )
+        pie_split_key = self.factory.convert(core_split_key)
+
+        self.assertIsInstance(pie_split_key, pobjects.SplitKey)
+        self._test_pie_key(
+            pie_split_key,
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.symmetric_bytes,
+            enums.KeyFormatType.RAW
+        )
+        self.assertEqual(3, pie_split_key.split_key_parts)
+        self.assertEqual(1, pie_split_key.key_part_identifier)
+        self.assertEqual(2, pie_split_key.split_key_threshold)
+        self.assertEqual(
+            enums.SplitKeyMethod.XOR,
+            pie_split_key.split_key_method
+        )
+        self.assertIsNone(pie_split_key.prime_field_size)
+
     def test_build_pie_symmetric_key(self):
         """
         Test that a core SymmetricKey object can be converted into a Pie
@@ -530,6 +612,88 @@ class TestObjectFactory(testtools.TestCase):
         args = (core_cert, )
         self.assertRaises(
             TypeError, self.factory._build_pie_certificate, *args)
+
+    def test_build_core_split_key(self):
+        """
+        Test that a Pie split key object can be converted into a core key
+        object.
+        """
+        pie_split_key = pobjects.SplitKey(
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=128,
+            key_value=self.symmetric_bytes,
+            cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
+            name="Split Key",
+            key_format_type=enums.KeyFormatType.RAW,
+            key_wrapping_data=None,
+            split_key_parts=3,
+            key_part_identifier=1,
+            split_key_threshold=2,
+            split_key_method=enums.SplitKeyMethod.XOR,
+            prime_field_size=None
+        )
+        core_split_key = self.factory._build_core_split_key(pie_split_key)
+
+        self.assertIsInstance(core_split_key, secrets.SplitKey)
+        self._test_core_key(
+            core_split_key,
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.symmetric_bytes,
+            enums.KeyFormatType.RAW
+        )
+        self.assertEqual(3, core_split_key.split_key_parts)
+        self.assertEqual(1, core_split_key.key_part_identifier)
+        self.assertEqual(2, core_split_key.split_key_threshold)
+        self.assertEqual(
+            enums.SplitKeyMethod.XOR,
+            core_split_key.split_key_method
+        )
+        self.assertIsNone(core_split_key.prime_field_size)
+
+    def test_build_pie_split_key(self):
+        """
+        Test that a core split key object can be converted into a Pie split
+        key object.
+        """
+        key_block = cobjects.KeyBlock(
+            key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
+            key_compression_type=None,
+            key_value=cobjects.KeyValue(
+                cobjects.KeyMaterial(self.symmetric_bytes)
+            ),
+            cryptographic_algorithm=attributes.CryptographicAlgorithm(
+                enums.CryptographicAlgorithm.AES
+            ),
+            cryptographic_length=attributes.CryptographicLength(128),
+            key_wrapping_data=None
+        )
+        core_split_key = secrets.SplitKey(
+            split_key_parts=3,
+            key_part_identifier=1,
+            split_key_threshold=2,
+            split_key_method=enums.SplitKeyMethod.XOR,
+            prime_field_size=None,
+            key_block=key_block
+        )
+        pie_split_key = self.factory._build_pie_split_key(core_split_key)
+
+        self.assertIsInstance(pie_split_key, pobjects.SplitKey)
+        self._test_pie_key(
+            pie_split_key,
+            enums.CryptographicAlgorithm.AES,
+            128,
+            self.symmetric_bytes,
+            enums.KeyFormatType.RAW
+        )
+        self.assertEqual(3, pie_split_key.split_key_parts)
+        self.assertEqual(1, pie_split_key.key_part_identifier)
+        self.assertEqual(2, pie_split_key.split_key_threshold)
+        self.assertEqual(
+            enums.SplitKeyMethod.XOR,
+            pie_split_key.split_key_method
+        )
+        self.assertIsNone(pie_split_key.prime_field_size)
 
     def _test_core_key(self, key, algorithm, length, value, format_type):
         key_block = key.key_block

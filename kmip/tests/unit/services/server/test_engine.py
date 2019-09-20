@@ -3494,11 +3494,11 @@ class TestKmipEngine(testtools.TestCase):
         e._data_session = e._data_store_session_factory()
         e._logger = mock.MagicMock()
 
-        object_type = enums.ObjectType.SPLIT_KEY
+        object_type = enums.ObjectType.TEMPLATE
         payload = payloads.RegisterRequestPayload(object_type=object_type)
 
         args = (payload, )
-        regex = "The SplitKey object type is not supported."
+        regex = "The Template object type is not supported."
         six.assertRaisesRegex(
             self,
             exceptions.InvalidField,
