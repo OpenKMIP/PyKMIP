@@ -31,6 +31,7 @@ from kmip.core.secrets import OpaqueObject
 from kmip.core.secrets import PrivateKey
 from kmip.core.secrets import PublicKey
 from kmip.core.secrets import SecretData
+from kmip.core.secrets import SplitKey
 from kmip.core.secrets import SymmetricKey
 from kmip.core.secrets import Template
 
@@ -116,7 +117,18 @@ class SecretFactory(object):
             return PrivateKey(key_block)
 
     def _create_split_key(self, value):
-        raise NotImplementedError()
+        if value is None:
+            return SplitKey()
+        else:
+            key_block = self._build_key_block(value)
+            return SplitKey(
+                split_key_parts=value.get("split_key_parts"),
+                key_part_identifier=value.get("key_part_identifier"),
+                split_key_threshold=value.get("split_key_threshold"),
+                split_key_method=value.get("split_key_method"),
+                prime_field_size=value.get("prime_field_size"),
+                key_block=key_block
+            )
 
     def _create_template(self, value):
         if value is None:

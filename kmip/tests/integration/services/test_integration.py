@@ -54,6 +54,7 @@ from kmip.core.secrets import PublicKey
 from kmip.core.secrets import Certificate
 from kmip.core.secrets import SecretData
 from kmip.core.secrets import OpaqueObject
+from kmip.core.secrets import SplitKey
 
 
 @pytest.mark.usefixtures("client")
@@ -1674,4 +1675,106 @@ class TestIntegration(testtools.TestCase):
         self.assertEqual(
             ResultStatus.OPERATION_FAILED,
             result.result_status.value
+        )
+
+    def test_split_key_register_get_destroy(self):
+        """
+        Tests that split keys are properly registered, retrieved, and
+        destroyed.
+        """
+        usage_mask = self.attr_factory.create_attribute(
+            AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [CryptographicUsageMask.ENCRYPT, CryptographicUsageMask.DECRYPT]
+        )
+        key_name = "Integration Test - Register-Get-Destroy Split Key"
+        name = self.attr_factory.create_attribute(AttributeType.NAME, key_name)
+        template_attribute = TemplateAttribute(attributes=[usage_mask, name])
+
+        key_data = (
+            b'\x00\x00\x00\x00\x00\x00\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        key_block = KeyBlock(
+            key_format_type=KeyFormatType(KeyFormatTypeEnum.RAW),
+            key_compression_type=None,
+            key_value=KeyValue(KeyMaterial(key_data)),
+            cryptographic_algorithm=CryptographicAlgorithm(
+                CryptoAlgorithmEnum.AES
+            ),
+            cryptographic_length=CryptographicLength(128),
+            key_wrapping_data=None
+        )
+
+        secret = SplitKey(
+            split_key_parts=3,
+            key_part_identifier=1,
+            split_key_threshold=2,
+            split_key_method=enums.SplitKeyMethod.XOR,
+            prime_field_size=None,
+            key_block=key_block
+        )
+
+        result = self.client.register(
+            ObjectType.SPLIT_KEY,
+            template_attribute,
+            secret,
+            credential=None
+        )
+
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
+        self._check_uuid(result.uuid, str)
+
+        # Check that the returned key bytes match what was provided
+        uuid = result.uuid
+        result = self.client.get(uuid=uuid, credential=None)
+
+        self._check_result_status(result, ResultStatus, ResultStatus.SUCCESS)
+        self._check_object_type(
+            result.object_type,
+            ObjectType,
+            ObjectType.SPLIT_KEY
+        )
+        self._check_uuid(result.uuid, str)
+
+        self.assertEqual(3, result.secret.split_key_parts)
+        self.assertEqual(1, result.secret.key_part_identifier)
+        self.assertEqual(2, result.secret.split_key_threshold)
+        self.assertEqual(
+            enums.SplitKeyMethod.XOR,
+            result.secret.split_key_method
+        )
+        self.assertIsNone(result.secret.prime_field_size)
+
+        # Check the secret type
+        self.assertIsInstance(result.secret, SplitKey)
+        self.assertEqual(
+            key_data,
+            result.secret.key_block.key_value.key_material.value
+        )
+
+        self.logger.debug(
+            'Destroying key: ' + key_name + '\nWith UUID: ' + result.uuid
+        )
+
+        result = self.client.destroy(result.uuid)
+        self._check_result_status(
+            result,
+            ResultStatus,
+            ResultStatus.SUCCESS
+        )
+        self._check_uuid(result.uuid.value, str)
+
+        # Verify the secret was destroyed
+        result = self.client.get(uuid=uuid, credential=None)
+
+        self._check_result_status(
+            result,
+            ResultStatus,
+            ResultStatus.OPERATION_FAILED
+        )
+        self.assertIsInstance(result.result_reason.value, ResultReason)
+        self.assertEqual(
+            ResultReason.ITEM_NOT_FOUND,
+            result.result_reason.value
         )
