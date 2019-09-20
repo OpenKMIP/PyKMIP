@@ -56,7 +56,7 @@ def build_console_logger(level):
     return logger
 
 
-def build_cli_parser(operation=None):
+def build_cli_parser(operation):
     # Build the argument parser and setup expected options
     parser = optparse.OptionParser(
         usage="%prog [options]",
@@ -699,6 +699,8 @@ def log_secret(logger, secret_type, secret_value):
         log_public_key(logger, secret_value)
     elif secret_type is ObjectType.SYMMETRIC_KEY:
         log_symmetric_key(logger, secret_value)
+    elif secret_type is ObjectType.SPLIT_KEY:
+        log_split_key(logger, secret_value)
     else:
         logger.info('generic secret: {0}'.format(secret_value))
 
@@ -729,9 +731,23 @@ def log_symmetric_key(logger, skey):
     log_key_block(logger, key_block)
 
 
+def log_split_key(logger, split_key):
+    logger.info("Split Key:")
+    logger.info("* Split Key Parts: {}".format(split_key.split_key_parts))
+    logger.info(
+        "* Key Part Identifier: {}".format(split_key.key_part_identifier)
+    )
+    logger.info(
+        "* Split Key Threshold: {}".format(split_key.split_key_threshold)
+    )
+    logger.info("* Split Key Method: {}".format(split_key.split_key_method))
+    logger.info("* Prime Field Size: {}".format(split_key.prime_field_size))
+    log_key_block(logger, split_key.key_block)
+
+
 def log_key_block(logger, key_block):
     if key_block is not None:
-        logger.info('key block:')
+        logger.info("* Key Block:")
 
         key_format_type = key_block.key_format_type
         key_compression_type = key_block.key_compression_type
@@ -740,33 +756,25 @@ def log_key_block(logger, key_block):
         cryptographic_length = key_block.cryptographic_length
         key_wrapping_data = key_block.key_wrapping_data
 
-        logger.info('* key format type: {0}'.format(key_format_type))
-        logger.info('* key compression type: {0}'.format(
+        logger.info("  * Key Format Type: {}".format(key_format_type))
+        logger.info("  * Key Compression Type: {}".format(
             key_compression_type))
-        logger.info('* cryptographic algorithm: {0}'.format(
+        logger.info("  * Cryptographic Algorithm: {}".format(
             cryptographic_algorithm))
-        logger.info('* cryptographic length: {0}'.format(
+        logger.info("  * Cryptographic Length: {}".format(
             cryptographic_length))
+        logger.info("  * Key Wrapping Data: {}".format(key_wrapping_data))
 
         log_key_value(logger, key_value)
-        log_key_wrapping_data(logger, key_wrapping_data)
     else:
-        logger.info('key block: {0}'.format(key_block))
+        logger.info("* Key Block: {}".format(key_block))
 
 
 def log_key_value(logger, key_value):
     if key_value is not None:
-        logger.info('key value:')
-
-        key_material = key_value.key_material
-        attributes = key_value.attributes
-
-        logger.info('key material: {0}'.format(repr(key_material)))
-
-        log_attribute_list(logger, attributes)
+        logger.info("  * Key Value:")
+        logger.info(
+            "    * Key Material: {}".format(repr(key_value.key_material))
+        )
     else:
-        logger.info('key value: {0}'.format(key_value))
-
-
-def log_key_wrapping_data(logger, key_wrapping_data):
-    logger.info('key wrapping data: {0}'.format(key_wrapping_data))
+        logger.info("  * Key Value: {}".format(key_value))
