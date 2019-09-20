@@ -123,7 +123,7 @@ class KmipEngine(object):
             enums.ObjectType.SYMMETRIC_KEY: objects.SymmetricKey,
             enums.ObjectType.PUBLIC_KEY: objects.PublicKey,
             enums.ObjectType.PRIVATE_KEY: objects.PrivateKey,
-            enums.ObjectType.SPLIT_KEY: None,
+            enums.ObjectType.SPLIT_KEY: objects.SplitKey,
             enums.ObjectType.TEMPLATE: None,
             enums.ObjectType.SECRET_DATA: objects.SecretData,
             enums.ObjectType.OPAQUE_DATA: objects.OpaqueObject

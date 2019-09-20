@@ -68,6 +68,10 @@ class ObjectFactory:
             return self._build_core_opaque_object(obj)
         elif isinstance(obj, secrets.OpaqueObject):
             return self._build_pie_opaque_object(obj)
+        elif isinstance(obj, pobjects.SplitKey):
+            return self._build_core_split_key(obj)
+        elif isinstance(obj, secrets.SplitKey):
+            return self._build_pie_split_key(obj)
         else:
             raise TypeError("object type unsupported and cannot be converted")
 
@@ -125,6 +129,23 @@ class ObjectFactory:
         value = obj.opaque_data_value.value
         return pobjects.OpaqueObject(value, opaque_type)
 
+    def _build_pie_split_key(self, secret):
+        algorithm = secret.key_block.cryptographic_algorithm.value
+        return pobjects.SplitKey(
+            cryptographic_algorithm=algorithm,
+            cryptographic_length=secret.key_block.cryptographic_length.value,
+            key_value=secret.key_block.key_value.key_material.value,
+            key_format_type=secret.key_block.key_format_type.value,
+            key_wrapping_data=self._build_key_wrapping_data(
+                secret.key_block.key_wrapping_data
+            ),
+            split_key_parts=secret.split_key_parts,
+            key_part_identifier=secret.key_part_identifier,
+            split_key_threshold=secret.split_key_threshold,
+            split_key_method=secret.split_key_method,
+            prime_field_size=secret.prime_field_size
+        )
+
     def _build_core_key(self, key, cls):
         algorithm = key.cryptographic_algorithm
         length = key.cryptographic_length
@@ -169,6 +190,32 @@ class ObjectFactory:
         data_type = secrets.SecretData.SecretDataType(secret_data_type)
 
         return secrets.SecretData(data_type, key_block)
+
+    def _build_core_split_key(self, secret):
+        key_material = cobjects.KeyMaterial(secret.value)
+        key_value = cobjects.KeyValue(key_material)
+        key_block = cobjects.KeyBlock(
+            key_format_type=misc.KeyFormatType(secret.key_format_type),
+            key_compression_type=None,
+            key_value=key_value,
+            cryptographic_algorithm=attributes.CryptographicAlgorithm(
+                secret.cryptographic_algorithm
+            ),
+            cryptographic_length=attributes.CryptographicLength(
+                secret.cryptographic_length
+            ),
+            key_wrapping_data=cobjects.KeyWrappingData(
+                **secret.key_wrapping_data
+            )
+        )
+        return secrets.SplitKey(
+            split_key_parts=secret.split_key_parts,
+            key_part_identifier=secret.key_part_identifier,
+            split_key_threshold=secret.split_key_threshold,
+            split_key_method=secret.split_key_method,
+            prime_field_size=secret.prime_field_size,
+            key_block=key_block
+        )
 
     def _build_core_opaque_object(self, obj):
         opaque_type = obj.opaque_type
