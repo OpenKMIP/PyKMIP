@@ -194,6 +194,11 @@ class ObjectFactory:
     def _build_core_split_key(self, secret):
         key_material = cobjects.KeyMaterial(secret.value)
         key_value = cobjects.KeyValue(key_material)
+        key_wrapping_data = None
+        if secret.key_wrapping_data:
+            key_wrapping_data = cobjects.KeyWrappingData(
+                **secret.key_wrapping_data
+            )
         key_block = cobjects.KeyBlock(
             key_format_type=misc.KeyFormatType(secret.key_format_type),
             key_compression_type=None,
@@ -204,9 +209,7 @@ class ObjectFactory:
             cryptographic_length=attributes.CryptographicLength(
                 secret.cryptographic_length
             ),
-            key_wrapping_data=cobjects.KeyWrappingData(
-                **secret.key_wrapping_data
-            )
+            key_wrapping_data=key_wrapping_data
         )
         return secrets.SplitKey(
             split_key_parts=secret.split_key_parts,

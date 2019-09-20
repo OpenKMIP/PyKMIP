@@ -1038,10 +1038,10 @@ class TestKmipEngine(testtools.TestCase):
 
         class DummyObject:
             def __init__(self):
-                self._object_type = enums.ObjectType.SPLIT_KEY
+                self._object_type = enums.ObjectType.TEMPLATE
 
         args = (DummyObject(), )
-        regex = "The SplitKey object type is not supported."
+        regex = "The Template object type is not supported."
         six.assertRaisesRegex(
             self,
             exceptions.InvalidField,

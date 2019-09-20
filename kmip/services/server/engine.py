@@ -519,6 +519,19 @@ class KmipEngine(object):
                 'opaque_data_type': obj.opaque_type,
                 'opaque_data_value': obj.value
             }
+        elif object_type == enums.ObjectType.SPLIT_KEY:
+            value = {
+                "cryptographic_algorithm": obj.cryptographic_algorithm,
+                "cryptographic_length": obj.cryptographic_length,
+                "key_format_type": obj.key_format_type,
+                "key_value": obj.value,
+                "key_wrapping_data": obj.key_wrapping_data,
+                "split_key_parts": obj.split_key_parts,
+                "key_part_identifier": obj.key_part_identifier,
+                "split_key_threshold": obj.split_key_threshold,
+                "split_key_method": obj.split_key_method,
+                "prime_field_size": obj.prime_field_size
+            }
         else:
             name = object_type.name
             raise exceptions.InvalidField(

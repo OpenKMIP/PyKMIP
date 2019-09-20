@@ -1295,3 +1295,57 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         # Clean up the keys
         self.client.destroy(a_id)
         self.client.destroy(b_id)
+
+    def test_split_key_register_get_destroy(self):
+        """
+        Test that the ProxyKmipClient can register, retrieve, and destroy a
+        split key.
+        """
+        key = objects.SplitKey(
+            cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+            cryptographic_length=128,
+            key_value=(
+                b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ),
+            name="Test Split Key",
+            cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
+            key_format_type=enums.KeyFormatType.RAW,
+            key_wrapping_data=None,
+            split_key_parts=3,
+            key_part_identifier=1,
+            split_key_threshold=2,
+            split_key_method=enums.SplitKeyMethod.XOR,
+            prime_field_size=None
+        )
+
+        uid = self.client.register(key)
+        self.assertIsInstance(uid, six.string_types)
+
+        try:
+            result = self.client.get(uid)
+            self.assertIsInstance(result, objects.SplitKey)
+            self.assertEqual(
+                enums.CryptographicAlgorithm.AES,
+                result.cryptographic_algorithm
+            )
+            self.assertEqual(128, result.cryptographic_length)
+            self.assertEqual(
+                (
+                    b'\x00\x01\x02\x03\x04\x05\x06\x07'
+                    b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+                ),
+                result.value
+            )
+            self.assertEqual(enums.KeyFormatType.RAW, result.key_format_type)
+            self.assertEqual(3, result.split_key_parts)
+            self.assertEqual(1, result.key_part_identifier)
+            self.assertEqual(2, result.split_key_threshold)
+            self.assertEqual(enums.SplitKeyMethod.XOR, result.split_key_method)
+            self.assertIsNone(result.prime_field_size)
+        finally:
+            self.client.destroy(uid)
+            self.assertRaises(
+                exceptions.KmipOperationFailure, self.client.get, uid)
+            self.assertRaises(
+                exceptions.KmipOperationFailure, self.client.destroy, uid)
