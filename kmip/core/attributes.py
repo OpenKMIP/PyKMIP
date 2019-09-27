@@ -16,14 +16,15 @@
 import six
 
 from kmip.core import enums
-from kmip.core import exceptions
-
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
 from kmip.core.enums import Tags
 
+from kmip.core import exceptions
+
 from kmip.core.misc import KeyFormatType
 
+from kmip.core import primitives
 from kmip.core.primitives import Boolean
 from kmip.core.primitives import ByteString
 from kmip.core.primitives import Enumeration
@@ -31,7 +32,9 @@ from kmip.core.primitives import Integer
 from kmip.core.primitives import Struct
 from kmip.core.primitives import TextString
 
+from kmip.core import utils
 from kmip.core.utils import BytearrayStream
+
 from enum import Enum
 
 
@@ -1070,48 +1073,7 @@ class ObjectGroup(TextString):
         super(ObjectGroup, self).__init__(value, Tags.OBJECT_GROUP)
 
 
-# 3.36
-class ApplicationNamespace(TextString):
-    """
-    The name of a namespace supported by the KMIP server.
-
-    A part of ApplicationSpecificInformation, sets of these are also potential
-    responses to a Query request. See Sections 3.36 and 4.25 of the KMIP v1.1
-    specification for more information.
-    """
-
-    def __init__(self, value=None):
-        """
-        Construct an ApplicationNamespace object.
-
-        Args:
-            value (str): A string representing a namespace. Optional, defaults
-                to None.
-        """
-        super(ApplicationNamespace, self).__init__(
-            value, Tags.APPLICATION_NAMESPACE)
-
-
-class ApplicationData(TextString):
-    """
-    A string representing data specific to an application namespace.
-
-    A part of ApplicationSpecificInformation. See Section 3.36 of the KMIP v1.1
-    specification for more information.
-    """
-
-    def __init__(self, value=None):
-        """
-        Construct an ApplicationData object.
-
-        Args:
-            value (str): A string representing data for a particular namespace.
-                Optional, defaults to None.
-        """
-        super(ApplicationData, self).__init__(value, Tags.APPLICATION_DATA)
-
-
-class ApplicationSpecificInformation(Struct):
+class ApplicationSpecificInformation(primitives.Struct):
     """
     A structure used to store data specific to the applications that use a
     Managed Object.
@@ -1131,98 +1093,168 @@ class ApplicationSpecificInformation(Struct):
         Construct an ApplicationSpecificInformation object.
 
         Args:
-            application_namespace (ApplicationNamespace): The name of a
-                namespace supported by the server. Optional, defaults to None.
-            application_data (ApplicationData): String data relevant to the
-                specified namespace. Optional, defaults to None.
+            application_namespace (string): The name of a namespace supported
+                by the server. Optional, defaults to None. Required for
+                read/write.
+            application_data (string): String data relevant to the specified
+                namespace. Optional, defaults to None. Required for read/write.
         """
         super(ApplicationSpecificInformation, self).__init__(
-            Tags.APPLICATION_SPECIFIC_INFORMATION)
+            enums.Tags.APPLICATION_SPECIFIC_INFORMATION
+        )
 
-        if application_namespace is None:
-            self.application_namespace = ApplicationNamespace()
+        self._application_namespace = None
+        self._application_data = None
+
+        self.application_namespace = application_namespace
+        self.application_data = application_data
+
+    @property
+    def application_namespace(self):
+        if self._application_namespace:
+            return self._application_namespace.value
+        return None
+
+    @application_namespace.setter
+    def application_namespace(self, value):
+        if value is None:
+            self._application_namespace = None
+        elif isinstance(value, six.string_types):
+            self._application_namespace = primitives.TextString(
+                value=value,
+                tag=enums.Tags.APPLICATION_NAMESPACE
+            )
         else:
-            self.application_namespace = application_namespace
+            raise TypeError("The application namespace must be a string.")
 
-        if application_data is None:
-            self.application_data = ApplicationData()
+    @property
+    def application_data(self):
+        if self._application_data:
+            return self._application_data.value
+        return None
+
+    @application_data.setter
+    def application_data(self, value):
+        if value is None:
+            self._application_data = None
+        elif isinstance(value, six.string_types):
+            self._application_data = primitives.TextString(
+                value=value,
+                tag=enums.Tags.APPLICATION_DATA
+            )
         else:
-            self.application_data = application_data
+            raise TypeError("The application data must be a string.")
 
-        self.validate()
-
-    def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
-        Read the data encoding the ApplicationSpecificInformation object and
-        decode it into its constituent parts.
+        Read the data encoding the ApplicationSpecificInformation attribute
+        and decode it.
 
         Args:
-            istream (Stream): A data stream containing encoded object data,
-                supporting a read method; usually a BytearrayStream object.
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
             kmip_version (KMIPVersion): An enumeration defining the KMIP
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
         super(ApplicationSpecificInformation, self).read(
-            istream,
+            input_buffer,
             kmip_version=kmip_version
         )
-        tstream = BytearrayStream(istream.read(self.length))
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        self.application_namespace.read(tstream, kmip_version=kmip_version)
-        self.application_data.read(tstream, kmip_version=kmip_version)
+        if self.is_tag_next(enums.Tags.APPLICATION_NAMESPACE, local_buffer):
+            self._application_namespace = primitives.TextString(
+                tag=enums.Tags.APPLICATION_NAMESPACE
+            )
+            self._application_namespace.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The ApplicationSpecificInformation encoding is missing the "
+                "ApplicationNamespace field."
+            )
+        if self.is_tag_next(enums.Tags.APPLICATION_DATA, local_buffer):
+            self._application_data = primitives.TextString(
+                tag=enums.Tags.APPLICATION_DATA
+            )
+            self._application_data.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The ApplicationSpecificInformation encoding is missing the "
+                "ApplicationData field."
+            )
 
-        self.is_oversized(tstream)
-        self.validate()
+        self.is_oversized(local_buffer)
 
-    def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
         Write the data encoding the ApplicationSpecificInformation object to a
-        stream.
+        buffer.
 
         Args:
-            ostream (Stream): A data stream in which to encode object data,
-                supporting a write method; usually a BytearrayStream object.
+            output_buffer (stream): A data stream in which to encode object
+                data, supporting a write method; usually a BytearrayStream
+                object.
             kmip_version (KMIPVersion): An enumeration defining the KMIP
                 version with which the object will be encoded. Optional,
                 defaults to KMIP 1.0.
         """
-        tstream = BytearrayStream()
+        local_buffer = utils.BytearrayStream()
 
-        self.application_namespace.write(tstream, kmip_version=kmip_version)
-        self.application_data.write(tstream, kmip_version=kmip_version)
+        if self._application_namespace:
+            self._application_namespace.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The ApplicationSpecificInformation object is missing the "
+                "ApplicationNamespace field."
+            )
+        if self._application_data:
+            self._application_data.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The ApplicationSpecificInformation object is missing the "
+                "ApplicationData field."
+            )
 
-        self.length = tstream.length()
+        self.length = local_buffer.length()
         super(ApplicationSpecificInformation, self).write(
-            ostream,
+            output_buffer,
             kmip_version=kmip_version
         )
-        ostream.write(tstream.buffer)
-
-    def validate(self):
-        """
-        Error check the types of the different attributes of the
-        ApplicationSpecificInformation object.
-        """
-        self.__validate()
+        output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
-        application_namespace = "application_namespace={0}".format(
-            repr(self.application_namespace)
-        )
-        application_data = "application_data={0}".format(
-            repr(self.application_data)
-        )
-        return "ApplicationSpecificInformation({0}, {1})".format(
-            application_namespace,
-            application_data
-        )
+        args = [
+            "application_namespace={}".format(
+                repr(self.application_namespace)
+            ),
+            "application_data={}".format(repr(self.application_data))
+        ]
+        return "ApplicationSpecificInformation({})".format(", ".join(args))
 
     def __str__(self):
-        return str({
-            "application_namespace": str(self.application_namespace),
-            "application_data": str(self.application_data)
-        })
+        value = ", ".join(
+            [
+                '"application_namespace": {}'.format(
+                    self.application_namespace
+                ),
+                '"application_data": {}'.format(self.application_data)
+            ]
+        )
+        return "{" + value + "}"
 
     def __eq__(self, other):
         if isinstance(other, ApplicationSpecificInformation):
@@ -1239,45 +1271,6 @@ class ApplicationSpecificInformation(Struct):
             return not self.__eq__(other)
         else:
             return NotImplemented
-
-    def __validate(self):
-        if not isinstance(self.application_namespace, ApplicationNamespace):
-            msg = "invalid application namespace"
-            msg += "; expected {0}, received {1}".format(
-                ApplicationNamespace, self.application_namespace)
-            raise TypeError(msg)
-
-        if not isinstance(self.application_data, ApplicationData):
-            msg = "invalid application data"
-            msg += "; expected {0}, received {1}".format(
-                ApplicationData, self.application_data)
-            raise TypeError(msg)
-
-    @classmethod
-    def create(cls, application_namespace, application_data):
-        """
-        Construct an ApplicationSpecificInformation object from provided data
-        and namespace values.
-
-        Args:
-            application_namespace (str): The name of the application namespace.
-            application_data (str): Application data related to the namespace.
-
-        Returns:
-            ApplicationSpecificInformation: The newly created set of
-                application information.
-
-        Example:
-            >>> x = ApplicationSpecificInformation.create('namespace', 'data')
-            >>> x.application_namespace.value
-            'namespace'
-            >>> x.application_data.value
-            'data'
-        """
-        namespace = ApplicationNamespace(application_namespace)
-        data = ApplicationData(application_data)
-        return ApplicationSpecificInformation(
-            application_namespace=namespace, application_data=data)
 
 
 # 3.37

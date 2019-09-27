@@ -996,8 +996,8 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
                     'Application Specific Information'
                 ),
                 attribute_value=attributes.ApplicationSpecificInformation(
-                    attributes.ApplicationNamespace('ssl'),
-                    attributes.ApplicationData('www.example.com')
+                    application_namespace="ssl",
+                    application_data="www.example.com"
                 )
             ),
             objects.Attribute(
@@ -1166,8 +1166,8 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
                     'Application Specific Information'
                 ),
                 attribute_value=attributes.ApplicationSpecificInformation(
-                    attributes.ApplicationNamespace('ssl'),
-                    attributes.ApplicationData('www.example.com')
+                    application_namespace="ssl",
+                    application_data="www.example.com"
                 )
             ),
             payload.attributes
@@ -1271,8 +1271,8 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
                         'Application Specific Information'
                     ),
                     attribute_value=attributes.ApplicationSpecificInformation(
-                        attributes.ApplicationNamespace('ssl'),
-                        attributes.ApplicationData('www.example.com')
+                        application_namespace="ssl",
+                        application_data="www.example.com"
                     )
                 ),
                 objects.Attribute(

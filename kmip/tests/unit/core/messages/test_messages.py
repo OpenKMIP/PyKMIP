@@ -22,9 +22,6 @@ from kmip.core.factories.secrets import SecretFactory
 from kmip.core.factories.attributes import AttributeFactory
 
 from kmip.core import attributes as attr
-from kmip.core.attributes import ApplicationData
-from kmip.core.attributes import ApplicationNamespace
-from kmip.core.attributes import ApplicationSpecificInformation
 from kmip.core.attributes import ContactInformation
 from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
@@ -1017,10 +1014,10 @@ class TestRequestMessage(TestCase):
                                                'Information')
         ap_n_name = 'ssl'
         ap_n_value = 'www.example.com'
-        ap_n = ApplicationNamespace(ap_n_name)
-        ap_d = ApplicationData(ap_n_value)
-        value = ApplicationSpecificInformation(application_namespace=ap_n,
-                                               application_data=ap_d)
+        value = attr.ApplicationSpecificInformation(
+            application_namespace=ap_n_name,
+            application_data=ap_n_value
+        )
         attribute = objects.Attribute(attribute_name=name,
                                       attribute_value=value)
         attributes.append(attribute)
