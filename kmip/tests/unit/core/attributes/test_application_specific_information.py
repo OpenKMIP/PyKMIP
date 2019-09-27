@@ -13,16 +13,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from testtools import TestCase
+import testtools
 
-from kmip.core.attributes import ApplicationData
-from kmip.core.attributes import ApplicationNamespace
-from kmip.core.attributes import ApplicationSpecificInformation
-
-from kmip.core.utils import BytearrayStream
+from kmip.core import attributes
+from kmip.core import exceptions
+from kmip.core import utils
 
 
-class TestApplicationSpecificInformation(TestCase):
+class TestApplicationSpecificInformation(testtools.TestCase):
     """
     A test suite for the ApplicationSpecificInformation class.
     """
@@ -30,364 +28,338 @@ class TestApplicationSpecificInformation(TestCase):
     def setUp(self):
         super(TestApplicationSpecificInformation, self).setUp()
 
-        self.encoding_default = BytearrayStream((
-            b'\x42\x00\x04\x01\x00\x00\x00\x10\x42\x00\x03\x07\x00\x00\x00\x00'
-            b'\x42\x00\x02\x07\x00\x00\x00\x00'))
-        self.encoding = BytearrayStream((
-            b'\x42\x00\x04\x01\x00\x00\x00\x28\x42\x00\x03\x07\x00\x00\x00\x03'
-            b'\x73\x73\x6C\x00\x00\x00\x00\x00\x42\x00\x02\x07\x00\x00\x00\x0F'
-            b'\x77\x77\x77\x2E\x65\x78\x61\x6D\x70\x6C\x65\x2E\x63\x6F\x6D'
-            b'\x00'))
+        # This encoding was taken from test case 3.1.2 from the KMIP 1.1 test
+        # document.
+        #
+        # This encoding matches the following set of values:
+        # Application Specific Information
+        #     Application Namespace - ssl
+        #     Application Data - www.example.com
+        self.full_encoding = utils.BytearrayStream(
+            b'\x42\x00\x04\x01\x00\x00\x00\x28'
+            b'\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00'
+            b'\x42\x00\x02\x07\x00\x00\x00\x0F'
+            b'\x77\x77\x77\x2E\x65\x78\x61\x6D\x70\x6C\x65\x2E\x63\x6F\x6D\x00'
+        )
+
+        # This encoding was adapted from test case 3.1.2 from the KMIP 1.1 test
+        # document.
+        #
+        # This encoding matches the following set of values:
+        # Application Specific Information
+        #     Application Data - www.example.com
+        self.no_application_namespace_encoding = utils.BytearrayStream(
+            b'\x42\x00\x04\x01\x00\x00\x00\x18'
+            b'\x42\x00\x02\x07\x00\x00\x00\x0F'
+            b'\x77\x77\x77\x2E\x65\x78\x61\x6D\x70\x6C\x65\x2E\x63\x6F\x6D\x00'
+        )
+
+        # This encoding was adapted from test case 3.1.2 from the KMIP 1.1 test
+        # document.
+        #
+        # This encoding matches the following set of values:
+        # Application Specific Information
+        #     Application Namespace - ssl
+        self.no_application_data_encoding = utils.BytearrayStream(
+            b'\x42\x00\x04\x01\x00\x00\x00\x10'
+            b'\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00'
+        )
 
     def tearDown(self):
         super(TestApplicationSpecificInformation, self).tearDown()
 
-    def _test_init(self, application_namespace, application_data):
-        application_specific_information = ApplicationSpecificInformation(
-            application_namespace=application_namespace,
-            application_data=application_data)
-
-        if application_namespace is None:
-            self.assertEqual(
-                ApplicationNamespace(),
-                application_specific_information.application_namespace)
-        else:
-            self.assertEqual(
-                application_namespace,
-                application_specific_information.application_namespace)
-
-        if application_data is None:
-            self.assertEqual(
-                ApplicationData(),
-                application_specific_information.application_data)
-        else:
-            self.assertEqual(
-                application_data,
-                application_specific_information.application_data)
-
-    def test_init_with_none(self):
+    def test_init(self):
         """
-        Test that an ApplicationSpecificInformation object can be constructed
-        with no specified values.
+        Test that an ApplicationSpecificInformation object can be constructed.
         """
-        self._test_init(None, None)
+        app_specific_info = attributes.ApplicationSpecificInformation()
 
-    def test_init_with_args(self):
-        """
-        Test that an ApplicationSpecificInformation object can be constructed
-        with valid values.
-        """
-        application_namespace = ApplicationNamespace("namespace")
-        application_data = ApplicationData("data")
-        self._test_init(application_namespace, application_data)
+        self.assertIsNone(app_specific_info.application_namespace)
+        self.assertIsNone(app_specific_info.application_data)
 
-    def test_validate_on_invalid_application_namespace(self):
-        """
-        Test that a TypeError exception is raised when an invalid
-        ApplicationNamespace value is used to construct an
-        ApplicationSpecificInformation object.
-        """
-        application_namespace = "invalid"
-        application_data = ApplicationData()
-        args = [application_namespace, application_data]
+        app_specific_info = attributes.ApplicationSpecificInformation(
+            application_namespace="namespace",
+            application_data="data"
+        )
 
+        self.assertEqual("namespace", app_specific_info.application_namespace)
+        self.assertEqual("data", app_specific_info.application_data)
+
+    def test_invalid_application_namespace(self):
+        """
+        Test that a TypeError is raised when an invalid value is used to set
+        the application namespace of an ApplicationSpecificInformation object.
+        """
+        kwargs = {"application_namespace": []}
         self.assertRaisesRegex(
-            TypeError, "invalid application namespace",
-            ApplicationSpecificInformation, *args)
+            TypeError,
+            "The application namespace must be a string.",
+            attributes.ApplicationSpecificInformation,
+            **kwargs
+        )
 
-    def test_validate_on_invalid_application_data(self):
-        """
-        Test that a TypeError exception is raised when an invalid
-        ApplicationData value is used to construct an
-        ApplicationSpecificInformation object.
-        """
-        application_namespace = ApplicationNamespace()
-        application_data = "invalid"
-        args = [application_namespace, application_data]
-
+        args = (
+            attributes.ApplicationSpecificInformation(),
+            "application_namespace",
+            []
+        )
         self.assertRaisesRegex(
-            TypeError, "invalid application data",
-            ApplicationSpecificInformation, *args)
+            TypeError,
+            "The application namespace must be a string.",
+            setattr,
+            *args
+        )
 
-    def _test_read(self, stream, application_namespace, application_data):
-        application_specific_information = ApplicationSpecificInformation()
-        application_specific_information.read(stream)
-
-        if application_namespace is None:
-            application_namespace = ApplicationNamespace()
-        if application_data is None:
-            application_data = ApplicationData()
-
-        msg = "application namespace encoding mismatch"
-        msg += "; expected {0}, observed {1}".format(
-            application_namespace,
-            application_specific_information.application_namespace)
-        self.assertEqual(
-            application_namespace,
-            application_specific_information.application_namespace, msg)
-
-        msg = "application data encoding mismatch"
-        msg += "; expected {0}, observed {1}".format(
-            application_data,
-            application_specific_information.application_data)
-        self.assertEqual(
-            application_data,
-            application_specific_information.application_data, msg)
-
-    def test_read_with_none(self):
+    def test_invalid_application_data(self):
         """
-        Test that an ApplicationSpecificInformation object with no data can be
-        read from a data stream.
+        Test that a TypeError is raised when an invalid value is used to set
+        the application data of an ApplicationSpecificInformation object.
         """
-        self._test_read(self.encoding_default, None, None)
+        kwargs = {"application_data": []}
+        self.assertRaisesRegex(
+            TypeError,
+            "The application data must be a string.",
+            attributes.ApplicationSpecificInformation,
+            **kwargs
+        )
 
-    def test_read_with_args(self):
+        args = (
+            attributes.ApplicationSpecificInformation(),
+            "application_data",
+            []
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The application data must be a string.",
+            setattr,
+            *args
+        )
+
+    def test_read(self):
         """
-        Test that an ApplicationSpecificInformation object with data can be
-        read from a data stream.
+        Test that an ApplicationSpecificInformation object can be read from a
+        buffer.
         """
-        application_namespace = ApplicationNamespace("ssl")
-        application_data = ApplicationData("www.example.com")
-        self._test_read(self.encoding, application_namespace, application_data)
+        app_specific_info = attributes.ApplicationSpecificInformation()
 
-    def _test_write(self, stream_expected, application_namespace,
-                    application_data):
-        stream_observed = BytearrayStream()
-        application_specific_information = ApplicationSpecificInformation(
-            application_namespace=application_namespace,
-            application_data=application_data)
-        application_specific_information.write(stream_observed)
+        self.assertIsNone(app_specific_info.application_namespace)
+        self.assertIsNone(app_specific_info.application_data)
 
-        length_expected = len(stream_expected)
-        length_observed = len(stream_observed)
+        app_specific_info.read(self.full_encoding)
 
-        msg = "encoding lengths not equal"
-        msg += "; expected {0}, observed {1}".format(
-            length_expected, length_observed)
-        self.assertEqual(length_expected, length_observed, msg)
+        self.assertEqual("ssl", app_specific_info.application_namespace)
+        self.assertEqual("www.example.com", app_specific_info.application_data)
 
-        msg = "encoding mismatch"
-        msg += ";\nexpected:\n{0}\nobserved:\n{1}".format(
-            stream_expected, stream_observed)
-        self.assertEqual(stream_expected, stream_observed, msg)
-
-    def test_write_with_none(self):
+    def test_read_missing_application_namespace(self):
         """
-        Test that an ApplicationSpecificInformation object with no data can be
-        written to a data stream.
+        Test that an InvalidKmipEncoding error is raised during the decoding of
+        an ApplicationSpecificInformation object with the application namespace
+        is missing from the encoding.
         """
-        self._test_write(self.encoding_default, None, None)
+        app_specific_info = attributes.ApplicationSpecificInformation()
 
-    def test_write_with_args(self):
+        self.assertIsNone(app_specific_info.application_namespace)
+
+        args = (self.no_application_namespace_encoding, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The ApplicationSpecificInformation encoding is missing the "
+            "ApplicationNamespace field.",
+            app_specific_info.read,
+            *args
+        )
+
+    def test_read_missing_application_data(self):
         """
-        Test that an ApplicationSpecificInformation object with data can be
-        written to a data stream.
+        Test that an InvalidKmipEncoding error is raised during the decoding of
+        an ApplicationSpecificInformation object with the application data is
+        missing from the encoding.
         """
-        application_namespace = ApplicationNamespace("ssl")
-        application_data = ApplicationData("www.example.com")
-        self._test_write(self.encoding, application_namespace,
-                         application_data)
+        app_specific_info = attributes.ApplicationSpecificInformation()
+
+        self.assertIsNone(app_specific_info.application_data)
+
+        args = (self.no_application_data_encoding, )
+        self.assertRaisesRegex(
+            exceptions.InvalidKmipEncoding,
+            "The ApplicationSpecificInformation encoding is missing the "
+            "ApplicationData field.",
+            app_specific_info.read,
+            *args
+        )
+
+    def test_write(self):
+        """
+        Test that an ApplicationSpecificInformation object can be written to a
+        buffer.
+        """
+        app_specific_info = attributes.ApplicationSpecificInformation(
+            application_namespace="ssl",
+            application_data="www.example.com"
+        )
+
+        buff = utils.BytearrayStream()
+        app_specific_info.write(buff)
+
+        self.assertEqual(len(self.full_encoding), len(buff))
+        self.assertEqual(str(self.full_encoding), str(buff))
+
+    def test_write_missing_application_namespace(self):
+        """
+        Test that an InvalidField error is raised during the encoding of an
+        ApplicationSpecificInformation object when the object is missing the
+        application namespace field.
+        """
+        app_specific_info = attributes.ApplicationSpecificInformation(
+            application_data="www.example.com"
+        )
+
+        buff = utils.BytearrayStream()
+        args = (buff, )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The ApplicationSpecificInformation object is missing the "
+            "ApplicationNamespace field.",
+            app_specific_info.write,
+            *args
+        )
+
+    def test_write_missing_application_data(self):
+        """
+        Test that an InvalidField error is raised during the encoding of an
+        ApplicationSpecificInformation object when the object is missing the
+        application data field.
+        """
+        app_specific_info = attributes.ApplicationSpecificInformation(
+            application_namespace="ssl"
+        )
+
+        buff = utils.BytearrayStream()
+        args = (buff, )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The ApplicationSpecificInformation object is missing the "
+            "ApplicationData field.",
+            app_specific_info.write,
+            *args
+        )
 
     def test_repr(self):
         """
-        Test that an ApplicationSpecificInformation object can be represented
-        using repr correctly.
+        Test that repr can be applied to an ApplicationSpecificInformation
+        object.
         """
-        application_specific_info = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace("ssl"),
-            application_data=ApplicationData("www.example.com")
+        app_specific_info = attributes.ApplicationSpecificInformation(
+            application_namespace="ssl",
+            application_data="www.example.com"
         )
-        s = repr(application_specific_info)
 
+        args = [
+            "application_namespace='ssl'",
+            "application_data='www.example.com'"
+        ]
         self.assertEqual(
-            "ApplicationSpecificInformation("
-            "application_namespace=ApplicationNamespace(value='ssl'), "
-            "application_data=ApplicationData(value='www.example.com'))",
-            s
+            "ApplicationSpecificInformation({})".format(", ".join(args)),
+            repr(app_specific_info)
         )
 
     def test_str(self):
         """
-        Test that an ApplicationSpecificInformation object can be turned into
-        a string correctly.
+        Test that str can be applied to an ApplicationSpecificInformation
+        object.
         """
-        application_specific_info = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace("ssl"),
-            application_data=ApplicationData("www.example.com")
+        app_specific_info = attributes.ApplicationSpecificInformation(
+            application_namespace="ssl",
+            application_data="www.example.com"
         )
-        s = str(application_specific_info)
 
+        args = [
+            ("application_namespace", "ssl"),
+            ("application_data", "www.example.com")
+        ]
+        value = "{}".format(
+            ", ".join(['"{}": {}'.format(arg[0], arg[1]) for arg in args])
+        )
         self.assertEqual(
-            str({'application_namespace': 'ssl',
-                 'application_data': 'www.example.com'}
-                ),
-            s
+            "{" + value + "}",
+            str(app_specific_info)
         )
 
-    def test_equal_on_equal(self):
+    def test_comparison(self):
         """
-        Test that the equality operator returns True when comparing two
-        ApplicationSpecificInformation objects with the same data.
+        Test that the equality/inequality operators return True/False when
+        comparing two ApplicationSpecificInformation objects with the same
+        data.
         """
-        a = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data')
+        a = attributes.ApplicationSpecificInformation()
+        b = attributes.ApplicationSpecificInformation()
+
+        self.assertTrue(a == b)
+        self.assertTrue(b == a)
+        self.assertFalse(a != b)
+        self.assertFalse(b != a)
+
+        a = attributes.ApplicationSpecificInformation(
+            application_namespace="test_namespace",
+            application_data="test_data"
         )
-        b = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data')
+        b = attributes.ApplicationSpecificInformation(
+            application_namespace="test_namespace",
+            application_data="test_data"
         )
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
-
-    def test_equal_on_not_equal_namespace(self):
-        """
-        Test that the equality operator returns False when comparing two
-        ApplicationSpecificInformation objects with different data.
-        """
-        a = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace_1'),
-            application_data=ApplicationData('test_data')
-        )
-        b = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace_2'),
-            application_data=ApplicationData('test_data')
-        )
-
-        self.assertFalse(a == b)
-        self.assertFalse(b == a)
-
-    def test_equal_on_not_equal_data(self):
-        """
-        Test that the equality operator returns False when comparing two
-        ApplicationSpecificInformation objects with different data.
-        """
-        a = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data_1')
-        )
-        b = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data_2')
-        )
-
-        self.assertFalse(a == b)
-        self.assertFalse(b == a)
-
-    def test_equal_on_type_mismatch(self):
-        """
-        Test that the equality operator returns False when comparing a
-        ApplicationSpecificInformation object to a
-        non-ApplicationSpecificInformation object.
-        """
-        a = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data')
-        )
-        b = "invalid"
-
-        self.assertFalse(a == b)
-        self.assertFalse(b == a)
-
-    def test_not_equal_on_equal(self):
-        """
-        Test that the inequality operator returns False when comparing
-        two ApplicationSpecificInformation objects with the same internal
-        data.
-        """
-        a = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data')
-        )
-        b = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data')
-        )
-
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-    def test_not_equal_on_not_equal_namespace(self):
+    def test_comparison_on_different_application_namespaces(self):
         """
-        Test that the inequality operator returns True when comparing two
-        ApplicationSpecificInformation objects with different data.
+        Test that the equality/inequality operators return False/True when
+        comparing two ApplicationSpecificInformation objects with different
+        data.
         """
-        a = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace_1'),
-            application_data=ApplicationData('test_data')
+        a = attributes.ApplicationSpecificInformation(
+            application_namespace="test_namespace_1"
         )
-        b = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace_2'),
-            application_data=ApplicationData('test_data')
+        b = attributes.ApplicationSpecificInformation(
+            application_namespace="test_namespace_2"
         )
 
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-    def test_not_equal_on_not_equal_data(self):
+    def test_comparison_on_different_application_data(self):
         """
-        Test that the inequality operator returns True when comparing two
-        ApplicationSpecificInformation objects with different data.
+        Test that the equality/inequality operators return False/True when
+        comparing two ApplicationSpecificInformation objects with different
+        data.
         """
-        a = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data_1')
+        a = attributes.ApplicationSpecificInformation(
+            application_data="test_data_1"
         )
-        b = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data_2')
+        b = attributes.ApplicationSpecificInformation(
+            application_data="test_data_2"
         )
 
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-    def test_not_equal_on_type_mismatch(self):
+    def test_comparison_on_type_mismatch(self):
         """
-        Test that the equality operator returns True when comparing a
-        ApplicationSpecificInformation object to a
+        Test that the equality/inequality operators return False/True when
+        comparing an ApplicationSpecificInformation object to a
         non-ApplicationSpecificInformation object.
         """
-        a = ApplicationSpecificInformation(
-            application_namespace=ApplicationNamespace('test_namespace'),
-            application_data=ApplicationData('test_data')
+        a = attributes.ApplicationSpecificInformation(
+            application_namespace="test_namespace",
+            application_data="test_data"
         )
         b = "invalid"
 
-        self.assertTrue(a != b)
-        self.assertTrue(b != a)
-
-    def _test_create(self, application_namespace, application_data):
-        application_specific_info = ApplicationSpecificInformation.create(
-            application_namespace, application_data)
-
-        self.assertIsInstance(
-            application_specific_info, ApplicationSpecificInformation)
-
-        expected = ApplicationNamespace(application_namespace)
-        observed = application_specific_info.application_namespace
-
-        msg = "expected {0}, observed {1}".format(expected, observed)
-        self.assertEqual(expected, observed, msg)
-
-        expected = ApplicationData(application_data)
-        observed = application_specific_info.application_data
-
-        msg = "expected {0}, observed {1}".format(expected, observed)
-        self.assertEqual(expected, observed, msg)
-
-    def test_create_with_none(self):
-        """
-        Test that an ApplicationSpecificInformation object with no data can be
-        created using the create class method.
-        """
-        self._test_create(None, None)
-
-    def test_create_with_args(self):
-        """
-        Test that an ApplicationSpecificInformation object with data can be
-        created using the create class method.
-        """
-        application_namespace = "ssl"
-        application_data = "www.example.com"
-        self._test_create(application_namespace, application_data)
+        self.assertFalse(a == b)
+        self.assertFalse(b == a)

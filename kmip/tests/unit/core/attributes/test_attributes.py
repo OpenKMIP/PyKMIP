@@ -15,8 +15,6 @@
 
 from testtools import TestCase
 
-from kmip.core.attributes import ApplicationData
-from kmip.core.attributes import ApplicationNamespace
 from kmip.core.attributes import CertificateType
 from kmip.core.attributes import CryptographicParameters
 from kmip.core.attributes import DerivationParameters
@@ -376,104 +374,6 @@ class TestDigestValue(TestCase):
         Test that a DigestValue object can be constructed with valid byte data.
         """
         self._test_init(b'\x00\x01\x02\x03')
-
-
-class TestApplicationNamespace(TestCase):
-    """
-    A test suite for the ApplicationNamespace class.
-
-    Since ApplicationNamespace is a simple wrapper for the TextString
-    primitive, only a few tests pertaining to construction are needed.
-    """
-
-    def setUp(self):
-        super(TestApplicationNamespace, self).setUp()
-
-    def tearDown(self):
-        super(TestApplicationNamespace, self).tearDown()
-
-    def _test_init(self, value):
-        if (isinstance(value, str)) or (value is None):
-            application_namespace = ApplicationNamespace(value)
-
-            if value is None:
-                value = ''
-
-            msg = "expected {0}, observed {1}".format(
-                value, application_namespace.value)
-            self.assertEqual(value, application_namespace.value, msg)
-        else:
-            self.assertRaises(TypeError, ApplicationNamespace, value)
-
-    def test_init_with_none(self):
-        """
-        Test that an ApplicationNamespace object can be constructed with no
-        specified value.
-        """
-        self._test_init(None)
-
-    def test_init_with_valid(self):
-        """
-        Test that an ApplicationNamespace object can be constructed with a
-        valid, string-type value.
-        """
-        self._test_init("valid")
-
-    def test_init_with_invalid(self):
-        """
-        Test that a TypeError exception is raised when a non-string value is
-        used to construct an ApplicationNamespace object.
-        """
-        self._test_init(0)
-
-
-class TestApplicationData(TestCase):
-    """
-    A test suite for the ApplicationData class.
-
-    Since ApplicationData is a simple wrapper for the TextString primitive,
-    only a few tests pertaining to construction are needed.
-    """
-
-    def setUp(self):
-        super(TestApplicationData, self).setUp()
-
-    def tearDown(self):
-        super(TestApplicationData, self).tearDown()
-
-    def _test_init(self, value):
-        if (isinstance(value, str)) or (value is None):
-            application_data = ApplicationData(value)
-
-            if value is None:
-                value = ''
-
-            msg = "expected {0}, observed {1}".format(
-                value, application_data.value)
-            self.assertEqual(value, application_data.value, msg)
-        else:
-            self.assertRaises(TypeError, ApplicationData, value)
-
-    def test_init_with_none(self):
-        """
-        Test that an ApplicationData object can be constructed with no
-        specified value.
-        """
-        self._test_init(None)
-
-    def test_init_with_valid(self):
-        """
-        Test that an ApplicationData object can be constructed with a
-        valid, string-type value.
-        """
-        self._test_init("valid")
-
-    def test_init_with_invalid(self):
-        """
-        Test that a TypeError exception is raised when a non-string value is
-        used to construct an ApplicationData object.
-        """
-        self._test_init(0)
 
 
 class TestCryptographicParameters(TestCase):
