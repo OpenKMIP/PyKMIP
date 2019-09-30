@@ -18,13 +18,34 @@ import sqlalchemy
 from sqlalchemy import Column, event, ForeignKey, Integer, String, VARBINARY
 from sqlalchemy import Boolean
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.orm import relationship
 
 import binascii
 import six
 
 from kmip.core import enums
 from kmip.pie import sqltypes as sql
+
+
+app_specific_info_map = sqlalchemy.Table(
+    "app_specific_info_map",
+    sql.Base.metadata,
+    sqlalchemy.Column(
+        "managed_object_id",
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey(
+            "managed_objects.uid",
+            ondelete="CASCADE"
+        )
+    ),
+    sqlalchemy.Column(
+        "app_specific_info_id",
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey(
+            "app_specific_info.id",
+            ondelete="CASCADE"
+        )
+    )
+)
 
 
 class ManagedObject(sql.Base):
@@ -51,8 +72,11 @@ class ManagedObject(sql.Base):
     _class_type = Column('class_type', String(50))
     value = Column('value', VARBINARY(1024))
     name_index = Column(Integer, default=0)
-    _names = relationship('ManagedObjectName', back_populates='mo',
-                          cascade='all, delete-orphan')
+    _names = sqlalchemy.orm.relationship(
+        "ManagedObjectName",
+        back_populates="mo",
+        cascade="all, delete-orphan"
+    )
     names = association_proxy('_names', 'name')
     operation_policy_name = Column(
         'operation_policy_name',
@@ -61,6 +85,13 @@ class ManagedObject(sql.Base):
     )
     initial_date = Column(Integer, default=0)
     _owner = Column('owner', String(50), default=None)
+
+    app_specific_info = sqlalchemy.orm.relationship(
+        "ApplicationSpecificInformation",
+        secondary=app_specific_info_map,
+        back_populates="managed_objects",
+        passive_deletes=True
+    )
 
     __mapper_args__ = {
         'polymorphic_identity': 'ManagedObject',
@@ -1713,3 +1744,100 @@ class OpaqueObject(ManagedObject):
 
 event.listen(OpaqueObject._names, 'append',
              sql.attribute_append_factory("name_index"), retval=False)
+
+
+class ApplicationSpecificInformation(sql.Base):
+    __tablename__ = "app_specific_info"
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _application_namespace = sqlalchemy.Column(
+        "application_namespace",
+        sqlalchemy.String
+    )
+    _application_data = sqlalchemy.Column(
+        "application_data",
+        sqlalchemy.String
+    )
+    managed_objects = sqlalchemy.orm.relationship(
+        "ManagedObject",
+        secondary=app_specific_info_map,
+        back_populates="app_specific_info"
+    )
+
+    def __init__(self,
+                 application_namespace=None,
+                 application_data=None):
+        """
+        Create an ApplicationSpecificInformation attribute.
+
+        Args:
+            application_namespace (str): A string specifying the application
+                namespace. Required.
+            application_data (str): A string specifying the application data.
+                Required.
+        """
+        super(ApplicationSpecificInformation, self).__init__()
+
+        self.application_namespace = application_namespace
+        self.application_data = application_data
+
+    @property
+    def application_namespace(self):
+        return self._application_namespace
+
+    @application_namespace.setter
+    def application_namespace(self, value):
+        if (value is None) or (isinstance(value, six.string_types)):
+            self._application_namespace = value
+        else:
+            raise TypeError("The application namespace must be a string.")
+
+    @property
+    def application_data(self):
+        return self._application_data
+
+    @application_data.setter
+    def application_data(self, value):
+        if (value is None) or (isinstance(value, six.string_types)):
+            self._application_data = value
+        else:
+            raise TypeError("The application data must be a string.")
+
+    def __repr__(self):
+        application_namespace = "application_namespace={}".format(
+            self.application_namespace
+        )
+        application_data = "application_data={}".format(self.application_data)
+
+        return "ApplicationSpecificInformation({})".format(
+            ", ".join(
+                [
+                    application_namespace,
+                    application_data
+                ]
+            )
+        )
+
+    def __str__(self):
+        return str(
+            {
+                "application_namespace": self.application_namespace,
+                "application_data": self.application_data
+            }
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, ApplicationSpecificInformation):
+            if self.application_namespace != other.application_namespace:
+                return False
+            elif self.application_data != other.application_data:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ApplicationSpecificInformation):
+            return not (self == other)
+        else:
+            return NotImplemented
