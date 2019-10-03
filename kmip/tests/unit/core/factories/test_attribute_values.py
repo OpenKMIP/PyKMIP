@@ -418,7 +418,55 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that an ApplicationSpecificInformation attribute can be created.
         """
-        self.skipTest('')
+        attribute = self.factory.create_attribute_value(
+            enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+            {
+                "application_namespace": "ssl",
+                "application_data": "www.example.com"
+            }
+        )
+        self.assertIsInstance(
+            attribute,
+            attributes.ApplicationSpecificInformation
+        )
+        self.assertEqual("ssl", attribute.application_namespace)
+        self.assertEqual("www.example.com", attribute.application_data)
+
+        attribute = self.factory.create_attribute_value(
+            enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+            None
+        )
+        self.assertIsInstance(
+            attribute,
+            attributes.ApplicationSpecificInformation
+        )
+        self.assertIsNone(attribute.application_namespace)
+        self.assertIsNone(attribute.application_data)
+
+        attribute = self.factory.create_attribute_value_by_enum(
+            enums.Tags.APPLICATION_SPECIFIC_INFORMATION,
+            {
+                "application_namespace": "ssl",
+                "application_data": "www.example.com"
+            }
+        )
+        self.assertIsInstance(
+            attribute,
+            attributes.ApplicationSpecificInformation
+        )
+        self.assertEqual("ssl", attribute.application_namespace)
+        self.assertEqual("www.example.com", attribute.application_data)
+
+        attribute = self.factory.create_attribute_value_by_enum(
+            enums.Tags.APPLICATION_SPECIFIC_INFORMATION,
+            None
+        )
+        self.assertIsInstance(
+            attribute,
+            attributes.ApplicationSpecificInformation
+        )
+        self.assertIsNone(attribute.application_namespace)
+        self.assertIsNone(attribute.application_data)
 
     def test_create_contact_information(self):
         """

@@ -1602,7 +1602,7 @@ class TestKmipEngine(testtools.TestCase):
             symmetric_key,
             'Application Specific Information'
         )
-        self.assertEqual(None, result)
+        self.assertEqual([], result)
 
         result = e._get_attribute_from_managed_object(
             symmetric_key,
@@ -2423,6 +2423,13 @@ class TestKmipEngine(testtools.TestCase):
                 attribute_factory.create_attribute(
                     enums.AttributeType.OPERATION_POLICY_NAME,
                     'test'
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+                    {
+                        "application_namespace": "ssl",
+                        "application_data": "www.example.com"
+                    }
                 )
             ]
         )
@@ -2473,6 +2480,15 @@ class TestKmipEngine(testtools.TestCase):
         self.assertEqual('test', symmetric_key.operation_policy_name)
         self.assertIsNotNone(symmetric_key.initial_date)
         self.assertNotEqual(0, symmetric_key.initial_date)
+        self.assertEqual(1, len(symmetric_key.app_specific_info))
+        self.assertEqual(
+            "ssl",
+            symmetric_key.app_specific_info[0].application_namespace
+        )
+        self.assertEqual(
+            "www.example.com",
+            symmetric_key.app_specific_info[0].application_data
+        )
 
         self.assertEqual(uid, e._id_placeholder)
 
@@ -5598,6 +5614,126 @@ class TestKmipEngine(testtools.TestCase):
             "the object's operation policy name (custom)."
         )
         self.assertEqual(0, len(response_payload.unique_identifiers))
+
+    def test_locate_with_application_specific_information(self):
+        """
+        Test the Locate operation when the 'Application Specific Information'
+        attribute is given.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        key = (
+            b'\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        )
+
+        app_specific_info_a = pie_objects.ApplicationSpecificInformation(
+            application_namespace="ssl",
+            application_data="www.example.com"
+        )
+        app_specific_info_b = pie_objects.ApplicationSpecificInformation(
+            application_namespace="ssl",
+            application_data="www.test.com"
+        )
+
+        obj_a = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            key,
+            name='name1'
+        )
+        obj_a.app_specific_info.append(app_specific_info_a)
+        obj_a.app_specific_info.append(app_specific_info_b)
+        obj_b = pie_objects.SecretData(
+            key,
+            enums.SecretDataType.PASSWORD
+        )
+        obj_b.app_specific_info.append(app_specific_info_a)
+        obj_c = pie_objects.SecretData(
+            key,
+            enums.SecretDataType.PASSWORD
+        )
+
+        e._data_session.add(obj_a)
+        e._data_session.add(obj_b)
+        e._data_session.add(obj_c)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        id_a = str(obj_a.unique_identifier)
+        id_b = str(obj_b.unique_identifier)
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Locate the symmetric key objects based on their shared application
+        # specific information attribute.
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+                {
+                    "application_namespace": "ssl",
+                    "application_data": "www.example.com"
+                }
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_a)
+        )
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_b)
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified application specific "
+            "information ('ssl', 'www.example.com') does not match any "
+            "of the object's associated application "
+            "specific information attributes."
+        )
+        self.assertEqual(2, len(response_payload.unique_identifiers))
+        self.assertIn(id_a, response_payload.unique_identifiers)
+        self.assertIn(id_b, response_payload.unique_identifiers)
+
+        # Locate a single symmetric key object based on its unique application
+        # specific information attribute.
+        attrs = [
+            attribute_factory.create_attribute(
+                enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+                {
+                    "application_namespace": "ssl",
+                    "application_data": "www.test.com"
+                }
+            )
+        ]
+        payload = payloads.LocateRequestPayload(attributes=attrs)
+        e._logger.reset_mock()
+        response_payload = e._process_locate(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call("Processing operation: Locate")
+        e._logger.debug.assert_any_call(
+            "Locate filter matched object: {}".format(id_a)
+        )
+        e._logger.debug.assert_any_call(
+            "Failed match: "
+            "the specified application specific "
+            "information ('ssl', 'www.test.com') does not match any "
+            "of the object's associated application "
+            "specific information attributes."
+        )
+        self.assertEqual(1, len(response_payload.unique_identifiers))
+        self.assertIn(id_a, response_payload.unique_identifiers)
 
     def test_get(self):
         """

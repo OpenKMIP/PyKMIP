@@ -278,7 +278,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
             ("application_data", "www.example.com")
         ]
         value = "{}".format(
-            ", ".join(['"{}": {}'.format(arg[0], arg[1]) for arg in args])
+            ", ".join(['"{}": "{}"'.format(arg[0], arg[1]) for arg in args])
         )
         self.assertEqual(
             "{" + value + "}",

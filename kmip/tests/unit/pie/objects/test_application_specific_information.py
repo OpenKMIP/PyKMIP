@@ -247,11 +247,15 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         session.add(app_specific_info)
         session.commit()
 
+        # Grab the ID now before making a new session to avoid a Detached error
+        # See http://sqlalche.me/e/bhk3 for more info.
+        app_specific_info_id = app_specific_info.id
+
         session = sqlalchemy.orm.sessionmaker(bind=engine)()
         retrieved_info = session.query(
             objects.ApplicationSpecificInformation
         ).filter(
-            objects.ApplicationSpecificInformation.id == app_specific_info.id
+            objects.ApplicationSpecificInformation.id == app_specific_info_id
         ).one()
         session.commit()
 

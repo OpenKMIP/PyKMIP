@@ -1248,10 +1248,10 @@ class ApplicationSpecificInformation(primitives.Struct):
     def __str__(self):
         value = ", ".join(
             [
-                '"application_namespace": {}'.format(
+                '"application_namespace": "{}"'.format(
                     self.application_namespace
                 ),
-                '"application_data": {}'.format(self.application_data)
+                '"application_data": "{}"'.format(self.application_data)
             ]
         )
         return "{" + value + "}"
