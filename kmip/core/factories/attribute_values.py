@@ -277,28 +277,13 @@ class AttributeValueFactory(object):
         return attributes.ObjectGroup(group)
 
     def _create_application_specific_information(self, info):
-        if info is None:
-            return attributes.ApplicationSpecificInformation()
+        if info:
+            return attributes.ApplicationSpecificInformation(
+                application_namespace=info.get("application_namespace"),
+                application_data=info.get("application_data")
+            )
         else:
-            application_namespace = info.get('application_namespace')
-            application_data = info.get('application_data')
-
-            if not isinstance(application_namespace, str):
-                msg = utils.build_er_error(
-                    attributes.ApplicationSpecificInformation,
-                    'constructor argument type',
-                    str, type(application_namespace))
-                raise TypeError(msg)
-
-            if not isinstance(application_data, str):
-                msg = utils.build_er_error(
-                    attributes.ApplicationSpecificInformation,
-                    'constructor argument type',
-                    str, type(application_data))
-                raise TypeError(msg)
-
-            return attributes.ApplicationSpecificInformation.create(
-                application_namespace, application_data)
+            return attributes.ApplicationSpecificInformation()
 
     def _create_contact_information(self, info):
         if info is None:

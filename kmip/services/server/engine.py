@@ -730,8 +730,16 @@ class KmipEngine(object):
             return None
         elif attr_name == 'Link':
             return None
-        elif attr_name == 'Application Specific Information':
-            return None
+        elif attr_name == "Application Specific Information":
+            values = []
+            for info in managed_object.app_specific_info:
+                values.append(
+                    {
+                        "application_namespace": info.application_namespace,
+                        "application_data": info.application_data
+                    }
+                )
+            return values
         elif attr_name == 'Contact Information':
             return None
         elif attr_name == 'Last Change Date':
@@ -781,6 +789,14 @@ class KmipEngine(object):
                         raise exceptions.InvalidField(
                             "Cannot set duplicate name values."
                         )
+            elif attribute_name == "Application Specific Information":
+                for value in attribute_value:
+                    managed_object.app_specific_info.append(
+                        objects.ApplicationSpecificInformation(
+                            application_namespace=value.application_namespace,
+                            application_data=value.application_data
+                        )
+                    )
             else:
                 # TODO (peterhamilton) Remove when all attributes are supported
                 raise exceptions.InvalidField(
@@ -1662,6 +1678,26 @@ class KmipEngine(object):
                     )
                     if attribute is None:
                         continue
+                    elif name == "Application Specific Information":
+                        application_namespace = value.application_namespace
+                        application_data = value.application_data
+                        v = {
+                            "application_namespace": application_namespace,
+                            "application_data": application_data
+                        }
+                        if v not in attribute:
+                            self._logger.debug(
+                                "Failed match: "
+                                "the specified application specific "
+                                "information ('{}', '{}') does not match any "
+                                "of the object's associated application "
+                                "specific information attributes.".format(
+                                    v.get("application_namespace"),
+                                    v.get("application_data")
+                                )
+                            )
+                            add_object = False
+                            break
                     elif name == "Name":
                         if value not in attribute:
                             self._logger.debug(
