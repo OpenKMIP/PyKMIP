@@ -26,7 +26,6 @@ from kmip.core.attributes import ContactInformation
 from kmip.core.attributes import CryptographicAlgorithm
 from kmip.core.attributes import CryptographicLength
 from kmip.core.attributes import Name
-from kmip.core.attributes import ObjectGroup
 
 from kmip.core import enums
 from kmip.core.enums import AttributeType
@@ -1005,7 +1004,7 @@ class TestRequestMessage(TestCase):
         attributes = []
 
         name = objects.Attribute.AttributeName('Object Group')
-        value = ObjectGroup('Group1')
+        value = TextString('Group1', tag=enums.Tags.OBJECT_GROUP)
         attribute = objects.Attribute(attribute_name=name,
                                       attribute_value=value)
         attributes.append(attribute)

@@ -393,7 +393,21 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that an ObjectGroup attribute can be created.
         """
-        self.skipTest('')
+        object_group = self.factory.create_attribute_value(
+            enums.AttributeType.OBJECT_GROUP,
+            "Group1"
+        )
+        self.assertIsInstance(object_group, primitives.TextString)
+        self.assertEqual("Group1", object_group.value)
+        self.assertEqual(enums.Tags.OBJECT_GROUP, object_group.tag)
+
+        object_group = self.factory.create_attribute_value_by_enum(
+            enums.Tags.OBJECT_GROUP,
+            "Group1"
+        )
+        self.assertIsInstance(object_group, primitives.TextString)
+        self.assertEqual("Group1", object_group.value)
+        self.assertEqual(enums.Tags.OBJECT_GROUP, object_group.tag)
 
     def test_create_fresh(self):
         """

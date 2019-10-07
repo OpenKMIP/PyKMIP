@@ -93,7 +93,7 @@ class AttributeValueFactory(object):
         elif name is enums.AttributeType.ARCHIVE_DATE:
             return primitives.DateTime(value, enums.Tags.ARCHIVE_DATE)
         elif name is enums.AttributeType.OBJECT_GROUP:
-            return self._create_object_group(value)
+            return primitives.TextString(value, enums.Tags.OBJECT_GROUP)
         elif name is enums.AttributeType.FRESH:
             return primitives.Boolean(value, enums.Tags.FRESH)
         elif name is enums.AttributeType.LINK:
@@ -182,6 +182,7 @@ class AttributeValueFactory(object):
         elif enum is enums.Tags.ARCHIVE_DATE:
             return primitives.DateTime(value, enums.Tags.ARCHIVE_DATE)
         elif enum is enums.Tags.OBJECT_GROUP:
+            return primitives.TextString(value, enums.Tags.OBJECT_GROUP)
             return self._create_object_group(value)
         elif enum is enums.Tags.FRESH:
             return primitives.Boolean(value, enums.Tags.FRESH)
@@ -266,15 +267,6 @@ class AttributeValueFactory(object):
                 mask |= flag.value
 
         return attributes.CryptographicUsageMask(mask)
-
-    def _create_object_group(self, group):
-        if group is not None and not isinstance(group, str):
-            msg = utils.build_er_error(attributes.ObjectGroup,
-                                       'constructor argument type', str,
-                                       type(group))
-            raise TypeError(msg)
-
-        return attributes.ObjectGroup(group)
 
     def _create_application_specific_information(self, info):
         if info:

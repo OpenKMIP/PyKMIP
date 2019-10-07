@@ -989,7 +989,10 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
                 attribute_name=objects.Attribute.AttributeName(
                     'Object Group'
                 ),
-                attribute_value=attributes.ObjectGroup('Group1')
+                attribute_value=primitives.TextString(
+                    "Group1",
+                    enums.Tags.OBJECT_GROUP
+                )
             ),
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName(

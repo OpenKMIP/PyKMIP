@@ -1066,13 +1066,6 @@ class State(Enumeration):
         super(State, self).__init__(enums.State, value, Tags.STATE)
 
 
-# 3.33
-class ObjectGroup(TextString):
-
-    def __init__(self, value=None):
-        super(ObjectGroup, self).__init__(value, Tags.OBJECT_GROUP)
-
-
 class ApplicationSpecificInformation(primitives.Struct):
     """
     A structure used to store data specific to the applications that use a
