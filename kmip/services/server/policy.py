@@ -875,7 +875,7 @@ class AttributePolicy(object):
                 False,
                 False,
                 False,
-                False,
+                True,
                 (
                     enums.Operation.CREATE,
                     enums.Operation.CREATE_KEY_PAIR,
