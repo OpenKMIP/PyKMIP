@@ -725,7 +725,7 @@ class KmipEngine(object):
         elif attr_name == 'Archive Date':
             return None
         elif attr_name == 'Object Group':
-            return None
+            return [x.object_group for x in managed_object.object_groups]
         elif attr_name == 'Fresh':
             return None
         elif attr_name == 'Link':
@@ -796,6 +796,11 @@ class KmipEngine(object):
                             application_namespace=value.application_namespace,
                             application_data=value.application_data
                         )
+                    )
+            elif attribute_name == "Object Group":
+                for value in attribute_value:
+                    managed_object.object_groups.append(
+                        objects.ObjectGroup(object_group=value.value)
                     )
             else:
                 # TODO (peterhamilton) Remove when all attributes are supported
@@ -1695,6 +1700,16 @@ class KmipEngine(object):
                                     v.get("application_namespace"),
                                     v.get("application_data")
                                 )
+                            )
+                            add_object = False
+                            break
+                    elif name == "Object Group":
+                        if value.value not in attribute:
+                            self._logger.debug(
+                                "Failed match: "
+                                "the specified object group ('{}') does not "
+                                "match any of the object's associated object "
+                                "group attributes.".format(value.value)
                             )
                             add_object = False
                             break
