@@ -48,6 +48,28 @@ app_specific_info_map = sqlalchemy.Table(
 )
 
 
+object_group_map = sqlalchemy.Table(
+    "object_group_map",
+    sql.Base.metadata,
+    sqlalchemy.Column(
+        "managed_object_id",
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey(
+            "managed_objects.uid",
+            ondelete="CASCADE"
+        )
+    ),
+    sqlalchemy.Column(
+        "object_group_id",
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey(
+            "object_groups.id",
+            ondelete="CASCADE"
+        )
+    )
+)
+
+
 class ManagedObject(sql.Base):
     """
     The abstract base class of the simplified KMIP object hierarchy.
@@ -89,6 +111,12 @@ class ManagedObject(sql.Base):
     app_specific_info = sqlalchemy.orm.relationship(
         "ApplicationSpecificInformation",
         secondary=app_specific_info_map,
+        back_populates="managed_objects",
+        passive_deletes=True
+    )
+    object_groups = sqlalchemy.orm.relationship(
+        "ObjectGroup",
+        secondary=object_group_map,
         back_populates="managed_objects",
         passive_deletes=True
     )
@@ -1838,6 +1866,67 @@ class ApplicationSpecificInformation(sql.Base):
 
     def __ne__(self, other):
         if isinstance(other, ApplicationSpecificInformation):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+
+class ObjectGroup(sql.Base):
+    __tablename__ = "object_groups"
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _object_group = sqlalchemy.Column(
+        "object_group",
+        sqlalchemy.String,
+        nullable=False,
+        unique=True
+    )
+    managed_objects = sqlalchemy.orm.relationship(
+        "ManagedObject",
+        secondary=object_group_map,
+        back_populates="object_groups"
+    )
+
+    def __init__(self, object_group=None):
+        """
+        Create an ObjectGroup attribute.
+
+        Args:
+            object_group (str): A string specifying the object group. Required.
+        """
+        super(ObjectGroup, self).__init__()
+
+        self.object_group = object_group
+
+    @property
+    def object_group(self):
+        return self._object_group
+
+    @object_group.setter
+    def object_group(self, value):
+        if (value is None) or (isinstance(value, six.string_types)):
+            self._object_group = value
+        else:
+            raise TypeError("The object group must be a string.")
+
+    def __repr__(self):
+        object_group = "object_group={}".format(self.object_group)
+
+        return "ObjectGroup({})".format(object_group)
+
+    def __str__(self):
+        return str({"object_group": self.object_group})
+
+    def __eq__(self, other):
+        if isinstance(other, ObjectGroup):
+            if self.object_group != other.object_group:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ObjectGroup):
             return not (self == other)
         else:
             return NotImplemented
