@@ -70,7 +70,9 @@ class TestObjectGroup(testtools.TestCase):
         """
         object_group = objects.ObjectGroup(object_group="Group1")
 
-        expected = "ObjectGroup({})".format("object_group={}".format("Group1"))
+        expected = "ObjectGroup({})".format(
+            "object_group='{}'".format("Group1")
+        )
         observed = repr(object_group)
 
         self.assertEqual(expected, observed)

@@ -1831,10 +1831,12 @@ class ApplicationSpecificInformation(sql.Base):
             raise TypeError("The application data must be a string.")
 
     def __repr__(self):
-        application_namespace = "application_namespace={}".format(
+        application_namespace = "application_namespace='{}'".format(
             self.application_namespace
         )
-        application_data = "application_data={}".format(self.application_data)
+        application_data = "application_data='{}'".format(
+            self.application_data
+        )
 
         return "ApplicationSpecificInformation({})".format(
             ", ".join(
@@ -1877,8 +1879,7 @@ class ObjectGroup(sql.Base):
     _object_group = sqlalchemy.Column(
         "object_group",
         sqlalchemy.String,
-        nullable=False,
-        unique=True
+        nullable=False
     )
     managed_objects = sqlalchemy.orm.relationship(
         "ManagedObject",
@@ -1909,7 +1910,7 @@ class ObjectGroup(sql.Base):
             raise TypeError("The object group must be a string.")
 
     def __repr__(self):
-        object_group = "object_group={}".format(self.object_group)
+        object_group = "object_group='{}'".format(self.object_group)
 
         return "ObjectGroup({})".format(object_group)
 
