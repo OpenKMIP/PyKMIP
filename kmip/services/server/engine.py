@@ -799,6 +799,8 @@ class KmipEngine(object):
                     )
             elif attribute_name == "Object Group":
                 for value in attribute_value:
+                    # TODO (peterhamilton) Enforce uniqueness of object groups
+                    # to avoid wasted space.
                     managed_object.object_groups.append(
                         objects.ObjectGroup(object_group=value.value)
                     )

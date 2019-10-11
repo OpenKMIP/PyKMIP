@@ -85,34 +85,54 @@ class TestIntegration(testtools.TestCase):
         :return: returns the result of the "create key" operation as
         provided by the KMIP appliance
         """
-        object_type = ObjectType.SYMMETRIC_KEY
-        attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
-        algorithm = self.attr_factory.create_attribute(attribute_type,
-                                                       CryptoAlgorithmEnum.AES)
-        mask_flags = [CryptographicUsageMask.ENCRYPT,
-                      CryptographicUsageMask.DECRYPT]
-        attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
-        usage_mask = self.attr_factory.create_attribute(attribute_type,
-                                                        mask_flags)
-        key_length = 128
-        attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
-        key_length_obj = self.attr_factory.create_attribute(attribute_type,
-                                                            key_length)
-        name = Attribute.AttributeName('Name')
-
+        cryptographic_algorithm = self.attr_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+            enums.CryptographicAlgorithm.AES
+        )
+        cryptographic_usage_mask = self.attr_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+            [
+                enums.CryptographicUsageMask.ENCRYPT,
+                enums.CryptographicUsageMask.DECRYPT
+            ]
+        )
+        cryptographic_length = self.attr_factory.create_attribute(
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+            128
+        )
         if key_name is None:
-            key_name = 'Integration Test - Key'
+            key_name = "Integration Test - Key"
+        name = self.attr_factory.create_attribute(
+            enums.AttributeType.NAME,
+            key_name
+        )
+        object_group = self.attr_factory.create_attribute(
+            enums.AttributeType.OBJECT_GROUP,
+            "IntegrationTestKeys"
+        )
+        application_specific_information = self.attr_factory.create_attribute(
+            enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+            {
+                "application_namespace": "ssl",
+                "application_data": "www.example.com"
+            }
+        )
 
-        name_value = Name.NameValue(key_name)
-
-        name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
-        value = Name(name_value=name_value, name_type=name_type)
-        name = Attribute(attribute_name=name, attribute_value=value)
-        attributes = [algorithm, usage_mask, key_length_obj, name]
+        attributes = [
+            cryptographic_algorithm,
+            cryptographic_usage_mask,
+            cryptographic_length,
+            name,
+            object_group,
+            application_specific_information
+        ]
         template_attribute = TemplateAttribute(attributes=attributes)
 
-        return self.client.create(object_type, template_attribute,
-                                  credential=None)
+        return self.client.create(
+            enums.ObjectType.SYMMETRIC_KEY,
+            template_attribute,
+            credential=None
+        )
 
     def _create_key_pair(self, key_name=None):
         """
@@ -1594,6 +1614,35 @@ class TestIntegration(testtools.TestCase):
             ]
         )
         self.assertEqual(0, len(result.uuids))
+
+        # Test locating each key by its application specific information.
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+                    {
+                        "application_namespace": "ssl",
+                        "application_data": "www.example.com"
+                    }
+                )
+            ]
+        )
+        self.assertEqual(2, len(result.uuids))
+        self.assertIn(uid_a, result.uuids)
+        self.assertIn(uid_b, result.uuids)
+
+        # Test locating each key by its object group.
+        result = self.client.locate(
+            attributes=[
+                self.attr_factory.create_attribute(
+                    enums.AttributeType.OBJECT_GROUP,
+                    "IntegrationTestKeys"
+                )
+            ]
+        )
+        self.assertEqual(2, len(result.uuids))
+        self.assertIn(uid_a, result.uuids)
+        self.assertIn(uid_b, result.uuids)
 
         # Test locating keys using offset and maximum item constraints.
         result = self.client.locate(offset_items=1)

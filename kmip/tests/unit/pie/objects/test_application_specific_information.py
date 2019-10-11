@@ -101,8 +101,8 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         )
 
         args = [
-            "application_namespace={}".format("ssl"),
-            "application_data={}".format("www.example.com")
+            "application_namespace='{}'".format("ssl"),
+            "application_data='{}'".format("www.example.com")
         ]
 
         expected = "ApplicationSpecificInformation({})".format(", ".join(args))
