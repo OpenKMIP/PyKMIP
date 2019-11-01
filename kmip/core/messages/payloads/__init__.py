@@ -41,6 +41,10 @@ from kmip.core.messages.payloads.decrypt import (
     DecryptRequestPayload,
     DecryptResponsePayload
 )
+from kmip.core.messages.payloads.delete_attribute import (
+    DeleteAttributeRequestPayload,
+    DeleteAttributeResponsePayload
+)
 from kmip.core.messages.payloads.derive_key import (
     DeriveKeyRequestPayload,
     DeriveKeyResponsePayload
@@ -137,6 +141,8 @@ __all__ = [
     "CreateKeyPairResponsePayload",
     "DecryptRequestPayload",
     "DecryptResponsePayload",
+    "DeleteAttributeRequestPayload",
+    "DeleteAttributeResponsePayload",
     "DeriveKeyRequestPayload",
     "DeriveKeyResponsePayload",
     "DestroyRequestPayload",
