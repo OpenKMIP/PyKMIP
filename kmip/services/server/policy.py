@@ -129,6 +129,7 @@ class AttributePolicy(object):
         """
         self._version = version
 
+        # TODO (peterhamilton) Alphabetize these
         self._attribute_rule_sets = {
             'Unique Identifier': AttributeRuleSet(
                 True,
@@ -872,9 +873,9 @@ class AttributePolicy(object):
             'Object Group': AttributeRuleSet(
                 False,
                 ('server', 'client'),
-                False,
-                False,
-                False,
+                True,
+                True,
+                True,
                 True,
                 (
                     enums.Operation.CREATE,
@@ -1115,6 +1116,20 @@ class AttributePolicy(object):
                 return False
         else:
             return False
+
+    def is_attribute_deletable_by_client(self, attribute):
+        """
+        Check if the attribute can be deleted by the client.
+
+        Args:
+            attribute (string): The name of the attribute (e.g., "Name").
+
+        Returns:
+            bool: True if the attribute can be deleted by the client. False
+                otherwise.
+        """
+        rule_set = self._attribute_rule_sets.get(attribute)
+        return rule_set.deletable_by_client
 
     def is_attribute_applicable_to_object_type(self, attribute, object_type):
         """

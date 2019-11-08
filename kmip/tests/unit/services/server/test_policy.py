@@ -76,6 +76,20 @@ class TestAttributePolicy(testtools.TestCase):
         result = rules.is_attribute_deprecated(attribute_b)
         self.assertTrue(result)
 
+    def test_is_attribute_deletable_by_client(self):
+        """
+        Test that is_attribute_deletable_by_client returns the expected
+        results in all cases.
+        """
+        rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
+
+        self.assertFalse(
+            rules.is_attribute_deletable_by_client("Cryptographic Algorithm")
+        )
+        self.assertTrue(
+            rules.is_attribute_deletable_by_client("Contact Information")
+        )
+
     def test_is_attribute_applicable_to_object_type(self):
         """
         Test that is_attribute_applicable_to_object_type returns the

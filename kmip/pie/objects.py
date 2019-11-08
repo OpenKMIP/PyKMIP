@@ -97,7 +97,8 @@ class ManagedObject(sql.Base):
     _names = sqlalchemy.orm.relationship(
         "ManagedObjectName",
         back_populates="mo",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by="ManagedObjectName.id"
     )
     names = association_proxy('_names', 'name')
     operation_policy_name = Column(
@@ -112,12 +113,14 @@ class ManagedObject(sql.Base):
         "ApplicationSpecificInformation",
         secondary=app_specific_info_map,
         back_populates="managed_objects",
+        order_by="ApplicationSpecificInformation.id",
         passive_deletes=True
     )
     object_groups = sqlalchemy.orm.relationship(
         "ObjectGroup",
         secondary=object_group_map,
         back_populates="managed_objects",
+        order_by="ObjectGroup.id",
         passive_deletes=True
     )
 
