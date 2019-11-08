@@ -702,8 +702,11 @@ class TestKmipEngine(testtools.TestCase):
         e = engine.KmipEngine()
         e._logger = mock.MagicMock()
 
+        # TODO (peterhamilton) Alphatize these.
         e._process_create = mock.MagicMock()
         e._process_create_key_pair = mock.MagicMock()
+        e._process_delete_attribute = mock.MagicMock()
+        e._process_derive_key = mock.MagicMock()
         e._process_register = mock.MagicMock()
         e._process_locate = mock.MagicMock()
         e._process_get = mock.MagicMock()
@@ -722,6 +725,8 @@ class TestKmipEngine(testtools.TestCase):
 
         e._process_operation(enums.Operation.CREATE, None)
         e._process_operation(enums.Operation.CREATE_KEY_PAIR, None)
+        e._process_operation(enums.Operation.DELETE_ATTRIBUTE, None)
+        e._process_operation(enums.Operation.DERIVE_KEY, None)
         e._process_operation(enums.Operation.REGISTER, None)
         e._process_operation(enums.Operation.LOCATE, None)
         e._process_operation(enums.Operation.GET, None)
@@ -740,6 +745,8 @@ class TestKmipEngine(testtools.TestCase):
 
         e._process_create.assert_called_with(None)
         e._process_create_key_pair.assert_called_with(None)
+        e._process_delete_attribute.assert_called_with(None)
+        e._process_derive_key.assert_called_with(None)
         e._process_register.assert_called_with(None)
         e._process_locate.assert_called_with(None)
         e._process_get.assert_called_with(None)
@@ -1915,6 +1922,343 @@ class TestKmipEngine(testtools.TestCase):
             exceptions.InvalidField,
             regex,
             e._set_attribute_on_managed_object,
+            *args
+        )
+
+    def test_delete_attribute_from_managed_object(self):
+        """
+        Test that various attributes can be deleted correctly from a given
+        managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        name_1 = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                "Name 1",
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+        name_2 = attribute_factory.create_attribute(
+            enums.AttributeType.NAME,
+            attributes.Name.create(
+                "Name 2",
+                enums.NameType.UNINTERPRETED_TEXT_STRING
+            )
+        )
+        app_specific_info_1 = attribute_factory.create_attribute(
+            enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+            {
+                "application_namespace": "Namespace 1",
+                "application_data": "Data 1"
+            }
+        )
+        app_specific_info_2 = attribute_factory.create_attribute(
+            enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+            {
+                "application_namespace": "Namespace 2",
+                "application_data": "Data 2"
+            }
+        )
+        object_group_1 = attribute_factory.create_attribute(
+            enums.AttributeType.OBJECT_GROUP,
+            "Object Group 1"
+        )
+        object_group_2 = attribute_factory.create_attribute(
+            enums.AttributeType.OBJECT_GROUP,
+            "Object Group 2"
+        )
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        managed_object.names.clear()
+
+        self.assertEqual(0, len(managed_object.names))
+        self.assertEqual(0, len(managed_object.app_specific_info))
+        self.assertEqual(0, len(managed_object.object_groups))
+
+        e._set_attribute_on_managed_object(
+            managed_object,
+            (
+                "Name",
+                [
+                    name_1.attribute_value,
+                    name_2.attribute_value
+                ]
+            )
+        )
+        e._set_attribute_on_managed_object(
+            managed_object,
+            (
+                "Application Specific Information",
+                [
+                    app_specific_info_1.attribute_value,
+                    app_specific_info_2.attribute_value
+                ]
+            )
+        )
+        e._set_attribute_on_managed_object(
+            managed_object,
+            (
+                "Object Group",
+                [
+                    object_group_1.attribute_value,
+                    object_group_2.attribute_value
+                ]
+            )
+        )
+
+        self.assertEqual(2, len(managed_object.names))
+        self.assertEqual(2, len(managed_object.app_specific_info))
+        self.assertEqual(2, len(managed_object.object_groups))
+
+        e._delete_attribute_from_managed_object(
+            managed_object,
+            (
+                "Application Specific Information",
+                0,
+                None
+            )
+        )
+
+        self.assertEqual(1, len(managed_object.app_specific_info))
+
+        e._delete_attribute_from_managed_object(
+            managed_object,
+            (
+                "Application Specific Information",
+                0,
+                app_specific_info_2.attribute_value
+            )
+        )
+
+        self.assertEqual(0, len(managed_object.app_specific_info))
+
+        e._delete_attribute_from_managed_object(
+            managed_object,
+            (
+                "Name",
+                None,
+                primitives.TextString(value="Name 2", tag=enums.Tags.NAME)
+            )
+        )
+
+        self.assertEqual(1, len(managed_object.names))
+        self.assertEqual("Name 1", managed_object.names[0])
+
+        e._delete_attribute_from_managed_object(
+            managed_object,
+            (
+                "Object Group",
+                None,
+                None
+            )
+        )
+
+        self.assertEqual(0, len(managed_object.object_groups))
+
+        e._set_attribute_on_managed_object(
+            managed_object,
+            (
+                "Object Group",
+                [object_group_1.attribute_value]
+            )
+        )
+
+        self.assertEqual(1, len(managed_object.object_groups))
+
+        e._delete_attribute_from_managed_object(
+            managed_object,
+            (
+                "Object Group",
+                None,
+                primitives.TextString(
+                    value="Object Group 1",
+                    tag=enums.Tags.OBJECT_GROUP
+                )
+            )
+        )
+
+        self.assertEqual(0, len(managed_object.object_groups))
+
+    def test_delete_attribute_from_managed_object_unsupported_attribute(self):
+        """
+        Test that an ItemNotFound error is raised when attempting to delete an
+        unsupported attribute from a managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        args = (managed_object, ("Digital Signature Algorithm", None, None))
+        self.assertRaisesRegex(
+            exceptions.ItemNotFound,
+            "The 'Digital Signature Algorithm' attribute is not applicable "
+            "to 'SymmetricKey' objects.",
+            e._delete_attribute_from_managed_object,
+            *args
+        )
+
+    def test_delete_attribute_from_managed_object_undeletable_attribute(self):
+        """
+        Test that a PermissionDenied error is raised when attempting to delete
+        a required attribute from a managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        args = (managed_object, ("Cryptographic Algorithm", None, None))
+        self.assertRaisesRegex(
+            exceptions.PermissionDenied,
+            "Cannot delete a required attribute.",
+            e._delete_attribute_from_managed_object,
+            *args
+        )
+
+    def test_delete_attribute_from_managed_object_unsupported_multivalue(self):
+        """
+        Test that an InvalidField error is raised when attempting to delete an
+        unsupported multivalued attribute.
+        """
+        # TODO (peterhamilton) Remove this test once all multivalued attributes
+        # are supported.
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        args = (managed_object, ("Link", None, None))
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The 'Link' attribute is not supported.",
+            e._delete_attribute_from_managed_object,
+            *args
+        )
+
+    def test_delete_attribute_from_managed_object_bad_attribute_value(self):
+        """
+        Test that an ItemNotFound error is raised when attempting to delete
+        an attribute by value that cannot be found on a managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        args = (
+            managed_object,
+            (
+                "Object Group",
+                None,
+                primitives.TextString(
+                    value="invalid",
+                    tag=enums.Tags.OBJECT_GROUP
+                )
+            )
+        )
+        self.assertRaisesRegex(
+            exceptions.ItemNotFound,
+            "Could not locate the attribute instance with the specified "
+            "value: {'object_group': 'invalid'}",
+            e._delete_attribute_from_managed_object,
+            *args
+        )
+
+    def test_delete_attribute_from_managed_object_bad_attribute_index(self):
+        """
+        Test that an ItemNotFound error is raised when attempting to delete
+        an attribute by index that cannot be found on a managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        args = (
+            managed_object,
+            (
+                "Object Group",
+                3,
+                None
+            )
+        )
+        self.assertRaisesRegex(
+            exceptions.ItemNotFound,
+            "Could not locate the attribute instance with the specified "
+            "index: 3",
+            e._delete_attribute_from_managed_object,
+            *args
+        )
+
+    def test_delete_attribute_from_managed_object_bad_single_value(self):
+        """
+        Test that an InvalidField error is raised when attempting to delete
+        a single-valued attribute from a managed object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        managed_object = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        args = (
+            managed_object,
+            (
+                "Contact Information",
+                None,
+                None
+            )
+        )
+        self.assertRaisesRegex(
+            exceptions.InvalidField,
+            "The 'Contact Information' attribute is not supported",
+            e._delete_attribute_from_managed_object,
             *args
         )
 
@@ -3392,6 +3736,379 @@ class TestKmipEngine(testtools.TestCase):
             "Processing operation: CreateKeyPair"
         )
         e._logger.reset_mock()
+
+    def test_delete_attribute(self):
+        """
+        Test that a DeleteAttribute request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        object_group_1 = attribute_factory.create_attribute(
+            enums.AttributeType.OBJECT_GROUP,
+            "Object Group 1"
+        )
+        object_group_2 = attribute_factory.create_attribute(
+            enums.AttributeType.OBJECT_GROUP,
+            "Object Group 2"
+        )
+
+        e._data_session.add(secret)
+        e._set_attribute_on_managed_object(
+            secret,
+            (
+                "Object Group",
+                [
+                    object_group_1.attribute_value,
+                    object_group_2.attribute_value
+                ]
+            )
+        )
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        # Confirm that the attribute was actually added by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            "1",
+            enums.Operation.DELETE_ATTRIBUTE
+        )
+        self.assertEqual(2, len(managed_object.object_groups))
+
+        payload = payloads.DeleteAttributeRequestPayload(
+            unique_identifier="1",
+            attribute_name="Object Group",
+            attribute_index=1
+        )
+
+        response_payload = e._process_delete_attribute(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: DeleteAttribute"
+        )
+        self.assertEqual(
+            "1",
+            response_payload.unique_identifier
+        )
+        self.assertEqual(
+            attribute_factory.create_attribute(
+                enums.AttributeType.OBJECT_GROUP,
+                "Object Group 2",
+                1
+            ),
+            response_payload.attribute
+        )
+
+        # Confirm that the attribute was actually deleted by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            response_payload.unique_identifier,
+            enums.Operation.DELETE_ATTRIBUTE
+        )
+
+        self.assertEqual(1, len(managed_object.object_groups))
+        payload = payloads.DeleteAttributeRequestPayload(
+            unique_identifier="1",
+            attribute_name="Object Group"
+        )
+
+        response_payload = e._process_delete_attribute(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: DeleteAttribute"
+        )
+        self.assertEqual(
+            "1",
+            response_payload.unique_identifier
+        )
+        self.assertEqual(
+            attribute_factory.create_attribute(
+                enums.AttributeType.OBJECT_GROUP,
+                "Object Group 1",
+                0
+            ),
+            response_payload.attribute
+        )
+
+        # Confirm that the attribute was actually deleted by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            response_payload.unique_identifier,
+            enums.Operation.DELETE_ATTRIBUTE
+        )
+        self.assertEqual(0, len(managed_object.object_groups))
+
+    def test_delete_attribute_with_kmip_2_0(self):
+        """
+        Test that a DeleteAttribute request can be processed correctly
+        when using KMIP 2.0 payload features.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        attribute_factory = factory.AttributeFactory()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+        object_group = attribute_factory.create_attribute(
+            enums.AttributeType.OBJECT_GROUP,
+            "Object Group 1"
+        )
+
+        e._data_session.add(secret)
+        e._set_attribute_on_managed_object(
+            secret,
+            (
+                "Object Group",
+                [object_group.attribute_value]
+            )
+        )
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        # Confirm that the attribute was actually added by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            "1",
+            enums.Operation.DELETE_ATTRIBUTE
+        )
+        self.assertEqual(1, len(managed_object.names))
+        self.assertEqual(1, len(managed_object.object_groups))
+
+        payload = payloads.DeleteAttributeRequestPayload(
+            unique_identifier="1",
+            current_attribute=objects.CurrentAttribute(
+                attribute=primitives.TextString(
+                    value="Object Group 1",
+                    tag=enums.Tags.OBJECT_GROUP
+                )
+            ),
+            attribute_reference=objects.AttributeReference(
+                vendor_identification="Vendor 1",
+                attribute_name="Object Group"
+            )
+        )
+
+        response_payload = e._process_delete_attribute(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: DeleteAttribute"
+        )
+        self.assertEqual(
+            "1",
+            response_payload.unique_identifier
+        )
+        self.assertIsNone(response_payload.attribute)
+
+        # Confirm that the attribute was actually deleted by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            response_payload.unique_identifier,
+            enums.Operation.DELETE_ATTRIBUTE
+        )
+        self.assertEqual(0, len(managed_object.object_groups))
+
+        payload = payloads.DeleteAttributeRequestPayload(
+            unique_identifier="1",
+            attribute_reference=objects.AttributeReference(
+                vendor_identification="Vendor 1",
+                attribute_name="Name"
+            )
+        )
+
+        response_payload = e._process_delete_attribute(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: DeleteAttribute"
+        )
+        self.assertEqual(
+            "1",
+            response_payload.unique_identifier
+        )
+        self.assertIsNone(response_payload.attribute)
+
+        # Confirm that the attribute was actually deleted by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            response_payload.unique_identifier,
+            enums.Operation.DELETE_ATTRIBUTE
+        )
+        self.assertEqual(0, len(managed_object.names))
+
+    def test_delete_attribute_with_invalid_current_attribute(self):
+        """
+        Test that an ItemNotFound error is raised when attempting to delete
+        an invalid current attribute from a managed object.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        current_attribute = objects.CurrentAttribute()
+        current_attribute._attribute = primitives.TextString(
+            value="Object Group 1",
+            tag=enums.Tags.CURRENT_ATTRIBUTE
+        )
+        args = (
+            payloads.DeleteAttributeRequestPayload(
+                unique_identifier="1",
+                current_attribute=current_attribute
+            ),
+        )
+
+        self.assertRaisesRegex(
+            exceptions.ItemNotFound,
+            "No attribute with the specified name exists.",
+            e._process_delete_attribute,
+            *args
+        )
+
+    def test_delete_attribute_with_missing_current_attribute_reference(self):
+        """
+        Test that an InvalidMessage error is raised when attempting to delete
+        an attribute without specifying a current attribute or an attribute
+        reference (under KMIP 2.0+).
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        args = (
+            payloads.DeleteAttributeRequestPayload(unique_identifier="1"),
+        )
+
+        self.assertRaisesRegex(
+            exceptions.InvalidMessage,
+            "The DeleteAttribute request must specify the current attribute "
+            "or an attribute reference.",
+            e._process_delete_attribute,
+            *args
+        )
+
+    def test_delete_attribute_with_missing_attribute_name(self):
+        """
+        Test that an InvalidMessage error is raised when attempting to delete
+        an attribute without specifying the attribute name (under KMIP 1.0+).
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        args = (
+            payloads.DeleteAttributeRequestPayload(unique_identifier="1"),
+        )
+
+        self.assertRaisesRegex(
+            exceptions.InvalidMessage,
+            "The DeleteAttribute request must specify the attribute name.",
+            e._process_delete_attribute,
+            *args
+        )
+
+    def test_delete_attribute_with_invalid_attribute_index(self):
+        """
+        Test that an ItemNotFound error is raised when attempting to delete
+        an attribute when specifying an invalid attribute index.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        args = (
+            payloads.DeleteAttributeRequestPayload(
+                unique_identifier="1",
+                attribute_name="Name",
+                attribute_index=20),
+        )
+
+        self.assertRaisesRegex(
+            exceptions.ItemNotFound,
+            "Could not locate the attribute instance with the specified "
+            "index: 20",
+            e._process_delete_attribute,
+            *args
+        )
 
     def test_register(self):
         """

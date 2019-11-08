@@ -843,6 +843,86 @@ class KmipEngine(object):
                     "The {0} attribute is unsupported.".format(attribute_name)
                 )
 
+    def _delete_attribute_from_managed_object(self, managed_object, attribute):
+        attribute_name, attribute_index, attribute_value = attribute
+        object_type = managed_object._object_type
+        if not self._attribute_policy.is_attribute_applicable_to_object_type(
+            attribute_name,
+            object_type
+        ):
+            raise exceptions.ItemNotFound(
+                "The '{}' attribute is not applicable to '{}' objects.".format(
+                    attribute_name,
+                    ''.join(
+                        [x.capitalize() for x in object_type.name.split('_')]
+                    )
+                )
+            )
+        if not self._attribute_policy.is_attribute_deletable_by_client(
+                attribute_name
+        ):
+            raise exceptions.PermissionDenied(
+                "Cannot delete a required attribute."
+            )
+
+        if self._attribute_policy.is_attribute_multivalued(attribute_name):
+            # Get the specific attribute collection and attribute objects.
+            attribute_list = []
+            if attribute_name == "Name":
+                attribute_list = managed_object.names
+                if attribute_value is not None:
+                    attribute_value = attribute_value.value
+            elif attribute_name == "Application Specific Information":
+                attribute_list = managed_object.app_specific_info
+                if attribute_value is not None:
+                    namespace = attribute_value.application_namespace
+                    attribute_value = objects.ApplicationSpecificInformation(
+                        application_namespace=namespace,
+                        application_data=attribute_value.application_data
+                    )
+            elif attribute_name == "Object Group":
+                attribute_list = managed_object.object_groups
+                if attribute_value is not None:
+                    attribute_value = objects.ObjectGroup(
+                        object_group=attribute_value.value
+                    )
+            else:
+                raise exceptions.InvalidField(
+                    "The '{}' attribute is not supported.".format(
+                        attribute_name
+                    )
+                )
+
+            # Generically handle attribute deletion.
+            if attribute_value:
+                if attribute_list.count(attribute_value):
+                    attribute_list.remove(attribute_value)
+                else:
+                    raise exceptions.ItemNotFound(
+                        "Could not locate the attribute instance with the "
+                        "specified value: {}".format(attribute_value)
+                    )
+            elif attribute_index is not None:
+                if attribute_index < len(attribute_list):
+                    attribute_list.pop(attribute_index)
+                else:
+                    raise exceptions.ItemNotFound(
+                        "Could not locate the attribute instance with the "
+                        "specified index: {}".format(attribute_index)
+                    )
+            else:
+                # If no attribute index is provided, this is not a KMIP
+                # 1.* request. If no attribute value is provided, this
+                # must be a KMIP 2.0 attribute reference request, so
+                # delete all instances of the attribute.
+                attribute_list[:] = []
+        else:
+            # The server does not currently support any single-instance,
+            # client deletable attributes.
+            raise exceptions.InvalidField(
+                "The '{}' attribute is not supported.".format(attribute_name)
+            )
+
     def _is_allowed_by_operation_policy(
             self,
             policy_name,
@@ -1075,6 +1155,8 @@ class KmipEngine(object):
             return self._process_create(payload)
         elif operation == enums.Operation.CREATE_KEY_PAIR:
             return self._process_create_key_pair(payload)
+        elif operation == enums.Operation.DELETE_ATTRIBUTE:
+            return self._process_delete_attribute(payload)
         elif operation == enums.Operation.REGISTER:
             return self._process_register(payload)
         elif operation == enums.Operation.DERIVE_KEY:
@@ -1376,6 +1458,91 @@ class KmipEngine(object):
         )
 
         self._id_placeholder = str(private_key.unique_identifier)
+        return response_payload
+
+    @_kmip_version_supported('1.0')
+    def _process_delete_attribute(self, payload):
+        self._logger.info("Processing operation: DeleteAttribute")
+
+        unique_identifier = self._id_placeholder
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier
+
+        managed_object = self._get_object_with_access_controls(
+            unique_identifier,
+            enums.Operation.DELETE_ATTRIBUTE
+        )
+        deleted_attribute = None
+
+        attribute_name = None
+        attribute_index = None
+        attribute_value = None
+
+        if self._protocol_version >= contents.ProtocolVersion(2, 0):
+            # If the current attribute is defined, use that. Otherwise, use
+            # the attribute reference.
+            if payload.current_attribute:
+                try:
+                    attribute_name = enums.convert_attribute_tag_to_name(
+                        payload.current_attribute.attribute.tag
+                    )
+                    attribute_value = payload.current_attribute.attribute
+                except ValueError as e:
+                    self._logger.exception(e)
+                    raise exceptions.ItemNotFound(
+                        "No attribute with the specified name exists."
+                    )
+            elif payload.attribute_reference:
+                attribute_name = payload.attribute_reference.attribute_name
+            else:
+                raise exceptions.InvalidMessage(
+                    "The DeleteAttribute request must specify the current "
+                    "attribute or an attribute reference."
+                )
+        else:
+            # Build a partial attribute from the attribute name and index.
+            if payload.attribute_name:
+                attribute_name = payload.attribute_name
+            else:
+                raise exceptions.InvalidMessage(
+                    "The DeleteAttribute request must specify the attribute "
+                    "name."
+                )
+            if payload.attribute_index:
+                attribute_index = payload.attribute_index
+            else:
+                attribute_index = 0
+
+            # Grab a copy of the attribute before deleting it.
+            existing_attributes = self._get_attributes_from_managed_object(
+                managed_object,
+                [payload.attribute_name]
+            )
+            if len(existing_attributes) > 0:
+                if not attribute_index:
+                    deleted_attribute = existing_attributes[0]
+                else:
+                    if attribute_index < len(existing_attributes):
+                        deleted_attribute = existing_attributes[
+                            attribute_index
+                        ]
+                    else:
+                        raise exceptions.ItemNotFound(
+                            "Could not locate the attribute instance with the "
+                            "specified index: {}".format(attribute_index)
+                        )
+
+        self._delete_attribute_from_managed_object(
+            managed_object,
+            (attribute_name, attribute_index, attribute_value)
+        )
+        self._data_session.commit()
+
+        response_payload = payloads.DeleteAttributeResponsePayload(
+            unique_identifier=unique_identifier,
+            attribute=deleted_attribute
+        )
+
         return response_payload
 
     @_kmip_version_supported('1.0')
