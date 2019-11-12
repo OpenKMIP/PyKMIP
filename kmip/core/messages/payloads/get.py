@@ -20,11 +20,11 @@ from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import secrets
 from kmip.core import utils
-
 from kmip.core.factories import secrets as secret_factory
+from kmip.core.messages.payloads import base
 
 
-class GetRequestPayload(primitives.Struct):
+class GetRequestPayload(base.RequestPayload):
     """
     A request payload for the Get operation.
 
@@ -62,9 +62,7 @@ class GetRequestPayload(primitives.Struct):
                 information for wrapping the returned object. Optional,
                 defaults to None.
         """
-        super(GetRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(GetRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._key_format_type = None
@@ -301,7 +299,7 @@ class GetRequestPayload(primitives.Struct):
         })
 
 
-class GetResponsePayload(primitives.Struct):
+class GetResponsePayload(base.ResponsePayload):
     """
     A response payload for the Get operation.
 
@@ -330,9 +328,8 @@ class GetResponsePayload(primitives.Struct):
 
                 Optional, defaults to None. Required for read/write.
         """
-        super(GetResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(GetResponsePayload, self).__init__()
+
         self._object_type = None
         self._unique_identifier = None
         self._secret = None

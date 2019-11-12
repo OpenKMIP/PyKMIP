@@ -13,6 +13,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+# Import payload base classes
+from kmip.core.messages.payloads.base import (
+    RequestPayload,
+    ResponsePayload
+)
+
+# Import payload subclasses
 from kmip.core.messages.payloads.activate import (
     ActivateRequestPayload,
     ActivateResponsePayload
@@ -176,6 +183,8 @@ __all__ = [
     "RekeyKeyPairResponsePayload",
     "RekeyRequestPayload",
     "RekeyResponsePayload",
+    "RequestPayload",
+    "ResponsePayload",
     "RevokeRequestPayload",
     "RevokeResponsePayload",
     "SignRequestPayload",

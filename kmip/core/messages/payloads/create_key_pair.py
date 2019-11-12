@@ -20,9 +20,10 @@ from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class CreateKeyPairRequestPayload(primitives.Struct):
+class CreateKeyPairRequestPayload(base.RequestPayload):
     """
     A request payload for the CreateKeyPair operation.
 
@@ -80,9 +81,7 @@ class CreateKeyPairRequestPayload(primitives.Struct):
                 permissible for the new public key. Added in KMIP 2.0.
                 Optional, defaults to None.
         """
-        super(CreateKeyPairRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(CreateKeyPairRequestPayload, self).__init__()
 
         self._common_template_attribute = None
         self._private_key_template_attribute = None
@@ -518,7 +517,7 @@ class CreateKeyPairRequestPayload(primitives.Struct):
         return '{' + value + '}'
 
 
-class CreateKeyPairResponsePayload(primitives.Struct):
+class CreateKeyPairResponsePayload(base.ResponsePayload):
     """
     A response payload for the CreateKeyPair operation.
 
@@ -556,9 +555,7 @@ class CreateKeyPairResponsePayload(primitives.Struct):
                 tag containing the set of attributes that were set on the new
                 public key. Optional, defaults to None.
         """
-        super(CreateKeyPairResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(CreateKeyPairResponsePayload, self).__init__()
 
         self._private_key_unique_identifier = None
         self._public_key_unique_identifier = None

@@ -18,9 +18,10 @@ import six
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class PollRequestPayload(primitives.Struct):
+class PollRequestPayload(base.RequestPayload):
     """
     A request payload for the Poll operation.
 
@@ -38,9 +39,7 @@ class PollRequestPayload(primitives.Struct):
                 operation to poll the status of, in bytes. Optional, defaults
                 to None.
         """
-        super(PollRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(PollRequestPayload, self).__init__()
 
         self._asynchronous_correlation_value = None
         self.asynchronous_correlation_value = asynchronous_correlation_value

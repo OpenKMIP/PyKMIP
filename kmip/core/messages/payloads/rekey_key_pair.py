@@ -18,13 +18,13 @@ from kmip.core import misc
 from kmip.core import objects
 
 from kmip.core import enums
+from kmip.core.messages.payloads import base
 from kmip.core.messages.payloads.create_key_pair import \
     CreateKeyPairResponsePayload
-from kmip.core.primitives import Struct
 from kmip.core.utils import BytearrayStream
 
 
-class RekeyKeyPairRequestPayload(Struct):
+class RekeyKeyPairRequestPayload(base.RequestPayload):
 
     def __init__(self,
                  private_key_uuid=None,
@@ -32,9 +32,7 @@ class RekeyKeyPairRequestPayload(Struct):
                  common_template_attribute=None,
                  private_key_template_attribute=None,
                  public_key_template_attribute=None):
-        super(RekeyKeyPairRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(RekeyKeyPairRequestPayload, self).__init__()
 
         self.private_key_uuid = private_key_uuid
         self.offset = offset

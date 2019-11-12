@@ -21,9 +21,10 @@ from kmip.core import misc
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class QueryRequestPayload(primitives.Struct):
+class QueryRequestPayload(base.RequestPayload):
     """
     A request payload for the Query operation.
 
@@ -41,7 +42,7 @@ class QueryRequestPayload(primitives.Struct):
         Args:
             query_functions (list): A list of QueryFunction enumerations.
         """
-        super(QueryRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+        super(QueryRequestPayload, self).__init__()
 
         self._query_functions = None
 
@@ -187,7 +188,7 @@ class QueryRequestPayload(primitives.Struct):
             return NotImplemented
 
 
-class QueryResponsePayload(primitives.Struct):
+class QueryResponsePayload(base.ResponsePayload):
     """
     A response payload for the Query operation.
 
@@ -290,10 +291,7 @@ class QueryResponsePayload(primitives.Struct):
                 the storage protections supported by the server. Optional,
                 defaults to None. Added in KMIP 2.0.
         """
-        super(QueryResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
-
+        super(QueryResponsePayload, self).__init__()
         self._operations = None
         self._object_types = None
         self._vendor_identification = None

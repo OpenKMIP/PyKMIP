@@ -18,9 +18,10 @@ import six
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class CheckRequestPayload(primitives.Struct):
+class CheckRequestPayload(base.RequestPayload):
     """
     A request payload for the Check operation.
 
@@ -55,7 +56,7 @@ class CheckRequestPayload(primitives.Struct):
                 lease should be available for on the checked object. Optional,
                 defaults to None.
         """
-        super(CheckRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+        super(CheckRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._usage_limits_count = None
@@ -285,7 +286,7 @@ class CheckRequestPayload(primitives.Struct):
         })
 
 
-class CheckResponsePayload(primitives.Struct):
+class CheckResponsePayload(base.ResponsePayload):
     """
     A response payload for the Check operation.
 
@@ -320,7 +321,7 @@ class CheckResponsePayload(primitives.Struct):
                 lease should be available for on the checked object. Optional,
                 defaults to None.
         """
-        super(CheckResponsePayload, self).__init__(enums.Tags.RESPONSE_PAYLOAD)
+        super(CheckResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._usage_limits_count = None

@@ -19,9 +19,10 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class EncryptRequestPayload(primitives.Struct):
+class EncryptRequestPayload(base.RequestPayload):
     """
     A request payload for the Encrypt operation.
 
@@ -63,9 +64,7 @@ class EncryptRequestPayload(primitives.Struct):
                 authenticated via the Authenticated Encryption Tag.
                 Added in KMIP 1.4.
         """
-        super(EncryptRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(EncryptRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._cryptographic_parameters = None
@@ -343,7 +342,7 @@ class EncryptRequestPayload(primitives.Struct):
         })
 
 
-class EncryptResponsePayload(primitives.Struct):
+class EncryptResponsePayload(base.ResponsePayload):
     """
     A response payload for the Encrypt operation.
 
@@ -384,9 +383,7 @@ class EncryptResponsePayload(primitives.Struct):
                 authenticated encryption cipher. Optional, defaults to None.
                 Added in KMIP 1.4.
         """
-        super(EncryptResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(EncryptResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._data = None

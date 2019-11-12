@@ -17,13 +17,11 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import objects
 from kmip.core import primitives
-
-from kmip.core.primitives import Struct
-
+from kmip.core.messages.payloads import base
 from kmip.core.utils import BytearrayStream
 
 
-class RevokeRequestPayload(Struct):
+class RevokeRequestPayload(base.RequestPayload):
     """
     A request payload for the Revoke operation.
 
@@ -51,8 +49,7 @@ class RevokeRequestPayload(Struct):
             compromise_occurrence_date (DateTime): the datetime when the object
                 was first believed to be compromised.
         """
-        super(RevokeRequestPayload, self).__init__(
-            tag=enums.Tags.REQUEST_PAYLOAD)
+        super(RevokeRequestPayload, self).__init__()
         self.unique_identifier = unique_identifier
         self.compromise_occurrence_date = compromise_occurrence_date
         self.revocation_reason = revocation_reason
@@ -145,7 +142,7 @@ class RevokeRequestPayload(Struct):
             raise TypeError(msg)
 
 
-class RevokeResponsePayload(Struct):
+class RevokeResponsePayload(base.ResponsePayload):
     """
     A response payload for the Revoke operation.
     The payload contains the server response to the initial Revoke request.
@@ -161,8 +158,7 @@ class RevokeResponsePayload(Struct):
             unique_identifier (UniqueIdentifier): The UUID of a managed
                 cryptographic object.
         """
-        super(RevokeResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD)
+        super(RevokeResponsePayload, self).__init__()
         if unique_identifier is None:
             self.unique_identifier = attributes.UniqueIdentifier()
         else:

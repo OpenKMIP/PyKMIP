@@ -18,9 +18,10 @@ import six
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class RecoverRequestPayload(primitives.Struct):
+class RecoverRequestPayload(base.RequestPayload):
     """
     A request payload for the Recover operation.
 
@@ -36,9 +37,7 @@ class RecoverRequestPayload(primitives.Struct):
             unique_identifier (string): The ID of the managed object (e.g.,
                 a public key) to recover. Optional, defaults to None.
         """
-        super(RecoverRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(RecoverRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self.unique_identifier = unique_identifier
@@ -151,7 +150,7 @@ class RecoverRequestPayload(primitives.Struct):
         })
 
 
-class RecoverResponsePayload(primitives.Struct):
+class RecoverResponsePayload(base.ResponsePayload):
     """
     A response payload for the Recover operation.
 
@@ -167,9 +166,7 @@ class RecoverResponsePayload(primitives.Struct):
             unique_identifier (string): The ID of the managed object (e.g.,
                 a public key) that was recovered. Optional, defaults to None.
         """
-        super(RecoverResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(RecoverResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self.unique_identifier = unique_identifier

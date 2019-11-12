@@ -16,9 +16,10 @@ from kmip.core import enums
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class RekeyRequestPayload(primitives.Struct):
+class RekeyRequestPayload(base.RequestPayload):
     """
     A request payload for the Rekey operation.
 
@@ -47,9 +48,7 @@ class RekeyRequestPayload(primitives.Struct):
                 cryptographic length) that should be set on the replacement
                 key. Optional, defaults to None.
         """
-        super(RekeyRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(RekeyRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._offset = None
@@ -227,7 +226,7 @@ class RekeyRequestPayload(primitives.Struct):
         })
 
 
-class RekeyResponsePayload(primitives.Struct):
+class RekeyResponsePayload(base.ResponsePayload):
     """
     A response payload for the Rekey operation.
 
@@ -250,9 +249,7 @@ class RekeyResponsePayload(primitives.Struct):
                 cryptographic length) that were set by the server on the
                 replacement key. Optional, defaults to None.
         """
-        super(RekeyResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(RekeyResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._template_attribute = None

@@ -20,9 +20,10 @@ from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class CreateRequestPayload(primitives.Struct):
+class CreateRequestPayload(base.RequestPayload):
     """
     A request payload for the Create operation.
 
@@ -52,9 +53,7 @@ class CreateRequestPayload(primitives.Struct):
                 structure containing the storage masks permissible for the new
                 object. Added in KMIP 2.0. Optional, defaults to None.
         """
-        super(CreateRequestPayload, self).__init__(
-            tag=enums.Tags.REQUEST_PAYLOAD
-        )
+        super(CreateRequestPayload, self).__init__()
 
         self._object_type = None
         self._template_attribute = None
@@ -316,7 +315,7 @@ class CreateRequestPayload(primitives.Struct):
         return '{' + value + '}'
 
 
-class CreateResponsePayload(primitives.Struct):
+class CreateResponsePayload(base.ResponsePayload):
     """
     A response payload for the Create operation.
 
@@ -344,9 +343,7 @@ class CreateResponsePayload(primitives.Struct):
                 structure containing a set of attributes that were set on the
                 new object. Optional, defaults to None.
         """
-        super(CreateResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(CreateResponsePayload, self).__init__()
 
         self._object_type = None
         self._unique_identifier = None

@@ -18,9 +18,10 @@ import six
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class ObtainLeaseRequestPayload(primitives.Struct):
+class ObtainLeaseRequestPayload(base.RequestPayload):
     """
     A request payload for the ObtainLease operation.
 
@@ -37,9 +38,7 @@ class ObtainLeaseRequestPayload(primitives.Struct):
                 a public key) to obtain a lease for. Optional, defaults to
                 None.
         """
-        super(ObtainLeaseRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(ObtainLeaseRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self.unique_identifier = unique_identifier
@@ -152,7 +151,7 @@ class ObtainLeaseRequestPayload(primitives.Struct):
         })
 
 
-class ObtainLeaseResponsePayload(primitives.Struct):
+class ObtainLeaseResponsePayload(base.ResponsePayload):
     """
     A response payload for the ObtainLease operation.
 
@@ -182,9 +181,7 @@ class ObtainLeaseResponsePayload(primitives.Struct):
                 when the last change was made to the object or one of its
                 attributes. Optional, defaults to None.
         """
-        super(ObtainLeaseResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(ObtainLeaseResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._lease_time = None
