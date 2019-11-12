@@ -18,9 +18,10 @@ import six
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class GetUsageAllocationRequestPayload(primitives.Struct):
+class GetUsageAllocationRequestPayload(base.RequestPayload):
     """
     A request payload for the GetUsageAllocation operation.
 
@@ -42,9 +43,7 @@ class GetUsageAllocationRequestPayload(primitives.Struct):
             usage_limits_count (int): The number of usage limits units that
                 should be reserved for the object. Optional, defaults to None.
         """
-        super(GetUsageAllocationRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(GetUsageAllocationRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._usage_limits_count = None
@@ -199,7 +198,7 @@ class GetUsageAllocationRequestPayload(primitives.Struct):
         })
 
 
-class GetUsageAllocationResponsePayload(primitives.Struct):
+class GetUsageAllocationResponsePayload(base.ResponsePayload):
     """
     A response payload for the GetUsageAllocation operation.
 
@@ -215,9 +214,7 @@ class GetUsageAllocationResponsePayload(primitives.Struct):
             unique_identifier (string): The ID of the managed object (e.g.,
                 a public key) that was allocated. Optional, defaults to None.
         """
-        super(GetUsageAllocationResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(GetUsageAllocationResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self.unique_identifier = unique_identifier

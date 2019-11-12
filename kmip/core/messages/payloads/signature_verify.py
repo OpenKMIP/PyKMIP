@@ -19,9 +19,10 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class SignatureVerifyRequestPayload(primitives.Struct):
+class SignatureVerifyRequestPayload(base.RequestPayload):
     """
     A request payload for the SignatureVerify operation.
 
@@ -77,9 +78,7 @@ class SignatureVerifyRequestPayload(primitives.Struct):
                 not the payload is the last in a series for a multi-payload
                 operation. Optional, defaults to None.
         """
-        super(SignatureVerifyRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(SignatureVerifyRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._cryptographic_parameters = None
@@ -438,7 +437,7 @@ class SignatureVerifyRequestPayload(primitives.Struct):
         })
 
 
-class SignatureVerifyResponsePayload(primitives.Struct):
+class SignatureVerifyResponsePayload(base.ResponsePayload):
     """
     A response payload for the SignatureVerify operation.
 
@@ -472,9 +471,7 @@ class SignatureVerifyResponsePayload(primitives.Struct):
                 value, allowing the linking together of individual payloads
                 for a single overarching operation. Optional, defaults to None.
         """
-        super(SignatureVerifyResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(SignatureVerifyResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._validity_indicator = None

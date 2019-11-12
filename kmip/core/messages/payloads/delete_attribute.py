@@ -20,9 +20,10 @@ from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class DeleteAttributeRequestPayload(primitives.Struct):
+class DeleteAttributeRequestPayload(base.RequestPayload):
     """
     A request payload for the DeleteAttribute operation.
 
@@ -65,9 +66,7 @@ class DeleteAttributeRequestPayload(primitives.Struct):
                 KMIP 2.0+. Optional, defaults to None. Must be specified if the
                 current attribute is not specified.
         """
-        super(DeleteAttributeRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(DeleteAttributeRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._attribute_name = None
@@ -374,7 +373,7 @@ class DeleteAttributeRequestPayload(primitives.Struct):
             return NotImplemented
 
 
-class DeleteAttributeResponsePayload(primitives.Struct):
+class DeleteAttributeResponsePayload(base.ResponsePayload):
     """
     A response payload for the DeleteAttribute operation.
 
@@ -397,9 +396,7 @@ class DeleteAttributeResponsePayload(primitives.Struct):
                 that was deleted. Used in KMIP 1.0 - 1.4. Defaults to None.
                 Required for read/write.
         """
-        super(DeleteAttributeResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(DeleteAttributeResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._attribute = None

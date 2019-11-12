@@ -15,13 +15,11 @@
 
 from kmip.core import attributes
 from kmip.core import enums
-
-from kmip.core.primitives import Struct
-
 from kmip.core.utils import BytearrayStream
+from kmip.core.messages.payloads import base
 
 
-class ActivateRequestPayload(Struct):
+class ActivateRequestPayload(base.RequestPayload):
     """
     A request payload for the Activate operation.
 
@@ -40,8 +38,7 @@ class ActivateRequestPayload(Struct):
             unique_identifier (UniqueIdentifier): The UUID of a managed
                 cryptographic object.
         """
-        super(ActivateRequestPayload, self).__init__(
-            tag=enums.Tags.REQUEST_PAYLOAD)
+        super(ActivateRequestPayload, self).__init__()
         self.unique_identifier = unique_identifier
         self.validate()
 
@@ -103,7 +100,7 @@ class ActivateRequestPayload(Struct):
                 raise TypeError(msg)
 
 
-class ActivateResponsePayload(Struct):
+class ActivateResponsePayload(base.ResponsePayload):
     """
     A response payload for the Activate operation.
 
@@ -122,8 +119,7 @@ class ActivateResponsePayload(Struct):
             unique_identifier (UniqueIdentifier): The UUID of a managed
                 cryptographic object.
         """
-        super(ActivateResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD)
+        super(ActivateResponsePayload, self).__init__()
         if unique_identifier is None:
             self.unique_identifier = attributes.UniqueIdentifier()
         else:

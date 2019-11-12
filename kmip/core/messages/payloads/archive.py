@@ -18,9 +18,10 @@ import six
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class ArchiveRequestPayload(primitives.Struct):
+class ArchiveRequestPayload(base.RequestPayload):
     """
     A request payload for the Archive operation.
 
@@ -36,9 +37,7 @@ class ArchiveRequestPayload(primitives.Struct):
             unique_identifier (string): The ID of the managed object (e.g.,
                 a public key) to archive. Optional, defaults to None.
         """
-        super(ArchiveRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(ArchiveRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self.unique_identifier = unique_identifier
@@ -151,7 +150,7 @@ class ArchiveRequestPayload(primitives.Struct):
         })
 
 
-class ArchiveResponsePayload(primitives.Struct):
+class ArchiveResponsePayload(base.ResponsePayload):
     """
     A response payload for the Archive operation.
 
@@ -167,9 +166,7 @@ class ArchiveResponsePayload(primitives.Struct):
             unique_identifier (string): The ID of the managed object (e.g.,
                 a public key) that was archived. Optional, defaults to None.
         """
-        super(ArchiveResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(ArchiveResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self.unique_identifier = unique_identifier

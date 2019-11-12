@@ -21,9 +21,10 @@ from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class DeriveKeyRequestPayload(primitives.Struct):
+class DeriveKeyRequestPayload(base.RequestPayload):
     """
     A request payload for the DeriveKey operation.
 
@@ -68,9 +69,7 @@ class DeriveKeyRequestPayload(primitives.Struct):
                 cryptographic object. Optional, defaults to None. Required
                 for read/write.
         """
-        super(DeriveKeyRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(DeriveKeyRequestPayload, self).__init__()
 
         self._object_type = None
         self._unique_identifiers = None
@@ -434,7 +433,7 @@ class DeriveKeyRequestPayload(primitives.Struct):
         })
 
 
-class DeriveKeyResponsePayload(primitives.Struct):
+class DeriveKeyResponsePayload(base.ResponsePayload):
     """
     A response payload for the DeriveKey operation.
 
@@ -461,9 +460,7 @@ class DeriveKeyResponsePayload(primitives.Struct):
                 newly derived cryptographic object. Optional, defaults to
                 None.
         """
-        super(DeriveKeyResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(DeriveKeyResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._template_attribute = None

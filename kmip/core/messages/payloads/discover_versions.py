@@ -16,20 +16,15 @@
 from six.moves import xrange
 
 from kmip.core import enums
-
 from kmip.core.messages.contents import ProtocolVersion
-
-from kmip.core.primitives import Struct
-
+from kmip.core.messages.payloads import base
 from kmip.core.utils import BytearrayStream
 
 
-class DiscoverVersionsRequestPayload(Struct):
+class DiscoverVersionsRequestPayload(base.RequestPayload):
 
     def __init__(self, protocol_versions=None):
-        super(DiscoverVersionsRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(DiscoverVersionsRequestPayload, self).__init__()
 
         if protocol_versions is None:
             self.protocol_versions = list()
@@ -85,12 +80,10 @@ class DiscoverVersionsRequestPayload(Struct):
             raise TypeError(msg)
 
 
-class DiscoverVersionsResponsePayload(Struct):
+class DiscoverVersionsResponsePayload(base.ResponsePayload):
 
     def __init__(self, protocol_versions=None):
-        super(DiscoverVersionsResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(DiscoverVersionsResponsePayload, self).__init__()
 
         if protocol_versions is None:
             self.protocol_versions = list()

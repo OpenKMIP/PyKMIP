@@ -21,11 +21,11 @@ from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import secrets
 from kmip.core import utils
-
 from kmip.core.factories import secrets as secret_factory
+from kmip.core.messages.payloads import base
 
 
-class RegisterRequestPayload(primitives.Struct):
+class RegisterRequestPayload(base.RequestPayload):
     """
     A request payload for the Register operation.
 
@@ -69,9 +69,7 @@ class RegisterRequestPayload(primitives.Struct):
                 object. Added in KMIP 2.0. Optional, defaults to None.
         """
 
-        super(RegisterRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(RegisterRequestPayload, self).__init__()
 
         self.secret_factory = secret_factory.SecretFactory()
 
@@ -388,7 +386,7 @@ class RegisterRequestPayload(primitives.Struct):
         return '{' + value + '}'
 
 
-class RegisterResponsePayload(primitives.Struct):
+class RegisterResponsePayload(base.ResponsePayload):
     """
     A response payload for the Register operation.
 
@@ -411,9 +409,7 @@ class RegisterResponsePayload(primitives.Struct):
                 structure containing a set of attributes that were set on the
                 new object. Optional, defaults to None.
         """
-        super(RegisterResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(RegisterResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._template_attribute = None

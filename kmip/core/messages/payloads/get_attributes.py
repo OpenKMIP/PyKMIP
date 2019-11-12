@@ -17,9 +17,10 @@ from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class GetAttributesRequestPayload(primitives.Struct):
+class GetAttributesRequestPayload(base.RequestPayload):
     """
     A request payload for the GetAttributes operation.
 
@@ -48,8 +49,7 @@ class GetAttributesRequestPayload(primitives.Struct):
                 attributes associated with the managed object. Optional,
                 defaults to None.
         """
-        super(GetAttributesRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD)
+        super(GetAttributesRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._attribute_names = list()
@@ -272,7 +272,7 @@ class GetAttributesRequestPayload(primitives.Struct):
             return NotImplemented
 
 
-class GetAttributesResponsePayload(primitives.Struct):
+class GetAttributesResponsePayload(base.ResponsePayload):
     """
     A response payload for the GetAttributes operation.
 
@@ -297,8 +297,7 @@ class GetAttributesResponsePayload(primitives.Struct):
             attributes (list): A list of attribute structures associated with
                 the managed object. Optional, defaults to None.
         """
-        super(GetAttributesResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD)
+        super(GetAttributesResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._attributes = list()

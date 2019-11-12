@@ -18,9 +18,10 @@ import six
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class CancelRequestPayload(primitives.Struct):
+class CancelRequestPayload(base.RequestPayload):
     """
     A request payload for the Cancel operation.
 
@@ -37,9 +38,7 @@ class CancelRequestPayload(primitives.Struct):
             asynchronous_correlation_value (bytes): The ID of a pending
                 operation to cancel, in bytes. Optional, defaults to None.
         """
-        super(CancelRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(CancelRequestPayload, self).__init__()
 
         self._asynchronous_correlation_value = None
         self.asynchronous_correlation_value = asynchronous_correlation_value
@@ -159,7 +158,7 @@ class CancelRequestPayload(primitives.Struct):
         })
 
 
-class CancelResponsePayload(primitives.Struct):
+class CancelResponsePayload(base.ResponsePayload):
     """
     A response payload for the Cancel operation.
 
@@ -183,9 +182,7 @@ class CancelResponsePayload(primitives.Struct):
                 specifying the result of canceling the operation. Optional,
                 defaults to None.
         """
-        super(CancelResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(CancelResponsePayload, self).__init__()
 
         self._asynchronous_correlation_value = None
         self._cancellation_result = None

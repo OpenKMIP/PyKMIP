@@ -16,18 +16,16 @@
 from kmip.core import attributes
 from kmip.core import enums
 from kmip.core.enums import Tags
-
-from kmip.core.primitives import Struct
-
+from kmip.core.messages.payloads import base
 from kmip.core.utils import BytearrayStream
 
 
 # 4.21
-class DestroyRequestPayload(Struct):
+class DestroyRequestPayload(base.RequestPayload):
 
     def __init__(self,
                  unique_identifier=None):
-        super(DestroyRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+        super(DestroyRequestPayload, self).__init__()
         self.unique_identifier = unique_identifier
         self.validate()
 
@@ -67,12 +65,11 @@ class DestroyRequestPayload(Struct):
         pass
 
 
-class DestroyResponsePayload(Struct):
+class DestroyResponsePayload(base.ResponsePayload):
 
     def __init__(self,
                  unique_identifier=None):
-        super(DestroyResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD)
+        super(DestroyResponsePayload, self).__init__()
         self.unique_identifier = unique_identifier
         self.validate()
 

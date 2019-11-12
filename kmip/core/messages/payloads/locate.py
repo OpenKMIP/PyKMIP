@@ -19,9 +19,10 @@ from kmip.core import enums
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class LocateRequestPayload(primitives.Struct):
+class LocateRequestPayload(base.RequestPayload):
     """
     A request payload for the Locate operation.
 
@@ -64,7 +65,7 @@ class LocateRequestPayload(primitives.Struct):
                 objects. Optional, defaults to None. Required for read/write
                 for KMIP 2.0+.
         """
-        super(LocateRequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
+        super(LocateRequestPayload, self).__init__()
 
         self._maximum_items = None
         self._offset_items = None
@@ -368,7 +369,7 @@ class LocateRequestPayload(primitives.Struct):
         return '{' + value + '}'
 
 
-class LocateResponsePayload(primitives.Struct):
+class LocateResponsePayload(base.ResponsePayload):
     """
     A response payload for the Locate operation.
 
@@ -391,8 +392,7 @@ class LocateResponsePayload(primitives.Struct):
             unique_identifiers (list): A list of strings specifying the object
                 identifiers for matching objects. Optional, defaults to None.
         """
-        super(LocateResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD)
+        super(LocateResponsePayload, self).__init__()
 
         self._located_items = None
         self._unique_identifiers = None

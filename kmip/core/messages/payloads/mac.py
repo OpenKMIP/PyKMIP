@@ -16,24 +16,20 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core.enums import Tags
-
+from kmip.core.messages.payloads import base
 from kmip.core.objects import Data, MACData
-
-from kmip.core.primitives import Struct
-
 from kmip.core.utils import BytearrayStream
 
 
 # 4.33
-class MACRequestPayload(Struct):
+class MACRequestPayload(base.RequestPayload):
 
     def __init__(self,
                  unique_identifier=None,
                  cryptographic_parameters=None,
                  data=None):
 
-        super(MACRequestPayload, self).__init__(
-            tag=enums.Tags.REQUEST_PAYLOAD)
+        super(MACRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._cryptographic_parameters = None
@@ -137,13 +133,12 @@ class MACRequestPayload(Struct):
         ostream.write(tstream.buffer)
 
 
-class MACResponsePayload(Struct):
+class MACResponsePayload(base.ResponsePayload):
 
     def __init__(self,
                  unique_identifier=None,
                  mac_data=None):
-        super(MACResponsePayload, self).__init__(
-            tag=enums.Tags.RESPONSE_PAYLOAD)
+        super(MACResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._mac_data = None

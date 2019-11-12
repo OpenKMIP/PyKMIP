@@ -19,9 +19,10 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import utils
+from kmip.core.messages.payloads import base
 
 
-class SignRequestPayload(primitives.Struct):
+class SignRequestPayload(base.RequestPayload):
     """
     A request payload for the Sign operation.
 
@@ -51,9 +52,7 @@ class SignRequestPayload(primitives.Struct):
                 managed object will be used instead.
             data (bytes): The data to be signed, in binary form.
         """
-        super(SignRequestPayload, self).__init__(
-            enums.Tags.REQUEST_PAYLOAD
-        )
+        super(SignRequestPayload, self).__init__()
 
         self._unique_identifier = None
         self._cryptographic_parameters = None
@@ -247,7 +246,7 @@ class SignRequestPayload(primitives.Struct):
         })
 
 
-class SignResponsePayload(primitives.Struct):
+class SignResponsePayload(base.ResponsePayload):
     """
     A response payload for the Sign operation.
 
@@ -260,9 +259,7 @@ class SignResponsePayload(primitives.Struct):
     def __init__(self,
                  unique_identifier=None,
                  signature_data=None):
-        super(SignResponsePayload, self).__init__(
-            enums.Tags.RESPONSE_PAYLOAD
-        )
+        super(SignResponsePayload, self).__init__()
 
         self._unique_identifier = None
         self._signature_data = None
