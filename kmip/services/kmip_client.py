@@ -39,6 +39,8 @@ from kmip.core.enums import ConformanceClause
 from kmip.core.enums import CredentialType
 from kmip.core.enums import Operation as OperationEnum
 
+from kmip.core import exceptions
+
 from kmip.core.factories.credentials import CredentialFactory
 
 from kmip.core import objects
@@ -308,6 +310,86 @@ class KMIPProxy(object):
                 # anything. In this case, ignore the error.
                 pass
             self.socket = None
+
+    def send_request_payload(self, operation, payload, credential=None):
+        """
+        Send a KMIP request.
+
+        Args:
+            operation (enum): An Operation enumeration specifying the type
+                of operation to be requested. Required.
+            payload (struct): A RequestPayload structure containing the
+                parameters for a specific KMIP operation. Required.
+            credential (struct): A Credential structure containing
+                authentication information for the server. Optional, defaults
+                to None.
+
+        Returns:
+            response (struct): A ResponsePayload structure containing the
+                results of the KMIP operation specified in the request.
+
+        Raises:
+            TypeError: if the payload is not a RequestPayload instance or if
+                the operation and payload type do not match
+            InvalidMessage: if the response message does not have the right
+                number of response payloads, or does not match the request
+                operation
+        """
+        if not isinstance(payload, payloads.RequestPayload):
+            raise TypeError(
+                "The request payload must be a RequestPayload object."
+            )
+
+        # TODO (peterhamilton) For now limit this to the new DeleteAttribute
+        # operation. Migrate over existing operations to use this method
+        # instead.
+        if operation == enums.Operation.DELETE_ATTRIBUTE:
+            if not isinstance(payload, payloads.DeleteAttributeRequestPayload):
+                raise TypeError(
+                    "The request payload for the DeleteAttribute operation "
+                    "must be a DeleteAttributeRequestPayload object."
+                )
+
+        batch_item = messages.RequestBatchItem(
+            operation=operation,
+            request_payload=payload
+        )
+
+        request_message = self._build_request_message(credential, [batch_item])
+        response_message = self._send_and_receive_message(request_message)
+
+        if len(response_message.batch_items) != 1:
+            raise exceptions.InvalidMessage(
+                "The response message does not have the right number of "
+                "requested operation results."
+            )
+
+        batch_item = response_message.batch_items[0]
+
+        if batch_item.result_status.value != enums.ResultStatus.SUCCESS:
+            raise exceptions.OperationFailure(
+                batch_item.result_status.value,
+                batch_item.result_reason.value,
+                batch_item.result_message.value
+            )
+
+        if batch_item.operation.value != operation:
+            raise exceptions.InvalidMessage(
+                "The response message does not match the request operation."
+            )
+
+        # TODO (peterhamilton) Same as above for now.
+        if batch_item.operation.value == enums.Operation.DELETE_ATTRIBUTE:
+            if not isinstance(
+                batch_item.response_payload,
+                payloads.DeleteAttributeResponsePayload
+            ):
+                raise exceptions.InvalidMessage(
+                    "Invalid response payload received for the "
+                    "DeleteAttribute operation."
+                )
+
+        return batch_item.response_payload
 
     def create(self, object_type, template_attribute, credential=None):
         return self._create(object_type=object_type,

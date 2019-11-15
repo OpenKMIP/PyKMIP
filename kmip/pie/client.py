@@ -25,6 +25,8 @@ from kmip.core.factories import attributes
 from kmip.core.attributes import CryptographicParameters
 from kmip.core.attributes import DerivationParameters
 
+from kmip.core.messages import payloads
+
 from kmip.pie import exceptions
 from kmip.pie import factory
 from kmip.pie import objects as pobjects
@@ -385,6 +387,49 @@ class ProxyKmipClient(object):
             reason = result.result_reason.value
             message = result.result_message.value
             raise exceptions.KmipOperationFailure(status, reason, message)
+
+    @is_connected
+    def delete_attribute(self, unique_identifier=None, **kwargs):
+        """
+        Delete an attribute from a KMIP managed object.
+
+        Args:
+            unique_identifier (string): The ID of the managed object.
+            **kwargs (various): A placeholder for attribute values used to
+                identify the attribute to delete. For KMIP 1.0 - 1.4, the
+                supported parameters are:
+                    attribute_name (string): The name of the attribute to
+                        delete. Required.
+                    attribute_index (int): The index of the attribute to
+                        delete. Defaults to zero.
+                For KMIP 2.0+, the supported parameters are:
+                    current_attribute (struct): A CurrentAttribute object
+                        containing the attribute to delete. Required if the
+                        attribute reference is not specified.
+                    attribute_reference (struct): An AttributeReference
+                        object containing the name of the attribute to
+                        delete. Required if the current attribute  is not
+                        specified.
+
+        Returns:
+            string: The ID of the managed object the attribute was deleted
+                from.
+            struct: A Primitive object representing the deleted attribute.
+                Only returned if used for KMIP 1.0 - 1.4 messages.
+        """
+        request_payload = payloads.DeleteAttributeRequestPayload(
+            unique_identifier=unique_identifier,
+            attribute_name=kwargs.get("attribute_name"),
+            attribute_index=kwargs.get("attribute_index"),
+            current_attribute=kwargs.get("current_attribute"),
+            attribute_reference=kwargs.get("attribute_reference")
+        )
+        response_payload = self.proxy.send_request_payload(
+            enums.Operation.DELETE_ATTRIBUTE,
+            request_payload
+        )
+
+        return response_payload.unique_identifier, response_payload.attribute
 
     @is_connected
     def register(self, managed_object):
