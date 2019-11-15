@@ -24,6 +24,7 @@ from kmip.core import objects as obj
 
 from kmip.core.factories import attributes
 from kmip.core.messages import contents
+from kmip.core.messages import payloads
 from kmip.core.primitives import DateTime
 
 from kmip.services.kmip_client import KMIPProxy
@@ -757,6 +758,41 @@ class TestProxyKmipClient(testtools.TestCase):
         self.assertRaisesRegex(
             KmipOperationFailure, error_msg,
             client.create_key_pair, *args)
+
+    @mock.patch(
+        "kmip.pie.client.KMIPProxy",
+        mock.MagicMock(spec_set=KMIPProxy)
+    )
+    def test_delete_attribute(self):
+        """
+        Test that the client can delete an attribute.
+        """
+        request_payload = payloads.DeleteAttributeRequestPayload(
+            unique_identifier="1",
+            attribute_name="Object Group",
+            attribute_index=2
+        )
+        response_payload = payloads.DeleteAttributeResponsePayload(
+            unique_identifier="1",
+            attribute=None
+        )
+
+        with ProxyKmipClient() as client:
+            client.proxy.send_request_payload.return_value = response_payload
+
+            unique_identifier, attribute = client.delete_attribute(
+                "1",
+                attribute_name="Object Group",
+                attribute_index=2
+            )
+
+            args = (
+                enums.Operation.DELETE_ATTRIBUTE,
+                request_payload
+            )
+            client.proxy.send_request_payload.assert_called_with(*args)
+            self.assertEqual("1", unique_identifier)
+            self.assertIsNone(attribute)
 
     @mock.patch(
         'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)

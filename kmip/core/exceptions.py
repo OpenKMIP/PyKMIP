@@ -228,6 +228,23 @@ class KeyFormatTypeNotSupported(KmipError):
         )
 
 
+class OperationFailure(KmipError):
+    """
+    An exception raised upon the failure of a KMIP appliance operation.
+    """
+    def __init__(self, status, reason, message):
+        """
+        Construct the error message and attributes for the KMIP operation
+        failure.
+
+        Args:
+            status: a ResultStatus enumeration
+            reason: a ResultReason enumeration
+            message: a string providing additional error information
+        """
+        super(OperationFailure, self).__init__(status, reason, message)
+
+
 class OperationNotSupported(KmipError):
     """
     An error generated when an unsupported operation is invoked.

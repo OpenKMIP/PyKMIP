@@ -30,6 +30,8 @@ from kmip.core.enums import QueryFunction as QueryFunctionEnum
 from kmip.core.enums import CryptographicAlgorithm as \
                             CryptographicAlgorithmEnum
 
+from kmip.core import exceptions
+
 from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.factories.credentials import CredentialFactory
 from kmip.core.factories.secrets import SecretFactory
@@ -771,6 +773,238 @@ class TestKMIPClient(TestCase):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client._create_socket(sock)
         self.assertEqual(ssl.SSLSocket, type(self.client.socket))
+
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._build_request_message"
+    )
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
+    )
+    def test_send_request_payload(self, send_mock, build_mock):
+        """
+        Test that the client can send a request payload and correctly handle
+        the resulting response messsage.
+        """
+        request_payload = payloads.DeleteAttributeRequestPayload(
+            unique_identifier="1",
+            attribute_name="Object Group",
+            attribute_index=2
+        )
+        response_payload = payloads.DeleteAttributeResponsePayload(
+            unique_identifier="1",
+            attribute=None
+        )
+
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.DELETE_ATTRIBUTE),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=response_payload
+        )
+        response_message = ResponseMessage(batch_items=[batch_item])
+
+        build_mock.return_value = None
+        send_mock.return_value = response_message
+
+        result = self.client.send_request_payload(
+            OperationEnum.DELETE_ATTRIBUTE,
+            request_payload
+        )
+
+        self.assertIsInstance(result, payloads.DeleteAttributeResponsePayload)
+        self.assertEqual(result, response_payload)
+
+    def test_send_request_payload_invalid_payload(self):
+        """
+        Test that a TypeError is raised when an invalid payload is used to
+        send a request.
+        """
+        args = (OperationEnum.DELETE_ATTRIBUTE, "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The request payload must be a RequestPayload object.",
+            self.client.send_request_payload,
+            *args
+        )
+
+    def test_send_request_payload_mismatch_operation_payload(self):
+        """
+        Test that a TypeError is raised when the operation and request payload
+        do not match up when used to send a request.
+        """
+        args = (
+            OperationEnum.DELETE_ATTRIBUTE,
+            payloads.CreateRequestPayload()
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The request payload for the DeleteAttribute operation must be a "
+            "DeleteAttributeRequestPayload object.",
+            self.client.send_request_payload,
+            *args
+        )
+
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._build_request_message"
+    )
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
+    )
+    def test_send_request_payload_incorrect_number_of_batch_items(
+        self,
+        send_mock,
+        build_mock
+    ):
+        """
+        Test that an InvalidMessage error is raised when the wrong number of
+        response payloads are returned from the server.
+        """
+        build_mock.return_value = None
+        send_mock.return_value = ResponseMessage(batch_items=[])
+
+        args = (
+            OperationEnum.DELETE_ATTRIBUTE,
+            payloads.DeleteAttributeRequestPayload(
+                unique_identifier="1",
+                attribute_name="Object Group",
+                attribute_index=2
+            )
+        )
+
+        self.assertRaisesRegex(
+            exceptions.InvalidMessage,
+            "The response message does not have the right number of requested "
+            "operation results.",
+            self.client.send_request_payload,
+            *args
+        )
+
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._build_request_message"
+    )
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
+    )
+    def test_send_request_payload_mismatch_response_operation(
+        self,
+        send_mock,
+        build_mock
+    ):
+        """
+        Test that an InvalidMessage error is raised when the wrong operation
+        is returned from the server.
+        """
+        response_payload = payloads.DeleteAttributeResponsePayload(
+            unique_identifier="1",
+            attribute=None
+        )
+
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.CREATE),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=response_payload
+        )
+        build_mock.return_value = None
+        send_mock.return_value = ResponseMessage(batch_items=[batch_item])
+
+        args = (
+            OperationEnum.DELETE_ATTRIBUTE,
+            payloads.DeleteAttributeRequestPayload(
+                unique_identifier="1",
+                attribute_name="Object Group",
+                attribute_index=2
+            )
+        )
+
+        self.assertRaisesRegex(
+            exceptions.InvalidMessage,
+            "The response message does not match the request operation.",
+            self.client.send_request_payload,
+            *args
+        )
+
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._build_request_message"
+    )
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
+    )
+    def test_send_request_payload_mismatch_response_payload(
+        self,
+        send_mock,
+        build_mock
+    ):
+        """
+        Test that an InvalidMessage error is raised when the wrong payload
+        is returned from the server.
+        """
+        response_payload = payloads.DestroyResponsePayload(
+            unique_identifier="1"
+        )
+
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.DELETE_ATTRIBUTE),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=response_payload
+        )
+        build_mock.return_value = None
+        send_mock.return_value = ResponseMessage(batch_items=[batch_item])
+
+        args = (
+            OperationEnum.DELETE_ATTRIBUTE,
+            payloads.DeleteAttributeRequestPayload(
+                unique_identifier="1",
+                attribute_name="Object Group",
+                attribute_index=2
+            )
+        )
+
+        self.assertRaisesRegex(
+            exceptions.InvalidMessage,
+            "Invalid response payload received for the DeleteAttribute "
+            "operation.",
+            self.client.send_request_payload,
+            *args
+        )
+
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._build_request_message"
+    )
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
+    )
+    def test_send_request_payload_operation_failure(
+        self,
+        send_mock,
+        build_mock
+    ):
+        """
+        Test that a KmipOperationFailure error is raised when a payload
+        with a failure status is returned.
+        """
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.DELETE_ATTRIBUTE),
+            result_status=ResultStatus(ResultStatusEnum.OPERATION_FAILED),
+            result_reason=ResultReason(ResultReasonEnum.GENERAL_FAILURE),
+            result_message=ResultMessage("Test failed!")
+        )
+        build_mock.return_value = None
+        send_mock.return_value = ResponseMessage(batch_items=[batch_item])
+
+        args = (
+            OperationEnum.DELETE_ATTRIBUTE,
+            payloads.DeleteAttributeRequestPayload(
+                unique_identifier="1",
+                attribute_name="Object Group",
+                attribute_index=2
+            )
+        )
+
+        self.assertRaisesRegex(
+            exceptions.OperationFailure,
+            "Test failed!",
+            self.client.send_request_payload,
+            *args
+        )
 
     @mock.patch(
         'kmip.services.kmip_client.KMIPProxy._build_request_message'
