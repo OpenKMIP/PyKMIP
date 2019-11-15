@@ -356,6 +356,187 @@ class CurrentAttribute(primitives.Struct):
             return NotImplemented
 
 
+class NewAttribute(primitives.Struct):
+    """
+    A structure containing a single attribute.
+
+    This is intended for use with KMIP 2.0+.
+
+    Attributes:
+        attribute: An attribute instance.
+    """
+
+    def __init__(self, attribute=None):
+        """
+        Construct a NewAttribute structure.
+
+        Args:
+            attribute (struct): An attribute structure of varying type.
+                Defaults to None. Required for read/write.
+        """
+        super(NewAttribute, self).__init__(
+            tag=enums.Tags.NEW_ATTRIBUTE
+        )
+
+        self._factory = AttributeValueFactory()
+
+        self._attribute = None
+
+        self.attribute = attribute
+
+    @property
+    def attribute(self):
+        if self._attribute:
+            return self._attribute
+        return None
+
+    @attribute.setter
+    def attribute(self, value):
+        if value is None:
+            self._attribute = None
+        elif isinstance(value, primitives.Base):
+            if enums.is_attribute(value.tag):
+                self._attribute = value
+            else:
+                raise TypeError(
+                    "The attribute must be a supported attribute type."
+                )
+        else:
+            raise TypeError(
+                "The attribute must be a Base object, not a {}.".format(
+                    type(value)
+                )
+            )
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Read the data stream and decode the NewAttribute structure into
+        its parts.
+
+        Args:
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            AttributeNotSupported: Raised when an invalid value is decoded as
+                the attribute from the encoding.
+            InvalidKmipEncoding: Raised if the attribute is missing from the
+                encoding.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the CurrentAttribute structure.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the NewAttribute object.".format(
+                    kmip_version.value
+                )
+            )
+
+        super(NewAttribute, self).read(
+            input_buffer,
+            kmip_version=kmip_version
+        )
+        local_buffer = BytearrayStream(input_buffer.read(self.length))
+
+        if len(local_buffer) < 3:
+            raise exceptions.InvalidKmipEncoding(
+                "The NewAttribute encoding is missing the attribute field."
+            )
+        tag = struct.unpack('!I', b'\x00' + local_buffer.peek(3))[0]
+        if enums.is_enum_value(enums.Tags, tag):
+            tag = enums.Tags(tag)
+            if enums.is_attribute(tag, kmip_version=kmip_version):
+                value = self._factory.create_attribute_value_by_enum(tag, None)
+                value.read(local_buffer, kmip_version=kmip_version)
+                self._attribute = value
+            else:
+                raise exceptions.AttributeNotSupported(
+                    "Attribute {} is not supported by KMIP {}.".format(
+                        tag.name,
+                        kmip_version.value
+                    )
+                )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The NewAttribute encoding is missing the attribute field."
+            )
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+        """
+        Write the NewAttribute structure encoding to the data stream.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode
+                NewAttribute structure data, supporting a write method.
+            kmip_version (enum): A KMIPVersion enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 2.0.
+
+        Raises:
+            AttributeNotSupported: Raised if an unsupported attribute is
+                found while encoding.
+            InvalidField: Raised when the attribute is unspecified at write
+                time.
+            VersionNotSupported: Raised when a KMIP version is provided that
+                does not support the NewAttribute object.
+        """
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            raise exceptions.VersionNotSupported(
+                "KMIP {} does not support the NewAttribute object.".format(
+                    kmip_version.value
+                )
+            )
+
+        local_buffer = BytearrayStream()
+
+        if self._attribute:
+            tag = self._attribute.tag
+            if not enums.is_attribute(tag, kmip_version=kmip_version):
+                raise exceptions.AttributeNotSupported(
+                    "Attribute {} is not supported by KMIP {}.".format(
+                        tag.name,
+                        kmip_version.value
+                    )
+                )
+            self._attribute.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The NewAttribute object is missing the attribute field."
+            )
+
+        self.length = local_buffer.length()
+        super(NewAttribute, self).write(
+            output_buffer,
+            kmip_version=kmip_version
+        )
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        return "NewAttribute(attribute={})".format(repr(self.attribute))
+
+    def __str__(self):
+        value = '"attribute": {}'.format(repr(self.attribute))
+        return '{' + value + '}'
+
+    def __eq__(self, other):
+        if not isinstance(other, NewAttribute):
+            return NotImplemented
+        elif self.attribute != other.attribute:
+            return False
+        return True
+
+    def __ne__(self, other):
+        if isinstance(other, NewAttribute):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+
 class AttributeReference(primitives.Struct):
     """
     A structure containing reference information for an attribute.
