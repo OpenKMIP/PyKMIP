@@ -123,6 +123,10 @@ from kmip.core.messages.payloads.revoke import (
     RevokeRequestPayload,
     RevokeResponsePayload
 )
+from kmip.core.messages.payloads.set_attribute import (
+    SetAttributeRequestPayload,
+    SetAttributeResponsePayload
+)
 from kmip.core.messages.payloads.sign import (
     SignRequestPayload,
     SignResponsePayload
@@ -187,6 +191,8 @@ __all__ = [
     "ResponsePayload",
     "RevokeRequestPayload",
     "RevokeResponsePayload",
+    "SetAttributeRequestPayload",
+    "SetAttributeResponsePayload",
     "SignRequestPayload",
     "SignResponsePayload",
     "SignatureVerifyRequestPayload",
