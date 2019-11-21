@@ -23,36 +23,55 @@ from kmip.core import utils
 from kmip.core.messages.payloads import base
 
 
-class SetAttributeRequestPayload(base.RequestPayload):
+class ModifyAttributeRequestPayload(base.RequestPayload):
     """
-    A request payload for the SetAttribute operation.
+    A request payload for the ModifyAttribute operation.
 
     Attributes:
         unique_identifier: The unique ID of the object on which attribute
             deletion should be performed.
-        new_attribute: The attribute to set on the specified object.
+        attribute: The attribute value to be modified by index. Used in KMIP
+            1.0 - 1.4.
+        current_attribute: The current attribute to be modified on the
+            specified object. Used in KMIP 2.0+.
+        new_attribute: The new attribute value to set on the specified object.
+            Used in KMIP 2.0+.
     """
 
     def __init__(self,
                  unique_identifier=None,
+                 attribute=None,
+                 current_attribute=None,
                  new_attribute=None):
         """
-        Construct a SetAttribute request payload.
+        Construct a ModifyAttribute request payload.
 
         Args:
             unique_identifier (string): The unique ID of the object on which
-                the attribute should be set. Optional, defaults to
-                None.
+                attribute modification should be performed. Optional, defaults
+                to None.
+            attribute (struct): An Attribute object containing the attribute
+                name and index identifying the existing attribute, and the new
+                attribute value to replace the original attribute. Optional,
+                defaults to None. Used in KMIP 1.0 - 1.4. Required for
+                read/write.
+            current_attribute (struct): A CurrentAttribute object containing
+                the original attribute value on the specified object. Optional,
+                defaults to None. Used in KMIP 2.0+.
             new_attribute (struct): A NewAttribute object containing the new
                 attribute value to set on the specified object. Optional,
-                defaults to None. Required for read/write.
+                defaults to None. Used in KMIP 2.0+. Required for read/write.
         """
-        super(SetAttributeRequestPayload, self).__init__()
+        super(ModifyAttributeRequestPayload, self).__init__()
 
         self._unique_identifier = None
+        self._attribute = None
+        self._current_attribute = None
         self._new_attribute = None
 
         self.unique_identifier = unique_identifier
+        self.attribute = attribute
+        self.current_attribute = current_attribute
         self.new_attribute = new_attribute
 
     @property
@@ -74,6 +93,38 @@ class SetAttributeRequestPayload(base.RequestPayload):
             raise TypeError("The unique identifier must be a string.")
 
     @property
+    def attribute(self):
+        if self._attribute:
+            return self._attribute
+        return None
+
+    @attribute.setter
+    def attribute(self, value):
+        if value is None:
+            self._attribute = None
+        elif isinstance(value, objects.Attribute):
+            self._attribute = value
+        else:
+            raise TypeError("The attribute must be an Attribute object.")
+
+    @property
+    def current_attribute(self):
+        if self._current_attribute:
+            return self._current_attribute
+        return None
+
+    @current_attribute.setter
+    def current_attribute(self, value):
+        if value is None:
+            self._current_attribute = None
+        elif isinstance(value, objects.CurrentAttribute):
+            self._current_attribute = value
+        else:
+            raise TypeError(
+                "The current attribute must be a CurrentAttribute object."
+            )
+
+    @property
     def new_attribute(self):
         if self._new_attribute:
             return self._new_attribute
@@ -90,9 +141,9 @@ class SetAttributeRequestPayload(base.RequestPayload):
                 "The new attribute must be a NewAttribute object."
             )
 
-    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
-        Read the data encoding the SetAttribute request payload and decode
+        Read the data encoding the ModifyAttribute request payload and decode
         it into its constituent part.
 
         Args:
@@ -104,19 +155,10 @@ class SetAttributeRequestPayload(base.RequestPayload):
                 defaults to KMIP 1.0.
 
         Raises:
-            VersionNotSupported: Raised when a KMIP version is provided that
-                does not support the SetAttribute operation.
             InvalidKmipEncoding: Raised if fields are missing from the
                 encoding.
         """
-        if kmip_version < enums.KMIPVersion.KMIP_2_0:
-            raise exceptions.VersionNotSupported(
-                "KMIP {} does not support the SetAttribute operation.".format(
-                    kmip_version.value
-                )
-            )
-
-        super(SetAttributeRequestPayload, self).read(
+        super(ModifyAttributeRequestPayload, self).read(
             input_buffer,
             kmip_version=kmip_version
         )
@@ -133,23 +175,42 @@ class SetAttributeRequestPayload(base.RequestPayload):
         else:
             self._unique_identifier = None
 
-        if self.is_tag_next(enums.Tags.NEW_ATTRIBUTE, local_buffer):
-            self._new_attribute = objects.NewAttribute()
-            self._new_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(enums.Tags.ATTRIBUTE, local_buffer):
+                self._attribute = objects.Attribute()
+                self._attribute.read(local_buffer, kmip_version=kmip_version)
+            else:
+                raise exceptions.InvalidKmipEncoding(
+                    "The ModifyAttribute request payload encoding is missing "
+                    "the attribute field."
+                )
         else:
-            raise exceptions.InvalidKmipEncoding(
-                "The SetAttribute request payload encoding is missing the new "
-                "attribute field."
-            )
+            if self.is_tag_next(enums.Tags.CURRENT_ATTRIBUTE, local_buffer):
+                self._current_attribute = objects.CurrentAttribute()
+                self._current_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            else:
+                self._current_attribute = None
+
+            if self.is_tag_next(enums.Tags.NEW_ATTRIBUTE, local_buffer):
+                self._new_attribute = objects.NewAttribute()
+                self._new_attribute.read(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            else:
+                raise exceptions.InvalidKmipEncoding(
+                    "The ModifyAttribute request payload encoding is missing "
+                    "the new attribute field."
+                )
 
         self.is_oversized(local_buffer)
 
-    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
-        Write the data encoding the SetAttribute request payload to a
+        Write the data encoding the ModifyAttribute request payload to a
         stream.
 
         Args:
@@ -161,18 +222,9 @@ class SetAttributeRequestPayload(base.RequestPayload):
                 defaults to KMIP 1.0.
 
         Raises:
-            VersionNotSupported: Raised when a KMIP version is provided that
-                does not support the SetAttribute operation.
             InvalidField: Raised if a required field is missing from the
                 payload object.
         """
-        if kmip_version < enums.KMIPVersion.KMIP_2_0:
-            raise exceptions.VersionNotSupported(
-                "KMIP {} does not support the SetAttribute operation.".format(
-                    kmip_version.value
-                )
-            )
-
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
@@ -181,19 +233,37 @@ class SetAttributeRequestPayload(base.RequestPayload):
                 kmip_version=kmip_version
             )
 
-        if self._new_attribute:
-            self._new_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._attribute:
+                self._attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            else:
+                raise exceptions.InvalidField(
+                    "The ModifyAttribute request payload is missing the "
+                    "attribute field."
+                )
         else:
-            raise exceptions.InvalidField(
-                "The SetAttribute request payload is missing the new "
-                "attribute field."
-            )
+            if self._current_attribute:
+                self._current_attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+
+            if self._new_attribute:
+                self._new_attribute.write(
+                    local_buffer,
+                    kmip_version=kmip_version
+                )
+            else:
+                raise exceptions.InvalidField(
+                    "The ModifyAttribute request payload is missing the new "
+                    "attribute field."
+                )
 
         self.length = local_buffer.length()
-        super(SetAttributeRequestPayload, self).write(
+        super(ModifyAttributeRequestPayload, self).write(
             output_buffer,
             kmip_version=kmip_version
         )
@@ -202,16 +272,27 @@ class SetAttributeRequestPayload(base.RequestPayload):
     def __repr__(self):
         args = [
             "unique_identifier='{}'".format(self.unique_identifier),
+            "attribute={}".format(
+                repr(self.attribute) if self.attribute else None
+            ),
+            "current_attribute={}".format(
+                repr(self.current_attribute) if self.current_attribute
+                else None
+            ),
             "new_attribute={}".format(
                 repr(self.new_attribute) if self.new_attribute else None
             )
         ]
-        return "SetAttributeRequestPayload({})".format(", ".join(args))
+        return "ModifyAttributeRequestPayload({})".format(", ".join(args))
 
     def __str__(self):
         return str(
             {
                 "unique_identifier": self.unique_identifier,
+                "attribute": str(self.attribute) if self.attribute else None,
+                "current_attribute": str(
+                    self.current_attribute
+                ) if self.current_attribute else None,
                 "new_attribute": str(
                     self.new_attribute
                 ) if self.new_attribute else None
@@ -219,8 +300,12 @@ class SetAttributeRequestPayload(base.RequestPayload):
         )
 
     def __eq__(self, other):
-        if isinstance(other, SetAttributeRequestPayload):
+        if isinstance(other, ModifyAttributeRequestPayload):
             if self.unique_identifier != other.unique_identifier:
+                return False
+            elif self.attribute != other.attribute:
+                return False
+            elif self.current_attribute != other.current_attribute:
                 return False
             elif self.new_attribute != other.new_attribute:
                 return False
@@ -230,35 +315,41 @@ class SetAttributeRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __ne__(self, other):
-        if isinstance(other, SetAttributeRequestPayload):
+        if isinstance(other, ModifyAttributeRequestPayload):
             return not self.__eq__(other)
         else:
             return NotImplemented
 
 
-class SetAttributeResponsePayload(base.ResponsePayload):
+class ModifyAttributeResponsePayload(base.ResponsePayload):
     """
-    A response payload for the SetAttribute operation.
+    A response payload for the ModifyAttribute operation.
 
     Attributes:
         unique_identifier: The unique ID of the object on which the attribute
             was set.
+        attribute: The newly modified attribute. Used in KMIP 1.0 - 1.4.
     """
 
-    def __init__(self, unique_identifier=None):
+    def __init__(self, unique_identifier=None, attribute=None):
         """
-        Construct a SetAttribute response payload.
+        Construct a ModifyAttribute response payload.
 
         Args:
             unique_identifier (string): The unique ID of the object on
                 which the attribute was set. Defaults to None. Required for
                 read/write.
+            attribute (struct): An Attribute object representing the newly
+                modified attribute. Optional, defaults to None. Used in KMIP
+                1.0 - 1.4. Required for read/write.
         """
-        super(SetAttributeResponsePayload, self).__init__()
+        super(ModifyAttributeResponsePayload, self).__init__()
 
         self._unique_identifier = None
+        self._attribute = None
 
         self.unique_identifier = unique_identifier
+        self.attribute = attribute
 
     @property
     def unique_identifier(self):
@@ -278,9 +369,24 @@ class SetAttributeResponsePayload(base.ResponsePayload):
         else:
             raise TypeError("The unique identifier must be a string.")
 
-    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+    @property
+    def attribute(self):
+        if self._attribute:
+            return self._attribute
+        return None
+
+    @attribute.setter
+    def attribute(self, value):
+        if value is None:
+            self._attribute = None
+        elif isinstance(value, objects.Attribute):
+            self._attribute = value
+        else:
+            raise TypeError("The attribute must be an Attribute object.")
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
-        Read the data encoding the SetAttribute response payload and decode
+        Read the data encoding the ModifyAttribute response payload and decode
         it into its constituent parts.
 
         Args:
@@ -292,19 +398,10 @@ class SetAttributeResponsePayload(base.ResponsePayload):
                 defaults to KMIP 1.0.
 
         Raises:
-            VersionNotSupported: Raised when a KMIP version is provided that
-                does not support the SetAttribute operation.
             InvalidKmipEncoding: Raised if any required fields are missing
                 from the encoding.
         """
-        if kmip_version < enums.KMIPVersion.KMIP_2_0:
-            raise exceptions.VersionNotSupported(
-                "KMIP {} does not support the SetAttribute operation.".format(
-                    kmip_version.value
-                )
-            )
-
-        super(SetAttributeResponsePayload, self).read(
+        super(ModifyAttributeResponsePayload, self).read(
             input_buffer,
             kmip_version=kmip_version
         )
@@ -320,15 +417,25 @@ class SetAttributeResponsePayload(base.ResponsePayload):
             )
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The SetAttribute response payload encoding is missing the "
+                "The ModifyAttribute response payload encoding is missing the "
                 "unique identifier field."
             )
 
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self.is_tag_next(enums.Tags.ATTRIBUTE, local_buffer):
+                self._attribute = objects.Attribute()
+                self._attribute.read(local_buffer, kmip_version=kmip_version)
+            else:
+                raise exceptions.InvalidKmipEncoding(
+                    "The ModifyAttribute response payload encoding is missing "
+                    "the attribute field."
+                )
+
         self.is_oversized(local_buffer)
 
-    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
-        Write the data encoding the SetAttribute response payload to a
+        Write the data encoding the ModifyAttribute response payload to a
         buffer.
 
         Args:
@@ -340,18 +447,9 @@ class SetAttributeResponsePayload(base.ResponsePayload):
                 defaults to KMIP 1.0.
 
         Raises:
-            VersionNotSupported: Raised when a KMIP version is provided that
-                does not support the SetAttribute operation.
             InvalidField: Raised if a required field is missing from the
                 payload object.
         """
-        if kmip_version < enums.KMIPVersion.KMIP_2_0:
-            raise exceptions.VersionNotSupported(
-                "KMIP {} does not support the SetAttribute operation.".format(
-                    kmip_version.value
-                )
-            )
-
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
@@ -361,12 +459,21 @@ class SetAttributeResponsePayload(base.ResponsePayload):
             )
         else:
             raise exceptions.InvalidField(
-                "The SetAttribute response payload is missing the unique "
+                "The ModifyAttribute response payload is missing the unique "
                 "identifier field."
             )
 
+        if kmip_version < enums.KMIPVersion.KMIP_2_0:
+            if self._attribute:
+                self._attribute.write(local_buffer, kmip_version=kmip_version)
+            else:
+                raise exceptions.InvalidField(
+                    "The ModifyAttribute response payload is missing the "
+                    "attribute field."
+                )
+
         self.length = local_buffer.length()
-        super(SetAttributeResponsePayload, self).write(
+        super(ModifyAttributeResponsePayload, self).write(
             output_buffer,
             kmip_version=kmip_version
         )
@@ -374,26 +481,32 @@ class SetAttributeResponsePayload(base.ResponsePayload):
 
     def __repr__(self):
         args = [
-            "unique_identifier='{}'".format(self.unique_identifier)
+            "unique_identifier='{}'".format(self.unique_identifier),
+            "attribute={}".format(
+                repr(self.attribute) if self.attribute else None
+            )
         ]
-        return "SetAttributeResponsePayload({})".format(", ".join(args))
+        return "ModifyAttributeResponsePayload({})".format(", ".join(args))
 
     def __str__(self):
         return str(
             {
-                "unique_identifier": self.unique_identifier
+                "unique_identifier": self.unique_identifier,
+                "attribute": str(self.attribute) if self.attribute else None
             }
         )
 
     def __eq__(self, other):
-        if isinstance(other, SetAttributeResponsePayload):
+        if isinstance(other, ModifyAttributeResponsePayload):
             if self.unique_identifier != other.unique_identifier:
+                return False
+            elif self.attribute != other.attribute:
                 return False
             else:
                 return True
         return NotImplemented
 
     def __ne__(self, other):
-        if isinstance(other, SetAttributeResponsePayload):
+        if isinstance(other, ModifyAttributeResponsePayload):
             return not self.__eq__(other)
         return NotImplemented
