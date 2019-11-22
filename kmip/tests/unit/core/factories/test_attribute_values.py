@@ -505,3 +505,23 @@ class TestAttributeValueFactory(testtools.TestCase):
         custom = self.factory.create_attribute_value(
             enums.AttributeType.CUSTOM_ATTRIBUTE, None)
         self.assertIsInstance(custom, attributes.CustomAttribute)
+
+    def test_create_sensitive(self):
+        """
+        Test that a Sensitive attribute can be created.
+        """
+        sensitive = self.factory.create_attribute_value(
+            enums.AttributeType.SENSITIVE,
+            True
+        )
+        self.assertIsInstance(sensitive, primitives.Boolean)
+        self.assertTrue(sensitive.value)
+        self.assertEqual(enums.Tags.SENSITIVE, sensitive.tag)
+
+        sensitive = self.factory.create_attribute_value_by_enum(
+            enums.Tags.SENSITIVE,
+            False
+        )
+        self.assertIsInstance(sensitive, primitives.Boolean)
+        self.assertFalse(sensitive.value)
+        self.assertEqual(enums.Tags.SENSITIVE, sensitive.tag)
