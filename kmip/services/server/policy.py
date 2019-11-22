@@ -1155,6 +1155,20 @@ class AttributePolicy(object):
         rule_set = self._attribute_rule_sets.get(attribute)
         return rule_set.deletable_by_client
 
+    def is_attribute_modifiable_by_client(self, attribute):
+        """
+        Check if the attribute can be modified by the client.
+
+        Args:
+            attribute (string): The name of the attribute (e.g., "Name").
+
+        Returns:
+            bool: True if the attribute can be modified by the client. False
+                otherwise.
+        """
+        rule_set = self._attribute_rule_sets.get(attribute)
+        return rule_set.modifiable_by_client
+
     def is_attribute_applicable_to_object_type(self, attribute, object_type):
         """
         Check if the attribute is supported by the given object type.

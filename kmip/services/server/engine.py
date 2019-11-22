@@ -1155,6 +1155,7 @@ class KmipEngine(object):
         return managed_objects_allowed
 
     def _process_operation(self, operation, payload):
+        # TODO (peterhamilton) Alphabetize this.
         if operation == enums.Operation.CREATE:
             return self._process_create(payload)
         elif operation == enums.Operation.CREATE_KEY_PAIR:
@@ -1189,6 +1190,8 @@ class KmipEngine(object):
             return self._process_decrypt(payload)
         elif operation == enums.Operation.SIGNATURE_VERIFY:
             return self._process_signature_verify(payload)
+        elif operation == enums.Operation.SET_ATTRIBUTE:
+            return self._process_set_attribute(payload)
         elif operation == enums.Operation.MAC:
             return self._process_mac(payload)
         elif operation == enums.Operation.SIGN:
@@ -1548,6 +1551,54 @@ class KmipEngine(object):
         )
 
         return response_payload
+
+    @_kmip_version_supported('2.0')
+    def _process_set_attribute(self, payload):
+        self._logger.info("Processing operation: SetAttribute")
+
+        unique_identifier = self._id_placeholder
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier
+
+        managed_object = self._get_object_with_access_controls(
+            unique_identifier,
+            enums.Operation.SET_ATTRIBUTE
+        )
+
+        attribute_name = enums.convert_attribute_tag_to_name(
+            payload.new_attribute.attribute.tag
+        )
+        if self._attribute_policy.is_attribute_multivalued(attribute_name):
+            raise exceptions.KmipError(
+                status=enums.ResultStatus.OPERATION_FAILED,
+                reason=enums.ResultReason.MULTI_VALUED_ATTRIBUTE,
+                message=(
+                    "The '{}' attribute is multi-valued. Multi-valued "
+                    "attributes cannot be set with the SetAttribute "
+                    "operation.".format(attribute_name)
+                )
+            )
+        if not self._attribute_policy.is_attribute_modifiable_by_client(
+            attribute_name
+        ):
+            raise exceptions.KmipError(
+                status=enums.ResultStatus.OPERATION_FAILED,
+                reason=enums.ResultReason.READ_ONLY_ATTRIBUTE,
+                message=(
+                    "The '{}' attribute is read-only and cannot be modified "
+                    "by the client.".format(attribute_name)
+                )
+            )
+
+        self._set_attributes_on_managed_object(
+            managed_object,
+            {attribute_name: payload.new_attribute.attribute}
+        )
+        self._data_session.commit()
+
+        return payloads.SetAttributeResponsePayload(
+            unique_identifier=unique_identifier
+        )
 
     @_kmip_version_supported('1.0')
     def _process_register(self, payload):
