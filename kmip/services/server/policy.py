@@ -1078,6 +1078,30 @@ class AttributePolicy(object):
                 ),
                 contents.ProtocolVersion(1, 0)
             ),
+            "Sensitive": AttributeRuleSet(
+                True,
+                ("server", "client"),
+                True,
+                True,
+                False,
+                False,
+                (
+                    enums.Operation.CREATE,
+                    enums.Operation.CREATE_KEY_PAIR,
+                    enums.Operation.REGISTER
+                ),
+                (
+                    enums.ObjectType.CERTIFICATE,
+                    enums.ObjectType.SYMMETRIC_KEY,
+                    enums.ObjectType.PUBLIC_KEY,
+                    enums.ObjectType.PRIVATE_KEY,
+                    enums.ObjectType.SPLIT_KEY,
+                    enums.ObjectType.TEMPLATE,
+                    enums.ObjectType.SECRET_DATA,
+                    enums.ObjectType.OPAQUE_DATA
+                ),
+                contents.ProtocolVersion(1, 4)
+            )
         }
 
     def is_attribute_supported(self, attribute):

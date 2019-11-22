@@ -106,6 +106,7 @@ class ManagedObject(sql.Base):
         String(50),
         default='default'
     )
+    sensitive = Column("sensitive", Boolean, default=False)
     initial_date = Column(Integer, default=0)
     _owner = Column('owner', String(50), default=None)
 
@@ -144,6 +145,7 @@ class ManagedObject(sql.Base):
         self.names = list()
         self.operation_policy_name = None
         self.initial_date = 0
+        self.sensitive = False
         self._object_type = None
         self._owner = None
 

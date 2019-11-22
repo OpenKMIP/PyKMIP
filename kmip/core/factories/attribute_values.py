@@ -104,6 +104,8 @@ class AttributeValueFactory(object):
             return self._create_contact_information(value)
         elif name is enums.AttributeType.LAST_CHANGE_DATE:
             return primitives.DateTime(value, enums.Tags.LAST_CHANGE_DATE)
+        elif name is enums.AttributeType.SENSITIVE:
+            return primitives.Boolean(value, enums.Tags.SENSITIVE)
         elif name is enums.AttributeType.CUSTOM_ATTRIBUTE:
             return attributes.CustomAttribute(value)
         else:
@@ -194,6 +196,8 @@ class AttributeValueFactory(object):
             return self._create_contact_information(value)
         elif enum is enums.Tags.LAST_CHANGE_DATE:
             return primitives.DateTime(value, enums.Tags.LAST_CHANGE_DATE)
+        elif enum is enums.Tags.SENSITIVE:
+            return primitives.Boolean(value, enums.Tags.SENSITIVE)
         elif enum is enums.Tags.CUSTOM_ATTRIBUTE:
             return attributes.CustomAttribute(value)
         else:

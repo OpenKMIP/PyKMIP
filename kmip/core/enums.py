@@ -126,6 +126,7 @@ class AttributeType(enum.Enum):
     KEY_VALUE_PRESENT                = 'Key Value Present'
     KEY_VALUE_LOCATION               = 'Key Value Location'
     ORIGINAL_CREATION_DATE           = 'Original Creation Date'
+    SENSITIVE                        = "Sensitive"
 
 
 class AuthenticationSuite(enum.Enum):

@@ -744,6 +744,8 @@ class KmipEngine(object):
             return None
         elif attr_name == 'Last Change Date':
             return None
+        elif attr_name == "Sensitive":
+            return managed_object.sensitive
         else:
             # Since custom attribute names are possible, just return None
             # for unrecognized attributes. This satisfies the spec.
@@ -825,6 +827,8 @@ class KmipEngine(object):
                         value.append(e)
             elif attribute_name == 'Operation Policy Name':
                 field = 'operation_policy_name'
+            elif attribute_name == "Sensitive":
+                field = "sensitive"
 
             if field:
                 existing_value = getattr(managed_object, field)

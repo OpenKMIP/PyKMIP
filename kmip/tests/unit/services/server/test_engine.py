@@ -1757,6 +1757,10 @@ class TestKmipEngine(testtools.TestCase):
                 enums.CryptographicUsageMask.DECRYPT
             ]
         )
+        sensitive = attribute_factory.create_attribute(
+            enums.AttributeType.SENSITIVE,
+            True
+        )
         managed_object = pie_objects.SymmetricKey(
             enums.CryptographicAlgorithm.AES,
             0,
@@ -1771,6 +1775,7 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(0, managed_object.cryptographic_length)
         self.assertEqual([], managed_object.cryptographic_usage_masks)
+        self.assertFalse(managed_object.sensitive)
 
         e._set_attribute_on_managed_object(
             managed_object,
@@ -1808,6 +1813,13 @@ class TestKmipEngine(testtools.TestCase):
             ],
             managed_object.cryptographic_usage_masks
         )
+
+        e._set_attribute_on_managed_object(
+            managed_object,
+            ("Sensitive", sensitive.attribute_value)
+        )
+
+        self.assertTrue(managed_object.sensitive)
 
     def test_set_attribute_on_managed_object_unsupported_features(self):
         """
