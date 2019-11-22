@@ -722,6 +722,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_signature_verify = mock.MagicMock()
         e._process_mac = mock.MagicMock()
         e._process_sign = mock.MagicMock()
+        e._process_set_attribute = mock.MagicMock()
 
         e._process_operation(enums.Operation.CREATE, None)
         e._process_operation(enums.Operation.CREATE_KEY_PAIR, None)
@@ -742,6 +743,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_operation(enums.Operation.SIGN, None)
         e._process_operation(enums.Operation.SIGNATURE_VERIFY, None)
         e._process_operation(enums.Operation.MAC, None)
+        e._process_operation(enums.Operation.SET_ATTRIBUTE, None)
 
         e._process_create.assert_called_with(None)
         e._process_create_key_pair.assert_called_with(None)
@@ -761,6 +763,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_decrypt.assert_called_with(None)
         e._process_signature_verify.assert_called_with(None)
         e._process_mac.assert_called_with(None)
+        e._process_set_attribute.assert_called_with(None)
 
     def test_unsupported_operation(self):
         """
@@ -4119,6 +4122,154 @@ class TestKmipEngine(testtools.TestCase):
             "Could not locate the attribute instance with the specified "
             "index: 20",
             e._process_delete_attribute,
+            *args
+        )
+
+    def test_set_attribute(self):
+        """
+        Test that a SetAttribute request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        # Confirm that the attribute is set to its default value by
+        # fetching the managed object fresh from the database and
+        # checking it.
+        managed_object = e._get_object_with_access_controls(
+            "1",
+            enums.Operation.SET_ATTRIBUTE
+        )
+        self.assertFalse(managed_object.sensitive)
+
+        payload = payloads.SetAttributeRequestPayload(
+            unique_identifier="1",
+            new_attribute=objects.NewAttribute(
+                attribute=primitives.Boolean(
+                    value=True,
+                    tag=enums.Tags.SENSITIVE
+                )
+            )
+        )
+
+        response_payload = e._process_set_attribute(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: SetAttribute"
+        )
+        self.assertEqual(
+            "1",
+            response_payload.unique_identifier
+        )
+
+        # Confirm that the attribute was actually set by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            response_payload.unique_identifier,
+            enums.Operation.SET_ATTRIBUTE
+        )
+        self.assertTrue(managed_object.sensitive)
+
+    def test_set_attribute_with_multivalued_attribute(self):
+        """
+        Test that a KmipError is raised when attempting to set the value of
+        a multivalued attribute.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        args = (
+            payloads.SetAttributeRequestPayload(
+                unique_identifier="1",
+                new_attribute=objects.NewAttribute(
+                    attribute=primitives.TextString(
+                        value="New Name",
+                        tag=enums.Tags.NAME
+                    )
+                )
+            ),
+        )
+
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The 'Name' attribute is multi-valued. Multi-valued attributes "
+            "cannot be set with the SetAttribute operation.",
+            e._process_set_attribute,
+            *args
+        )
+
+    def test_set_attribute_with_non_client_modifiable_attribute(self):
+        """
+        Test that a KmipError is raised when attempting to set the value of
+        a attribute not modifiable by the client.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        args = (
+            payloads.SetAttributeRequestPayload(
+                unique_identifier="1",
+                new_attribute=objects.NewAttribute(
+                    attribute=primitives.Enumeration(
+                        enums.CryptographicAlgorithm,
+                        enums.CryptographicAlgorithm.RSA,
+                        enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    )
+                )
+            ),
+        )
+
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The 'Cryptographic Algorithm' attribute is read-only and cannot "
+            "be modified by the client.",
+            e._process_set_attribute,
             *args
         )
 
