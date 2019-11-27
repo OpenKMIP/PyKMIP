@@ -340,8 +340,8 @@ class KMIPProxy(object):
                 "The request payload must be a RequestPayload object."
             )
 
-        # TODO (peterhamilton) For now limit this to the new DeleteAttribute
-        # and SetAttribute operations. Migrate over existing operations to use
+        # TODO (peterhamilton) For now limit this to the new Delete/Set/Modify
+        # Attribute operations. Migrate over existing operations to use
         # this method instead.
         if operation == enums.Operation.DELETE_ATTRIBUTE:
             if not isinstance(payload, payloads.DeleteAttributeRequestPayload):
@@ -354,6 +354,12 @@ class KMIPProxy(object):
                 raise TypeError(
                     "The request payload for the SetAttribute operation must "
                     "be a SetAttributeRequestPayload object."
+                )
+        elif operation == enums.Operation.MODIFY_ATTRIBUTE:
+            if not isinstance(payload, payloads.ModifyAttributeRequestPayload):
+                raise TypeError(
+                    "The request payload for the ModifyAttribute operation "
+                    "must be a ModifyAttributeRequestPayload object."
                 )
 
         batch_item = messages.RequestBatchItem(
@@ -402,6 +408,15 @@ class KMIPProxy(object):
                 raise exceptions.InvalidMessage(
                     "Invalid response payload received for the SetAttribute "
                     "operation."
+                )
+        elif batch_item.operation.value == enums.Operation.MODIFY_ATTRIBUTE:
+            if not isinstance(
+                batch_item.response_payload,
+                payloads.ModifyAttributeRequestPayload
+            ):
+                raise exceptions.InvalidMessage(
+                    "Invalid response payload received for the "
+                    "ModifyAttribute operation."
                 )
 
         return batch_item.response_payload

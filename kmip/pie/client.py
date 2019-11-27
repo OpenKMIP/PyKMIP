@@ -473,6 +473,44 @@ class ProxyKmipClient(object):
         return response_payload.unique_identifier
 
     @is_connected
+    def modify_attribute(self, unique_identifier=None, **kwargs):
+        """
+        Set an attribute on a KMIP managed object.
+
+        Args:
+            unique_identifier (string): The ID of the managed object.
+            **kwargs (various): A placeholder for attribute values used to
+                identify the attribute to modify. For KMIP 1.0 - 1.4, the
+                supported parameters are:
+                    attribute (struct): An Attribute object containing the
+                        name and index of the existing attribute and the
+                        new value for that attribute.
+                For KMIP 2.0+, the supported parameters are:
+                    current_attribute (struct): A CurrentAttribute object
+                        containing the attribute to modify. Required if the
+                        attribute is multivalued.
+                    attribute_reference (struct): A NewAttribute object
+                        containing the new attribute value. Required.
+
+        Returns:
+            string: The ID of the managed object the attribute was modified on.
+            struct: An Attribute object representing the newly modified
+                attribute. Only returned if used for KMIP 1.0 - 1.4 messages.
+        """
+        request_payload = payloads.ModifyAttributeRequestPayload(
+            unique_identifier=unique_identifier,
+            attribute=kwargs.get("attribute"),
+            current_attribute=kwargs.get("current_attribute"),
+            new_attribute=kwargs.get("new_attribute")
+        )
+        response_payload = self.proxy.send_request_payload(
+            enums.Operation.MODIFY_ATTRIBUTE,
+            request_payload
+        )
+
+        return response_payload.unique_identifier, response_payload.attribute
+
+    @is_connected
     def register(self, managed_object):
         """
         Register a managed object with a KMIP appliance.

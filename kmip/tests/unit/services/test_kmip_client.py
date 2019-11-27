@@ -855,6 +855,18 @@ class TestKMIPClient(TestCase):
             *args
         )
 
+        args = (
+            OperationEnum.MODIFY_ATTRIBUTE,
+            payloads.CreateRequestPayload()
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "The request payload for the ModifyAttribute operation must be a "
+            "ModifyAttributeRequestPayload object.",
+            self.client.send_request_payload,
+            *args
+        )
+
     @mock.patch(
         "kmip.services.kmip_client.KMIPProxy._build_request_message"
     )
@@ -977,6 +989,7 @@ class TestKMIPClient(TestCase):
             *args
         )
 
+        # Test SetAttribute
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.SET_ATTRIBUTE),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
@@ -998,6 +1011,33 @@ class TestKMIPClient(TestCase):
         self.assertRaisesRegex(
             exceptions.InvalidMessage,
             "Invalid response payload received for the SetAttribute "
+            "operation.",
+            self.client.send_request_payload,
+            *args
+        )
+
+        # Test ModifyAttribute
+        batch_item = ResponseBatchItem(
+            operation=Operation(OperationEnum.MODIFY_ATTRIBUTE),
+            result_status=ResultStatus(ResultStatusEnum.SUCCESS),
+            response_payload=response_payload
+        )
+        send_mock.return_value = ResponseMessage(batch_items=[batch_item])
+        args = (
+            OperationEnum.MODIFY_ATTRIBUTE,
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                new_attribute=objects.NewAttribute(
+                    attribute=primitives.Boolean(
+                        value=True,
+                        tag=enums.Tags.SENSITIVE
+                    )
+                )
+            )
+        )
+        self.assertRaisesRegex(
+            exceptions.InvalidMessage,
+            "Invalid response payload received for the ModifyAttribute "
             "operation.",
             self.client.send_request_payload,
             *args
