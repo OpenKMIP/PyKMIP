@@ -833,6 +833,48 @@ class TestProxyKmipClient(testtools.TestCase):
             self.assertEqual("1", unique_identifier)
 
     @mock.patch(
+        "kmip.pie.client.KMIPProxy",
+        mock.MagicMock(spec_set=KMIPProxy)
+    )
+    def test_modify_attribute(self):
+        """
+        Test that the client can modify an attribute.
+        """
+        request_payload = payloads.ModifyAttributeRequestPayload(
+            unique_identifier="1",
+            new_attribute=obj.NewAttribute(
+                attribute=primitives.Boolean(
+                    value=True,
+                    tag=enums.Tags.SENSITIVE
+                )
+            )
+        )
+        response_payload = payloads.ModifyAttributeResponsePayload(
+            unique_identifier="1"
+        )
+
+        with ProxyKmipClient() as client:
+            client.proxy.send_request_payload.return_value = response_payload
+
+            unique_identifier, attribute = client.modify_attribute(
+                unique_identifier="1",
+                new_attribute=obj.NewAttribute(
+                    attribute=primitives.Boolean(
+                        value=True,
+                        tag=enums.Tags.SENSITIVE
+                    )
+                )
+            )
+
+            args = (
+                enums.Operation.MODIFY_ATTRIBUTE,
+                request_payload
+            )
+            client.proxy.send_request_payload.assert_called_with(*args)
+            self.assertEqual("1", unique_identifier)
+            self.assertIsNone(attribute)
+
+    @mock.patch(
         'kmip.pie.client.KMIPProxy', mock.MagicMock(spec_set=KMIPProxy)
     )
     def test_rekey(self):
