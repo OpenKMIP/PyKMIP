@@ -751,6 +751,96 @@ class KmipEngine(object):
             # for unrecognized attributes. This satisfies the spec.
             return None
 
+    def _get_attribute_index_from_managed_object(
+        self,
+        managed_object,
+        attribute_name,
+        attribute_value
+    ):
+        """
+        Find the attribute index for the specified attribute value.
+
+        Args:
+            managed_object (pie.ManagedObject): A managed object kept by the
+                server. Usually obtained from _get_object_with_access_controls.
+                Required.
+            attribute_name (string): The name of the attribute to look up.
+                Required.
+            attribute_value (primitive.Base): A primitive object representing
+                the attribute value. If a simple object (e.g., Integer) just
+                do a direct comparison on its value. If a complex object (e.g.,
+                Struct) do a comparison on all of the object fields. Required.
+
+        Returns:
+            int - the attribute index of the attribute value on the managed
+                object, if it exists, 0 for single-valued attributes
+            None - if the attribute value could not be found on the managed
+                object
+        """
+        if attribute_name == "Application Specific Information":
+            a = attribute_value
+            for count, v in enumerate(managed_object.app_specific_info):
+                if ((a.application_namespace == v.application_namespace) and
+                        (a.application_data == v.application_data)):
+                    return count
+            return None
+        elif attribute_name == "Certificate Type":
+            if attribute_value.value == managed_object.certificate_type:
+                return 0
+            return None
+        elif attribute_name == "Cryptographic Algorithm":
+            if attribute_value.value == managed_object.cryptographic_algorithm:
+                return 0
+            return None
+        elif attribute_name == "Cryptographic Length":
+            if attribute_value.value == managed_object.cryptographic_length:
+                return 0
+            return None
+        elif attribute_name == "Cryptographic Usage Mask":
+            v = attribute_value.value
+            combined_mask = 0
+            for mask in managed_object.cryptographic_usage_masks:
+                combined_mask |= mask.value
+            if v == combined_mask:
+                return 0
+            return None
+        elif attribute_name == "Initial Date":
+            if attribute_value.value == managed_object.initial_date:
+                return 0
+            return None
+        elif attribute_name == "Name":
+            for count, v in enumerate(managed_object.names):
+                if attribute_value.name_value.value == v:
+                    return count
+            return None
+        elif attribute_name == "Object Group":
+            for count, v in enumerate(managed_object.object_groups):
+                if attribute_value.value == v.object_group:
+                    return count
+            return None
+        elif attribute_name == "Object Type":
+            if attribute_value.value == managed_object.object_type:
+                return 0
+            return None
+        elif attribute_name == "Operation Policy Name":
+            if attribute_value.value == managed_object.operation_policy_name:
+                return 0
+            return None
+        elif attribute_name == "Sensitive":
+            if attribute_value.value == managed_object.sensitive:
+                return 0
+            return None
+        elif attribute_name == "State":
+            if attribute_value.value == managed_object.state:
+                return 0
+            return None
+        elif attribute_name == "Unique Identifier":
+            if attribute_value.value == str(managed_object.unique_identifier):
+                return 0
+            return None
+        else:
+            return None
+
     def _set_attributes_on_managed_object(self, managed_object, attributes):
         """
         Given a kmip.pie object and a dictionary of attributes, attempt to set
@@ -846,6 +936,38 @@ class KmipEngine(object):
                 raise exceptions.InvalidField(
                     "The {0} attribute is unsupported.".format(attribute_name)
                 )
+
+    def _set_attribute_on_managed_object_by_index(
+        self,
+        managed_object,
+        attribute_name,
+        attribute_value,
+        attribute_index
+    ):
+        """
+        Set the attribute value for the specified attribute index.
+
+        Args:
+            managed_object (pie.ManagedObject): A managed object kept by the
+                server. Usually obtained from _get_object_with_access_controls.
+                Required.
+            attribute_name (string): The name of the attribute to modify.
+                Required.
+            attribute_value (primitive.Base): A primitive object representing
+                the new attribute value to set on the managd object. Required.
+            attribute_index (int): The index of the existing attribute to
+                modify. Required.
+        """
+        if attribute_name == "Application Specific Information":
+            a = managed_object.app_specific_info[attribute_index]
+            a.application_namespace = attribute_value.application_namespace
+            a.application_data = attribute_value.application_data
+        elif attribute_name == "Name":
+            name_value = attribute_value.name_value
+            managed_object.names[attribute_index] = name_value.value
+        elif attribute_name == "Object Group":
+            a = managed_object.object_groups[attribute_index]
+            a.object_group = attribute_value.value
 
     def _delete_attribute_from_managed_object(self, managed_object, attribute):
         attribute_name, attribute_index, attribute_value = attribute
@@ -1192,6 +1314,8 @@ class KmipEngine(object):
             return self._process_signature_verify(payload)
         elif operation == enums.Operation.SET_ATTRIBUTE:
             return self._process_set_attribute(payload)
+        elif operation == enums.Operation.MODIFY_ATTRIBUTE:
+            return self._process_modify_attribute(payload)
         elif operation == enums.Operation.MAC:
             return self._process_mac(payload)
         elif operation == enums.Operation.SIGN:
@@ -1599,6 +1723,223 @@ class KmipEngine(object):
         return payloads.SetAttributeResponsePayload(
             unique_identifier=unique_identifier
         )
+
+    @_kmip_version_supported('1.0')
+    def _process_modify_attribute(self, payload):
+        self._logger.info("Processing operation: ModifyAttribute")
+
+        unique_identifier = self._id_placeholder
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier
+
+        managed_object = self._get_object_with_access_controls(
+            unique_identifier,
+            enums.Operation.MODIFY_ATTRIBUTE
+        )
+
+        if self._protocol_version >= contents.ProtocolVersion(2, 0):
+            current_attribute = payload.current_attribute
+            if current_attribute:
+                current_attribute = current_attribute.attribute
+            new_attribute = payload.new_attribute.attribute
+
+            attribute_name = enums.convert_attribute_tag_to_name(
+                new_attribute.tag
+            )
+
+            if not self._attribute_policy.is_attribute_modifiable_by_client(
+                attribute_name
+            ):
+                raise exceptions.KmipError(
+                    status=enums.ResultStatus.OPERATION_FAILED,
+                    reason=enums.ResultReason.PERMISSION_DENIED,
+                    message=(
+                        "The '{}' attribute is read-only and cannot be "
+                        "modified.".format(attribute_name)
+                    )
+                )
+
+            is_multivalued = self._attribute_policy.is_attribute_multivalued(
+                attribute_name
+            )
+
+            if is_multivalued:
+                if current_attribute is None:
+                    raise exceptions.KmipError(
+                        status=enums.ResultStatus.OPERATION_FAILED,
+                        reason=enums.ResultReason.ATTRIBUTE_INSTANCE_NOT_FOUND,
+                        message=(
+                            "The '{}' attribute is multivalued so the current "
+                            "attribute must be specified.".format(
+                                attribute_name
+                            )
+                        )
+                    )
+                else:
+                    index = self._get_attribute_index_from_managed_object(
+                        managed_object,
+                        attribute_name,
+                        current_attribute
+                    )
+                    if index is None:
+                        raise exceptions.KmipError(
+                            status=enums.ResultStatus.OPERATION_FAILED,
+                            reason=enums.ResultReason.ATTRIBUTE_NOT_FOUND,
+                            message=(
+                                "The specified current attribute could not be "
+                                "found on the managed object."
+                            )
+                        )
+                    else:
+                        self._set_attribute_on_managed_object_by_index(
+                            managed_object,
+                            attribute_name,
+                            new_attribute,
+                            index
+                        )
+                        self._data_session.commit()
+            else:
+                if current_attribute is None:
+                    # Verify the attribute is set.
+                    existing_attr = self._get_attribute_from_managed_object(
+                        managed_object,
+                        attribute_name
+                    )
+                    if existing_attr is None:
+                        raise exceptions.KmipError(
+                            status=enums.ResultStatus.OPERATION_FAILED,
+                            reason=enums.ResultReason.ATTRIBUTE_NOT_FOUND,
+                            message=(
+                                "The '{}' attribute is not set on the managed "
+                                "object. It must be set before it can be "
+                                "modified.".format(attribute_name)
+                            )
+                        )
+                else:
+                    # Verify the attribute matches the current attribute.
+                    index = self._get_attribute_index_from_managed_object(
+                        managed_object,
+                        attribute_name,
+                        current_attribute
+                    )
+                    if index is None:
+                        raise exceptions.KmipError(
+                            status=enums.ResultStatus.OPERATION_FAILED,
+                            reason=enums.ResultReason.ATTRIBUTE_NOT_FOUND,
+                            message=(
+                                "The specified current attribute could not be "
+                                "found on the managed object."
+                            )
+                        )
+
+                # Set the attribute value.
+                self._set_attribute_on_managed_object(
+                    managed_object,
+                    (attribute_name, new_attribute)
+                )
+                self._data_session.commit()
+
+            return payloads.ModifyAttributeResponsePayload(
+                unique_identifier=unique_identifier
+            )
+
+        else:
+            attribute_name = payload.attribute.attribute_name.value
+            attribute_index = payload.attribute.attribute_index
+            if attribute_index:
+                attribute_index = attribute_index.value
+            attribute_value = payload.attribute.attribute_value
+
+            if not self._attribute_policy.is_attribute_modifiable_by_client(
+                attribute_name
+            ):
+                raise exceptions.KmipError(
+                    status=enums.ResultStatus.OPERATION_FAILED,
+                    reason=enums.ResultReason.PERMISSION_DENIED,
+                    message=(
+                        "The '{}' attribute is read-only and cannot be "
+                        "modified.".format(attribute_name)
+                    )
+                )
+
+            is_multivalued = self._attribute_policy.is_attribute_multivalued(
+                attribute_name
+            )
+
+            modified_attribute = None
+
+            if is_multivalued:
+                if attribute_index is None:
+                    attribute_index = 0
+
+                existing_attributes = self._get_attribute_from_managed_object(
+                    managed_object,
+                    attribute_name
+                )
+                if 0 <= attribute_index <= len(existing_attributes):
+                    self._set_attribute_on_managed_object_by_index(
+                        managed_object,
+                        attribute_name,
+                        attribute_value,
+                        attribute_index
+                    )
+                    self._data_session.commit()
+                else:
+                    raise exceptions.KmipError(
+                        status=enums.ResultStatus.OPERATION_FAILED,
+                        reason=enums.ResultReason.ITEM_NOT_FOUND,
+                        message=(
+                            "No matching attribute instance could be found "
+                            "for the specified attribute index."
+                        )
+                    )
+
+                existing_attributes = self._get_attributes_from_managed_object(
+                    managed_object,
+                    [attribute_name]
+                )
+                modified_attribute = existing_attributes[attribute_index]
+            else:
+                if attribute_index is not None:
+                    raise exceptions.KmipError(
+                        status=enums.ResultStatus.OPERATION_FAILED,
+                        reason=enums.ResultReason.INVALID_FIELD,
+                        message=(
+                            "The attribute index cannot be specified for a "
+                            "single-valued attribute."
+                        )
+                    )
+                existing_attribute = self._get_attributes_from_managed_object(
+                    managed_object,
+                    [attribute_name]
+                )
+                if len(existing_attribute) == 0:
+                    raise exceptions.KmipError(
+                        status=enums.ResultStatus.OPERATION_FAILED,
+                        reason=enums.ResultReason.INVALID_FIELD,
+                        message=(
+                            "The '{}' attribute is not set on the managed "
+                            "object. It must be set before it can be "
+                            "modified.".format(attribute_name)
+                        )
+                    )
+                else:
+                    self._set_attribute_on_managed_object(
+                        managed_object,
+                        (attribute_name, attribute_value)
+                    )
+                    self._data_session.commit()
+
+                existing_attributes = self._get_attributes_from_managed_object(
+                    managed_object,
+                    [attribute_name]
+                )
+                modified_attribute = existing_attributes[0]
+
+            return payloads.ModifyAttributeResponsePayload(
+                unique_identifier=unique_identifier,
+                attribute=modified_attribute
+            )
 
     @_kmip_version_supported('1.0')
     def _process_register(self, payload):

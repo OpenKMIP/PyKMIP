@@ -723,6 +723,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_mac = mock.MagicMock()
         e._process_sign = mock.MagicMock()
         e._process_set_attribute = mock.MagicMock()
+        e._process_modify_attribute = mock.MagicMock()
 
         e._process_operation(enums.Operation.CREATE, None)
         e._process_operation(enums.Operation.CREATE_KEY_PAIR, None)
@@ -744,6 +745,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_operation(enums.Operation.SIGNATURE_VERIFY, None)
         e._process_operation(enums.Operation.MAC, None)
         e._process_operation(enums.Operation.SET_ATTRIBUTE, None)
+        e._process_operation(enums.Operation.MODIFY_ATTRIBUTE, None)
 
         e._process_create.assert_called_with(None)
         e._process_create_key_pair.assert_called_with(None)
@@ -764,6 +766,7 @@ class TestKmipEngine(testtools.TestCase):
         e._process_signature_verify.assert_called_with(None)
         e._process_mac.assert_called_with(None)
         e._process_set_attribute.assert_called_with(None)
+        e._process_modify_attribute.assert_called_with(None)
 
     def test_unsupported_operation(self):
         """
@@ -1632,6 +1635,344 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertEqual(None, result)
 
+    def test_get_attribute_index_from_managed_object(self):
+        """
+        Test that an attribute's index can be retrieved from a given managed
+        object.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        symmetric_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b'',
+            masks=[enums.CryptographicUsageMask.ENCRYPT,
+                   enums.CryptographicUsageMask.DECRYPT]
+        )
+        certificate = pie_objects.X509Certificate(
+            b''
+        )
+
+        e._data_session.add(symmetric_key)
+        e._data_session.add(certificate)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._set_attribute_on_managed_object(
+            symmetric_key,
+            (
+                "Application Specific Information",
+                [
+                    attributes.ApplicationSpecificInformation(
+                        application_namespace="Example Namespace",
+                        application_data="Example Data"
+                    )
+                ]
+            )
+        )
+        e._set_attribute_on_managed_object(
+            symmetric_key,
+            (
+                "Name",
+                [
+                    attributes.Name(
+                        name_value=attributes.Name.NameValue("Name 1")
+                    ),
+                    attributes.Name(
+                        name_value=attributes.Name.NameValue("Name 2")
+                    )
+                ]
+            )
+        )
+        e._set_attribute_on_managed_object(
+            symmetric_key,
+            (
+                "Object Group",
+                [
+                    primitives.TextString(
+                        "Example Group",
+                        tag=enums.Tags.OBJECT_GROUP
+                    )
+                ]
+            )
+        )
+
+        # Test getting the index for an ApplicationSpecificInfo attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Application Specific Information",
+            attributes.ApplicationSpecificInformation(
+                application_namespace="Example Namespace",
+                application_data="Example Data"
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Application Specific Information",
+            attributes.ApplicationSpecificInformation(
+                application_namespace="Wrong Namespace",
+                application_data="Wrong Data"
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a CertificateType attribute
+        index = e._get_attribute_index_from_managed_object(
+            certificate,
+            "Certificate Type",
+            primitives.Enumeration(
+                enums.CertificateType,
+                enums.CertificateType.X_509,
+                tag=enums.Tags.CERTIFICATE_TYPE
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            certificate,
+            "Certificate Type",
+            primitives.Enumeration(
+                enums.CertificateType,
+                enums.CertificateType.PGP,
+                tag=enums.Tags.CERTIFICATE_TYPE
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a CryptographicAlgorithm attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Cryptographic Algorithm",
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.AES,
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Cryptographic Algorithm",
+            primitives.Enumeration(
+                enums.CryptographicAlgorithm,
+                enums.CryptographicAlgorithm.RSA,
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a CryptographicLength attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Cryptographic Length",
+            primitives.Integer(
+                0,
+                tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Cryptographic Length",
+            primitives.Integer(
+                128,
+                tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a CryptographicUsageMasks attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Cryptographic Usage Mask",
+            primitives.Integer(
+                12,
+                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Cryptographic Usage Mask",
+            primitives.Integer(
+                0,
+                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a InitialDate attribute
+        date = e._get_attribute_from_managed_object(
+            symmetric_key,
+            "Initial Date"
+        )
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Initial Date",
+            primitives.DateTime(
+                date,
+                tag=enums.Tags.INITIAL_DATE
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Initial Date",
+            primitives.DateTime(
+                9999,
+                tag=enums.Tags.INITIAL_DATE
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a Name attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Name",
+            attributes.Name(
+                name_value=attributes.Name.NameValue("Name 2")
+            )
+        )
+        self.assertEqual(2, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Name",
+            attributes.Name(
+                name_value=attributes.Name.NameValue("Name 3")
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a ObjectGroup attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Object Group",
+            primitives.TextString(
+                "Example Group",
+                tag=enums.Tags.OBJECT_GROUP
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Object Group",
+            primitives.TextString(
+                "Invalid Group",
+                tag=enums.Tags.OBJECT_GROUP
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a ObjectType attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Object Type",
+            primitives.Enumeration(
+                enums.ObjectType,
+                enums.ObjectType.SYMMETRIC_KEY,
+                tag=enums.Tags.OBJECT_TYPE
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Object Type",
+            primitives.Enumeration(
+                enums.ObjectType,
+                enums.ObjectType.CERTIFICATE,
+                tag=enums.Tags.OBJECT_TYPE
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a OperationPolicyName attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Operation Policy Name",
+            primitives.TextString(
+                "default",
+                tag=enums.Tags.OPERATION_POLICY_NAME
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Operation Policy Name",
+            primitives.TextString(
+                "invalid",
+                tag=enums.Tags.OPERATION_POLICY_NAME
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a Sensitive attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Sensitive",
+            primitives.Boolean(
+                False,
+                tag=enums.Tags.SENSITIVE
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Sensitive",
+            primitives.Boolean(
+                True,
+                tag=enums.Tags.SENSITIVE
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a State attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "State",
+            primitives.Enumeration(
+                enums.State,
+                enums.State.PRE_ACTIVE,
+                tag=enums.Tags.STATE
+            )
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "State",
+            primitives.Enumeration(
+                enums.State,
+                enums.State.ACTIVE,
+                tag=enums.Tags.STATE
+            )
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for a UniqueIdentifier attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Unique Identifier",
+            primitives.TextString(value="1", tag=enums.Tags.UNIQUE_IDENTIFIER)
+        )
+        self.assertEqual(0, index)
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Unique Identifier",
+            primitives.TextString(value="9", tag=enums.Tags.UNIQUE_IDENTIFIER)
+        )
+        self.assertIsNone(index)
+
+        # Test getting the index for an unsupported attribute
+        index = e._get_attribute_index_from_managed_object(
+            symmetric_key,
+            "Archive Date",
+            None
+        )
+        self.assertIsNone(index)
+
     def test_set_attributes_on_managed_object(self):
         """
         Test that multiple attributes can be set on a given managed object.
@@ -1939,6 +2280,156 @@ class TestKmipEngine(testtools.TestCase):
             e._set_attribute_on_managed_object,
             *args
         )
+
+    def test_set_attribute_on_managed_object_by_index(self):
+        """
+        Test that an attribute can be modified on a managed object given its
+        name, index, and new value.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+
+        symmetric_key = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b'',
+            masks=[enums.CryptographicUsageMask.ENCRYPT,
+                   enums.CryptographicUsageMask.DECRYPT]
+        )
+
+        e._data_session.add(symmetric_key)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._set_attribute_on_managed_object(
+            symmetric_key,
+            (
+                "Application Specific Information",
+                [
+                    attributes.ApplicationSpecificInformation(
+                        application_namespace="Example Namespace 1",
+                        application_data="Example Data 1"
+                    ),
+                    attributes.ApplicationSpecificInformation(
+                        application_namespace="Example Namespace 2",
+                        application_data="Example Data 2"
+                    )
+                ]
+            )
+        )
+        e._set_attribute_on_managed_object(
+            symmetric_key,
+            (
+                "Name",
+                [
+                    attributes.Name(
+                        name_value=attributes.Name.NameValue("Name 1")
+                    ),
+                    attributes.Name(
+                        name_value=attributes.Name.NameValue("Name 2")
+                    )
+                ]
+            )
+        )
+        e._set_attribute_on_managed_object(
+            symmetric_key,
+            (
+                "Object Group",
+                [
+                    primitives.TextString(
+                        "Example Group 1",
+                        tag=enums.Tags.OBJECT_GROUP
+                    ),
+                    primitives.TextString(
+                        "Example Group 2",
+                        tag=enums.Tags.OBJECT_GROUP
+                    )
+                ]
+            )
+        )
+
+        # Test setting an ApplicationSpecificInformation attribute by index
+        a = e._get_attribute_from_managed_object(
+            symmetric_key,
+            "Application Specific Information"
+        )
+        self.assertEqual(2, len(a))
+        self.assertEqual(
+            "Example Namespace 1",
+            a[0].get("application_namespace")
+        )
+        self.assertEqual("Example Data 1", a[0].get("application_data"))
+        self.assertEqual(
+            "Example Namespace 2",
+            a[1].get("application_namespace")
+        )
+        self.assertEqual("Example Data 2", a[1].get("application_data"))
+        e._set_attribute_on_managed_object_by_index(
+            symmetric_key,
+            "Application Specific Information",
+            attributes.ApplicationSpecificInformation(
+                application_namespace="Example Namespace 3",
+                application_data="Example Data 3"
+            ),
+            1
+        )
+        a = e._get_attribute_from_managed_object(
+            symmetric_key,
+            "Application Specific Information"
+        )
+        self.assertEqual(2, len(a))
+        self.assertEqual(
+            "Example Namespace 1",
+            a[0].get("application_namespace")
+        )
+        self.assertEqual("Example Data 1", a[0].get("application_data"))
+        self.assertEqual(
+            "Example Namespace 3",
+            a[1].get("application_namespace")
+        )
+        self.assertEqual("Example Data 3", a[1].get("application_data"))
+
+        # Test setting a Name attribute by index
+        a = e._get_attribute_from_managed_object(symmetric_key, "Name")
+        self.assertEqual(3, len(a))
+        self.assertEqual("Symmetric Key", a[0].name_value.value)
+        self.assertEqual("Name 1", a[1].name_value.value)
+        self.assertEqual("Name 2", a[2].name_value.value)
+        e._set_attribute_on_managed_object_by_index(
+            symmetric_key,
+            "Name",
+            attributes.Name(
+                name_value=attributes.Name.NameValue("Name 3")
+            ),
+            1
+        )
+        a = e._get_attribute_from_managed_object(symmetric_key, "Name")
+        self.assertEqual(3, len(a))
+        self.assertEqual("Symmetric Key", a[0].name_value.value)
+        self.assertEqual("Name 3", a[1].name_value.value)
+        self.assertEqual("Name 2", a[2].name_value.value)
+
+        # Test setting an ObjectGroup attribute by index
+        a = e._get_attribute_from_managed_object(symmetric_key, "Object Group")
+        self.assertEqual(2, len(a))
+        self.assertEqual("Example Group 1", a[0])
+        self.assertEqual("Example Group 2", a[1])
+        e._set_attribute_on_managed_object_by_index(
+            symmetric_key,
+            "Object Group",
+            primitives.TextString(
+                "Example Group 3",
+                tag=enums.Tags.OBJECT_GROUP
+            ),
+            1
+        )
+        a = e._get_attribute_from_managed_object(symmetric_key, "Object Group")
+        self.assertEqual(2, len(a))
+        self.assertEqual("Example Group 1", a[0])
+        self.assertEqual("Example Group 3", a[1])
 
     def test_delete_attribute_from_managed_object(self):
         """
@@ -4270,6 +4761,686 @@ class TestKmipEngine(testtools.TestCase):
             "The 'Cryptographic Algorithm' attribute is read-only and cannot "
             "be modified by the client.",
             e._process_set_attribute,
+            *args
+        )
+
+    def test_modify_attribute(self):
+        """
+        Test that a ModifyAttribute request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(1, 4)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Confirm that the attribute is set to its default value by
+        # fetching the managed object fresh from the database and
+        # checking it.
+        managed_object = e._get_object_with_access_controls(
+            "1",
+            enums.Operation.MODIFY_ATTRIBUTE
+        )
+        self.assertFalse(managed_object.sensitive)
+
+        payload = payloads.ModifyAttributeRequestPayload(
+            unique_identifier="1",
+            attribute=attribute_factory.create_attribute(
+                enums.AttributeType.SENSITIVE,
+                True
+            )
+        )
+
+        response_payload = e._process_modify_attribute(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: ModifyAttribute"
+        )
+        self.assertEqual("1", response_payload.unique_identifier)
+        self.assertEqual(
+            "Sensitive",
+            response_payload.attribute.attribute_name.value
+        )
+        self.assertIsNone(response_payload.attribute.attribute_index)
+        self.assertEqual(
+            True,
+            response_payload.attribute.attribute_value.value
+        )
+
+        # Confirm that the attribute was actually set by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            response_payload.unique_identifier,
+            enums.Operation.MODIFY_ATTRIBUTE
+        )
+        self.assertTrue(managed_object.sensitive)
+
+    def test_modify_attribute_with_unmodifiable_attribute(self):
+        """
+        Test that a KmipError is raised when attempting to modify an
+        unmodifiable attribute.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(1, 4)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        attribute_factory = factory.AttributeFactory()
+
+        args = (
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                attribute=attribute_factory.create_attribute(
+                    enums.AttributeType.UNIQUE_IDENTIFIER,
+                    "2"
+                )
+            ),
+        )
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The 'Unique Identifier' attribute is read-only and cannot be "
+            "modified.",
+            e._process_modify_attribute,
+            *args
+        )
+
+    def test_modify_attribute_with_multivalued(self):
+        """
+        Test that a ModifyAttribute request can be processed correctly.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(1, 4)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        attribute_factory = factory.AttributeFactory()
+
+        # Confirm that the attribute is set to its default value by
+        # fetching the managed object fresh from the database and
+        # checking it.
+        managed_object = e._get_object_with_access_controls(
+            "1",
+            enums.Operation.MODIFY_ATTRIBUTE
+        )
+        self.assertEqual("Symmetric Key", managed_object.names[0])
+
+        payload = payloads.ModifyAttributeRequestPayload(
+            unique_identifier="1",
+            attribute=attribute_factory.create_attribute(
+                enums.AttributeType.NAME,
+                "Modified Name"
+            )
+        )
+
+        response_payload = e._process_modify_attribute(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: ModifyAttribute"
+        )
+        self.assertEqual("1", response_payload.unique_identifier)
+        self.assertEqual(
+            "Name",
+            response_payload.attribute.attribute_name.value
+        )
+        self.assertEqual(0, response_payload.attribute.attribute_index.value)
+        self.assertEqual(
+            "Modified Name",
+            response_payload.attribute.attribute_value.name_value.value
+        )
+
+        # Confirm that the attribute was actually set by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            response_payload.unique_identifier,
+            enums.Operation.MODIFY_ATTRIBUTE
+        )
+        self.assertEqual("Modified Name", managed_object.names[0])
+
+    def test_modify_attribute_with_multivalued_no_index_match(self):
+        """
+        Test that a KmipError is raised when attempting to modify an attribute
+        based on an index that doesn't exist.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(1, 4)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        attribute_factory = factory.AttributeFactory()
+
+        args = (
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                attribute=attribute_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    "Modified Name",
+                    index=3
+                )
+            ),
+        )
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "No matching attribute instance could be found for the specified "
+            "attribute index.",
+            e._process_modify_attribute,
+            *args
+        )
+
+    def test_modify_attribute_with_singlevalued_index_specified(self):
+        """
+        Test that a KmipError is raised when attempting to modify a
+        single-valued attribute while also specifying the attribute index.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(1, 4)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        attribute_factory = factory.AttributeFactory()
+
+        args = (
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                attribute=attribute_factory.create_attribute(
+                    enums.AttributeType.SENSITIVE,
+                    True,
+                    index=0
+                )
+            ),
+        )
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The attribute index cannot be specified for a single-valued "
+            "attribute.",
+            e._process_modify_attribute,
+            *args
+        )
+
+    def test_modify_attribute_with_singlevalued_unset_attr(self):
+        """
+        Test that a KmipError is raised when attempting to modify an
+        unset attribute.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(1, 4)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+        e._get_attributes_from_managed_object = mock.Mock(return_value=[])
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        attribute_factory = factory.AttributeFactory()
+
+        e._set_attribute_on_managed_object(
+            secret,
+            ("Sensitive", primitives.Boolean(None))
+        )
+
+        args = (
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                attribute=attribute_factory.create_attribute(
+                    enums.AttributeType.SENSITIVE,
+                    True
+                )
+            ),
+        )
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The 'Sensitive' attribute is not set on the managed "
+            "object. It must be set before it can be modified.",
+            e._process_modify_attribute,
+            *args
+        )
+
+    def test_modify_attribute_kmip_2_0(self):
+        """
+        Test that a ModifyAttribute request can be processed correctly with
+        KMIP 2.0 parameters.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        # Confirm that the attribute is set to its default value by
+        # fetching the managed object fresh from the database and
+        # checking it.
+        managed_object = e._get_object_with_access_controls(
+            "1",
+            enums.Operation.MODIFY_ATTRIBUTE
+        )
+        self.assertFalse(managed_object.sensitive)
+
+        payload = payloads.ModifyAttributeRequestPayload(
+            unique_identifier="1",
+            current_attribute=objects.CurrentAttribute(
+                attribute=primitives.Boolean(
+                    False,
+                    tag=enums.Tags.SENSITIVE
+                )
+            ),
+            new_attribute=objects.NewAttribute(
+                attribute=primitives.Boolean(
+                    True,
+                    tag=enums.Tags.SENSITIVE
+                )
+            )
+        )
+
+        response_payload = e._process_modify_attribute(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: ModifyAttribute"
+        )
+        self.assertEqual("1", response_payload.unique_identifier)
+        self.assertIsNone(response_payload.attribute)
+
+        # Confirm that the attribute was actually set by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            response_payload.unique_identifier,
+            enums.Operation.MODIFY_ATTRIBUTE
+        )
+        self.assertTrue(managed_object.sensitive)
+
+    def test_modify_attribute_kmip_2_0_with_unmodifiable_attribute(self):
+        """
+        Test that a KmipError is raised when attempting to modify an
+        unmodifiable attribute with KMIP 2.0 parameters.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        args = (
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                current_attribute=objects.CurrentAttribute(
+                    attribute=primitives.TextString(
+                        "1",
+                        tag=enums.Tags.UNIQUE_IDENTIFIER
+                    )
+                ),
+                new_attribute=objects.NewAttribute(
+                    attribute=primitives.TextString(
+                        "2",
+                        tag=enums.Tags.UNIQUE_IDENTIFIER
+                    )
+                )
+            ),
+        )
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The 'Unique Identifier' attribute is read-only and cannot be "
+            "modified.",
+            e._process_modify_attribute,
+            *args
+        )
+
+    def test_modify_attribute_kmip_2_0_with_multivalued(self):
+        """
+        Test that a ModifyAttribute request can be processed correctly with
+        KMIP 2.0 parameters.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        # Confirm that the attribute is set to its default value by
+        # fetching the managed object fresh from the database and
+        # checking it.
+        managed_object = e._get_object_with_access_controls(
+            "1",
+            enums.Operation.MODIFY_ATTRIBUTE
+        )
+        self.assertEqual("Symmetric Key", managed_object.names[0])
+
+        payload = payloads.ModifyAttributeRequestPayload(
+            unique_identifier="1",
+            current_attribute=objects.CurrentAttribute(
+                attribute=attributes.Name(
+                    name_value=attributes.Name.NameValue("Symmetric Key")
+                )
+            ),
+            new_attribute=objects.NewAttribute(
+                attribute=attributes.Name(
+                    name_value=attributes.Name.NameValue("Modified Name")
+                )
+            )
+        )
+
+        response_payload = e._process_modify_attribute(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._logger.info.assert_any_call(
+            "Processing operation: ModifyAttribute"
+        )
+        self.assertEqual("1", response_payload.unique_identifier)
+        self.assertIsNone(response_payload.attribute)
+
+        # Confirm that the attribute was actually set by fetching the
+        # managed object fresh from the database and checking it.
+        managed_object = e._get_object_with_access_controls(
+            response_payload.unique_identifier,
+            enums.Operation.MODIFY_ATTRIBUTE
+        )
+        self.assertEqual("Modified Name", managed_object.names[0])
+
+    def test_modify_attribute_kmip_2_0_with_multivalued_no_current(self):
+        """
+        Test that a KmipError is raised when attempting to modifyg a
+        multivalued attribute with no current attribute.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        args = (
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                new_attribute=objects.NewAttribute(
+                    attribute=attributes.Name(
+                        name_value=attributes.Name.NameValue("Modified Name")
+                    )
+                )
+            ),
+        )
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The 'Name' attribute is multivalued so the current attribute "
+            "must be specified.",
+            e._process_modify_attribute,
+            *args
+        )
+
+    def test_modify_attribute_kmip_2_0_with_multivalued_no_attr_match(self):
+        """
+        Test that a KmipError is raised when attempting to modify an
+        non-existent attribute value.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        args = (
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                current_attribute=objects.CurrentAttribute(
+                    attribute=attributes.Name(
+                        name_value=attributes.Name.NameValue("Invalid Key")
+                    )
+                ),
+                new_attribute=objects.NewAttribute(
+                    attribute=attributes.Name(
+                        name_value=attributes.Name.NameValue("Modified Name")
+                    )
+                )
+            ),
+        )
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The specified current attribute could not be found on the "
+            "managed object.",
+            e._process_modify_attribute,
+            *args
+        )
+
+    def test_modify_attribute_kmip_2_0_with_singlevalued_unset_attr(self):
+        """
+        Test that a KmipError is raised when attempting to modify an
+        unset attribute with KMIP 2.0 parameters.
+        """
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+        e._get_attribute_from_managed_object = mock.Mock(return_value=None)
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        e._set_attribute_on_managed_object(
+            secret,
+            ("Sensitive", primitives.Boolean(None))
+        )
+
+        args = (
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                new_attribute=objects.NewAttribute(
+                    attribute=primitives.Boolean(
+                        True,
+                        tag=enums.Tags.SENSITIVE
+                    )
+                )
+            ),
+        )
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The 'Sensitive' attribute is not set on the managed "
+            "object. It must be set before it can be modified.",
+            e._process_modify_attribute,
+            *args
+        )
+
+    def test_modify_attribute_kmip_2_0_with_singlevalued_no_attr_match(self):
+        e = engine.KmipEngine()
+        e._protocol_version = contents.ProtocolVersion(2, 0)
+        e._attribute_policy._version = e._protocol_version
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._is_allowed_by_operation_policy = mock.Mock(return_value=True)
+        e._logger = mock.MagicMock()
+
+        secret = pie_objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            0,
+            b''
+        )
+
+        e._data_session.add(secret)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        args = (
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier="1",
+                current_attribute=objects.CurrentAttribute(
+                    attribute=primitives.Boolean(
+                        True,
+                        tag=enums.Tags.SENSITIVE
+                    )
+                ),
+                new_attribute=objects.NewAttribute(
+                    attribute=primitives.Boolean(
+                        False,
+                        tag=enums.Tags.SENSITIVE
+                    )
+                )
+            ),
+        )
+        self.assertRaisesRegex(
+            exceptions.KmipError,
+            "The specified current attribute could not be found on the "
+            "managed object.",
+            e._process_modify_attribute,
             *args
         )
 
