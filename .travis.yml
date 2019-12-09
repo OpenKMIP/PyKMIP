@@ -223,7 +223,14 @@ install:
   # For more info, see: https://github.com/OpenKMIP/PyKMIP/issues/435
   - pip uninstall -y six
   - pip install six>=1.11.0
-  - pip install tox
+  # Pin more_itertools to <= 7.2.0. Version 8.0.0+ drops support for
+  # Python 3.4. Once PyKMIP drops support for Python 3.4, remove this.
+  - pip install "more_itertools<=7.2.0"
+  # Pin tox to <= 3.14.1. Version 3.14.2+ moves to newer versions of
+  # the importlib_metadata package which breaks on Python 3.4. Future
+  # versions of tox will also drop support for Python 2.7 and 3.4.
+  # Once PyKMIP also drops support for Python 2.7 and 3.4, remove this. 
+  - pip install "tox<=3.14.1"
   - pip install bandit
   - pip install codecov
   - pip install slugs
