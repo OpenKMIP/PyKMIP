@@ -4975,7 +4975,7 @@ class TestKmipEngine(testtools.TestCase):
                 attribute=attribute_factory.create_attribute(
                     enums.AttributeType.NAME,
                     "Modified Name",
-                    index=3
+                    index=1
                 )
             ),
         )
