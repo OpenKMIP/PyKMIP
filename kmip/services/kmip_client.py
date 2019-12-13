@@ -44,6 +44,7 @@ from kmip.core import exceptions
 from kmip.core.factories.credentials import CredentialFactory
 
 from kmip.core import objects
+from kmip.core import primitives
 
 from kmip.core.messages.contents import Authentication
 from kmip.core.messages.contents import BatchCount
@@ -363,7 +364,11 @@ class KMIPProxy(object):
                 )
 
         batch_item = messages.RequestBatchItem(
-            operation=operation,
+            operation=primitives.Enumeration(
+                enums.Operation,
+                operation,
+                tag=enums.Tags.OPERATION
+            ),
             request_payload=payload
         )
 
@@ -403,7 +408,7 @@ class KMIPProxy(object):
         elif batch_item.operation.value == enums.Operation.SET_ATTRIBUTE:
             if not isinstance(
                 batch_item.response_payload,
-                payloads.SetAttributeRequestPayload
+                payloads.SetAttributeResponsePayload
             ):
                 raise exceptions.InvalidMessage(
                     "Invalid response payload received for the SetAttribute "
@@ -412,7 +417,7 @@ class KMIPProxy(object):
         elif batch_item.operation.value == enums.Operation.MODIFY_ATTRIBUTE:
             if not isinstance(
                 batch_item.response_payload,
-                payloads.ModifyAttributeRequestPayload
+                payloads.ModifyAttributeResponsePayload
             ):
                 raise exceptions.InvalidMessage(
                     "Invalid response payload received for the "
