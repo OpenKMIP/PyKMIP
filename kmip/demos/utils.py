@@ -229,6 +229,33 @@ def build_cli_parser(operation):
             dest="attribute_names",
             help="List of attribute names to retrieve, defaults to all "
                  "attributes")
+    elif operation is Operation.MODIFY_ATTRIBUTE:
+        parser.add_option(
+            "-i",
+            "--uuid",
+            action="store",
+            type="str",
+            default=None,
+            dest="uuid",
+            help="UID of a managed object")
+    elif operation is Operation.DELETE_ATTRIBUTE:
+        parser.add_option(
+            "-i",
+            "--uuid",
+            action="store",
+            type="str",
+            default=None,
+            dest="uuid",
+            help="UID of a managed object")
+    elif operation is Operation.SET_ATTRIBUTE:
+        parser.add_option(
+            "-i",
+            "--uuid",
+            action="store",
+            type="str",
+            default=None,
+            dest="uuid",
+            help="UID of a managed object")
     elif operation is Operation.LOCATE:
         parser.add_option(
             "--offset-items",
