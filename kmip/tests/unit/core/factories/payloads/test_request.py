@@ -105,16 +105,16 @@ class TestRequestPayloadFactory(testtools.TestCase):
         )
 
     def test_create_modify_attribute_payload(self):
-        self._test_not_implemented(
-            self.factory.create,
-            enums.Operation.MODIFY_ATTRIBUTE
-        )
+        payload = self.factory.create(enums.Operation.MODIFY_ATTRIBUTE)
+        self.assertIsInstance(payload, payloads.ModifyAttributeRequestPayload)
 
     def test_create_delete_attribute_payload(self):
-        self._test_not_implemented(
-            self.factory.create,
-            enums.Operation.DELETE_ATTRIBUTE
-        )
+        payload = self.factory.create(enums.Operation.DELETE_ATTRIBUTE)
+        self.assertIsInstance(payload, payloads.DeleteAttributeRequestPayload)
+
+    def test_create_set_attribute_payload(self):
+        payload = self.factory.create(enums.Operation.SET_ATTRIBUTE)
+        self.assertIsInstance(payload, payloads.SetAttributeRequestPayload)
 
     def test_create_obtain_lease_payload(self):
         self._test_not_implemented(

@@ -112,6 +112,12 @@ class TestPayloadFactory(testtools.TestCase):
             enums.Operation.DELETE_ATTRIBUTE
         )
 
+    def test_create_set_attribute_payload(self):
+        self._test_not_implemented(
+            self.factory.create,
+            enums.Operation.SET_ATTRIBUTE
+        )
+
     def test_create_obtain_lease_payload(self):
         self._test_not_implemented(
             self.factory.create,

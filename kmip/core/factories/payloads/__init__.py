@@ -46,6 +46,8 @@ class PayloadFactory():
             return self._create_get_attribute_list_payload()
         elif operation is enums.Operation.ADD_ATTRIBUTE:
             return self._create_add_attribute_payload()
+        elif operation is enums.Operation.SET_ATTRIBUTE:
+            return self._create_set_attribute_payload()
         elif operation is enums.Operation.MODIFY_ATTRIBUTE:
             return self._create_modify_attribute_payload()
         elif operation is enums.Operation.DELETE_ATTRIBUTE:
@@ -142,6 +144,9 @@ class PayloadFactory():
         raise NotImplementedError()
 
     def _create_add_attribute_payload(self):
+        raise NotImplementedError()
+
+    def _create_set_attribute_payload(self):
         raise NotImplementedError()
 
     def _create_modify_attribute_payload(self):
