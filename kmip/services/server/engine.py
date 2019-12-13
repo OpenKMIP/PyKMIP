@@ -1876,7 +1876,7 @@ class KmipEngine(object):
                     managed_object,
                     attribute_name
                 )
-                if 0 <= attribute_index <= len(existing_attributes):
+                if 0 <= attribute_index < len(existing_attributes):
                     self._set_attribute_on_managed_object_by_index(
                         managed_object,
                         attribute_name,
