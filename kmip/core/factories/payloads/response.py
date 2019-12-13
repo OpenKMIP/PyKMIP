@@ -19,6 +19,7 @@ from kmip.core.messages import payloads
 
 class ResponsePayloadFactory(PayloadFactory):
 
+    # TODO (peterhamilton) Alphabetize these
     def _create_create_payload(self):
         return payloads.CreateResponsePayload()
 
@@ -51,6 +52,15 @@ class ResponsePayloadFactory(PayloadFactory):
 
     def _create_get_attributes_payload(self):
         return payloads.GetAttributesResponsePayload()
+
+    def _create_delete_attribute_payload(self):
+        return payloads.DeleteAttributeResponsePayload()
+
+    def _create_set_attribute_payload(self):
+        return payloads.SetAttributeResponsePayload()
+
+    def _create_modify_attribute_payload(self):
+        return payloads.ModifyAttributeResponsePayload()
 
     def _create_destroy_payload(self):
         return payloads.DestroyResponsePayload()
