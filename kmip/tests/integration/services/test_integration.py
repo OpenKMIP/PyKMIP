@@ -40,6 +40,7 @@ from kmip.core.factories.attributes import AttributeFactory
 from kmip.core.factories.credentials import CredentialFactory
 from kmip.core.factories.secrets import SecretFactory
 
+from kmip.core.messages import payloads
 from kmip.core.misc import KeyFormatType
 
 from kmip.core.objects import Attribute
@@ -1826,4 +1827,94 @@ class TestIntegration(testtools.TestCase):
         self.assertEqual(
             ResultReason.ITEM_NOT_FOUND,
             result.result_reason.value
+        )
+
+    def test_modify_delete_attribute(self):
+        """
+        Test that the KMIPProxy client can be used to set, modify, and delete
+        attributes for an object stored by the server.
+        """
+        key_name = "Integration Test - Set-Modify-Delete-Attribute Key"
+        result = self._create_symmetric_key(key_name=key_name)
+        key_uuid = result.uuid
+
+        self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
+        self.assertEqual(ObjectType.SYMMETRIC_KEY, result.object_type)
+        self.assertIsInstance(key_uuid, str)
+
+        # Get the "Name" attribute for the key
+        result = self.client.get_attributes(
+            uuid=key_uuid,
+            attribute_names=["Name"]
+        )
+        self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
+        self.assertEqual(1, len(result.attributes))
+        self.assertEqual(
+            "Name",
+            result.attributes[0].attribute_name.value
+        )
+        self.assertEqual(0, result.attributes[0].attribute_index.value)
+        self.assertEqual(
+            "Integration Test - Set-Modify-Delete-Attribute Key",
+            result.attributes[0].attribute_value.name_value.value
+        )
+
+        # Modify the "Name" attribute for the key.
+        response_payload = self.client.send_request_payload(
+            enums.Operation.MODIFY_ATTRIBUTE,
+            payloads.ModifyAttributeRequestPayload(
+                unique_identifier=key_uuid,
+                attribute=self.attr_factory.create_attribute(
+                    enums.AttributeType.NAME,
+                    "New Name",
+                    index=0
+                )
+            )
+        )
+        self.assertEqual(key_uuid, response_payload.unique_identifier)
+        self.assertEqual(
+            "Name",
+            response_payload.attribute.attribute_name.value
+        )
+        self.assertEqual(0, response_payload.attribute.attribute_index.value)
+        self.assertEqual(
+            "New Name",
+            response_payload.attribute.attribute_value.name_value.value
+        )
+
+        # Get the "Name" attribute for the key to verify it was modified
+        result = self.client.get_attributes(
+            uuid=key_uuid,
+            attribute_names=["Name"]
+        )
+        self.assertEqual(ResultStatus.SUCCESS, result.result_status.value)
+        self.assertEqual(1, len(result.attributes))
+        self.assertEqual(
+            "Name",
+            result.attributes[0].attribute_name.value
+        )
+        self.assertEqual(0, result.attributes[0].attribute_index.value)
+        self.assertEqual(
+            "New Name",
+            result.attributes[0].attribute_value.name_value.value
+        )
+
+        # Delete the "Name" attribute for the key.
+        response_payload = self.client.send_request_payload(
+            enums.Operation.DELETE_ATTRIBUTE,
+            payloads.DeleteAttributeRequestPayload(
+                unique_identifier=key_uuid,
+                attribute_name="Name",
+                attribute_index=0
+            )
+        )
+        self.assertEqual(key_uuid, response_payload.unique_identifier)
+        self.assertEqual(
+            "Name",
+            response_payload.attribute.attribute_name.value
+        )
+        self.assertEqual(0, response_payload.attribute.attribute_index.value)
+        self.assertEqual(
+            "New Name",
+            response_payload.attribute.attribute_value.name_value.value
         )

@@ -1349,3 +1349,70 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 exceptions.KmipOperationFailure, self.client.get, uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.destroy, uid)
+
+    def test_modify_delete_attribute(self):
+        """
+        Test that the ProxyKmipClient can modify and delete an attribute.
+        """
+        key_id = self.client.create(
+            enums.CryptographicAlgorithm.IDEA,
+            128,
+            name="Symmetric Key"
+        )
+
+        self.assertIsInstance(key_id, str)
+
+        # Get the "Name" attribute for the key.
+        result_id, result_attributes = self.client.get_attributes(
+            uid=key_id,
+            attribute_names=["Name"]
+        )
+        self.assertEqual(1, len(result_attributes))
+        self.assertEqual("Name", result_attributes[0].attribute_name.value)
+        self.assertEqual(
+            "Symmetric Key",
+            result_attributes[0].attribute_value.name_value.value
+        )
+
+        # Modify the "Name" attribute for the key.
+        response_id, response_attr = self.client.modify_attribute(
+            unique_identifier=key_id,
+            attribute=self.attribute_factory.create_attribute(
+                enums.AttributeType.NAME,
+                "Modified Name",
+                index=0
+            )
+        )
+        self.assertEqual(key_id, response_id)
+        self.assertEqual("Name", response_attr.attribute_name.value)
+        self.assertEqual(0, response_attr.attribute_index.value)
+        self.assertEqual(
+            "Modified Name",
+            response_attr.attribute_value.name_value.value
+        )
+
+        # Get the "Name" attribute for the key to verify it was modified.
+        result_id, result_attributes = self.client.get_attributes(
+            uid=key_id,
+            attribute_names=["Name"]
+        )
+        self.assertEqual(1, len(result_attributes))
+        self.assertEqual("Name", result_attributes[0].attribute_name.value)
+        self.assertEqual(
+            "Modified Name",
+            result_attributes[0].attribute_value.name_value.value
+        )
+
+        # Delete the "Name" attribute for the key.
+        response_id, response_attr = self.client.delete_attribute(
+            unique_identifier=key_id,
+            attribute_name="Name",
+            attribute_index=0
+        )
+        self.assertEqual(key_id, response_id)
+        self.assertEqual("Name", response_attr.attribute_name.value)
+        self.assertEqual(0, response_attr.attribute_index.value)
+        self.assertEqual(
+            "Modified Name",
+            response_attr.attribute_value.name_value.value
+        )
