@@ -40,6 +40,7 @@ more information, check out the various articles below.
    changelog
    faq
    development
+   security
    client
    server
    community
