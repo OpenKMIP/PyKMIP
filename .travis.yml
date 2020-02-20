@@ -231,6 +231,11 @@ install:
   # versions of tox will also drop support for Python 2.7 and 3.4.
   # Once PyKMIP also drops support for Python 2.7 and 3.4, remove this. 
   - pip install "tox<=3.14.1"
+  # Pin PyYAML to <= 5.2. Version 5.3+ removes support for Python 3.4.
+  # PyYAML is installed as a bandit dependency, so while it doesn't
+  # break PyKMIP proper, it does break any of our test runs using
+  # Python 3.4. Once PyKMIP drops support for Python 3.4, remove this.
+  - pip install "PyYAML<=5.2"
   - pip install bandit
   - pip install codecov
   - pip install slugs
