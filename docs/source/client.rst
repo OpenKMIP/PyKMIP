@@ -184,6 +184,73 @@ Class Documentation
         :raises Exception: This is raised if an error occurs while trying to
             close the connection.
 
+    .. py:method:: activate(uid=None)
+
+        Activate a managed object stored by a KMIP appliance.
+
+        :param string uid: The unique ID of the managed object to activate.
+            Optional, defaults to None.
+
+        :return: None
+
+        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
+            the client connection is unusable.
+        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
+            operation result is a failure.
+        :raises TypeError: This is raised if the input argument is invalid.
+
+        Activating a symmetric key would look like this:
+
+        .. code-block:: python
+
+            >>> from kmip.pie import objects
+            >>> from kmip.pie import client
+            >>> from kmip import enums
+            >>> c = client.ProxyKmipClient()
+            >>> symmetric_key = objects.SymmetricKey(
+            ...     enums.CryptographicAlgorithm.AES,
+            ...     128,
+            ...     (
+            ...         b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ...         b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ...     )
+            ... )
+            >>> with c:
+            ...     key_id = c.register(symmetric_key)
+            ...     c.activate(key_id)
+
+    .. py:method:: check(uid=None, usage_limits_count=None, cryptographic_usage_mask=None, lease_time=None)
+
+        Check the constraints for a managed object.
+
+        :param string uid: The unique ID of the managed object to check.
+        :param int usage_limits_count: The number of items that can be secured
+            with the specified managed object.
+        :param list cryptographic_usage_mask: A list of :class:`kmip.core.enums.CryptographicUsageMask`
+            enumerations specifying the operations allowed for the specified
+            managed object.
+        :param int least_time: The number of seconds that can be leased for the
+            specified managed object.
+
+        :return: The string ID of the managed object that was checked.
+
+        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
+            the client connection is unusable.
+        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
+            operation result is a failure.
+        :raises TypeError: This is raised if the input arguments are invalid.
+
+        .. code-block:: python
+
+            >>> from kmip.pie import client
+            >>> c = client.ProxyKmipClient()
+            >>> with c:
+            ...     c.check(
+            ...         uid="1",
+            ...         usage_limits_count=50
+            ...     )
+            '1'
+
     .. py:method:: create(algorithm, length, operation_policy_name=None, name=None, cryptographic_usage_mask=None)
 
         Create a symmetric key on a KMIP appliance.
@@ -286,14 +353,22 @@ Class Documentation
             ...     )
             ('450', '451')
 
-    .. py:method:: register(managed_object)
+    .. py:method:: decrypt(data, uid=None, cryptographic_parameters=None, iv_counter_nonce=None)
 
-        Register a managed object with a KMIP appliance.
+        Decrypt data using the specified decryption key and parameters.
 
-        :param managed_object: A :class:`kmip.pie.objects.ManagedObject`
-            instance to register with the server.
+        :param bytes data: The bytes to decrypt. Required.
+        :param string uid: The unique ID of the decryption key to use.
+            Optional, defaults to None.
+        :param dict cryptographic_parameters: A dictionary containing various
+            cryptographic settings to be used for the decryption. Optional,
+            defaults to None. See :term:`cryptographic_parameters` for more
+            information.
+        :param bytes iv_counter_nonce: The bytes to use for the IV/counter/
+            nonce, if needed by the decryption algorithm and/or cipher mode.
+            Optional, defaults to None.
 
-        :return: The string uid of the newly registered managed object.
+        :return: The decrypted data bytes.
 
         :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
             the client connection is unusable.
@@ -301,7 +376,7 @@ Class Documentation
             operation result is a failure.
         :raises TypeError: This is raised if the input argument is invalid.
 
-        Registering an existing 128-bit AES symmetric key would look like this:
+        Decrypting cipher text with a symmetric key would look like this:
 
         .. code-block:: python
 
@@ -309,18 +384,96 @@ Class Documentation
             >>> from kmip.pie import client
             >>> from kmip import enums
             >>> c = client.ProxyKmipClient()
-            >>> symmetric_key = objects.SymmetricKey(
-            ...     enums.CryptographicAlgorithm.AES,
-            ...     128,
-            ...     (
-            ...         b'\x00\x01\x02\x03\x04\x05\x06\x07'
-            ...         b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
-            ...     )
-            ... )
             >>> with c:
-            ...     c.register(symmetric_key)
+            ...     key_id = c.create(
+            ...         enums.CryptographicAlgorithm.AES,
+            ...         256,
+            ...         cryptographic_usage_mask=[
+            ...             enums.CryptographicUsageMask.ENCRYPT,
+            ...             enums.CryptographicUsageMask.DECRYPT
+            ...         ]
+            ...     )
+            ...     c.activate(key_id)
+            ...     c.decrypt(
+            ...         (
+            ...             b' \xb6:s0\x16\xea\t\x1b\x16\xed\xb2\x04-\xd6'
+            ...             b'\xb6\\\xf3xJ\xfe\xa7[\x1eJ\x08I\xae\x14\xd2'
+            ...             b\xdb\xe2'
+            ...         ),
+            ...         uid=key_id,
+            ...         cryptographic_parameters={
+            ...             'cryptographic_algorithm':
+            ...                 enums.CryptographicAlgorithm.AES,
+            ...             'block_cipher_mode': enums.BlockCipherMode.CBC,
+            ...             'padding_method': enums.PaddingMethod.PKCS5
+            ...         },
+            ...         iv_counter_nonce=(
+            ...             b'\x85\x1e\x87\x64\x77\x6e\x67\x96'
+            ...             b'\xaa\xb7\x22\xdb\xb6\x44\xac\xe8'
+            ...         )
+            ...     )
             ...
-            '452'
+            b'This is a secret message.'
+
+    .. py:method:: delete_attribute(unique_identifier=None, **kwargs)
+
+        Delete an attribute from a managed object.
+
+        :param string unique_identifier: The unique ID of the managed object
+            from which to delete the specified attribute.
+        :param `**kwargs`: A placeholder for attribute values used to identify
+            the attribute to delete. See the examples below for more
+            information.
+
+        :return: The string ID of the managed object from which the
+            attribute was deleted.
+        :return: A :class:`kmip.core.primitives.Struct` object
+            representing the deleted attribute. Only returned for KMIP
+            1.0 - 1.4 messages.
+
+        For KMIP 1.0 - 1.4, the supported `kwargs` values are:
+
+        * `attribute_name` (string): The name of the attribute to delete. Required.
+        * `attribute_index` (int): The index of the attribute to delete. Defaults to zero.
+
+        .. code-block:: python
+
+            >>> from kmip.pie import client
+            >>> c = client.ProxyKmipClient()
+            >>> with c:
+            ...     c.delete_attribute(
+            ...         unique_identifier="1",
+            ...         attribute_name="Name",
+            ...         attribute_index=0
+            ...     )
+            ('1', Attribute(...))
+
+        For KMIP 2.0+, the supported `kwargs` values are:
+
+        * `current_attribute` (struct): A :class:`kmip.core.objects.CurrentAttribute` object containing the attribute to delete. Required if the attribute reference is not specified.
+        * `attribute_reference` (struct): A :class:`kmip.core.objects.AttributeReference` object containing the name of the attribute to delete. Required if the current attribute is not specified.
+
+        .. code-block:: python
+
+            >>> from kmip.pie import client
+            >>> from kmip import enums
+            >>> from kmip.core import objects, primitives
+            >>> c = client.ProxyKmipClient()
+            >>> with c:
+            ...     c.delete_attribute(
+            ...         unique_identifier="1",
+            ...         current_attribute=objects.CurrentAttribute(
+            ...             attribute=primitives.TextString(
+            ...                 value="Object Group 1",
+            ...                 tag=enums.Tags.OBJECT_GROUP
+            ...             ),
+            ...         ),
+            ...         attribute_reference=objects.AttributeReference(
+            ...             vendor_identification="Vendor 1",
+            ...             attribute_name="Object Group"
+            ...         )
+            ...     )
+            '1'
 
     .. py:method:: derive_key(object_type, unique_identifiers, derivation_method, derivation_parameters, **kwargs)
 
@@ -529,9 +682,99 @@ Class Documentation
             ...
             '460'
 
-    .. py:method:: locate(maximum_items=None, storage_status_mask=None, object_group_member=None, attributes=None)
+    .. py:method:: destroy(uid=None)
 
-        Documentation coming soon.
+        Destroy a managed object stored by a KMIP appliance.
+
+        :param string uid: The unique ID of the managed object to destroy.
+
+        :return: None
+
+        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
+            the client connection is unusable.
+        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
+            operation result is a failure.
+        :raises TypeError: This is raised if the input argument is invalid.
+
+        Destroying a symmetric key would look like this:
+
+        .. code-block:: python
+
+            >>> from kmip.pie import objects
+            >>> from kmip.pie import client
+            >>> from kmip import enums
+            >>> c = client.ProxyKmipClient()
+            >>> symmetric_key = objects.SymmetricKey(
+            ...     enums.CryptographicAlgorithm.AES,
+            ...     128,
+            ...     (
+            ...         b'\x00\x01\x02\x03\x04\x05\x06\x07'
+            ...         b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
+            ...     )
+            ... )
+            >>> with c:
+            ...     key_id = c.register(symmetric_key)
+            ...     c.destroy(key_id)
+
+    .. py:method:: encrypt(data, uid=None, cryptographic_parameters=None, iv_counter_nonce=None)
+
+        Encrypt data using the specified encryption key and parameters.
+
+        :param bytes data: The bytes to encrypt. Required.
+        :param string uid: The unique ID of the encryption key to use.
+            Optional, defaults to None.
+        :param dict cryptographic_parameters: A dictionary containing various
+            cryptographic settings to be used for the encryption. Optional,
+            defaults to None. See :term:`cryptographic_parameters` for more
+            information.
+        :param bytes iv_counter_nonce: The bytes to use for the IV/counter/
+            nonce, if needed by the encryption algorithm and/or cipher mode.
+            Optional, defaults to None.
+
+        :return: The encrypted data bytes.
+        :return: The IV/counter/nonce bytes used with the encryption algorithm,
+            only if it was autogenerated by the server.
+
+        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
+            the client connection is unusable.
+        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
+            operation result is a failure.
+        :raises TypeError: This is raised if the input argument is invalid.
+
+        Encrypting plain text with a symmetric key would look like this:
+
+        .. code-block:: python
+
+            >>> from kmip.pie import objects
+            >>> from kmip.pie import client
+            >>> from kmip import enums
+            >>> c = client.ProxyKmipClient()
+            >>> with c:
+            ...     key_id = c.create(
+            ...         enums.CryptographicAlgorithm.AES,
+            ...         256,
+            ...         cryptographic_usage_mask=[
+            ...             enums.CryptographicUsageMask.ENCRYPT,
+            ...             enums.CryptographicUsageMask.DECRYPT
+            ...         ]
+            ...     )
+            ...     c.activate(key_id)
+            ...     c.encrypt(
+            ...         b'This is a secret message.',
+            ...         uid=key_id,
+            ...         cryptographic_parameters={
+            ...             'cryptographic_algorithm':
+            ...                 enums.CryptographicAlgorithm.AES,
+            ...             'block_cipher_mode': enums.BlockCipherMode.CBC,
+            ...             'padding_method': enums.PaddingMethod.PKCS5
+            ...         },
+            ...         iv_counter_nonce=(
+            ...             b'\x85\x1e\x87\x64\x77\x6e\x67\x96'
+            ...             b'\xaa\xb7\x22\xdb\xb6\x44\xac\xe8'
+            ...         )
+            ...     )
+            ...
+            (b'...', None)
 
     .. py:method:: get(uid=None, key_wrapping_specification=None)
 
@@ -742,14 +985,24 @@ Class Documentation
                 'Unique Identifier'
             ]
 
-    .. py:method:: activate(uid=None)
+    .. py:method:: locate(maximum_items=None, storage_status_mask=None, object_group_member=None, offset_items=None, attributes=None)
 
-        Activate a managed object stored by a KMIP appliance.
+        Search for managed objects with specific matching attributes.
 
-        :param string uid: The unique ID of the managed object to activate.
-            Optional, defaults to None.
+        :param int maximum_items: The maximum number of results that should be
+            returned.
+        :param int storage_status_mask: A bit-mask indicating whether online or
+            archived objects should be included in the search. See
+            :term:`storage_status` for more information.
+        :param enum object_group_member: A :class:`kmip.core.enums.ObjectGroupMember`
+            enumeration indicating the object group member type. See
+            :term:`object_group_member` for more information.
+        :param int offset_items: The number of results that should be skipped
+            before results are returned.
+        :param list attributes: A list of :class:`kmip.core.objects.Attribute`
+            objects representing an attribute filter for the search.
 
-        :return: None
+        :return: A list of string IDs of all matching objects, per the operation parameters.
 
         :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
             the client connection is unusable.
@@ -757,7 +1010,141 @@ Class Documentation
             operation result is a failure.
         :raises TypeError: This is raised if the input argument is invalid.
 
-        Activating a symmetric key would look like this:
+        .. code-block:: python
+
+            >>> from kmip.pie import client
+            >>> from kmip.core import enums
+            >>> from kmip.core.factories import attributes
+            >>> f = attributes.AttributeFactory()
+            >>> c = client.ProxyKmipClient()
+            >>> with c:
+            ...     c.locate(
+            ...         attributes=[
+            ...             f.create_attribute(
+            ...                 enums.AttributeType.OBJECT_TYPE,
+            ...                 enums.ObjectType.SYMMETRIC_KEY
+            ...             )
+            ...         ]
+            ...     )
+            ['1', '2', '3']
+
+    .. py:method:: mac(data, uid=None, algorithm=None)
+
+        Get the message authentication code for a piece of data.
+
+        :param string data: The data to be MACed.
+        :param string uid: The unique ID of the managed object that is the key
+            to be used in the MAC operation.
+        :param enum algorithm: A :class:`kmip.core.enums.CryptographicAlgorithm`
+            enumeration specifying the algorithm to use in the MAC operation.
+            See :term:`cryptographic_algorithm` for more information.
+
+        :return: The string ID of the managed object that is the key used in
+            the MAC operation.
+        :return: The bytestring representing the MAC of the data.
+
+        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
+            the client connection is unusable.
+        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
+            operation result is a failure.
+        :raises TypeError: This is raised if the input argument is invalid.
+
+        .. code-block:: python
+
+            >>> from kmip.pie import client
+            >>> c = client.ProxyKmipClient()
+            >>> with c:
+            ...     c.mac(
+            ...         b'\x01\x02\x03\x04',
+            ...         uid="5",
+            ...         algorithm=enums.CryptographicAlgorithm.HMAC_SHA512
+            ...     )
+            ('5', b'...')
+
+    .. py:method:: modify_attribute(unique_identifier=None, **kwargs)
+
+        Modify an attribute on a managed object.
+
+        :param string unique_identifier: The unique ID of the managed object
+            on which to set the specified attribute.
+        :param `**kwargs`: A placeholder for attribute values used to identify
+            the attribute to set. See the example below for more
+            information.
+
+        :return: The string ID of the managed object on which the attribute
+            was set.
+        :return: A :class:`kmip.core.primitives.Struct` object representing
+            the modified attribute. Only returned for KMIP 1.0 - 1.4 messages.
+
+        For KMIP 1.0 - 1.4, the supported `kwargs` values are:
+
+        * `attribute` (struct): A :class:`kmip.core.objects.Attribute` object
+            containing the details required to identify and modify an existing
+            attribute on the specified managed object. Required.
+
+        .. code-block:: python
+
+            >>> from kmip.pie import client
+            >>> from kmip.core import enums
+            >>> from kmip.core.factories import attributes
+            >>> f = attributes.AttributeFactory()
+            >>> c = client.ProxyKmipClient()
+            >>> with c:
+            ...     c.modify_attribute(
+            ...         unique_identifier="1",
+            ...         attribute=f.create_attribute(
+            ...             enums.AttributeType.NAME,
+            ...             "New Name",
+            ...             index=0
+            ...         )
+            ...     )
+            ('1', Attribute(...))
+
+        For KMIP 2.0+, the supported `kwargs` values are:
+
+        * `current_attribute` (struct): A :class:`kmip.core.objects.CurrentAttribute` object containing the existing attribute to modify. Required if the attribute is multivalued.
+        * `new_attribute` (struct): A :class:`kmip.core.objects.NewAttribute` object containing the new attribute. Required.
+
+        .. code-block:: python
+
+            >>> from kmip.pie import client
+            >>> from kmip import enums
+            >>> from kmip.core import objects, primitives
+            >>> c = client.ProxyKmipClient()
+            >>> with c:
+            ...     c.modify_attribute(
+            ...         unique_identifier="1",
+            ...         current_attribute=objects.CurrentAttribute(
+            ...             attribute=primitives.TextString(
+            ...                 value="Old Object Group",
+            ...                 tag=enums.Tags.OBJECT_GROUP
+            ...             ),
+            ...         ),
+            ...         new_attribute=objects.NewAttribute(
+            ...             attribute=primitives.TextString(
+            ...                 value="New Object Group",
+            ...                 tag=enums.Tags.OBJECT_GROUP
+            ...             )
+            ...         )
+            ...     )
+            '1'
+
+    .. py:method:: register(managed_object)
+
+        Register a managed object with a KMIP appliance.
+
+        :param managed_object: A :class:`kmip.pie.objects.ManagedObject`
+            instance to register with the server.
+
+        :return: The string uid of the newly registered managed object.
+
+        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
+            the client connection is unusable.
+        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
+            operation result is a failure.
+        :raises TypeError: This is raised if the input argument is invalid.
+
+        Registering an existing 128-bit AES symmetric key would look like this:
 
         .. code-block:: python
 
@@ -774,8 +1161,46 @@ Class Documentation
             ...     )
             ... )
             >>> with c:
-            ...     key_id = c.register(symmetric_key)
-            ...     c.activate(key_id)
+            ...     c.register(symmetric_key)
+            ...
+            '452'
+
+    .. py:method:: rekey(uid=None, offset=None, **kwargs)
+
+        Rekey an existing key.
+
+        :param string uid: The unique ID of the managed object that is the key
+            to rekey.
+        :param int offset: The time delta, in seconds, between the new key's
+            initialization date and activation date.
+        :param `**kwargs`: A placeholder for object attributes that
+            should be set on the newly rekeyed key.
+
+        :return: The string ID of the newly rekeyed key.
+
+        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
+            the client connection is unusable.
+        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
+            operation result is a failure.
+        :raises TypeError: This is raised if the input argument is invalid.
+
+        The current set of supported `kwargs` values are:
+
+        * `activation_date` (int): The new key's activation date, in seconds since the epoch.
+        * `process_start_date` (int): The new key's process start date, in seconds since the epoch.
+        * `protect_stop_date` (int): The new key's protect stop date, in seconds since the epoch.
+        * `deactivation_date` (int): The new key's deactivation date, in seconds since the epoch.
+
+        .. code-block:: python
+
+            >>> from kmip.pie import client
+            >>> c = client.ProxyKmipClient()
+            >>> with c:
+            ...     c.rekey(
+            ...         uid="1",
+            ...         offset=60
+            ...     )
+            "2"
 
     .. py:method:: revoke(revocation_reason, uid=None, revocation_message=None, compromise_occurrence_date=None)
 
@@ -828,161 +1253,36 @@ Class Documentation
             ...         key_id
             ...     )
 
-    .. py:method:: destroy(uid=None)
+    .. py:method:: set_attribute(unique_identifier=None, **kwargs)
 
-        Destroy a managed object stored by a KMIP appliance.
+        Set an attribute on a managed object.
 
-        :param string uid: The unique ID of the managed object to destroy.
-
-        :return: None
-
-        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
-            the client connection is unusable.
-        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
-            operation result is a failure.
-        :raises TypeError: This is raised if the input argument is invalid.
-
-        Destroying a symmetric key would look like this:
-
-        .. code-block:: python
-
-            >>> from kmip.pie import objects
-            >>> from kmip.pie import client
-            >>> from kmip import enums
-            >>> c = client.ProxyKmipClient()
-            >>> symmetric_key = objects.SymmetricKey(
-            ...     enums.CryptographicAlgorithm.AES,
-            ...     128,
-            ...     (
-            ...         b'\x00\x01\x02\x03\x04\x05\x06\x07'
-            ...         b'\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F'
-            ...     )
-            ... )
-            >>> with c:
-            ...     key_id = c.register(symmetric_key)
-            ...     c.destroy(key_id)
-
-    .. py:method:: encrypt(data, uid=None, cryptographic_parameters=None, iv_counter_nonce=None)
-
-        Encrypt data using the specified encryption key and parameters.
-
-        :param bytes data: The bytes to encrypt. Required.
-        :param string uid: The unique ID of the encryption key to use.
-            Optional, defaults to None.
-        :param dict cryptographic_parameters: A dictionary containing various
-            cryptographic settings to be used for the encryption. Optional,
-            defaults to None. See :term:`cryptographic_parameters` for more
+        :param string unique_identifier: The unique ID of the managed object
+            on which to set the specified attribute.
+        :param `**kwargs`: A placeholder for attribute values used to identify
+            the attribute to set. See the example below for more
             information.
-        :param bytes iv_counter_nonce: The bytes to use for the IV/counter/
-            nonce, if needed by the encryption algorithm and/or cipher mode.
-            Optional, defaults to None.
 
-        :return: The encrypted data bytes.
-        :return: The IV/counter/nonce bytes used with the encryption algorithm,
-            only if it was autogenerated by the server.
+        :return: The string ID of the managed object on which the attribute
+            was set.
 
-        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
-            the client connection is unusable.
-        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
-            operation result is a failure.
-        :raises TypeError: This is raised if the input argument is invalid.
+        This operation is supported by KMIP 2.0+ only. The supported `kwargs`
+        values are:
 
-        Encrypting plain text with a symmetric key would look like this:
+        * `attribute_name` (string): The name of the attribute to set. Required.
+        * `attribute_value` (various): The value of the attribute to set. Required.
 
         .. code-block:: python
 
-            >>> from kmip.pie import objects
             >>> from kmip.pie import client
-            >>> from kmip import enums
             >>> c = client.ProxyKmipClient()
             >>> with c:
-            ...     key_id = c.create(
-            ...         enums.CryptographicAlgorithm.AES,
-            ...         256,
-            ...         cryptographic_usage_mask=[
-            ...             enums.CryptographicUsageMask.ENCRYPT,
-            ...             enums.CryptographicUsageMask.DECRYPT
-            ...         ]
+            ...     c.set_attribute(
+            ...         unique_identifier="1",
+            ...         attribute_name="Sensitive",
+            ...         attribute_value=True
             ...     )
-            ...     c.activate(key_id)
-            ...     c.encrypt(
-            ...         b'This is a secret message.',
-            ...         uid=key_id,
-            ...         cryptographic_parameters={
-            ...             'cryptographic_algorithm':
-            ...                 enums.CryptographicAlgorithm.AES,
-            ...             'block_cipher_mode': enums.BlockCipherMode.CBC,
-            ...             'padding_method': enums.PaddingMethod.PKCS5
-            ...         },
-            ...         iv_counter_nonce=(
-            ...             b'\x85\x1e\x87\x64\x77\x6e\x67\x96'
-            ...             b'\xaa\xb7\x22\xdb\xb6\x44\xac\xe8'
-            ...         )
-            ...     )
-            ...
-            (b'...', None)
-
-    .. py:method:: decrypt(data, uid=None, cryptographic_parameters=None, iv_counter_nonce=None)
-
-        Decrypt data using the specified decryption key and parameters.
-
-        :param bytes data: The bytes to decrypt. Required.
-        :param string uid: The unique ID of the decryption key to use.
-            Optional, defaults to None.
-        :param dict cryptographic_parameters: A dictionary containing various
-            cryptographic settings to be used for the decryption. Optional,
-            defaults to None. See :term:`cryptographic_parameters` for more
-            information.
-        :param bytes iv_counter_nonce: The bytes to use for the IV/counter/
-            nonce, if needed by the decryption algorithm and/or cipher mode.
-            Optional, defaults to None.
-
-        :return: The decrypted data bytes.
-
-        :raises kmip.pie.exceptions.ClientConnectionNotOpen: This is raised if
-            the client connection is unusable.
-        :raises kmip.pie.exceptions.KmipOperationFailure: This is raised if the
-            operation result is a failure.
-        :raises TypeError: This is raised if the input argument is invalid.
-
-        Decrypting cipher text with a symmetric key would look like this:
-
-        .. code-block:: python
-
-            >>> from kmip.pie import objects
-            >>> from kmip.pie import client
-            >>> from kmip import enums
-            >>> c = client.ProxyKmipClient()
-            >>> with c:
-            ...     key_id = c.create(
-            ...         enums.CryptographicAlgorithm.AES,
-            ...         256,
-            ...         cryptographic_usage_mask=[
-            ...             enums.CryptographicUsageMask.ENCRYPT,
-            ...             enums.CryptographicUsageMask.DECRYPT
-            ...         ]
-            ...     )
-            ...     c.activate(key_id)
-            ...     c.decrypt(
-            ...         (
-            ...             b' \xb6:s0\x16\xea\t\x1b\x16\xed\xb2\x04-\xd6'
-            ...             b'\xb6\\\xf3xJ\xfe\xa7[\x1eJ\x08I\xae\x14\xd2'
-            ...             b\xdb\xe2'
-            ...         ),
-            ...         uid=key_id,
-            ...         cryptographic_parameters={
-            ...             'cryptographic_algorithm':
-            ...                 enums.CryptographicAlgorithm.AES,
-            ...             'block_cipher_mode': enums.BlockCipherMode.CBC,
-            ...             'padding_method': enums.PaddingMethod.PKCS5
-            ...         },
-            ...         iv_counter_nonce=(
-            ...             b'\x85\x1e\x87\x64\x77\x6e\x67\x96'
-            ...             b'\xaa\xb7\x22\xdb\xb6\x44\xac\xe8'
-            ...         )
-            ...     )
-            ...
-            b'This is a secret message.'
+            '1'
 
     .. py:method:: sign(data, uid=None, cryptographic_parameters=None)
 
@@ -1097,10 +1397,5 @@ Class Documentation
             ...     )
             ...
             <ValidityIndicator.VALID: 1>
-
-    .. py:method:: mac(data, uid=None, algorithm=None)
-
-        Documentation coming soon.
-
 
 .. _`ssl`: https://docs.python.org/dev/library/ssl.html#socket-creation

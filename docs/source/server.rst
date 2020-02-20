@@ -37,6 +37,7 @@ as found in the configuration file, is shown below:
         TLS_RSA_WITH_AES_256_CBC_SHA256
         TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
     logging_level=DEBUG
+    database_path=/tmp/pykmip.db
 
 The server can also be configured manually via Python. The following example
 shows how to create the ``KmipServer`` in Python code, directly specifying the
@@ -61,7 +62,8 @@ different configuration values:
     ...         'TLS_RSA_WITH_AES_256_CBC_SHA256',
     ...         'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384'
     ...     ],
-    ...     logging_level='DEBUG'
+    ...     logging_level='DEBUG',
+    ...     database_path='/tmp/pykmip.db'
     ... )
 
 The different configuration options are defined below:
@@ -178,9 +180,16 @@ to it:
 If PyKMIP is installed and you are able to ``import kmip`` in Python, you can
 copy the startup script and run it from any directory you choose.
 
+PyKMIP also defines a system-wide entry point that can be used to run the
+PyKMIP server once PyKMIP is installed. You can use the entry point like this:
+
+.. code-block:: console
+
+    $ pykmip-server
+
 Storage
 -------
-All data storage for the server is managed via `sqlalchemy`_. The current
+All data storage for the server is managed via `SQLAlchemy`_. The current
 backend leverages `SQLite`_, storing managed objects in a flat file. The file
 location can be configured using the ``database_path`` configuration setting.
 By default this file will be located at ``/tmp/pykmip.database``. If this
@@ -193,7 +202,7 @@ file is preserved across server restarts, object access will be maintained.
    is no upgrade path.
 
 Long term, the intent is to add support for more robust database and storage
-backends available through ``sqlalchemy``. If you are interested in this work,
+backends available through ``SQLAlchemy``. If you are interested in this work,
 please see :doc:`Development <development>` for more information.
 
 .. _authentication:
@@ -761,6 +770,29 @@ Creating a private key object would look like this:
     ...     "Example Private Key"
     ... )
 
+Split Keys
+~~~~~~~~~~
+A split key is a secret value representing a key composed of multiple parts.
+The parts of the key can be recombined cryptographically to reconstitute the
+original key.
+
+Creating a split key object would look like this:
+
+.. code-block:: python
+
+    >>> from kmip import enums
+    >>> from kmip.pie.objects import SplitKey
+    >>> key = SplitKey(
+    ...     cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
+    ...     cryptographic_length=128,
+    ...     key_value=b'\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xAA\xBB\xCC\xDD\xEE\xFF',
+    ...     name="Split Key",
+    ...     split_key_parts=3,
+    ...     key_part_identifier=1,
+    ...     split_key_threshold=3,
+    ...     split_key_method=enums.SplitKeyMethod.XOR
+    ... )
+
 Certificates
 ~~~~~~~~~~~~
 A certificate is a cryptographic object that contains a public key along with
@@ -838,6 +870,18 @@ operation, the PyKMIP server will not be able to support it either.
 
 If you are interested in adding a new cryptographic backend to the PyKMIP
 server, see :doc:`Development <development>` for more information.
+
+Activate
+~~~~~~~~
+The Activate operation updates the state of a managed object, allowing it to
+be used for cryptographic operations. Specifically, the object transitions
+from the pre-active state to the active state (see :term:`state`).
+
+Errors may be generated during the activation of a managed object. These
+may occur in the following cases:
+
+* the managed object is not activatable (e.g., opaque data object)
+* the managed object is not in the pre-active state
 
 Create
 ~~~~~~
@@ -920,27 +964,26 @@ may occur in the following cases:
 * an invalid cryptographic length is provided for a specific cryptographic
   algorithm
 
-Register
-~~~~~~~~
-The Register operation is used to store an existing KMIP object with the
-server. For examples of the objects that can be stored, see :ref:`objects`.
+Decrypt
+~~~~~~~
+The Decrypt operations allows the client to decrypt data with an existing
+managed object stored by the server. Both symmetric and asymmetric decryption
+are supported. See :ref:`encrypt` above for information on supported algorithms
+and the types of errors to expect from the server.
 
-All users are allowed to register objects. There are no quotas currently
-enforced by the server.
+DeleteAttribute
+~~~~~~~~~~~~~~~
+The DeleteAttribute operation allows the client to delete an attribute from an
+existing managed object.
 
-Various KMIP-defined attributes may be set when an object is registered.
-These may include:
+Errors may be generated during the attribute deletion process. These may occur
+in the following cases:
 
-* :term:`cryptographic_algorithm`
-* :term:`cryptographic_length`
-* :term:`cryptographic_usage_mask`
-* :term:`initial_date`
-* :term:`key_format_type`
-* :term:`name`
-* :term:`object_type`
-* :term:`operation_policy_name`
-* :term:`state`
-* :term:`unique_identifier`
+* the specified managed object does not exist
+* the specified attribute may not be applicable to the specified managed object
+* the specified attribute is not supported by the server
+* the specified attribute cannot be deleted by the client
+* the specified attribute could not be located for deletion on the specified managed object
 
 DeriveKey
 ~~~~~~~~~
@@ -973,15 +1016,56 @@ in the following cases:
 * the cryptographic length is not provided with the request
 * the requested cryptographic length is longer than the generated key
 
-Locate
-~~~~~~
-The Locate operation is used to identify managed objects that the user has
-access to, according to specific filtering criteria. Currently, the server
-only support object filtering based on the object :term:`name` attribute.
+Destroy
+~~~~~~~
+The Destroy operation deletes a managed object from the server. Once destroyed,
+the object can no longer be retrieved or used for cryptographic operations.
+An object can only be destroyed if it is in the pre-active or deactivated
+states.
 
-If no filtering values are provided, the server will return a list of
-:term:`unique_identifier` values corresponding to all of the managed objects
-the user has access to.
+Errors may be generated during the destruction of a managed object. These
+may occur in the following cases:
+
+* the managed object is not destroyable (e.g., the object does not exist)
+* the managed object is in the active state
+
+DiscoverVersions
+~~~~~~~~~~~~~~~~
+The DiscoverVersions operation allows the client to determine which versions
+of the KMIP specification are supported by the server.
+
+.. _encrypt:
+
+Encrypt
+~~~~~~~
+The Encrypt operation allows the client to encrypt data with an existing
+managed object stored by the server. Both symmetric and asymmetric encryption
+are supported:
+
+Symmetric Key Algorithms
+************************
+* `3DES`_
+* `AES`_
+* `Blowfish`_
+* `Camellia`_
+* `CAST5`_
+* `IDEA`_
+* `RC4`_
+
+Asymmetric Key Algorithms
+*************************
+* `RSA`_
+
+Errors may be generated during the encryption. These may occur in the
+following cases:
+
+* the encryption key is not accessible to the user
+* the encryption key is not in the active state and must be activated
+* the encryption key does not have the Encrypt bit set in its usage mask
+* the requested encryption algorithm is not supported
+* the specified encryption key is not compatible with the requested algorithm
+* the requested encryption algorithm requires a block cipher mode
+* the requested block cipher mode is not supported
 
 .. _get:
 
@@ -1035,49 +1119,64 @@ available for a specific managed object. Given the :term:`unique_identifier`
 of a managed object, the server will return a list of attribute names for
 attributes that can be accessed using the GetAttributes operation.
 
-Activate
-~~~~~~~~
-The Activate operation updates the state of a managed object, allowing it to
-be used for cryptographic operations. Specifically, the object transitions
-from the pre-active state to the active state (see :term:`state`).
-
-Errors may be generated during the activation of a managed object. These
-may occur in the following cases:
-
-* the managed object is not activatable (e.g., opaque data object)
-* the managed object is not in the pre-active state
-
-Revoke
+Locate
 ~~~~~~
-The Revoke operation updates the state of a managed object, effectively
-deactivating but not destroying it. The client provides a specific
-:term:`revocation_reason_code` indicating why revocation is occurring.
+The Locate operation is used to identify managed objects that the user has
+access to, according to specific filtering criteria. Currently, the server
+only support object filtering based on the object :term:`name` attribute.
 
-If revocation is due to a key or CA compromise, the managed object is moved
-to the compromised state if it is in the pre-active, active, or deactivated
-states. If the object has already been destroyed, it will be moved to the
-destroyed compromised state. Otherwise, if revocation is due to any other
-reason, the managed object is moved to the deactivated state if it is in
-the active state.
+If no filtering values are provided, the server will return a list of
+:term:`unique_identifier` values corresponding to all of the managed objects
+the user has access to.
 
-Errors may be generated during the revocation of a managed object. These
+MAC
+~~~
+The MAC operation allows the client to compute a message authentication code
+on data using an existing managed object stored by the server. Both `HMAC`_
+and `CMAC`_ algorithms are supported:
+
+HMAC Hashing Algorithms
+***********************
+* `MD5`_
+* `SHA1`_
+* `SHA224`_
+* `SHA256`_
+* `SHA384`_
+* `SHA512`_
+
+CMAC Symmetric Algorithms
+*************************
+* `3DES`_
+* `AES`_
+* `Blowfish`_
+* `Camellia`_
+* `CAST5`_
+* `IDEA`_
+* `RC4`_
+
+Errors may be generated during the authentication code creation process. These
 may occur in the following cases:
 
-* the managed object is not revokable (e.g., opaque data object)
-* the managed object is not active when revoked for a non-compromise
+* the managed object to use is not accessible to the user
+* the managed object to use is not in the active state and must be activated
+* the managed object does not have the Generate bit set in its usage mask
+* the requested algorithm is not supported for HMAC/CMAC generation
 
-Destroy
-~~~~~~~
-The Destroy operation deletes a managed object from the server. Once destroyed,
-the object can no longer be retrieved or used for cryptographic operations.
-An object can only be destroyed if it is in the pre-active or deactivated
-states.
+ModifyAttribute
+~~~~~~~~~~~~~~~
+The ModifyAttribute operation allows the client to modify an existing attribute
+on an existing managed object.
 
-Errors may be generated during the destruction of a managed object. These
-may occur in the following cases:
+Errors may be generated during the attribute modification process. These may
+occur in the following cases:
 
-* the managed object is not destroyable (e.g., the object does not exist)
-* the managed object is in the active state
+* the specified managed object does not exist
+* the specified attribute may not be applicable to the specified managed object
+* the specified attribute is not supported by the server
+* the specified attribute cannot be modified by the client
+* the specified attribute is not set on the specified managed object
+* the specified attribute is multivalued and the current attribute field must be specified
+* the specified attribute index does not correspond to an existing attribute
 
 Query
 ~~~~~
@@ -1101,50 +1200,60 @@ types of information, depending upon which items the client requests:
 The PyKMIP server currently only includes the supported operations and the
 server information in Query responses.
 
-DiscoverVersions
-~~~~~~~~~~~~~~~~
-The DiscoverVersions operation allows the client to determine which versions
-of the KMIP specification are supported by the server.
+Register
+~~~~~~~~
+The Register operation is used to store an existing KMIP object with the
+server. For examples of the objects that can be stored, see :ref:`objects`.
 
-.. _encrypt:
+All users are allowed to register objects. There are no quotas currently
+enforced by the server.
 
-Encrypt
-~~~~~~~
-The Encrypt operation allows the client to encrypt data with an existing
-managed object stored by the server. Both symmetric and asymmetric encryption
-are supported:
+Various KMIP-defined attributes may be set when an object is registered.
+These may include:
 
-Symmetric Key Algorithms
-************************
-* `3DES`_
-* `AES`_
-* `Blowfish`_
-* `Camellia`_
-* `CAST5`_
-* `IDEA`_
-* `RC4`_
+* :term:`cryptographic_algorithm`
+* :term:`cryptographic_length`
+* :term:`cryptographic_usage_mask`
+* :term:`initial_date`
+* :term:`key_format_type`
+* :term:`name`
+* :term:`object_type`
+* :term:`operation_policy_name`
+* :term:`state`
+* :term:`unique_identifier`
 
-Asymmetric Key Algorithms
-*************************
-* `RSA`_
+Revoke
+~~~~~~
+The Revoke operation updates the state of a managed object, effectively
+deactivating but not destroying it. The client provides a specific
+:term:`revocation_reason_code` indicating why revocation is occurring.
 
-Errors may be generated during the encryption. These may occur in the
-following cases:
+If revocation is due to a key or CA compromise, the managed object is moved
+to the compromised state if it is in the pre-active, active, or deactivated
+states. If the object has already been destroyed, it will be moved to the
+destroyed compromised state. Otherwise, if revocation is due to any other
+reason, the managed object is moved to the deactivated state if it is in
+the active state.
 
-* the encryption key is not accessible to the user
-* the encryption key is not in the active state and must be activated
-* the encryption key does not have the Encrypt bit set in its usage mask
-* the requested encryption algorithm is not supported
-* the specified encryption key is not compatible with the requested algorithm
-* the requested encryption algorithm requires a block cipher mode
-* the requested block cipher mode is not supported
+Errors may be generated during the revocation of a managed object. These
+may occur in the following cases:
 
-Decrypt
-~~~~~~~
-The Decrypt operations allows the client to decrypt data with an existing
-managed object stored by the server. Both symmetric and asymmetric decryption
-are supported. See :ref:`encrypt` above for information on supported algorithms
-and the types of errors to expect from the server.
+* the managed object is not revokable (e.g., opaque data object)
+* the managed object is not active when revoked for a non-compromise
+
+SetAttribute
+~~~~~~~~~~~~
+The SetAttribute operation allows the client to set the value of an attribute
+on an existing managed object.
+
+Errors may be generated during the attribute setting process. These may occur
+in the following cases:
+
+* the specified managed object does not exist
+* the specified attribute may not be applicable to the specified managed object
+* the specified attribute is not supported by the server
+* the specified attribute cannot be set by the client
+* the specified attribute is multivalued and cannot be set with this operation
 
 .. _sign:
 
@@ -1181,41 +1290,8 @@ with an existing public key stored by the server. See :ref:`sign` above for
 information on supported algorithms and the types of errors to expect from
 the server.
 
-MAC
-~~~
-The MAC operation allows the client to compute a message authentication code
-on data using an existing managed object stored by the server. Both `HMAC`_
-and `CMAC`_ algorithms are supported:
-
-HMAC Hashing Algorithms
-***********************
-* `MD5`_
-* `SHA1`_
-* `SHA224`_
-* `SHA256`_
-* `SHA384`_
-* `SHA512`_
-
-CMAC Symmetric Algorithms
-*************************
-* `3DES`_
-* `AES`_
-* `Blowfish`_
-* `Camellia`_
-* `CAST5`_
-* `IDEA`_
-* `RC4`_
-
-Errors may be generated during the authentication code creation process. These
-may occur in the following cases:
-
-* the managed object to use is not accessible to the user
-* the managed object to use is not in the active state and must be activated
-* the managed object does not have the Generate bit set in its usage mask
-* the requested algorithm is not supported for HMAC/CMAC generation
-
 .. _`ssl`: https://docs.python.org/dev/library/ssl.html#socket-creation
-.. _`sqlalchemy`: https://www.sqlalchemy.org/
+.. _`SQLAlchemy`: https://www.sqlalchemy.org/
 .. _`SQLite`: http://docs.sqlalchemy.org/en/latest/dialects/sqlite.html
 .. _`pyca/cryptography`: https://cryptography.io/en/latest/
 .. _`OpenSSL`: https://www.openssl.org/
