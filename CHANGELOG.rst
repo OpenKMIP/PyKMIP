@@ -4,10 +4,27 @@ Changelog
 
 .. _v0.10:
 
-0.10 - `master`_
-~~~~~~~~~~~~~~~~
-
-.. note:: This version is not yet released and is under active development.
+0.10 - February 25, 2020
+~~~~~~~~~~~~~~~~~~~~~~~~
+* Add server debug logging for message encodings
+* Add server Locate filtering for all currently supported attributes
+* Add server Locate filtering using offset and maximum item constraints
+* Add server cryptography engine support for AES GCM mode
+* Add server support for the SplitKey object
+* Add client/server support for the ApplicationSpecificInformation attribute
+* Add client/server support for the ObjectGroup and Sensitive attributes
+* Add client/server support for the DeleteAttribute operation
+* Add client/server support for the SetAttribute operation
+* Add client/server support for the ModifyAttribute operation
+* Add a variety of unit and integration tests to cover all new functionality
+* Add new ProxyKmipClient demo scripts to show how to use the new operations
+* Add pending deprecation warnings for Python 2.7 and 3.4 due to their EOL
+* Update server Locate filtering to return results sorted by creation date
+* Update encoding support for SplitKey objects
+* Update the Travis CI configuration to better support default Python versions
+* Update library and testing dependencies to maintain Python 3.4 support
+* Update the library documentation to reflect new features and security details
+* Fix a bug with how key pair names are handled by the client for KMIP 2.0
 
 .. _v0.9.1:
 
@@ -262,4 +279,3 @@ Changelog
 * Add client/server support for Create, Get, Register, and Destroy operations
 * Add unit test suite
 
-.. _`master`: https://github.com/openkmip/pykmip/
