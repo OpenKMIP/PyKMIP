@@ -922,6 +922,7 @@ class KMIPProxy(object):
             result['unique_identifier'] = payload.unique_identifier
             result['data'] = payload.data
             result['iv_counter_nonce'] = payload.iv_counter_nonce
+            result['auth_tag'] = payload.auth_tag
 
         result['result_status'] = batch_item.result_status.value
         try:
@@ -940,7 +941,8 @@ class KMIPProxy(object):
                 unique_identifier=None,
                 cryptographic_parameters=None,
                 iv_counter_nonce=None,
-                credential=None):
+                credential=None,
+                auth_tag=None):
         """
         Decrypt data using the specified decryption key and parameters.
 
@@ -980,7 +982,8 @@ class KMIPProxy(object):
             unique_identifier=unique_identifier,
             data=data,
             cryptographic_parameters=cryptographic_parameters,
-            iv_counter_nonce=iv_counter_nonce
+            iv_counter_nonce=iv_counter_nonce,
+            auth_tag=auth_tag
         )
         batch_item = messages.RequestBatchItem(
             operation=operation,
