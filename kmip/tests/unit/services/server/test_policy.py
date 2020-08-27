@@ -187,7 +187,8 @@ class TestAttributePolicy(testtools.TestCase):
             'Contact Information',
             'Last Change Date',
             'Custom Attribute',
-            "Sensitive"
+            "Sensitive",
+            'Alternative Name'
         ]
 
         result = rules.get_all_attribute_names()

@@ -108,6 +108,8 @@ class AttributeValueFactory(object):
             return primitives.Boolean(value, enums.Tags.SENSITIVE)
         elif name is enums.AttributeType.CUSTOM_ATTRIBUTE:
             return attributes.CustomAttribute(value)
+        elif name is enums.AttributeType.ALTERNATIVE_NAME:
+            return self._create_alternative_name(value)
         else:
             if not isinstance(name, str):
                 raise ValueError('Unrecognized attribute type: '
@@ -200,6 +202,8 @@ class AttributeValueFactory(object):
             return primitives.Boolean(value, enums.Tags.SENSITIVE)
         elif enum is enums.Tags.CUSTOM_ATTRIBUTE:
             return attributes.CustomAttribute(value)
+        elif enum is enums.Tags.ALTERNATIVE_NAME:
+            return self._create_alternative_name(value)
         else:
             raise ValueError("Unrecognized attribute type: {}".format(enum))
 
@@ -271,6 +275,15 @@ class AttributeValueFactory(object):
                 mask |= flag.value
 
         return attributes.CryptographicUsageMask(mask)
+
+    def _create_alternative_name(self, info):
+        if info:
+            return attributes.AlternativeName(
+              alternative_name_value=info.get('alternative_name_value'),
+              alternative_name_type=info.get('alternative_name_type')
+            )
+        else:
+            return attributes.AlternativeName()
 
     def _create_application_specific_information(self, info):
         if info:

@@ -1568,3 +1568,213 @@ class DerivationParameters(Struct):
             'salt': self.salt,
             'iteration_count': self.iteration_count
         })
+
+
+class AlternativeName(primitives.Struct):
+    """
+    The AlternativeName attribute is used to identify and locate the object.
+
+    This attribute is assigned by the client, and the Alternative Name Value
+    is intended to be in a form that humans are able to interpret. The key
+    management system MAY specify rules by which the client creates valid
+    alternative names. Clients are informed of such rules by a mechanism that
+    is not specified by this standard. Alternative Names MAY NOT be unique
+    within a given key management server.
+
+    Attributes:
+        alternative_name_value: text string
+        alternative_name_type: enumeration
+
+    See Section 4.2 of the KMIP v2.1 specification for more information.
+    """
+
+    def __init__(
+        self,
+        alternative_name_value=None,
+        alternative_name_type=None
+      ):
+        """
+        Construct an AlternativeName object.
+
+        Args:
+            alternative_name_value (string): Optional, defaults to None.
+                Required for read/write.
+            alternative_name_type (enumeration): Optional, defaults to None.
+                Required for read/write.
+        """
+        super(AlternativeName, self).__init__(
+            enums.Tags.ALTERNATIVE_NAME
+        )
+
+        self._alternative_name_value = None
+        self._alternative_name_type = None
+
+        self.alternative_name_value = alternative_name_value
+        self.alternative_name_type = alternative_name_type
+
+    @property
+    def alternative_name_value(self):
+        if self._alternative_name_value:
+            return self._alternative_name_value.value
+        return None
+
+    @alternative_name_value.setter
+    def alternative_name_value(self, value):
+        if value is None:
+            self._alternative_name_value = None
+        elif isinstance(value, six.string_types):
+            self._alternative_name_value = primitives.TextString(
+                value=value,
+                tag=enums.Tags.ALTERNATIVE_NAME_VALUE
+            )
+        else:
+            raise TypeError("The alternative name value must be a string.")
+
+    @property
+    def alternative_name_type(self):
+        if self._alternative_name_type:
+            return self._alternative_name_type.value
+        return None
+
+    @alternative_name_type.setter
+    def alternative_name_type(self, value):
+        if value is None:
+            self._alternative_name_type = None
+        elif isinstance(value, enums.AlternativeNameType):
+            self._alternative_name_type = primitives.Enumeration(
+                enum=enums.AlternativeNameType,
+                tag=enums.Tags.ALTERNATIVE_NAME_TYPE,
+                value=value
+            )
+        else:
+            raise TypeError("The alternative name type must be an int.")
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Read the data encoding the AlternativeName attribute
+        and decode it.
+
+        Args:
+            input_buffer (stream): A data stream containing encoded object
+                data, supporting a read method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be decoded. Optional,
+                defaults to KMIP 1.0.
+        """
+        super(AlternativeName, self).read(
+            input_buffer,
+            kmip_version=kmip_version
+        )
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
+
+        if self.is_tag_next(enums.Tags.ALTERNATIVE_NAME_VALUE, local_buffer):
+            self._alternative_name_value = primitives.TextString(
+                tag=enums.Tags.ALTERNATIVE_NAME_VALUE
+            )
+            self._alternative_name_value.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The AlternativeName encoding is missing the "
+                "AlternativeNameValue field."
+            )
+        if self.is_tag_next(enums.Tags.ALTERNATIVE_NAME_TYPE, local_buffer):
+            self._alternative_name_type = primitives.Enumeration(
+                enum=enums.AlternativeNameType,
+                tag=enums.Tags.ALTERNATIVE_NAME_TYPE
+            )
+            self._alternative_name_type.read(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The AlternativeName encoding is missing the "
+                "AlternativeNameType field."
+            )
+
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        """
+        Write the data encoding the AlternativeName object to a
+        buffer.
+
+        Args:
+            output_buffer (stream): A data stream in which to encode object
+                data, supporting a write method; usually a BytearrayStream
+                object.
+            kmip_version (KMIPVersion): An enumeration defining the KMIP
+                version with which the object will be encoded. Optional,
+                defaults to KMIP 1.0.
+        """
+        local_buffer = utils.BytearrayStream()
+
+        if self._alternative_name_value:
+            self._alternative_name_value.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The AlternativeName object is missing the "
+                "AlternativeNameValue field."
+            )
+        if self._alternative_name_type:
+            self._alternative_name_type.write(
+                local_buffer,
+                kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The AlternativeName object is missing the "
+                "AlternativeNameType field."
+            )
+
+        self.length = local_buffer.length()
+        super(AlternativeName, self).write(
+            output_buffer,
+            kmip_version=kmip_version
+        )
+        output_buffer.write(local_buffer.buffer)
+
+    def __repr__(self):
+        args = [
+            "alternative_name_value={}".format(
+                repr(self.alternative_name_value)
+            ),
+            "alternative_name_type={}".format(repr(self.alternative_name_type))
+        ]
+        return "AlternativeName({})".format(", ".join(args))
+
+    def __str__(self):
+        value = ", ".join(
+            [
+                '"alternative_name_value": "{}"'.format(
+                    self.alternative_name_value
+                ),
+                '"alternative_name_type": "{}"'.format(
+                  self.alternative_name_type
+                )
+            ]
+        )
+        return "{" + value + "}"
+
+    def __eq__(self, other):
+        if isinstance(other, AlternativeName):
+            if self.alternative_name_value != other.alternative_name_value:
+                return False
+            if self.alternative_name_type != other.alternative_name_type:
+                return False
+            return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, AlternativeName):
+            return not self.__eq__(other)
+        else:
+            return NotImplemented

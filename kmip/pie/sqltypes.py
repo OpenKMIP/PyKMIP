@@ -129,7 +129,6 @@ class EnumType(types.TypeDecorator):
 
 
 class ManagedObjectName(Base):
-
     __tablename__ = 'managed_object_names'
     id = Column('id', Integer, primary_key=True)
     mo_uid = Column('mo_uid', Integer, ForeignKey('managed_objects.uid'))
@@ -164,6 +163,81 @@ class ManagedObjectName(Base):
 
     def __ne__(self, other):
         if isinstance(other, ManagedObjectName):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+
+class ManagedObjectAlternativeName(Base):
+    __tablename__ = 'managed_object_alternative_names'
+    id = Column('id', Integer, primary_key=True)
+    mo_uid = Column('mo_uid', Integer, ForeignKey('managed_objects.uid'))
+    alternative_name_value = Column('alternative_name_value', String)
+    alternative_name_type = Column(
+      'alternative_name_type',
+      EnumType(enums.AlternativeNameType)
+    )
+
+    mo = relationship('ManagedObject', back_populates='alternative_names')
+
+    def __init__(self, alternative_name_value, alternative_name_type):
+        self.alternative_name_value = alternative_name_value
+        self.alternative_name_type = alternative_name_type
+
+    def __repr__(self):
+        return ("<ManagedObjectAlternativeName(name='%s', type='%s')>" %
+                (self.alternative_name_value, self.alternative_name_type))
+
+    def __eq__(self, other):
+        if isinstance(other, ManagedObjectAlternativeName):
+            if self.alternative_name_value != other.alternative_name_value:
+                return False
+            elif self.alternative_name_type != other.alternative_name_type:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ManagedObjectAlternativeName):
+            return not (self == other)
+        else:
+            return NotImplemented
+
+
+class ManagedObjectCustomAttribute(Base):
+    __tablename__ = 'managed_object_custom_attributes'
+    id = Column('id', Integer, primary_key=True)
+    mo_uid = Column('mo_uid', Integer, ForeignKey('managed_objects.uid'))
+    attribute_name = Column('attribute_name', String)
+    attribute_text = Column('attribute_text', String)
+
+    mo = relationship('ManagedObject', back_populates='custom_attributes')
+
+    def __init__(self, attribute_name, attribute_text):
+        self.attribute_name = attribute_name
+        self.attribute_text = attribute_text
+
+    def __repr__(self):
+        return (
+          "<ManagedObjectCustomAttribute(alternative_name='%s', \
+alternative_name_type='%s')>" % (self.attribute_name, self.attribute_text)
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, ManagedObjectCustomAttribute):
+            if self.attribute_name != other.attribute_name:
+                return False
+            elif self.attribute_text != other.attribute_text:
+                return False
+            else:
+                return True
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, ManagedObjectCustomAttribute):
             return not (self == other)
         else:
             return NotImplemented

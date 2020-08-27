@@ -101,6 +101,31 @@ class AttributeRuleSet(object):
         self.version_deprecated = version_deprecated
 
 
+class CustomAttrDict:
+    """
+    Dictionary that translates 'x-' keys into 'Custom Attribute'.
+
+    It is used to support custom attributes for KMIP 1.x.
+    """
+    def __init__(self, dct):
+        self._dct = dct
+
+    def get(self, key):
+        if key.startswith('x-'):
+            return self._dct.get('Custom Attribute')
+        else:
+            return self._dct.get(key)
+
+    def keys(self):
+        return self._dct.keys()
+
+    def __contains__(self, key):
+        if key.startswith('x-'):
+            return 'Custom Attribute' in self._dct
+        else:
+            return key in self._dct
+
+
 class AttributePolicy(object):
     """
     A collection of attribute rules and methods to query those rules.
@@ -130,7 +155,7 @@ class AttributePolicy(object):
         self._version = version
 
         # TODO (peterhamilton) Alphabetize these
-        self._attribute_rule_sets = {
+        self._attribute_rule_sets = CustomAttrDict({
             'Unique Identifier': AttributeRuleSet(
                 True,
                 ('server', ),
@@ -1078,6 +1103,38 @@ class AttributePolicy(object):
                 ),
                 contents.ProtocolVersion(1, 0)
             ),
+            'Alternative Name': AttributeRuleSet(
+                False,
+                ('server', 'client'),
+                True,  # Only for server-created attributes
+                True,  # Only for client-created attributes
+                True,  # Only for client-created attributes
+                True,
+                (
+                    enums.Operation.CREATE,
+                    enums.Operation.CREATE_KEY_PAIR,
+                    enums.Operation.REGISTER,
+                    enums.Operation.DERIVE_KEY,
+                    enums.Operation.ACTIVATE,
+                    enums.Operation.REVOKE,
+                    enums.Operation.DESTROY,
+                    enums.Operation.CERTIFY,
+                    enums.Operation.RECERTIFY,
+                    enums.Operation.REKEY,
+                    enums.Operation.REKEY_KEY_PAIR
+                ),
+                (
+                    enums.ObjectType.CERTIFICATE,
+                    enums.ObjectType.SYMMETRIC_KEY,
+                    enums.ObjectType.PUBLIC_KEY,
+                    enums.ObjectType.PRIVATE_KEY,
+                    enums.ObjectType.SPLIT_KEY,
+                    enums.ObjectType.TEMPLATE,
+                    enums.ObjectType.SECRET_DATA,
+                    enums.ObjectType.OPAQUE_DATA
+                ),
+                contents.ProtocolVersion(1, 0)
+            ),
             "Sensitive": AttributeRuleSet(
                 True,
                 ("server", "client"),
@@ -1102,7 +1159,7 @@ class AttributePolicy(object):
                 ),
                 contents.ProtocolVersion(1, 4)
             )
-        }
+        })
 
     def is_attribute_supported(self, attribute):
         """
@@ -1115,7 +1172,7 @@ class AttributePolicy(object):
             bool: True if the attribute is supported by the current KMIP
                 version. False otherwise.
         """
-        if attribute not in self._attribute_rule_sets.keys():
+        if attribute not in self._attribute_rule_sets:
             return False
 
         rule_set = self._attribute_rule_sets.get(attribute)
