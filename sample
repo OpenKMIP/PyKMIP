@@ -1,0 +1,23 @@
+node "master" {
+	stage ('BranchCheckOut') {
+		checkout([$class: 'GitSCM', branches: [[name: "master"]],userRemoteConfigs: [[credentialsId: 'credentials', url: 'https://github.com/OpenKMIP/PyKMIP.git']]])
+	}
+	
+    stage ('Sonarqube'){
+			sh """
+			cd ${env.workspace}
+			sonar-scanner
+			"""
+		}
+	}
+	
+	stage ('Docker image') {
+		docker.image('ubuntu:latest').pull()
+		docker.image("ubuntu:latest").inside("-u root:root -v ${env.WORKSPACE}:/checkoutfolder -p 80:8080 -p 443:4043 -v /mnt:/tmp -e MASTER_KEY=1 -e HOST_KEY=1") 
+		{
+			apt-get install python3-dev libffi-dev libssl-dev libsqlite3-dev
+			cd /checkoutfolder
+			python pykmip/setup.py install
+		}
+	}
+}
