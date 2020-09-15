@@ -63,7 +63,7 @@ if __name__ == '__main__':
     for initial_date in initial_dates:
         try:
             t = time.strptime(initial_date)
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             logger.error(
                 "Invalid initial date provided: {}".format(initial_date)
             )
