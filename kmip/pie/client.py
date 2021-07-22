@@ -20,6 +20,7 @@ from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import objects as cobjects
 
+from kmip.core.objects import Attribute
 from kmip.core.factories import attributes
 
 from kmip.core.attributes import CryptographicParameters
@@ -556,6 +557,11 @@ class ProxyKmipClient(object):
                         name
                     )
                     object_attributes.append(name_attribute)
+
+        if hasattr(managed_object, '_application_specific_informations'):
+            if managed_object._application_specific_informations:
+                for attr in managed_object._application_specific_informations:
+                    object_attributes.append(attr)
 
         template = cobjects.TemplateAttribute(attributes=object_attributes)
         object_type = managed_object.object_type

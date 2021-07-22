@@ -1580,7 +1580,7 @@ class SecretData(CryptographicObject):
         'sqlite_autoincrement': True
     }
 
-    def __init__(self, value, data_type, masks=None, name='Secret Data'):
+    def __init__(self, value, data_type, app_specific_info=None, masks=None, name='Secret Data'):
         """
         Create a SecretData object.
 
@@ -1599,6 +1599,9 @@ class SecretData(CryptographicObject):
         self.value = value
         self.data_type = data_type
         self.names = [name]
+        
+        if app_specific_info:
+            self._application_specific_informations = app_specific_info
 
         if masks:
             self.cryptographic_usage_masks = masks
