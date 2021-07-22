@@ -20,7 +20,6 @@ from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import objects as cobjects
 
-from kmip.core.objects import Attribute
 from kmip.core.factories import attributes
 
 from kmip.core.attributes import CryptographicParameters
