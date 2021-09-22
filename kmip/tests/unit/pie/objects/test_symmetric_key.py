@@ -408,7 +408,7 @@ class TestSymmetricKey(testtools.TestCase):
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a,
             masks=masks,
             name=test_name)
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(key)
         session.commit()
@@ -448,7 +448,7 @@ class TestSymmetricKey(testtools.TestCase):
             expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
         self.assertEquals(expected_mo_names, key._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(key)
         session.commit()
@@ -485,7 +485,7 @@ class TestSymmetricKey(testtools.TestCase):
         self.assertEquals(expected_names, key.names)
         self.assertEquals(expected_mo_names, key._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(key)
         session.commit()
@@ -525,7 +525,7 @@ class TestSymmetricKey(testtools.TestCase):
         self.assertEquals(expected_names, key.names)
         self.assertEquals(expected_mo_names, key._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(key)
         session.commit()
@@ -554,7 +554,7 @@ class TestSymmetricKey(testtools.TestCase):
         key = SymmetricKey(
             enums.CryptographicAlgorithm.AES, 128, self.bytes_128a,
             name=first_name)
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(key)
         session.commit()
@@ -595,7 +595,7 @@ class TestSymmetricKey(testtools.TestCase):
         key.names.append(names[1])
         key.names.append(names[2])
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(key)
         session.commit()
@@ -638,7 +638,7 @@ class TestSymmetricKey(testtools.TestCase):
         key.names.append(names[1])
         key.names.append(names[2])
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(key)
         session.commit()

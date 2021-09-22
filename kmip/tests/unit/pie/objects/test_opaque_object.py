@@ -224,7 +224,7 @@ class TestOpaqueObject(testtools.TestCase):
         test_name = 'bowser'
         obj = OpaqueObject(
             self.bytes_a, enums.OpaqueDataType.NONE, name=test_name)
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -259,7 +259,7 @@ class TestOpaqueObject(testtools.TestCase):
             expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
         self.assertEquals(expected_mo_names, obj._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -295,7 +295,7 @@ class TestOpaqueObject(testtools.TestCase):
         self.assertEquals(expected_names, obj.names)
         self.assertEquals(expected_mo_names, obj._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -334,7 +334,7 @@ class TestOpaqueObject(testtools.TestCase):
         self.assertEquals(expected_names, obj.names)
         self.assertEquals(expected_mo_names, obj._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -362,7 +362,7 @@ class TestOpaqueObject(testtools.TestCase):
         first_name = 'bowser'
         obj = OpaqueObject(
             self.bytes_a, enums.OpaqueDataType.NONE, name=first_name)
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -402,7 +402,7 @@ class TestOpaqueObject(testtools.TestCase):
         obj.names.append(names[1])
         obj.names.append(names[2])
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -444,7 +444,7 @@ class TestOpaqueObject(testtools.TestCase):
         obj.names.append(names[1])
         obj.names.append(names[2])
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()

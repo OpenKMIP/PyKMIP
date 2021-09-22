@@ -320,7 +320,7 @@ class TestX509Certificate(testtools.TestCase):
         masks = [enums.CryptographicUsageMask.ENCRYPT,
                  enums.CryptographicUsageMask.WRAP_KEY]
         cert = X509Certificate(self.bytes_a, masks=masks, name=test_name)
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(cert)
         session.commit()
@@ -354,7 +354,7 @@ class TestX509Certificate(testtools.TestCase):
             expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
         self.assertEquals(expected_mo_names, cert._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(cert)
         session.commit()
@@ -389,7 +389,7 @@ class TestX509Certificate(testtools.TestCase):
         self.assertEquals(expected_names, cert.names)
         self.assertEquals(expected_mo_names, cert._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(cert)
         session.commit()
@@ -427,7 +427,7 @@ class TestX509Certificate(testtools.TestCase):
         self.assertEquals(expected_names, cert.names)
         self.assertEquals(expected_mo_names, cert._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(cert)
         session.commit()
@@ -454,7 +454,7 @@ class TestX509Certificate(testtools.TestCase):
         """
         first_name = 'bowser'
         cert = X509Certificate(self.bytes_a, name=first_name)
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(cert)
         session.commit()
@@ -493,7 +493,7 @@ class TestX509Certificate(testtools.TestCase):
         cert.names.append(names[1])
         cert.names.append(names[2])
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(cert)
         session.commit()
@@ -534,7 +534,7 @@ class TestX509Certificate(testtools.TestCase):
         cert.names.append(names[1])
         cert.names.append(names[2])
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(cert)
         session.commit()
