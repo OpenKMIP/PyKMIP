@@ -243,7 +243,7 @@ class TestSecretData(testtools.TestCase):
         test_name = 'bowser'
         obj = SecretData(self.bytes_a, enums.SecretDataType.PASSWORD,
                          name=test_name)
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -278,7 +278,7 @@ class TestSecretData(testtools.TestCase):
             expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
         self.assertEquals(expected_mo_names, obj._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -314,7 +314,7 @@ class TestSecretData(testtools.TestCase):
         self.assertEquals(expected_names, obj.names)
         self.assertEquals(expected_mo_names, obj._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -353,7 +353,7 @@ class TestSecretData(testtools.TestCase):
         self.assertEquals(expected_names, obj.names)
         self.assertEquals(expected_mo_names, obj._names)
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -381,7 +381,7 @@ class TestSecretData(testtools.TestCase):
         first_name = 'bowser'
         obj = SecretData(self.bytes_a, enums.SecretDataType.PASSWORD,
                          name=first_name)
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -421,7 +421,7 @@ class TestSecretData(testtools.TestCase):
         obj.names.append(names[1])
         obj.names.append(names[2])
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
@@ -463,7 +463,7 @@ class TestSecretData(testtools.TestCase):
         obj.names.append(names[1])
         obj.names.append(names[2])
 
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()

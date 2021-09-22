@@ -595,7 +595,8 @@ class TestSplitKey(testtools.TestCase):
             prime_field_size=104729
         )
 
-        session = sqlalchemy.orm.sessionmaker(bind=self.engine)()
+        session = sqlalchemy.orm.sessionmaker(
+            bind=self.engine, expire_on_commit=False)()
         session.add(split_key)
         session.commit()
 
