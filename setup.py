@@ -18,11 +18,8 @@ import re
 import setuptools
 
 # Dynamically set __version__
-version_path = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    "kmip",
-    "version.py"
-)
+this_dir = os.path.dirname(os.path.realpath(__file__))
+version_path = os.path.join(this_dir, "kmip", "version.py")
 with open(version_path, 'r') as f:
     m = re.search(
         r"^__version__ = \"(\d+\.\d+\..*)\"$",
@@ -30,6 +27,9 @@ with open(version_path, 'r') as f:
         re.MULTILINE
     )
     __version__ = m.group(1)
+readme_path = os.path.join(this_dir, "README.rst")
+with open(readme_path, 'r') as f:
+    long_description = f.read()
 
 setuptools.setup(
     name='PyKMIP',
@@ -40,6 +40,8 @@ setuptools.setup(
     author_email='peter.hamilton@jhuapl.edu',
     url='https://github.com/OpenKMIP/PyKMIP',
     license='Apache License, Version 2.0',
+    long_description=long_description,
+    long_description_content_type="text/x-rst",
     packages=setuptools.find_packages(exclude=["kmip.tests", "kmip.tests.*"]),
     package_data={'kmip': ['kmipconfig.ini', 'logconfig.ini'],
                   'kmip.demos': ['certs/server.crt', 'certs/server.key']},
