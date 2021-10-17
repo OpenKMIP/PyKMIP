@@ -34,7 +34,7 @@ class TestOrderedEnum(testtools.TestCase):
             enums.KMIPVersion.KMIP_1_0 >= enums.KMIPVersion.KMIP_2_0
         )
 
-        self.assertEquals(
+        self.assertEqual(
             NotImplemented,
             enums.KMIPVersion.KMIP_2_0.__ge__(enums.WrappingMethod.ENCRYPT)
         )
@@ -47,7 +47,7 @@ class TestOrderedEnum(testtools.TestCase):
             enums.KMIPVersion.KMIP_1_1 > enums.KMIPVersion.KMIP_1_3
         )
 
-        self.assertEquals(
+        self.assertEqual(
             NotImplemented,
             enums.KMIPVersion.KMIP_2_0.__gt__(enums.WrappingMethod.ENCRYPT)
         )
@@ -60,7 +60,7 @@ class TestOrderedEnum(testtools.TestCase):
             enums.KMIPVersion.KMIP_1_4 <= enums.KMIPVersion.KMIP_1_3
         )
 
-        self.assertEquals(
+        self.assertEqual(
             NotImplemented,
             enums.KMIPVersion.KMIP_2_0.__le__(enums.WrappingMethod.ENCRYPT)
         )
@@ -73,7 +73,7 @@ class TestOrderedEnum(testtools.TestCase):
             enums.KMIPVersion.KMIP_2_0 < enums.KMIPVersion.KMIP_1_3
         )
 
-        self.assertEquals(
+        self.assertEqual(
             NotImplemented,
             enums.KMIPVersion.KMIP_2_0.__lt__(enums.WrappingMethod.ENCRYPT)
         )
