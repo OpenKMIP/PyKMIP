@@ -658,7 +658,7 @@ class SymmetricKey(Key):
     }
 
     def __init__(self, algorithm, length, value, app_specific_info=None, masks=None,
-                 name='Symmetric Key', key_wrapping_data=None):
+                 name='Symmetric Key2', key_wrapping_data=None):
         """
         Create a SymmetricKey.
 
@@ -824,7 +824,7 @@ class PublicKey(Key):
 
     def __init__(self, algorithm, length, value,
                  format_type=enums.KeyFormatType.X_509, masks=None,
-                 name='Public Key', key_wrapping_data=None):
+                 name='Public Key', app_specific_info = None, key_wrapping_data=None):
         """
         Create a PublicKey.
 
@@ -861,6 +861,9 @@ class PublicKey(Key):
 
         if masks:
             self.cryptographic_usage_masks = masks
+
+        if app_specific_info:
+            self._application_specific_informations = app_specific_info
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.
@@ -989,7 +992,7 @@ class PrivateKey(Key):
     }
 
     def __init__(self, algorithm, length, value, format_type, masks=None,
-                 name='Private Key', key_wrapping_data=None):
+                 name='Private Key', app_specific_info = None, key_wrapping_data=None):
         """
         Create a PrivateKey.
 
@@ -1025,6 +1028,9 @@ class PrivateKey(Key):
 
         if masks:
             self.cryptographic_usage_masks = masks
+
+        if app_specific_info:
+            self._application_specific_informations = app_specific_info
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.

@@ -565,7 +565,6 @@ class ProxyKmipClient(object):
 
         template = cobjects.TemplateAttribute(attributes=object_attributes)
         object_type = managed_object.object_type
-
         # Register the managed object and handle the results
         secret = self.object_factory.convert(managed_object)
         result = self.proxy.register(object_type, template, secret)
