@@ -658,7 +658,7 @@ class SymmetricKey(Key):
     }
 
     def __init__(self, algorithm, length, value, app_specific_info=None, masks=None,
-                 name='Symmetric Key2', key_wrapping_data=None):
+                 name='Symmetric Key', key_wrapping_data=None):
         """
         Create a SymmetricKey.
 
