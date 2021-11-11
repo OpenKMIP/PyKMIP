@@ -196,6 +196,7 @@ class TLS12AuthenticationSuite(AuthenticationSuite):
     """
 
     _default_cipher_suites = [
+        'AES256-SHA',
         'AES128-SHA256',
         'AES256-SHA256',
         'DH-DSS-AES256-SHA256',
