@@ -47,7 +47,8 @@ def create_certificate(subject_name,
                        signing_certificate,
                        signing_key,
                        days_valid=365,
-                       client_auth=False):
+                       client_auth=False,
+                       hostname=None):
     subject = x509.Name([
         x509.NameAttribute(x509.NameOID.ORGANIZATION_NAME, u"Test, Inc."),
         x509.NameAttribute(x509.NameOID.COMMON_NAME, subject_name)
@@ -72,6 +73,12 @@ def create_certificate(subject_name,
             critical=True
         )
 
+    if hostname:
+        builder = builder.add_extension(
+            x509.SubjectAlternativeName([x509.DNSName(hostname)]),
+            critical=False,
+        )
+
     certificate = builder.sign(
         signing_key,
         hashes.SHA256(),
@@ -92,7 +99,8 @@ def main():
         u"Server Certificate",
         server_key,
         root_certificate,
-        root_key
+        root_key,
+        hostname=u"localhost"
     )
 
     john_doe_client_key = create_rsa_private_key()
