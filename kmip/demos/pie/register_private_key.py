@@ -26,7 +26,7 @@ from kmip.pie import objects
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 
-    parser = utils.build_cli_parser()
+    parser = utils.build_cli_parser(enums.Operation.REGISTER)
     opts, args = parser.parse_args(sys.argv[1:])
 
     config = opts.config

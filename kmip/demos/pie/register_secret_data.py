@@ -27,7 +27,7 @@ from kmip.pie import objects
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 
-    parser = utils.build_cli_parser()
+    parser = utils.build_cli_parser(enums.Operation.REGISTER)
     opts, args = parser.parse_args(sys.argv[1:])
 
     config = opts.config
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     usage_mask = [enums.CryptographicUsageMask.VERIFY]
     name = 'Demo Secret Data'
 
-    secret = objects.SecretData(value, data_type, usage_mask, name)
+    secret = objects.SecretData(value, data_type, None, usage_mask, name)
     secret.operation_policy_name = opts.operation_policy_name
 
     # Build the client and connect to the server
