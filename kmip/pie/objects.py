@@ -657,8 +657,8 @@ class SymmetricKey(Key):
         'sqlite_autoincrement': True
     }
 
-    def __init__(self, algorithm, length, value, app_specific_info=None, masks=None,
-                 name='Symmetric Key', key_wrapping_data=None):
+    def __init__(self, algorithm, length, value, masks=None,
+                 name='Symmetric Key', key_wrapping_data=None, app_specific_info=None):
         """
         Create a SymmetricKey.
 
@@ -824,7 +824,7 @@ class PublicKey(Key):
 
     def __init__(self, algorithm, length, value,
                  format_type=enums.KeyFormatType.X_509, masks=None,
-                 name='Public Key', app_specific_info = None, key_wrapping_data=None):
+                 name='Public Key', key_wrapping_data=None, app_specific_info=None):
         """
         Create a PublicKey.
 
@@ -992,7 +992,7 @@ class PrivateKey(Key):
     }
 
     def __init__(self, algorithm, length, value, format_type, masks=None,
-                 name='Private Key', app_specific_info = None, key_wrapping_data=None):
+                 name='Private Key', key_wrapping_data=None, app_specific_info=None):
         """
         Create a PrivateKey.
 
@@ -1589,7 +1589,7 @@ class SecretData(CryptographicObject):
         'sqlite_autoincrement': True
     }
 
-    def __init__(self, value, data_type, app_specific_info=None, masks=None, name='Secret Data'):
+    def __init__(self, value, data_type, masks=None, name='Secret Data', app_specific_info=None):
         """
         Create a SecretData object.
 
