@@ -39,7 +39,10 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
 
         uuids = self.client.locate()
         for uuid in uuids:
-            self.client.destroy(uid=uuid)
+            try:
+            	self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uuid)
+            finally:
+            	self.client.destroy(uid=uuid)
 
     def test_symmetric_key_create_get_destroy(self):
         """
@@ -57,6 +60,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 enums.CryptographicAlgorithm.AES)
             self.assertEqual(key.cryptographic_length, 256)
         finally:
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uid)
             self.client.destroy(uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, uid)
@@ -100,10 +104,8 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
 
         self.assertNotEqual(unwrapped_key.value, wrapped_key.value)
 
-        self.client.revoke(
-            enums.RevocationReasonCode.CESSATION_OF_OPERATION,
-            wrapping_id
-        )
+        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, key_id)
+        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, wrapping_id)
         self.client.destroy(key_id)
         self.client.destroy(wrapping_id)
 
@@ -131,6 +133,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             self.assertEqual(
                 result, key, "expected {0}\nobserved {1}".format(result, key))
         finally:
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uid)
             self.client.destroy(uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, uid)
@@ -181,6 +184,30 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             enums.EncodingOption.NO_ENCODING,
             key_wrapping_data.get('encoding_option')
         )
+        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, key_id)
+        self.client.destroy(key_id)
+    
+    def test_register_app_specific_get(self):
+        """
+        Test that a key with app specifc info can be registered with the server and that its
+        metadata is retrieved with the get operation.
+        """
+        key = objects.SymmetricKey(
+            enums.CryptographicAlgorithm.AES,
+            128,
+            (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E'
+             b'\x0F'),
+            app_specific_info={
+            	'application_namespace': 'Testing', 
+            	'application_data': 'Testing2'
+            	}
+        )
+        key_id = self.client.register(key)
+        result = self.client.get(key_id)
+        app_specific_info = result.app_specific_info
+        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, key_id)
+        self.client.destroy(key_id)
+ 
 
     def test_asymmetric_key_pair_create_get_destroy(self):
         """
@@ -211,6 +238,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 enums.CryptographicAlgorithm.RSA)
             self.assertEqual(private_key.cryptographic_length, 2048)
         finally:
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, public_uid)
             self.client.destroy(public_uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, public_uid)
@@ -218,6 +246,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 exceptions.KmipOperationFailure, self.client.destroy,
                 public_uid)
 
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, private_uid)
             self.client.destroy(private_uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, private_uid)
@@ -264,6 +293,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             self.assertEqual(
                 result, key, "expected {0}\nobserved {1}".format(result, key))
         finally:
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uid)
             self.client.destroy(uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, uid)
@@ -371,6 +401,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             self.assertEqual(
                 result, key, "expected {0}\nobserved {1}".format(result, key))
         finally:
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uid)
             self.client.destroy(uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, uid)
@@ -449,6 +480,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 result, cert, "expected {0}\nobserved {1}".format(
                     result, cert))
         finally:
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uid)
             self.client.destroy(uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, uid)
@@ -476,6 +508,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 result, secret, "expected {0}\nobserved {1}".format(
                     result, secret))
         finally:
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uid)
             self.client.destroy(uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, uid)
@@ -570,6 +603,8 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             attribute.attribute_name.value
         )
         self.assertEqual(160, attribute.attribute_value.value)
+        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, key_id)
+        self.client.destroy(key_id)
 
     def test_derive_key_using_encryption(self):
         """
@@ -798,10 +833,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         self.assertEqual(plain_text, result)
 
         # Clean up.
-        self.client.revoke(
-            enums.RevocationReasonCode.CESSATION_OF_OPERATION,
-            key_id
-        )
+        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, key_id)
         self.client.destroy(key_id)
 
     def test_create_key_pair_sign_signature_verify(self):
@@ -858,11 +890,11 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
 
         # Clean up.
         self.client.revoke(
-            enums.RevocationReasonCode.CESSATION_OF_OPERATION,
+            enums.RevocationReasonCode.KEY_COMPROMISE,
             public_key_id
         )
         self.client.revoke(
-            enums.RevocationReasonCode.CESSATION_OF_OPERATION,
+            enums.RevocationReasonCode.KEY_COMPROMISE,
             private_key_id
         )
         self.client.destroy(public_key_id)
@@ -1293,6 +1325,8 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         self.assertEqual(0, len(result))
 
         # Clean up the keys
+        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, a_id)
+        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, b_id)
         self.client.destroy(a_id)
         self.client.destroy(b_id)
 
@@ -1344,6 +1378,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             self.assertEqual(enums.SplitKeyMethod.XOR, result.split_key_method)
             self.assertIsNone(result.prime_field_size)
         finally:
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uid)
             self.client.destroy(uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, uid)

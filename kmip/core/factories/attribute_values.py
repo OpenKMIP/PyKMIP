@@ -17,6 +17,7 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import utils
+import json
 
 
 class AttributeValueFactory(object):
@@ -274,10 +275,11 @@ class AttributeValueFactory(object):
 
     def _create_application_specific_information(self, info):
         if info:
-            return attributes.ApplicationSpecificInformation(
-                application_namespace=info.get("application_namespace"),
-                application_data=info.get("application_data")
-            )
+        	for k,v in info.items():
+        		return attributes.ApplicationSpecificInformation(
+        			k,
+        			v
+        		)
         else:
             return attributes.ApplicationSpecificInformation()
 
