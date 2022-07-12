@@ -25,6 +25,7 @@ from kmip.core.factories import attributes
 from kmip.core.attributes import CryptographicParameters
 from kmip.core.attributes import DerivationParameters
 
+
 from kmip.core.messages import payloads
 
 from kmip.pie import exceptions
@@ -559,8 +560,15 @@ class ProxyKmipClient(object):
 
         if hasattr(managed_object, '_application_specific_informations'):
             if managed_object._application_specific_informations:
-                for attr in managed_object._application_specific_informations:
-                    object_attributes.append(attr)
+            	for attr in managed_object._application_specific_informations:
+            		app_dict = {}
+            		app_dict[attr] = managed_object._application_specific_informations[attr]
+            		attribute = self.attribute_factory.create_attribute(
+            			name=enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
+            			value=app_dict,
+            			index=1
+            			)
+            		object_attributes.append(attribute)
 
         template = cobjects.TemplateAttribute(attributes=object_attributes)
         object_type = managed_object.object_type
