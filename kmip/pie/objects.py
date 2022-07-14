@@ -674,6 +674,8 @@ class SymmetricKey(Key):
             key_wrapping_data(dict): A dictionary containing key wrapping data
                 settings, describing how the key value has been wrapped.
                 Optional, defaults to None.
+            app_specific_info(dict): A dictionary containing application_namespace and application_data.
+                Optional, defaults to None.
         """
         super(SymmetricKey, self).__init__(
             key_wrapping_data=key_wrapping_data
@@ -842,6 +844,8 @@ class PublicKey(Key):
             key_wrapping_data(dict): A dictionary containing key wrapping data
                 settings, describing how the key value has been wrapped.
                 Optional, defaults to None.
+            app_specific_info(dict): A dictionary containing application_namespace and application_data.
+                Optional, defaults to None.
         """
         super(PublicKey, self).__init__(
             key_wrapping_data=key_wrapping_data
@@ -1008,6 +1012,8 @@ class PrivateKey(Key):
             name(string): The string name of the key.
             key_wrapping_data(dict): A dictionary containing key wrapping data
                 settings, describing how the key value has been wrapped.
+                Optional, defaults to None.
+            app_specific_info(dict): A dictionary containing application_namespace and application_data.
                 Optional, defaults to None.
         """
         super(PrivateKey, self).__init__(
@@ -1600,6 +1606,8 @@ class SecretData(CryptographicObject):
             masks(list): A list of CryptographicUsageMask enumerations
                 defining how the key will be used.
             name(string): The string name of the key.
+            app_specific_info(dict): A dictionary containing application_namespace and application_data.
+                Optional, defaults to None.
         """
         super(SecretData, self).__init__()
 
