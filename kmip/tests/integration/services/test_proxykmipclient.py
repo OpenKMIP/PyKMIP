@@ -198,16 +198,37 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E'
              b'\x0F'),
             app_specific_info={
-            	'application_namespace': 'Testing', 
-            	'application_data': 'Testing2'
-            	}
+                'application_namespace': 'Testing',
+                'application_data': 'Testing2'
+            }
         )
         key_id = self.client.register(key)
-        result = self.client.get(key_id)
-        app_specific_info = result.app_specific_info
+        attribute_list = self.client.get_attribute_list(key_id)
+        self.assertIn('Application Specific Information', attribute_list)
+        result_id, attribute_list = self.client.get_attributes(
+            uid=key_id,
+            attribute_names=['Application Specific Information']
+        )
+        self.assertEqual(key_id, result_id)
+        self.assertEqual(1, len(attribute_list))
+
+        attribute = attribute_list[0]
+        self.assertEqual(
+            'Application Specific Information',
+            attribute.attribute_name.value
+        )
+        print(attribute.attribute_value)
+        self.assertEqual(
+            'Testing',
+            attribute.attribute_value.application_namespace
+        )
+        self.assertEqual(
+            'Testing2',
+            attribute.attribute_value.application_data
+        )
+
         self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, key_id)
         self.client.destroy(key_id)
- 
 
     def test_asymmetric_key_pair_create_get_destroy(self):
         """
@@ -507,6 +528,63 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             self.assertEqual(
                 result, secret, "expected {0}\nobserved {1}".format(
                     result, secret))
+        finally:
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uid)
+            self.client.destroy(uid)
+            self.assertRaises(
+                exceptions.KmipOperationFailure, self.client.get, uid)
+            self.assertRaises(
+                exceptions.KmipOperationFailure, self.client.destroy, uid)
+                
+    def test_secret_data_register_get_destroy_app_specific(self):
+        """
+        Test that the ProxyKmipClient can register, retrieve, and destroy a
+        secret with the app specific info field.
+        """
+        # Secret encoding obtained from Section 3.1.5 of the KMIP 1.1 test
+        # documentation.
+        secret = objects.SecretData(
+            b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64',
+            enums.SecretDataType.PASSWORD,
+            app_specific_info={
+                'application_namespace': 'Testing',
+                'application_data': 'Testing2'
+            }
+            )
+
+        uid = self.client.register(secret)
+        self.assertIsInstance(uid, six.string_types)
+
+        try:
+            result = self.client.get(uid)
+            self.assertIsInstance(result, objects.SecretData)
+            self.assertEqual(
+                result, secret, "expected {0}\nobserved {1}".format(
+                    result, secret))
+            attribute_list = self.client.get_attribute_list(uid)
+            self.assertIn('Application Specific Information', attribute_list)
+            result_id, attribute_list = self.client.get_attributes(
+                uid=uid,
+                attribute_names=['Application Specific Information']
+            )
+            self.assertEqual(uid, result_id)
+            self.assertEqual(1, len(attribute_list))
+
+            attribute = attribute_list[0]
+            self.assertEqual(
+                'Application Specific Information',
+                attribute.attribute_name.value
+            )
+            print(attribute.attribute_value)
+            self.assertEqual(
+                'Testing',
+                attribute.attribute_value.application_namespace
+            )
+            self.assertEqual(
+                'Testing2',
+                attribute.attribute_value.application_data
+            )
+
         finally:
             self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uid)
             self.client.destroy(uid)
