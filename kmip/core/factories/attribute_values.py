@@ -275,11 +275,11 @@ class AttributeValueFactory(object):
 
     def _create_application_specific_information(self, info):
         if info:
-        	for k,v in info.items():
-        		return attributes.ApplicationSpecificInformation(
-        			k,
-        			v
-        		)
+            print(info.get("application_namespace"))
+            return attributes.ApplicationSpecificInformation(
+                application_namespace=info.get("application_namespace"),
+                application_data=info.get("application_data")
+            )
         else:
             return attributes.ApplicationSpecificInformation()
 
