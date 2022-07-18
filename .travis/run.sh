@@ -14,8 +14,8 @@ if [[ "${RUN_INTEGRATION_TESTS}" == "1" ]]; then
     sudo cp ./.travis/policy.json /etc/pykmip/policies/policy.json
     sudo mkdir -p /var/log/pykmip
     sudo chmod 777 /var/log/pykmip
-    sudo python3 ./bin/run_server.py &
-    sudo tox -e integration -- --config client
+    python3 ./bin/run_server.py &
+    tox -e integration -- --config client
 elif [[ "${RUN_INTEGRATION_TESTS}" == "2" ]]; then
     # Set up the SLUGS instance
     cp -r ./.travis/functional/slugs /tmp/
@@ -23,14 +23,14 @@ elif [[ "${RUN_INTEGRATION_TESTS}" == "2" ]]; then
 
     # Set up the PyKMIP server
     cp -r ./.travis/functional/pykmip /tmp/
-    sudo python3 ./bin/create_certificates.py
+    python3 ./bin/create_certificates.py
     mv *.pem /tmp/pykmip/certs/
     sudo mkdir -p /var/log/pykmip
     sudo chmod 777 /var/log/pykmip
-    sudo pykmip-server -f /tmp/pykmip/server.conf -l /tmp/pykmip/server.log &
+    pykmip-server -f /tmp/pykmip/server.conf -l /tmp/pykmip/server.log &
 
     # Run the functional tests
-    sudo tox -e functional -- --config-file /tmp/pykmip/client.conf
+    tox -e functional -- --config-file /tmp/pykmip/client.conf
 else
-    sudo tox
+    tox
 fi

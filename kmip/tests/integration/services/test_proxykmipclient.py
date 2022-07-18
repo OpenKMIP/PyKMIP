@@ -39,10 +39,8 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
 
         uuids = self.client.locate()
         for uuid in uuids:
-            try:
-            	self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uuid)
-            finally:
-            	self.client.destroy(uid=uuid)
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, uuid)
+            self.client.destroy(uid=uuid)
 
     def test_symmetric_key_create_get_destroy(self):
         """
@@ -197,10 +195,16 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             128,
             (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E'
              b'\x0F'),
-            app_specific_info={
-                'application_namespace': 'Testing',
-                'application_data': 'Testing2'
-            }
+            app_specific_info=[
+                {
+                    'application_namespace': 'Testing',
+                    'application_data': 'Testing2'
+                },
+                {
+                    'application_namespace': 'Testing3',
+                    'application_data': 'Testing4'
+                }
+            ]
         )
         key_id = self.client.register(key)
         attribute_list = self.client.get_attribute_list(key_id)
@@ -210,14 +214,12 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             attribute_names=['Application Specific Information']
         )
         self.assertEqual(key_id, result_id)
-        self.assertEqual(1, len(attribute_list))
 
         attribute = attribute_list[0]
         self.assertEqual(
             'Application Specific Information',
             attribute.attribute_name.value
         )
-        print(attribute.attribute_value)
         self.assertEqual(
             'Testing',
             attribute.attribute_value.application_namespace
@@ -225,6 +227,20 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         self.assertEqual(
             'Testing2',
             attribute.attribute_value.application_data
+        )
+
+        attribute2 = attribute_list[1]
+        self.assertEqual(
+            'Application Specific Information',
+            attribute2.attribute_name.value
+        )
+        self.assertEqual(
+            'Testing3',
+            attribute2.attribute_value.application_namespace
+        )
+        self.assertEqual(
+            'Testing4',
+            attribute2.attribute_value.application_data
         )
 
         self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, key_id)
@@ -546,10 +562,16 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         secret = objects.SecretData(
             b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64',
             enums.SecretDataType.PASSWORD,
-            app_specific_info={
-                'application_namespace': 'Testing',
-                'application_data': 'Testing2'
-            }
+            app_specific_info=[
+                {
+                    'application_namespace': 'Testing',
+                    'application_data': 'Testing2'
+                },
+                {
+                    'application_namespace': 'Testing3',
+                    'application_data': 'Testing4'
+                }
+            ]
             )
 
         uid = self.client.register(secret)
@@ -568,14 +590,12 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 attribute_names=['Application Specific Information']
             )
             self.assertEqual(uid, result_id)
-            self.assertEqual(1, len(attribute_list))
 
             attribute = attribute_list[0]
             self.assertEqual(
                 'Application Specific Information',
                 attribute.attribute_name.value
             )
-            print(attribute.attribute_value)
             self.assertEqual(
                 'Testing',
                 attribute.attribute_value.application_namespace
@@ -583,6 +603,20 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             self.assertEqual(
                 'Testing2',
                 attribute.attribute_value.application_data
+            )
+
+            attribute2 = attribute_list[1]
+            self.assertEqual(
+                'Application Specific Information',
+                attribute2.attribute_name.value
+            )
+            self.assertEqual(
+                'Testing3',
+                attribute2.attribute_value.application_namespace
+            )
+            self.assertEqual(
+                'Testing4',
+                attribute2.attribute_value.application_data
             )
 
         finally:
