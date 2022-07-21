@@ -1286,6 +1286,8 @@ class KmipEngine(object):
             return self._process_delete_attribute(payload)
         elif operation == enums.Operation.REGISTER:
             return self._process_register(payload)
+        elif operation == enums.Operation.REKEY:
+            return self._process_rekey(payload)
         elif operation == enums.Operation.DERIVE_KEY:
             return self._process_derive_key(payload)
         elif operation == enums.Operation.LOCATE:
@@ -1940,6 +1942,92 @@ class KmipEngine(object):
                 unique_identifier=unique_identifier,
                 attribute=modified_attribute
             )
+
+    # NOTE Basic re-key for internal testing.
+    @_kmip_version_supported('1.0')
+    def _process_rekey(self, payload):
+        self._logger.info("Processing operation: Re-key")
+
+        if payload.unique_identifier:
+            unique_identifier = payload.unique_identifier
+        else:
+            unique_identifier = self._id_placeholder
+
+        if payload.offset:
+            raise exceptions.InvalidField(
+                "Offset is not supported."
+            )
+
+        if payload.template_attribute:
+            raise exceptions.InvalidField(
+                "Template attribute is not supported."
+            )
+
+        existing_managed_object = self._get_object_with_access_controls(
+            unique_identifier,
+            enums.Operation.REKEY
+        )
+
+        object_type = existing_managed_object._object_type
+        if object_type != enums.ObjectType.SYMMETRIC_KEY:
+            name = object_type.name
+            raise exceptions.PermissionDenied(
+                "Cannot re-key a {0} object with the Re-key operation.".format(
+                    ''.join([x.capitalize() for x in name.split('_')])
+                )
+            )
+
+        algorithm = existing_managed_object.cryptographic_algorithm
+        length = existing_managed_object.cryptographic_length
+
+        result = self._cryptography_engine.create_symmetric_key(
+            algorithm,
+            length
+        )
+
+        new_managed_object = objects.SymmetricKey(
+            algorithm,
+            length,
+            result.get('value')
+        )
+
+        # Attributes are copied to the new managed object.
+        new_managed_object.cryptographic_algorithm = existing_managed_object.cryptographic_algorithm
+        new_managed_object.cryptographic_length = existing_managed_object.cryptographic_length
+        new_managed_object.cryptographic_usage_masks = existing_managed_object.cryptographic_usage_masks
+        new_managed_object.operation_policy_name = existing_managed_object.operation_policy_name
+        new_managed_object.sensitive = existing_managed_object.sensitive
+        new_managed_object.state = existing_managed_object.state
+
+        # The Name attribute is transferred to the new managed object.
+        new_managed_object.names = existing_managed_object.names
+        existing_managed_object.names = []
+
+        # TODO Link the new and existing managed objects.
+
+        # TODO Set additional server-only attributes?
+        new_managed_object._owner = self._client_identity[0]
+        new_managed_object.initial_date = int(time.time())
+
+        self._data_session.add(new_managed_object)
+
+        # NOTE SQLAlchemy will *not* assign an ID until
+        # commit is called. This makes future support for UNDO problematic.
+        self._data_session.commit()
+
+        self._logger.info(
+            "Re-keyed SymmetricKey with ID: {0}".format(
+                new_managed_object.unique_identifier
+            )
+        )
+
+        response_payload = payloads.RekeyResponsePayload(
+            unique_identifier=str(new_managed_object.unique_identifier)
+        )
+
+        self._id_placeholder = str(new_managed_object.unique_identifier)
+
+        return response_payload
 
     @_kmip_version_supported('1.0')
     def _process_register(self, payload):
