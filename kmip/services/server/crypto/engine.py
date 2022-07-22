@@ -21,8 +21,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes, hmac, cmac
 from cryptography.hazmat.primitives import padding as symmetric_padding
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.asymmetric import padding as \
-    asymmetric_padding
+from cryptography.hazmat.primitives.asymmetric import padding as asymmetric_padding
 from cryptography.hazmat.primitives import ciphers, keywrap
 from cryptography.hazmat.primitives.ciphers import algorithms, modes
 from cryptography.hazmat.primitives.kdf import hkdf
@@ -44,18 +43,18 @@ class CryptographyEngine(api.CryptographicEngine):
         """
         Construct a CryptographyEngine.
         """
-        self.logger = logging.getLogger('kmip.server.engine.cryptography')
+        self.logger = logging.getLogger("kmip.server.engine.cryptography")
 
         # The IDEA algorithm is supported by cryptography but may not be
         # supported by certain backends, like OpenSSL.
         self._symmetric_key_algorithms = {
             enums.CryptographicAlgorithm.TRIPLE_DES: algorithms.TripleDES,
-            enums.CryptographicAlgorithm.AES:        algorithms.AES,
-            enums.CryptographicAlgorithm.BLOWFISH:   algorithms.Blowfish,
-            enums.CryptographicAlgorithm.CAMELLIA:   algorithms.Camellia,
-            enums.CryptographicAlgorithm.CAST5:      algorithms.CAST5,
-            enums.CryptographicAlgorithm.IDEA:       algorithms.IDEA,
-            enums.CryptographicAlgorithm.RC4:        algorithms.ARC4
+            enums.CryptographicAlgorithm.AES: algorithms.AES,
+            enums.CryptographicAlgorithm.BLOWFISH: algorithms.Blowfish,
+            enums.CryptographicAlgorithm.CAMELLIA: algorithms.Camellia,
+            enums.CryptographicAlgorithm.CAST5: algorithms.CAST5,
+            enums.CryptographicAlgorithm.IDEA: algorithms.IDEA,
+            enums.CryptographicAlgorithm.RC4: algorithms.ARC4,
         }
         self._asymmetric_key_algorithms = {
             enums.CryptographicAlgorithm.RSA: self._create_rsa_key_pair
@@ -66,17 +65,17 @@ class CryptographyEngine(api.CryptographicEngine):
             enums.CryptographicAlgorithm.HMAC_SHA256: hashes.SHA256,
             enums.CryptographicAlgorithm.HMAC_SHA384: hashes.SHA384,
             enums.CryptographicAlgorithm.HMAC_SHA512: hashes.SHA512,
-            enums.CryptographicAlgorithm.HMAC_MD5: hashes.MD5
+            enums.CryptographicAlgorithm.HMAC_MD5: hashes.MD5,
         }
 
         # TODO(peter-hamilton): Consider merging above hash dict and this one
         self._encryption_hash_algorithms = {
-            enums.HashingAlgorithm.MD5:     hashes.MD5,
-            enums.HashingAlgorithm.SHA_1:   hashes.SHA1,
+            enums.HashingAlgorithm.MD5: hashes.MD5,
+            enums.HashingAlgorithm.SHA_1: hashes.SHA1,
             enums.HashingAlgorithm.SHA_224: hashes.SHA224,
             enums.HashingAlgorithm.SHA_256: hashes.SHA256,
             enums.HashingAlgorithm.SHA_384: hashes.SHA384,
-            enums.HashingAlgorithm.SHA_512: hashes.SHA512
+            enums.HashingAlgorithm.SHA_512: hashes.SHA512,
         }
 
         self._modes = {
@@ -85,40 +84,50 @@ class CryptographyEngine(api.CryptographicEngine):
             enums.BlockCipherMode.OFB: modes.OFB,
             enums.BlockCipherMode.CFB: modes.CFB,
             enums.BlockCipherMode.CTR: modes.CTR,
-            enums.BlockCipherMode.GCM: modes.GCM
+            enums.BlockCipherMode.GCM: modes.GCM,
         }
         self._asymmetric_padding_methods = {
-             enums.PaddingMethod.OAEP:     asymmetric_padding.OAEP,
-             enums.PaddingMethod.PKCS1v15: asymmetric_padding.PKCS1v15,
-             enums.PaddingMethod.PSS:      asymmetric_padding.PSS
+            enums.PaddingMethod.OAEP: asymmetric_padding.OAEP,
+            enums.PaddingMethod.PKCS1v15: asymmetric_padding.PKCS1v15,
+            enums.PaddingMethod.PSS: asymmetric_padding.PSS,
         }
         self._symmetric_padding_methods = {
             enums.PaddingMethod.ANSI_X923: symmetric_padding.ANSIX923,
-            enums.PaddingMethod.PKCS5:     symmetric_padding.PKCS7
+            enums.PaddingMethod.PKCS5: symmetric_padding.PKCS7,
         }
-        self._no_mode_needed = [
-            enums.CryptographicAlgorithm.RC4
-        ]
+        self._no_mode_needed = [enums.CryptographicAlgorithm.RC4]
         self._no_padding_needed = [
             enums.BlockCipherMode.CTR,
             enums.BlockCipherMode.OFB,
             enums.BlockCipherMode.CFB,
-            enums.BlockCipherMode.GCM
+            enums.BlockCipherMode.GCM,
         ]
 
         self._digital_signature_algorithms = {
-            enums.DigitalSignatureAlgorithm.MD5_WITH_RSA_ENCRYPTION:
-                (hashes.MD5, enums.CryptographicAlgorithm.RSA),
-            enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION:
-                (hashes.SHA1, enums.CryptographicAlgorithm.RSA),
-            enums.DigitalSignatureAlgorithm.SHA224_WITH_RSA_ENCRYPTION:
-                (hashes.SHA224, enums.CryptographicAlgorithm.RSA),
-            enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION:
-                (hashes.SHA256, enums.CryptographicAlgorithm.RSA),
-            enums.DigitalSignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION:
-                (hashes.SHA384, enums.CryptographicAlgorithm.RSA),
-            enums.DigitalSignatureAlgorithm.SHA512_WITH_RSA_ENCRYPTION:
-                (hashes.SHA512, enums.CryptographicAlgorithm.RSA)
+            enums.DigitalSignatureAlgorithm.MD5_WITH_RSA_ENCRYPTION: (
+                hashes.MD5,
+                enums.CryptographicAlgorithm.RSA,
+            ),
+            enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION: (
+                hashes.SHA1,
+                enums.CryptographicAlgorithm.RSA,
+            ),
+            enums.DigitalSignatureAlgorithm.SHA224_WITH_RSA_ENCRYPTION: (
+                hashes.SHA224,
+                enums.CryptographicAlgorithm.RSA,
+            ),
+            enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION: (
+                hashes.SHA256,
+                enums.CryptographicAlgorithm.RSA,
+            ),
+            enums.DigitalSignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION: (
+                hashes.SHA384,
+                enums.CryptographicAlgorithm.RSA,
+            ),
+            enums.DigitalSignatureAlgorithm.SHA512_WITH_RSA_ENCRYPTION: (
+                hashes.SHA512,
+                enums.CryptographicAlgorithm.RSA,
+            ),
         }
 
     def create_symmetric_key(self, algorithm, length):
@@ -159,9 +168,7 @@ class CryptographyEngine(api.CryptographicEngine):
         if length not in cryptography_algorithm.key_sizes:
             raise exceptions.InvalidField(
                 "The cryptographic length ({0}) is not valid for "
-                "the cryptographic algorithm ({1}).".format(
-                    length, algorithm.name
-                )
+                "the cryptographic algorithm ({1}).".format(length, algorithm.name)
             )
 
         self.logger.info(
@@ -176,9 +183,10 @@ class CryptographyEngine(api.CryptographicEngine):
         except Exception as e:
             self.logger.exception(e)
             raise exceptions.CryptographicFailure(
-                "Invalid bytes for the provided cryptographic algorithm.")
+                "Invalid bytes for the provided cryptographic algorithm."
+            )
 
-        return {'value': key_bytes, 'format': enums.KeyFormatType.RAW}
+        return {"value": key_bytes, "format": enums.KeyFormatType.RAW}
 
     def create_asymmetric_key_pair(self, algorithm, length):
         """
@@ -286,16 +294,18 @@ class CryptographyEngine(api.CryptographicEngine):
             )
         return mac_data
 
-    def encrypt(self,
-                encryption_algorithm,
-                encryption_key,
-                plain_text,
-                cipher_mode=None,
-                padding_method=None,
-                iv_nonce=None,
-                auth_additional_data=None,
-                auth_tag_length=None,
-                hashing_algorithm=None):
+    def encrypt(
+        self,
+        encryption_algorithm,
+        encryption_key,
+        plain_text,
+        cipher_mode=None,
+        padding_method=None,
+        iv_nonce=None,
+        auth_additional_data=None,
+        auth_tag_length=None,
+        hashing_algorithm=None,
+    ):
         """
         Encrypt data using symmetric or asymmetric encryption.
 
@@ -373,7 +383,7 @@ class CryptographyEngine(api.CryptographicEngine):
                 encryption_key,
                 plain_text,
                 padding_method,
-                hashing_algorithm=hashing_algorithm
+                hashing_algorithm=hashing_algorithm,
             )
         else:
             return self._encrypt_symmetric(
@@ -384,19 +394,20 @@ class CryptographyEngine(api.CryptographicEngine):
                 padding_method=padding_method,
                 iv_nonce=iv_nonce,
                 auth_additional_data=auth_additional_data,
-                auth_tag_length=auth_tag_length
+                auth_tag_length=auth_tag_length,
             )
 
     def _encrypt_symmetric(
-            self,
-            encryption_algorithm,
-            encryption_key,
-            plain_text,
-            cipher_mode=None,
-            padding_method=None,
-            iv_nonce=None,
-            auth_additional_data=None,
-            auth_tag_length=None):
+        self,
+        encryption_algorithm,
+        encryption_key,
+        plain_text,
+        cipher_mode=None,
+        padding_method=None,
+        iv_nonce=None,
+        auth_additional_data=None,
+        auth_tag_length=None,
+    ):
         """
         Encrypt data using symmetric encryption.
 
@@ -444,10 +455,7 @@ class CryptographyEngine(api.CryptographicEngine):
         """
 
         # Set up the algorithm
-        algorithm = self._symmetric_key_algorithms.get(
-            encryption_algorithm,
-            None
-        )
+        algorithm = self._symmetric_key_algorithms.get(encryption_algorithm, None)
         if algorithm is None:
             raise exceptions.InvalidField(
                 "Encryption algorithm '{0}' is not a supported symmetric "
@@ -464,13 +472,13 @@ class CryptographyEngine(api.CryptographicEngine):
         is_gcm_mode = cipher_mode == enums.BlockCipherMode.GCM
         if not is_gcm_mode and auth_additional_data is not None:
             raise exceptions.InvalidField(
-                'Authenticated encryption additional data is supported '
-                'in GCM mode only.'
+                "Authenticated encryption additional data is supported "
+                "in GCM mode only."
             )
         if is_gcm_mode and auth_tag_length is None:
             raise exceptions.InvalidField(
-                'Authenticated encryption tag length must be provided '
-                'in GCM mode only.'
+                "Authenticated encryption tag length must be provided "
+                "in GCM mode only."
             )
 
         # Set up the cipher mode if needed
@@ -483,12 +491,9 @@ class CryptographyEngine(api.CryptographicEngine):
             mode = self._modes.get(cipher_mode, None)
             if mode is None:
                 raise exceptions.InvalidField(
-                    "Cipher mode '{0}' is not a supported mode.".format(
-                        cipher_mode
-                    )
+                    "Cipher mode '{0}' is not a supported mode.".format(cipher_mode)
                 )
-            if hasattr(mode, 'initialization_vector') or \
-                    hasattr(mode, 'nonce'):
+            if hasattr(mode, "initialization_vector") or hasattr(mode, "nonce"):
                 if iv_nonce is None:
                     iv_nonce = os.urandom(algorithm.block_size // 8)
                     return_iv_nonce = True
@@ -500,14 +505,11 @@ class CryptographyEngine(api.CryptographicEngine):
                 mode = mode()
 
         # Pad the plain text if needed (separate methods for testing purposes)
-        if cipher_mode in [
-                enums.BlockCipherMode.CBC,
-                enums.BlockCipherMode.ECB
-        ]:
+        if cipher_mode in [enums.BlockCipherMode.CBC, enums.BlockCipherMode.ECB]:
             plain_text = self._handle_symmetric_padding(
                 self._symmetric_key_algorithms.get(encryption_algorithm),
                 plain_text,
-                padding_method
+                padding_method,
             )
 
         # Encrypt the plain text
@@ -517,19 +519,21 @@ class CryptographyEngine(api.CryptographicEngine):
             encryptor.authenticate_additional_data(auth_additional_data)
         cipher_text = encryptor.update(plain_text) + encryptor.finalize()
 
-        result = {'cipher_text': cipher_text}
+        result = {"cipher_text": cipher_text}
         if return_iv_nonce:
-            result['iv_nonce'] = iv_nonce
+            result["iv_nonce"] = iv_nonce
         if is_gcm_mode:
-            result['auth_tag'] = encryptor.tag[:auth_tag_length]
+            result["auth_tag"] = encryptor.tag[:auth_tag_length]
         return result
 
-    def _encrypt_asymmetric(self,
-                            encryption_algorithm,
-                            encryption_key,
-                            plain_text,
-                            padding_method,
-                            hashing_algorithm=None):
+    def _encrypt_asymmetric(
+        self,
+        encryption_algorithm,
+        encryption_key,
+        plain_text,
+        padding_method,
+        hashing_algorithm=None,
+    ):
         """
         Encrypt data using asymmetric encryption.
 
@@ -561,9 +565,7 @@ class CryptographyEngine(api.CryptographicEngine):
         """
         if encryption_algorithm == enums.CryptographicAlgorithm.RSA:
             if padding_method == enums.PaddingMethod.OAEP:
-                hash_algorithm = self._encryption_hash_algorithms.get(
-                    hashing_algorithm
-                )
+                hash_algorithm = self._encryption_hash_algorithms.get(hashing_algorithm)
                 if hash_algorithm is None:
                     raise exceptions.InvalidField(
                         "The hashing algorithm '{0}' is not supported for "
@@ -571,11 +573,9 @@ class CryptographyEngine(api.CryptographicEngine):
                     )
 
                 padding_method = asymmetric_padding.OAEP(
-                    mgf=asymmetric_padding.MGF1(
-                        algorithm=hash_algorithm()
-                    ),
+                    mgf=asymmetric_padding.MGF1(algorithm=hash_algorithm()),
                     algorithm=hash_algorithm(),
-                    label=None
+                    label=None,
                 )
             elif padding_method == enums.PaddingMethod.PKCS1v15:
                 padding_method = asymmetric_padding.PKCS1v15()
@@ -596,22 +596,17 @@ class CryptographyEngine(api.CryptographicEngine):
                     raise exceptions.CryptographicFailure(
                         "The public key bytes could not be loaded."
                     )
-            cipher_text = public_key.encrypt(
-                plain_text,
-                padding_method
-            )
-            return {'cipher_text': cipher_text}
+            cipher_text = public_key.encrypt(plain_text, padding_method)
+            return {"cipher_text": cipher_text}
         else:
             raise exceptions.InvalidField(
                 "The cryptographic algorithm '{0}' is not supported for "
                 "asymmetric encryption.".format(encryption_algorithm)
             )
 
-    def _handle_symmetric_padding(self,
-                                  algorithm,
-                                  plain_text,
-                                  padding_method,
-                                  undo_padding=False):
+    def _handle_symmetric_padding(
+        self, algorithm, plain_text, padding_method, undo_padding=False
+    ):
         # KMIP 1.3 test TC-STREAM-ENC-2-13.xml demonstrates a case
         # where an encrypt call for 3DES-ECB does not use padding if
         # the plaintext fits the blocksize of the algorithm. This does
@@ -620,9 +615,7 @@ class CryptographyEngine(api.CryptographicEngine):
         # impossible to differentiate from cipher text/key mismatches.
         # For now, ALWAYS apply padding regardless of plain text length.
         if padding_method in self._symmetric_padding_methods.keys():
-            padding_method = self._symmetric_padding_methods.get(
-                padding_method
-            )
+            padding_method = self._symmetric_padding_methods.get(padding_method)
             if undo_padding:
                 padder = padding_method(algorithm.block_size).unpadder()
             else:
@@ -631,27 +624,25 @@ class CryptographyEngine(api.CryptographicEngine):
             plain_text += padder.finalize()
         else:
             if padding_method is None:
-                raise exceptions.InvalidField(
-                    "Padding method is required."
-                )
+                raise exceptions.InvalidField("Padding method is required.")
             else:
                 raise exceptions.InvalidField(
-                    "Padding method '{0}' is not supported.".format(
-                        padding_method
-                    )
+                    "Padding method '{0}' is not supported.".format(padding_method)
                 )
         return plain_text
 
-    def decrypt(self,
-                decryption_algorithm,
-                decryption_key,
-                cipher_text,
-                cipher_mode=None,
-                padding_method=None,
-                iv_nonce=None,
-                auth_additional_data=None,
-                auth_tag=None,
-                hashing_algorithm=None):
+    def decrypt(
+        self,
+        decryption_algorithm,
+        decryption_key,
+        cipher_text,
+        cipher_mode=None,
+        padding_method=None,
+        iv_nonce=None,
+        auth_additional_data=None,
+        auth_tag=None,
+        hashing_algorithm=None,
+    ):
         """
         Decrypt data using symmetric decryption.
 
@@ -725,7 +716,7 @@ class CryptographyEngine(api.CryptographicEngine):
                 decryption_key,
                 cipher_text,
                 padding_method,
-                hashing_algorithm=hashing_algorithm
+                hashing_algorithm=hashing_algorithm,
             )
         else:
             return self._decrypt_symmetric(
@@ -736,19 +727,20 @@ class CryptographyEngine(api.CryptographicEngine):
                 padding_method=padding_method,
                 iv_nonce=iv_nonce,
                 auth_additional_data=auth_additional_data,
-                auth_tag=auth_tag
+                auth_tag=auth_tag,
             )
 
     def _decrypt_symmetric(
-            self,
-            decryption_algorithm,
-            decryption_key,
-            cipher_text,
-            cipher_mode=None,
-            padding_method=None,
-            iv_nonce=None,
-            auth_additional_data=None,
-            auth_tag=None):
+        self,
+        decryption_algorithm,
+        decryption_key,
+        cipher_text,
+        cipher_mode=None,
+        padding_method=None,
+        iv_nonce=None,
+        auth_additional_data=None,
+        auth_tag=None,
+    ):
         """
         Decrypt data using symmetric decryption.
 
@@ -788,10 +780,7 @@ class CryptographyEngine(api.CryptographicEngine):
                 fails.
         """
         # Set up the algorithm
-        algorithm = self._symmetric_key_algorithms.get(
-            decryption_algorithm,
-            None
-        )
+        algorithm = self._symmetric_key_algorithms.get(decryption_algorithm, None)
         if algorithm is None:
             raise exceptions.InvalidField(
                 "Decryption algorithm '{0}' is not a supported symmetric "
@@ -808,11 +797,11 @@ class CryptographyEngine(api.CryptographicEngine):
         is_gcm_mode = cipher_mode == enums.BlockCipherMode.GCM
         if auth_additional_data is not None and not is_gcm_mode:
             raise exceptions.InvalidField(
-                'Additional data is supported in GCM mode only.'
+                "Additional data is supported in GCM mode only."
             )
         if is_gcm_mode and auth_tag is None:
             raise exceptions.InvalidField(
-                'Authenticated tag must be provided in GCM mode.'
+                "Authenticated tag must be provided in GCM mode."
             )
 
         # Set up the cipher mode if needed
@@ -824,22 +813,13 @@ class CryptographyEngine(api.CryptographicEngine):
             mode = self._modes.get(cipher_mode, None)
             if mode is None:
                 raise exceptions.InvalidField(
-                    "Cipher mode '{0}' is not a supported mode.".format(
-                        cipher_mode
-                    )
+                    "Cipher mode '{0}' is not a supported mode.".format(cipher_mode)
                 )
-            if hasattr(mode, 'initialization_vector') or \
-                    hasattr(mode, 'nonce'):
+            if hasattr(mode, "initialization_vector") or hasattr(mode, "nonce"):
                 if iv_nonce is None:
-                    raise exceptions.InvalidField(
-                        "IV/nonce is required."
-                    )
+                    raise exceptions.InvalidField("IV/nonce is required.")
                 if is_gcm_mode:
-                    mode = mode(
-                        iv_nonce,
-                        tag=auth_tag,
-                        min_tag_length=len(auth_tag)
-                    )
+                    mode = mode(iv_nonce, tag=auth_tag, min_tag_length=len(auth_tag))
                 else:
                     mode = mode(iv_nonce)
             else:
@@ -854,26 +834,24 @@ class CryptographyEngine(api.CryptographicEngine):
 
         # Unpad the plain text if needed (separate methods for testing
         # purposes)
-        if cipher_mode in [
-                enums.BlockCipherMode.CBC,
-                enums.BlockCipherMode.ECB
-        ]:
+        if cipher_mode in [enums.BlockCipherMode.CBC, enums.BlockCipherMode.ECB]:
             plain_text = self._handle_symmetric_padding(
                 self._symmetric_key_algorithms.get(decryption_algorithm),
                 plain_text,
                 padding_method,
-                undo_padding=True
+                undo_padding=True,
             )
 
         return plain_text
 
     def _decrypt_asymmetric(
-            self,
-            decryption_algorithm,
-            decryption_key,
-            cipher_text,
-            padding_method,
-            hashing_algorithm=None):
+        self,
+        decryption_algorithm,
+        decryption_key,
+        cipher_text,
+        padding_method,
+        hashing_algorithm=None,
+    ):
         """
         Decrypt data using asymmetric decryption.
 
@@ -905,9 +883,7 @@ class CryptographyEngine(api.CryptographicEngine):
         """
         if decryption_algorithm == enums.CryptographicAlgorithm.RSA:
             if padding_method == enums.PaddingMethod.OAEP:
-                hash_algorithm = self._encryption_hash_algorithms.get(
-                    hashing_algorithm
-                )
+                hash_algorithm = self._encryption_hash_algorithms.get(hashing_algorithm)
                 if hash_algorithm is None:
                     raise exceptions.InvalidField(
                         "The hashing algorithm '{0}' is not supported for "
@@ -915,11 +891,9 @@ class CryptographyEngine(api.CryptographicEngine):
                     )
 
                 padding_method = asymmetric_padding.OAEP(
-                    mgf=asymmetric_padding.MGF1(
-                        algorithm=hash_algorithm()
-                    ),
+                    mgf=asymmetric_padding.MGF1(algorithm=hash_algorithm()),
                     algorithm=hash_algorithm(),
-                    label=None
+                    label=None,
                 )
             elif padding_method == enums.PaddingMethod.PKCS1v15:
                 padding_method = asymmetric_padding.PKCS1v15()
@@ -932,24 +906,15 @@ class CryptographyEngine(api.CryptographicEngine):
             backend = default_backend()
 
             try:
-                private_key = backend.load_der_private_key(
-                    decryption_key,
-                    None
-                )
+                private_key = backend.load_der_private_key(decryption_key, None)
             except Exception:
                 try:
-                    private_key = backend.load_pem_private_key(
-                        decryption_key,
-                        None
-                    )
+                    private_key = backend.load_pem_private_key(decryption_key, None)
                 except Exception:
                     raise exceptions.CryptographicFailure(
                         "The private key bytes could not be loaded."
                     )
-            plain_text = private_key.decrypt(
-                cipher_text,
-                padding_method
-            )
+            plain_text = private_key.decrypt(cipher_text, padding_method)
             return plain_text
         else:
             raise exceptions.InvalidField(
@@ -983,24 +948,24 @@ class CryptographyEngine(api.CryptographicEngine):
         """
         self.logger.info(
             "Generating an RSA key pair with length: {0}, and "
-            "public_exponent: {1}".format(
-                length, public_exponent
-            )
+            "public_exponent: {1}".format(length, public_exponent)
         )
         try:
             private_key = rsa.generate_private_key(
                 public_exponent=public_exponent,
                 key_size=length,
-                backend=default_backend())
+                backend=default_backend(),
+            )
             public_key = private_key.public_key()
 
             private_bytes = private_key.private_bytes(
                 serialization.Encoding.DER,
                 serialization.PrivateFormat.PKCS8,
-                serialization.NoEncryption())
+                serialization.NoEncryption(),
+            )
             public_bytes = public_key.public_bytes(
-                serialization.Encoding.DER,
-                serialization.PublicFormat.PKCS1)
+                serialization.Encoding.DER, serialization.PublicFormat.PKCS1
+            )
         except Exception as e:
             self.logger.exception(e)
             raise exceptions.CryptographicFailure(
@@ -1009,30 +974,32 @@ class CryptographyEngine(api.CryptographicEngine):
             )
 
         public_key = {
-            'value': public_bytes,
-            'format': enums.KeyFormatType.PKCS_1,
-            'public_exponent': public_exponent
+            "value": public_bytes,
+            "format": enums.KeyFormatType.PKCS_1,
+            "public_exponent": public_exponent,
         }
         private_key = {
-            'value': private_bytes,
-            'format': enums.KeyFormatType.PKCS_8,
-            'public_exponent': public_exponent
+            "value": private_bytes,
+            "format": enums.KeyFormatType.PKCS_8,
+            "public_exponent": public_exponent,
         }
 
         return public_key, private_key
 
-    def derive_key(self,
-                   derivation_method,
-                   derivation_length,
-                   derivation_data=None,
-                   key_material=None,
-                   hash_algorithm=None,
-                   salt=None,
-                   iteration_count=None,
-                   encryption_algorithm=None,
-                   cipher_mode=None,
-                   padding_method=None,
-                   iv_nonce=None):
+    def derive_key(
+        self,
+        derivation_method,
+        derivation_length,
+        derivation_data=None,
+        key_material=None,
+        hash_algorithm=None,
+        salt=None,
+        iteration_count=None,
+        encryption_algorithm=None,
+        cipher_mode=None,
+        padding_method=None,
+        iv_nonce=None,
+    ):
         """
         Derive key data using a variety of key derivation functions.
 
@@ -1107,9 +1074,9 @@ class CryptographyEngine(api.CryptographicEngine):
                 plain_text=derivation_data,
                 cipher_mode=cipher_mode,
                 padding_method=padding_method,
-                iv_nonce=iv_nonce
+                iv_nonce=iv_nonce,
             )
-            return result.get('cipher_text')
+            return result.get("cipher_text")
         else:
             # Handle key derivation functions that use hash algorithms
 
@@ -1117,8 +1084,7 @@ class CryptographyEngine(api.CryptographicEngine):
             if hash_algorithm is None:
                 raise exceptions.InvalidField("Hash algorithm is required.")
             hashing_algorithm = self._encryption_hash_algorithms.get(
-                hash_algorithm,
-                None
+                hash_algorithm, None
             )
             if hashing_algorithm is None:
                 raise exceptions.InvalidField(
@@ -1132,7 +1098,7 @@ class CryptographyEngine(api.CryptographicEngine):
                     length=derivation_length,
                     salt=salt,
                     info=derivation_data,
-                    backend=default_backend()
+                    backend=default_backend(),
                 )
                 derived_data = df.derive(key_material)
                 return derived_data
@@ -1153,8 +1119,7 @@ class CryptographyEngine(api.CryptographicEngine):
                     )
 
                 df = hashes.Hash(
-                    algorithm=hashing_algorithm(),
-                    backend=default_backend()
+                    algorithm=hashing_algorithm(), backend=default_backend()
                 )
                 df.update(hashing_data)
                 derived_data = df.finalize()
@@ -1175,7 +1140,7 @@ class CryptographyEngine(api.CryptographicEngine):
                     length=derivation_length,
                     salt=salt,
                     iterations=iteration_count,
-                    backend=default_backend()
+                    backend=default_backend(),
                 )
                 derived_data = df.derive(key_material)
                 return derived_data
@@ -1190,7 +1155,7 @@ class CryptographyEngine(api.CryptographicEngine):
                     label=None,
                     context=None,
                     fixed=derivation_data,
-                    backend=default_backend()
+                    backend=default_backend(),
                 )
                 derived_data = df.derive(key_material)
                 return derived_data
@@ -1200,11 +1165,9 @@ class CryptographyEngine(api.CryptographicEngine):
                     "derivation method.".format(derivation_method)
                 )
 
-    def wrap_key(self,
-                 key_material,
-                 wrapping_method,
-                 key_wrap_algorithm,
-                 encryption_key):
+    def wrap_key(
+        self, key_material, wrapping_method, key_wrap_algorithm, encryption_key
+    ):
         """
         Args:
             key_material (bytes): The bytes of the key to wrap. Required.
@@ -1248,9 +1211,7 @@ class CryptographyEngine(api.CryptographicEngine):
             if key_wrap_algorithm == enums.BlockCipherMode.NIST_KEY_WRAP:
                 try:
                     wrapped_key = keywrap.aes_key_wrap(
-                        encryption_key,
-                        key_material,
-                        default_backend()
+                        encryption_key, key_material, default_backend()
                     )
                     return wrapped_key
                 except Exception as e:
@@ -1266,8 +1227,7 @@ class CryptographyEngine(api.CryptographicEngine):
                 "method.".format(wrapping_method)
             )
 
-    def _create_RSA_private_key(self,
-                                bytes):
+    def _create_RSA_private_key(self, bytes):
         """
         Instantiates an RSA key from bytes.
 
@@ -1281,26 +1241,24 @@ class CryptographyEngine(api.CryptographicEngine):
 
         try:
             private_key = serialization.load_pem_private_key(
-                bytes,
-                password=None,
-                backend=default_backend()
+                bytes, password=None, backend=default_backend()
             )
             return private_key
         except Exception:
             private_key = serialization.load_der_private_key(
-                bytes,
-                password=None,
-                backend=default_backend()
+                bytes, password=None, backend=default_backend()
             )
             return private_key
 
-    def sign(self,
-             digital_signature_algorithm,
-             crypto_alg,
-             hash_algorithm,
-             padding,
-             signing_key,
-             data):
+    def sign(
+        self,
+        digital_signature_algorithm,
+        crypto_alg,
+        hash_algorithm,
+        padding,
+        signing_key,
+        data,
+    ):
         """
         Args:
             digital_signature_algorithm (DigitalSignatureAlgorithm): An
@@ -1332,38 +1290,32 @@ class CryptographyEngine(api.CryptographicEngine):
 
         if digital_signature_algorithm:
             (hash_alg, crypto_alg) = self._digital_signature_algorithms.get(
-                                         digital_signature_algorithm,
-                                         (None, None)
+                digital_signature_algorithm, (None, None)
             )
 
         elif crypto_alg and hash_algorithm:
-            hash_alg = self._encryption_hash_algorithms.get(
-                hash_algorithm, None
-            )
+            hash_alg = self._encryption_hash_algorithms.get(hash_algorithm, None)
         else:
             raise exceptions.InvalidField(
-                'For signing, either a digital signature algorithm or a hash'
-                ' algorithm and a cryptographic algorithm must be specified.'
+                "For signing, either a digital signature algorithm or a hash"
+                " algorithm and a cryptographic algorithm must be specified."
             )
 
         if crypto_alg == enums.CryptographicAlgorithm.RSA:
             try:
                 key = self._create_RSA_private_key(signing_key)
             except Exception:
-                raise exceptions.InvalidField('Unable to deserialize key '
-                                              'bytes, unknown format.')
+                raise exceptions.InvalidField(
+                    "Unable to deserialize key " "bytes, unknown format."
+                )
         else:
-            raise exceptions.InvalidField(
-                'For signing, an RSA key must be used.'
-            )
+            raise exceptions.InvalidField("For signing, an RSA key must be used.")
 
         if padding:
-            padding_method = self._asymmetric_padding_methods.get(
-                padding, None
-            )
+            padding_method = self._asymmetric_padding_methods.get(padding, None)
         else:
             raise exceptions.InvalidField(
-                'For signing, a padding method must be specified.'
+                "For signing, a padding method must be specified."
             )
 
         if padding == enums.PaddingMethod.PSS:
@@ -1371,16 +1323,12 @@ class CryptographyEngine(api.CryptographicEngine):
                 data,
                 asymmetric_padding.PSS(
                     mgf=asymmetric_padding.MGF1(hash_alg()),
-                    salt_length=asymmetric_padding.PSS.MAX_LENGTH
+                    salt_length=asymmetric_padding.PSS.MAX_LENGTH,
                 ),
-                hash_alg()
+                hash_alg(),
             )
         elif padding == enums.PaddingMethod.PKCS1v15:
-            signature = key.sign(
-                data,
-                padding_method(),
-                hash_alg()
-            )
+            signature = key.sign(data, padding_method(), hash_alg())
         else:
             raise exceptions.InvalidField(
                 "Padding method '{0}' is not a supported signature "
@@ -1388,14 +1336,16 @@ class CryptographyEngine(api.CryptographicEngine):
             )
         return signature
 
-    def verify_signature(self,
-                         signing_key,
-                         message,
-                         signature,
-                         padding_method,
-                         signing_algorithm=None,
-                         hashing_algorithm=None,
-                         digital_signature_algorithm=None):
+    def verify_signature(
+        self,
+        signing_key,
+        message,
+        signature,
+        padding_method,
+        signing_algorithm=None,
+        hashing_algorithm=None,
+        digital_signature_algorithm=None,
+    ):
         """
         Verify a message signature.
 
@@ -1441,9 +1391,7 @@ class CryptographyEngine(api.CryptographicEngine):
         dsa_signing_algorithm = None
 
         if hashing_algorithm:
-            hash_algorithm = self._encryption_hash_algorithms.get(
-                hashing_algorithm
-            )
+            hash_algorithm = self._encryption_hash_algorithms.get(hashing_algorithm)
         if digital_signature_algorithm:
             algorithm_pair = self._digital_signature_algorithms.get(
                 digital_signature_algorithm
@@ -1458,8 +1406,7 @@ class CryptographyEngine(api.CryptographicEngine):
                     "The hashing algorithm does not match the digital "
                     "signature algorithm."
                 )
-            if (signing_algorithm and
-                    (signing_algorithm != dsa_signing_algorithm)):
+            if signing_algorithm and (signing_algorithm != dsa_signing_algorithm):
                 raise exceptions.InvalidField(
                     "The signing algorithm does not match the digital "
                     "signature algorithm."
@@ -1473,12 +1420,11 @@ class CryptographyEngine(api.CryptographicEngine):
                 if hash_algorithm:
                     padding = asymmetric_padding.PSS(
                         mgf=asymmetric_padding.MGF1(hash_algorithm()),
-                        salt_length=asymmetric_padding.PSS.MAX_LENGTH
+                        salt_length=asymmetric_padding.PSS.MAX_LENGTH,
                     )
                 else:
                     raise exceptions.InvalidField(
-                        "A hashing algorithm must be specified for PSS "
-                        "padding."
+                        "A hashing algorithm must be specified for PSS " "padding."
                     )
             elif padding_method == enums.PaddingMethod.PKCS1v15:
                 padding = asymmetric_padding.PKCS1v15()
@@ -1499,12 +1445,7 @@ class CryptographyEngine(api.CryptographicEngine):
                     )
 
             try:
-                public_key.verify(
-                    signature,
-                    message,
-                    padding,
-                    hash_algorithm()
-                )
+                public_key.verify(signature, message, padding, hash_algorithm())
                 return True
             except errors.InvalidSignature:
                 return False

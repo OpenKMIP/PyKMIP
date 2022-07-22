@@ -34,16 +34,14 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         #     Unique Identifier - f4152f17-9312-431a-b3fb-4fe86a86a7a1
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x66\x34\x31\x35\x32\x66\x31\x37\x2D\x39\x33\x31\x32\x2D\x34\x33'
-            b'\x31\x61\x2D\x62\x33\x66\x62\x2D\x34\x66\x65\x38\x36\x61\x38\x36'
-            b'\x61\x37\x61\x31\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x66\x34\x31\x35\x32\x66\x31\x37\x2D\x39\x33\x31\x32\x2D\x34\x33"
+            b"\x31\x61\x2D\x62\x33\x66\x62\x2D\x34\x66\x65\x38\x36\x61\x38\x36"
+            b"\x61\x37\x61\x31\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestObtainLeaseRequestPayload, self).tearDown()
@@ -63,12 +61,11 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         values.
         """
         payload = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444'
+            unique_identifier="00000000-1111-2222-3333-444444444444"
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
 
     def test_invalid_unique_identifier(self):
@@ -76,7 +73,7 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of an ObtainLease request payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -85,12 +82,9 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.ObtainLeaseRequestPayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_read(self):
@@ -105,8 +99,7 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            'f4152f17-9312-431a-b3fb-4fe86a86a7a1',
-            payload.unique_identifier
+            "f4152f17-9312-431a-b3fb-4fe86a86a7a1", payload.unique_identifier
         )
 
     def test_read_empty(self):
@@ -128,7 +121,7 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         stream.
         """
         payload = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='f4152f17-9312-431a-b3fb-4fe86a86a7a1'
+            unique_identifier="f4152f17-9312-431a-b3fb-4fe86a86a7a1"
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -160,10 +153,10 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='f4152f17-9312-431a-b3fb-4fe86a86a7a1'
+            unique_identifier="f4152f17-9312-431a-b3fb-4fe86a86a7a1"
         )
         b = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='f4152f17-9312-431a-b3fb-4fe86a86a7a1'
+            unique_identifier="f4152f17-9312-431a-b3fb-4fe86a86a7a1"
         )
 
         self.assertTrue(a == b)
@@ -174,12 +167,8 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         ObtainLease request payloads with different unique identifiers.
         """
-        a = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='a'
-        )
-        b = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='b'
-        )
+        a = payloads.ObtainLeaseRequestPayload(unique_identifier="a")
+        b = payloads.ObtainLeaseRequestPayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -190,7 +179,7 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         ObtainLease request payloads with different types.
         """
         a = payloads.ObtainLeaseRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -207,10 +196,10 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='f4152f17-9312-431a-b3fb-4fe86a86a7a1'
+            unique_identifier="f4152f17-9312-431a-b3fb-4fe86a86a7a1"
         )
         b = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='f4152f17-9312-431a-b3fb-4fe86a86a7a1'
+            unique_identifier="f4152f17-9312-431a-b3fb-4fe86a86a7a1"
         )
 
         self.assertFalse(a != b)
@@ -221,12 +210,8 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         ObtainLease request payloads with different unique identifiers.
         """
-        a = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='a'
-        )
-        b = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='b'
-        )
+        a = payloads.ObtainLeaseRequestPayload(unique_identifier="a")
+        b = payloads.ObtainLeaseRequestPayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -237,7 +222,7 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         ObtainLease request payloads with different types.
         """
         a = payloads.ObtainLeaseRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -247,7 +232,7 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         Test that repr can be applied to an ObtainLease request payload.
         """
         payload = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         expected = (
             "ObtainLeaseRequestPayload("
@@ -262,12 +247,10 @@ class TestObtainLeaseRequestPayload(testtools.TestCase):
         Test that str can be applied to an ObtainLease request payload
         """
         payload = payloads.ObtainLeaseRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038'
-        })
+        expected = str({"unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038"})
         observed = str(payload)
 
         self.assertEqual(expected, observed)
@@ -290,29 +273,27 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         #     Last Change Date - 0x4F9A5564 (Fri Apr 27 10:14:28 CEST 2012)
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x50'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x66\x34\x31\x35\x32\x66\x31\x37\x2D\x39\x33\x31\x32\x2D\x34\x33'
-            b'\x31\x61\x2D\x62\x33\x66\x62\x2D\x34\x66\x65\x38\x36\x61\x38\x36'
-            b'\x61\x37\x61\x31\x00\x00\x00\x00'
-            b'\x42\x00\x49\x0A\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x48\x09\x00\x00\x00\x08\x00\x00\x00\x00\x4F\x9A\x55\x64'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x50"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x66\x34\x31\x35\x32\x66\x31\x37\x2D\x39\x33\x31\x32\x2D\x34\x33"
+            b"\x31\x61\x2D\x62\x33\x66\x62\x2D\x34\x66\x65\x38\x36\x61\x38\x36"
+            b"\x61\x37\x61\x31\x00\x00\x00\x00"
+            b"\x42\x00\x49\x0A\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x48\x09\x00\x00\x00\x08\x00\x00\x00\x00\x4F\x9A\x55\x64"
         )
 
         # This encoding matches the following set of values:
         # Response Payload
         #     Unique Identifier - f4152f17-9312-431a-b3fb-4fe86a86a7a1
         self.partial_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x66\x34\x31\x35\x32\x66\x31\x37\x2D\x39\x33\x31\x32\x2D\x34\x33'
-            b'\x31\x61\x2D\x62\x33\x66\x62\x2D\x34\x66\x65\x38\x36\x61\x38\x36'
-            b'\x61\x37\x61\x31\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x66\x34\x31\x35\x32\x66\x31\x37\x2D\x39\x33\x31\x32\x2D\x34\x33"
+            b"\x31\x61\x2D\x62\x33\x66\x62\x2D\x34\x66\x65\x38\x36\x61\x38\x36"
+            b"\x61\x37\x61\x31\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestObtainLeaseResponsePayload, self).tearDown()
@@ -334,14 +315,13 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         values.
         """
         payload = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
+            unique_identifier="00000000-1111-2222-3333-444444444444",
             lease_time=1000000000,
-            last_change_date=1512400153
+            last_change_date=1512400153,
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
         self.assertEqual(1000000000, payload.lease_time)
         self.assertEqual(1512400153, payload.last_change_date)
@@ -351,7 +331,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of an ObtainLease response payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -360,12 +340,9 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.ObtainLeaseResponsePayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_lease_time(self):
@@ -373,7 +350,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the lease time of an ObtainLease response payload.
         """
-        kwargs = {'lease_time': 'invalid'}
+        kwargs = {"lease_time": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Lease time must be an integer.",
@@ -382,12 +359,9 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.ObtainLeaseResponsePayload()
-        args = (payload, 'lease_time', 'invalid')
+        args = (payload, "lease_time", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Lease time must be an integer.",
-            setattr,
-            *args
+            TypeError, "Lease time must be an integer.", setattr, *args
         )
 
     def test_invalid_last_change_date(self):
@@ -395,7 +369,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the last change date of an ObtainLease response payload.
         """
-        kwargs = {'last_change_date': 'invalid'}
+        kwargs = {"last_change_date": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Last change date must be an integer.",
@@ -404,12 +378,9 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.ObtainLeaseResponsePayload()
-        args = (payload, 'last_change_date', 'invalid')
+        args = (payload, "last_change_date", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Last change date must be an integer.",
-            setattr,
-            *args
+            TypeError, "Last change date must be an integer.", setattr, *args
         )
 
     def test_read(self):
@@ -426,8 +397,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            'f4152f17-9312-431a-b3fb-4fe86a86a7a1',
-            payload.unique_identifier
+            "f4152f17-9312-431a-b3fb-4fe86a86a7a1", payload.unique_identifier
         )
         self.assertEqual(0, payload.lease_time)
         self.assertEqual(1335514468, payload.last_change_date)
@@ -446,8 +416,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         payload.read(self.partial_encoding)
 
         self.assertEqual(
-            'f4152f17-9312-431a-b3fb-4fe86a86a7a1',
-            payload.unique_identifier
+            "f4152f17-9312-431a-b3fb-4fe86a86a7a1", payload.unique_identifier
         )
         self.assertEqual(None, payload.lease_time)
         self.assertEqual(None, payload.last_change_date)
@@ -475,9 +444,9 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         stream.
         """
         payload = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='f4152f17-9312-431a-b3fb-4fe86a86a7a1',
+            unique_identifier="f4152f17-9312-431a-b3fb-4fe86a86a7a1",
             lease_time=0,
-            last_change_date=1335514468
+            last_change_date=1335514468,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -491,7 +460,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         data stream.
         """
         payload = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='f4152f17-9312-431a-b3fb-4fe86a86a7a1'
+            unique_identifier="f4152f17-9312-431a-b3fb-4fe86a86a7a1"
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -523,14 +492,14 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             lease_time=1511882848,
-            last_change_date=1512410153
+            last_change_date=1512410153,
         )
         b = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             lease_time=1511882848,
-            last_change_date=1512410153
+            last_change_date=1512410153,
         )
 
         self.assertTrue(a == b)
@@ -541,12 +510,8 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         ObtainLease response payloads with different unique identifiers.
         """
-        a = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='a'
-        )
-        b = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='b'
-        )
+        a = payloads.ObtainLeaseResponsePayload(unique_identifier="a")
+        b = payloads.ObtainLeaseResponsePayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -556,12 +521,8 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         ObtainLease response payloads with different lease times.
         """
-        a = payloads.ObtainLeaseResponsePayload(
-            lease_time=0
-        )
-        b = payloads.ObtainLeaseResponsePayload(
-            lease_time=1511882848
-        )
+        a = payloads.ObtainLeaseResponsePayload(lease_time=0)
+        b = payloads.ObtainLeaseResponsePayload(lease_time=1511882848)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -571,12 +532,8 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         ObtainLease response payloads with different last change dates.
         """
-        a = payloads.ObtainLeaseResponsePayload(
-            last_change_date=0
-        )
-        b = payloads.ObtainLeaseResponsePayload(
-            last_change_date=1511882848
-        )
+        a = payloads.ObtainLeaseResponsePayload(last_change_date=0)
+        b = payloads.ObtainLeaseResponsePayload(last_change_date=1511882848)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -587,7 +544,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         ObtainLease response payloads with different types.
         """
         a = payloads.ObtainLeaseResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -604,14 +561,14 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             lease_time=1511882848,
-            last_change_date=0
+            last_change_date=0,
         )
         b = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             lease_time=1511882848,
-            last_change_date=0
+            last_change_date=0,
         )
 
         self.assertFalse(a != b)
@@ -622,12 +579,8 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         ObtainLease response payloads with different unique identifiers.
         """
-        a = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='a'
-        )
-        b = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='b'
-        )
+        a = payloads.ObtainLeaseResponsePayload(unique_identifier="a")
+        b = payloads.ObtainLeaseResponsePayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -637,12 +590,8 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         ObtainLease response payloads with different lease times.
         """
-        a = payloads.ObtainLeaseResponsePayload(
-            lease_time=0
-        )
-        b = payloads.ObtainLeaseResponsePayload(
-            lease_time=1511882848
-        )
+        a = payloads.ObtainLeaseResponsePayload(lease_time=0)
+        b = payloads.ObtainLeaseResponsePayload(lease_time=1511882848)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -652,12 +601,8 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         ObtainLease response payloads with different last change time.
         """
-        a = payloads.ObtainLeaseResponsePayload(
-            lease_time=0
-        )
-        b = payloads.ObtainLeaseResponsePayload(
-            lease_time=1511882848
-        )
+        a = payloads.ObtainLeaseResponsePayload(lease_time=0)
+        b = payloads.ObtainLeaseResponsePayload(lease_time=1511882848)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -668,7 +613,7 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         ObtainLease response payloads with different types.
         """
         a = payloads.ObtainLeaseResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -678,9 +623,9 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that repr can be applied to an ObtainLease response payload.
         """
         payload = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             lease_time=1511882898,
-            last_change_date=1512410153
+            last_change_date=1512410153,
         )
         expected = (
             "ObtainLeaseResponsePayload("
@@ -697,16 +642,18 @@ class TestObtainLeaseResponsePayload(testtools.TestCase):
         Test that str can be applied to an ObtainLease response payload.
         """
         payload = payloads.ObtainLeaseResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             lease_time=1511882898,
-            last_change_date=1512410153
+            last_change_date=1512410153,
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            'lease_time': 1511882898,
-            'last_change_date': 1512410153
-        })
+        expected = str(
+            {
+                "unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038",
+                "lease_time": 1511882898,
+                "last_change_date": 1512410153,
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)

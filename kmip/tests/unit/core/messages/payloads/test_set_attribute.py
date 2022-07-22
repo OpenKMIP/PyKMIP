@@ -42,13 +42,13 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         #     New Attribute
         #         Cryptographic Algorithm - AES
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x01\x3D\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x01\x3D\x01\x00\x00\x00\x10"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # This encoding was adapted from test case 3.1.4-7 from the KMIP 1.1
@@ -61,14 +61,12 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         #     New Attribute
         #         Cryptographic Algorithm - AES
         self.no_unique_identifier_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x18'
-            b'\x42\x01\x3D\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x18"
+            b"\x42\x01\x3D\x01\x00\x00\x00\x10"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestSetAttributeRequestPayload, self).tearDown()
@@ -86,16 +84,9 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.SetAttributeRequestPayload(),
-            "unique_identifier",
-            0
-        )
+        args = (payloads.SetAttributeRequestPayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "The unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_new_attribute(self):
@@ -111,11 +102,7 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.SetAttributeRequestPayload(),
-            "new_attribute",
-            "invalid"
-        )
+        args = (payloads.SetAttributeRequestPayload(), "new_attribute", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The new attribute must be a NewAttribute object.",
@@ -135,18 +122,17 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertEqual(
             objects.NewAttribute(
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
-            payload.new_attribute
+            payload.new_attribute,
         )
 
     def test_read_no_unique_identifier(self):
@@ -167,10 +153,10 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
-            payload.new_attribute
+            payload.new_attribute,
         )
 
     def test_read_no_new_attribute(self):
@@ -180,7 +166,7 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         a SetAttribute request payload.
         """
         payload = payloads.SetAttributeRequestPayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The SetAttribute request payload encoding is missing the "
@@ -195,7 +181,7 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         version of KMIP is used to decode the SetAttribute request payload.
         """
         payload = payloads.SetAttributeRequestPayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_0}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -215,9 +201,9 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
-            )
+            ),
         )
 
         buffer = utils.BytearrayStream()
@@ -236,7 +222,7 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             )
         )
@@ -255,11 +241,10 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         """
         payload = payloads.SetAttributeRequestPayload()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The SetAttribute request payload is missing the new attribute "
-            "field.",
+            "The SetAttribute request payload is missing the new attribute " "field.",
             payload.write,
             *args
         )
@@ -271,7 +256,7 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         """
         payload = payloads.SetAttributeRequestPayload()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_0}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -286,17 +271,15 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         Test that repr can be applied to a SetAttribute request payload.
         """
         payload = payloads.SetAttributeRequestPayload(
-            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
-            new_attribute=None
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959", new_attribute=None
         )
 
         args = [
             "unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959'",
-            "new_attribute=None"
+            "new_attribute=None",
         ]
         self.assertEqual(
-            "SetAttributeRequestPayload({})".format(", ".join(args)),
-            repr(payload)
+            "SetAttributeRequestPayload({})".format(", ".join(args)), repr(payload)
         )
 
     def test_str(self):
@@ -304,13 +287,12 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         Test that str can be applied to a SetAttribute request payload.
         """
         payload = payloads.SetAttributeRequestPayload(
-            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
-            new_attribute=None
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959", new_attribute=None
         )
         s = str(
             {
                 "unique_identifier": "b4faee10-aa2a-4446-8ad4-0881f3422959",
-                "new_attribute": None
+                "new_attribute": None,
             }
         )
         self.assertEqual(s, str(payload))
@@ -334,9 +316,9 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
-            )
+            ),
         )
         b = payloads.SetAttributeRequestPayload(
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
@@ -344,9 +326,9 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
-            )
+            ),
         )
 
         self.assertTrue(a == b)
@@ -379,16 +361,13 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             )
         )
         b = payloads.SetAttributeRequestPayload(
             new_attribute=objects.NewAttribute(
-                attribute=primitives.Integer(
-                    128,
-                    enums.Tags.CRYPTOGRAPHIC_LENGTH
-                )
+                attribute=primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH)
             )
         )
 
@@ -426,16 +405,14 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
         # Response Payload
         #     Unique Identifier - b4faee10-aa2a-4446-8ad4-0881f3422959
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestSetAttributeResponsePayload, self).tearDown()
@@ -453,16 +430,9 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.SetAttributeResponsePayload(),
-            "unique_identifier",
-            0
-        )
+        args = (payloads.SetAttributeResponsePayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "The unique identifier must be a string.", setattr, *args
         )
 
     def test_read(self):
@@ -476,8 +446,7 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
 
     def test_read_no_unique_identifier(self):
@@ -487,7 +456,7 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
         a SetAttribute response payload.
         """
         payload = payloads.SetAttributeResponsePayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The SetAttribute response payload encoding is missing the "
@@ -502,7 +471,7 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
         version of KMIP is used to decode the SetAttribute response payload.
         """
         payload = payloads.SetAttributeResponsePayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_0}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -535,7 +504,7 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
         """
         payload = payloads.SetAttributeResponsePayload()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The SetAttribute response payload is missing the unique "
@@ -551,7 +520,7 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
         """
         payload = payloads.SetAttributeResponsePayload()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_0}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -569,12 +538,9 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959"
         )
 
-        args = [
-            "unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959'"
-        ]
+        args = ["unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959'"]
         self.assertEqual(
-            "SetAttributeResponsePayload({})".format(", ".join(args)),
-            repr(payload)
+            "SetAttributeResponsePayload({})".format(", ".join(args)), repr(payload)
         )
 
     def test_str(self):
@@ -584,11 +550,7 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
         payload = payloads.SetAttributeResponsePayload(
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959"
         )
-        s = str(
-            {
-                "unique_identifier": "b4faee10-aa2a-4446-8ad4-0881f3422959"
-            }
-        )
+        s = str({"unique_identifier": "b4faee10-aa2a-4446-8ad4-0881f3422959"})
         self.assertEqual(s, str(payload))
 
     def test_comparison(self):

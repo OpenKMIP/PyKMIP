@@ -21,10 +21,12 @@ class KmipError(Exception):
     A generic KMIP error that is the base for the KMIP error hierarchy.
     """
 
-    def __init__(self,
-                 status=enums.ResultStatus.OPERATION_FAILED,
-                 reason=enums.ResultReason.GENERAL_FAILURE,
-                 message='A general failure occurred.'):
+    def __init__(
+        self,
+        status=enums.ResultStatus.OPERATION_FAILED,
+        reason=enums.ResultReason.GENERAL_FAILURE,
+        message="A general failure occurred.",
+    ):
         """
         Create a KmipError exception.
 
@@ -71,8 +73,7 @@ class CryptographicFailure(KmipError):
             message (string): A string containing information about the error.
         """
         super(CryptographicFailure, self).__init__(
-            reason=enums.ResultReason.CRYPTOGRAPHIC_FAILURE,
-            message=message
+            reason=enums.ResultReason.CRYPTOGRAPHIC_FAILURE, message=message
         )
 
 
@@ -85,6 +86,7 @@ class EncodingOptionError(KmipError):
     key wrapping request (e.g., attributes are requested with the key but
     the encoding does not support wrapping attributes with the key value).
     """
+
     def __init__(self, message):
         """
         Create an EncodingOptionError.
@@ -93,8 +95,7 @@ class EncodingOptionError(KmipError):
             message (string): A string containing information about the error.
         """
         super(EncodingOptionError, self).__init__(
-            reason=enums.ResultReason.ENCODING_OPTION_ERROR,
-            message=message
+            reason=enums.ResultReason.ENCODING_OPTION_ERROR, message=message
         )
 
 
@@ -105,6 +106,7 @@ class IllegalOperation(KmipError):
     literal object/operation mismatch (e.g., a Template item cannot be
     activated with the Activate operation since it has no state).
     """
+
     def __init__(self, message):
         """
         Create an IllegalOperation exception.
@@ -113,8 +115,7 @@ class IllegalOperation(KmipError):
             message (string): A string containing information about the error.
         """
         super(IllegalOperation, self).__init__(
-            reason=enums.ResultReason.ILLEGAL_OPERATION,
-            message=message
+            reason=enums.ResultReason.ILLEGAL_OPERATION, message=message
         )
 
 
@@ -131,8 +132,7 @@ class IndexOutOfBounds(KmipError):
             message (string): A string containing information about the error.
         """
         super(IndexOutOfBounds, self).__init__(
-            reason=enums.ResultReason.INDEX_OUT_OF_BOUNDS,
-            message=message
+            reason=enums.ResultReason.INDEX_OUT_OF_BOUNDS, message=message
         )
 
 
@@ -149,8 +149,7 @@ class InvalidField(KmipError):
             message (string): A string containing information about the error.
         """
         super(InvalidField, self).__init__(
-            reason=enums.ResultReason.INVALID_FIELD,
-            message=message
+            reason=enums.ResultReason.INVALID_FIELD, message=message
         )
 
 
@@ -167,8 +166,7 @@ class InvalidMessage(KmipError):
             message (string): A string containing information about the error.
         """
         super(InvalidMessage, self).__init__(
-            reason=enums.ResultReason.INVALID_MESSAGE,
-            message=message
+            reason=enums.ResultReason.INVALID_MESSAGE, message=message
         )
 
 
@@ -185,8 +183,7 @@ class ItemNotFound(KmipError):
             message (string): A string containing information about the error.
         """
         super(ItemNotFound, self).__init__(
-            reason=enums.ResultReason.ITEM_NOT_FOUND,
-            message=message
+            reason=enums.ResultReason.ITEM_NOT_FOUND, message=message
         )
 
 
@@ -205,7 +202,7 @@ class KeyCompressionTypeNotSupported(KmipError):
         """
         super(KeyCompressionTypeNotSupported, self).__init__(
             reason=enums.ResultReason.KEY_COMPRESSION_TYPE_NOT_SUPPORTED,
-            message=message
+            message=message,
         )
 
 
@@ -223,8 +220,7 @@ class KeyFormatTypeNotSupported(KmipError):
             message (string): A string containing information about the error.
         """
         super(KeyFormatTypeNotSupported, self).__init__(
-            reason=enums.ResultReason.KEY_FORMAT_TYPE_NOT_SUPPORTED,
-            message=message
+            reason=enums.ResultReason.KEY_FORMAT_TYPE_NOT_SUPPORTED, message=message
         )
 
 
@@ -232,6 +228,7 @@ class OperationFailure(KmipError):
     """
     An exception raised upon the failure of a KMIP appliance operation.
     """
+
     def __init__(self, status, reason, message):
         """
         Construct the error message and attributes for the KMIP operation
@@ -258,8 +255,7 @@ class OperationNotSupported(KmipError):
             message (string): A string containing information about the error.
         """
         super(OperationNotSupported, self).__init__(
-            reason=enums.ResultReason.OPERATION_NOT_SUPPORTED,
-            message=message
+            reason=enums.ResultReason.OPERATION_NOT_SUPPORTED, message=message
         )
 
 
@@ -276,8 +272,7 @@ class PermissionDenied(KmipError):
             message (string): A string containing information about the error.
         """
         super(PermissionDenied, self).__init__(
-            reason=enums.ResultReason.PERMISSION_DENIED,
-            message=message
+            reason=enums.ResultReason.PERMISSION_DENIED, message=message
         )
 
 
@@ -285,6 +280,7 @@ class AttributeNotSupported(Exception):
     """
     An error generated when an unsupported attribute is processed.
     """
+
     pass
 
 
@@ -293,6 +289,7 @@ class ConfigurationError(Exception):
     An error generated when a problem occurs with a client or server
     configuration.
     """
+
     pass
 
 
@@ -301,6 +298,7 @@ class ConnectionClosed(Exception):
     An exception generated when attempting to use a connection that has been
     closed.
     """
+
     pass
 
 
@@ -309,6 +307,7 @@ class NetworkingError(Exception):
     An error generated when a problem occurs with client or server networking
     activity.
     """
+
     pass
 
 
@@ -316,6 +315,7 @@ class InvalidKmipEncoding(Exception):
     """
     An exception raised when processing invalid KMIP message encodings.
     """
+
     pass
 
 
@@ -324,6 +324,7 @@ class InvalidPaddingBytes(Exception):
     An exception raised for errors when processing the padding bytes of
     primitive encodings.
     """
+
     pass
 
 
@@ -332,6 +333,7 @@ class InvalidPrimitiveLength(Exception):
     An exception raised for errors when processing primitives with invalid
     lengths.
     """
+
     pass
 
 
@@ -390,12 +392,11 @@ class WriteOverflowError(Exception):
 
 class KMIPServerZombieError(Exception):
     """KMIP server error for hung and persistent live KMIP servers."""
+
     def __init__(self, pid):
         super(KMIPServerZombieError, self).__init__()
 
-        self.message = 'KMIP server alive after termination: PID {0}'.format(
-            pid
-        )
+        self.message = "KMIP server alive after termination: PID {0}".format(pid)
 
     def __str__(self):
         return self.message
@@ -403,10 +404,11 @@ class KMIPServerZombieError(Exception):
 
 class KMIPServerSuicideError(Exception):
     """KMIP server error for prematurely dead KMIP servers."""
+
     def __init__(self, pid):
         super(KMIPServerSuicideError, self).__init__()
 
-        self.message = 'KMIP server dead prematurely: PID {0}'.format(pid)
+        self.message = "KMIP server dead prematurely: PID {0}".format(pid)
 
     def __str__(self):
         return self.message

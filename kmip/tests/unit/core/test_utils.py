@@ -20,7 +20,6 @@ from kmip.core import utils
 
 
 class TestUtils(TestCase):
-
     def setUp(self):
         super(TestUtils, self).setUp()
 
@@ -31,98 +30,96 @@ class TestUtils(TestCase):
         num = 65535
         bytes_exp = 2
         bytes_obs = utils.count_bytes(num)
-        self.assertEqual(bytes_exp, bytes_obs,
-                         'Value {0} requires {1} bytes to encode, '
-                         'received {2} byte(s)'.format(num, bytes_exp,
-                                                       bytes_obs))
+        self.assertEqual(
+            bytes_exp,
+            bytes_obs,
+            "Value {0} requires {1} bytes to encode, "
+            "received {2} byte(s)".format(num, bytes_exp, bytes_obs),
+        )
 
     def test_count_bytes_overflow(self):
         num = 65536
         bytes_exp = 3
         bytes_obs = utils.count_bytes(num)
-        self.assertEqual(bytes_exp, bytes_obs,
-                         'Value {0} requires {1} bytes to encode, '
-                         'received {2} bytes'.format(num, bytes_exp,
-                                                     bytes_obs))
+        self.assertEqual(
+            bytes_exp,
+            bytes_obs,
+            "Value {0} requires {1} bytes to encode, "
+            "received {2} bytes".format(num, bytes_exp, bytes_obs),
+        )
 
     def test_count_bytes_zero(self):
         num = 0
         bytes_exp = 1
         bytes_obs = utils.count_bytes(num)
-        self.assertEqual(bytes_exp, bytes_obs,
-                         'Value {0} requires {1} bytes to encode, '
-                         'received {2} byte(s)'.format(num, bytes_exp,
-                                                       bytes_obs))
+        self.assertEqual(
+            bytes_exp,
+            bytes_obs,
+            "Value {0} requires {1} bytes to encode, "
+            "received {2} byte(s)".format(num, bytes_exp, bytes_obs),
+        )
 
 
 class TestBytearrayStream(TestCase):
-
     def setUp(self):
         super(TestBytearrayStream, self).setUp()
         self.stream = utils.BytearrayStream()
 
         self.bad_type = exceptions.ErrorStrings.BAD_EXP_RECV.format(
-            'BytearrayStream.{0}',
-            'type',
-            '{1}',
-            '{2}'
+            "BytearrayStream.{0}", "type", "{1}", "{2}"
         )
         self.bad_len = exceptions.ErrorStrings.BAD_EXP_RECV.format(
-            'BytearrayStream.{0}',
-            'length',
-            '{1}',
-            '{2}'
+            "BytearrayStream.{0}", "length", "{1}", "{2}"
         )
         self.bad_val = exceptions.ErrorStrings.BAD_EXP_RECV.format(
-            'BytearrayStream.{0}',
-            'value',
-            '{1}',
-            '{2}'
+            "BytearrayStream.{0}", "value", "{1}", "{2}"
         )
 
     def tearDown(self):
         super(TestBytearrayStream, self).tearDown()
 
     def test_init(self):
-        value = b'\x00'
+        value = b"\x00"
         b = utils.BytearrayStream(value)
 
         buf_type = type(b.buffer)
-        msg = self.bad_type.format('buffer', type(b''), buf_type)
-        self.assertIsInstance(b.buffer, type(b''),
-                              msg.format(type(b''), type(b.buffer)))
+        msg = self.bad_type.format("buffer", type(b""), buf_type)
+        self.assertIsInstance(
+            b.buffer, type(b""), msg.format(type(b""), type(b.buffer))
+        )
 
         length = len(b.buffer)
-        msg = self.bad_len.format('buffer', 1, length)
+        msg = self.bad_len.format("buffer", 1, length)
         self.assertEqual(1, length, msg)
 
         content = b.buffer
-        msg = self.bad_val.format('buffer', value, content)
+        msg = self.bad_val.format("buffer", value, content)
         self.assertEqual(value, content, msg)
 
     def test_init_unset(self):
         b = utils.BytearrayStream()
 
         buf_type = type(b.buffer)
-        msg = self.bad_type.format('buffer', type(b''), buf_type)
-        self.assertIsInstance(b.buffer, type(b''),
-                              msg.format(type(b''), type(b.buffer)))
+        msg = self.bad_type.format("buffer", type(b""), buf_type)
+        self.assertIsInstance(
+            b.buffer, type(b""), msg.format(type(b""), type(b.buffer))
+        )
 
         length = len(b.buffer)
-        msg = self.bad_len.format('buffer', 0, length)
+        msg = self.bad_len.format("buffer", 0, length)
         self.assertEqual(0, length, msg)
 
     def test_read(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skipTest('')
+        self.skipTest("")
 
     def test_write(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skipTest('')
+        self.skipTest("")
 
     def test_peek(self):
         # TODO (peter-hamilton) Finish implementation.
-        value = (b'\x00\x01\x02\x03')
+        value = b"\x00\x01\x02\x03"
         expected = value
         b = expected
         expected = b
@@ -130,16 +127,16 @@ class TestBytearrayStream(TestCase):
 
     def test_peek_overflow(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skipTest('')
+        self.skipTest("")
 
     def test_peek_empty(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skipTest('')
+        self.skipTest("")
 
     def test_peek_none(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skipTest('')
+        self.skipTest("")
 
     def test_length(self):
         # TODO (peter-hamilton) Finish implementation.
-        self.skipTest('')
+        self.skipTest("")

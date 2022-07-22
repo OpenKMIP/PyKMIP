@@ -51,8 +51,8 @@ class TestAttributeClass(TestCase):
     def setUp(self):
         super(TestAttributeClass, self).setUp()
 
-        name_a = 'CRYPTOGRAPHIC PARAMETERS'
-        name_b = 'CRYPTOGRAPHIC ALGORITHM'
+        name_a = "CRYPTOGRAPHIC PARAMETERS"
+        name_b = "CRYPTOGRAPHIC ALGORITHM"
 
         self.attribute_name_a = Attribute.AttributeName(name_a)
         self.attribute_name_b = Attribute.AttributeName(name_b)
@@ -61,17 +61,23 @@ class TestAttributeClass(TestCase):
 
         self.attribute_value_a = self.factory.create_attribute_value(
             AttributeType.CRYPTOGRAPHIC_PARAMETERS,
-            {'block_cipher_mode': BlockCipherMode.CBC,
-             'padding_method': PaddingMethod.PKCS5,
-             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
-             'key_role_type': KeyRoleType.BDK})
+            {
+                "block_cipher_mode": BlockCipherMode.CBC,
+                "padding_method": PaddingMethod.PKCS5,
+                "hashing_algorithm": HashingAlgorithmEnum.SHA_1,
+                "key_role_type": KeyRoleType.BDK,
+            },
+        )
 
         self.attribute_value_b = self.factory.create_attribute_value(
             AttributeType.CRYPTOGRAPHIC_PARAMETERS,
-            {'block_cipher_mode': BlockCipherMode.CCM,
-             'padding_method': PaddingMethod.PKCS5,
-             'hashing_algorithm': HashingAlgorithmEnum.SHA_1,
-             'key_role_type': KeyRoleType.BDK})
+            {
+                "block_cipher_mode": BlockCipherMode.CCM,
+                "padding_method": PaddingMethod.PKCS5,
+                "hashing_algorithm": HashingAlgorithmEnum.SHA_1,
+                "key_role_type": KeyRoleType.BDK,
+            },
+        )
 
         index_a = 2
         index_b = 3
@@ -82,34 +88,40 @@ class TestAttributeClass(TestCase):
         self.attributeObj_a = Attribute(
             attribute_name=self.attribute_name_a,
             attribute_value=self.attribute_value_a,
-            attribute_index=self.attribute_index_a)
+            attribute_index=self.attribute_index_a,
+        )
 
         self.attributeObj_b = Attribute(
             attribute_name=self.attribute_name_b,
             attribute_value=self.attribute_value_a,
-            attribute_index=self.attribute_index_a)
+            attribute_index=self.attribute_index_a,
+        )
 
         self.attributeObj_c = Attribute(
             attribute_name=self.attribute_name_a,
             attribute_value=self.attribute_value_b,
-            attribute_index=self.attribute_index_a)
+            attribute_index=self.attribute_index_a,
+        )
 
         self.attributeObj_d = Attribute(
             attribute_name=self.attribute_name_a,
             attribute_value=self.attribute_value_a,
-            attribute_index=self.attribute_index_b)
+            attribute_index=self.attribute_index_b,
+        )
 
-        self.key_req_with_crypt_params = BytearrayStream((
-            b'\x42\x00\x08\x01\x00\x00\x00\x78\x42\x00\x0a\x07\x00\x00\x00\x18'
-            b'\x43\x52\x59\x50\x54\x4f\x47\x52\x41\x50\x48\x49\x43\x20\x50\x41'
-            b'\x52\x41\x4d\x45\x54\x45\x52\x53'
-            b'\x42\x00\x09\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x0b\x01\x00\x00\x00\x40'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x5f\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-        ))
+        self.key_req_with_crypt_params = BytearrayStream(
+            (
+                b"\x42\x00\x08\x01\x00\x00\x00\x78\x42\x00\x0a\x07\x00\x00\x00\x18"
+                b"\x43\x52\x59\x50\x54\x4f\x47\x52\x41\x50\x48\x49\x43\x20\x50\x41"
+                b"\x52\x41\x4d\x45\x54\x45\x52\x53"
+                b"\x42\x00\x09\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+                b"\x42\x00\x0b\x01\x00\x00\x00\x40"
+                b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+                b"\x42\x00\x5f\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+                b"\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+                b"\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            )
+        )
 
     def tearDown(self):
         super(TestAttributeClass, self).tearDown()
@@ -120,8 +132,9 @@ class TestAttributeClass(TestCase):
         self.assertEqual(self.attributeObj_a, attrObj)
 
     def test_write(self):
-        attrObj = Attribute(self.attribute_name_a, self.attribute_index_a,
-                            self.attribute_value_a)
+        attrObj = Attribute(
+            self.attribute_name_a, self.attribute_index_a, self.attribute_value_a
+        )
         ostream = BytearrayStream()
         attrObj.write(ostream)
 
@@ -137,7 +150,6 @@ class TestAttributeClass(TestCase):
 
 
 class TestAttributeReference(testtools.TestCase):
-
     def setUp(self):
         super(TestAttributeReference, self).setUp()
 
@@ -146,29 +158,29 @@ class TestAttributeReference(testtools.TestCase):
         #     Vendor Identification - Acme Corporation
         #     Attribute Name - Delivery Date
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x01\x3B\x01\x00\x00\x00\x30'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x10'
-            b'\x41\x63\x6D\x65\x20\x43\x6F\x72\x70\x6F\x72\x61\x74\x69\x6F\x6E'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0D'
-            b'\x44\x65\x6C\x69\x76\x65\x72\x79\x20\x44\x61\x74\x65\x00\x00\x00'
+            b"\x42\x01\x3B\x01\x00\x00\x00\x30"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x10"
+            b"\x41\x63\x6D\x65\x20\x43\x6F\x72\x70\x6F\x72\x61\x74\x69\x6F\x6E"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0D"
+            b"\x44\x65\x6C\x69\x76\x65\x72\x79\x20\x44\x61\x74\x65\x00\x00\x00"
         )
 
         # This encoding matches the following set of values.
         # AttributeReference
         #     Attribute Name - Delivery Date
         self.no_vendor_identification_encoding = utils.BytearrayStream(
-            b'\x42\x01\x3B\x01\x00\x00\x00\x18'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0D'
-            b'\x44\x65\x6C\x69\x76\x65\x72\x79\x20\x44\x61\x74\x65\x00\x00\x00'
+            b"\x42\x01\x3B\x01\x00\x00\x00\x18"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0D"
+            b"\x44\x65\x6C\x69\x76\x65\x72\x79\x20\x44\x61\x74\x65\x00\x00\x00"
         )
 
         # This encoding matches the following set of values.
         # AttributeReference
         #     Vendor Identification - Acme Corporation
         self.no_attribute_name_encoding = utils.BytearrayStream(
-            b'\x42\x01\x3B\x01\x00\x00\x00\x18'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x10'
-            b'\x41\x63\x6D\x65\x20\x43\x6F\x72\x70\x6F\x72\x61\x74\x69\x6F\x6E'
+            b"\x42\x01\x3B\x01\x00\x00\x00\x18"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x10"
+            b"\x41\x63\x6D\x65\x20\x43\x6F\x72\x70\x6F\x72\x61\x74\x69\x6F\x6E"
         )
 
     def tearDown(self):
@@ -189,10 +201,7 @@ class TestAttributeReference(testtools.TestCase):
 
         args = (objects.AttributeReference(), "vendor_identification", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Vendor identification must be a string.",
-            setattr,
-            *args
+            TypeError, "Vendor identification must be a string.", setattr, *args
         )
 
     def test_invalid_attribute_name(self):
@@ -210,10 +219,7 @@ class TestAttributeReference(testtools.TestCase):
 
         args = (objects.AttributeReference(), "attribute_name", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Attribute name must be a string.",
-            setattr,
-            *args
+            TypeError, "Attribute name must be a string.", setattr, *args
         )
 
     def test_read(self):
@@ -228,14 +234,8 @@ class TestAttributeReference(testtools.TestCase):
 
         attribute_reference.read(self.full_encoding)
 
-        self.assertEqual(
-            "Acme Corporation",
-            attribute_reference.vendor_identification
-        )
-        self.assertEqual(
-            "Delivery Date",
-            attribute_reference.attribute_name
-        )
+        self.assertEqual("Acme Corporation", attribute_reference.vendor_identification)
+        self.assertEqual("Delivery Date", attribute_reference.attribute_name)
 
     def test_read_unsupported_kmip_version(self):
         """
@@ -245,7 +245,7 @@ class TestAttributeReference(testtools.TestCase):
         """
         attribute_reference = objects.AttributeReference()
 
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_4}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -265,7 +265,7 @@ class TestAttributeReference(testtools.TestCase):
 
         self.assertIsNone(attribute_reference.vendor_identification)
 
-        args = (self.no_vendor_identification_encoding, )
+        args = (self.no_vendor_identification_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The AttributeReference encoding is missing the vendor "
@@ -284,11 +284,10 @@ class TestAttributeReference(testtools.TestCase):
 
         self.assertIsNone(attribute_reference.attribute_name)
 
-        args = (self.no_attribute_name_encoding, )
+        args = (self.no_attribute_name_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "The AttributeReference encoding is missing the attribute name "
-            "string.",
+            "The AttributeReference encoding is missing the attribute name " "string.",
             attribute_reference.read,
             *args
         )
@@ -299,8 +298,7 @@ class TestAttributeReference(testtools.TestCase):
         stream.
         """
         attribute_reference = objects.AttributeReference(
-            vendor_identification="Acme Corporation",
-            attribute_name="Delivery Date"
+            vendor_identification="Acme Corporation", attribute_name="Delivery Date"
         )
 
         buffer = utils.BytearrayStream()
@@ -316,11 +314,10 @@ class TestAttributeReference(testtools.TestCase):
         unsupported KMIP version.
         """
         attribute_reference = objects.AttributeReference(
-            vendor_identification="Acme Corporation",
-            attribute_name="Delivery Date"
+            vendor_identification="Acme Corporation", attribute_name="Delivery Date"
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_4}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -336,15 +333,12 @@ class TestAttributeReference(testtools.TestCase):
         AttributeReference structure when the structure is missing the vendor
         identification field.
         """
-        attribute_reference = objects.AttributeReference(
-            attribute_name="Delivery Date"
-        )
+        attribute_reference = objects.AttributeReference(attribute_name="Delivery Date")
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The AttributeReference is missing the vendor identification "
-            "field.",
+            "The AttributeReference is missing the vendor identification " "field.",
             attribute_reference.write,
             *args
         )
@@ -359,7 +353,7 @@ class TestAttributeReference(testtools.TestCase):
             vendor_identification="Acme Corporation"
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The AttributeReference is missing the attribute name field.",
@@ -372,8 +366,7 @@ class TestAttributeReference(testtools.TestCase):
         Test that repr can be applied to an AttributeReference structure.
         """
         attribute_reference = objects.AttributeReference(
-            vendor_identification="Acme Corporation",
-            attribute_name="Delivery Date"
+            vendor_identification="Acme Corporation", attribute_name="Delivery Date"
         )
         v = 'vendor_identification="Acme Corporation"'
         a = 'attribute_name="Delivery Date"'
@@ -386,8 +379,7 @@ class TestAttributeReference(testtools.TestCase):
         Test that str can be applied to an AttributeReference structure.
         """
         attribute_reference = objects.AttributeReference(
-            vendor_identification="Acme Corporation",
-            attribute_name="Delivery Date"
+            vendor_identification="Acme Corporation", attribute_name="Delivery Date"
         )
         v = '"vendor_identification": "Acme Corporation"'
         a = '"attribute_name": "Delivery Date"'
@@ -407,12 +399,10 @@ class TestAttributeReference(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = objects.AttributeReference(
-            vendor_identification="Acme Corporation",
-            attribute_name="Delivery Date"
+            vendor_identification="Acme Corporation", attribute_name="Delivery Date"
         )
         b = objects.AttributeReference(
-            vendor_identification="Acme Corporation",
-            attribute_name="Delivery Date"
+            vendor_identification="Acme Corporation", attribute_name="Delivery Date"
         )
 
         self.assertTrue(a == b)
@@ -424,12 +414,8 @@ class TestAttributeReference(testtools.TestCase):
         AttributeReference structures with different vendor identification
         fields.
         """
-        a = objects.AttributeReference(
-            vendor_identification="Acme Corporation 1"
-        )
-        b = objects.AttributeReference(
-            vendor_identification="Acme Corporation 2"
-        )
+        a = objects.AttributeReference(vendor_identification="Acme Corporation 1")
+        b = objects.AttributeReference(vendor_identification="Acme Corporation 2")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -439,12 +425,8 @@ class TestAttributeReference(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         AttributeReference structures with different attribute name fields.
         """
-        a = objects.AttributeReference(
-            attribute_name="Attribute 1"
-        )
-        b = objects.AttributeReference(
-            attribute_name="Attribute 2"
-        )
+        a = objects.AttributeReference(attribute_name="Attribute 1")
+        b = objects.AttributeReference(attribute_name="Attribute 2")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -472,12 +454,10 @@ class TestAttributeReference(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = objects.AttributeReference(
-            vendor_identification="Acme Corporation",
-            attribute_name="Delivery Date"
+            vendor_identification="Acme Corporation", attribute_name="Delivery Date"
         )
         b = objects.AttributeReference(
-            vendor_identification="Acme Corporation",
-            attribute_name="Delivery Date"
+            vendor_identification="Acme Corporation", attribute_name="Delivery Date"
         )
 
         self.assertFalse(a != b)
@@ -489,12 +469,8 @@ class TestAttributeReference(testtools.TestCase):
         AttributeReference structures with different vendor identification
         fields.
         """
-        a = objects.AttributeReference(
-            vendor_identification="Acme Corporation 1"
-        )
-        b = objects.AttributeReference(
-            vendor_identification="Acme Corporation 2"
-        )
+        a = objects.AttributeReference(vendor_identification="Acme Corporation 1")
+        b = objects.AttributeReference(vendor_identification="Acme Corporation 2")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -504,12 +480,8 @@ class TestAttributeReference(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         AttributeReference structures with different attribute name fields.
         """
-        a = objects.AttributeReference(
-            attribute_name="Attribute 1"
-        )
-        b = objects.AttributeReference(
-            attribute_name="Attribute 2"
-        )
+        a = objects.AttributeReference(attribute_name="Attribute 1")
+        b = objects.AttributeReference(attribute_name="Attribute 2")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -527,7 +499,6 @@ class TestAttributeReference(testtools.TestCase):
 
 
 class TestAttributes(TestCase):
-
     def setUp(self):
         super(TestAttributes, self).setUp()
 
@@ -536,33 +507,31 @@ class TestAttributes(TestCase):
         #     Cryptographic Algorithm - AES
         #     Cryptographic Length - 128
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x01\x25\x01\x00\x00\x00\x20'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+            b"\x42\x01\x25\x01\x00\x00\x00\x20"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x01\x25\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x01\x25\x01\x00\x00\x00\x00")
 
         # This encoding matches the following set of values:
         # Attributes
         #     Cryptographic Algorithm - AES
         #     Non-existent Tag
         self.invalid_encoding = utils.BytearrayStream(
-            b'\x42\x01\x25\x01\x00\x00\x00\x20'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\xFF\xFF\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x01\x25\x01\x00\x00\x00\x20"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\xFF\xFF\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         # Attributes
         #     Operation Policy Name - b4faee10-aa2a-4446-8ad4-0881f3422959
         self.unsupported_encoding = utils.BytearrayStream(
-            b'\x42\x01\x25\x01\x00\x00\x00\x30'
-            b'\x42\x00\x5D\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30'
-            b'\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D'
-            b'\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00'
+            b"\x42\x01\x25\x01\x00\x00\x00\x30"
+            b"\x42\x00\x5D\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30"
+            b"\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D"
+            b"\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -570,9 +539,9 @@ class TestAttributes(TestCase):
         #     Cryptographic Algorithm - AES
         #     Cryptographic Length - 128
         self.alt_encoding = utils.BytearrayStream(
-            b'\x42\x01\x27\x01\x00\x00\x00\x20'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+            b"\x42\x01\x27\x01\x00\x00\x00\x20"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -585,11 +554,11 @@ class TestAttributes(TestCase):
         is a valid PyKMIP object derived from Base, it just isn't an attribute.
         """
         kwargs = {
-            'attributes': [
+            "attributes": [
                 primitives.Enumeration(
                     enums.WrappingMethod,
                     enums.WrappingMethod.ENCRYPT,
-                    enums.Tags.WRAPPING_METHOD
+                    enums.Tags.WRAPPING_METHOD,
                 )
             ]
         }
@@ -603,25 +572,22 @@ class TestAttributes(TestCase):
         attrs = objects.Attributes()
         args = (
             attrs,
-            'attributes',
+            "attributes",
             [
                 primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 ),
                 primitives.Enumeration(
                     enums.WrappingMethod,
                     enums.WrappingMethod.ENCRYPT,
-                    enums.Tags.WRAPPING_METHOD
-                )
-            ]
+                    enums.Tags.WRAPPING_METHOD,
+                ),
+            ],
         )
         self.assertRaisesRegex(
-            TypeError,
-            "Item 2 must be a supported attribute.",
-            setattr,
-            *args
+            TypeError, "Item 2 must be a supported attribute.", setattr, *args
         )
 
     def test_invalid_attributes(self):
@@ -630,9 +596,7 @@ class TestAttributes(TestCase):
         in the attribute list. Note that the value is not a valid PyKMIP
         object derived from Base and therefore cannot be an attribute.
         """
-        kwargs = {
-            'attributes': [0]
-        }
+        kwargs = {"attributes": [0]}
         self.assertRaisesRegex(
             TypeError,
             "Item 1 must be a Base object, not a {}.".format(type(0)),
@@ -643,20 +607,20 @@ class TestAttributes(TestCase):
         attrs = objects.Attributes()
         args = (
             attrs,
-            'attributes',
+            "attributes",
             [
                 primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 ),
                 primitives.Enumeration(
                     enums.KeyFormatType,
                     enums.KeyFormatType.RAW,
-                    enums.Tags.KEY_FORMAT_TYPE
+                    enums.Tags.KEY_FORMAT_TYPE,
                 ),
-                1
-            ]
+                1,
+            ],
         )
         self.assertRaisesRegex(
             TypeError,
@@ -670,9 +634,7 @@ class TestAttributes(TestCase):
         Test that a TypeError is raised when an invalid attribute list is
         used with the Attributes structure.
         """
-        kwargs = {
-            'attributes': 'invalid'
-        }
+        kwargs = {"attributes": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Attributes must be a list of Base objects.",
@@ -681,16 +643,9 @@ class TestAttributes(TestCase):
         )
 
         attrs = objects.Attributes()
-        args = (
-            attrs,
-            'attributes',
-            'invalid'
-        )
+        args = (attrs, "attributes", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Attributes must be a list of Base objects.",
-            setattr,
-            *args
+            TypeError, "Attributes must be a list of Base objects.", setattr, *args
         )
 
     def test_read(self):
@@ -738,7 +693,7 @@ class TestAttributes(TestCase):
 
         self.assertEqual([], attrs.attributes)
 
-        args = (self.invalid_encoding, )
+        args = (self.invalid_encoding,)
         self.assertRaisesRegex(
             exceptions.StreamNotEmptyError,
             "Invalid length used to read Base, bytes remaining: 16",
@@ -757,7 +712,7 @@ class TestAttributes(TestCase):
 
         self.assertEqual([], attrs.attributes)
 
-        args = (self.unsupported_encoding, )
+        args = (self.unsupported_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.AttributeNotSupported,
@@ -798,7 +753,7 @@ class TestAttributes(TestCase):
         """
         attrs = objects.Attributes()
 
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -813,17 +768,16 @@ class TestAttributes(TestCase):
         Test that an Attributes structure can be correctly written to a data
         stream.
         """
-        attrs = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
+        attrs = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
 
         stream = utils.BytearrayStream()
         attrs.write(stream)
@@ -851,15 +805,14 @@ class TestAttributes(TestCase):
         stream. This can occur when an older attribute is no longer supported
         by a newer version of KMIP, or vice versa.
         """
-        attrs = objects.Attributes(attributes=[
-            primitives.TextString(
-                "default",
-                tag=enums.Tags.OPERATION_POLICY_NAME
-            )
-        ])
+        attrs = objects.Attributes(
+            attributes=[
+                primitives.TextString("default", tag=enums.Tags.OPERATION_POLICY_NAME)
+            ]
+        )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.AttributeNotSupported,
@@ -881,14 +834,11 @@ class TestAttributes(TestCase):
                 primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 ),
-                primitives.Integer(
-                    128,
-                    enums.Tags.CRYPTOGRAPHIC_LENGTH
-                )
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
             ],
-            tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES
+            tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES,
         )
 
         stream = utils.BytearrayStream()
@@ -903,15 +853,14 @@ class TestAttributes(TestCase):
         KMIP version is provided while writing an Attributes structure to a
         data stream. The Attributes structure is only supported in KMIP 2.0+.
         """
-        attrs = objects.Attributes(attributes=[
-            primitives.TextString(
-                "default",
-                tag=enums.Tags.OPERATION_POLICY_NAME
-            )
-        ])
+        attrs = objects.Attributes(
+            attributes=[
+                primitives.TextString("default", tag=enums.Tags.OPERATION_POLICY_NAME)
+            ]
+        )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_1}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -925,17 +874,16 @@ class TestAttributes(TestCase):
         """
         Test that repr can be applied to an Attributes structure.
         """
-        attrs = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
+        attrs = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
         self.assertEqual(
             "Attributes(attributes=["
             "Enumeration("
@@ -944,7 +892,7 @@ class TestAttributes(TestCase):
             "tag=Tags.CRYPTOGRAPHIC_ALGORITHM), "
             "Integer(value=128)], "
             "tag=Tags.ATTRIBUTES)",
-            repr(attrs)
+            repr(attrs),
         )
 
     def test_repr_alternative_tag(self):
@@ -956,28 +904,25 @@ class TestAttributes(TestCase):
         """
         attrs = objects.Attributes(tag=enums.Tags.COMMON_ATTRIBUTES)
         self.assertEqual(
-            "Attributes(attributes=[], tag=Tags.COMMON_ATTRIBUTES)",
-            repr(attrs)
+            "Attributes(attributes=[], tag=Tags.COMMON_ATTRIBUTES)", repr(attrs)
         )
 
     def test_str(self):
         """
         Test that str can be applied to an Attributes structure.
         """
-        attrs = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
+        attrs = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
         self.assertEqual(
-            '{"attributes": [CryptographicAlgorithm.AES, 128]}',
-            str(attrs)
+            '{"attributes": [CryptographicAlgorithm.AES, 128]}', str(attrs)
         )
 
     def test_equal_on_equal(self):
@@ -991,28 +936,26 @@ class TestAttributes(TestCase):
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
-        a = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
-        b = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
+        a = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
+        b = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
@@ -1023,43 +966,40 @@ class TestAttributes(TestCase):
         Attributes structures with different attributes lists.
         """
         a = objects.Attributes()
-        b = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
+        b = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
-        a = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
-        b = objects.Attributes(attributes=[
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            ),
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            )
-        ])
+        a = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
+        b = objects.Attributes(
+            attributes=[
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+            ]
+        )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1070,7 +1010,7 @@ class TestAttributes(TestCase):
         Attributes structure with another type.
         """
         a = objects.Attributes()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1086,28 +1026,26 @@ class TestAttributes(TestCase):
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
-        a = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
-        b = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
+        a = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
+        b = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
@@ -1118,43 +1056,40 @@ class TestAttributes(TestCase):
         Attributes structures with different attributes lists.
         """
         a = objects.Attributes()
-        b = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
+        b = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-        a = objects.Attributes(attributes=[
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            ),
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
-        ])
-        b = objects.Attributes(attributes=[
-            primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            ),
-            primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-            )
-        ])
+        a = objects.Attributes(
+            attributes=[
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+            ]
+        )
+        b = objects.Attributes(
+            attributes=[
+                primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH),
+                primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                ),
+            ]
+        )
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1165,14 +1100,13 @@ class TestAttributes(TestCase):
         Attributes structure with another type.
         """
         a = objects.Attributes()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
 
 class TestAttributeUtilities(testtools.TestCase):
-
     def setUp(self):
         super(TestAttributeUtilities, self).setUp()
 
@@ -1183,21 +1117,15 @@ class TestAttributeUtilities(testtools.TestCase):
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "State"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("State"),
                     attribute_value=primitives.Enumeration(
-                        enums.State,
-                        value=enums.State.PRE_ACTIVE,
-                        tag=enums.Tags.STATE
-                    )
+                        enums.State, value=enums.State.PRE_ACTIVE, tag=enums.Tags.STATE
+                    ),
                 )
             ]
         )
 
-        value = objects.convert_template_attribute_to_attributes(
-            template_attribute
-        )
+        value = objects.convert_template_attribute_to_attributes(template_attribute)
 
         self.assertIsInstance(value, objects.Attributes)
         self.assertEqual(enums.Tags.ATTRIBUTES, value.tag)
@@ -1205,11 +1133,9 @@ class TestAttributeUtilities(testtools.TestCase):
         self.assertEqual(1, len(value.attributes))
         self.assertEqual(
             primitives.Enumeration(
-                enums.State,
-                value=enums.State.PRE_ACTIVE,
-                tag=enums.Tags.STATE
+                enums.State, value=enums.State.PRE_ACTIVE, tag=enums.Tags.STATE
             ),
-            value.attributes[0]
+            value.attributes[0],
         )
 
     def test_convert_common_template_attribute_to_attributes(self):
@@ -1222,16 +1148,14 @@ class TestAttributeUtilities(testtools.TestCase):
                     attribute_value=primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                    ),
                 )
             ],
-            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
         )
 
-        value = objects.convert_template_attribute_to_attributes(
-            template_attribute
-        )
+        value = objects.convert_template_attribute_to_attributes(template_attribute)
 
         self.assertIsInstance(value, objects.Attributes)
         self.assertEqual(enums.Tags.COMMON_ATTRIBUTES, value.tag)
@@ -1241,31 +1165,27 @@ class TestAttributeUtilities(testtools.TestCase):
             primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 value=enums.CryptographicAlgorithm.AES,
-                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             ),
-            value.attributes[0]
+            value.attributes[0],
         )
 
     def test_convert_private_key_template_attribute_to_attributes(self):
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Key Format Type"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Key Format Type"),
                     attribute_value=primitives.Enumeration(
                         enums.KeyFormatType,
                         value=enums.KeyFormatType.RAW,
-                        tag=enums.Tags.KEY_FORMAT_TYPE
-                    )
+                        tag=enums.Tags.KEY_FORMAT_TYPE,
+                    ),
                 )
             ],
-            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
         )
 
-        value = objects.convert_template_attribute_to_attributes(
-            template_attribute
-        )
+        value = objects.convert_template_attribute_to_attributes(template_attribute)
 
         self.assertIsInstance(value, objects.Attributes)
         self.assertEqual(enums.Tags.PRIVATE_KEY_ATTRIBUTES, value.tag)
@@ -1275,31 +1195,27 @@ class TestAttributeUtilities(testtools.TestCase):
             primitives.Enumeration(
                 enums.KeyFormatType,
                 value=enums.KeyFormatType.RAW,
-                tag=enums.Tags.KEY_FORMAT_TYPE
+                tag=enums.Tags.KEY_FORMAT_TYPE,
             ),
-            value.attributes[0]
+            value.attributes[0],
         )
 
     def test_convert_public_key_template_attribute_to_attributes(self):
         template_attribute = objects.TemplateAttribute(
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Type"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Type"),
                     attribute_value=primitives.Enumeration(
                         enums.ObjectType,
                         value=enums.ObjectType.PUBLIC_KEY,
-                        tag=enums.Tags.OBJECT_TYPE
-                    )
+                        tag=enums.Tags.OBJECT_TYPE,
+                    ),
                 )
             ],
-            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
         )
 
-        value = objects.convert_template_attribute_to_attributes(
-            template_attribute
-        )
+        value = objects.convert_template_attribute_to_attributes(template_attribute)
 
         self.assertIsInstance(value, objects.Attributes)
         self.assertEqual(enums.Tags.PUBLIC_KEY_ATTRIBUTES, value.tag)
@@ -1309,13 +1225,13 @@ class TestAttributeUtilities(testtools.TestCase):
             primitives.Enumeration(
                 enums.ObjectType,
                 value=enums.ObjectType.PUBLIC_KEY,
-                tag=enums.Tags.OBJECT_TYPE
+                tag=enums.Tags.OBJECT_TYPE,
             ),
-            value.attributes[0]
+            value.attributes[0],
         )
 
     def test_convert_template_attribute_to_attributes_invalid(self):
-        args = ("invalid", )
+        args = ("invalid",)
         self.assertRaisesRegex(
             TypeError,
             "Input must be a TemplateAttribute structure.",
@@ -1327,12 +1243,10 @@ class TestAttributeUtilities(testtools.TestCase):
         attributes = objects.Attributes(
             attributes=[
                 primitives.Enumeration(
-                    enums.State,
-                    value=enums.State.PRE_ACTIVE,
-                    tag=enums.Tags.STATE
+                    enums.State, value=enums.State.PRE_ACTIVE, tag=enums.Tags.STATE
                 )
             ],
-            tag=enums.Tags.ATTRIBUTES
+            tag=enums.Tags.ATTRIBUTES,
         )
 
         value = objects.convert_attributes_to_template_attribute(attributes)
@@ -1341,21 +1255,15 @@ class TestAttributeUtilities(testtools.TestCase):
         self.assertEqual(value.tag, enums.Tags.TEMPLATE_ATTRIBUTE)
         self.assertIsInstance(value.attributes, list)
         self.assertEqual(1, len(value.attributes))
-        self.assertIsInstance(
-            value.attributes[0],
-            objects.Attribute
-        )
-        self.assertEqual(
-            "State",
-            value.attributes[0].attribute_name.value
-        )
+        self.assertIsInstance(value.attributes[0], objects.Attribute)
+        self.assertEqual("State", value.attributes[0].attribute_name.value)
         self.assertEqual(
             primitives.Enumeration(
                 enums.State,
                 value=enums.State.PRE_ACTIVE,
-                tag=enums.Tags.ATTRIBUTE_VALUE
+                tag=enums.Tags.ATTRIBUTE_VALUE,
             ),
-            value.attributes[0].attribute_value
+            value.attributes[0].attribute_value,
         )
 
     def test_convert_attributes_to_common_template_attribute(self):
@@ -1364,10 +1272,10 @@ class TestAttributeUtilities(testtools.TestCase):
                 primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     value=enums.CryptographicAlgorithm.AES,
-                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ],
-            tag=enums.Tags.COMMON_ATTRIBUTES
+            tag=enums.Tags.COMMON_ATTRIBUTES,
         )
 
         value = objects.convert_attributes_to_template_attribute(attributes)
@@ -1376,21 +1284,17 @@ class TestAttributeUtilities(testtools.TestCase):
         self.assertEqual(value.tag, enums.Tags.COMMON_TEMPLATE_ATTRIBUTE)
         self.assertIsInstance(value.attributes, list)
         self.assertEqual(1, len(value.attributes))
-        self.assertIsInstance(
-            value.attributes[0],
-            objects.Attribute
-        )
+        self.assertIsInstance(value.attributes[0], objects.Attribute)
         self.assertEqual(
-            "Cryptographic Algorithm",
-            value.attributes[0].attribute_name.value
+            "Cryptographic Algorithm", value.attributes[0].attribute_name.value
         )
         self.assertEqual(
             primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 value=enums.CryptographicAlgorithm.AES,
-                tag=enums.Tags.ATTRIBUTE_VALUE
+                tag=enums.Tags.ATTRIBUTE_VALUE,
             ),
-            value.attributes[0].attribute_value
+            value.attributes[0].attribute_value,
         )
 
     def test_convert_attributes_to_private_key_template_attribute(self):
@@ -1399,10 +1303,10 @@ class TestAttributeUtilities(testtools.TestCase):
                 primitives.Enumeration(
                     enums.KeyFormatType,
                     value=enums.KeyFormatType.RAW,
-                    tag=enums.Tags.KEY_FORMAT_TYPE
+                    tag=enums.Tags.KEY_FORMAT_TYPE,
                 )
             ],
-            tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES
+            tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES,
         )
 
         value = objects.convert_attributes_to_template_attribute(attributes)
@@ -1411,21 +1315,15 @@ class TestAttributeUtilities(testtools.TestCase):
         self.assertEqual(value.tag, enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE)
         self.assertIsInstance(value.attributes, list)
         self.assertEqual(1, len(value.attributes))
-        self.assertIsInstance(
-            value.attributes[0],
-            objects.Attribute
-        )
-        self.assertEqual(
-            "Key Format Type",
-            value.attributes[0].attribute_name.value
-        )
+        self.assertIsInstance(value.attributes[0], objects.Attribute)
+        self.assertEqual("Key Format Type", value.attributes[0].attribute_name.value)
         self.assertEqual(
             primitives.Enumeration(
                 enums.KeyFormatType,
                 value=enums.KeyFormatType.RAW,
-                tag=enums.Tags.ATTRIBUTE_VALUE
+                tag=enums.Tags.ATTRIBUTE_VALUE,
             ),
-            value.attributes[0].attribute_value
+            value.attributes[0].attribute_value,
         )
 
     def test_convert_attributes_to_public_key_template_attribute(self):
@@ -1434,10 +1332,10 @@ class TestAttributeUtilities(testtools.TestCase):
                 primitives.Enumeration(
                     enums.ObjectType,
                     value=enums.ObjectType.PUBLIC_KEY,
-                    tag=enums.Tags.OBJECT_TYPE
+                    tag=enums.Tags.OBJECT_TYPE,
                 )
             ],
-            tag=enums.Tags.PUBLIC_KEY_ATTRIBUTES
+            tag=enums.Tags.PUBLIC_KEY_ATTRIBUTES,
         )
 
         value = objects.convert_attributes_to_template_attribute(attributes)
@@ -1446,25 +1344,19 @@ class TestAttributeUtilities(testtools.TestCase):
         self.assertEqual(value.tag, enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE)
         self.assertIsInstance(value.attributes, list)
         self.assertEqual(1, len(value.attributes))
-        self.assertIsInstance(
-            value.attributes[0],
-            objects.Attribute
-        )
-        self.assertEqual(
-            "Object Type",
-            value.attributes[0].attribute_name.value
-        )
+        self.assertIsInstance(value.attributes[0], objects.Attribute)
+        self.assertEqual("Object Type", value.attributes[0].attribute_name.value)
         self.assertEqual(
             primitives.Enumeration(
                 enums.ObjectType,
                 value=enums.ObjectType.PUBLIC_KEY,
-                tag=enums.Tags.ATTRIBUTE_VALUE
+                tag=enums.Tags.ATTRIBUTE_VALUE,
             ),
-            value.attributes[0].attribute_value
+            value.attributes[0].attribute_value,
         )
 
     def test_convert_attributes_to_template_attribute_invalid(self):
-        args = ("invalid", )
+        args = ("invalid",)
         self.assertRaisesRegex(
             TypeError,
             "Input must be an Attributes structure.",
@@ -1515,10 +1407,9 @@ class TestExtensionName(TestCase):
             extension_name = ExtensionName(value)
 
             if value is None:
-                value = ''
+                value = ""
 
-            msg = "expected {0}, observed {1}".format(
-                value, extension_name.value)
+            msg = "expected {0}, observed {1}".format(value, extension_name.value)
             self.assertEqual(value, extension_name.value, msg)
         else:
             self.assertRaises(TypeError, ExtensionName, value)
@@ -1566,8 +1457,7 @@ class TestExtensionTag(TestCase):
             if value is None:
                 value = 0
 
-            msg = "expected {0}, observed {1}".format(
-                value, extension_tag.value)
+            msg = "expected {0}, observed {1}".format(value, extension_tag.value)
             self.assertEqual(value, extension_tag.value, msg)
         else:
             self.assertRaises(TypeError, ExtensionTag, value)
@@ -1615,8 +1505,7 @@ class TestExtensionType(TestCase):
             if value is None:
                 value = 0
 
-            msg = "expected {0}, observed {1}".format(
-                value, extension_type.value)
+            msg = "expected {0}, observed {1}".format(value, extension_type.value)
             self.assertEqual(value, extension_type.value, msg)
         else:
             self.assertRaises(TypeError, ExtensionType, value)
@@ -1659,13 +1548,13 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         #     Block Cipher Mode - NIST_KEY_WRAP
 
         self.full_encoding = BytearrayStream(
-            b'\x42\x00\x36\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
+            b"\x42\x00\x36\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
         )
 
         # Adapted from the full encoding above. This encoding matches the
@@ -1673,16 +1562,14 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         # Unique Identifier - 100182d5-72b8-47aa-8383-4d97d512e98a
 
         self.partial_encoding = BytearrayStream(
-            b'\x42\x00\x36\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
+            b"\x42\x00\x36\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = BytearrayStream(
-            b'\x42\x00\x36\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = BytearrayStream(b"\x42\x00\x36\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestEncryptionKeyInformation, self).tearDown()
@@ -1695,10 +1582,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         encryption_key_information = objects.EncryptionKeyInformation()
 
         self.assertEqual(None, encryption_key_information.unique_identifier)
-        self.assertEqual(
-            None,
-            encryption_key_information.cryptographic_parameters
-        )
+        self.assertEqual(None, encryption_key_information.cryptographic_parameters)
 
     def test_init_with_args(self):
         """
@@ -1706,53 +1590,46 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         valid values.
         """
         cryptographic_parameters = attributes.CryptographicParameters(
-            block_cipher_mode=enums.BlockCipherMode.CTR)
+            block_cipher_mode=enums.BlockCipherMode.CTR
+        )
         encryption_key_information = objects.EncryptionKeyInformation(
             unique_identifier="00000000-1111-2222-3333-444444444444",
-            cryptographic_parameters=cryptographic_parameters
+            cryptographic_parameters=cryptographic_parameters,
         )
 
         self.assertEqual(
             "00000000-1111-2222-3333-444444444444",
-            encryption_key_information.unique_identifier
+            encryption_key_information.unique_identifier,
         )
         self.assertIsInstance(
             encryption_key_information.cryptographic_parameters,
-            attributes.CryptographicParameters
+            attributes.CryptographicParameters,
         )
         parameters = encryption_key_information.cryptographic_parameters
-        self.assertEqual(
-            enums.BlockCipherMode.CTR,
-            parameters.block_cipher_mode
-        )
+        self.assertEqual(enums.BlockCipherMode.CTR, parameters.block_cipher_mode)
 
         encryption_key_information = objects.EncryptionKeyInformation(
             unique_identifier="00000000-1111-2222-3333-444444444444",
-            cryptographic_parameters={
-                'block_cipher_mode': enums.BlockCipherMode.CTR
-            }
+            cryptographic_parameters={"block_cipher_mode": enums.BlockCipherMode.CTR},
         )
 
         self.assertEqual(
             "00000000-1111-2222-3333-444444444444",
-            encryption_key_information.unique_identifier
+            encryption_key_information.unique_identifier,
         )
         self.assertIsInstance(
             encryption_key_information.cryptographic_parameters,
-            attributes.CryptographicParameters
+            attributes.CryptographicParameters,
         )
         parameters = encryption_key_information.cryptographic_parameters
-        self.assertEqual(
-            enums.BlockCipherMode.CTR,
-            parameters.block_cipher_mode
-        )
+        self.assertEqual(enums.BlockCipherMode.CTR, parameters.block_cipher_mode)
 
     def test_invalid_unique_identifier(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of an EncryptionKeyInformation struct.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -1761,12 +1638,9 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         )
 
         encryption_key_information = objects.EncryptionKeyInformation()
-        args = (encryption_key_information, 'unique_identifier', 0)
+        args = (encryption_key_information, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_cryptographic_parameters(self):
@@ -1774,25 +1648,19 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the cryptographic parameters of an EncryptionKeyInformation struct.
         """
-        kwargs = {'cryptographic_parameters': 'invalid'}
+        kwargs = {"cryptographic_parameters": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "Cryptographic parameters must be a CryptographicParameters "
-            "struct.",
+            "Cryptographic parameters must be a CryptographicParameters " "struct.",
             objects.EncryptionKeyInformation,
             **kwargs
         )
 
         encryption_key_information = objects.EncryptionKeyInformation()
-        args = (
-            encryption_key_information,
-            'cryptographic_parameters',
-            'invalid'
-        )
+        args = (encryption_key_information, "cryptographic_parameters", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "Cryptographic parameters must be a CryptographicParameters "
-            "struct.",
+            "Cryptographic parameters must be a CryptographicParameters " "struct.",
             setattr,
             *args
         )
@@ -1805,26 +1673,22 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         encryption_key_information = objects.EncryptionKeyInformation()
 
         self.assertEqual(None, encryption_key_information.unique_identifier)
-        self.assertEqual(
-            None,
-            encryption_key_information.cryptographic_parameters
-        )
+        self.assertEqual(None, encryption_key_information.cryptographic_parameters)
 
         encryption_key_information.read(self.full_encoding)
 
         self.assertEqual(
             "100182d5-72b8-47aa-8383-4d97d512e98a",
-            encryption_key_information.unique_identifier
+            encryption_key_information.unique_identifier,
         )
         self.assertIsInstance(
             encryption_key_information.cryptographic_parameters,
-            attributes.CryptographicParameters
+            attributes.CryptographicParameters,
         )
-        cryptographic_parameters = \
-            encryption_key_information.cryptographic_parameters
+        cryptographic_parameters = encryption_key_information.cryptographic_parameters
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            cryptographic_parameters.block_cipher_mode
+            cryptographic_parameters.block_cipher_mode,
         )
 
     def test_read_partial(self):
@@ -1835,21 +1699,15 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         encryption_key_information = objects.EncryptionKeyInformation()
 
         self.assertEqual(None, encryption_key_information.unique_identifier)
-        self.assertEqual(
-            None,
-            encryption_key_information.cryptographic_parameters
-        )
+        self.assertEqual(None, encryption_key_information.cryptographic_parameters)
 
         encryption_key_information.read(self.partial_encoding)
 
         self.assertEqual(
             "100182d5-72b8-47aa-8383-4d97d512e98a",
-            encryption_key_information.unique_identifier
+            encryption_key_information.unique_identifier,
         )
-        self.assertEqual(
-            None,
-            encryption_key_information.cryptographic_parameters
-        )
+        self.assertEqual(None, encryption_key_information.cryptographic_parameters)
 
     def test_read_invalid(self):
         """
@@ -1875,7 +1733,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         )
         encryption_key_information = objects.EncryptionKeyInformation(
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
-            cryptographic_parameters=cryptographic_parameters
+            cryptographic_parameters=cryptographic_parameters,
         )
         stream = BytearrayStream()
         encryption_key_information.write(stream)
@@ -1927,13 +1785,13 @@ class TestEncryptionKeyInformation(testtools.TestCase):
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
         b = objects.EncryptionKeyInformation(
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
 
         self.assertTrue(a == b)
@@ -1980,7 +1838,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         EncryptionKeyInformation structs with different types.
         """
         a = objects.EncryptionKeyInformation()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -2000,13 +1858,13 @@ class TestEncryptionKeyInformation(testtools.TestCase):
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
         b = objects.EncryptionKeyInformation(
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
 
         self.assertFalse(a != b)
@@ -2053,7 +1911,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         EncryptionKeyInformation structs with different types.
         """
         a = objects.EncryptionKeyInformation()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -2066,7 +1924,7 @@ class TestEncryptionKeyInformation(testtools.TestCase):
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
 
         expected = (
@@ -2100,13 +1958,15 @@ class TestEncryptionKeyInformation(testtools.TestCase):
         )
         encryption_key_information = objects.EncryptionKeyInformation(
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
-            cryptographic_parameters=cryptographic_parameters
+            cryptographic_parameters=cryptographic_parameters,
         )
 
-        expected = str({
-            'unique_identifier': "100182d5-72b8-47aa-8383-4d97d512e98a",
-            'cryptographic_parameters': cryptographic_parameters
-        })
+        expected = str(
+            {
+                "unique_identifier": "100182d5-72b8-47aa-8383-4d97d512e98a",
+                "cryptographic_parameters": cryptographic_parameters,
+            }
+        )
         observed = str(encryption_key_information)
 
         self.assertEqual(expected, observed)
@@ -2129,13 +1989,13 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         #     Block Cipher Mode - NIST_KEY_WRAP
 
         self.full_encoding = BytearrayStream(
-            b'\x42\x00\x4E\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
+            b"\x42\x00\x4E\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
         )
 
         # Adapted from the full encoding above. This encoding matches the
@@ -2143,16 +2003,14 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         # Unique Identifier - 100182d5-72b8-47aa-8383-4d97d512e98a
 
         self.partial_encoding = BytearrayStream(
-            b'\x42\x00\x4E\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
+            b"\x42\x00\x4E\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = BytearrayStream(
-            b'\x42\x00\x4E\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = BytearrayStream(b"\x42\x00\x4E\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestMACSignatureKeyInformation, self).tearDown()
@@ -2164,14 +2022,8 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         """
         mac_signature_key_information = objects.MACSignatureKeyInformation()
 
-        self.assertEqual(
-            None,
-            mac_signature_key_information.unique_identifier
-        )
-        self.assertEqual(
-            None,
-            mac_signature_key_information.cryptographic_parameters
-        )
+        self.assertEqual(None, mac_signature_key_information.unique_identifier)
+        self.assertEqual(None, mac_signature_key_information.cryptographic_parameters)
 
     def test_init_with_args(self):
         """
@@ -2179,53 +2031,46 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         valid values.
         """
         cryptographic_parameters = attributes.CryptographicParameters(
-            block_cipher_mode=enums.BlockCipherMode.CTR)
+            block_cipher_mode=enums.BlockCipherMode.CTR
+        )
         mac_signature_key_information = objects.MACSignatureKeyInformation(
             unique_identifier="00000000-1111-2222-3333-444444444444",
-            cryptographic_parameters=cryptographic_parameters
+            cryptographic_parameters=cryptographic_parameters,
         )
 
         self.assertEqual(
             "00000000-1111-2222-3333-444444444444",
-            mac_signature_key_information.unique_identifier
+            mac_signature_key_information.unique_identifier,
         )
         self.assertIsInstance(
             mac_signature_key_information.cryptographic_parameters,
-            attributes.CryptographicParameters
+            attributes.CryptographicParameters,
         )
         parameters = mac_signature_key_information.cryptographic_parameters
-        self.assertEqual(
-            enums.BlockCipherMode.CTR,
-            parameters.block_cipher_mode
-        )
+        self.assertEqual(enums.BlockCipherMode.CTR, parameters.block_cipher_mode)
 
         mac_signature_key_information = objects.MACSignatureKeyInformation(
             unique_identifier="00000000-1111-2222-3333-444444444444",
-            cryptographic_parameters={
-                'block_cipher_mode': enums.BlockCipherMode.CTR
-            }
+            cryptographic_parameters={"block_cipher_mode": enums.BlockCipherMode.CTR},
         )
 
         self.assertEqual(
             "00000000-1111-2222-3333-444444444444",
-            mac_signature_key_information.unique_identifier
+            mac_signature_key_information.unique_identifier,
         )
         self.assertIsInstance(
             mac_signature_key_information.cryptographic_parameters,
-            attributes.CryptographicParameters
+            attributes.CryptographicParameters,
         )
         parameters = mac_signature_key_information.cryptographic_parameters
-        self.assertEqual(
-            enums.BlockCipherMode.CTR,
-            parameters.block_cipher_mode
-        )
+        self.assertEqual(enums.BlockCipherMode.CTR, parameters.block_cipher_mode)
 
     def test_invalid_unique_identifier(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a MACSignatureKeyInformation struct.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -2233,12 +2078,9 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (objects.MACSignatureKeyInformation(), 'unique_identifier', 0)
+        args = (objects.MACSignatureKeyInformation(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_cryptographic_parameters(self):
@@ -2246,24 +2088,22 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the cryptographic parameters of a MACSignatureKeyInformation struct.
         """
-        kwargs = {'cryptographic_parameters': 'invalid'}
+        kwargs = {"cryptographic_parameters": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "Cryptographic parameters must be a CryptographicParameters "
-            "struct.",
+            "Cryptographic parameters must be a CryptographicParameters " "struct.",
             objects.MACSignatureKeyInformation,
             **kwargs
         )
 
         args = (
             objects.MACSignatureKeyInformation(),
-            'cryptographic_parameters',
-            'invalid'
+            "cryptographic_parameters",
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
-            "Cryptographic parameters must be a CryptographicParameters "
-            "struct.",
+            "Cryptographic parameters must be a CryptographicParameters " "struct.",
             setattr,
             *args
         )
@@ -2275,30 +2115,25 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         """
         mac_signature_key_information = objects.MACSignatureKeyInformation()
 
-        self.assertEqual(
-            None,
-            mac_signature_key_information.unique_identifier
-        )
-        self.assertEqual(
-            None,
-            mac_signature_key_information.cryptographic_parameters
-        )
+        self.assertEqual(None, mac_signature_key_information.unique_identifier)
+        self.assertEqual(None, mac_signature_key_information.cryptographic_parameters)
 
         mac_signature_key_information.read(self.full_encoding)
 
         self.assertEqual(
             "100182d5-72b8-47aa-8383-4d97d512e98a",
-            mac_signature_key_information.unique_identifier
+            mac_signature_key_information.unique_identifier,
         )
         self.assertIsInstance(
             mac_signature_key_information.cryptographic_parameters,
-            attributes.CryptographicParameters
+            attributes.CryptographicParameters,
         )
-        cryptographic_parameters = \
+        cryptographic_parameters = (
             mac_signature_key_information.cryptographic_parameters
+        )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            cryptographic_parameters.block_cipher_mode
+            cryptographic_parameters.block_cipher_mode,
         )
 
     def test_read_partial(self):
@@ -2308,25 +2143,16 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         """
         mac_signature_key_information = objects.MACSignatureKeyInformation()
 
-        self.assertEqual(
-            None,
-            mac_signature_key_information.unique_identifier
-        )
-        self.assertEqual(
-            None,
-            mac_signature_key_information.cryptographic_parameters
-        )
+        self.assertEqual(None, mac_signature_key_information.unique_identifier)
+        self.assertEqual(None, mac_signature_key_information.cryptographic_parameters)
 
         mac_signature_key_information.read(self.partial_encoding)
 
         self.assertEqual(
             "100182d5-72b8-47aa-8383-4d97d512e98a",
-            mac_signature_key_information.unique_identifier
+            mac_signature_key_information.unique_identifier,
         )
-        self.assertEqual(
-            None,
-            mac_signature_key_information.cryptographic_parameters
-        )
+        self.assertEqual(None, mac_signature_key_information.cryptographic_parameters)
 
     def test_read_invalid(self):
         """
@@ -2352,7 +2178,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         )
         mac_signature_key_information = objects.MACSignatureKeyInformation(
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
-            cryptographic_parameters=cryptographic_parameters
+            cryptographic_parameters=cryptographic_parameters,
         )
         stream = BytearrayStream()
         mac_signature_key_information.write(stream)
@@ -2404,13 +2230,13 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
         b = objects.MACSignatureKeyInformation(
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
 
         self.assertTrue(a == b)
@@ -2457,7 +2283,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         MACSignatureKeyInformation structs with different types.
         """
         a = objects.MACSignatureKeyInformation()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -2477,13 +2303,13 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
         b = objects.MACSignatureKeyInformation(
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
 
         self.assertFalse(a != b)
@@ -2530,7 +2356,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         MACSignatureKeyInformation structs with different types.
         """
         a = objects.MACSignatureKeyInformation()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -2543,7 +2369,7 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC
-            )
+            ),
         )
 
         expected = (
@@ -2577,13 +2403,15 @@ class TestMACSignatureKeyInformation(testtools.TestCase):
         )
         mac_signature_key_information = objects.MACSignatureKeyInformation(
             unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
-            cryptographic_parameters=cryptographic_parameters
+            cryptographic_parameters=cryptographic_parameters,
         )
 
-        expected = str({
-            'unique_identifier': "100182d5-72b8-47aa-8383-4d97d512e98a",
-            'cryptographic_parameters': cryptographic_parameters
-        })
+        expected = str(
+            {
+                "unique_identifier": "100182d5-72b8-47aa-8383-4d97d512e98a",
+                "cryptographic_parameters": cryptographic_parameters,
+            }
+        )
         observed = str(mac_signature_key_information)
 
         self.assertEqual(expected, observed)
@@ -2616,25 +2444,25 @@ class TestKeyWrappingData(testtools.TestCase):
         # Encoding Option - NO_ENCODING
 
         self.full_encoding = BytearrayStream(
-            b'\x42\x00\x46\x01\x00\x00\x00\xE0'
-            b'\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x36\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\x4E\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\x4D\x08\x00\x00\x00\x08\x01\x23\x45\x67\x89\xAB\xCD\xEF'
-            b'\x42\x00\x3D\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x46\x01\x00\x00\x00\xE0"
+            b"\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x36\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\x4E\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\x4D\x08\x00\x00\x00\x08\x01\x23\x45\x67\x89\xAB\xCD\xEF"
+            b"\x42\x00\x3D\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 14.1.
@@ -2648,21 +2476,19 @@ class TestKeyWrappingData(testtools.TestCase):
         # Encoding Option - NO_ENCODING
 
         self.partial_encoding = BytearrayStream(
-            b'\x42\x00\x46\x01\x00\x00\x00\x70'
-            b'\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x36\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x46\x01\x00\x00\x00\x70"
+            b"\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x36\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = BytearrayStream(
-            b'\x42\x00\x46\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = BytearrayStream(b"\x42\x00\x46\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestKeyWrappingData, self).tearDown()
@@ -2692,126 +2518,104 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="12345678-9012-3456-7890-123456789012",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CTR
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="00000000-1111-2222-3333-444444444444",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            mac_signature=b'\x01',
-            iv_counter_nonce=b'\x02',
-            encoding_option=enums.EncodingOption.TTLV_ENCODING
+            mac_signature=b"\x01",
+            iv_counter_nonce=b"\x02",
+            encoding_option=enums.EncodingOption.TTLV_ENCODING,
         )
 
         self.assertEqual(
-            enums.WrappingMethod.ENCRYPT,
-            key_wrapping_data.wrapping_method
+            enums.WrappingMethod.ENCRYPT, key_wrapping_data.wrapping_method
         )
         self.assertIsInstance(
             key_wrapping_data.encryption_key_information,
-            objects.EncryptionKeyInformation
+            objects.EncryptionKeyInformation,
         )
         e = key_wrapping_data.encryption_key_information
-        self.assertEqual(
-            "12345678-9012-3456-7890-123456789012",
-            e.unique_identifier
-        )
+        self.assertEqual("12345678-9012-3456-7890-123456789012", e.unique_identifier)
         self.assertIsInstance(
-            e.cryptographic_parameters,
-            attributes.CryptographicParameters
+            e.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
-            enums.BlockCipherMode.CTR,
-            e.cryptographic_parameters.block_cipher_mode
+            enums.BlockCipherMode.CTR, e.cryptographic_parameters.block_cipher_mode
         )
         self.assertIsInstance(
             key_wrapping_data.mac_signature_key_information,
-            objects.MACSignatureKeyInformation
+            objects.MACSignatureKeyInformation,
         )
         m = key_wrapping_data.mac_signature_key_information
-        self.assertEqual(
-            "00000000-1111-2222-3333-444444444444",
-            m.unique_identifier
-        )
+        self.assertEqual("00000000-1111-2222-3333-444444444444", m.unique_identifier)
         self.assertIsInstance(
-            m.cryptographic_parameters,
-            attributes.CryptographicParameters
+            m.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            m.cryptographic_parameters.block_cipher_mode
+            m.cryptographic_parameters.block_cipher_mode,
         )
-        self.assertEqual(b'\x01', key_wrapping_data.mac_signature)
-        self.assertEqual(b'\x02', key_wrapping_data.iv_counter_nonce)
+        self.assertEqual(b"\x01", key_wrapping_data.mac_signature)
+        self.assertEqual(b"\x02", key_wrapping_data.iv_counter_nonce)
         self.assertEqual(
-            enums.EncodingOption.TTLV_ENCODING,
-            key_wrapping_data.encoding_option
+            enums.EncodingOption.TTLV_ENCODING, key_wrapping_data.encoding_option
         )
 
         key_wrapping_data = objects.KeyWrappingData(
             wrapping_method=enums.WrappingMethod.ENCRYPT,
             encryption_key_information={
-                'unique_identifier': "12345678-9012-3456-7890-123456789012",
-                'cryptographic_parameters': {
-                    'block_cipher_mode': enums.BlockCipherMode.CTR
-                }
+                "unique_identifier": "12345678-9012-3456-7890-123456789012",
+                "cryptographic_parameters": {
+                    "block_cipher_mode": enums.BlockCipherMode.CTR
+                },
             },
             mac_signature_key_information={
-                'unique_identifier': "00000000-1111-2222-3333-444444444444",
-                'cryptographic_parameters': {
-                    'block_cipher_mode': enums.BlockCipherMode.NIST_KEY_WRAP
-                }
+                "unique_identifier": "00000000-1111-2222-3333-444444444444",
+                "cryptographic_parameters": {
+                    "block_cipher_mode": enums.BlockCipherMode.NIST_KEY_WRAP
+                },
             },
-            mac_signature=b'\x01',
-            iv_counter_nonce=b'\x02',
-            encoding_option=enums.EncodingOption.TTLV_ENCODING
+            mac_signature=b"\x01",
+            iv_counter_nonce=b"\x02",
+            encoding_option=enums.EncodingOption.TTLV_ENCODING,
         )
 
         self.assertEqual(
-            enums.WrappingMethod.ENCRYPT,
-            key_wrapping_data.wrapping_method
+            enums.WrappingMethod.ENCRYPT, key_wrapping_data.wrapping_method
         )
         self.assertIsInstance(
             key_wrapping_data.encryption_key_information,
-            objects.EncryptionKeyInformation
+            objects.EncryptionKeyInformation,
         )
         e = key_wrapping_data.encryption_key_information
-        self.assertEqual(
-            "12345678-9012-3456-7890-123456789012",
-            e.unique_identifier
-        )
+        self.assertEqual("12345678-9012-3456-7890-123456789012", e.unique_identifier)
         self.assertIsInstance(
-            e.cryptographic_parameters,
-            attributes.CryptographicParameters
+            e.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
-            enums.BlockCipherMode.CTR,
-            e.cryptographic_parameters.block_cipher_mode
+            enums.BlockCipherMode.CTR, e.cryptographic_parameters.block_cipher_mode
         )
         self.assertIsInstance(
             key_wrapping_data.mac_signature_key_information,
-            objects.MACSignatureKeyInformation
+            objects.MACSignatureKeyInformation,
         )
         m = key_wrapping_data.mac_signature_key_information
-        self.assertEqual(
-            "00000000-1111-2222-3333-444444444444",
-            m.unique_identifier
-        )
+        self.assertEqual("00000000-1111-2222-3333-444444444444", m.unique_identifier)
         self.assertIsInstance(
-            m.cryptographic_parameters,
-            attributes.CryptographicParameters
+            m.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            m.cryptographic_parameters.block_cipher_mode
+            m.cryptographic_parameters.block_cipher_mode,
         )
-        self.assertEqual(b'\x01', key_wrapping_data.mac_signature)
-        self.assertEqual(b'\x02', key_wrapping_data.iv_counter_nonce)
+        self.assertEqual(b"\x01", key_wrapping_data.mac_signature)
+        self.assertEqual(b"\x02", key_wrapping_data.iv_counter_nonce)
         self.assertEqual(
-            enums.EncodingOption.TTLV_ENCODING,
-            key_wrapping_data.encoding_option
+            enums.EncodingOption.TTLV_ENCODING, key_wrapping_data.encoding_option
         )
 
     def test_invalid_wrapping_method(self):
@@ -2819,7 +2623,7 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the wrapping method of a KeyWrappingData struct.
         """
-        kwargs = {'wrapping_method': 'invalid'}
+        kwargs = {"wrapping_method": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Wrapping method must be a WrappingMethod enumeration.",
@@ -2827,7 +2631,7 @@ class TestKeyWrappingData(testtools.TestCase):
             **kwargs
         )
 
-        args = (objects.KeyWrappingData(), 'wrapping_method', 0)
+        args = (objects.KeyWrappingData(), "wrapping_method", 0)
         self.assertRaisesRegex(
             TypeError,
             "Wrapping method must be a WrappingMethod enumeration.",
@@ -2840,24 +2644,18 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the encryption key information of a KeyWrappingData struct.
         """
-        kwargs = {'encryption_key_information': 'invalid'}
+        kwargs = {"encryption_key_information": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "Encryption key information must be an EncryptionKeyInformation "
-            "struct.",
+            "Encryption key information must be an EncryptionKeyInformation " "struct.",
             objects.KeyWrappingData,
             **kwargs
         )
 
-        args = (
-            objects.KeyWrappingData(),
-            'encryption_key_information',
-            'invalid'
-        )
+        args = (objects.KeyWrappingData(), "encryption_key_information", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "Encryption key information must be an EncryptionKeyInformation "
-            "struct.",
+            "Encryption key information must be an EncryptionKeyInformation " "struct.",
             setattr,
             *args
         )
@@ -2867,7 +2665,7 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the MAC/signature key information of a KeyWrappingData struct.
         """
-        kwargs = {'mac_signature_key_information': 'invalid'}
+        kwargs = {"mac_signature_key_information": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "MAC/signature key information must be an "
@@ -2876,11 +2674,7 @@ class TestKeyWrappingData(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.KeyWrappingData(),
-            'mac_signature_key_information',
-            'invalid'
-        )
+        args = (objects.KeyWrappingData(), "mac_signature_key_information", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "MAC/signature key information must be an "
@@ -2894,24 +2688,14 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the MAC/signature of a KeyWrappingData struct.
         """
-        kwargs = {'mac_signature': 0}
+        kwargs = {"mac_signature": 0}
         self.assertRaisesRegex(
-            TypeError,
-            "MAC/signature must be bytes.",
-            objects.KeyWrappingData,
-            **kwargs
+            TypeError, "MAC/signature must be bytes.", objects.KeyWrappingData, **kwargs
         )
 
-        args = (
-            objects.KeyWrappingData(),
-            'mac_signature',
-            0
-        )
+        args = (objects.KeyWrappingData(), "mac_signature", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "MAC/signature must be bytes.",
-            setattr,
-            *args
+            TypeError, "MAC/signature must be bytes.", setattr, *args
         )
 
     def test_invalid_iv_counter_nonce(self):
@@ -2919,7 +2703,7 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the IV/counter/nonce of a KeyWrappingData struct.
         """
-        kwargs = {'iv_counter_nonce': 0}
+        kwargs = {"iv_counter_nonce": 0}
         self.assertRaisesRegex(
             TypeError,
             "IV/counter/nonce must be bytes.",
@@ -2927,16 +2711,9 @@ class TestKeyWrappingData(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.KeyWrappingData(),
-            'iv_counter_nonce',
-            0
-        )
+        args = (objects.KeyWrappingData(), "iv_counter_nonce", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "IV/counter/nonce must be bytes.",
-            setattr,
-            *args
+            TypeError, "IV/counter/nonce must be bytes.", setattr, *args
         )
 
     def test_invalid_encoding_option(self):
@@ -2944,7 +2721,7 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the encoding option of a KeyWrappingData struct.
         """
-        kwargs = {'encoding_option': 'invalid'}
+        kwargs = {"encoding_option": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Encoding option must be an EncodingOption enumeration.",
@@ -2952,11 +2729,7 @@ class TestKeyWrappingData(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.KeyWrappingData(),
-            'encoding_option',
-            'invalid'
-        )
+        args = (objects.KeyWrappingData(), "encoding_option", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Encoding option must be an EncodingOption enumeration.",
@@ -2980,54 +2753,40 @@ class TestKeyWrappingData(testtools.TestCase):
         key_wrapping_data.read(self.full_encoding)
 
         self.assertEqual(
-            enums.WrappingMethod.ENCRYPT,
-            key_wrapping_data.wrapping_method
+            enums.WrappingMethod.ENCRYPT, key_wrapping_data.wrapping_method
         )
         self.assertIsInstance(
             key_wrapping_data.encryption_key_information,
-            objects.EncryptionKeyInformation
+            objects.EncryptionKeyInformation,
         )
         e = key_wrapping_data.encryption_key_information
-        self.assertEqual(
-            "100182d5-72b8-47aa-8383-4d97d512e98a",
-            e.unique_identifier
-        )
+        self.assertEqual("100182d5-72b8-47aa-8383-4d97d512e98a", e.unique_identifier)
         self.assertIsInstance(
-            e.cryptographic_parameters,
-            attributes.CryptographicParameters
+            e.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            e.cryptographic_parameters.block_cipher_mode
+            e.cryptographic_parameters.block_cipher_mode,
         )
         self.assertIsInstance(
             key_wrapping_data.mac_signature_key_information,
-            objects.MACSignatureKeyInformation
+            objects.MACSignatureKeyInformation,
         )
         m = key_wrapping_data.mac_signature_key_information
-        self.assertEqual(
-            "100182d5-72b8-47aa-8383-4d97d512e98a",
-            m.unique_identifier
-        )
+        self.assertEqual("100182d5-72b8-47aa-8383-4d97d512e98a", m.unique_identifier)
         self.assertIsInstance(
-            m.cryptographic_parameters,
-            attributes.CryptographicParameters
+            m.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            m.cryptographic_parameters.block_cipher_mode
+            m.cryptographic_parameters.block_cipher_mode,
         )
         self.assertEqual(
-            b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            key_wrapping_data.mac_signature
+            b"\x01\x23\x45\x67\x89\xAB\xCD\xEF", key_wrapping_data.mac_signature
         )
+        self.assertEqual(b"\x01", key_wrapping_data.iv_counter_nonce)
         self.assertEqual(
-            b'\x01',
-            key_wrapping_data.iv_counter_nonce
-        )
-        self.assertEqual(
-            enums.EncodingOption.NO_ENCODING,
-            key_wrapping_data.encoding_option
+            enums.EncodingOption.NO_ENCODING, key_wrapping_data.encoding_option
         )
 
     def test_read_partial(self):
@@ -3047,32 +2806,26 @@ class TestKeyWrappingData(testtools.TestCase):
         key_wrapping_data.read(self.partial_encoding)
 
         self.assertEqual(
-            enums.WrappingMethod.ENCRYPT,
-            key_wrapping_data.wrapping_method
+            enums.WrappingMethod.ENCRYPT, key_wrapping_data.wrapping_method
         )
         self.assertIsInstance(
             key_wrapping_data.encryption_key_information,
-            objects.EncryptionKeyInformation
+            objects.EncryptionKeyInformation,
         )
         e = key_wrapping_data.encryption_key_information
-        self.assertEqual(
-            "100182d5-72b8-47aa-8383-4d97d512e98a",
-            e.unique_identifier
-        )
+        self.assertEqual("100182d5-72b8-47aa-8383-4d97d512e98a", e.unique_identifier)
         self.assertIsInstance(
-            e.cryptographic_parameters,
-            attributes.CryptographicParameters
+            e.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            e.cryptographic_parameters.block_cipher_mode
+            e.cryptographic_parameters.block_cipher_mode,
         )
         self.assertIsNone(key_wrapping_data.mac_signature_key_information)
         self.assertIsNone(key_wrapping_data.mac_signature)
         self.assertIsNone(key_wrapping_data.iv_counter_nonce)
         self.assertEqual(
-            enums.EncodingOption.NO_ENCODING,
-            key_wrapping_data.encoding_option
+            enums.EncodingOption.NO_ENCODING, key_wrapping_data.encoding_option
         )
 
     def test_read_invalid(self):
@@ -3099,17 +2852,17 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            mac_signature=b'\x01\x23\x45\x67\x89\xAB\xCD\xEF',
-            iv_counter_nonce=b'\x01',
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            mac_signature=b"\x01\x23\x45\x67\x89\xAB\xCD\xEF",
+            iv_counter_nonce=b"\x01",
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
         stream = BytearrayStream()
         key_wrapping_data.write(stream)
@@ -3128,9 +2881,9 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
         stream = BytearrayStream()
         key_wrapping_data.write(stream)
@@ -3170,17 +2923,17 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            mac_signature=b'\x01\x01\x01\x01\x01\x01\x01\x01',
-            iv_counter_nonce=b'\x01',
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            mac_signature=b"\x01\x01\x01\x01\x01\x01\x01\x01",
+            iv_counter_nonce=b"\x01",
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
         b = objects.KeyWrappingData(
             wrapping_method=enums.WrappingMethod.ENCRYPT,
@@ -3188,17 +2941,17 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            mac_signature=b'\x01\x01\x01\x01\x01\x01\x01\x01',
-            iv_counter_nonce=b'\x01',
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            mac_signature=b"\x01\x01\x01\x01\x01\x01\x01\x01",
+            iv_counter_nonce=b"\x01",
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
 
         self.assertTrue(a == b)
@@ -3209,12 +2962,8 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         KeyWrappingData structs with different wrapping methods.
         """
-        a = objects.KeyWrappingData(
-            wrapping_method=enums.WrappingMethod.ENCRYPT
-        )
-        b = objects.KeyWrappingData(
-            wrapping_method=enums.WrappingMethod.MAC_SIGN
-        )
+        a = objects.KeyWrappingData(wrapping_method=enums.WrappingMethod.ENCRYPT)
+        b = objects.KeyWrappingData(wrapping_method=enums.WrappingMethod.MAC_SIGN)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3229,7 +2978,7 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             )
         )
         b = objects.KeyWrappingData(
@@ -3237,7 +2986,7 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             )
         )
 
@@ -3254,7 +3003,7 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             )
         )
         b = objects.KeyWrappingData(
@@ -3262,7 +3011,7 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             )
         )
 
@@ -3274,8 +3023,8 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         KeyWrappingData structs with different MAC/signatures.
         """
-        a = objects.KeyWrappingData(mac_signature=b'\x01')
-        b = objects.KeyWrappingData(mac_signature=b'\x10')
+        a = objects.KeyWrappingData(mac_signature=b"\x01")
+        b = objects.KeyWrappingData(mac_signature=b"\x10")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3285,8 +3034,8 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         KeyWrappingData structs with different IV/counter/nonces.
         """
-        a = objects.KeyWrappingData(iv_counter_nonce=b'\x01')
-        b = objects.KeyWrappingData(iv_counter_nonce=b'\x10')
+        a = objects.KeyWrappingData(iv_counter_nonce=b"\x01")
+        b = objects.KeyWrappingData(iv_counter_nonce=b"\x10")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3296,12 +3045,8 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         KeyWrappingData structs with different encoding options.
         """
-        a = objects.KeyWrappingData(
-            encoding_option=enums.EncodingOption.NO_ENCODING
-        )
-        b = objects.KeyWrappingData(
-            encoding_option=enums.EncodingOption.TTLV_ENCODING
-        )
+        a = objects.KeyWrappingData(encoding_option=enums.EncodingOption.NO_ENCODING)
+        b = objects.KeyWrappingData(encoding_option=enums.EncodingOption.TTLV_ENCODING)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3312,7 +3057,7 @@ class TestKeyWrappingData(testtools.TestCase):
         KeyWrappingData structs with different types.
         """
         a = objects.KeyWrappingData()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3334,17 +3079,17 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            mac_signature=b'\x01\x01\x01\x01\x01\x01\x01\x01',
-            iv_counter_nonce=b'\x01',
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            mac_signature=b"\x01\x01\x01\x01\x01\x01\x01\x01",
+            iv_counter_nonce=b"\x01",
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
         b = objects.KeyWrappingData(
             wrapping_method=enums.WrappingMethod.ENCRYPT,
@@ -3352,17 +3097,17 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            mac_signature=b'\x01\x01\x01\x01\x01\x01\x01\x01',
-            iv_counter_nonce=b'\x01',
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            mac_signature=b"\x01\x01\x01\x01\x01\x01\x01\x01",
+            iv_counter_nonce=b"\x01",
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
 
         self.assertFalse(a != b)
@@ -3373,12 +3118,8 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         KeyWrappingData structs with different wrapping methods.
         """
-        a = objects.KeyWrappingData(
-            wrapping_method=enums.WrappingMethod.ENCRYPT
-        )
-        b = objects.KeyWrappingData(
-            wrapping_method=enums.WrappingMethod.MAC_SIGN
-        )
+        a = objects.KeyWrappingData(wrapping_method=enums.WrappingMethod.ENCRYPT)
+        b = objects.KeyWrappingData(wrapping_method=enums.WrappingMethod.MAC_SIGN)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -3393,7 +3134,7 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             )
         )
         b = objects.KeyWrappingData(
@@ -3401,7 +3142,7 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             )
         )
 
@@ -3418,7 +3159,7 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             )
         )
         b = objects.KeyWrappingData(
@@ -3426,7 +3167,7 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             )
         )
 
@@ -3438,8 +3179,8 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         KeyWrappingData structs with different MAC/signatures.
         """
-        a = objects.KeyWrappingData(mac_signature=b'\x01')
-        b = objects.KeyWrappingData(mac_signature=b'\x10')
+        a = objects.KeyWrappingData(mac_signature=b"\x01")
+        b = objects.KeyWrappingData(mac_signature=b"\x10")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -3449,8 +3190,8 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         KeyWrappingData structs with different IV/counter/nonces.
         """
-        a = objects.KeyWrappingData(iv_counter_nonce=b'\x01')
-        b = objects.KeyWrappingData(iv_counter_nonce=b'\x10')
+        a = objects.KeyWrappingData(iv_counter_nonce=b"\x01")
+        b = objects.KeyWrappingData(iv_counter_nonce=b"\x10")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -3460,12 +3201,8 @@ class TestKeyWrappingData(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         KeyWrappingData structs with different encoding options.
         """
-        a = objects.KeyWrappingData(
-            encoding_option=enums.EncodingOption.NO_ENCODING
-        )
-        b = objects.KeyWrappingData(
-            encoding_option=enums.EncodingOption.TTLV_ENCODING
-        )
+        a = objects.KeyWrappingData(encoding_option=enums.EncodingOption.NO_ENCODING)
+        b = objects.KeyWrappingData(encoding_option=enums.EncodingOption.TTLV_ENCODING)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -3476,7 +3213,7 @@ class TestKeyWrappingData(testtools.TestCase):
         KeyWrappingData structs with different types.
         """
         a = objects.KeyWrappingData()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -3491,17 +3228,17 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             ),
-            mac_signature=b'\x01\x01\x02\x02\x03\x03\x04\x04',
-            iv_counter_nonce=b'\xFF',
-            encoding_option=enums.EncodingOption.TTLV_ENCODING
+            mac_signature=b"\x01\x01\x02\x02\x03\x03\x04\x04",
+            iv_counter_nonce=b"\xFF",
+            encoding_option=enums.EncodingOption.TTLV_ENCODING,
         )
 
         expected = (
@@ -3542,8 +3279,7 @@ class TestKeyWrappingData(testtools.TestCase):
             "mac_signature={0}, "
             "iv_counter_nonce={1}, "
             "encoding_option=EncodingOption.TTLV_ENCODING)".format(
-                b'\x01\x01\x02\x02\x03\x03\x04\x04',
-                b'\xFF'
+                b"\x01\x01\x02\x02\x03\x03\x04\x04", b"\xFF"
             )
         )
         observed = repr(key_wrapping_data)
@@ -3560,38 +3296,39 @@ class TestKeyWrappingData(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             ),
-            mac_signature=b'\x01\x01\x02\x02\x03\x03\x04\x04',
-            iv_counter_nonce=b'\xFF',
-            encoding_option=enums.EncodingOption.TTLV_ENCODING
+            mac_signature=b"\x01\x01\x02\x02\x03\x03\x04\x04",
+            iv_counter_nonce=b"\xFF",
+            encoding_option=enums.EncodingOption.TTLV_ENCODING,
         )
 
-        expected = str({
-            'wrapping_method': enums.WrappingMethod.ENCRYPT,
-            'encryption_key_information': objects.EncryptionKeyInformation(
-                unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
-                cryptographic_parameters=attributes.CryptographicParameters(
-                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
-            ),
-            'mac_signature_key_information':
-                objects.MACSignatureKeyInformation(
-                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
-                cryptographic_parameters=attributes.CryptographicParameters(
-                    block_cipher_mode=enums.BlockCipherMode.CBC
-                )
-            ),
-            'mac_signature': b'\x01\x01\x02\x02\x03\x03\x04\x04',
-            'iv_counter_nonce': b'\xFF',
-            'encoding_option': enums.EncodingOption.TTLV_ENCODING
-        })
+        expected = str(
+            {
+                "wrapping_method": enums.WrappingMethod.ENCRYPT,
+                "encryption_key_information": objects.EncryptionKeyInformation(
+                    unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
+                        block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                    ),
+                ),
+                "mac_signature_key_information": objects.MACSignatureKeyInformation(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
+                        block_cipher_mode=enums.BlockCipherMode.CBC
+                    ),
+                ),
+                "mac_signature": b"\x01\x01\x02\x02\x03\x03\x04\x04",
+                "iv_counter_nonce": b"\xFF",
+                "encoding_option": enums.EncodingOption.TTLV_ENCODING,
+            }
+        )
         observed = str(key_wrapping_data)
 
         self.assertEqual(expected, observed)
@@ -3624,26 +3361,26 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         # Encoding Option - NO_ENCODING
 
         self.full_encoding = BytearrayStream(
-            b'\x42\x00\x47\x01\x00\x00\x00\xE0'
-            b'\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x36\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\x4E\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x47\x01\x00\x00\x00\xE0"
+            b"\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x36\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\x4E\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Adapted from the full encoding above. This encoding matches the
@@ -3656,20 +3393,18 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         #         Block Cipher Mode - NIST_KEY_WRAP
 
         self.partial_encoding = BytearrayStream(
-            b'\x42\x00\x47\x01\x00\x00\x00\x60'
-            b'\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x36\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
+            b"\x42\x00\x47\x01\x00\x00\x00\x60"
+            b"\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x36\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = BytearrayStream(
-            b'\x42\x00\x47\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = BytearrayStream(b"\x42\x00\x47\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestKeyWrappingSpecification, self).tearDown()
@@ -3682,14 +3417,8 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         key_wrapping_specification = objects.KeyWrappingSpecification()
 
         self.assertEqual(None, key_wrapping_specification.wrapping_method)
-        self.assertEqual(
-            None,
-            key_wrapping_specification.encryption_key_information
-        )
-        self.assertEqual(
-            None,
-            key_wrapping_specification.mac_signature_key_information
-        )
+        self.assertEqual(None, key_wrapping_specification.encryption_key_information)
+        self.assertEqual(None, key_wrapping_specification.mac_signature_key_information)
         self.assertEqual(None, key_wrapping_specification.attribute_names)
         self.assertEqual(None, key_wrapping_specification.encoding_option)
 
@@ -3702,84 +3431,68 @@ class TestKeyWrappingSpecification(testtools.TestCase):
             unique_identifier="12345678-9012-3456-7890-123456789012",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CTR
-            )
+            ),
         )
         mac_signature_key_information = objects.MACSignatureKeyInformation(
             unique_identifier="00000000-1111-2222-3333-444444444444",
             cryptographic_parameters=attributes.CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-            )
+            ),
         )
         key_wrapping_specification = objects.KeyWrappingSpecification(
             wrapping_method=enums.WrappingMethod.ENCRYPT,
             encryption_key_information=encryption_key_information,
             mac_signature_key_information=mac_signature_key_information,
             attribute_names=[
-                'Cryptographic Algorithm',
-                'Cryptographic Length',
-                'Cryptographic Usage Mask'
+                "Cryptographic Algorithm",
+                "Cryptographic Length",
+                "Cryptographic Usage Mask",
             ],
-            encoding_option=enums.EncodingOption.TTLV_ENCODING
+            encoding_option=enums.EncodingOption.TTLV_ENCODING,
         )
 
         self.assertEqual(
-            enums.WrappingMethod.ENCRYPT,
-            key_wrapping_specification.wrapping_method
+            enums.WrappingMethod.ENCRYPT, key_wrapping_specification.wrapping_method
         )
         self.assertIsInstance(
             key_wrapping_specification.encryption_key_information,
-            objects.EncryptionKeyInformation
+            objects.EncryptionKeyInformation,
         )
         e = key_wrapping_specification.encryption_key_information
-        self.assertEqual(
-            "12345678-9012-3456-7890-123456789012",
-            e.unique_identifier
-        )
+        self.assertEqual("12345678-9012-3456-7890-123456789012", e.unique_identifier)
         self.assertIsInstance(
-            e.cryptographic_parameters,
-            attributes.CryptographicParameters
+            e.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
-            enums.BlockCipherMode.CTR,
-            e.cryptographic_parameters.block_cipher_mode
+            enums.BlockCipherMode.CTR, e.cryptographic_parameters.block_cipher_mode
         )
         self.assertIsInstance(
             key_wrapping_specification.mac_signature_key_information,
-            objects.MACSignatureKeyInformation
+            objects.MACSignatureKeyInformation,
         )
         m = key_wrapping_specification.mac_signature_key_information
-        self.assertEqual(
-            "00000000-1111-2222-3333-444444444444",
-            m.unique_identifier
-        )
+        self.assertEqual("00000000-1111-2222-3333-444444444444", m.unique_identifier)
         self.assertIsInstance(
-            m.cryptographic_parameters,
-            attributes.CryptographicParameters
+            m.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            m.cryptographic_parameters.block_cipher_mode
+            m.cryptographic_parameters.block_cipher_mode,
         )
-        self.assertIsInstance(
-            key_wrapping_specification.attribute_names,
-            list
-        )
+        self.assertIsInstance(key_wrapping_specification.attribute_names, list)
         self.assertEqual(3, len(key_wrapping_specification.attribute_names))
         self.assertEqual(
-            'Cryptographic Algorithm',
-            key_wrapping_specification.attribute_names[0]
+            "Cryptographic Algorithm", key_wrapping_specification.attribute_names[0]
         )
         self.assertEqual(
-            'Cryptographic Length',
-            key_wrapping_specification.attribute_names[1]
+            "Cryptographic Length", key_wrapping_specification.attribute_names[1]
         )
         self.assertEqual(
-            'Cryptographic Usage Mask',
-            key_wrapping_specification.attribute_names[2]
+            "Cryptographic Usage Mask", key_wrapping_specification.attribute_names[2]
         )
         self.assertEqual(
             enums.EncodingOption.TTLV_ENCODING,
-            key_wrapping_specification.encoding_option
+            key_wrapping_specification.encoding_option,
         )
 
     def test_invalid_wrapping_method(self):
@@ -3787,7 +3500,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the wrapping method of a KeyWrappingSpecification struct.
         """
-        kwargs = {'wrapping_method': 'invalid'}
+        kwargs = {"wrapping_method": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Wrapping method must be a WrappingMethod enumeration.",
@@ -3795,7 +3508,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
             **kwargs
         )
 
-        args = (objects.KeyWrappingSpecification(), 'wrapping_method', 0)
+        args = (objects.KeyWrappingSpecification(), "wrapping_method", 0)
         self.assertRaisesRegex(
             TypeError,
             "Wrapping method must be a WrappingMethod enumeration.",
@@ -3808,24 +3521,22 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the encryption key information of a KeyWrappingSpecification struct.
         """
-        kwargs = {'encryption_key_information': 'invalid'}
+        kwargs = {"encryption_key_information": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "Encryption key information must be an EncryptionKeyInformation "
-            "struct.",
+            "Encryption key information must be an EncryptionKeyInformation " "struct.",
             objects.KeyWrappingSpecification,
             **kwargs
         )
 
         args = (
             objects.KeyWrappingSpecification(),
-            'encryption_key_information',
-            'invalid'
+            "encryption_key_information",
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
-            "Encryption key information must be an EncryptionKeyInformation "
-            "struct.",
+            "Encryption key information must be an EncryptionKeyInformation " "struct.",
             setattr,
             *args
         )
@@ -3836,7 +3547,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         the MAC/signature key information of a KeyWrappingSpecification
         struct.
         """
-        kwargs = {'mac_signature_key_information': 'invalid'}
+        kwargs = {"mac_signature_key_information": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "MAC/signature key information must be an "
@@ -3847,8 +3558,8 @@ class TestKeyWrappingSpecification(testtools.TestCase):
 
         args = (
             objects.KeyWrappingSpecification(),
-            'mac_signature_key_information',
-            'invalid'
+            "mac_signature_key_information",
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -3863,7 +3574,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the attribute names of a KeyWrappingSpecification struct.
         """
-        kwargs = {'attribute_names': 'invalid'}
+        kwargs = {"attribute_names": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Attribute names must be a list of strings.",
@@ -3871,16 +3582,9 @@ class TestKeyWrappingSpecification(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.KeyWrappingSpecification(),
-            'attribute_names',
-            ['valid', 0]
-        )
+        args = (objects.KeyWrappingSpecification(), "attribute_names", ["valid", 0])
         self.assertRaisesRegex(
-            TypeError,
-            "Attribute names must be a list of strings.",
-            setattr,
-            *args
+            TypeError, "Attribute names must be a list of strings.", setattr, *args
         )
 
     def test_invalid_encoding_option(self):
@@ -3888,7 +3592,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the encoding option of a KeyWrappingSpecification struct.
         """
-        kwargs = {'encoding_option': 'invalid'}
+        kwargs = {"encoding_option": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Encoding option must be an EncodingOption enumeration.",
@@ -3896,11 +3600,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.KeyWrappingSpecification(),
-            'encoding_option',
-            'invalid'
-        )
+        args = (objects.KeyWrappingSpecification(), "encoding_option", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Encoding option must be an EncodingOption enumeration.",
@@ -3916,68 +3616,48 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         key_wrapping_specification = objects.KeyWrappingSpecification()
 
         self.assertEqual(None, key_wrapping_specification.wrapping_method)
-        self.assertEqual(
-            None,
-            key_wrapping_specification.encryption_key_information
-        )
-        self.assertEqual(
-            None,
-            key_wrapping_specification.mac_signature_key_information
-        )
+        self.assertEqual(None, key_wrapping_specification.encryption_key_information)
+        self.assertEqual(None, key_wrapping_specification.mac_signature_key_information)
         self.assertEqual(None, key_wrapping_specification.attribute_names)
         self.assertEqual(None, key_wrapping_specification.encoding_option)
 
         key_wrapping_specification.read(self.full_encoding)
 
         self.assertEqual(
-            enums.WrappingMethod.ENCRYPT,
-            key_wrapping_specification.wrapping_method
+            enums.WrappingMethod.ENCRYPT, key_wrapping_specification.wrapping_method
         )
         self.assertIsInstance(
             key_wrapping_specification.encryption_key_information,
-            objects.EncryptionKeyInformation
+            objects.EncryptionKeyInformation,
         )
         e = key_wrapping_specification.encryption_key_information
-        self.assertEqual(
-            "100182d5-72b8-47aa-8383-4d97d512e98a",
-            e.unique_identifier
-        )
+        self.assertEqual("100182d5-72b8-47aa-8383-4d97d512e98a", e.unique_identifier)
         self.assertIsInstance(
-            e.cryptographic_parameters,
-            attributes.CryptographicParameters
+            e.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            e.cryptographic_parameters.block_cipher_mode
+            e.cryptographic_parameters.block_cipher_mode,
         )
         self.assertIsInstance(
             key_wrapping_specification.mac_signature_key_information,
-            objects.MACSignatureKeyInformation
+            objects.MACSignatureKeyInformation,
         )
         m = key_wrapping_specification.mac_signature_key_information
-        self.assertEqual(
-            "100182d5-72b8-47aa-8383-4d97d512e98a",
-            m.unique_identifier
-        )
+        self.assertEqual("100182d5-72b8-47aa-8383-4d97d512e98a", m.unique_identifier)
         self.assertIsInstance(
-            m.cryptographic_parameters,
-            attributes.CryptographicParameters
+            m.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            m.cryptographic_parameters.block_cipher_mode
+            m.cryptographic_parameters.block_cipher_mode,
         )
-        self.assertIsInstance(
-            key_wrapping_specification.attribute_names,
-            list
+        self.assertIsInstance(key_wrapping_specification.attribute_names, list)
+        self.assertEqual(
+            "Cryptographic Usage Mask", key_wrapping_specification.attribute_names[0]
         )
         self.assertEqual(
-            'Cryptographic Usage Mask',
-            key_wrapping_specification.attribute_names[0]
-        )
-        self.assertEqual(
-            enums.EncodingOption.NO_ENCODING,
-            key_wrapping_specification.encoding_option
+            enums.EncodingOption.NO_ENCODING, key_wrapping_specification.encoding_option
         )
 
     def test_read_partial(self):
@@ -3988,49 +3668,32 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         key_wrapping_specification = objects.KeyWrappingSpecification()
 
         self.assertEqual(None, key_wrapping_specification.wrapping_method)
-        self.assertEqual(
-            None,
-            key_wrapping_specification.encryption_key_information
-        )
-        self.assertEqual(
-            None,
-            key_wrapping_specification.mac_signature_key_information
-        )
+        self.assertEqual(None, key_wrapping_specification.encryption_key_information)
+        self.assertEqual(None, key_wrapping_specification.mac_signature_key_information)
         self.assertEqual(None, key_wrapping_specification.attribute_names)
         self.assertEqual(None, key_wrapping_specification.encoding_option)
 
         key_wrapping_specification.read(self.partial_encoding)
 
         self.assertEqual(
-            enums.WrappingMethod.ENCRYPT,
-            key_wrapping_specification.wrapping_method
+            enums.WrappingMethod.ENCRYPT, key_wrapping_specification.wrapping_method
         )
         self.assertIsInstance(
             key_wrapping_specification.encryption_key_information,
-            objects.EncryptionKeyInformation
+            objects.EncryptionKeyInformation,
         )
         e = key_wrapping_specification.encryption_key_information
-        self.assertEqual(
-            "100182d5-72b8-47aa-8383-4d97d512e98a",
-            e.unique_identifier
-        )
+        self.assertEqual("100182d5-72b8-47aa-8383-4d97d512e98a", e.unique_identifier)
         self.assertIsInstance(
-            e.cryptographic_parameters,
-            attributes.CryptographicParameters
+            e.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            e.cryptographic_parameters.block_cipher_mode
+            e.cryptographic_parameters.block_cipher_mode,
         )
-        self.assertIsNone(
-            key_wrapping_specification.mac_signature_key_information
-        )
-        self.assertIsNone(
-            key_wrapping_specification.attribute_names
-        )
-        self.assertIsNone(
-            key_wrapping_specification.encoding_option
-        )
+        self.assertIsNone(key_wrapping_specification.mac_signature_key_information)
+        self.assertIsNone(key_wrapping_specification.attribute_names)
+        self.assertIsNone(key_wrapping_specification.encoding_option)
 
     def test_read_invalid(self):
         """
@@ -4057,16 +3720,16 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            attribute_names=['Cryptographic Usage Mask'],
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            attribute_names=["Cryptographic Usage Mask"],
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
         stream = BytearrayStream()
         key_wrapping_specification.write(stream)
@@ -4085,8 +3748,8 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
-            )
+                ),
+            ),
         )
         stream = BytearrayStream()
         key_wrapping_specification.write(stream)
@@ -4126,10 +3789,10 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            attribute_names=['Cryptographic Usage Mask'],
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            attribute_names=["Cryptographic Usage Mask"],
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
         b = objects.KeyWrappingSpecification(
             wrapping_method=enums.WrappingMethod.ENCRYPT,
@@ -4137,10 +3800,10 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            attribute_names=['Cryptographic Usage Mask'],
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            attribute_names=["Cryptographic Usage Mask"],
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
 
         self.assertTrue(a == b)
@@ -4172,7 +3835,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             )
         )
         b = objects.KeyWrappingSpecification(
@@ -4180,7 +3843,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             )
         )
 
@@ -4198,7 +3861,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             )
         )
         b = objects.KeyWrappingSpecification(
@@ -4206,7 +3869,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             )
         )
 
@@ -4219,13 +3882,10 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         KeyWrappingSpecification structs with different attribute names.
         """
         a = objects.KeyWrappingSpecification(
-            attribute_names=[
-                'Cryptographic Algorithm',
-                'Cryptographic Length'
-            ]
+            attribute_names=["Cryptographic Algorithm", "Cryptographic Length"]
         )
         b = objects.KeyWrappingSpecification(
-            attribute_names=['Cryptographic Usage Mask']
+            attribute_names=["Cryptographic Usage Mask"]
         )
 
         self.assertFalse(a == b)
@@ -4252,7 +3912,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         KeyWrappingSpecification structs with different types.
         """
         a = objects.KeyWrappingSpecification()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -4274,10 +3934,10 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            attribute_names=['Cryptographic Usage Mask'],
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            attribute_names=["Cryptographic Usage Mask"],
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
         b = objects.KeyWrappingSpecification(
             wrapping_method=enums.WrappingMethod.ENCRYPT,
@@ -4285,10 +3945,10 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
-            attribute_names=['Cryptographic Usage Mask'],
-            encoding_option=enums.EncodingOption.NO_ENCODING
+            attribute_names=["Cryptographic Usage Mask"],
+            encoding_option=enums.EncodingOption.NO_ENCODING,
         )
 
         self.assertFalse(a != b)
@@ -4320,7 +3980,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             )
         )
         b = objects.KeyWrappingSpecification(
@@ -4328,7 +3988,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             )
         )
 
@@ -4346,7 +4006,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             )
         )
         b = objects.KeyWrappingSpecification(
@@ -4354,7 +4014,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             )
         )
 
@@ -4367,13 +4027,10 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         KeyWrappingSpecification structs with different attribute names.
         """
         a = objects.KeyWrappingSpecification(
-            attribute_names=[
-                'Cryptographic Algorithm',
-                'Cryptographic Length'
-            ]
+            attribute_names=["Cryptographic Algorithm", "Cryptographic Length"]
         )
         b = objects.KeyWrappingSpecification(
-            attribute_names=['Cryptographic Usage Mask']
+            attribute_names=["Cryptographic Usage Mask"]
         )
 
         self.assertTrue(a != b)
@@ -4400,7 +4057,7 @@ class TestKeyWrappingSpecification(testtools.TestCase):
         KeyWrappingSpecification structs with different types.
         """
         a = objects.KeyWrappingSpecification()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -4415,19 +4072,16 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             ),
-            attribute_names=[
-                'Cryptographic Algorithm',
-                'Cryptographic Length'
-            ],
-            encoding_option=enums.EncodingOption.TTLV_ENCODING
+            attribute_names=["Cryptographic Algorithm", "Cryptographic Length"],
+            encoding_option=enums.EncodingOption.TTLV_ENCODING,
         )
 
         expected = (
@@ -4483,49 +4137,43 @@ class TestKeyWrappingSpecification(testtools.TestCase):
                 unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
+                ),
             ),
             mac_signature_key_information=objects.MACSignatureKeyInformation(
                 unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
                 cryptographic_parameters=attributes.CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC
-                )
+                ),
             ),
-            attribute_names=[
-                'Cryptographic Algorithm',
-                'Cryptographic Length'
-            ],
-            encoding_option=enums.EncodingOption.TTLV_ENCODING
+            attribute_names=["Cryptographic Algorithm", "Cryptographic Length"],
+            encoding_option=enums.EncodingOption.TTLV_ENCODING,
         )
 
-        expected = str({
-            'wrapping_method': enums.WrappingMethod.ENCRYPT,
-            'encryption_key_information': objects.EncryptionKeyInformation(
-                unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
-                cryptographic_parameters=attributes.CryptographicParameters(
-                    block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                )
-            ),
-            'mac_signature_key_information':
-                objects.MACSignatureKeyInformation(
-                unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
-                cryptographic_parameters=attributes.CryptographicParameters(
-                    block_cipher_mode=enums.BlockCipherMode.CBC
-                )
-            ),
-            'attribute_names': [
-                'Cryptographic Algorithm',
-                'Cryptographic Length'
-            ],
-            'encoding_option': enums.EncodingOption.TTLV_ENCODING
-        })
+        expected = str(
+            {
+                "wrapping_method": enums.WrappingMethod.ENCRYPT,
+                "encryption_key_information": objects.EncryptionKeyInformation(
+                    unique_identifier="100182d5-72b8-ffff-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
+                        block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                    ),
+                ),
+                "mac_signature_key_information": objects.MACSignatureKeyInformation(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
+                        block_cipher_mode=enums.BlockCipherMode.CBC
+                    ),
+                ),
+                "attribute_names": ["Cryptographic Algorithm", "Cryptographic Length"],
+                "encoding_option": enums.EncodingOption.TTLV_ENCODING,
+            }
+        )
         observed = str(key_wrapping_specification)
 
         self.assertEqual(expected, observed)
 
 
 class TestObjectDefaults(testtools.TestCase):
-
     def setUp(self):
         super(TestObjectDefaults, self).setUp()
 
@@ -4538,12 +4186,12 @@ class TestObjectDefaults(testtools.TestCase):
         #         Cryptographic Length - 128
         #         Cryptographic Usage Mask - Encrypt | Decrypt
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x01\x53\x01\x00\x00\x00\x48'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x01\x25\x01\x00\x00\x00\x30'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+            b"\x42\x01\x53\x01\x00\x00\x00\x48"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x01\x25\x01\x00\x00\x00\x30"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -4554,11 +4202,11 @@ class TestObjectDefaults(testtools.TestCase):
         #         Cryptographic Length - 128
         #         Cryptographic Usage Mask - Encrypt | Decrypt
         self.no_object_type_encoding = utils.BytearrayStream(
-            b'\x42\x01\x53\x01\x00\x00\x00\x38'
-            b'\x42\x01\x25\x01\x00\x00\x00\x30'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+            b"\x42\x01\x53\x01\x00\x00\x00\x38"
+            b"\x42\x01\x25\x01\x00\x00\x00\x30"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -4566,8 +4214,8 @@ class TestObjectDefaults(testtools.TestCase):
         # ObjectDefaults
         #     Object Type - Symmetric Key
         self.no_attributes_encoding = utils.BytearrayStream(
-            b'\x42\x01\x53\x01\x00\x00\x00\x10'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x01\x53\x01\x00\x00\x00\x10"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -4588,10 +4236,7 @@ class TestObjectDefaults(testtools.TestCase):
 
         args = (objects.ObjectDefaults(), "object_type", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Object type must be an ObjectType enumeration.",
-            setattr,
-            *args
+            TypeError, "Object type must be an ObjectType enumeration.", setattr, *args
         )
 
     def test_invalid_attributes(self):
@@ -4609,10 +4254,7 @@ class TestObjectDefaults(testtools.TestCase):
 
         args = (objects.ObjectDefaults(), "attributes", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Attributes must be an Attributes structure.",
-            setattr,
-            *args
+            TypeError, "Attributes must be an Attributes structure.", setattr, *args
         )
 
     def test_read(self):
@@ -4626,36 +4268,29 @@ class TestObjectDefaults(testtools.TestCase):
         self.assertIsNone(object_defaults.attributes)
 
         object_defaults.read(
-            self.full_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
-        self.assertEqual(
-            enums.ObjectType.SYMMETRIC_KEY,
-            object_defaults.object_type
-        )
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_defaults.object_type)
         self.assertEqual(
             objects.Attributes(
                 attributes=[
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
             ),
-            object_defaults.attributes
+            object_defaults.attributes,
         )
 
     def test_read_unsupported_kmip_version(self):
@@ -4666,7 +4301,7 @@ class TestObjectDefaults(testtools.TestCase):
         """
         object_defaults = objects.ObjectDefaults()
 
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_4}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -4686,11 +4321,10 @@ class TestObjectDefaults(testtools.TestCase):
 
         self.assertIsNone(object_defaults.object_type)
 
-        args = (self.no_object_type_encoding, )
+        args = (self.no_object_type_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "The ObjectDefaults encoding is missing the object type "
-            "enumeration.",
+            "The ObjectDefaults encoding is missing the object type " "enumeration.",
             object_defaults.read,
             *args
         )
@@ -4705,7 +4339,7 @@ class TestObjectDefaults(testtools.TestCase):
 
         self.assertIsNone(object_defaults.attributes)
 
-        args = (self.no_attributes_encoding, )
+        args = (self.no_attributes_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The ObjectDefaults encoding is missing the attributes structure.",
@@ -4724,21 +4358,18 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
 
         buffer = utils.BytearrayStream()
@@ -4760,24 +4391,21 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_4}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -4799,24 +4427,21 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
             )
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The ObjectDefaults structure is missing the object type field.",
@@ -4834,7 +4459,7 @@ class TestObjectDefaults(testtools.TestCase):
             object_type=enums.ObjectType.SYMMETRIC_KEY
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The ObjectDefaults structure is missing the attributes field.",
@@ -4853,21 +4478,18 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
         o = "object_type=ObjectType.SYMMETRIC_KEY"
         a1e = "enum=CryptographicAlgorithm"
@@ -4895,21 +4517,18 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
         o = '"object_type": ObjectType.SYMMETRIC_KEY'
         aa = '{"attributes": [CryptographicAlgorithm.AES, 128, 12]}'
@@ -4936,21 +4555,18 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
         b = objects.ObjectDefaults(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
@@ -4959,21 +4575,18 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
 
         self.assertTrue(a == b)
@@ -5001,7 +4614,7 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     )
                 ]
             )
@@ -5009,10 +4622,7 @@ class TestObjectDefaults(testtools.TestCase):
         b = objects.ObjectDefaults(
             attributes=objects.Attributes(
                 attributes=[
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    )
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH)
                 ]
             )
         )
@@ -5049,21 +4659,18 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
         b = objects.ObjectDefaults(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
@@ -5072,21 +4679,18 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
 
         self.assertFalse(a != b)
@@ -5114,7 +4718,7 @@ class TestObjectDefaults(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     )
                 ]
             )
@@ -5122,10 +4726,7 @@ class TestObjectDefaults(testtools.TestCase):
         b = objects.ObjectDefaults(
             attributes=objects.Attributes(
                 attributes=[
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    )
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH)
                 ]
             )
         )
@@ -5146,7 +4747,6 @@ class TestObjectDefaults(testtools.TestCase):
 
 
 class TestDefaultsInformation(testtools.TestCase):
-
     def setUp(self):
         super(TestDefaultsInformation, self).setUp()
 
@@ -5160,20 +4760,20 @@ class TestDefaultsInformation(testtools.TestCase):
         #             Cryptographic Length - 128
         #             Cryptographic Usage Mask - Encrypt | Decrypt
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x01\x52\x01\x00\x00\x00\x50'
-            b'\x42\x01\x53\x01\x00\x00\x00\x48'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x01\x25\x01\x00\x00\x00\x30'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+            b"\x42\x01\x52\x01\x00\x00\x00\x50"
+            b"\x42\x01\x53\x01\x00\x00\x00\x48"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x01\x25\x01\x00\x00\x00\x30"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         #
         # DefaultsInformation
         self.no_object_defaults_encoding = utils.BytearrayStream(
-            b'\x42\x01\x52\x01\x00\x00\x00\x00'
+            b"\x42\x01\x52\x01\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -5213,11 +4813,7 @@ class TestDefaultsInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.DefaultsInformation(),
-            "object_defaults",
-            "invalid"
-        )
+        args = (objects.DefaultsInformation(), "object_defaults", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Object defaults must be a list of ObjectDefaults structures.",
@@ -5235,8 +4831,7 @@ class TestDefaultsInformation(testtools.TestCase):
         self.assertIsNone(defaults_information.object_defaults)
 
         defaults_information.read(
-            self.full_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         expected = [
@@ -5247,27 +4842,23 @@ class TestDefaultsInformation(testtools.TestCase):
                         primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                         ),
                         primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                         ),
                         primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     ]
-                )
+                ),
             )
         ]
-        self.assertEqual(
-            expected,
-            defaults_information.object_defaults
-        )
+        self.assertEqual(expected, defaults_information.object_defaults)
 
     def test_read_unsupported_kmip_version(self):
         """
@@ -5277,7 +4868,7 @@ class TestDefaultsInformation(testtools.TestCase):
         """
         defaults_information = objects.DefaultsInformation()
 
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_4}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -5297,7 +4888,7 @@ class TestDefaultsInformation(testtools.TestCase):
 
         self.assertIsNone(defaults_information.object_defaults)
 
-        args = (self.no_object_defaults_encoding, )
+        args = (self.no_object_defaults_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The DefaultsInformation encoding is missing the object defaults "
@@ -5319,21 +4910,20 @@ class TestDefaultsInformation(testtools.TestCase):
                         primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                         ),
                         primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                         ),
                         primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     ]
-                )
+                ),
             )
         ]
         defaults_information = objects.DefaultsInformation(
@@ -5341,10 +4931,7 @@ class TestDefaultsInformation(testtools.TestCase):
         )
 
         buffer = utils.BytearrayStream()
-        defaults_information.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
-        )
+        defaults_information.write(buffer, kmip_version=enums.KMIPVersion.KMIP_2_0)
 
         self.assertEqual(len(self.full_encoding), len(buffer))
         self.assertEqual(str(self.full_encoding), str(buffer))
@@ -5362,27 +4949,24 @@ class TestDefaultsInformation(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
         defaults_information = objects.DefaultsInformation(
             object_defaults=[object_defaults]
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_4}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -5400,7 +4984,7 @@ class TestDefaultsInformation(testtools.TestCase):
         """
         defaults_information = objects.DefaultsInformation()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The DefaultsInformation structure is missing the object defaults "
@@ -5420,21 +5004,18 @@ class TestDefaultsInformation(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
         defaults_information = objects.DefaultsInformation(
             object_defaults=[object_defaults]
@@ -5466,21 +5047,18 @@ class TestDefaultsInformation(testtools.TestCase):
                     primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                     ),
-                    primitives.Integer(
-                        value=128,
-                        tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                    ),
+                    primitives.Integer(value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH),
                     primitives.Integer(
                         value=(
-                            enums.CryptographicUsageMask.ENCRYPT.value |
-                            enums.CryptographicUsageMask.DECRYPT.value
+                            enums.CryptographicUsageMask.ENCRYPT.value
+                            | enums.CryptographicUsageMask.DECRYPT.value
                         ),
-                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                    ),
                 ]
-            )
+            ),
         )
         defaults_information = objects.DefaultsInformation(
             object_defaults=[object_defaults]
@@ -5505,54 +5083,56 @@ class TestDefaultsInformation(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = objects.DefaultsInformation(
-            object_defaults=[objects.ObjectDefaults(
-                object_type=enums.ObjectType.SYMMETRIC_KEY,
-                attributes=objects.Attributes(
-                    attributes=[
-                        primitives.Enumeration(
-                            enums.CryptographicAlgorithm,
-                            value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        ),
-                        primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        ),
-                        primitives.Integer(
-                            value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+            object_defaults=[
+                objects.ObjectDefaults(
+                    object_type=enums.ObjectType.SYMMETRIC_KEY,
+                    attributes=objects.Attributes(
+                        attributes=[
+                            primitives.Enumeration(
+                                enums.CryptographicAlgorithm,
+                                value=enums.CryptographicAlgorithm.AES,
+                                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    ]
+                            primitives.Integer(
+                                value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                            ),
+                            primitives.Integer(
+                                value=(
+                                    enums.CryptographicUsageMask.ENCRYPT.value
+                                    | enums.CryptographicUsageMask.DECRYPT.value
+                                ),
+                                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                            ),
+                        ]
+                    ),
                 )
-            )]
+            ]
         )
         b = objects.DefaultsInformation(
-            object_defaults=[objects.ObjectDefaults(
-                object_type=enums.ObjectType.SYMMETRIC_KEY,
-                attributes=objects.Attributes(
-                    attributes=[
-                        primitives.Enumeration(
-                            enums.CryptographicAlgorithm,
-                            value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        ),
-                        primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        ),
-                        primitives.Integer(
-                            value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+            object_defaults=[
+                objects.ObjectDefaults(
+                    object_type=enums.ObjectType.SYMMETRIC_KEY,
+                    attributes=objects.Attributes(
+                        attributes=[
+                            primitives.Enumeration(
+                                enums.CryptographicAlgorithm,
+                                value=enums.CryptographicAlgorithm.AES,
+                                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    ]
+                            primitives.Integer(
+                                value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                            ),
+                            primitives.Integer(
+                                value=(
+                                    enums.CryptographicUsageMask.ENCRYPT.value
+                                    | enums.CryptographicUsageMask.DECRYPT.value
+                                ),
+                                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                            ),
+                        ]
+                    ),
                 )
-            )]
+            ]
         )
 
         self.assertTrue(a == b)
@@ -5564,34 +5144,38 @@ class TestDefaultsInformation(testtools.TestCase):
         DefaultsInformation structures with different object defaults fields.
         """
         a = objects.DefaultsInformation(
-            object_defaults=[objects.ObjectDefaults(
-                object_type=enums.ObjectType.SYMMETRIC_KEY,
-                attributes=objects.Attributes(
-                    attributes=[
-                        primitives.Enumeration(
-                            enums.CryptographicAlgorithm,
-                            value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
-                    ]
+            object_defaults=[
+                objects.ObjectDefaults(
+                    object_type=enums.ObjectType.SYMMETRIC_KEY,
+                    attributes=objects.Attributes(
+                        attributes=[
+                            primitives.Enumeration(
+                                enums.CryptographicAlgorithm,
+                                value=enums.CryptographicAlgorithm.AES,
+                                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                            )
+                        ]
+                    ),
                 )
-            )]
+            ]
         )
         b = objects.DefaultsInformation(
-            object_defaults=[objects.ObjectDefaults(
-                object_type=enums.ObjectType.SYMMETRIC_KEY,
-                attributes=objects.Attributes(
-                    attributes=[
-                        primitives.Integer(
-                            value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
-                            ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    ]
+            object_defaults=[
+                objects.ObjectDefaults(
+                    object_type=enums.ObjectType.SYMMETRIC_KEY,
+                    attributes=objects.Attributes(
+                        attributes=[
+                            primitives.Integer(
+                                value=(
+                                    enums.CryptographicUsageMask.ENCRYPT.value
+                                    | enums.CryptographicUsageMask.DECRYPT.value
+                                ),
+                                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                            )
+                        ]
+                    ),
                 )
-            )]
+            ]
         )
 
         self.assertFalse(a == b)
@@ -5620,54 +5204,56 @@ class TestDefaultsInformation(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = objects.DefaultsInformation(
-            object_defaults=[objects.ObjectDefaults(
-                object_type=enums.ObjectType.SYMMETRIC_KEY,
-                attributes=objects.Attributes(
-                    attributes=[
-                        primitives.Enumeration(
-                            enums.CryptographicAlgorithm,
-                            value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        ),
-                        primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        ),
-                        primitives.Integer(
-                            value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+            object_defaults=[
+                objects.ObjectDefaults(
+                    object_type=enums.ObjectType.SYMMETRIC_KEY,
+                    attributes=objects.Attributes(
+                        attributes=[
+                            primitives.Enumeration(
+                                enums.CryptographicAlgorithm,
+                                value=enums.CryptographicAlgorithm.AES,
+                                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    ]
+                            primitives.Integer(
+                                value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                            ),
+                            primitives.Integer(
+                                value=(
+                                    enums.CryptographicUsageMask.ENCRYPT.value
+                                    | enums.CryptographicUsageMask.DECRYPT.value
+                                ),
+                                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                            ),
+                        ]
+                    ),
                 )
-            )]
+            ]
         )
         b = objects.DefaultsInformation(
-            object_defaults=[objects.ObjectDefaults(
-                object_type=enums.ObjectType.SYMMETRIC_KEY,
-                attributes=objects.Attributes(
-                    attributes=[
-                        primitives.Enumeration(
-                            enums.CryptographicAlgorithm,
-                            value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        ),
-                        primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        ),
-                        primitives.Integer(
-                            value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+            object_defaults=[
+                objects.ObjectDefaults(
+                    object_type=enums.ObjectType.SYMMETRIC_KEY,
+                    attributes=objects.Attributes(
+                        attributes=[
+                            primitives.Enumeration(
+                                enums.CryptographicAlgorithm,
+                                value=enums.CryptographicAlgorithm.AES,
+                                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    ]
+                            primitives.Integer(
+                                value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                            ),
+                            primitives.Integer(
+                                value=(
+                                    enums.CryptographicUsageMask.ENCRYPT.value
+                                    | enums.CryptographicUsageMask.DECRYPT.value
+                                ),
+                                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                            ),
+                        ]
+                    ),
                 )
-            )]
+            ]
         )
 
         self.assertFalse(a != b)
@@ -5679,34 +5265,38 @@ class TestDefaultsInformation(testtools.TestCase):
         DefaultsInformation structures with different object defaults fields.
         """
         a = objects.DefaultsInformation(
-            object_defaults=[objects.ObjectDefaults(
-                object_type=enums.ObjectType.SYMMETRIC_KEY,
-                attributes=objects.Attributes(
-                    attributes=[
-                        primitives.Enumeration(
-                            enums.CryptographicAlgorithm,
-                            value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
-                    ]
+            object_defaults=[
+                objects.ObjectDefaults(
+                    object_type=enums.ObjectType.SYMMETRIC_KEY,
+                    attributes=objects.Attributes(
+                        attributes=[
+                            primitives.Enumeration(
+                                enums.CryptographicAlgorithm,
+                                value=enums.CryptographicAlgorithm.AES,
+                                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                            )
+                        ]
+                    ),
                 )
-            )]
+            ]
         )
         b = objects.DefaultsInformation(
-            object_defaults=[objects.ObjectDefaults(
-                object_type=enums.ObjectType.SYMMETRIC_KEY,
-                attributes=objects.Attributes(
-                    attributes=[
-                        primitives.Integer(
-                            value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
-                            ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    ]
+            object_defaults=[
+                objects.ObjectDefaults(
+                    object_type=enums.ObjectType.SYMMETRIC_KEY,
+                    attributes=objects.Attributes(
+                        attributes=[
+                            primitives.Integer(
+                                value=(
+                                    enums.CryptographicUsageMask.ENCRYPT.value
+                                    | enums.CryptographicUsageMask.DECRYPT.value
+                                ),
+                                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                            )
+                        ]
+                    ),
                 )
-            )]
+            ]
         )
 
         self.assertTrue(a != b)
@@ -5725,7 +5315,6 @@ class TestDefaultsInformation(testtools.TestCase):
 
 
 class TestRNGParameters(testtools.TestCase):
-
     def setUp(self):
         super(TestRNGParameters, self).setUp()
 
@@ -5741,15 +5330,15 @@ class TestRNGParameters(testtools.TestCase):
         #     FIPS186 Variation - GP x-Original
         #     Prediction Resistance - True
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\xD9\x01\x00\x00\x00\x80'
-            b'\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00'
-            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b"\x42\x00\xD9\x01\x00\x00\x00\x80"
+            b"\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00"
+            b"\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
         )
 
         # This encoding matches the following set of values:
@@ -5763,14 +5352,14 @@ class TestRNGParameters(testtools.TestCase):
         #     FIPS186 Variation - GP x-Original
         #     Prediction Resistance - True
         self.no_rng_algorithm_encoding = utils.BytearrayStream(
-            b'\x42\x00\xD9\x01\x00\x00\x00\x70'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00'
-            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
+            b"\x42\x00\xD9\x01\x00\x00\x00\x70"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00"
+            b"\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
         )
 
         # This encoding matches the following set of values:
@@ -5778,8 +5367,8 @@ class TestRNGParameters(testtools.TestCase):
         # RNGParameters
         #     RNG Algorithm - FIPS 186-2
         self.only_rng_algorithm_encoding = utils.BytearrayStream(
-            b'\x42\x00\xD9\x01\x00\x00\x00\x10'
-            b'\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\xD9\x01\x00\x00\x00\x10"
+            b"\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -5844,10 +5433,7 @@ class TestRNGParameters(testtools.TestCase):
 
         args = (objects.RNGParameters(), "cryptographic_length", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The cryptographic length must be an integer.",
-            setattr,
-            *args
+            TypeError, "The cryptographic length must be an integer.", setattr, *args
         )
 
     def test_invalid_hashing_algorithm(self):
@@ -5949,10 +5535,7 @@ class TestRNGParameters(testtools.TestCase):
 
         args = (objects.RNGParameters(), "prediction_resistance", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The prediction resistance must be a boolean.",
-            setattr,
-            *args
+            TypeError, "The prediction resistance must be a boolean.", setattr, *args
         )
 
     def test_read(self):
@@ -5971,35 +5554,20 @@ class TestRNGParameters(testtools.TestCase):
         self.assertIsNone(rng_parameters.fips186_variation)
         self.assertIsNone(rng_parameters.prediction_resistance)
 
-        rng_parameters.read(
-            self.full_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
-        )
+        rng_parameters.read(self.full_encoding, kmip_version=enums.KMIPVersion.KMIP_1_3)
 
+        self.assertEqual(enums.RNGAlgorithm.FIPS186_2, rng_parameters.rng_algorithm)
         self.assertEqual(
-            enums.RNGAlgorithm.FIPS186_2,
-            rng_parameters.rng_algorithm
-        )
-        self.assertEqual(
-            enums.CryptographicAlgorithm.AES,
-            rng_parameters.cryptographic_algorithm
+            enums.CryptographicAlgorithm.AES, rng_parameters.cryptographic_algorithm
         )
         self.assertEqual(256, rng_parameters.cryptographic_length)
         self.assertEqual(
-            enums.HashingAlgorithm.SHA_256,
-            rng_parameters.hashing_algorithm
+            enums.HashingAlgorithm.SHA_256, rng_parameters.hashing_algorithm
         )
+        self.assertEqual(enums.DRBGAlgorithm.HASH, rng_parameters.drbg_algorithm)
+        self.assertEqual(enums.RecommendedCurve.P_192, rng_parameters.recommended_curve)
         self.assertEqual(
-            enums.DRBGAlgorithm.HASH,
-            rng_parameters.drbg_algorithm
-        )
-        self.assertEqual(
-            enums.RecommendedCurve.P_192,
-            rng_parameters.recommended_curve
-        )
-        self.assertEqual(
-            enums.FIPS186Variation.GP_X_ORIGINAL,
-            rng_parameters.fips186_variation
+            enums.FIPS186Variation.GP_X_ORIGINAL, rng_parameters.fips186_variation
         )
         self.assertTrue(rng_parameters.prediction_resistance)
 
@@ -6011,7 +5579,7 @@ class TestRNGParameters(testtools.TestCase):
         """
         rng_parameters = objects.RNGParameters()
 
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -6029,7 +5597,7 @@ class TestRNGParameters(testtools.TestCase):
         """
         rng_parameters = objects.RNGParameters()
 
-        args = (self.no_rng_algorithm_encoding, )
+        args = (self.no_rng_algorithm_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The RNGParameters encoding is missing the RNG algorithm.",
@@ -6054,14 +5622,10 @@ class TestRNGParameters(testtools.TestCase):
         self.assertIsNone(rng_parameters.prediction_resistance)
 
         rng_parameters.read(
-            self.only_rng_algorithm_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
+            self.only_rng_algorithm_encoding, kmip_version=enums.KMIPVersion.KMIP_1_3
         )
 
-        self.assertEqual(
-            enums.RNGAlgorithm.FIPS186_2,
-            rng_parameters.rng_algorithm
-        )
+        self.assertEqual(enums.RNGAlgorithm.FIPS186_2, rng_parameters.rng_algorithm)
         self.assertIsNone(rng_parameters.cryptographic_algorithm)
         self.assertIsNone(rng_parameters.cryptographic_length)
         self.assertIsNone(rng_parameters.hashing_algorithm)
@@ -6083,14 +5647,11 @@ class TestRNGParameters(testtools.TestCase):
             drbg_algorithm=enums.DRBGAlgorithm.HASH,
             recommended_curve=enums.RecommendedCurve.P_192,
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-            prediction_resistance=True
+            prediction_resistance=True,
         )
 
         buffer = utils.BytearrayStream()
-        rng_parameters.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
-        )
+        rng_parameters.write(buffer, kmip_version=enums.KMIPVersion.KMIP_1_3)
 
         self.assertEqual(len(self.full_encoding), len(buffer))
         self.assertEqual(str(self.full_encoding), str(buffer))
@@ -6109,10 +5670,10 @@ class TestRNGParameters(testtools.TestCase):
             drbg_algorithm=enums.DRBGAlgorithm.HASH,
             recommended_curve=enums.RecommendedCurve.P_192,
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-            prediction_resistance=True
+            prediction_resistance=True,
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -6130,7 +5691,7 @@ class TestRNGParameters(testtools.TestCase):
         """
         rng_parameters = objects.RNGParameters()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The RNGParameters structure is missing the RNG algorithm field.",
@@ -6148,10 +5709,7 @@ class TestRNGParameters(testtools.TestCase):
         )
 
         buffer = utils.BytearrayStream()
-        rng_parameters.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
-        )
+        rng_parameters.write(buffer, kmip_version=enums.KMIPVersion.KMIP_1_3)
 
         self.assertEqual(len(self.only_rng_algorithm_encoding), len(buffer))
         self.assertEqual(str(self.only_rng_algorithm_encoding), str(buffer))
@@ -6168,7 +5726,7 @@ class TestRNGParameters(testtools.TestCase):
             drbg_algorithm=enums.DRBGAlgorithm.HASH,
             recommended_curve=enums.RecommendedCurve.P_192,
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-            prediction_resistance=True
+            prediction_resistance=True,
         )
 
         a = "rng_algorithm=RNGAlgorithm.FIPS186_2"
@@ -6182,10 +5740,7 @@ class TestRNGParameters(testtools.TestCase):
 
         v = ", ".join([a, c, e, h, d, r, f, p])
 
-        self.assertEqual(
-            "RNGParameters({})".format(v),
-            repr(rng_parameters)
-        )
+        self.assertEqual("RNGParameters({})".format(v), repr(rng_parameters))
 
     def test_str(self):
         """
@@ -6199,7 +5754,7 @@ class TestRNGParameters(testtools.TestCase):
             drbg_algorithm=enums.DRBGAlgorithm.HASH,
             recommended_curve=enums.RecommendedCurve.P_192,
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-            prediction_resistance=True
+            prediction_resistance=True,
         )
 
         a = '"rng_algorithm": RNGAlgorithm.FIPS186_2'
@@ -6213,10 +5768,7 @@ class TestRNGParameters(testtools.TestCase):
 
         v = ", ".join([a, c, e, h, d, r, f, p])
 
-        self.assertEqual(
-            "{" + v + "}",
-            str(rng_parameters)
-        )
+        self.assertEqual("{" + v + "}", str(rng_parameters))
 
     def test_equal_on_equal(self):
         """
@@ -6237,7 +5789,7 @@ class TestRNGParameters(testtools.TestCase):
             drbg_algorithm=enums.DRBGAlgorithm.HASH,
             recommended_curve=enums.RecommendedCurve.P_192,
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-            prediction_resistance=True
+            prediction_resistance=True,
         )
         b = objects.RNGParameters(
             rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
@@ -6247,7 +5799,7 @@ class TestRNGParameters(testtools.TestCase):
             drbg_algorithm=enums.DRBGAlgorithm.HASH,
             recommended_curve=enums.RecommendedCurve.P_192,
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-            prediction_resistance=True
+            prediction_resistance=True,
         )
 
         self.assertTrue(a == b)
@@ -6307,9 +5859,7 @@ class TestRNGParameters(testtools.TestCase):
         RNGParameters structures with different DRBG algorithm fields.
         """
         a = objects.RNGParameters(drbg_algorithm=enums.DRBGAlgorithm.HASH)
-        b = objects.RNGParameters(
-            drbg_algorithm=enums.DRBGAlgorithm.UNSPECIFIED
-        )
+        b = objects.RNGParameters(drbg_algorithm=enums.DRBGAlgorithm.UNSPECIFIED)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -6319,12 +5869,8 @@ class TestRNGParameters(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         RNGParameters structures with different recommended curve fields.
         """
-        a = objects.RNGParameters(
-            recommended_curve=enums.RecommendedCurve.P_192
-        )
-        b = objects.RNGParameters(
-            recommended_curve=enums.RecommendedCurve.K_163
-        )
+        a = objects.RNGParameters(recommended_curve=enums.RecommendedCurve.P_192)
+        b = objects.RNGParameters(recommended_curve=enums.RecommendedCurve.K_163)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -6337,9 +5883,7 @@ class TestRNGParameters(testtools.TestCase):
         a = objects.RNGParameters(
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL
         )
-        b = objects.RNGParameters(
-            fips186_variation=enums.FIPS186Variation.X_ORIGINAL
-        )
+        b = objects.RNGParameters(fips186_variation=enums.FIPS186Variation.X_ORIGINAL)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -6385,7 +5929,7 @@ class TestRNGParameters(testtools.TestCase):
             drbg_algorithm=enums.DRBGAlgorithm.HASH,
             recommended_curve=enums.RecommendedCurve.P_192,
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-            prediction_resistance=True
+            prediction_resistance=True,
         )
         b = objects.RNGParameters(
             rng_algorithm=enums.RNGAlgorithm.FIPS186_2,
@@ -6395,7 +5939,7 @@ class TestRNGParameters(testtools.TestCase):
             drbg_algorithm=enums.DRBGAlgorithm.HASH,
             recommended_curve=enums.RecommendedCurve.P_192,
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-            prediction_resistance=True
+            prediction_resistance=True,
         )
 
         self.assertFalse(a != b)
@@ -6455,9 +5999,7 @@ class TestRNGParameters(testtools.TestCase):
         RNGParameters structures with different DRBG algorithm fields.
         """
         a = objects.RNGParameters(drbg_algorithm=enums.DRBGAlgorithm.HASH)
-        b = objects.RNGParameters(
-            drbg_algorithm=enums.DRBGAlgorithm.UNSPECIFIED
-        )
+        b = objects.RNGParameters(drbg_algorithm=enums.DRBGAlgorithm.UNSPECIFIED)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -6467,12 +6009,8 @@ class TestRNGParameters(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         RNGParameters structures with different recommended curve fields.
         """
-        a = objects.RNGParameters(
-            recommended_curve=enums.RecommendedCurve.P_192
-        )
-        b = objects.RNGParameters(
-            recommended_curve=enums.RecommendedCurve.K_163
-        )
+        a = objects.RNGParameters(recommended_curve=enums.RecommendedCurve.P_192)
+        b = objects.RNGParameters(recommended_curve=enums.RecommendedCurve.K_163)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -6485,9 +6023,7 @@ class TestRNGParameters(testtools.TestCase):
         a = objects.RNGParameters(
             fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL
         )
-        b = objects.RNGParameters(
-            fips186_variation=enums.FIPS186Variation.X_ORIGINAL
-        )
+        b = objects.RNGParameters(fips186_variation=enums.FIPS186Variation.X_ORIGINAL)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -6516,7 +6052,6 @@ class TestRNGParameters(testtools.TestCase):
 
 
 class TestProfileInformation(testtools.TestCase):
-
     def setUp(self):
         super(TestProfileInformation, self).setUp()
 
@@ -6527,12 +6062,12 @@ class TestProfileInformation(testtools.TestCase):
         #     Server URI - https://example.com
         #     Server Port - 5696
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\xEB\x01\x00\x00\x00\x40'
-            b'\x42\x00\xEC\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xED\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEE\x02\x00\x00\x00\x04\x00\x00\x16\x40\x00\x00\x00\x00'
+            b"\x42\x00\xEB\x01\x00\x00\x00\x40"
+            b"\x42\x00\xEC\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xED\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEE\x02\x00\x00\x00\x04\x00\x00\x16\x40\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -6541,11 +6076,11 @@ class TestProfileInformation(testtools.TestCase):
         #     Server URI - https://example.com
         #     Server Port - 5696
         self.no_profile_name_encoding = utils.BytearrayStream(
-            b'\x42\x00\xEB\x01\x00\x00\x00\x30'
-            b'\x42\x00\xED\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEE\x02\x00\x00\x00\x04\x00\x00\x16\x40\x00\x00\x00\x00'
+            b"\x42\x00\xEB\x01\x00\x00\x00\x30"
+            b"\x42\x00\xED\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEE\x02\x00\x00\x00\x04\x00\x00\x16\x40\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -6553,8 +6088,8 @@ class TestProfileInformation(testtools.TestCase):
         # Profile Information
         #     Profile Name - BASELINE_SERVER_BASIC_KMIPv12
         self.only_profile_name_encoding = utils.BytearrayStream(
-            b'\x42\x00\xEB\x01\x00\x00\x00\x10'
-            b'\x42\x00\xEC\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\xEB\x01\x00\x00\x00\x10"
+            b"\x42\x00\xEC\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -6596,10 +6131,7 @@ class TestProfileInformation(testtools.TestCase):
 
         args = (objects.ProfileInformation(), "server_uri", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The server URI must be a string.",
-            setattr,
-            *args
+            TypeError, "The server URI must be a string.", setattr, *args
         )
 
     def test_invalid_server_port(self):
@@ -6617,10 +6149,7 @@ class TestProfileInformation(testtools.TestCase):
 
         args = (objects.ProfileInformation(), "server_port", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The server port must be an integer.",
-            setattr,
-            *args
+            TypeError, "The server port must be an integer.", setattr, *args
         )
 
     def test_read(self):
@@ -6635,13 +6164,12 @@ class TestProfileInformation(testtools.TestCase):
         self.assertIsNone(profile_information.server_port)
 
         profile_information.read(
-            self.full_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
+            self.full_encoding, kmip_version=enums.KMIPVersion.KMIP_1_3
         )
 
         self.assertEqual(
             enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
-            profile_information.profile_name
+            profile_information.profile_name,
         )
         self.assertEqual("https://example.com", profile_information.server_uri)
         self.assertEqual(5696, profile_information.server_port)
@@ -6654,7 +6182,7 @@ class TestProfileInformation(testtools.TestCase):
         """
         profile_information = objects.ProfileInformation()
 
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -6672,7 +6200,7 @@ class TestProfileInformation(testtools.TestCase):
         """
         profile_information = objects.ProfileInformation()
 
-        args = (self.no_profile_name_encoding, )
+        args = (self.no_profile_name_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The ProfileInformation encoding is missing the profile name.",
@@ -6693,13 +6221,12 @@ class TestProfileInformation(testtools.TestCase):
         self.assertIsNone(profile_information.server_port)
 
         profile_information.read(
-            self.only_profile_name_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
+            self.only_profile_name_encoding, kmip_version=enums.KMIPVersion.KMIP_1_3
         )
 
         self.assertEqual(
             enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
-            profile_information.profile_name
+            profile_information.profile_name,
         )
         self.assertIsNone(profile_information.server_uri)
         self.assertIsNone(profile_information.server_port)
@@ -6712,14 +6239,11 @@ class TestProfileInformation(testtools.TestCase):
         profile_information = objects.ProfileInformation(
             profile_name=enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
             server_uri="https://example.com",
-            server_port=5696
+            server_port=5696,
         )
 
         buffer = utils.BytearrayStream()
-        profile_information.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
-        )
+        profile_information.write(buffer, kmip_version=enums.KMIPVersion.KMIP_1_3)
 
         self.assertEqual(len(self.full_encoding), len(buffer))
         self.assertEqual(str(self.full_encoding), str(buffer))
@@ -6733,10 +6257,10 @@ class TestProfileInformation(testtools.TestCase):
         profile_information = objects.ProfileInformation(
             profile_name=enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
             server_uri="https://example.com",
-            server_port=5696
+            server_port=5696,
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -6754,11 +6278,10 @@ class TestProfileInformation(testtools.TestCase):
         """
         profile_information = objects.ProfileInformation()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The ProfileInformation structure is missing the profile name "
-            "field.",
+            "The ProfileInformation structure is missing the profile name " "field.",
             profile_information.write,
             *args
         )
@@ -6773,10 +6296,7 @@ class TestProfileInformation(testtools.TestCase):
         )
 
         buffer = utils.BytearrayStream()
-        profile_information.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
-        )
+        profile_information.write(buffer, kmip_version=enums.KMIPVersion.KMIP_1_3)
 
         self.assertEqual(len(self.only_profile_name_encoding), len(buffer))
         self.assertEqual(str(self.only_profile_name_encoding), str(buffer))
@@ -6788,7 +6308,7 @@ class TestProfileInformation(testtools.TestCase):
         profile_information = objects.ProfileInformation(
             profile_name=enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
             server_uri="https://example.com",
-            server_port=5696
+            server_port=5696,
         )
 
         n = "profile_name=ProfileName.BASELINE_SERVER_BASIC_KMIPv12"
@@ -6797,10 +6317,7 @@ class TestProfileInformation(testtools.TestCase):
 
         v = ", ".join([n, u, p])
 
-        self.assertEqual(
-            "ProfileInformation({})".format(v),
-            repr(profile_information)
-        )
+        self.assertEqual("ProfileInformation({})".format(v), repr(profile_information))
 
     def test_str(self):
         """
@@ -6809,7 +6326,7 @@ class TestProfileInformation(testtools.TestCase):
         profile_information = objects.ProfileInformation(
             profile_name=enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
             server_uri="https://example.com",
-            server_port=5696
+            server_port=5696,
         )
 
         n = '"profile_name": ProfileName.BASELINE_SERVER_BASIC_KMIPv12'
@@ -6818,10 +6335,7 @@ class TestProfileInformation(testtools.TestCase):
 
         v = ", ".join([n, u, p])
 
-        self.assertEqual(
-            "{" + v + "}",
-            str(profile_information)
-        )
+        self.assertEqual("{" + v + "}", str(profile_information))
 
     def test_equal_on_equal(self):
         """
@@ -6837,12 +6351,12 @@ class TestProfileInformation(testtools.TestCase):
         a = objects.ProfileInformation(
             profile_name=enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
             server_uri="https://example.com",
-            server_port=5696
+            server_port=5696,
         )
         b = objects.ProfileInformation(
             profile_name=enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
             server_uri="https://example.com",
-            server_port=5696
+            server_port=5696,
         )
 
         self.assertTrue(a == b)
@@ -6910,12 +6424,12 @@ class TestProfileInformation(testtools.TestCase):
         a = objects.ProfileInformation(
             profile_name=enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
             server_uri="https://example.com",
-            server_port=5696
+            server_port=5696,
         )
         b = objects.ProfileInformation(
             profile_name=enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12,
             server_uri="https://example.com",
-            server_port=5696
+            server_port=5696,
         )
 
         self.assertFalse(a != b)
@@ -6971,7 +6485,6 @@ class TestProfileInformation(testtools.TestCase):
 
 
 class TestValidationInformation(testtools.TestCase):
-
     def setUp(self):
         super(TestValidationInformation, self).setUp()
 
@@ -6993,29 +6506,29 @@ class TestValidationInformation(testtools.TestCase):
         #         Profile 1
         #         Profile 2
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\xDF\x01\x00\x00\x01\x18'
-            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
-            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
-            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
-            b'\x31\x33\x39\x36\x00\x00\x00\x00'
-            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
-            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
-            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\xDF\x01\x00\x00\x01\x18"
+            b"\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE2\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE7\x07\x00\x00\x00\x24"
+            b"\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31"
+            b"\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63"
+            b"\x31\x33\x39\x36\x00\x00\x00\x00"
+            b"\x42\x00\xE8\x07\x00\x00\x00\x10"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D"
+            b"\x42\x00\xE9\x07\x00\x00\x00\x12"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63"
+            b"\x6F\x6D\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -7035,28 +6548,28 @@ class TestValidationInformation(testtools.TestCase):
         #         Profile 1
         #         Profile 2
         self.no_validation_authority_type_encoding = utils.BytearrayStream(
-            b'\x42\x00\xDF\x01\x00\x00\x01\x08'
-            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
-            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
-            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
-            b'\x31\x33\x39\x36\x00\x00\x00\x00'
-            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
-            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
-            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\xDF\x01\x00\x00\x01\x08"
+            b"\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE2\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE7\x07\x00\x00\x00\x24"
+            b"\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31"
+            b"\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63"
+            b"\x31\x33\x39\x36\x00\x00\x00\x00"
+            b"\x42\x00\xE8\x07\x00\x00\x00\x10"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D"
+            b"\x42\x00\xE9\x07\x00\x00\x00\x12"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63"
+            b"\x6F\x6D\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -7076,28 +6589,28 @@ class TestValidationInformation(testtools.TestCase):
         #         Profile 1
         #         Profile 2
         self.no_validation_version_major_encoding = utils.BytearrayStream(
-            b'\x42\x00\xDF\x01\x00\x00\x01\x08'
-            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
-            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
-            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
-            b'\x31\x33\x39\x36\x00\x00\x00\x00'
-            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
-            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
-            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\xDF\x01\x00\x00\x01\x08"
+            b"\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE2\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE7\x07\x00\x00\x00\x24"
+            b"\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31"
+            b"\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63"
+            b"\x31\x33\x39\x36\x00\x00\x00\x00"
+            b"\x42\x00\xE8\x07\x00\x00\x00\x10"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D"
+            b"\x42\x00\xE9\x07\x00\x00\x00\x12"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63"
+            b"\x6F\x6D\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -7117,28 +6630,28 @@ class TestValidationInformation(testtools.TestCase):
         #         Profile 1
         #         Profile 2
         self.no_validation_type_encoding = utils.BytearrayStream(
-            b'\x42\x00\xDF\x01\x00\x00\x01\x08'
-            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
-            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
-            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
-            b'\x31\x33\x39\x36\x00\x00\x00\x00'
-            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
-            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
-            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\xDF\x01\x00\x00\x01\x08"
+            b"\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE2\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE7\x07\x00\x00\x00\x24"
+            b"\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31"
+            b"\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63"
+            b"\x31\x33\x39\x36\x00\x00\x00\x00"
+            b"\x42\x00\xE8\x07\x00\x00\x00\x10"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D"
+            b"\x42\x00\xE9\x07\x00\x00\x00\x12"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63"
+            b"\x6F\x6D\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -7158,28 +6671,28 @@ class TestValidationInformation(testtools.TestCase):
         #         Profile 1
         #         Profile 2
         self.no_validation_level_encoding = utils.BytearrayStream(
-            b'\x42\x00\xDF\x01\x00\x00\x01\x08'
-            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
-            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
-            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
-            b'\x31\x33\x39\x36\x00\x00\x00\x00'
-            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
-            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
-            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\xDF\x01\x00\x00\x01\x08"
+            b"\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE2\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE7\x07\x00\x00\x00\x24"
+            b"\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31"
+            b"\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63"
+            b"\x31\x33\x39\x36\x00\x00\x00\x00"
+            b"\x42\x00\xE8\x07\x00\x00\x00\x10"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D"
+            b"\x42\x00\xE9\x07\x00\x00\x00\x12"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63"
+            b"\x6F\x6D\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -7190,11 +6703,11 @@ class TestValidationInformation(testtools.TestCase):
         #     Validation Type - HYBRID
         #     Validation Level - 5
         self.only_essentials_encoding = utils.BytearrayStream(
-            b'\x42\x00\xDF\x01\x00\x00\x00\x40'
-            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b"\x42\x00\xDF\x01\x00\x00\x00\x40"
+            b"\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -7214,11 +6727,7 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_authority_type",
-            "invalid"
-        )
+        args = (objects.ValidationInformation(), "validation_authority_type", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The validation authority type must be a ValidationAuthorityType "
@@ -7240,11 +6749,7 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_authority_country",
-            0
-        )
+        args = (objects.ValidationInformation(), "validation_authority_country", 0)
         self.assertRaisesRegex(
             TypeError,
             "The validation authority country must be a string.",
@@ -7265,16 +6770,9 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_authority_uri",
-            0
-        )
+        args = (objects.ValidationInformation(), "validation_authority_uri", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The validation authority URI must be a string.",
-            setattr,
-            *args
+            TypeError, "The validation authority URI must be a string.", setattr, *args
         )
 
     def test_invalid_validation_version_major(self):
@@ -7290,11 +6788,7 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_version_major",
-            "invalid"
-        )
+        args = (objects.ValidationInformation(), "validation_version_major", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The validation version major must be an integer.",
@@ -7315,11 +6809,7 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_version_minor",
-            "invalid"
-        )
+        args = (objects.ValidationInformation(), "validation_version_minor", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The validation version minor must be an integer.",
@@ -7340,11 +6830,7 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_type",
-            "invalid"
-        )
+        args = (objects.ValidationInformation(), "validation_type", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The validation type must be a ValidationType enumeration.",
@@ -7365,16 +6851,9 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_level",
-            "invalid"
-        )
+        args = (objects.ValidationInformation(), "validation_level", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The validation level must be an integer.",
-            setattr,
-            *args
+            TypeError, "The validation level must be an integer.", setattr, *args
         )
 
     def test_invalid_validation_certificate_identifier(self):
@@ -7391,11 +6870,7 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_certificate_identifier",
-            0
-        )
+        args = (objects.ValidationInformation(), "validation_certificate_identifier", 0)
         self.assertRaisesRegex(
             TypeError,
             "The validation certificate identifier must be a string.",
@@ -7416,11 +6891,7 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_certificate_uri",
-            0
-        )
+        args = (objects.ValidationInformation(), "validation_certificate_uri", 0)
         self.assertRaisesRegex(
             TypeError,
             "The validation certificate URI must be a string.",
@@ -7441,16 +6912,9 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_vendor_uri",
-            0
-        )
+        args = (objects.ValidationInformation(), "validation_vendor_uri", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The validation vendor URI must be a string.",
-            setattr,
-            *args
+            TypeError, "The validation vendor URI must be a string.", setattr, *args
         )
 
     def test_invalid_validation_profiles(self):
@@ -7473,22 +6937,14 @@ class TestValidationInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ValidationInformation(),
-            "validation_profiles",
-            0
-        )
+        args = (objects.ValidationInformation(), "validation_profiles", 0)
         self.assertRaisesRegex(
             TypeError,
             "The validation profiles must be a list of strings.",
             setattr,
             *args
         )
-        args = (
-            objects.ValidationInformation(),
-            "validation_profiles",
-            ["valid", 0]
-        )
+        args = (objects.ValidationInformation(), "validation_profiles", ["valid", 0])
         self.assertRaisesRegex(
             TypeError,
             "The validation profiles must be a list of strings.",
@@ -7510,57 +6966,41 @@ class TestValidationInformation(testtools.TestCase):
         self.assertIsNone(validation_information.validation_version_minor)
         self.assertIsNone(validation_information.validation_type)
         self.assertIsNone(validation_information.validation_level)
-        self.assertIsNone(
-            validation_information.validation_certificate_identifier
-        )
+        self.assertIsNone(validation_information.validation_certificate_identifier)
         self.assertIsNone(validation_information.validation_certificate_uri)
         self.assertIsNone(validation_information.validation_vendor_uri)
-        self.assertIsNone(
-            validation_information.validation_profiles
-        )
+        self.assertIsNone(validation_information.validation_profiles)
 
         validation_information.read(
-            self.full_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
+            self.full_encoding, kmip_version=enums.KMIPVersion.KMIP_1_3
         )
 
         self.assertEqual(
             enums.ValidationAuthorityType.COMMON_CRITERIA,
-            validation_information.validation_authority_type
+            validation_information.validation_authority_type,
         )
+        self.assertEqual("US", validation_information.validation_authority_country)
         self.assertEqual(
-            "US",
-            validation_information.validation_authority_country
-        )
-        self.assertEqual(
-            "https://example.com",
-            validation_information.validation_authority_uri
+            "https://example.com", validation_information.validation_authority_uri
         )
         self.assertEqual(1, validation_information.validation_version_major)
         self.assertEqual(0, validation_information.validation_version_minor)
         self.assertEqual(
-            enums.ValidationType.HYBRID,
-            validation_information.validation_type
+            enums.ValidationType.HYBRID, validation_information.validation_type
         )
         self.assertEqual(5, validation_information.validation_level)
         self.assertEqual(
             "c005d39e-604f-11e9-99df-080027fc1396",
-            validation_information.validation_certificate_identifier
+            validation_information.validation_certificate_identifier,
         )
         self.assertEqual(
-            "https://test.com",
-            validation_information.validation_certificate_uri
+            "https://test.com", validation_information.validation_certificate_uri
         )
         self.assertEqual(
-            "https://vendor.com",
-            validation_information.validation_vendor_uri
+            "https://vendor.com", validation_information.validation_vendor_uri
         )
         self.assertEqual(
-            [
-                "Profile 1",
-                "Profile 2"
-            ],
-            validation_information.validation_profiles
+            ["Profile 1", "Profile 2"], validation_information.validation_profiles
         )
 
     def test_read_unsupported_kmip_version(self):
@@ -7571,7 +7011,7 @@ class TestValidationInformation(testtools.TestCase):
         """
         validation_information = objects.ValidationInformation()
 
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -7589,7 +7029,7 @@ class TestValidationInformation(testtools.TestCase):
         """
         validation_information = objects.ValidationInformation()
 
-        args = (self.no_validation_authority_type_encoding, )
+        args = (self.no_validation_authority_type_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The ValidationInformation encoding is missing the validation "
@@ -7606,7 +7046,7 @@ class TestValidationInformation(testtools.TestCase):
         """
         validation_information = objects.ValidationInformation()
 
-        args = (self.no_validation_version_major_encoding, )
+        args = (self.no_validation_version_major_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The ValidationInformation encoding is missing the validation "
@@ -7623,11 +7063,10 @@ class TestValidationInformation(testtools.TestCase):
         """
         validation_information = objects.ValidationInformation()
 
-        args = (self.no_validation_type_encoding, )
+        args = (self.no_validation_type_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "The ValidationInformation encoding is missing the validation "
-            "type.",
+            "The ValidationInformation encoding is missing the validation " "type.",
             validation_information.read,
             *args
         )
@@ -7640,11 +7079,10 @@ class TestValidationInformation(testtools.TestCase):
         """
         validation_information = objects.ValidationInformation()
 
-        args = (self.no_validation_level_encoding, )
+        args = (self.no_validation_level_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "The ValidationInformation encoding is missing the validation "
-            "level.",
+            "The ValidationInformation encoding is missing the validation " "level.",
             validation_information.read,
             *args
         )
@@ -7664,41 +7102,31 @@ class TestValidationInformation(testtools.TestCase):
         self.assertIsNone(validation_information.validation_version_minor)
         self.assertIsNone(validation_information.validation_type)
         self.assertIsNone(validation_information.validation_level)
-        self.assertIsNone(
-            validation_information.validation_certificate_identifier
-        )
+        self.assertIsNone(validation_information.validation_certificate_identifier)
         self.assertIsNone(validation_information.validation_certificate_uri)
         self.assertIsNone(validation_information.validation_vendor_uri)
-        self.assertIsNone(
-            validation_information.validation_profiles
-        )
+        self.assertIsNone(validation_information.validation_profiles)
 
         validation_information.read(
-            self.only_essentials_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
+            self.only_essentials_encoding, kmip_version=enums.KMIPVersion.KMIP_1_3
         )
 
         self.assertEqual(
             enums.ValidationAuthorityType.COMMON_CRITERIA,
-            validation_information.validation_authority_type
+            validation_information.validation_authority_type,
         )
         self.assertIsNone(validation_information.validation_authority_country)
         self.assertIsNone(validation_information.validation_authority_uri)
         self.assertEqual(1, validation_information.validation_version_major)
         self.assertIsNone(validation_information.validation_version_minor)
         self.assertEqual(
-            enums.ValidationType.HYBRID,
-            validation_information.validation_type
+            enums.ValidationType.HYBRID, validation_information.validation_type
         )
         self.assertEqual(5, validation_information.validation_level)
-        self.assertIsNone(
-            validation_information.validation_certificate_identifier
-        )
+        self.assertIsNone(validation_information.validation_certificate_identifier)
         self.assertIsNone(validation_information.validation_certificate_uri)
         self.assertIsNone(validation_information.validation_vendor_uri)
-        self.assertIsNone(
-            validation_information.validation_profiles
-        )
+        self.assertIsNone(validation_information.validation_profiles)
 
     def test_write(self):
         """
@@ -7706,28 +7134,21 @@ class TestValidationInformation(testtools.TestCase):
         stream.
         """
         validation_information = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
         buffer = utils.BytearrayStream()
-        validation_information.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
-        )
+        validation_information.write(buffer, kmip_version=enums.KMIPVersion.KMIP_1_3)
 
         self.assertEqual(len(self.full_encoding), len(buffer))
         self.assertEqual(str(self.full_encoding), str(buffer))
@@ -7739,24 +7160,20 @@ class TestValidationInformation(testtools.TestCase):
         unsupported KMIP version.
         """
         validation_information = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -7779,15 +7196,13 @@ class TestValidationInformation(testtools.TestCase):
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The ValidationInformation structure is missing the validation "
@@ -7803,23 +7218,19 @@ class TestValidationInformation(testtools.TestCase):
         validation version major field.
         """
         validation_information = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The ValidationInformation structure is missing the validation "
@@ -7835,23 +7246,19 @@ class TestValidationInformation(testtools.TestCase):
         validation type field.
         """
         validation_information = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The ValidationInformation structure is missing the validation "
@@ -7867,23 +7274,19 @@ class TestValidationInformation(testtools.TestCase):
         validation level field.
         """
         validation_information = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The ValidationInformation structure is missing the validation "
@@ -7898,19 +7301,14 @@ class TestValidationInformation(testtools.TestCase):
         stream when only containing essential required fields.
         """
         validation_information = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_version_major=1,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
         )
 
         buffer = utils.BytearrayStream()
-        validation_information.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
-        )
+        validation_information.write(buffer, kmip_version=enums.KMIPVersion.KMIP_1_3)
 
         self.assertEqual(len(self.only_essentials_encoding), len(buffer))
         self.assertEqual(str(self.only_essentials_encoding), str(buffer))
@@ -7920,33 +7318,30 @@ class TestValidationInformation(testtools.TestCase):
         Test that repr can be applied to a ValidationInformation structure.
         """
         validation_information = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
-        vat = "validation_authority_type=" + \
-              "ValidationAuthorityType.COMMON_CRITERIA"
+        vat = "validation_authority_type=" + "ValidationAuthorityType.COMMON_CRITERIA"
         vac = 'validation_authority_country="US"'
         vau = 'validation_authority_uri="https://example.com"'
         vvj = "validation_version_major=1"
         vvn = "validation_version_minor=0"
         vt = "validation_type=ValidationType.HYBRID"
         vl = "validation_level=5"
-        vci = 'validation_certificate_identifier=' + \
-              '"c005d39e-604f-11e9-99df-080027fc1396"'
+        vci = (
+            "validation_certificate_identifier="
+            + '"c005d39e-604f-11e9-99df-080027fc1396"'
+        )
         vcu = 'validation_certificate_uri="https://test.com"'
         vvu = 'validation_vendor_uri="https://vendor.com"'
         vp = 'validation_profiles=["Profile 1", "Profile 2"]'
@@ -7954,8 +7349,7 @@ class TestValidationInformation(testtools.TestCase):
         v = ", ".join([vat, vac, vau, vvj, vvn, vt, vl, vci, vcu, vvu, vp])
 
         self.assertEqual(
-            "ValidationInformation({})".format(v),
-            repr(validation_information)
+            "ValidationInformation({})".format(v), repr(validation_information)
         )
 
     def test_str(self):
@@ -7963,43 +7357,39 @@ class TestValidationInformation(testtools.TestCase):
         Test that str can be applied to a ValidationInformation structure.
         """
         validation_information = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
-        vat = '"validation_authority_type": ' + \
-              'ValidationAuthorityType.COMMON_CRITERIA'
+        vat = (
+            '"validation_authority_type": ' + "ValidationAuthorityType.COMMON_CRITERIA"
+        )
         vac = '"validation_authority_country": "US"'
         vau = '"validation_authority_uri": "https://example.com"'
         vvj = '"validation_version_major": 1'
         vvn = '"validation_version_minor": 0'
         vt = '"validation_type": ValidationType.HYBRID'
         vl = '"validation_level": 5'
-        vci = '"validation_certificate_identifier": ' + \
-              '"c005d39e-604f-11e9-99df-080027fc1396"'
+        vci = (
+            '"validation_certificate_identifier": '
+            + '"c005d39e-604f-11e9-99df-080027fc1396"'
+        )
         vcu = '"validation_certificate_uri": "https://test.com"'
         vvu = '"validation_vendor_uri": "https://vendor.com"'
         vp = '"validation_profiles": ["Profile 1", "Profile 2"]'
 
         v = ", ".join([vat, vac, vau, vvj, vvn, vt, vl, vci, vcu, vvu, vp])
 
-        self.assertEqual(
-            "{" + v + "}",
-            str(validation_information)
-        )
+        self.assertEqual("{" + v + "}", str(validation_information))
 
     def test_equal_on_equal(self):
         """
@@ -8013,38 +7403,30 @@ class TestValidationInformation(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
         b = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
         self.assertTrue(a == b)
@@ -8057,9 +7439,7 @@ class TestValidationInformation(testtools.TestCase):
         type fields.
         """
         a = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            )
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA)
         )
         b = objects.ValidationInformation(
             validation_authority_type=enums.ValidationAuthorityType.UNSPECIFIED
@@ -8086,12 +7466,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation authority
         URI fields.
         """
-        a = objects.ValidationInformation(
-            validation_authority_uri="https://a.com"
-        )
-        b = objects.ValidationInformation(
-            validation_authority_uri="https://b.com"
-        )
+        a = objects.ValidationInformation(validation_authority_uri="https://a.com")
+        b = objects.ValidationInformation(validation_authority_uri="https://b.com")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -8126,12 +7502,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation type
         fields.
         """
-        a = objects.ValidationInformation(
-            validation_type=enums.ValidationType.HARDWARE
-        )
-        b = objects.ValidationInformation(
-            validation_type=enums.ValidationType.SOFTWARE
-        )
+        a = objects.ValidationInformation(validation_type=enums.ValidationType.HARDWARE)
+        b = objects.ValidationInformation(validation_type=enums.ValidationType.SOFTWARE)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -8154,12 +7526,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation certificate
         identifier fields.
         """
-        a = objects.ValidationInformation(
-            validation_certificate_identifier="1"
-        )
-        b = objects.ValidationInformation(
-            validation_certificate_identifier="2"
-        )
+        a = objects.ValidationInformation(validation_certificate_identifier="1")
+        b = objects.ValidationInformation(validation_certificate_identifier="2")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -8170,12 +7538,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation certificate
         URI fields.
         """
-        a = objects.ValidationInformation(
-            validation_certificate_uri="https://a.com"
-        )
-        b = objects.ValidationInformation(
-            validation_certificate_uri="https://b.com"
-        )
+        a = objects.ValidationInformation(validation_certificate_uri="https://a.com")
+        b = objects.ValidationInformation(validation_certificate_uri="https://b.com")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -8186,12 +7550,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation vendor URI
         fields.
         """
-        a = objects.ValidationInformation(
-            validation_vendor_uri="https://a.com"
-        )
-        b = objects.ValidationInformation(
-            validation_vendor_uri="https://b.com"
-        )
+        a = objects.ValidationInformation(validation_vendor_uri="https://a.com")
+        b = objects.ValidationInformation(validation_vendor_uri="https://b.com")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -8235,38 +7595,30 @@ class TestValidationInformation(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
         b = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            ),
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA),
             validation_authority_country="US",
             validation_authority_uri="https://example.com",
             validation_version_major=1,
             validation_version_minor=0,
             validation_type=enums.ValidationType.HYBRID,
             validation_level=5,
-            validation_certificate_identifier=(
-                "c005d39e-604f-11e9-99df-080027fc1396"
-            ),
+            validation_certificate_identifier=("c005d39e-604f-11e9-99df-080027fc1396"),
             validation_certificate_uri="https://test.com",
             validation_vendor_uri="https://vendor.com",
-            validation_profiles=["Profile 1", "Profile 2"]
+            validation_profiles=["Profile 1", "Profile 2"],
         )
 
         self.assertFalse(a != b)
@@ -8279,9 +7631,7 @@ class TestValidationInformation(testtools.TestCase):
         type fields.
         """
         a = objects.ValidationInformation(
-            validation_authority_type=(
-                enums.ValidationAuthorityType.COMMON_CRITERIA
-            )
+            validation_authority_type=(enums.ValidationAuthorityType.COMMON_CRITERIA)
         )
         b = objects.ValidationInformation(
             validation_authority_type=enums.ValidationAuthorityType.UNSPECIFIED
@@ -8308,12 +7658,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation authority
         URI fields.
         """
-        a = objects.ValidationInformation(
-            validation_authority_uri="https://a.com"
-        )
-        b = objects.ValidationInformation(
-            validation_authority_uri="https://b.com"
-        )
+        a = objects.ValidationInformation(validation_authority_uri="https://a.com")
+        b = objects.ValidationInformation(validation_authority_uri="https://b.com")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -8348,12 +7694,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation type
         fields.
         """
-        a = objects.ValidationInformation(
-            validation_type=enums.ValidationType.HARDWARE
-        )
-        b = objects.ValidationInformation(
-            validation_type=enums.ValidationType.SOFTWARE
-        )
+        a = objects.ValidationInformation(validation_type=enums.ValidationType.HARDWARE)
+        b = objects.ValidationInformation(validation_type=enums.ValidationType.SOFTWARE)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -8376,12 +7718,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation certificate
         identifier fields.
         """
-        a = objects.ValidationInformation(
-            validation_certificate_identifier="1"
-        )
-        b = objects.ValidationInformation(
-            validation_certificate_identifier="2"
-        )
+        a = objects.ValidationInformation(validation_certificate_identifier="1")
+        b = objects.ValidationInformation(validation_certificate_identifier="2")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -8392,12 +7730,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation certificate
         URI fields.
         """
-        a = objects.ValidationInformation(
-            validation_certificate_uri="https://a.com"
-        )
-        b = objects.ValidationInformation(
-            validation_certificate_uri="https://b.com"
-        )
+        a = objects.ValidationInformation(validation_certificate_uri="https://a.com")
+        b = objects.ValidationInformation(validation_certificate_uri="https://b.com")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -8408,12 +7742,8 @@ class TestValidationInformation(testtools.TestCase):
         ValidationInformation structures with different validation vendor URI
         fields.
         """
-        a = objects.ValidationInformation(
-            validation_vendor_uri="https://a.com"
-        )
-        b = objects.ValidationInformation(
-            validation_vendor_uri="https://b.com"
-        )
+        a = objects.ValidationInformation(validation_vendor_uri="https://a.com")
+        b = objects.ValidationInformation(validation_vendor_uri="https://b.com")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -8447,7 +7777,6 @@ class TestValidationInformation(testtools.TestCase):
 
 
 class TestCapabilityInformation(testtools.TestCase):
-
     def setUp(self):
         super(TestCapabilityInformation, self).setUp()
 
@@ -8464,16 +7793,16 @@ class TestCapabilityInformation(testtools.TestCase):
         #     Shredding Algorithm - CRYPTOGRAPHIC
         #     RNG Mode - NON_SHARED_INSTANTIATION
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\xF7\x01\x00\x00\x00\x90'
-            b'\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xF9\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xFA\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\xF7\x01\x00\x00\x00\x90"
+            b"\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xF9\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xFA\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -8487,22 +7816,20 @@ class TestCapabilityInformation(testtools.TestCase):
         #     Shredding Algorithm - CRYPTOGRAPHIC
         #     RNG Mode - NON_SHARED_INSTANTIATION
         self.full_encoding_kmip_1_3 = utils.BytearrayStream(
-            b'\x42\x00\xF7\x01\x00\x00\x00\x70'
-            b'\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\xF7\x01\x00\x00\x00\x70"
+            b"\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         #
         # Capability Information
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\xF7\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\xF7\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestCapabilityInformation, self).tearDown()
@@ -8520,16 +7847,9 @@ class TestCapabilityInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.CapabilityInformation(),
-            "streaming_capability",
-            "invalid"
-        )
+        args = (objects.CapabilityInformation(), "streaming_capability", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The streaming capability must be a boolean.",
-            setattr,
-            *args
+            TypeError, "The streaming capability must be a boolean.", setattr, *args
         )
 
     def test_invalid_asynchronous_capability(self):
@@ -8545,16 +7865,9 @@ class TestCapabilityInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.CapabilityInformation(),
-            "asynchronous_capability",
-            "invalid"
-        )
+        args = (objects.CapabilityInformation(), "asynchronous_capability", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The asynchronous capability must be a boolean.",
-            setattr,
-            *args
+            TypeError, "The asynchronous capability must be a boolean.", setattr, *args
         )
 
     def test_invalid_attestation_capability(self):
@@ -8570,16 +7883,9 @@ class TestCapabilityInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.CapabilityInformation(),
-            "attestation_capability",
-            "invalid"
-        )
+        args = (objects.CapabilityInformation(), "attestation_capability", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The attestation capability must be a boolean.",
-            setattr,
-            *args
+            TypeError, "The attestation capability must be a boolean.", setattr, *args
         )
 
     def test_invalid_batch_undo_capability(self):
@@ -8595,16 +7901,9 @@ class TestCapabilityInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.CapabilityInformation(),
-            "batch_undo_capability",
-            "invalid"
-        )
+        args = (objects.CapabilityInformation(), "batch_undo_capability", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The batch undo capability must be a boolean.",
-            setattr,
-            *args
+            TypeError, "The batch undo capability must be a boolean.", setattr, *args
         )
 
     def test_invalid_batch_continue_capability(self):
@@ -8620,11 +7919,7 @@ class TestCapabilityInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.CapabilityInformation(),
-            "batch_continue_capability",
-            "invalid"
-        )
+        args = (objects.CapabilityInformation(), "batch_continue_capability", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The batch continue capability must be a boolean.",
@@ -8645,11 +7940,7 @@ class TestCapabilityInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.CapabilityInformation(),
-            "unwrap_mode",
-            "invalid"
-        )
+        args = (objects.CapabilityInformation(), "unwrap_mode", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The unwrap mode must be an UnwrapMode enumeration.",
@@ -8670,11 +7961,7 @@ class TestCapabilityInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.CapabilityInformation(),
-            "destroy_action",
-            "invalid"
-        )
+        args = (objects.CapabilityInformation(), "destroy_action", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The destroy action must be a DestroyAction enumeration.",
@@ -8690,21 +7977,15 @@ class TestCapabilityInformation(testtools.TestCase):
         kwargs = {"shredding_algorithm": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "The shredding algorithm must be a ShreddingAlgorithm "
-            "enumeration.",
+            "The shredding algorithm must be a ShreddingAlgorithm " "enumeration.",
             objects.CapabilityInformation,
             **kwargs
         )
 
-        args = (
-            objects.CapabilityInformation(),
-            "shredding_algorithm",
-            "invalid"
-        )
+        args = (objects.CapabilityInformation(), "shredding_algorithm", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "The shredding algorithm must be a ShreddingAlgorithm "
-            "enumeration.",
+            "The shredding algorithm must be a ShreddingAlgorithm " "enumeration.",
             setattr,
             *args
         )
@@ -8722,16 +8003,9 @@ class TestCapabilityInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.CapabilityInformation(),
-            "rng_mode",
-            "invalid"
-        )
+        args = (objects.CapabilityInformation(), "rng_mode", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The RNG mode must be an RNGMode enumeration.",
-            setattr,
-            *args
+            TypeError, "The RNG mode must be an RNGMode enumeration.", setattr, *args
         )
 
     def test_read(self):
@@ -8752,8 +8026,7 @@ class TestCapabilityInformation(testtools.TestCase):
         self.assertIsNone(capability_information.rng_mode)
 
         capability_information.read(
-            self.full_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_1_4
+            self.full_encoding, kmip_version=enums.KMIPVersion.KMIP_1_4
         )
 
         self.assertFalse(capability_information.streaming_capability)
@@ -8761,21 +8034,16 @@ class TestCapabilityInformation(testtools.TestCase):
         self.assertTrue(capability_information.attestation_capability)
         self.assertFalse(capability_information.batch_undo_capability)
         self.assertTrue(capability_information.batch_continue_capability)
+        self.assertEqual(enums.UnwrapMode.PROCESSED, capability_information.unwrap_mode)
         self.assertEqual(
-            enums.UnwrapMode.PROCESSED,
-            capability_information.unwrap_mode
-        )
-        self.assertEqual(
-            enums.DestroyAction.SHREDDED,
-            capability_information.destroy_action
+            enums.DestroyAction.SHREDDED, capability_information.destroy_action
         )
         self.assertEqual(
             enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            capability_information.shredding_algorithm
+            capability_information.shredding_algorithm,
         )
         self.assertEqual(
-            enums.RNGMode.NON_SHARED_INSTANTIATION,
-            capability_information.rng_mode
+            enums.RNGMode.NON_SHARED_INSTANTIATION, capability_information.rng_mode
         )
 
     def test_read_unsupported_kmip_version(self):
@@ -8786,7 +8054,7 @@ class TestCapabilityInformation(testtools.TestCase):
         """
         capability_information = objects.CapabilityInformation()
 
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -8814,8 +8082,7 @@ class TestCapabilityInformation(testtools.TestCase):
         self.assertIsNone(capability_information.rng_mode)
 
         capability_information.read(
-            self.full_encoding_kmip_1_3,
-            kmip_version=enums.KMIPVersion.KMIP_1_4
+            self.full_encoding_kmip_1_3, kmip_version=enums.KMIPVersion.KMIP_1_4
         )
 
         self.assertFalse(capability_information.streaming_capability)
@@ -8823,21 +8090,16 @@ class TestCapabilityInformation(testtools.TestCase):
         self.assertTrue(capability_information.attestation_capability)
         self.assertIsNone(capability_information.batch_undo_capability)
         self.assertIsNone(capability_information.batch_continue_capability)
+        self.assertEqual(enums.UnwrapMode.PROCESSED, capability_information.unwrap_mode)
         self.assertEqual(
-            enums.UnwrapMode.PROCESSED,
-            capability_information.unwrap_mode
-        )
-        self.assertEqual(
-            enums.DestroyAction.SHREDDED,
-            capability_information.destroy_action
+            enums.DestroyAction.SHREDDED, capability_information.destroy_action
         )
         self.assertEqual(
             enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            capability_information.shredding_algorithm
+            capability_information.shredding_algorithm,
         )
         self.assertEqual(
-            enums.RNGMode.NON_SHARED_INSTANTIATION,
-            capability_information.rng_mode
+            enums.RNGMode.NON_SHARED_INSTANTIATION, capability_information.rng_mode
         )
 
     def test_read_empty(self):
@@ -8858,8 +8120,7 @@ class TestCapabilityInformation(testtools.TestCase):
         self.assertIsNone(capability_information.rng_mode)
 
         capability_information.read(
-            self.empty_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_1_4
+            self.empty_encoding, kmip_version=enums.KMIPVersion.KMIP_1_4
         )
 
         self.assertIsNone(capability_information.streaming_capability)
@@ -8886,14 +8147,11 @@ class TestCapabilityInformation(testtools.TestCase):
             unwrap_mode=enums.UnwrapMode.PROCESSED,
             destroy_action=enums.DestroyAction.SHREDDED,
             shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
         )
 
         buffer = utils.BytearrayStream()
-        capability_information.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_1_4
-        )
+        capability_information.write(buffer, kmip_version=enums.KMIPVersion.KMIP_1_4)
 
         self.assertEqual(len(self.full_encoding), len(buffer))
         self.assertEqual(str(self.full_encoding), str(buffer))
@@ -8913,10 +8171,10 @@ class TestCapabilityInformation(testtools.TestCase):
             unwrap_mode=enums.UnwrapMode.PROCESSED,
             destroy_action=enums.DestroyAction.SHREDDED,
             shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -8940,14 +8198,11 @@ class TestCapabilityInformation(testtools.TestCase):
             unwrap_mode=enums.UnwrapMode.PROCESSED,
             destroy_action=enums.DestroyAction.SHREDDED,
             shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
         )
 
         buffer = utils.BytearrayStream()
-        capability_information.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
-        )
+        capability_information.write(buffer, kmip_version=enums.KMIPVersion.KMIP_1_3)
 
         self.assertEqual(len(self.full_encoding_kmip_1_3), len(buffer))
         self.assertEqual(str(self.full_encoding_kmip_1_3), str(buffer))
@@ -8960,10 +8215,7 @@ class TestCapabilityInformation(testtools.TestCase):
         capability_information = objects.CapabilityInformation()
 
         buffer = utils.BytearrayStream()
-        capability_information.write(
-            buffer,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
-        )
+        capability_information.write(buffer, kmip_version=enums.KMIPVersion.KMIP_1_3)
 
         self.assertEqual(len(self.empty_encoding), len(buffer))
         self.assertEqual(str(self.empty_encoding), str(buffer))
@@ -8981,7 +8233,7 @@ class TestCapabilityInformation(testtools.TestCase):
             unwrap_mode=enums.UnwrapMode.PROCESSED,
             destroy_action=enums.DestroyAction.SHREDDED,
             shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
         )
 
         sc = "streaming_capability=False"
@@ -8997,8 +8249,7 @@ class TestCapabilityInformation(testtools.TestCase):
         v = ", ".join([sc, rc, tc, buc, bcc, um, da, sa, rm])
 
         self.assertEqual(
-            "CapabilityInformation({})".format(v),
-            repr(capability_information)
+            "CapabilityInformation({})".format(v), repr(capability_information)
         )
 
     def test_str(self):
@@ -9014,7 +8265,7 @@ class TestCapabilityInformation(testtools.TestCase):
             unwrap_mode=enums.UnwrapMode.PROCESSED,
             destroy_action=enums.DestroyAction.SHREDDED,
             shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
         )
 
         sc = '"streaming_capability": False'
@@ -9029,10 +8280,7 @@ class TestCapabilityInformation(testtools.TestCase):
 
         v = ", ".join([sc, rc, tc, buc, bcc, um, da, sa, rm])
 
-        self.assertEqual(
-            "{" + v + "}",
-            str(capability_information)
-        )
+        self.assertEqual("{" + v + "}", str(capability_information))
 
     def test_equal_on_equal(self):
         """
@@ -9054,7 +8302,7 @@ class TestCapabilityInformation(testtools.TestCase):
             unwrap_mode=enums.UnwrapMode.PROCESSED,
             destroy_action=enums.DestroyAction.SHREDDED,
             shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
         )
         b = objects.CapabilityInformation(
             streaming_capability=False,
@@ -9065,7 +8313,7 @@ class TestCapabilityInformation(testtools.TestCase):
             unwrap_mode=enums.UnwrapMode.PROCESSED,
             destroy_action=enums.DestroyAction.SHREDDED,
             shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
         )
 
         self.assertTrue(a == b)
@@ -9136,12 +8384,8 @@ class TestCapabilityInformation(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         CapabilityInformation structures with different unwrap mode fields.
         """
-        a = objects.CapabilityInformation(
-            unwrap_mode=enums.UnwrapMode.PROCESSED
-        )
-        b = objects.CapabilityInformation(
-            unwrap_mode=enums.UnwrapMode.NOT_PROCESSED
-        )
+        a = objects.CapabilityInformation(unwrap_mode=enums.UnwrapMode.PROCESSED)
+        b = objects.CapabilityInformation(unwrap_mode=enums.UnwrapMode.NOT_PROCESSED)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -9151,12 +8395,8 @@ class TestCapabilityInformation(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         CapabilityInformation structures with different destroy action fields.
         """
-        a = objects.CapabilityInformation(
-            destroy_action=enums.DestroyAction.DELETED
-        )
-        b = objects.CapabilityInformation(
-            destroy_action=enums.DestroyAction.SHREDDED
-        )
+        a = objects.CapabilityInformation(destroy_action=enums.DestroyAction.DELETED)
+        b = objects.CapabilityInformation(destroy_action=enums.DestroyAction.SHREDDED)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -9182,9 +8422,7 @@ class TestCapabilityInformation(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         CapabilityInformation structures with different RNG mode fields.
         """
-        a = objects.CapabilityInformation(
-            rng_mode=enums.RNGMode.SHARED_INSTANTIATION
-        )
+        a = objects.CapabilityInformation(rng_mode=enums.RNGMode.SHARED_INSTANTIATION)
         b = objects.CapabilityInformation(
             rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
         )
@@ -9223,7 +8461,7 @@ class TestCapabilityInformation(testtools.TestCase):
             unwrap_mode=enums.UnwrapMode.PROCESSED,
             destroy_action=enums.DestroyAction.SHREDDED,
             shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
         )
         b = objects.CapabilityInformation(
             streaming_capability=False,
@@ -9234,7 +8472,7 @@ class TestCapabilityInformation(testtools.TestCase):
             unwrap_mode=enums.UnwrapMode.PROCESSED,
             destroy_action=enums.DestroyAction.SHREDDED,
             shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+            rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
         )
 
         self.assertFalse(a != b)
@@ -9305,12 +8543,8 @@ class TestCapabilityInformation(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         CapabilityInformation structures with different unwrap mode fields.
         """
-        a = objects.CapabilityInformation(
-            unwrap_mode=enums.UnwrapMode.PROCESSED
-        )
-        b = objects.CapabilityInformation(
-            unwrap_mode=enums.UnwrapMode.NOT_PROCESSED
-        )
+        a = objects.CapabilityInformation(unwrap_mode=enums.UnwrapMode.PROCESSED)
+        b = objects.CapabilityInformation(unwrap_mode=enums.UnwrapMode.NOT_PROCESSED)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -9320,12 +8554,8 @@ class TestCapabilityInformation(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         CapabilityInformation structures with different destroy action fields.
         """
-        a = objects.CapabilityInformation(
-            destroy_action=enums.DestroyAction.DELETED
-        )
-        b = objects.CapabilityInformation(
-            destroy_action=enums.DestroyAction.SHREDDED
-        )
+        a = objects.CapabilityInformation(destroy_action=enums.DestroyAction.DELETED)
+        b = objects.CapabilityInformation(destroy_action=enums.DestroyAction.SHREDDED)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -9351,9 +8581,7 @@ class TestCapabilityInformation(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         CapabilityInformation structures with different RNG mode fields.
         """
-        a = objects.CapabilityInformation(
-            rng_mode=enums.RNGMode.SHARED_INSTANTIATION
-        )
+        a = objects.CapabilityInformation(rng_mode=enums.RNGMode.SHARED_INSTANTIATION)
         b = objects.CapabilityInformation(
             rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
         )
@@ -9374,7 +8602,6 @@ class TestCapabilityInformation(testtools.TestCase):
 
 
 class TestProtectionStorageMasks(testtools.TestCase):
-
     def setUp(self):
         super(TestProtectionStorageMasks, self).setUp()
 
@@ -9384,17 +8611,15 @@ class TestProtectionStorageMasks(testtools.TestCase):
         #     Protection Storage Mask - Software | Hardware
         #     Protection Storage Mask - On Premises | Off Premises
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x01\x5F\x01\x00\x00\x00\x20'
-            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x03\x00\x00\x00\x00\x00'
+            b"\x42\x01\x5F\x01\x00\x00\x00\x20"
+            b"\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x03\x00\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         #
         # Protection Storage Masks
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x01\x5F\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x01\x5F\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestProtectionStorageMasks, self).tearDown()
@@ -9429,10 +8654,18 @@ class TestProtectionStorageMasks(testtools.TestCase):
             **kwargs
         )
 
+        args = (objects.ProtectionStorageMasks(), "protection_storage_masks", "invalid")
+        self.assertRaisesRegex(
+            TypeError,
+            "The protection storage masks must be a list of integers "
+            "representing combinations of ProtectionStorageMask enumerations.",
+            setattr,
+            *args
+        )
         args = (
             objects.ProtectionStorageMasks(),
             "protection_storage_masks",
-            "invalid"
+            ["invalid"],
         )
         self.assertRaisesRegex(
             TypeError,
@@ -9444,19 +8677,7 @@ class TestProtectionStorageMasks(testtools.TestCase):
         args = (
             objects.ProtectionStorageMasks(),
             "protection_storage_masks",
-            ["invalid"]
-        )
-        self.assertRaisesRegex(
-            TypeError,
-            "The protection storage masks must be a list of integers "
-            "representing combinations of ProtectionStorageMask enumerations.",
-            setattr,
-            *args
-        )
-        args = (
-            objects.ProtectionStorageMasks(),
-            "protection_storage_masks",
-            [0x10000000]
+            [0x10000000],
         )
         self.assertRaisesRegex(
             TypeError,
@@ -9478,8 +8699,7 @@ class TestProtectionStorageMasks(testtools.TestCase):
         protection_storage_masks.read(self.full_encoding)
 
         self.assertEqual(
-            [0x03, 0x0300],
-            protection_storage_masks.protection_storage_masks
+            [0x03, 0x0300], protection_storage_masks.protection_storage_masks
         )
 
     def test_read_unsupported_kmip_version(self):
@@ -9490,7 +8710,7 @@ class TestProtectionStorageMasks(testtools.TestCase):
         """
         protection_storage_masks = objects.ProtectionStorageMasks()
 
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -9521,13 +8741,13 @@ class TestProtectionStorageMasks(testtools.TestCase):
         protection_storage_masks = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
 
@@ -9546,17 +8766,17 @@ class TestProtectionStorageMasks(testtools.TestCase):
         protection_storage_masks = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -9586,21 +8806,20 @@ class TestProtectionStorageMasks(testtools.TestCase):
         protection_storage_masks = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
 
         v = "protection_storage_masks=[3, 768]"
 
         self.assertEqual(
-            "ProtectionStorageMasks({})".format(v),
-            repr(protection_storage_masks)
+            "ProtectionStorageMasks({})".format(v), repr(protection_storage_masks)
         )
 
     def test_str(self):
@@ -9610,22 +8829,19 @@ class TestProtectionStorageMasks(testtools.TestCase):
         protection_storage_masks = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
 
         v = '"protection_storage_masks": [3, 768]'
 
-        self.assertEqual(
-            "{" + v + "}",
-            str(protection_storage_masks)
-        )
+        self.assertEqual("{" + v + "}", str(protection_storage_masks))
 
     def test_equal_on_equal(self):
         """
@@ -9641,25 +8857,25 @@ class TestProtectionStorageMasks(testtools.TestCase):
         a = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
         b = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
 
@@ -9675,24 +8891,22 @@ class TestProtectionStorageMasks(testtools.TestCase):
         a = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
         b = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
-                (
-                    enums.ProtectionStorageMask.ON_PREMISES.value
-                )
+                (enums.ProtectionStorageMask.ON_PREMISES.value),
             ]
         )
 
@@ -9724,25 +8938,25 @@ class TestProtectionStorageMasks(testtools.TestCase):
         a = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
         b = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
 
@@ -9758,24 +8972,22 @@ class TestProtectionStorageMasks(testtools.TestCase):
         a = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
                 (
-                    enums.ProtectionStorageMask.ON_PREMISES.value |
-                    enums.ProtectionStorageMask.OFF_PREMISES.value
-                )
+                    enums.ProtectionStorageMask.ON_PREMISES.value
+                    | enums.ProtectionStorageMask.OFF_PREMISES.value
+                ),
             ]
         )
         b = objects.ProtectionStorageMasks(
             protection_storage_masks=[
                 (
-                    enums.ProtectionStorageMask.SOFTWARE.value |
-                    enums.ProtectionStorageMask.HARDWARE.value
+                    enums.ProtectionStorageMask.SOFTWARE.value
+                    | enums.ProtectionStorageMask.HARDWARE.value
                 ),
-                (
-                    enums.ProtectionStorageMask.ON_PREMISES.value
-                )
+                (enums.ProtectionStorageMask.ON_PREMISES.value),
             ]
         )
 

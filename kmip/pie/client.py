@@ -39,6 +39,7 @@ def is_connected(function):
         if not self._is_open:
             raise exceptions.ClientConnectionNotOpen()
         return function(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -54,18 +55,21 @@ class ProxyKmipClient(object):
 
     Like the KMIPProxy, the ProxyKmipClient is not thread-safe.
     """
-    def __init__(self,
-                 hostname=None,
-                 port=None,
-                 cert=None,
-                 key=None,
-                 ca=None,
-                 ssl_version=None,
-                 username=None,
-                 password=None,
-                 config='client',
-                 config_file=None,
-                 kmip_version=None):
+
+    def __init__(
+        self,
+        hostname=None,
+        port=None,
+        cert=None,
+        key=None,
+        ca=None,
+        ssl_version=None,
+        username=None,
+        password=None,
+        config="client",
+        config_file=None,
+        kmip_version=None,
+    ):
         """
         Construct a ProxyKmipClient.
 
@@ -117,7 +121,7 @@ class ProxyKmipClient(object):
             password=password,
             config=config,
             config_file=config_file,
-            kmip_version=kmip_version
+            kmip_version=kmip_version,
         )
 
         # TODO (peter-hamilton) Add a multiprocessing lock for synchronization.
@@ -166,8 +170,7 @@ class ProxyKmipClient(object):
             Exception: if an error occurs while trying to open the connection
         """
         if self._is_open:
-            raise exceptions.ClientConnectionFailure(
-                "client connection already open")
+            raise exceptions.ClientConnectionFailure("client connection already open")
         else:
             try:
                 self.proxy.open()
@@ -194,8 +197,14 @@ class ProxyKmipClient(object):
                 raise
 
     @is_connected
-    def create(self, algorithm, length, operation_policy_name=None, name=None,
-               cryptographic_usage_mask=None):
+    def create(
+        self,
+        algorithm,
+        length,
+        operation_policy_name=None,
+        name=None,
+        cryptographic_usage_mask=None,
+    ):
         """
         Create a symmetric key on a KMIP appliance.
 
@@ -220,32 +229,35 @@ class ProxyKmipClient(object):
         """
         # Check inputs
         if not isinstance(algorithm, enums.CryptographicAlgorithm):
-            raise TypeError(
-                "algorithm must be a CryptographicAlgorithm enumeration")
+            raise TypeError("algorithm must be a CryptographicAlgorithm enumeration")
         elif not isinstance(length, six.integer_types) or length <= 0:
             raise TypeError("length must be a positive integer")
         if cryptographic_usage_mask is not None:
-            if not isinstance(cryptographic_usage_mask, list) or \
-                all(isinstance(item, enums.CryptographicUsageMask)
-                    for item in cryptographic_usage_mask) is False:
+            if (
+                not isinstance(cryptographic_usage_mask, list)
+                or all(
+                    isinstance(item, enums.CryptographicUsageMask)
+                    for item in cryptographic_usage_mask
+                )
+                is False
+            ):
                 raise TypeError(
                     "cryptographic_usage_mask must be a list of "
-                    "CryptographicUsageMask enumerations")
+                    "CryptographicUsageMask enumerations"
+                )
 
         # Create the template containing the attributes
-        common_attributes = self._build_common_attributes(
-            operation_policy_name
-        )
+        common_attributes = self._build_common_attributes(operation_policy_name)
         key_attributes = self._build_key_attributes(
-                            algorithm, length, cryptographic_usage_mask)
+            algorithm, length, cryptographic_usage_mask
+        )
         key_attributes.extend(common_attributes)
 
         if name:
             key_attributes.extend(
                 [
                     self.attribute_factory.create_attribute(
-                        enums.AttributeType.NAME,
-                        name
+                        enums.AttributeType.NAME, name
                     )
                 ]
             )
@@ -264,14 +276,16 @@ class ProxyKmipClient(object):
             raise exceptions.KmipOperationFailure(status, reason, message)
 
     @is_connected
-    def create_key_pair(self,
-                        algorithm,
-                        length,
-                        operation_policy_name=None,
-                        public_name=None,
-                        public_usage_mask=None,
-                        private_name=None,
-                        private_usage_mask=None):
+    def create_key_pair(
+        self,
+        algorithm,
+        length,
+        operation_policy_name=None,
+        public_name=None,
+        public_usage_mask=None,
+        private_name=None,
+        private_usage_mask=None,
+    ):
         """
         Create an asymmetric key pair on a KMIP appliance.
 
@@ -303,29 +317,23 @@ class ProxyKmipClient(object):
         """
         # Check inputs
         if not isinstance(algorithm, enums.CryptographicAlgorithm):
-            raise TypeError(
-                "algorithm must be a CryptographicAlgorithm enumeration")
+            raise TypeError("algorithm must be a CryptographicAlgorithm enumeration")
         elif not isinstance(length, six.integer_types) or length <= 0:
             raise TypeError("length must be a positive integer")
 
         # Create the common attributes that are shared
-        common_attributes = self._build_common_attributes(
-            operation_policy_name
-        )
+        common_attributes = self._build_common_attributes(operation_policy_name)
 
         algorithm_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
-            algorithm
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm
         )
         length_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
-            length
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length
         )
 
         common_attributes.extend([algorithm_attribute, length_attribute])
         template = cobjects.TemplateAttribute(
-            attributes=common_attributes,
-            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+            attributes=common_attributes, tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
         )
 
         # Create public / private specific attributes
@@ -334,21 +342,18 @@ class ProxyKmipClient(object):
         if public_name:
             attrs.append(
                 self.attribute_factory.create_attribute(
-                    enums.AttributeType.NAME,
-                    public_name
+                    enums.AttributeType.NAME, public_name
                 )
             )
         if public_usage_mask:
             attrs.append(
                 self.attribute_factory.create_attribute(
-                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-                    public_usage_mask
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK, public_usage_mask
                 )
             )
         if attrs:
             public_template = cobjects.TemplateAttribute(
-                attributes=attrs,
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                attributes=attrs, tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
             )
 
         private_template = None
@@ -356,28 +361,26 @@ class ProxyKmipClient(object):
         if private_name:
             attrs.append(
                 self.attribute_factory.create_attribute(
-                    enums.AttributeType.NAME,
-                    private_name
+                    enums.AttributeType.NAME, private_name
                 )
             )
         if private_usage_mask:
             attrs.append(
                 self.attribute_factory.create_attribute(
-                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-                    private_usage_mask
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK, private_usage_mask
                 )
             )
         if attrs:
             private_template = cobjects.TemplateAttribute(
-                attributes=attrs,
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                attributes=attrs, tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
             )
 
         # Create the asymmetric key pair and handle the results
         result = self.proxy.create_key_pair(
             common_template_attribute=template,
             private_key_template_attribute=private_template,
-            public_key_template_attribute=public_template)
+            public_key_template_attribute=public_template,
+        )
 
         status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
@@ -423,11 +426,10 @@ class ProxyKmipClient(object):
             attribute_name=kwargs.get("attribute_name"),
             attribute_index=kwargs.get("attribute_index"),
             current_attribute=kwargs.get("current_attribute"),
-            attribute_reference=kwargs.get("attribute_reference")
+            attribute_reference=kwargs.get("attribute_reference"),
         )
         response_payload = self.proxy.send_request_payload(
-            enums.Operation.DELETE_ATTRIBUTE,
-            request_payload
+            enums.Operation.DELETE_ATTRIBUTE, request_payload
         )
 
         return response_payload.unique_identifier, response_payload.attribute
@@ -459,15 +461,14 @@ class ProxyKmipClient(object):
         """
         a = self.attribute_value_factory.create_attribute_value_by_enum(
             enums.convert_attribute_name_to_tag(kwargs.get("attribute_name")),
-            kwargs.get("attribute_value")
+            kwargs.get("attribute_value"),
         )
         request_payload = payloads.SetAttributeRequestPayload(
             unique_identifier=unique_identifier,
-            new_attribute=cobjects.NewAttribute(attribute=a)
+            new_attribute=cobjects.NewAttribute(attribute=a),
         )
         response_payload = self.proxy.send_request_payload(
-            enums.Operation.SET_ATTRIBUTE,
-            request_payload
+            enums.Operation.SET_ATTRIBUTE, request_payload
         )
 
         return response_payload.unique_identifier
@@ -501,11 +502,10 @@ class ProxyKmipClient(object):
             unique_identifier=unique_identifier,
             attribute=kwargs.get("attribute"),
             current_attribute=kwargs.get("current_attribute"),
-            new_attribute=kwargs.get("new_attribute")
+            new_attribute=kwargs.get("new_attribute"),
         )
         response_payload = self.proxy.send_request_payload(
-            enums.Operation.MODIFY_ATTRIBUTE,
-            request_payload
+            enums.Operation.MODIFY_ATTRIBUTE, request_payload
         )
 
         return response_payload.unique_identifier, response_payload.attribute
@@ -534,30 +534,29 @@ class ProxyKmipClient(object):
         # Extract and create attributes
         object_attributes = list()
 
-        if hasattr(managed_object, 'cryptographic_usage_masks'):
+        if hasattr(managed_object, "cryptographic_usage_masks"):
             if managed_object.cryptographic_usage_masks is not None:
                 mask_attribute = self.attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-                    managed_object.cryptographic_usage_masks
+                    managed_object.cryptographic_usage_masks,
                 )
                 object_attributes.append(mask_attribute)
-        if hasattr(managed_object, 'operation_policy_name'):
+        if hasattr(managed_object, "operation_policy_name"):
             if managed_object.operation_policy_name is not None:
                 opn_attribute = self.attribute_factory.create_attribute(
                     enums.AttributeType.OPERATION_POLICY_NAME,
-                    managed_object.operation_policy_name
+                    managed_object.operation_policy_name,
                 )
                 object_attributes.append(opn_attribute)
-        if hasattr(managed_object, 'names'):
+        if hasattr(managed_object, "names"):
             if managed_object.names:
                 for name in managed_object.names:
                     name_attribute = self.attribute_factory.create_attribute(
-                        enums.AttributeType.NAME,
-                        name
+                        enums.AttributeType.NAME, name
                     )
                     object_attributes.append(name_attribute)
 
-        if hasattr(managed_object, '_application_specific_informations'):
+        if hasattr(managed_object, "_application_specific_informations"):
             if managed_object._application_specific_informations:
                 for attr in managed_object._application_specific_informations:
                     object_attributes.append(attr)
@@ -578,10 +577,7 @@ class ProxyKmipClient(object):
             raise exceptions.KmipOperationFailure(status, reason, message)
 
     @is_connected
-    def rekey(self,
-              uid=None,
-              offset=None,
-              **kwargs):
+    def rekey(self, uid=None, offset=None, **kwargs):
         """
         Rekey an existing key.
 
@@ -616,62 +612,57 @@ class ProxyKmipClient(object):
 
         # TODO (peter-hamilton) Unify attribute handling across operations
         attributes = []
-        if kwargs.get('activation_date'):
+        if kwargs.get("activation_date"):
             attributes.append(
                 self.attribute_factory.create_attribute(
-                    enums.AttributeType.ACTIVATION_DATE,
-                    kwargs.get('activation_date')
+                    enums.AttributeType.ACTIVATION_DATE, kwargs.get("activation_date")
                 )
             )
-        if kwargs.get('process_start_date'):
+        if kwargs.get("process_start_date"):
             attributes.append(
                 self.attribute_factory.create_attribute(
                     enums.AttributeType.PROCESS_START_DATE,
-                    kwargs.get('process_start_date')
+                    kwargs.get("process_start_date"),
                 )
             )
-        if kwargs.get('protect_stop_date'):
+        if kwargs.get("protect_stop_date"):
             attributes.append(
                 self.attribute_factory.create_attribute(
                     enums.AttributeType.PROTECT_STOP_DATE,
-                    kwargs.get('protect_stop_date')
+                    kwargs.get("protect_stop_date"),
                 )
             )
-        if kwargs.get('deactivation_date'):
+        if kwargs.get("deactivation_date"):
             attributes.append(
                 self.attribute_factory.create_attribute(
                     enums.AttributeType.DEACTIVATION_DATE,
-                    kwargs.get('deactivation_date')
+                    kwargs.get("deactivation_date"),
                 )
             )
-        template_attribute = cobjects.TemplateAttribute(
-            attributes=attributes
-        )
+        template_attribute = cobjects.TemplateAttribute(attributes=attributes)
 
         # Derive the new key/data and handle the results
         result = self.proxy.rekey(
-            uuid=uid,
-            offset=offset,
-            template_attribute=template_attribute
+            uuid=uid, offset=offset, template_attribute=template_attribute
         )
 
-        status = result.get('result_status')
+        status = result.get("result_status")
         if status == enums.ResultStatus.SUCCESS:
-            return result.get('unique_identifier')
+            return result.get("unique_identifier")
         else:
             raise exceptions.KmipOperationFailure(
-                status,
-                result.get('result_reason'),
-                result.get('result_message')
+                status, result.get("result_reason"), result.get("result_message")
             )
 
     @is_connected
-    def derive_key(self,
-                   object_type,
-                   unique_identifiers,
-                   derivation_method,
-                   derivation_parameters,
-                   **kwargs):
+    def derive_key(
+        self,
+        object_type,
+        unique_identifiers,
+        derivation_method,
+        derivation_parameters,
+        **kwargs
+    ):
         """
         Derive a new key or secret data from existing managed objects.
 
@@ -733,54 +724,46 @@ class ProxyKmipClient(object):
         else:
             for unique_identifier in unique_identifiers:
                 if not isinstance(unique_identifier, six.string_types):
-                    raise TypeError(
-                        "Unique identifiers must be a list of strings."
-                    )
+                    raise TypeError("Unique identifiers must be a list of strings.")
         if not isinstance(derivation_method, enums.DerivationMethod):
-            raise TypeError(
-                "Derivation method must be a DerivationMethod enumeration."
-            )
+            raise TypeError("Derivation method must be a DerivationMethod enumeration.")
         if not isinstance(derivation_parameters, dict):
             raise TypeError("Derivation parameters must be a dictionary.")
 
         derivation_parameters = DerivationParameters(
             cryptographic_parameters=self._build_cryptographic_parameters(
-                derivation_parameters.get('cryptographic_parameters')
+                derivation_parameters.get("cryptographic_parameters")
             ),
-            initialization_vector=derivation_parameters.get(
-                'initialization_vector'
-            ),
-            derivation_data=derivation_parameters.get('derivation_data'),
-            salt=derivation_parameters.get('salt'),
-            iteration_count=derivation_parameters.get('iteration_count')
+            initialization_vector=derivation_parameters.get("initialization_vector"),
+            derivation_data=derivation_parameters.get("derivation_data"),
+            salt=derivation_parameters.get("salt"),
+            iteration_count=derivation_parameters.get("iteration_count"),
         )
 
         # Handle object attributes
         attributes = []
-        if kwargs.get('cryptographic_length'):
+        if kwargs.get("cryptographic_length"):
             attributes.append(
                 self.attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
-                    kwargs.get('cryptographic_length')
+                    kwargs.get("cryptographic_length"),
                 )
             )
-        if kwargs.get('cryptographic_algorithm'):
+        if kwargs.get("cryptographic_algorithm"):
             attributes.append(
                 self.attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
-                    kwargs.get('cryptographic_algorithm')
+                    kwargs.get("cryptographic_algorithm"),
                 )
             )
-        if kwargs.get('cryptographic_usage_mask'):
+        if kwargs.get("cryptographic_usage_mask"):
             attributes.append(
                 self.attribute_factory.create_attribute(
                     enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-                    kwargs.get('cryptographic_usage_mask')
+                    kwargs.get("cryptographic_usage_mask"),
                 )
             )
-        template_attribute = cobjects.TemplateAttribute(
-            attributes=attributes
-        )
+        template_attribute = cobjects.TemplateAttribute(attributes=attributes)
 
         # Derive the new key/data and handle the results
         result = self.proxy.derive_key(
@@ -788,22 +771,26 @@ class ProxyKmipClient(object):
             unique_identifiers,
             derivation_method,
             derivation_parameters,
-            template_attribute
+            template_attribute,
         )
 
-        status = result.get('result_status')
+        status = result.get("result_status")
         if status == enums.ResultStatus.SUCCESS:
-            return result.get('unique_identifier')
+            return result.get("unique_identifier")
         else:
             raise exceptions.KmipOperationFailure(
-                status,
-                result.get('result_reason'),
-                result.get('result_message')
+                status, result.get("result_reason"), result.get("result_message")
             )
 
     @is_connected
-    def locate(self, maximum_items=None, storage_status_mask=None,
-               object_group_member=None, attributes=None, offset_items=None):
+    def locate(
+        self,
+        maximum_items=None,
+        storage_status_mask=None,
+        object_group_member=None,
+        attributes=None,
+        offset_items=None,
+    ):
         """
         Search for managed objects, depending on the attributes specified in
         the request.
@@ -841,14 +828,15 @@ class ProxyKmipClient(object):
         if object_group_member is not None:
             if not isinstance(object_group_member, enums.ObjectGroupMember):
                 raise TypeError(
-                    "object_group_member must be a ObjectGroupMember"
-                    "enumeration")
+                    "object_group_member must be a ObjectGroupMember" "enumeration"
+                )
         if attributes is not None:
-            if not isinstance(attributes, list) or \
-                all(isinstance(item, cobjects.Attribute)
-                    for item in attributes) is False:
-                raise TypeError(
-                    "attributes must be a list of attributes")
+            if (
+                not isinstance(attributes, list)
+                or all(isinstance(item, cobjects.Attribute) for item in attributes)
+                is False
+            ):
+                raise TypeError("attributes must be a list of attributes")
 
         # Search for managed objects and handle the results
         result = self.proxy.locate(
@@ -856,7 +844,7 @@ class ProxyKmipClient(object):
             offset_items=offset_items,
             storage_status_mask=storage_status_mask,
             object_group_member=object_group_member,
-            attributes=attributes
+            attributes=attributes,
         )
 
         status = result.result_status.value
@@ -868,11 +856,13 @@ class ProxyKmipClient(object):
             raise exceptions.KmipOperationFailure(status, reason, message)
 
     @is_connected
-    def check(self,
-              uid=None,
-              usage_limits_count=None,
-              cryptographic_usage_mask=None,
-              lease_time=None):
+    def check(
+        self,
+        uid=None,
+        usage_limits_count=None,
+        cryptographic_usage_mask=None,
+        lease_time=None,
+    ):
         """
         Check the constraints for a managed object.
 
@@ -894,11 +884,10 @@ class ProxyKmipClient(object):
             if not isinstance(usage_limits_count, six.integer_types):
                 raise TypeError("The usage limits count must be an integer.")
         if cryptographic_usage_mask is not None:
-            if not isinstance(cryptographic_usage_mask, list) or \
-                    not all(isinstance(
-                        x,
-                        enums.CryptographicUsageMask
-                    ) for x in cryptographic_usage_mask):
+            if not isinstance(cryptographic_usage_mask, list) or not all(
+                isinstance(x, enums.CryptographicUsageMask)
+                for x in cryptographic_usage_mask
+            ):
                 raise TypeError(
                     "The cryptographic usage mask must be a list of "
                     "CryptographicUsageMask enumerations."
@@ -908,20 +897,15 @@ class ProxyKmipClient(object):
                 raise TypeError("The lease time must be an integer.")
 
         result = self.proxy.check(
-            uid,
-            usage_limits_count,
-            cryptographic_usage_mask,
-            lease_time
+            uid, usage_limits_count, cryptographic_usage_mask, lease_time
         )
 
-        status = result.get('result_status')
+        status = result.get("result_status")
         if status == enums.ResultStatus.SUCCESS:
-            return result.get('unique_identifier')
+            return result.get("unique_identifier")
         else:
             raise exceptions.KmipOperationFailure(
-                status,
-                result.get('result_reason'),
-                result.get('result_message')
+                status, result.get("result_reason"), result.get("result_message")
             )
 
     @is_connected
@@ -974,13 +958,9 @@ class ProxyKmipClient(object):
                 raise TypeError("uid must be a string")
         if key_wrapping_specification is not None:
             if not isinstance(key_wrapping_specification, dict):
-                raise TypeError(
-                    "Key wrapping specification must be a dictionary."
-                )
+                raise TypeError("Key wrapping specification must be a dictionary.")
 
-        spec = self._build_key_wrapping_specification(
-            key_wrapping_specification
-        )
+        spec = self._build_key_wrapping_specification(key_wrapping_specification)
 
         # Get the managed object and handle the results
         result = self.proxy.get(uid, key_wrapping_specification=spec)
@@ -1023,9 +1003,7 @@ class ProxyKmipClient(object):
             else:
                 for attribute_name in attribute_names:
                     if not isinstance(attribute_name, six.string_types):
-                        raise TypeError(
-                            "attribute_names must be a list of strings"
-                        )
+                        raise TypeError("attribute_names must be a list of strings")
 
         # Get the list of attributes for a managed object
         result = self.proxy.get_attributes(uid, attribute_names)
@@ -1102,8 +1080,13 @@ class ProxyKmipClient(object):
             raise exceptions.KmipOperationFailure(status, reason, message)
 
     @is_connected
-    def revoke(self, revocation_reason, uid=None, revocation_message=None,
-               compromise_occurrence_date=None):
+    def revoke(
+        self,
+        revocation_reason,
+        uid=None,
+        revocation_message=None,
+        compromise_occurrence_date=None,
+    ):
         """
         Revoke a managed object stored by a KMIP appliance.
 
@@ -1130,7 +1113,8 @@ class ProxyKmipClient(object):
         # Check input
         if not isinstance(revocation_reason, enums.RevocationReasonCode):
             raise TypeError(
-                "revocation_reason must be a RevocationReasonCode enumeration")
+                "revocation_reason must be a RevocationReasonCode enumeration"
+            )
         if uid is not None:
             if not isinstance(uid, six.string_types):
                 raise TypeError("uid must be a string")
@@ -1139,15 +1123,15 @@ class ProxyKmipClient(object):
                 raise TypeError("revocation_message must be a string")
         if compromise_occurrence_date is not None:
             if not isinstance(compromise_occurrence_date, six.integer_types):
-                raise TypeError(
-                    "compromise_occurrence_date must be an integer")
+                raise TypeError("compromise_occurrence_date must be an integer")
             compromise_occurrence_date = primitives.DateTime(
-                compromise_occurrence_date,
-                enums.Tags.COMPROMISE_OCCURRENCE_DATE)
+                compromise_occurrence_date, enums.Tags.COMPROMISE_OCCURRENCE_DATE
+            )
 
         # revoke the managed object and handle the results
-        result = self.proxy.revoke(revocation_reason, uid, revocation_message,
-                                   compromise_occurrence_date)
+        result = self.proxy.revoke(
+            revocation_reason, uid, revocation_message, compromise_occurrence_date
+        )
 
         status = result.result_status.value
         if status == enums.ResultStatus.SUCCESS:
@@ -1190,8 +1174,9 @@ class ProxyKmipClient(object):
             raise exceptions.KmipOperationFailure(status, reason, message)
 
     @is_connected
-    def encrypt(self, data, uid=None, cryptographic_parameters=None,
-                iv_counter_nonce=None):
+    def encrypt(
+        self, data, uid=None, cryptographic_parameters=None, iv_counter_nonce=None
+    ):
         """
         Encrypt data using the specified encryption key and parameters.
 
@@ -1280,25 +1265,21 @@ class ProxyKmipClient(object):
 
         # Encrypt the provided data and handle the results
         result = self.proxy.encrypt(
-            data,
-            uid,
-            cryptographic_parameters,
-            iv_counter_nonce
+            data, uid, cryptographic_parameters, iv_counter_nonce
         )
 
-        status = result.get('result_status')
+        status = result.get("result_status")
         if status == enums.ResultStatus.SUCCESS:
-            return result.get('data'), result.get('iv_counter_nonce')
+            return result.get("data"), result.get("iv_counter_nonce")
         else:
             raise exceptions.KmipOperationFailure(
-                status,
-                result.get('result_reason'),
-                result.get('result_message')
+                status, result.get("result_reason"), result.get("result_message")
             )
 
     @is_connected
-    def decrypt(self, data, uid=None, cryptographic_parameters=None,
-                iv_counter_nonce=None):
+    def decrypt(
+        self, data, uid=None, cryptographic_parameters=None, iv_counter_nonce=None
+    ):
         """
         Decrypt data using the specified decryption key and parameters.
 
@@ -1385,25 +1366,21 @@ class ProxyKmipClient(object):
 
         # Decrypt the provided data and handle the results
         result = self.proxy.decrypt(
-            data,
-            uid,
-            cryptographic_parameters,
-            iv_counter_nonce
+            data, uid, cryptographic_parameters, iv_counter_nonce
         )
 
-        status = result.get('result_status')
+        status = result.get("result_status")
         if status == enums.ResultStatus.SUCCESS:
-            return result.get('data')
+            return result.get("data")
         else:
             raise exceptions.KmipOperationFailure(
-                status,
-                result.get('result_reason'),
-                result.get('result_message')
+                status, result.get("result_reason"), result.get("result_message")
             )
 
     @is_connected
-    def signature_verify(self, message, signature, uid=None,
-                         cryptographic_parameters=None):
+    def signature_verify(
+        self, message, signature, uid=None, cryptographic_parameters=None
+    ):
         """
         Verify a message signature using the specified signing key.
 
@@ -1441,9 +1418,7 @@ class ProxyKmipClient(object):
                 raise TypeError("Unique identifier must be a string.")
         if cryptographic_parameters is not None:
             if not isinstance(cryptographic_parameters, dict):
-                raise TypeError(
-                    "Cryptographic parameters must be a dictionary."
-                )
+                raise TypeError("Cryptographic parameters must be a dictionary.")
 
         cryptographic_parameters = self._build_cryptographic_parameters(
             cryptographic_parameters
@@ -1451,20 +1426,15 @@ class ProxyKmipClient(object):
 
         # Decrypt the provided data and handle the results
         result = self.proxy.signature_verify(
-            message,
-            signature,
-            uid,
-            cryptographic_parameters
+            message, signature, uid, cryptographic_parameters
         )
 
-        status = result.get('result_status')
+        status = result.get("result_status")
         if status == enums.ResultStatus.SUCCESS:
-            return result.get('validity_indicator')
+            return result.get("validity_indicator")
         else:
             raise exceptions.KmipOperationFailure(
-                status,
-                result.get('result_reason'),
-                result.get('result_message')
+                status, result.get("result_reason"), result.get("result_message")
             )
 
     @is_connected
@@ -1497,29 +1467,21 @@ class ProxyKmipClient(object):
                 raise TypeError("Unique identifier must be a string.")
         if cryptographic_parameters is not None:
             if not isinstance(cryptographic_parameters, dict):
-                raise TypeError(
-                    "Cryptographic parameters must be a dictionary."
-                )
+                raise TypeError("Cryptographic parameters must be a dictionary.")
 
         cryptographic_parameters = self._build_cryptographic_parameters(
             cryptographic_parameters
         )
 
         # Sign the provided data and handle results
-        result = self.proxy.sign(
-            data,
-            uid,
-            cryptographic_parameters
-        )
+        result = self.proxy.sign(data, uid, cryptographic_parameters)
 
-        status = result.get('result_status')
+        status = result.get("result_status")
         if status == enums.ResultStatus.SUCCESS:
-            return result.get('signature')
+            return result.get("signature")
         else:
             raise exceptions.KmipOperationFailure(
-                status,
-                result.get('result_reason'),
-                result.get('result_message')
+                status, result.get("result_reason"), result.get("result_message")
             )
 
     @is_connected
@@ -1553,10 +1515,11 @@ class ProxyKmipClient(object):
         if algorithm is not None:
             if not isinstance(algorithm, enums.CryptographicAlgorithm):
                 raise TypeError(
-                    "algorithm must be a CryptographicAlgorithm enumeration")
+                    "algorithm must be a CryptographicAlgorithm enumeration"
+                )
 
         parameters_attribute = self._build_cryptographic_parameters(
-            {'cryptographic_algorithm': algorithm}
+            {"cryptographic_algorithm": algorithm}
         )
 
         # Get the message authentication code and handle the results
@@ -1575,21 +1538,23 @@ class ProxyKmipClient(object):
     def _build_key_attributes(self, algorithm, length, masks=None):
         # Build a list of core key attributes.
         algorithm_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
-            algorithm)
+            enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, algorithm
+        )
         length_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
-            length)
+            enums.AttributeType.CRYPTOGRAPHIC_LENGTH, length
+        )
         # Default crypto usage mask value
-        mask_value = [enums.CryptographicUsageMask.ENCRYPT,
-                      enums.CryptographicUsageMask.DECRYPT]
+        mask_value = [
+            enums.CryptographicUsageMask.ENCRYPT,
+            enums.CryptographicUsageMask.DECRYPT,
+        ]
         if masks:
             mask_value.extend(masks)
         # remove duplicates
         mask_value = list(set(mask_value))
         mask_attribute = self.attribute_factory.create_attribute(
-            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-            mask_value)
+            enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK, mask_value
+        )
 
         return [algorithm_attribute, length_attribute, mask_attribute]
 
@@ -1614,21 +1579,19 @@ class ProxyKmipClient(object):
             raise TypeError("Cryptographic parameters must be a dictionary.")
 
         cryptographic_parameters = CryptographicParameters(
-            block_cipher_mode=value.get('block_cipher_mode'),
-            padding_method=value.get('padding_method'),
-            hashing_algorithm=value.get('hashing_algorithm'),
-            key_role_type=value.get('key_role_type'),
-            digital_signature_algorithm=value.get(
-                'digital_signature_algorithm'
-            ),
-            cryptographic_algorithm=value.get('cryptographic_algorithm'),
-            random_iv=value.get('random_iv'),
-            iv_length=value.get('iv_length'),
-            tag_length=value.get('tag_length'),
-            fixed_field_length=value.get('fixed_field_length'),
-            invocation_field_length=value.get('invocation_field_length'),
-            counter_length=value.get('counter_length'),
-            initial_counter_value=value.get('initial_counter_value')
+            block_cipher_mode=value.get("block_cipher_mode"),
+            padding_method=value.get("padding_method"),
+            hashing_algorithm=value.get("hashing_algorithm"),
+            key_role_type=value.get("key_role_type"),
+            digital_signature_algorithm=value.get("digital_signature_algorithm"),
+            cryptographic_algorithm=value.get("cryptographic_algorithm"),
+            random_iv=value.get("random_iv"),
+            iv_length=value.get("iv_length"),
+            tag_length=value.get("tag_length"),
+            fixed_field_length=value.get("fixed_field_length"),
+            invocation_field_length=value.get("invocation_field_length"),
+            counter_length=value.get("counter_length"),
+            initial_counter_value=value.get("initial_counter_value"),
         )
         return cryptographic_parameters
 
@@ -1651,14 +1614,14 @@ class ProxyKmipClient(object):
         if not isinstance(value, dict):
             raise TypeError("Encryption key information must be a dictionary.")
 
-        cryptographic_parameters = value.get('cryptographic_parameters')
+        cryptographic_parameters = value.get("cryptographic_parameters")
         if cryptographic_parameters:
             cryptographic_parameters = self._build_cryptographic_parameters(
                 cryptographic_parameters
             )
         encryption_key_information = cobjects.EncryptionKeyInformation(
-            unique_identifier=value.get('unique_identifier'),
-            cryptographic_parameters=cryptographic_parameters
+            unique_identifier=value.get("unique_identifier"),
+            cryptographic_parameters=cryptographic_parameters,
         )
         return encryption_key_information
 
@@ -1679,18 +1642,16 @@ class ProxyKmipClient(object):
         if value is None:
             return None
         if not isinstance(value, dict):
-            raise TypeError(
-                "MAC/signature key information must be a dictionary."
-            )
+            raise TypeError("MAC/signature key information must be a dictionary.")
 
-        cryptographic_parameters = value.get('cryptographic_parameters')
+        cryptographic_parameters = value.get("cryptographic_parameters")
         if cryptographic_parameters:
             cryptographic_parameters = self._build_cryptographic_parameters(
                 cryptographic_parameters
             )
         mac_signature_key_information = cobjects.MACSignatureKeyInformation(
-            unique_identifier=value.get('unique_identifier'),
-            cryptographic_parameters=cryptographic_parameters
+            unique_identifier=value.get("unique_identifier"),
+            cryptographic_parameters=cryptographic_parameters,
         )
         return mac_signature_key_information
 
@@ -1714,33 +1675,32 @@ class ProxyKmipClient(object):
             raise TypeError("Key wrapping specification must be a dictionary.")
 
         encryption_key_info = self._build_encryption_key_information(
-            value.get('encryption_key_information')
+            value.get("encryption_key_information")
         )
         mac_signature_key_info = self._build_mac_signature_key_information(
-            value.get('mac_signature_key_information')
+            value.get("mac_signature_key_information")
         )
 
         key_wrapping_specification = cobjects.KeyWrappingSpecification(
-            wrapping_method=value.get('wrapping_method'),
+            wrapping_method=value.get("wrapping_method"),
             encryption_key_information=encryption_key_info,
             mac_signature_key_information=mac_signature_key_info,
-            attribute_names=value.get('attribute_names'),
-            encoding_option=value.get('encoding_option')
+            attribute_names=value.get("attribute_names"),
+            encoding_option=value.get("encoding_option"),
         )
         return key_wrapping_specification
 
     def _build_common_attributes(self, operation_policy_name=None):
-        '''
-         Build a list of common attributes that are shared across
-         symmetric as well as asymmetric objects
-        '''
+        """
+        Build a list of common attributes that are shared across
+        symmetric as well as asymmetric objects
+        """
         common_attributes = []
 
         if operation_policy_name:
             common_attributes.append(
                 self.attribute_factory.create_attribute(
-                    enums.AttributeType.OPERATION_POLICY_NAME,
-                    operation_policy_name
+                    enums.AttributeType.OPERATION_POLICY_NAME, operation_policy_name
                 )
             )
 

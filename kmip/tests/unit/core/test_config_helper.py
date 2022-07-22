@@ -26,15 +26,15 @@ from kmip.core.config_helper import ConfigHelper
 
 
 class TestConfigHelper(TestCase):
-
     def setUp(self):
         def side_effect(arg1, arg2):
-            if arg1 == 'conf_test_section' and arg2 == 'conf_test_option':
-                return 'conf_test_value'
-            elif arg1 == 'conf_test_section' and arg2 == 'conf_null_option':
+            if arg1 == "conf_test_section" and arg2 == "conf_test_option":
+                return "conf_test_value"
+            elif arg1 == "conf_test_section" and arg2 == "conf_null_option":
                 return ConfigHelper.NONE_VALUE
             else:
                 raise configparser.NoSectionError
+
         super(TestConfigHelper, self).setUp()
         self.config_helper = ConfigHelper()
         self.config_helper.conf = MagicMock()
@@ -48,47 +48,51 @@ class TestConfigHelper(TestCase):
         self.assertEqual(None, value)
 
     def test_get_valid_value_direct_value_is_none(self):
-        value = self.config_helper.get_valid_value(ConfigHelper.NONE_VALUE,
-                                                   'conf_test_section',
-                                                   'conf_test_option',
-                                                   'test_default_option')
+        value = self.config_helper.get_valid_value(
+            ConfigHelper.NONE_VALUE,
+            "conf_test_section",
+            "conf_test_option",
+            "test_default_option",
+        )
         self.assertFalse(self.config_helper.conf.get.called)
         self.assertEqual(None, value)
 
     def test_get_valid_value_config_value_is_none(self):
-        value = self.config_helper.get_valid_value(None,
-                                                   'conf_test_section',
-                                                   'conf_null_option',
-                                                   'test_default_option')
+        value = self.config_helper.get_valid_value(
+            None, "conf_test_section", "conf_null_option", "test_default_option"
+        )
         self.assertTrue(self.config_helper.conf.get.called)
-        self.config_helper.conf.get.assert_called_with('conf_test_section',
-                                                       'conf_null_option')
+        self.config_helper.conf.get.assert_called_with(
+            "conf_test_section", "conf_null_option"
+        )
         self.assertEqual(None, value)
 
     def test_get_valid_value_returns_direct(self):
-        value = self.config_helper.get_valid_value('test_direct_value',
-                                                   'conf_test_section',
-                                                   'conf_test_option',
-                                                   'test_default_value')
+        value = self.config_helper.get_valid_value(
+            "test_direct_value",
+            "conf_test_section",
+            "conf_test_option",
+            "test_default_value",
+        )
         self.assertFalse(self.config_helper.conf.get.called)
-        self.assertEqual('test_direct_value', value)
+        self.assertEqual("test_direct_value", value)
 
     def test_get_valid_value_returns_conf_value(self):
-        value = self.config_helper.get_valid_value(None,
-                                                   'conf_test_section',
-                                                   'conf_test_option',
-                                                   'test_default_value')
+        value = self.config_helper.get_valid_value(
+            None, "conf_test_section", "conf_test_option", "test_default_value"
+        )
         self.assertTrue(self.config_helper.conf.get.called)
-        self.config_helper.conf.get.assert_called_with('conf_test_section',
-                                                       'conf_test_option')
-        self.assertEqual(value, 'conf_test_value')
+        self.config_helper.conf.get.assert_called_with(
+            "conf_test_section", "conf_test_option"
+        )
+        self.assertEqual(value, "conf_test_value")
 
     def test_get_valid_value_returns_default(self):
-        value = self.config_helper.get_valid_value(None,
-                                                   'invalid_section',
-                                                   'invalid_option',
-                                                   'test_default_value')
+        value = self.config_helper.get_valid_value(
+            None, "invalid_section", "invalid_option", "test_default_value"
+        )
         self.assertTrue(self.config_helper.conf.get.called)
-        self.config_helper.conf.get.assert_called_with('invalid_section',
-                                                       'invalid_option')
-        self.assertEqual(value, 'test_default_value')
+        self.config_helper.conf.get.assert_called_with(
+            "invalid_section", "invalid_option"
+        )
+        self.assertEqual(value, "test_default_value")

@@ -24,7 +24,8 @@ def pytest_addoption(parser):
         "--config",
         action="store",
         default="client",
-        help="Config file section name for client configuration settings")
+        help="Config file section name for client configuration settings",
+    )
 
 
 @pytest.fixture(scope="class")

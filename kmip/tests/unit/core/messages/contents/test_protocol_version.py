@@ -21,7 +21,6 @@ from kmip.core import utils
 
 
 class TestProtocolVersion(testtools.TestCase):
-
     def setUp(self):
         super(TestProtocolVersion, self).setUp()
 
@@ -33,19 +32,19 @@ class TestProtocolVersion(testtools.TestCase):
         #     ProtocolVersionMinor - 1
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x69\x01\x00\x00\x00\x20'
-            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x69\x01\x00\x00\x00\x20"
+            b"\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         self.encoding_no_major_number = utils.BytearrayStream(
-            b'\x42\x00\x69\x01\x00\x00\x00\x10'
-            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x69\x01\x00\x00\x00\x10"
+            b"\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         self.encoding_no_minor_number = utils.BytearrayStream(
-            b'\x42\x00\x69\x01\x00\x00\x00\x10'
-            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x69\x01\x00\x00\x00\x10"
+            b"\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -77,7 +76,7 @@ class TestProtocolVersion(testtools.TestCase):
         the major protocol version number of a ProtocolVersion struct.
         """
         struct = contents.ProtocolVersion()
-        args = (struct, 'major', 'invalid')
+        args = (struct, "major", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Major protocol version number must be an integer.",
@@ -91,7 +90,7 @@ class TestProtocolVersion(testtools.TestCase):
         the minor protocol version number of a ProtocolVersion struct.
         """
         struct = contents.ProtocolVersion()
-        args = (struct, 'minor', 'invalid')
+        args = (struct, "minor", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Minor protocol version number must be an integer.",
@@ -119,7 +118,7 @@ class TestProtocolVersion(testtools.TestCase):
         struct attribute is missing from the struct encoding.
         """
         struct = contents.ProtocolVersion()
-        args = (self.encoding_no_major_number, )
+        args = (self.encoding_no_major_number,)
         self.assertRaisesRegex(
             ValueError,
             "Invalid encoding missing the major protocol version number.",
@@ -133,7 +132,7 @@ class TestProtocolVersion(testtools.TestCase):
         struct attribute is missing from the struct encoding.
         """
         struct = contents.ProtocolVersion()
-        args = (self.encoding_no_minor_number, )
+        args = (self.encoding_no_minor_number,)
         self.assertRaisesRegex(
             ValueError,
             "Invalid encoding missing the minor protocol version number.",
@@ -159,7 +158,7 @@ class TestProtocolVersion(testtools.TestCase):
         """
         struct = contents.ProtocolVersion(None, 1)
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the major protocol version number.",
@@ -174,7 +173,7 @@ class TestProtocolVersion(testtools.TestCase):
         """
         struct = contents.ProtocolVersion(1, None)
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             ValueError,
             "Invalid struct missing the minor protocol version number.",
@@ -262,7 +261,7 @@ class TestProtocolVersion(testtools.TestCase):
 
         # A direct call to __lt__ is required here due to differences in how
         # Python 2 and Python 3 treat comparison operators.
-        self.assertEqual(NotImplemented, a.__lt__('invalid'))
+        self.assertEqual(NotImplemented, a.__lt__("invalid"))
 
     def test_greater_than(self):
         """
@@ -284,7 +283,7 @@ class TestProtocolVersion(testtools.TestCase):
 
         # A direct call to __gt__ is required here due to differences in how
         # Python 2 and Python 3 treat comparison operators.
-        self.assertEqual(NotImplemented, a.__gt__('invalid'))
+        self.assertEqual(NotImplemented, a.__gt__("invalid"))
 
     def test_less_than_or_equal(self):
         """
@@ -306,7 +305,7 @@ class TestProtocolVersion(testtools.TestCase):
 
         # A direct call to __le__ is required here due to differences in how
         # Python 2 and Python 3 treat comparison operators.
-        self.assertEqual(NotImplemented, a.__le__('invalid'))
+        self.assertEqual(NotImplemented, a.__le__("invalid"))
 
     def test_greater_than_or_equal(self):
         """
@@ -328,7 +327,7 @@ class TestProtocolVersion(testtools.TestCase):
 
         # A direct call to __ge__ is required here due to differences in how
         # Python 2 and Python 3 treat comparison operators.
-        self.assertEqual(NotImplemented, a.__ge__('invalid'))
+        self.assertEqual(NotImplemented, a.__ge__("invalid"))
 
     def test_repr(self):
         """
@@ -336,10 +335,7 @@ class TestProtocolVersion(testtools.TestCase):
         """
         struct = contents.ProtocolVersion(1, 0)
 
-        self.assertEqual(
-            "ProtocolVersion(major=1, minor=0)",
-            "{}".format(repr(struct))
-        )
+        self.assertEqual("ProtocolVersion(major=1, minor=0)", "{}".format(repr(struct)))
 
     def test_str(self):
         """
@@ -351,7 +347,6 @@ class TestProtocolVersion(testtools.TestCase):
 
 
 class TestContents(testtools.TestCase):
-
     def setUp(self):
         super(TestContents, self).setUp()
 

@@ -40,12 +40,14 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             the newly derived cryptographic object.
     """
 
-    def __init__(self,
-                 object_type=None,
-                 unique_identifiers=None,
-                 derivation_method=None,
-                 derivation_parameters=None,
-                 template_attribute=None):
+    def __init__(
+        self,
+        object_type=None,
+        unique_identifiers=None,
+        derivation_method=None,
+        derivation_parameters=None,
+        template_attribute=None,
+    ):
         """
         Construct a DeriveKey request payload struct.
 
@@ -96,9 +98,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             self._object_type = None
         elif isinstance(value, enums.ObjectType):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                value=value,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, value=value, tag=enums.Tags.OBJECT_TYPE
             )
         else:
             raise TypeError("Object type must be an ObjectType enumeration.")
@@ -122,15 +122,10 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             for i in value:
                 if isinstance(i, six.string_types):
                     unique_identifiers.append(
-                        primitives.TextString(
-                            value=i,
-                            tag=enums.Tags.UNIQUE_IDENTIFIER
-                        )
+                        primitives.TextString(value=i, tag=enums.Tags.UNIQUE_IDENTIFIER)
                     )
                 else:
-                    raise TypeError(
-                        "Unique identifiers must be a list of strings."
-                    )
+                    raise TypeError("Unique identifiers must be a list of strings.")
             self._unique_identifiers = unique_identifiers
         else:
             raise TypeError("Unique identifiers must be a list of strings.")
@@ -148,14 +143,10 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             self._derivation_method = None
         elif isinstance(value, enums.DerivationMethod):
             self._derivation_method = primitives.Enumeration(
-                enums.DerivationMethod,
-                value=value,
-                tag=enums.Tags.DERIVATION_METHOD
+                enums.DerivationMethod, value=value, tag=enums.Tags.DERIVATION_METHOD
             )
         else:
-            raise TypeError(
-                "Derivation method must be a DerivationMethod enumeration."
-            )
+            raise TypeError("Derivation method must be a DerivationMethod enumeration.")
 
     @property
     def derivation_parameters(self):
@@ -172,8 +163,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             self._derivation_parameters = value
         else:
             raise TypeError(
-                "Derivation parameters must be a DerivationParameters "
-                "structure."
+                "Derivation parameters must be a DerivationParameters " "structure."
             )
 
     @property
@@ -190,9 +180,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
         elif isinstance(value, objects.TemplateAttribute):
             self._template_attribute = value
         else:
-            raise TypeError(
-                "Template attribute must be a TemplateAttribute structure."
-            )
+            raise TypeError("Template attribute must be a TemplateAttribute structure.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -212,28 +200,23 @@ class DeriveKeyRequestPayload(base.RequestPayload):
                 encoded payload.
         """
         super(DeriveKeyRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, tag=enums.Tags.OBJECT_TYPE
             )
             self._object_type.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The DeriveKey request payload encoding is missing the object "
-                "type."
+                "The DeriveKey request payload encoding is missing the object " "type."
             )
 
         unique_identifiers = []
         while self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_buffer):
-            unique_identifier = primitives.TextString(
-                tag=enums.Tags.UNIQUE_IDENTIFIER
-            )
+            unique_identifier = primitives.TextString(tag=enums.Tags.UNIQUE_IDENTIFIER)
             unique_identifier.read(local_buffer, kmip_version=kmip_version)
             unique_identifiers.append(unique_identifier)
         if not unique_identifiers:
@@ -246,13 +229,9 @@ class DeriveKeyRequestPayload(base.RequestPayload):
 
         if self.is_tag_next(enums.Tags.DERIVATION_METHOD, local_buffer):
             self._derivation_method = primitives.Enumeration(
-                enums.DerivationMethod,
-                tag=enums.Tags.DERIVATION_METHOD
+                enums.DerivationMethod, tag=enums.Tags.DERIVATION_METHOD
             )
-            self._derivation_method.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._derivation_method.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The DeriveKey request payload encoding is missing the "
@@ -261,10 +240,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
 
         if self.is_tag_next(enums.Tags.DERIVATION_PARAMETERS, local_buffer):
             self._derivation_parameters = attributes.DerivationParameters()
-            self._derivation_parameters.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._derivation_parameters.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The DeriveKey request payload encoding is missing the "
@@ -274,10 +250,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
                 self._template_attribute = objects.TemplateAttribute()
-                self._template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.read(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidKmipEncoding(
                     "The DeriveKey request payload encoding is missing the "
@@ -287,9 +260,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             if self.is_tag_next(enums.Tags.ATTRIBUTES, local_buffer):
                 attrs = objects.Attributes()
                 attrs.read(local_buffer, kmip_version=kmip_version)
-                value = objects.convert_attributes_to_template_attribute(
-                    attrs
-                )
+                value = objects.convert_attributes_to_template_attribute(attrs)
                 self._template_attribute = value
             else:
                 raise exceptions.InvalidKmipEncoding(
@@ -320,16 +291,12 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             self._object_type.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
-                "The DeriveKey request payload is missing the object type "
-                "field."
+                "The DeriveKey request payload is missing the object type " "field."
             )
 
         if self._unique_identifiers:
             for unique_identifier in self._unique_identifiers:
-                unique_identifier.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                unique_identifier.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The DeriveKey request payload is missing the unique "
@@ -337,10 +304,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             )
 
         if self._derivation_method:
-            self._derivation_method.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._derivation_method.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The DeriveKey request payload is missing the derivation "
@@ -348,10 +312,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             )
 
         if self._derivation_parameters:
-            self._derivation_parameters.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._derivation_parameters.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The DeriveKey request payload is missing the derivation "
@@ -360,10 +321,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._template_attribute:
-                self._template_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.write(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidField(
                     "The DeriveKey request payload is missing the template "
@@ -383,8 +341,7 @@ class DeriveKeyRequestPayload(base.RequestPayload):
 
         self.length = local_buffer.length()
         super(DeriveKeyRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -412,25 +369,27 @@ class DeriveKeyRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "object_type={0}".format(self.object_type),
-            "unique_identifiers={0}".format(self.unique_identifiers),
-            "derivation_method={0}".format(self.derivation_method),
-            "derivation_parameters={0}".format(
-                repr(self.derivation_parameters)
-            ),
-            "template_attribute={0}".format(repr(self.template_attribute))
-        ])
+        args = ", ".join(
+            [
+                "object_type={0}".format(self.object_type),
+                "unique_identifiers={0}".format(self.unique_identifiers),
+                "derivation_method={0}".format(self.derivation_method),
+                "derivation_parameters={0}".format(repr(self.derivation_parameters)),
+                "template_attribute={0}".format(repr(self.template_attribute)),
+            ]
+        )
         return "DeriveKeyRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            "object_type": self.object_type,
-            "unique_identifiers": self.unique_identifiers,
-            "derivation_method": self.derivation_method,
-            "derivation_parameters": self.derivation_parameters,
-            "template_attribute": self.template_attribute
-        })
+        return str(
+            {
+                "object_type": self.object_type,
+                "unique_identifiers": self.unique_identifiers,
+                "derivation_method": self.derivation_method,
+                "derivation_parameters": self.derivation_parameters,
+                "template_attribute": self.template_attribute,
+            }
+        )
 
 
 class DeriveKeyResponsePayload(base.ResponsePayload):
@@ -444,9 +403,7 @@ class DeriveKeyResponsePayload(base.ResponsePayload):
             set by the server on the newly derived cryptographic object.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 template_attribute=None):
+    def __init__(self, unique_identifier=None, template_attribute=None):
         """
         Construct a DeriveKey response payload struct.
 
@@ -481,8 +438,7 @@ class DeriveKeyResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -501,9 +457,7 @@ class DeriveKeyResponsePayload(base.ResponsePayload):
         elif isinstance(value, objects.TemplateAttribute):
             self._template_attribute = value
         else:
-            raise TypeError(
-                "Template attribute must be a TemplateAttribute structure."
-            )
+            raise TypeError("Template attribute must be a TemplateAttribute structure.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -523,8 +477,7 @@ class DeriveKeyResponsePayload(base.ResponsePayload):
                 encoded payload.
         """
         super(DeriveKeyResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -532,10 +485,7 @@ class DeriveKeyResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The DeriveKey response payload encoding is missing the "
@@ -545,10 +495,7 @@ class DeriveKeyResponsePayload(base.ResponsePayload):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
                 self._template_attribute = objects.TemplateAttribute()
-                self._template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.read(local_buffer, kmip_version=kmip_version)
 
         self.is_oversized(local_buffer)
 
@@ -570,10 +517,7 @@ class DeriveKeyResponsePayload(base.ResponsePayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The DeriveKey response payload is missing the unique "
@@ -582,15 +526,11 @@ class DeriveKeyResponsePayload(base.ResponsePayload):
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._template_attribute:
-                self._template_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(DeriveKeyResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -612,14 +552,18 @@ class DeriveKeyResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "template_attribute={0}".format(repr(self.template_attribute))
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "template_attribute={0}".format(repr(self.template_attribute)),
+            ]
+        )
         return "DeriveKeyResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            "unique_identifier": self.unique_identifier,
-            "template_attribute": self.template_attribute
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "template_attribute": self.template_attribute,
+            }
+        )

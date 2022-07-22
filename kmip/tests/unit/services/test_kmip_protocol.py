@@ -26,20 +26,22 @@ from kmip.services.kmip_protocol import KMIPProtocolFactory
 class TestKMIPProtocol(TestCase):
 
     request = binascii.unhexlify(
-            '42007801000000b04200770100000088420069010000002042006a02000000040'
-            '00000010000000042006b0200000004000000010000000042000c010000004842'
-            '00230100000040420024050000000400000001000000004200250100000028420'
-            '099070000000a4b6d6970436c69656e740000000000004200a10700000006436f'
-            '75636f75000042000d0200000004000000010000000042000f010000001842005'
-            'c05000000040000001e000000004200790100000000')
+        "42007801000000b04200770100000088420069010000002042006a02000000040"
+        "00000010000000042006b0200000004000000010000000042000c010000004842"
+        "00230100000040420024050000000400000001000000004200250100000028420"
+        "099070000000a4b6d6970436c69656e740000000000004200a10700000006436f"
+        "75636f75000042000d0200000004000000010000000042000f010000001842005"
+        "c05000000040000001e000000004200790100000000"
+    )
     response = binascii.unhexlify(
-            '42007b01000000d042007a0100000048420069010000002042006a02000000040'
-            '00000010000000042006b02000000040000000100000000420092090000000800'
-            '00000056bda8eb42000d0200000004000000010000000042000f0100000078420'
-            '05c05000000040000001e0000000042007f050000000400000000000000004200'
-            '7c0100000050420069010000002042006a0200000004000000010000000042006'
-            'b02000000040000000100000000420069010000002042006a0200000004000000'
-            '010000000042006b02000000040000000000000000')
+        "42007b01000000d042007a0100000048420069010000002042006a02000000040"
+        "00000010000000042006b02000000040000000100000000420092090000000800"
+        "00000056bda8eb42000d0200000004000000010000000042000f0100000078420"
+        "05c05000000040000001e0000000042007f050000000400000000000000004200"
+        "7c0100000050420069010000002042006a0200000004000000010000000042006"
+        "b02000000040000000100000000420069010000002042006a0200000004000000"
+        "010000000042006b02000000040000000000000000"
+    )
 
     def setUp(self):
         super(TestKMIPProtocol, self).setUp()
@@ -56,7 +58,7 @@ class TestKMIPProtocol(TestCase):
         KMIPProtocol(socket)
 
     def test_protocol_factory(self):
-        mock_name = 'test_protocol_factory'
+        mock_name = "test_protocol_factory"
         socket = MagicMock(mock_name=mock_name)
         protocol = self.factory.getProtocol(socket)
 
@@ -72,13 +74,13 @@ class TestKMIPProtocol(TestCase):
         protocol.write(self.request)
 
         protocol.logger.debug.assert_any_call(
-            "KMIPProtocol.write: {0}".format(binascii.hexlify(self.request)))
+            "KMIPProtocol.write: {0}".format(binascii.hexlify(self.request))
+        )
         protocol.socket.sendall.assert_called_once_with(self.request)
 
     def test_IO_read(self):
         socket = MagicMock()
-        socket.recv = MagicMock(
-            side_effect=[self.response[:8], self.response[8:]])
+        socket.recv = MagicMock(side_effect=[self.response[:8], self.response[8:]])
         protocol = self.factory.getProtocol(socket)
 
         received = protocol.read()
@@ -105,22 +107,24 @@ class TestKMIPProtocol(TestCase):
     def test_IO_read_request_length_mismatch(self):
         socket = MagicMock()
         socket.recv = MagicMock(
-            side_effect=[self.response[:8], self.response[8:16], []])
+            side_effect=[self.response[:8], self.response[8:16], []]
+        )
         protocol = self.factory.getProtocol(socket)
         resp_len = len(self.response)
 
         try:
             protocol.read()
         except Exception as e:
-            self.assertIsInstance(
-                e, RequestLengthMismatch, "Invalid exception")
+            self.assertIsInstance(e, RequestLengthMismatch, "Invalid exception")
             self.assertEqual(e.expected, resp_len - 8, "Unexpected expected")
             self.assertEqual(e.received, 8, "Unexpected received")
             self.assertEqual(
                 "{0}".format(e),
                 "{0}: expected {1}, received {2}".format(
-                    "KMIPProtocol read error", resp_len - 8, 8),
-                "Invalid RequestLengthMismatch attributes")
+                    "KMIPProtocol read error", resp_len - 8, 8
+                ),
+                "Invalid RequestLengthMismatch attributes",
+            )
         else:
             self.assertTrue(False, "Unexpected error")
 

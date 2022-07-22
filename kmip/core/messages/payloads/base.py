@@ -21,6 +21,7 @@ class RequestPayload(primitives.Struct):
     """
     An abstract base class for KMIP request payloads.
     """
+
     def __init__(self):
         super(RequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
 

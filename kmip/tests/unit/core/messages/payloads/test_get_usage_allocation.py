@@ -35,25 +35,23 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         #     Usage Limits Count - 500
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x40'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62'
-            b'\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33'
-            b'\x64\x34\x62\x36\x00\x00\x00\x00'
-            b'\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4'
+            b"\x42\x00\x79\x01\x00\x00\x00\x40"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62"
+            b"\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33"
+            b"\x64\x34\x62\x36\x00\x00\x00\x00"
+            b"\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4"
         )
 
         # This encoding matches the following set of values:
         # Request Payload
         #     Usage Limits Count - 500
         self.partial_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x10'
-            b'\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4'
+            b"\x42\x00\x79\x01\x00\x00\x00\x10"
+            b"\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestGetUsageAllocationRequestPayload, self).tearDown()
@@ -74,13 +72,12 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         valid values.
         """
         payload = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
-            usage_limits_count=10
+            unique_identifier="00000000-1111-2222-3333-444444444444",
+            usage_limits_count=10,
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
         self.assertEqual(10, payload.usage_limits_count)
 
@@ -89,7 +86,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a GetUsageAllocation request payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -98,12 +95,9 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.GetUsageAllocationRequestPayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_usage_limits_count(self):
@@ -111,7 +105,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the usage limits count of a GetUsageAllocation request payload.
         """
-        kwargs = {'usage_limits_count': 'invalid'}
+        kwargs = {"usage_limits_count": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Usage limits count must be an integer.",
@@ -120,12 +114,9 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.GetUsageAllocationRequestPayload()
-        args = (payload, 'usage_limits_count', 'invalid')
+        args = (payload, "usage_limits_count", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Usage limits count must be an integer.",
-            setattr,
-            *args
+            TypeError, "Usage limits count must be an integer.", setattr, *args
         )
 
     def test_read(self):
@@ -141,8 +132,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            '2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
-            payload.unique_identifier
+            "2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6", payload.unique_identifier
         )
         self.assertEqual(500, payload.usage_limits_count)
 
@@ -182,8 +172,8 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         data stream.
         """
         payload = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
-            usage_limits_count=500
+            unique_identifier="2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6",
+            usage_limits_count=500,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -196,9 +186,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         Test that a partial GetUsageAllocation request payload can be written
         to a data stream.
         """
-        payload = payloads.GetUsageAllocationRequestPayload(
-            usage_limits_count=500
-        )
+        payload = payloads.GetUsageAllocationRequestPayload(usage_limits_count=500)
         stream = utils.BytearrayStream()
         payload.write(stream)
 
@@ -229,12 +217,12 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            usage_limits_count=200
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            usage_limits_count=200,
         )
         b = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            usage_limits_count=200
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            usage_limits_count=200,
         )
 
         self.assertTrue(a == b)
@@ -245,12 +233,8 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetUsageAllocation request payloads with different unique identifiers.
         """
-        a = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='a'
-        )
-        b = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='b'
-        )
+        a = payloads.GetUsageAllocationRequestPayload(unique_identifier="a")
+        b = payloads.GetUsageAllocationRequestPayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -260,12 +244,8 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetUsageAllocation request payloads with different usage limits counts.
         """
-        a = payloads.GetUsageAllocationRequestPayload(
-            usage_limits_count=0
-        )
-        b = payloads.GetUsageAllocationRequestPayload(
-            usage_limits_count=1
-        )
+        a = payloads.GetUsageAllocationRequestPayload(usage_limits_count=0)
+        b = payloads.GetUsageAllocationRequestPayload(usage_limits_count=1)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -276,7 +256,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         GetUsageAllocation request payloads with different types.
         """
         a = payloads.GetUsageAllocationRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -293,12 +273,12 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            usage_limits_count=200
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            usage_limits_count=200,
         )
         b = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            usage_limits_count=200
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            usage_limits_count=200,
         )
 
         self.assertFalse(a != b)
@@ -309,12 +289,8 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetUsageAllocation request payloads with different unique identifiers.
         """
-        a = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='a'
-        )
-        b = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='b'
-        )
+        a = payloads.GetUsageAllocationRequestPayload(unique_identifier="a")
+        b = payloads.GetUsageAllocationRequestPayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -324,12 +300,8 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetUsageAllocation request payloads with different usage limits counts.
         """
-        a = payloads.GetUsageAllocationRequestPayload(
-            usage_limits_count=0
-        )
-        b = payloads.GetUsageAllocationRequestPayload(
-            usage_limits_count=1
-        )
+        a = payloads.GetUsageAllocationRequestPayload(usage_limits_count=0)
+        b = payloads.GetUsageAllocationRequestPayload(usage_limits_count=1)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -340,7 +312,7 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         GetUsageAllocation request payloads with different types.
         """
         a = payloads.GetUsageAllocationRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -350,8 +322,8 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         Test that repr can be applied to a GetUsageAllocation request payload.
         """
         payload = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            usage_limits_count=1000
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            usage_limits_count=1000,
         )
         expected = (
             "GetUsageAllocationRequestPayload("
@@ -367,14 +339,16 @@ class TestGetUsageAllocationRequestPayload(testtools.TestCase):
         Test that str can be applied to a GetUsageAllocation request payload.
         """
         payload = payloads.GetUsageAllocationRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            usage_limits_count=1000
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            usage_limits_count=1000,
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            'usage_limits_count': 1000
-        })
+        expected = str(
+            {
+                "unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038",
+                "usage_limits_count": 1000,
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)
@@ -395,16 +369,14 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         #     Unique Identifier - 2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62'
-            b'\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33'
-            b'\x64\x34\x62\x36\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62"
+            b"\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33"
+            b"\x64\x34\x62\x36\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestGetUsageAllocationResponsePayload, self).tearDown()
@@ -424,12 +396,11 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         with valid values.
         """
         payload = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444'
+            unique_identifier="00000000-1111-2222-3333-444444444444"
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
 
     def test_invalid_unique_identifier(self):
@@ -437,7 +408,7 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a GetUsageAllocation response payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -446,12 +417,9 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.GetUsageAllocationResponsePayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_read(self):
@@ -466,8 +434,7 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            '2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
-            payload.unique_identifier
+            "2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6", payload.unique_identifier
         )
 
     def test_read_empty(self):
@@ -489,7 +456,7 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         data stream.
         """
         payload = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6'
+            unique_identifier="2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6"
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -521,10 +488,10 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
         self.assertTrue(a == b)
@@ -535,12 +502,8 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetUsageAllocation response payloads with different unique identifiers.
         """
-        a = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='a'
-        )
-        b = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='b'
-        )
+        a = payloads.GetUsageAllocationResponsePayload(unique_identifier="a")
+        b = payloads.GetUsageAllocationResponsePayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -551,7 +514,7 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         GetUsageAllocation response payloads with different types.
         """
         a = payloads.GetUsageAllocationResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -568,10 +531,10 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
         self.assertFalse(a != b)
@@ -582,12 +545,8 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetUsageAllocation response payloads with different unique identifiers.
         """
-        a = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='a'
-        )
-        b = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='b'
-        )
+        a = payloads.GetUsageAllocationResponsePayload(unique_identifier="a")
+        b = payloads.GetUsageAllocationResponsePayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -598,7 +557,7 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         GetUsageAllocation response payloads with different types.
         """
         a = payloads.GetUsageAllocationResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -608,7 +567,7 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         Test that repr can be applied to a GetUsageAllocation response payload.
         """
         payload = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         expected = (
             "GetUsageAllocationResponsePayload("
@@ -623,12 +582,10 @@ class TestGetUsageAllocationResponsePayload(testtools.TestCase):
         Test that str can be applied to a GetUsageAllocation response payload
         """
         payload = payloads.GetUsageAllocationResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038'
-        })
+        expected = str({"unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038"})
         observed = str(payload)
 
         self.assertEqual(expected, observed)

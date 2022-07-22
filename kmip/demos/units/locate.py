@@ -25,7 +25,7 @@ from kmip.demos import utils
 from kmip.services import kmip_client
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -57,13 +57,9 @@ if __name__ == '__main__':
         credential = None
     else:
         credential_type = enums.CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {
-            "Username": username,
-            "Password": password
-        }
+        credential_value = {"Username": username, "Password": password}
         credential = credential_factory.create_credential(
-            credential_type,
-            credential_value
+            credential_type, credential_value
         )
 
     if offset_items and (offset_items < 0):
@@ -87,9 +83,7 @@ if __name__ == '__main__':
         try:
             t = time.strptime(initial_date)
         except ValueError:
-            logger.error(
-                "Invalid initial date provided: {}".format(initial_date)
-            )
+            logger.error("Invalid initial date provided: {}".format(initial_date))
             logger.info(
                 "Date values should be formatted like this: "
                 "'Tue Jul 23 18:39:01 2019'"
@@ -106,19 +100,13 @@ if __name__ == '__main__':
             sys.exit(-2)
 
         attributes.append(
-            attribute_factory.create_attribute(
-                enums.AttributeType.INITIAL_DATE,
-                t
-            )
+            attribute_factory.create_attribute(enums.AttributeType.INITIAL_DATE, t)
         )
     if state:
         state = getattr(enums.State, state, None)
         if state:
             attributes.append(
-                attribute_factory.create_attribute(
-                    enums.AttributeType.STATE,
-                    state
-                )
+                attribute_factory.create_attribute(enums.AttributeType.STATE, state)
             )
         else:
             logger.error("Invalid state provided: {}".format(opts.state))
@@ -129,27 +117,21 @@ if __name__ == '__main__':
         if object_type:
             attributes.append(
                 attribute_factory.create_attribute(
-                    enums.AttributeType.OBJECT_TYPE,
-                    object_type
+                    enums.AttributeType.OBJECT_TYPE, object_type
                 )
             )
         else:
-            logger.error(
-                "Invalid object type provided: {}".format(opts.object_type)
-            )
+            logger.error("Invalid object type provided: {}".format(opts.object_type))
             client.close()
             sys.exit(-4)
     if cryptographic_algorithm:
         cryptographic_algorithm = getattr(
-            enums.CryptographicAlgorithm,
-            cryptographic_algorithm,
-            None
+            enums.CryptographicAlgorithm, cryptographic_algorithm, None
         )
         if cryptographic_algorithm:
             attributes.append(
                 attribute_factory.create_attribute(
-                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
-                    cryptographic_algorithm
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM, cryptographic_algorithm
                 )
             )
         else:
@@ -164,8 +146,7 @@ if __name__ == '__main__':
         if cryptographic_length > 0:
             attributes.append(
                 attribute_factory.create_attribute(
-                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
-                    cryptographic_length
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH, cryptographic_length
                 )
             )
         else:
@@ -179,11 +160,7 @@ if __name__ == '__main__':
     if cryptographic_usage_masks:
         masks = []
         for cryptographic_usage_mask in cryptographic_usage_masks:
-            mask = getattr(
-                enums.CryptographicUsageMask,
-                cryptographic_usage_mask,
-                None
-            )
+            mask = getattr(enums.CryptographicUsageMask, cryptographic_usage_mask, None)
             if mask:
                 masks.append(mask)
             else:
@@ -195,43 +172,33 @@ if __name__ == '__main__':
                 sys.exit(-7)
         attributes.append(
             attribute_factory.create_attribute(
-                enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
-                masks
+                enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK, masks
             )
         )
     if certificate_type:
-        certificate_type = getattr(
-            enums.CertificateType,
-            certificate_type,
-            None
-        )
+        certificate_type = getattr(enums.CertificateType, certificate_type, None)
         if certificate_type:
             attributes.append(
                 attribute_factory.create_attribute(
-                    enums.AttributeType.CERTIFICATE_TYPE,
-                    certificate_type
+                    enums.AttributeType.CERTIFICATE_TYPE, certificate_type
                 )
             )
         else:
             logger.error(
-                "Invalid certificate type provided: {}".format(
-                    opts.certificate_type
-                )
+                "Invalid certificate type provided: {}".format(opts.certificate_type)
             )
             client.close()
             sys.exit(-8)
     if unique_identifier:
         attributes.append(
             attribute_factory.create_attribute(
-                enums.AttributeType.UNIQUE_IDENTIFIER,
-                unique_identifier
+                enums.AttributeType.UNIQUE_IDENTIFIER, unique_identifier
             )
         )
     if operation_policy_name:
         attributes.append(
             attribute_factory.create_attribute(
-                enums.AttributeType.OPERATION_POLICY_NAME,
-                operation_policy_name
+                enums.AttributeType.OPERATION_POLICY_NAME, operation_policy_name
             )
         )
 
@@ -239,20 +206,17 @@ if __name__ == '__main__':
         attributes=attributes,
         offset_items=offset_items,
         maximum_items=maximum_items,
-        credential=credential
+        credential=credential,
     )
     client.close()
 
     # Display operation results
-    logger.info('locate() result status: {0}'.format(
-        result.result_status.value))
+    logger.info("locate() result status: {0}".format(result.result_status.value))
 
     if result.result_status.value == enums.ResultStatus.SUCCESS:
-        logger.info('located UUIDs:')
+        logger.info("located UUIDs:")
         for uuid in result.uuids:
-            logger.info('{0}'.format(uuid))
+            logger.info("{0}".format(uuid))
     else:
-        logger.info('get() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('get() result message: {0}'.format(
-            result.result_message.value))
+        logger.info("get() result reason: {0}".format(result.result_reason.value))
+        logger.info("get() result message: {0}".format(result.result_message.value))

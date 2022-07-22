@@ -22,7 +22,7 @@ from kmip.demos import utils
 from kmip.pie import client
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     # Exit early if the arguments are not specified
     if algorithm is None:
-        logger.error('No algorithm provided, exiting early from demo')
+        logger.error("No algorithm provided, exiting early from demo")
         sys.exit()
     if length is None:
         logger.error("No key length provided, exiting early from demo")
@@ -44,17 +44,13 @@ if __name__ == '__main__':
     algorithm = getattr(enums.CryptographicAlgorithm, algorithm, None)
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(
-            config=config,
-            config_file=opts.config_file
-    ) as client:
+    with client.ProxyKmipClient(config=config, config_file=opts.config_file) as client:
         try:
             uid = client.create(
-                algorithm,
-                length,
-                operation_policy_name=opts.operation_policy_name
+                algorithm, length, operation_policy_name=opts.operation_policy_name
             )
-            logger.info("Successfully created symmetric key with ID: "
-                        "{0}".format(uid))
+            logger.info(
+                "Successfully created symmetric key with ID: " "{0}".format(uid)
+            )
         except Exception as e:
             logger.error(e)

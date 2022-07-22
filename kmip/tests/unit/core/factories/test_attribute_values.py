@@ -23,7 +23,6 @@ from kmip.core.factories import attribute_values
 
 
 class TestAttributeValueFactory(testtools.TestCase):
-
     def setUp(self):
         super(TestAttributeValueFactory, self).setUp()
         self.factory = attribute_values.AttributeValueFactory()
@@ -35,7 +34,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a UniqueIdentifier attribute can be created.
         """
-        self.skipTest('')
+        self.skipTest("")
 
     def test_create_name(self):
         """
@@ -52,8 +51,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that an empty ObjectType attribute can be created.
         """
         object_type = self.factory.create_attribute_value(
-            enums.AttributeType.OBJECT_TYPE,
-            None
+            enums.AttributeType.OBJECT_TYPE, None
         )
         self.assertIsInstance(object_type, attributes.ObjectType)
         self.assertEqual(None, object_type.value)
@@ -63,8 +61,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that an ObjectType attribute can be created with a custom value.
         """
         object_type = self.factory.create_attribute_value(
-            enums.AttributeType.OBJECT_TYPE,
-            enums.ObjectType.SYMMETRIC_KEY
+            enums.AttributeType.OBJECT_TYPE, enums.ObjectType.SYMMETRIC_KEY
         )
         self.assertIsInstance(object_type, attributes.ObjectType)
         self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, object_type.value)
@@ -73,67 +70,58 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a CryptographicAlgorithm attribute can be created.
         """
-        self.skipTest('')
+        self.skipTest("")
 
     def test_create_cryptographic_length(self):
         """
         Test that a CryptographicLength attribute can be created.
         """
-        self.skipTest('')
+        self.skipTest("")
 
     def test_create_cryptographic_parameters(self):
         """
         Test that a CryptographicParameters attribute can be created.
         """
         value = {
-            'block_cipher_mode': enums.BlockCipherMode.NIST_KEY_WRAP,
-            'padding_method': enums.PaddingMethod.ANSI_X923,
-            'key_role_type': enums.KeyRoleType.KEK,
-            'hashing_algorithm': enums.HashingAlgorithm.SHA_512,
-            'digital_signature_algorithm':
-                enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA512,
-            'cryptographic_algorithm':
-                enums.CryptographicAlgorithm.HMAC_SHA512,
-            'random_iv': True,
-            'iv_length': 96,
-            'tag_length': None,
-            'fixed_field_length': 32,
-            'invocation_field_length': 64,
-            'counter_length': None,
-            'initial_counter_value': 1
+            "block_cipher_mode": enums.BlockCipherMode.NIST_KEY_WRAP,
+            "padding_method": enums.PaddingMethod.ANSI_X923,
+            "key_role_type": enums.KeyRoleType.KEK,
+            "hashing_algorithm": enums.HashingAlgorithm.SHA_512,
+            "digital_signature_algorithm": enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA512,
+            "cryptographic_algorithm": enums.CryptographicAlgorithm.HMAC_SHA512,
+            "random_iv": True,
+            "iv_length": 96,
+            "tag_length": None,
+            "fixed_field_length": 32,
+            "invocation_field_length": 64,
+            "counter_length": None,
+            "initial_counter_value": 1,
         }
         cryptographic_parameters = self.factory.create_attribute_value(
-            enums.AttributeType.CRYPTOGRAPHIC_PARAMETERS,
-            value
+            enums.AttributeType.CRYPTOGRAPHIC_PARAMETERS, value
         )
 
         self.assertIsInstance(
-            cryptographic_parameters,
-            attributes.CryptographicParameters
+            cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            cryptographic_parameters.block_cipher_mode
+            cryptographic_parameters.block_cipher_mode,
         )
         self.assertEqual(
-            enums.PaddingMethod.ANSI_X923,
-            cryptographic_parameters.padding_method
+            enums.PaddingMethod.ANSI_X923, cryptographic_parameters.padding_method
         )
+        self.assertEqual(enums.KeyRoleType.KEK, cryptographic_parameters.key_role_type)
         self.assertEqual(
-            enums.KeyRoleType.KEK,
-            cryptographic_parameters.key_role_type
-        )
-        self.assertEqual(
-            enums.HashingAlgorithm.SHA_512,
-            cryptographic_parameters.hashing_algorithm
+            enums.HashingAlgorithm.SHA_512, cryptographic_parameters.hashing_algorithm
         )
         self.assertEqual(
             enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA512,
-            cryptographic_parameters.digital_signature_algorithm
+            cryptographic_parameters.digital_signature_algorithm,
         )
         self.assertEqual(
             enums.CryptographicAlgorithm.HMAC_SHA512,
-            cryptographic_parameters.cryptographic_algorithm
+            cryptographic_parameters.cryptographic_algorithm,
         )
         self.assertEqual(True, cryptographic_parameters.random_iv)
         self.assertEqual(96, cryptographic_parameters.iv_length)
@@ -147,18 +135,20 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a CryptographicDomainParameters attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.CRYPTOGRAPHIC_DOMAIN_PARAMETERS,
-                  'value': None}
+        kwargs = {
+            "name": enums.AttributeType.CRYPTOGRAPHIC_DOMAIN_PARAMETERS,
+            "value": None,
+        }
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_certificate_type(self):
         """
         Test that a CertificateType attribute can be created.
         """
         certificate_type = self.factory.create_attribute_value(
-            name=enums.AttributeType.CERTIFICATE_TYPE,
-            value=enums.CertificateType.X_509
+            name=enums.AttributeType.CERTIFICATE_TYPE, value=enums.CertificateType.X_509
         )
         self.assertIsInstance(certificate_type, primitives.Enumeration)
         self.assertEqual(enums.CertificateType.X_509, certificate_type.value)
@@ -169,7 +159,8 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that a CertificateLength attribute can be created.
         """
         length = self.factory.create_attribute_value(
-            enums.AttributeType.CERTIFICATE_LENGTH, 0)
+            enums.AttributeType.CERTIFICATE_LENGTH, 0
+        )
         self.assertIsInstance(length, primitives.Integer)
         self.assertEqual(0, length.value)
         self.assertEqual(enums.Tags.CERTIFICATE_LENGTH, length.tag)
@@ -178,71 +169,76 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that an X509CertificateIdentifier attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.X_509_CERTIFICATE_IDENTIFIER,
-                  'value': None}
+        kwargs = {
+            "name": enums.AttributeType.X_509_CERTIFICATE_IDENTIFIER,
+            "value": None,
+        }
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_x509_certificate_subject(self):
         """
         Test that an X509CertificateSubject attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.X_509_CERTIFICATE_SUBJECT,
-                  'value': None}
+        kwargs = {"name": enums.AttributeType.X_509_CERTIFICATE_SUBJECT, "value": None}
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_x509_certificate_issuer(self):
         """
         Test that an X509CertificateIssuer attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.X_509_CERTIFICATE_ISSUER,
-                  'value': None}
+        kwargs = {"name": enums.AttributeType.X_509_CERTIFICATE_ISSUER, "value": None}
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_certificate_identifier(self):
         """
         Test that a CertificateIdentifier attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.CERTIFICATE_IDENTIFIER,
-                  'value': None}
+        kwargs = {"name": enums.AttributeType.CERTIFICATE_IDENTIFIER, "value": None}
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_certificate_subject(self):
         """
         Test that a CertificateSubject attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.CERTIFICATE_SUBJECT,
-                  'value': None}
+        kwargs = {"name": enums.AttributeType.CERTIFICATE_SUBJECT, "value": None}
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_certificate_issuer(self):
         """
         Test that a CertificateIssuer attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.CERTIFICATE_ISSUER,
-                  'value': None}
+        kwargs = {"name": enums.AttributeType.CERTIFICATE_ISSUER, "value": None}
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_digital_signature_algorithm(self):
         """
         Test that a DigitalSignatureAlgorithm attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.DIGITAL_SIGNATURE_ALGORITHM,
-                  'value': None}
+        kwargs = {
+            "name": enums.AttributeType.DIGITAL_SIGNATURE_ALGORITHM,
+            "value": None,
+        }
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_digest(self):
         """
         Test that a Digest attribute can be created.
         """
-        digest = self.factory.create_attribute_value(
-            enums.AttributeType.DIGEST, None)
+        digest = self.factory.create_attribute_value(enums.AttributeType.DIGEST, None)
         self.assertIsInstance(digest, attributes.Digest)
 
     def test_create_operation_policy_name(self):
@@ -250,22 +246,22 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that an OperationPolicyName attribute can be created.
         """
         attribute = self.factory.create_attribute_value(
-            enums.AttributeType.OPERATION_POLICY_NAME, 'test')
+            enums.AttributeType.OPERATION_POLICY_NAME, "test"
+        )
         self.assertIsInstance(attribute, attributes.OperationPolicyName)
-        self.assertEqual('test', attribute.value)
+        self.assertEqual("test", attribute.value)
 
     def test_create_cryptographic_usage_mask(self):
         """
         Test that a CryptographicUsageMask attribute can be created.
         """
-        self.skipTest('')
+        self.skipTest("")
 
     def test_create_lease_time(self):
         """
         Test that a LeaseTime attribute can be created.
         """
-        lease = self.factory.create_attribute_value(
-            enums.AttributeType.LEASE_TIME, 0)
+        lease = self.factory.create_attribute_value(enums.AttributeType.LEASE_TIME, 0)
         self.assertIsInstance(lease, primitives.Interval)
         self.assertEqual(0, lease.value)
         self.assertEqual(enums.Tags.LEASE_TIME, lease.tag)
@@ -274,18 +270,17 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a UsageLimits attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.USAGE_LIMITS,
-                  'value': None}
+        kwargs = {"name": enums.AttributeType.USAGE_LIMITS, "value": None}
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_state(self):
         """
         Test that a State attribute can be created.
         """
         state = self.factory.create_attribute_value(
-            enums.AttributeType.STATE,
-            enums.State.ACTIVE
+            enums.AttributeType.STATE, enums.State.ACTIVE
         )
         self.assertIsInstance(state, attributes.State)
         self.assertEqual(enums.State.ACTIVE, state.value)
@@ -294,8 +289,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that an InitialDate attribute can be created.
         """
-        date = self.factory.create_attribute_value(
-            enums.AttributeType.INITIAL_DATE, 0)
+        date = self.factory.create_attribute_value(enums.AttributeType.INITIAL_DATE, 0)
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.INITIAL_DATE, date.tag)
@@ -305,7 +299,8 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that an ActivationDate attribute can be created.
         """
         date = self.factory.create_attribute_value(
-            enums.AttributeType.ACTIVATION_DATE, 0)
+            enums.AttributeType.ACTIVATION_DATE, 0
+        )
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.ACTIVATION_DATE, date.tag)
@@ -315,7 +310,8 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that a ProcessStartDate attribute can be created.
         """
         date = self.factory.create_attribute_value(
-            enums.AttributeType.PROCESS_START_DATE, 0)
+            enums.AttributeType.PROCESS_START_DATE, 0
+        )
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.PROCESS_START_DATE, date.tag)
@@ -325,7 +321,8 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that a ProtectStopDate attribute can be created.
         """
         date = self.factory.create_attribute_value(
-            enums.AttributeType.PROTECT_STOP_DATE, 0)
+            enums.AttributeType.PROTECT_STOP_DATE, 0
+        )
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.PROTECT_STOP_DATE, date.tag)
@@ -335,7 +332,8 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that a DeactivationDate attribute can be created.
         """
         date = self.factory.create_attribute_value(
-            enums.AttributeType.DEACTIVATION_DATE, 0)
+            enums.AttributeType.DEACTIVATION_DATE, 0
+        )
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.DEACTIVATION_DATE, date.tag)
@@ -344,8 +342,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a DestroyDate attribute can be created.
         """
-        date = self.factory.create_attribute_value(
-            enums.AttributeType.DESTROY_DATE, 0)
+        date = self.factory.create_attribute_value(enums.AttributeType.DESTROY_DATE, 0)
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.DESTROY_DATE, date.tag)
@@ -355,7 +352,8 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that a CompromiseOccurrenceDate attribute can be created.
         """
         date = self.factory.create_attribute_value(
-            enums.AttributeType.COMPROMISE_OCCURRENCE_DATE, 0)
+            enums.AttributeType.COMPROMISE_OCCURRENCE_DATE, 0
+        )
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.COMPROMISE_OCCURRENCE_DATE, date.tag)
@@ -365,7 +363,8 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that a CompromiseDate attribute can be created.
         """
         date = self.factory.create_attribute_value(
-            enums.AttributeType.COMPROMISE_DATE, 0)
+            enums.AttributeType.COMPROMISE_DATE, 0
+        )
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.COMPROMISE_DATE, date.tag)
@@ -374,17 +373,16 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a RevocationReason attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.REVOCATION_REASON,
-                  'value': None}
+        kwargs = {"name": enums.AttributeType.REVOCATION_REASON, "value": None}
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_archive_date(self):
         """
         Test that an ArchiveDate attribute can be created.
         """
-        date = self.factory.create_attribute_value(
-            enums.AttributeType.ARCHIVE_DATE, 0)
+        date = self.factory.create_attribute_value(enums.AttributeType.ARCHIVE_DATE, 0)
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.ARCHIVE_DATE, date.tag)
@@ -394,16 +392,14 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that an ObjectGroup attribute can be created.
         """
         object_group = self.factory.create_attribute_value(
-            enums.AttributeType.OBJECT_GROUP,
-            "Group1"
+            enums.AttributeType.OBJECT_GROUP, "Group1"
         )
         self.assertIsInstance(object_group, primitives.TextString)
         self.assertEqual("Group1", object_group.value)
         self.assertEqual(enums.Tags.OBJECT_GROUP, object_group.tag)
 
         object_group = self.factory.create_attribute_value_by_enum(
-            enums.Tags.OBJECT_GROUP,
-            "Group1"
+            enums.Tags.OBJECT_GROUP, "Group1"
         )
         self.assertIsInstance(object_group, primitives.TextString)
         self.assertEqual("Group1", object_group.value)
@@ -413,8 +409,7 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a Fresh attribute can be created.
         """
-        fresh = self.factory.create_attribute_value(
-            enums.AttributeType.FRESH, True)
+        fresh = self.factory.create_attribute_value(enums.AttributeType.FRESH, True)
         self.assertIsInstance(fresh, primitives.Boolean)
         self.assertEqual(True, fresh.value)
         self.assertEqual(enums.Tags.FRESH, fresh.tag)
@@ -423,10 +418,10 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a Link attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.LINK,
-                  'value': None}
+        kwargs = {"name": enums.AttributeType.LINK, "value": None}
         self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+            NotImplementedError, self.factory.create_attribute_value, **kwargs
+        )
 
     def test_create_application_specific_information(self):
         """
@@ -434,51 +429,31 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         attribute = self.factory.create_attribute_value(
             enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
-            {
-                "application_namespace": "ssl",
-                "application_data": "www.example.com"
-            }
+            {"application_namespace": "ssl", "application_data": "www.example.com"},
         )
-        self.assertIsInstance(
-            attribute,
-            attributes.ApplicationSpecificInformation
-        )
+        self.assertIsInstance(attribute, attributes.ApplicationSpecificInformation)
         self.assertEqual("ssl", attribute.application_namespace)
         self.assertEqual("www.example.com", attribute.application_data)
 
         attribute = self.factory.create_attribute_value(
-            enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION,
-            None
+            enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION, None
         )
-        self.assertIsInstance(
-            attribute,
-            attributes.ApplicationSpecificInformation
-        )
+        self.assertIsInstance(attribute, attributes.ApplicationSpecificInformation)
         self.assertIsNone(attribute.application_namespace)
         self.assertIsNone(attribute.application_data)
 
         attribute = self.factory.create_attribute_value_by_enum(
             enums.Tags.APPLICATION_SPECIFIC_INFORMATION,
-            {
-                "application_namespace": "ssl",
-                "application_data": "www.example.com"
-            }
+            {"application_namespace": "ssl", "application_data": "www.example.com"},
         )
-        self.assertIsInstance(
-            attribute,
-            attributes.ApplicationSpecificInformation
-        )
+        self.assertIsInstance(attribute, attributes.ApplicationSpecificInformation)
         self.assertEqual("ssl", attribute.application_namespace)
         self.assertEqual("www.example.com", attribute.application_data)
 
         attribute = self.factory.create_attribute_value_by_enum(
-            enums.Tags.APPLICATION_SPECIFIC_INFORMATION,
-            None
+            enums.Tags.APPLICATION_SPECIFIC_INFORMATION, None
         )
-        self.assertIsInstance(
-            attribute,
-            attributes.ApplicationSpecificInformation
-        )
+        self.assertIsInstance(attribute, attributes.ApplicationSpecificInformation)
         self.assertIsNone(attribute.application_namespace)
         self.assertIsNone(attribute.application_data)
 
@@ -486,14 +461,15 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a ContactInformation attribute can be created.
         """
-        self.skipTest('')
+        self.skipTest("")
 
     def test_create_last_change_date(self):
         """
         Test that an LastChangeDate attribute can be created.
         """
         date = self.factory.create_attribute_value(
-            enums.AttributeType.LAST_CHANGE_DATE, 0)
+            enums.AttributeType.LAST_CHANGE_DATE, 0
+        )
         self.assertIsInstance(date, primitives.DateTime)
         self.assertEqual(0, date.value)
         self.assertEqual(enums.Tags.LAST_CHANGE_DATE, date.tag)
@@ -503,7 +479,8 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that a CustomAttribute can be created.
         """
         custom = self.factory.create_attribute_value(
-            enums.AttributeType.CUSTOM_ATTRIBUTE, None)
+            enums.AttributeType.CUSTOM_ATTRIBUTE, None
+        )
         self.assertIsInstance(custom, attributes.CustomAttribute)
 
     def test_create_sensitive(self):
@@ -511,16 +488,14 @@ class TestAttributeValueFactory(testtools.TestCase):
         Test that a Sensitive attribute can be created.
         """
         sensitive = self.factory.create_attribute_value(
-            enums.AttributeType.SENSITIVE,
-            True
+            enums.AttributeType.SENSITIVE, True
         )
         self.assertIsInstance(sensitive, primitives.Boolean)
         self.assertTrue(sensitive.value)
         self.assertEqual(enums.Tags.SENSITIVE, sensitive.tag)
 
         sensitive = self.factory.create_attribute_value_by_enum(
-            enums.Tags.SENSITIVE,
-            False
+            enums.Tags.SENSITIVE, False
         )
         self.assertIsInstance(sensitive, primitives.Boolean)
         self.assertFalse(sensitive.value)

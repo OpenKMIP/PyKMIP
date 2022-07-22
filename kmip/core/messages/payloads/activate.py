@@ -30,8 +30,8 @@ class ActivateRequestPayload(base.RequestPayload):
     Attributes:
         unique_identifier: The UUID of a managed cryptographic object
     """
-    def __init__(self,
-                 unique_identifier=None):
+
+    def __init__(self, unique_identifier=None):
         """
         Construct a ActivateRequestPayload object.
         Args:
@@ -53,10 +53,7 @@ class ActivateRequestPayload(base.RequestPayload):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(ActivateRequestPayload, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(ActivateRequestPayload, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
@@ -83,10 +80,7 @@ class ActivateRequestPayload(base.RequestPayload):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(ActivateRequestPayload, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(ActivateRequestPayload, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -94,8 +88,7 @@ class ActivateRequestPayload(base.RequestPayload):
         Error check the attributes of the ActivateRequestPayload object.
         """
         if self.unique_identifier is not None:
-            if not isinstance(self.unique_identifier,
-                              attributes.UniqueIdentifier):
+            if not isinstance(self.unique_identifier, attributes.UniqueIdentifier):
                 msg = "invalid unique identifier"
                 raise TypeError(msg)
 
@@ -110,8 +103,8 @@ class ActivateResponsePayload(base.ResponsePayload):
     Attributes:
         unique_identifier: The UUID of a managed cryptographic object.
     """
-    def __init__(self,
-                 unique_identifier=None):
+
+    def __init__(self, unique_identifier=None):
         """
         Construct a ActivateResponsePayload object.
 
@@ -138,10 +131,7 @@ class ActivateResponsePayload(base.ResponsePayload):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(ActivateResponsePayload, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(ActivateResponsePayload, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
@@ -168,10 +158,7 @@ class ActivateResponsePayload(base.ResponsePayload):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(ActivateResponsePayload, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(ActivateResponsePayload, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):

@@ -22,7 +22,7 @@ from kmip.demos import utils
 from kmip.pie import client
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -33,30 +33,23 @@ if __name__ == '__main__':
     uid = opts.uuid
     algorithm = opts.algorithm
 
-    data = (
-        b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E'
-        b'\x0F')
+    data = b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E" b"\x0F"
 
     # Exit early if the arguments are not specified
     if uid is None:
-        logger.error('No UUID provided, exiting early from demo')
+        logger.error("No UUID provided, exiting early from demo")
         sys.exit()
     if algorithm is None:
-        logger.error('No algorithm provided, exiting early from demo')
+        logger.error("No algorithm provided, exiting early from demo")
         sys.exit()
 
     algorithm = getattr(enums.CryptographicAlgorithm, algorithm, None)
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(
-            config=config,
-            config_file=opts.config_file
-    ) as client:
+    with client.ProxyKmipClient(config=config, config_file=opts.config_file) as client:
         try:
             uid, mac_data = client.mac(data, uid, algorithm)
-            logger.info("Successfully done MAC using key with ID: "
-                        "{0}".format(uid))
-            logger.info("MACed data: {0}".format(
-                str(binascii.hexlify(mac_data))))
+            logger.info("Successfully done MAC using key with ID: " "{0}".format(uid))
+            logger.info("MACed data: {0}".format(str(binascii.hexlify(mac_data))))
         except Exception as e:
             logger.error(e)

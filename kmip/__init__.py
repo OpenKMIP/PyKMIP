@@ -24,28 +24,13 @@ from kmip.pie import objects
 from kmip.pie.client import ProxyKmipClient as KmipClient
 
 # Dynamically set __version__
-version_path = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    "version.py"
-)
-with open(version_path, 'r') as f:
-    m = re.search(
-        r"^__version__ = \"(\d+\.\d+\..*)\"$",
-        f.read(),
-        re.MULTILINE
-    )
+version_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "version.py")
+with open(version_path, "r") as f:
+    m = re.search(r"^__version__ = \"(\d+\.\d+\..*)\"$", f.read(), re.MULTILINE)
     __version__ = m.group(1)
 
 
-__all__ = [
-    'client',
-    'core',
-    'demos',
-    'enums',
-    'KmipClient',
-    'objects',
-    'services'
-]
+__all__ = ["client", "core", "demos", "enums", "KmipClient", "objects", "services"]
 
 
 if sys.version_info[:2] == (2, 7):
@@ -54,7 +39,7 @@ if sys.version_info[:2] == (2, 7):
             "PyKMIP will drop support for Python 2.7 in a future release. "
             "Please upgrade to a newer version of Python (3.5+ preferred)."
         ),
-        PendingDeprecationWarning
+        PendingDeprecationWarning,
     )
 
 if sys.version_info[:2] == (3, 4):
@@ -63,5 +48,5 @@ if sys.version_info[:2] == (3, 4):
             "PyKMIP will drop support for Python 3.4 in a future release. "
             "Please upgrade to a newer version of Python (3.5+ preferred)."
         ),
-        PendingDeprecationWarning
+        PendingDeprecationWarning,
     )

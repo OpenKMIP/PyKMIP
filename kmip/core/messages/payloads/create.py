@@ -35,10 +35,9 @@ class CreateRequestPayload(base.RequestPayload):
             Added in KMIP 2.0.
     """
 
-    def __init__(self,
-                 object_type=None,
-                 template_attribute=None,
-                 protection_storage_masks=None):
+    def __init__(
+        self, object_type=None, template_attribute=None, protection_storage_masks=None
+    ):
         """
         Construct a Create request payload structure.
 
@@ -76,14 +75,10 @@ class CreateRequestPayload(base.RequestPayload):
             self._object_type = None
         elif isinstance(value, enums.ObjectType):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                value=value,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, value=value, tag=enums.Tags.OBJECT_TYPE
             )
         else:
-            raise TypeError(
-                "Object type must be an ObjectType enumeration."
-            )
+            raise TypeError("Object type must be an ObjectType enumeration.")
 
     @property
     def template_attribute(self):
@@ -96,9 +91,7 @@ class CreateRequestPayload(base.RequestPayload):
         elif isinstance(value, objects.TemplateAttribute):
             self._template_attribute = value
         else:
-            raise TypeError(
-                "Template attribute must be a TemplateAttribute structure."
-            )
+            raise TypeError("Template attribute must be a TemplateAttribute structure.")
 
     @property
     def protection_storage_masks(self):
@@ -139,31 +132,23 @@ class CreateRequestPayload(base.RequestPayload):
             InvalidKmipEncoding: Raised if the object type or template
                 attribute is missing from the encoded payload.
         """
-        super(CreateRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(CreateRequestPayload, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, tag=enums.Tags.OBJECT_TYPE
             )
             self._object_type.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The Create request payload encoding is missing the object "
-                "type."
+                "The Create request payload encoding is missing the object " "type."
             )
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
                 self._template_attribute = objects.TemplateAttribute()
-                self._template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.read(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidKmipEncoding(
                     "The Create request payload encoding is missing the "
@@ -179,9 +164,7 @@ class CreateRequestPayload(base.RequestPayload):
             if self.is_tag_next(enums.Tags.ATTRIBUTES, local_buffer):
                 attributes = objects.Attributes()
                 attributes.read(local_buffer, kmip_version=kmip_version)
-                value = objects.convert_attributes_to_template_attribute(
-                    attributes
-                )
+                value = objects.convert_attributes_to_template_attribute(attributes)
                 self._template_attribute = value
             else:
                 raise exceptions.InvalidKmipEncoding(
@@ -190,17 +173,11 @@ class CreateRequestPayload(base.RequestPayload):
                 )
 
         if kmip_version >= enums.KMIPVersion.KMIP_2_0:
-            if self.is_tag_next(
-                enums.Tags.PROTECTION_STORAGE_MASKS,
-                local_buffer
-            ):
+            if self.is_tag_next(enums.Tags.PROTECTION_STORAGE_MASKS, local_buffer):
                 protection_storage_masks = objects.ProtectionStorageMasks(
                     tag=enums.Tags.PROTECTION_STORAGE_MASKS
                 )
-                protection_storage_masks.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                protection_storage_masks.read(local_buffer, kmip_version=kmip_version)
                 self._protection_storage_masks = protection_storage_masks
 
         self.is_oversized(local_buffer)
@@ -231,10 +208,7 @@ class CreateRequestPayload(base.RequestPayload):
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._template_attribute:
-                self._template_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.write(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidField(
                     "The Create request payload is missing the template "
@@ -261,14 +235,12 @@ class CreateRequestPayload(base.RequestPayload):
         if kmip_version >= enums.KMIPVersion.KMIP_2_0:
             if self._protection_storage_masks:
                 self._protection_storage_masks.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
 
         self.length = local_buffer.length()
         super(CreateRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -278,8 +250,7 @@ class CreateRequestPayload(base.RequestPayload):
                 return False
             elif self.template_attribute != other.template_attribute:
                 return False
-            elif self.protection_storage_masks != \
-                    other.protection_storage_masks:
+            elif self.protection_storage_masks != other.protection_storage_masks:
                 return False
             else:
                 return True
@@ -293,13 +264,15 @@ class CreateRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "object_type={}".format(self.object_type),
-            "template_attribute={}".format(repr(self.template_attribute)),
-            "protection_storage_masks={}".format(
-                repr(self.protection_storage_masks)
-            )
-        ])
+        args = ", ".join(
+            [
+                "object_type={}".format(self.object_type),
+                "template_attribute={}".format(repr(self.template_attribute)),
+                "protection_storage_masks={}".format(
+                    repr(self.protection_storage_masks)
+                ),
+            ]
+        )
         return "CreateRequestPayload({})".format(args)
 
     def __str__(self):
@@ -309,10 +282,10 @@ class CreateRequestPayload(base.RequestPayload):
                 '"template_attribute": {}'.format(self.template_attribute),
                 '"protection_storage_masks": {}'.format(
                     str(self.protection_storage_masks)
-                )
+                ),
             ]
         )
-        return '{' + value + '}'
+        return "{" + value + "}"
 
 
 class CreateResponsePayload(base.ResponsePayload):
@@ -326,10 +299,9 @@ class CreateResponsePayload(base.ResponsePayload):
             object.
     """
 
-    def __init__(self,
-                 object_type=None,
-                 unique_identifier=None,
-                 template_attribute=None):
+    def __init__(
+        self, object_type=None, unique_identifier=None, template_attribute=None
+    ):
         """
         Construct a Create response payload structure.
 
@@ -366,14 +338,10 @@ class CreateResponsePayload(base.ResponsePayload):
             self._object_type = None
         elif isinstance(value, enums.ObjectType):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                value=value,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, value=value, tag=enums.Tags.OBJECT_TYPE
             )
         else:
-            raise TypeError(
-                "Object type must be an ObjectType enumeration."
-            )
+            raise TypeError("Object type must be an ObjectType enumeration.")
 
     @property
     def unique_identifier(self):
@@ -388,8 +356,7 @@ class CreateResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -405,9 +372,7 @@ class CreateResponsePayload(base.ResponsePayload):
         elif isinstance(value, objects.TemplateAttribute):
             self._template_attribute = value
         else:
-            raise TypeError(
-                "Template attribute must be a TemplateAttribute structure."
-            )
+            raise TypeError("Template attribute must be a TemplateAttribute structure.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -425,32 +390,24 @@ class CreateResponsePayload(base.ResponsePayload):
             InvalidKmipEncoding: Raised if the object type or unique
                 identifier is missing from the encoded payload.
         """
-        super(CreateResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(CreateResponsePayload, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, tag=enums.Tags.OBJECT_TYPE
             )
             self._object_type.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The Create response payload encoding is missing the object "
-                "type."
+                "The Create response payload encoding is missing the object " "type."
             )
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_buffer):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The Create response payload encoding is missing the unique "
@@ -460,10 +417,7 @@ class CreateResponsePayload(base.ResponsePayload):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
                 self._template_attribute = objects.TemplateAttribute()
-                self._template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.read(local_buffer, kmip_version=kmip_version)
 
         self.is_oversized(local_buffer)
 
@@ -492,27 +446,19 @@ class CreateResponsePayload(base.ResponsePayload):
             )
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
-                "The Create response payload is missing the unique identifier "
-                "field."
+                "The Create response payload is missing the unique identifier " "field."
             )
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._template_attribute:
-                self._template_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(CreateResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -536,11 +482,13 @@ class CreateResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "object_type={}".format(self.object_type),
-            "unique_identifier='{}'".format(self.unique_identifier),
-            "template_attribute={}".format(repr(self.template_attribute))
-        ])
+        args = ", ".join(
+            [
+                "object_type={}".format(self.object_type),
+                "unique_identifier='{}'".format(self.unique_identifier),
+                "template_attribute={}".format(repr(self.template_attribute)),
+            ]
+        )
         return "CreateResponsePayload({})".format(args)
 
     def __str__(self):
@@ -548,7 +496,7 @@ class CreateResponsePayload(base.ResponsePayload):
             [
                 '"object_type": {}'.format(self.object_type),
                 '"unique_identifier": "{}"'.format(self.unique_identifier),
-                '"template_attribute": {}'.format(self.template_attribute)
+                '"template_attribute": {}'.format(self.template_attribute),
             ]
         )
-        return '{' + value + '}'
+        return "{" + value + "}"

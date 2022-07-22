@@ -32,8 +32,8 @@ class TestDateTime(testtools.TestCase):
 
         self.value = 1335514341
         self.encoding = (
-            b'\x42\x00\x00\x09\x00\x00\x00\x08\x00\x00\x00\x00\x4F\x9A\x54'
-            b'\xE5')
+            b"\x42\x00\x00\x09\x00\x00\x00\x08\x00\x00\x00\x00\x4F\x9A\x54" b"\xE5"
+        )
 
     def tearDown(self):
         super(TestDateTime, self).tearDown()
@@ -89,7 +89,7 @@ class TestDateTime(testtools.TestCase):
         Test that the string representation of a DateTime is formatted
         properly.
         """
-        expected = 'Tue Aug 11 13:18:55 2015'
+        expected = "Tue Aug 11 13:18:55 2015"
         date_time = primitives.DateTime(1439299135)
 
         self.assertEqual(expected, str(date_time))

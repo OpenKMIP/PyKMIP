@@ -62,10 +62,11 @@ class PolicyDirectoryMonitor(multiprocessing.Process):
         self.policy_map = None
         self.policy_store = policy_store
 
-        self.reserved_policies = ['default', 'public']
+        self.reserved_policies = ["default", "public"]
 
         def interrupt_handler(trigger, frame):
             self.stop()
+
         signal.signal(signal.SIGINT, interrupt_handler)
         signal.signal(signal.SIGTERM, interrupt_handler)
 
@@ -113,15 +114,14 @@ class PolicyDirectoryMonitor(multiprocessing.Process):
                         continue
                     if p in sorted(self.policy_store.keys()):
                         self.logger.debug(
-                            "Policy '{}' overwrites an existing "
-                            "policy.".format(p)
+                            "Policy '{}' overwrites an existing " "policy.".format(p)
                         )
                         if f != self.policy_map.get(p):
                             self.policy_cache.get(p).append(
                                 (
                                     time.time(),
                                     self.policy_map.get(p),
-                                    self.policy_store.get(p)
+                                    self.policy_store.get(p),
                                 )
                             )
                     else:

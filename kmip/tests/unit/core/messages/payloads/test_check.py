@@ -38,14 +38,14 @@ class TestCheckRequestPayload(testtools.TestCase):
         #     Lease Time - 0
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x60'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62'
-            b'\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33'
-            b'\x64\x34\x62\x36\x00\x00\x00\x00'
-            b'\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x00\x49\x0A\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x60"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62"
+            b"\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33"
+            b"\x64\x34\x62\x36\x00\x00\x00\x00"
+            b"\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
+            b"\x42\x00\x49\x0A\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -53,17 +53,15 @@ class TestCheckRequestPayload(testtools.TestCase):
         #     Unique Identifier - 2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6
         #     Usage Limits Count - 500
         self.partial_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x40'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62'
-            b'\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33'
-            b'\x64\x34\x62\x36\x00\x00\x00\x00'
-            b'\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4'
+            b"\x42\x00\x79\x01\x00\x00\x00\x40"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62"
+            b"\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33"
+            b"\x64\x34\x62\x36\x00\x00\x00\x00"
+            b"\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestCheckRequestPayload, self).tearDown()
@@ -84,15 +82,14 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that a Check request payload can be constructed with valid values.
         """
         payload = payloads.CheckRequestPayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
+            unique_identifier="00000000-1111-2222-3333-444444444444",
             usage_limits_count=10,
             cryptographic_usage_mask=12,
-            lease_time=1000000000
+            lease_time=1000000000,
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
         self.assertEqual(10, payload.usage_limits_count)
         self.assertEqual(12, payload.cryptographic_usage_mask)
@@ -103,7 +100,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a Check request payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -112,12 +109,9 @@ class TestCheckRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.CheckRequestPayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_usage_limits_count(self):
@@ -125,7 +119,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the usage limits count of a Check request payload.
         """
-        kwargs = {'usage_limits_count': 'invalid'}
+        kwargs = {"usage_limits_count": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Usage limits count must be an integer.",
@@ -134,12 +128,9 @@ class TestCheckRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.CheckRequestPayload()
-        args = (payload, 'usage_limits_count', 'invalid')
+        args = (payload, "usage_limits_count", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Usage limits count must be an integer.",
-            setattr,
-            *args
+            TypeError, "Usage limits count must be an integer.", setattr, *args
         )
 
     def test_invalid_cryptographic_usage_mask(self):
@@ -147,7 +138,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the cryptographic usage mask of a Check request payload.
         """
-        kwargs = {'cryptographic_usage_mask': 'invalid'}
+        kwargs = {"cryptographic_usage_mask": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Cryptographic usage mask must be an integer.",
@@ -156,12 +147,9 @@ class TestCheckRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.CheckRequestPayload()
-        args = (payload, 'cryptographic_usage_mask', 'invalid')
+        args = (payload, "cryptographic_usage_mask", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Cryptographic usage mask must be an integer.",
-            setattr,
-            *args
+            TypeError, "Cryptographic usage mask must be an integer.", setattr, *args
         )
 
     def test_invalid_lease_time(self):
@@ -169,7 +157,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the lease time of a Check request payload.
         """
-        kwargs = {'lease_time': 'invalid'}
+        kwargs = {"lease_time": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Lease time must be an integer.",
@@ -178,12 +166,9 @@ class TestCheckRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.CheckRequestPayload()
-        args = (payload, 'lease_time', 'invalid')
+        args = (payload, "lease_time", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Lease time must be an integer.",
-            setattr,
-            *args
+            TypeError, "Lease time must be an integer.", setattr, *args
         )
 
     def test_read(self):
@@ -200,8 +185,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            '2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
-            payload.unique_identifier
+            "2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6", payload.unique_identifier
         )
         self.assertEqual(500, payload.usage_limits_count)
         self.assertEqual(12, payload.cryptographic_usage_mask)
@@ -222,8 +206,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         payload.read(self.partial_encoding)
 
         self.assertEqual(
-            '2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
-            payload.unique_identifier
+            "2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6", payload.unique_identifier
         )
         self.assertEqual(500, payload.usage_limits_count)
         self.assertEqual(None, payload.cryptographic_usage_mask)
@@ -253,10 +236,10 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that a Check request payload can be written to a data stream.
         """
         payload = payloads.CheckRequestPayload(
-            unique_identifier='2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
+            unique_identifier="2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6",
             usage_limits_count=500,
             cryptographic_usage_mask=12,
-            lease_time=0
+            lease_time=0,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -270,8 +253,8 @@ class TestCheckRequestPayload(testtools.TestCase):
         stream.
         """
         payload = payloads.CheckRequestPayload(
-            unique_identifier='2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
-            usage_limits_count=500
+            unique_identifier="2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6",
+            usage_limits_count=500,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -303,16 +286,16 @@ class TestCheckRequestPayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.CheckRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=200,
             cryptographic_usage_mask=4,
-            lease_time=1511882848
+            lease_time=1511882848,
         )
         b = payloads.CheckRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=200,
             cryptographic_usage_mask=4,
-            lease_time=1511882848
+            lease_time=1511882848,
         )
 
         self.assertTrue(a == b)
@@ -323,12 +306,8 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Check request payloads with different unique identifiers.
         """
-        a = payloads.CheckRequestPayload(
-            unique_identifier='a'
-        )
-        b = payloads.CheckRequestPayload(
-            unique_identifier='b'
-        )
+        a = payloads.CheckRequestPayload(unique_identifier="a")
+        b = payloads.CheckRequestPayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -338,12 +317,8 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Check request payloads with different usage limits counts.
         """
-        a = payloads.CheckRequestPayload(
-            usage_limits_count=0
-        )
-        b = payloads.CheckRequestPayload(
-            usage_limits_count=1
-        )
+        a = payloads.CheckRequestPayload(usage_limits_count=0)
+        b = payloads.CheckRequestPayload(usage_limits_count=1)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -353,12 +328,8 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Check request payloads with different cryptographic usage masks.
         """
-        a = payloads.CheckRequestPayload(
-            cryptographic_usage_mask=4
-        )
-        b = payloads.CheckRequestPayload(
-            cryptographic_usage_mask=12
-        )
+        a = payloads.CheckRequestPayload(cryptographic_usage_mask=4)
+        b = payloads.CheckRequestPayload(cryptographic_usage_mask=12)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -368,12 +339,8 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Check request payloads with different lease times.
         """
-        a = payloads.CheckRequestPayload(
-            lease_time=0
-        )
-        b = payloads.CheckRequestPayload(
-            lease_time=1511882848
-        )
+        a = payloads.CheckRequestPayload(lease_time=0)
+        b = payloads.CheckRequestPayload(lease_time=1511882848)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -384,7 +351,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         Check request payloads with different types.
         """
         a = payloads.CheckRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -401,16 +368,16 @@ class TestCheckRequestPayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.CheckRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=200,
             cryptographic_usage_mask=4,
-            lease_time=1511882848
+            lease_time=1511882848,
         )
         b = payloads.CheckRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=200,
             cryptographic_usage_mask=4,
-            lease_time=1511882848
+            lease_time=1511882848,
         )
 
         self.assertFalse(a != b)
@@ -421,12 +388,8 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Check request payloads with different unique identifiers.
         """
-        a = payloads.CheckRequestPayload(
-            unique_identifier='a'
-        )
-        b = payloads.CheckRequestPayload(
-            unique_identifier='b'
-        )
+        a = payloads.CheckRequestPayload(unique_identifier="a")
+        b = payloads.CheckRequestPayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -436,12 +399,8 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Check request payloads with different usage limits counts.
         """
-        a = payloads.CheckRequestPayload(
-            usage_limits_count=0
-        )
-        b = payloads.CheckRequestPayload(
-            usage_limits_count=1
-        )
+        a = payloads.CheckRequestPayload(usage_limits_count=0)
+        b = payloads.CheckRequestPayload(usage_limits_count=1)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -451,12 +410,8 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Check request payloads with different cryptographic usage masks.
         """
-        a = payloads.CheckRequestPayload(
-            cryptographic_usage_mask=4
-        )
-        b = payloads.CheckRequestPayload(
-            cryptographic_usage_mask=12
-        )
+        a = payloads.CheckRequestPayload(cryptographic_usage_mask=4)
+        b = payloads.CheckRequestPayload(cryptographic_usage_mask=12)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -466,12 +421,8 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Check request payloads with different lease times.
         """
-        a = payloads.CheckRequestPayload(
-            lease_time=0
-        )
-        b = payloads.CheckRequestPayload(
-            lease_time=1511882848
-        )
+        a = payloads.CheckRequestPayload(lease_time=0)
+        b = payloads.CheckRequestPayload(lease_time=1511882848)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -482,7 +433,7 @@ class TestCheckRequestPayload(testtools.TestCase):
         Check request payloads with different types.
         """
         a = payloads.CheckRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -492,10 +443,10 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that repr can be applied to a Check request payload.
         """
         payload = payloads.CheckRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=1000,
             cryptographic_usage_mask=8,
-            lease_time=1511882898
+            lease_time=1511882898,
         )
         expected = (
             "CheckRequestPayload("
@@ -513,18 +464,20 @@ class TestCheckRequestPayload(testtools.TestCase):
         Test that str can be applied to a Check request payload
         """
         payload = payloads.CheckRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=1000,
             cryptographic_usage_mask=8,
-            lease_time=1511882898
+            lease_time=1511882898,
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            'usage_limits_count': 1000,
-            'cryptographic_usage_mask': 8,
-            'lease_time': 1511882898
-        })
+        expected = str(
+            {
+                "unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038",
+                "usage_limits_count": 1000,
+                "cryptographic_usage_mask": 8,
+                "lease_time": 1511882898,
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)
@@ -549,14 +502,14 @@ class TestCheckResponsePayload(testtools.TestCase):
         #     Lease Time - 0
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x60'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62'
-            b'\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33'
-            b'\x64\x34\x62\x36\x00\x00\x00\x00'
-            b'\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x00\x49\x0A\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x60"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62"
+            b"\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33"
+            b"\x64\x34\x62\x36\x00\x00\x00\x00"
+            b"\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
+            b"\x42\x00\x49\x0A\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
@@ -564,17 +517,15 @@ class TestCheckResponsePayload(testtools.TestCase):
         #     Unique Identifier - 2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6
         #     Usage Limits Count - 500
         self.partial_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x40'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62'
-            b'\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33'
-            b'\x64\x34\x62\x36\x00\x00\x00\x00'
-            b'\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x40"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x32\x63\x32\x33\x32\x31\x37\x65\x2D\x66\x35\x33\x63\x2D\x34\x62"
+            b"\x64\x66\x2D\x61\x64\x30\x61\x2D\x35\x38\x61\x33\x31\x66\x64\x33"
+            b"\x64\x34\x62\x36\x00\x00\x00\x00"
+            b"\x42\x00\x96\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x01\xF4"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestCheckResponsePayload, self).tearDown()
@@ -597,15 +548,14 @@ class TestCheckResponsePayload(testtools.TestCase):
         values.
         """
         payload = payloads.CheckResponsePayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
+            unique_identifier="00000000-1111-2222-3333-444444444444",
             usage_limits_count=10,
             cryptographic_usage_mask=12,
-            lease_time=1000000000
+            lease_time=1000000000,
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
         self.assertEqual(10, payload.usage_limits_count)
         self.assertEqual(12, payload.cryptographic_usage_mask)
@@ -616,7 +566,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a Check response payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -625,12 +575,9 @@ class TestCheckResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.CheckResponsePayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_usage_limits_count(self):
@@ -638,7 +585,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the usage limits count of a Check response payload.
         """
-        kwargs = {'usage_limits_count': 'invalid'}
+        kwargs = {"usage_limits_count": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Usage limits count must be an integer.",
@@ -647,12 +594,9 @@ class TestCheckResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.CheckResponsePayload()
-        args = (payload, 'usage_limits_count', 'invalid')
+        args = (payload, "usage_limits_count", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Usage limits count must be an integer.",
-            setattr,
-            *args
+            TypeError, "Usage limits count must be an integer.", setattr, *args
         )
 
     def test_invalid_cryptographic_usage_mask(self):
@@ -660,7 +604,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the cryptographic usage mask of a Check response payload.
         """
-        kwargs = {'cryptographic_usage_mask': 'invalid'}
+        kwargs = {"cryptographic_usage_mask": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Cryptographic usage mask must be an integer.",
@@ -669,12 +613,9 @@ class TestCheckResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.CheckResponsePayload()
-        args = (payload, 'cryptographic_usage_mask', 'invalid')
+        args = (payload, "cryptographic_usage_mask", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Cryptographic usage mask must be an integer.",
-            setattr,
-            *args
+            TypeError, "Cryptographic usage mask must be an integer.", setattr, *args
         )
 
     def test_invalid_lease_time(self):
@@ -682,7 +623,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the lease time of a Check response payload.
         """
-        kwargs = {'lease_time': 'invalid'}
+        kwargs = {"lease_time": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Lease time must be an integer.",
@@ -691,12 +632,9 @@ class TestCheckResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.CheckResponsePayload()
-        args = (payload, 'lease_time', 'invalid')
+        args = (payload, "lease_time", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Lease time must be an integer.",
-            setattr,
-            *args
+            TypeError, "Lease time must be an integer.", setattr, *args
         )
 
     def test_read(self):
@@ -713,8 +651,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            '2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
-            payload.unique_identifier
+            "2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6", payload.unique_identifier
         )
         self.assertEqual(500, payload.usage_limits_count)
         self.assertEqual(12, payload.cryptographic_usage_mask)
@@ -735,8 +672,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         payload.read(self.partial_encoding)
 
         self.assertEqual(
-            '2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
-            payload.unique_identifier
+            "2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6", payload.unique_identifier
         )
         self.assertEqual(500, payload.usage_limits_count)
         self.assertEqual(None, payload.cryptographic_usage_mask)
@@ -766,10 +702,10 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that a Check response payload can be written to a data stream.
         """
         payload = payloads.CheckResponsePayload(
-            unique_identifier='2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
+            unique_identifier="2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6",
             usage_limits_count=500,
             cryptographic_usage_mask=12,
-            lease_time=0
+            lease_time=0,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -783,8 +719,8 @@ class TestCheckResponsePayload(testtools.TestCase):
         stream.
         """
         payload = payloads.CheckResponsePayload(
-            unique_identifier='2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6',
-            usage_limits_count=500
+            unique_identifier="2c23217e-f53c-4bdf-ad0a-58a31fd3d4b6",
+            usage_limits_count=500,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -816,16 +752,16 @@ class TestCheckResponsePayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.CheckResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=200,
             cryptographic_usage_mask=4,
-            lease_time=1511882848
+            lease_time=1511882848,
         )
         b = payloads.CheckResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=200,
             cryptographic_usage_mask=4,
-            lease_time=1511882848
+            lease_time=1511882848,
         )
 
         self.assertTrue(a == b)
@@ -836,12 +772,8 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Check response payloads with different unique identifiers.
         """
-        a = payloads.CheckResponsePayload(
-            unique_identifier='a'
-        )
-        b = payloads.CheckResponsePayload(
-            unique_identifier='b'
-        )
+        a = payloads.CheckResponsePayload(unique_identifier="a")
+        b = payloads.CheckResponsePayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -851,12 +783,8 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Check response payloads with different usage limits counts.
         """
-        a = payloads.CheckResponsePayload(
-            usage_limits_count=0
-        )
-        b = payloads.CheckResponsePayload(
-            usage_limits_count=1
-        )
+        a = payloads.CheckResponsePayload(usage_limits_count=0)
+        b = payloads.CheckResponsePayload(usage_limits_count=1)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -866,12 +794,8 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Check response payloads with different cryptographic usage masks.
         """
-        a = payloads.CheckResponsePayload(
-            cryptographic_usage_mask=4
-        )
-        b = payloads.CheckResponsePayload(
-            cryptographic_usage_mask=12
-        )
+        a = payloads.CheckResponsePayload(cryptographic_usage_mask=4)
+        b = payloads.CheckResponsePayload(cryptographic_usage_mask=12)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -881,12 +805,8 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Check response payloads with different lease times.
         """
-        a = payloads.CheckResponsePayload(
-            lease_time=0
-        )
-        b = payloads.CheckResponsePayload(
-            lease_time=1511882848
-        )
+        a = payloads.CheckResponsePayload(lease_time=0)
+        b = payloads.CheckResponsePayload(lease_time=1511882848)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -897,7 +817,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         Check response payloads with different types.
         """
         a = payloads.CheckResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -914,16 +834,16 @@ class TestCheckResponsePayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.CheckResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=200,
             cryptographic_usage_mask=4,
-            lease_time=1511882848
+            lease_time=1511882848,
         )
         b = payloads.CheckResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=200,
             cryptographic_usage_mask=4,
-            lease_time=1511882848
+            lease_time=1511882848,
         )
 
         self.assertFalse(a != b)
@@ -934,12 +854,8 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Check response payloads with different unique identifiers.
         """
-        a = payloads.CheckResponsePayload(
-            unique_identifier='a'
-        )
-        b = payloads.CheckResponsePayload(
-            unique_identifier='b'
-        )
+        a = payloads.CheckResponsePayload(unique_identifier="a")
+        b = payloads.CheckResponsePayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -949,12 +865,8 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Check response payloads with different usage limits counts.
         """
-        a = payloads.CheckResponsePayload(
-            usage_limits_count=0
-        )
-        b = payloads.CheckResponsePayload(
-            usage_limits_count=1
-        )
+        a = payloads.CheckResponsePayload(usage_limits_count=0)
+        b = payloads.CheckResponsePayload(usage_limits_count=1)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -964,12 +876,8 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Check response payloads with different cryptographic usage masks.
         """
-        a = payloads.CheckResponsePayload(
-            cryptographic_usage_mask=4
-        )
-        b = payloads.CheckResponsePayload(
-            cryptographic_usage_mask=12
-        )
+        a = payloads.CheckResponsePayload(cryptographic_usage_mask=4)
+        b = payloads.CheckResponsePayload(cryptographic_usage_mask=12)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -979,12 +887,8 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Check response payloads with different lease times.
         """
-        a = payloads.CheckResponsePayload(
-            lease_time=0
-        )
-        b = payloads.CheckResponsePayload(
-            lease_time=1511882848
-        )
+        a = payloads.CheckResponsePayload(lease_time=0)
+        b = payloads.CheckResponsePayload(lease_time=1511882848)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -995,7 +899,7 @@ class TestCheckResponsePayload(testtools.TestCase):
         Check response payloads with different types.
         """
         a = payloads.CheckResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1005,10 +909,10 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that repr can be applied to a Check response payload.
         """
         payload = payloads.CheckResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=1000,
             cryptographic_usage_mask=8,
-            lease_time=1511882898
+            lease_time=1511882898,
         )
         expected = (
             "CheckResponsePayload("
@@ -1026,18 +930,20 @@ class TestCheckResponsePayload(testtools.TestCase):
         Test that str can be applied to a Check response payload
         """
         payload = payloads.CheckResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             usage_limits_count=1000,
             cryptographic_usage_mask=8,
-            lease_time=1511882898
+            lease_time=1511882898,
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            'usage_limits_count': 1000,
-            'cryptographic_usage_mask': 8,
-            'lease_time': 1511882898
-        })
+        expected = str(
+            {
+                "unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038",
+                "usage_limits_count": 1000,
+                "cryptographic_usage_mask": 8,
+                "lease_time": 1511882898,
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)

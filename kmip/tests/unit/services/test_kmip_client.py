@@ -27,8 +27,7 @@ from kmip.core.enums import ResultStatus as ResultStatusEnum
 from kmip.core.enums import ResultReason as ResultReasonEnum
 from kmip.core.enums import Operation as OperationEnum
 from kmip.core.enums import QueryFunction as QueryFunctionEnum
-from kmip.core.enums import CryptographicAlgorithm as \
-                            CryptographicAlgorithmEnum
+from kmip.core.enums import CryptographicAlgorithm as CryptographicAlgorithmEnum
 
 from kmip.core import exceptions
 
@@ -73,7 +72,6 @@ import ssl
 
 
 class TestKMIPClient(TestCase):
-
     def setUp(self):
         super(TestKMIPClient, self).setUp()
 
@@ -84,11 +82,15 @@ class TestKMIPClient(TestCase):
         self.client = KMIPProxy()
 
         KMIP_PORT = 9090
-        CA_CERTS_PATH = os.path.normpath(os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), '../utils/certs/server.crt'))
+        CA_CERTS_PATH = os.path.normpath(
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), "../utils/certs/server.crt"
+            )
+        )
 
-        self.mock_client = KMIPProxy(host="IP_ADDR_1, IP_ADDR_2",
-                                     port=KMIP_PORT, ca_certs=CA_CERTS_PATH)
+        self.mock_client = KMIPProxy(
+            host="IP_ADDR_1, IP_ADDR_2", port=KMIP_PORT, ca_certs=CA_CERTS_PATH
+        )
         self.mock_client.socket = mock.MagicMock()
         self.mock_client.socket.connect = mock.MagicMock()
         self.mock_client.socket.close = mock.MagicMock()
@@ -120,10 +122,7 @@ class TestKMIPClient(TestCase):
         client = KMIPProxy()
         args = (client, "kmip_version", None)
         self.assertRaisesRegex(
-            ValueError,
-            "KMIP version must be a KMIPVersion enumeration",
-            setattr,
-            *args
+            ValueError, "KMIP version must be a KMIPVersion enumeration", setattr, *args
         )
 
     def test_init_with_invalid_config_file_value(self):
@@ -131,7 +130,7 @@ class TestKMIPClient(TestCase):
         Test that the right error is raised when an invalid configuration file
         value is provided to the client.
         """
-        kwargs = {'config_file': 1}
+        kwargs = {"config_file": 1}
         self.assertRaisesRegex(
             ValueError,
             "The client configuration file argument must be a string.",
@@ -144,7 +143,7 @@ class TestKMIPClient(TestCase):
         Test that the right error is raised when an invalid configuration file
         path is provided to the client.
         """
-        kwargs = {'config_file': 'invalid'}
+        kwargs = {"config_file": "invalid"}
         self.assertRaisesRegex(
             ValueError,
             "The client configuration file 'invalid' does not exist.",
@@ -156,11 +155,7 @@ class TestKMIPClient(TestCase):
         """
         Test that calling close on the client works as expected.
         """
-        c = KMIPProxy(
-            host="IP_ADDR_1, IP_ADDR_2",
-            port=9090,
-            ca_certs=None
-        )
+        c = KMIPProxy(host="IP_ADDR_1, IP_ADDR_2", port=9090, ca_certs=None)
         c.socket = mock.MagicMock()
         c_socket = c.socket
 
@@ -178,11 +173,7 @@ class TestKMIPClient(TestCase):
         Test that calling close on an unconnected client does not trigger an
         exception.
         """
-        c = KMIPProxy(
-            host="IP_ADDR_1, IP_ADDR_2",
-            port=9090,
-            ca_certs=None
-        )
+        c = KMIPProxy(host="IP_ADDR_1, IP_ADDR_2", port=9090, ca_certs=None)
         c.socket = mock.MagicMock()
         c_socket = c.socket
         c.socket.shutdown.side_effect = OSError
@@ -198,41 +189,36 @@ class TestKMIPClient(TestCase):
 
     # TODO (peter-hamilton) Modify for credential type and/or add new test
     def test_build_credential(self):
-        username = 'username'
-        password = 'password'
+        username = "username"
+        password = "password"
         self.client.username = username
         self.client.password = password
 
         credential = self.client._build_credential()
 
         self.assertEqual(
-            CredentialType.USERNAME_AND_PASSWORD,
-            credential.credential_type
+            CredentialType.USERNAME_AND_PASSWORD, credential.credential_type
         )
         self.assertEqual(username, credential.credential_value.username)
         self.assertEqual(password, credential.credential_value.password)
 
     def test_build_credential_no_username(self):
         username = None
-        password = 'password'
+        password = "password"
         self.client.username = username
         self.client.password = password
 
-        exception = self.assertRaises(ValueError,
-                                      self.client._build_credential)
-        self.assertEqual('cannot build credential, username is None',
-                         str(exception))
+        exception = self.assertRaises(ValueError, self.client._build_credential)
+        self.assertEqual("cannot build credential, username is None", str(exception))
 
     def test_build_credential_no_password(self):
-        username = 'username'
+        username = "username"
         password = None
         self.client.username = username
         self.client.password = password
 
-        exception = self.assertRaises(ValueError,
-                                      self.client._build_credential)
-        self.assertEqual('cannot build credential, password is None',
-                         str(exception))
+        exception = self.assertRaises(ValueError, self.client._build_credential)
+        self.assertEqual("cannot build credential, password is None", str(exception))
 
     def test_build_credential_no_creds(self):
         self.client.username = None
@@ -246,7 +232,8 @@ class TestKMIPClient(TestCase):
         batch_item = self.client._build_create_key_pair_batch_item(
             common_template_attribute=common,
             private_key_template_attribute=private,
-            public_key_template_attribute=public)
+            public_key_template_attribute=public,
+        )
 
         base = "expected {0}, received {1}"
         msg = base.format(RequestBatchItem, batch_item)
@@ -265,11 +252,7 @@ class TestKMIPClient(TestCase):
         payload = batch_item.request_payload
 
         msg = base.format(payloads.CreateKeyPairRequestPayload, payload)
-        self.assertIsInstance(
-            payload,
-            payloads.CreateKeyPairRequestPayload,
-            msg
-        )
+        self.assertIsInstance(payload, payloads.CreateKeyPairRequestPayload, msg)
 
         common_observed = payload.common_template_attribute
         private_observed = payload.private_key_template_attribute
@@ -288,18 +271,22 @@ class TestKMIPClient(TestCase):
         self._test_build_create_key_pair_batch_item(
             CommonTemplateAttribute(),
             PrivateKeyTemplateAttribute(),
-            PublicKeyTemplateAttribute())
+            PublicKeyTemplateAttribute(),
+        )
 
     def test_build_create_key_pair_batch_item_no_input(self):
         self._test_build_create_key_pair_batch_item(None, None, None)
 
-    def _test_build_rekey_key_pair_batch_item(self, uuid, offset, common,
-                                              private, public):
+    def _test_build_rekey_key_pair_batch_item(
+        self, uuid, offset, common, private, public
+    ):
         batch_item = self.client._build_rekey_key_pair_batch_item(
-            private_key_uuid=uuid, offset=offset,
+            private_key_uuid=uuid,
+            offset=offset,
             common_template_attribute=common,
             private_key_template_attribute=private,
-            public_key_template_attribute=public)
+            public_key_template_attribute=public,
+        )
 
         base = "expected {0}, received {1}"
         msg = base.format(RequestBatchItem, batch_item)
@@ -318,11 +305,7 @@ class TestKMIPClient(TestCase):
         payload = batch_item.request_payload
 
         msg = base.format(payloads.RekeyKeyPairRequestPayload, payload)
-        self.assertIsInstance(
-            payload,
-            payloads.RekeyKeyPairRequestPayload,
-            msg
-        )
+        self.assertIsInstance(payload, payloads.RekeyKeyPairRequestPayload, msg)
 
         private_key_uuid_observed = payload.private_key_uuid
         offset_observed = payload.offset
@@ -347,14 +330,15 @@ class TestKMIPClient(TestCase):
 
     def test_build_rekey_key_pair_batch_item_with_input(self):
         self._test_build_rekey_key_pair_batch_item(
-            PrivateKeyUniqueIdentifier(), Offset(),
+            PrivateKeyUniqueIdentifier(),
+            Offset(),
             CommonTemplateAttribute(),
             PrivateKeyTemplateAttribute(),
-            PublicKeyTemplateAttribute())
+            PublicKeyTemplateAttribute(),
+        )
 
     def test_build_rekey_key_pair_batch_item_no_input(self):
-        self._test_build_rekey_key_pair_batch_item(
-            None, None, None, None, None)
+        self._test_build_rekey_key_pair_batch_item(None, None, None, None, None)
 
     def _test_build_query_batch_item(self, query_functions):
         batch_item = self.client._build_query_batch_item(query_functions)
@@ -382,16 +366,13 @@ class TestKMIPClient(TestCase):
         self.assertEqual(query_functions, query_functions_observed)
 
     def test_build_query_batch_item_with_input(self):
-        self._test_build_query_batch_item(
-            [QueryFunctionEnum.QUERY_OBJECTS]
-        )
+        self._test_build_query_batch_item([QueryFunctionEnum.QUERY_OBJECTS])
 
     def test_build_query_batch_item_without_input(self):
         self._test_build_query_batch_item(None)
 
     def _test_build_discover_versions_batch_item(self, protocol_versions):
-        batch_item = self.client._build_discover_versions_batch_item(
-            protocol_versions)
+        batch_item = self.client._build_discover_versions_batch_item(protocol_versions)
 
         base = "expected {0}, received {1}"
         msg = base.format(RequestBatchItem, batch_item)
@@ -413,11 +394,7 @@ class TestKMIPClient(TestCase):
             protocol_versions = list()
 
         msg = base.format(payloads.DiscoverVersionsRequestPayload, payload)
-        self.assertIsInstance(
-            payload,
-            payloads.DiscoverVersionsRequestPayload,
-            msg
-        )
+        self.assertIsInstance(payload, payloads.DiscoverVersionsRequestPayload, msg)
 
         observed = payload.protocol_versions
 
@@ -433,49 +410,36 @@ class TestKMIPClient(TestCase):
         self._test_build_discover_versions_batch_item(protocol_versions)
 
     def test_build_get_attributes_batch_item(self):
-        uuid = '00000000-1111-2222-3333-444444444444'
-        attribute_names = [
-            'Name',
-            'Object Type'
-        ]
-        batch_item = self.client._build_get_attributes_batch_item(
-            uuid,
-            attribute_names
-        )
+        uuid = "00000000-1111-2222-3333-444444444444"
+        attribute_names = ["Name", "Object Type"]
+        batch_item = self.client._build_get_attributes_batch_item(uuid, attribute_names)
 
         self.assertIsInstance(batch_item, RequestBatchItem)
         self.assertIsInstance(batch_item.operation, Operation)
-        self.assertEqual(
-            OperationEnum.GET_ATTRIBUTES,
-            batch_item.operation.value
-        )
+        self.assertEqual(OperationEnum.GET_ATTRIBUTES, batch_item.operation.value)
         self.assertIsInstance(
-            batch_item.request_payload,
-            payloads.GetAttributesRequestPayload
+            batch_item.request_payload, payloads.GetAttributesRequestPayload
         )
         self.assertEqual(uuid, batch_item.request_payload.unique_identifier)
-        self.assertEqual(
-            attribute_names,
-            batch_item.request_payload.attribute_names
-        )
+        self.assertEqual(attribute_names, batch_item.request_payload.attribute_names)
 
     def test_build_get_attribute_list_batch_item(self):
-        uid = '00000000-1111-2222-3333-444444444444'
+        uid = "00000000-1111-2222-3333-444444444444"
         batch_item = self.client._build_get_attribute_list_batch_item(uid)
 
         self.assertIsInstance(batch_item, RequestBatchItem)
         self.assertIsInstance(batch_item.operation, Operation)
-        self.assertEqual(
-            OperationEnum.GET_ATTRIBUTE_LIST, batch_item.operation.value)
+        self.assertEqual(OperationEnum.GET_ATTRIBUTE_LIST, batch_item.operation.value)
         self.assertIsInstance(
-            batch_item.request_payload,
-            payloads.GetAttributeListRequestPayload)
+            batch_item.request_payload, payloads.GetAttributeListRequestPayload
+        )
         self.assertEqual(uid, batch_item.request_payload.unique_identifier)
 
     def test_process_batch_items(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE_KEY_PAIR),
-            response_payload=payloads.CreateKeyPairResponsePayload())
+            response_payload=payloads.CreateKeyPairResponsePayload(),
+        )
         response = ResponseMessage(batch_items=[batch_item, batch_item])
         results = self.client._process_batch_items(response)
 
@@ -509,7 +473,8 @@ class TestKMIPClient(TestCase):
         batch_item = ResponseBatchItem(
             result_status=result_status,
             result_reason=result_reason,
-            result_message=result_message)
+            result_message=result_message,
+        )
         response = ResponseMessage(batch_items=[batch_item])
         results = self.client._process_batch_items(response)
 
@@ -527,14 +492,12 @@ class TestKMIPClient(TestCase):
         base = "expected {0}, received {1}"
 
         expected = self.client._process_create_key_pair_batch_item
-        observed = self.client._get_batch_item_processor(
-            OperationEnum.CREATE_KEY_PAIR)
+        observed = self.client._get_batch_item_processor(OperationEnum.CREATE_KEY_PAIR)
         msg = base.format(expected, observed)
         self.assertEqual(expected, observed, msg)
 
         expected = self.client._process_rekey_key_pair_batch_item
-        observed = self.client._get_batch_item_processor(
-            OperationEnum.REKEY_KEY_PAIR)
+        observed = self.client._get_batch_item_processor(OperationEnum.REKEY_KEY_PAIR)
         msg = base.format(expected, observed)
         self.assertEqual(expected, observed, msg)
 
@@ -542,18 +505,17 @@ class TestKMIPClient(TestCase):
             ValueError,
             "no processor for operation",
             self.client._get_batch_item_processor,
-            0xA5A5A5A5
+            0xA5A5A5A5,
         )
 
         expected = self.client._process_get_attributes_batch_item
-        observed = self.client._get_batch_item_processor(
-            OperationEnum.GET_ATTRIBUTES
-        )
+        observed = self.client._get_batch_item_processor(OperationEnum.GET_ATTRIBUTES)
         self.assertEqual(expected, observed)
 
         expected = self.client._process_get_attribute_list_batch_item
         observed = self.client._get_batch_item_processor(
-            OperationEnum.GET_ATTRIBUTE_LIST)
+            OperationEnum.GET_ATTRIBUTE_LIST
+        )
         self.assertEqual(expected, observed)
 
     def _test_equality(self, expected, observed):
@@ -563,7 +525,8 @@ class TestKMIPClient(TestCase):
     def test_process_create_key_pair_batch_item(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE_KEY_PAIR),
-            response_payload=payloads.CreateKeyPairResponsePayload())
+            response_payload=payloads.CreateKeyPairResponsePayload(),
+        )
         result = self.client._process_create_key_pair_batch_item(batch_item)
 
         msg = "expected {0}, received {1}".format(CreateKeyPairResult, result)
@@ -572,20 +535,22 @@ class TestKMIPClient(TestCase):
     def test_process_rekey_key_pair_batch_item(self):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.REKEY_KEY_PAIR),
-            response_payload=payloads.RekeyKeyPairResponsePayload())
+            response_payload=payloads.RekeyKeyPairResponsePayload(),
+        )
         result = self.client._process_rekey_key_pair_batch_item(batch_item)
 
         msg = "expected {0}, received {1}".format(RekeyKeyPairResult, result)
         self.assertIsInstance(result, RekeyKeyPairResult, msg)
 
     def _test_process_query_batch_item(
-            self,
-            operations,
-            object_types,
-            vendor_identification,
-            server_information,
-            application_namespaces,
-            extension_information):
+        self,
+        operations,
+        object_types,
+        vendor_identification,
+        server_information,
+        application_namespaces,
+        extension_information,
+    ):
 
         payload = payloads.QueryResponsePayload(
             operations,
@@ -593,10 +558,11 @@ class TestKMIPClient(TestCase):
             vendor_identification,
             server_information,
             application_namespaces,
-            extension_information)
+            extension_information,
+        )
         batch_item = ResponseBatchItem(
-            operation=Operation(OperationEnum.QUERY),
-            response_payload=payload)
+            operation=Operation(OperationEnum.QUERY), response_payload=payload
+        )
 
         result = self.client._process_query_batch_item(batch_item)
 
@@ -616,22 +582,15 @@ class TestKMIPClient(TestCase):
 
         self._test_equality(operations, result.operations)
         self._test_equality(object_types, result.object_types)
-        self._test_equality(
-            vendor_identification, result.vendor_identification)
+        self._test_equality(vendor_identification, result.vendor_identification)
         self._test_equality(server_information, result.server_information)
-        self._test_equality(
-            application_namespaces, result.application_namespaces)
-        self._test_equality(
-            extension_information, result.extension_information)
+        self._test_equality(application_namespaces, result.application_namespaces)
+        self._test_equality(extension_information, result.extension_information)
 
     def test_process_query_batch_item_with_results(self):
         self._test_process_query_batch_item(
-            list(),
-            list(),
-            "",
-            ServerInformation(),
-            list(),
-            list())
+            list(), list(), "", ServerInformation(), list(), list()
+        )
 
     def test_process_query_batch_item_without_results(self):
         self._test_process_query_batch_item(None, None, None, None, None, None)
@@ -640,7 +599,9 @@ class TestKMIPClient(TestCase):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.DISCOVER_VERSIONS),
             response_payload=payloads.DiscoverVersionsResponsePayload(
-                protocol_versions))
+                protocol_versions
+            ),
+        )
         result = self.client._process_discover_versions_batch_item(batch_item)
 
         base = "expected {0}, received {1}"
@@ -663,15 +624,13 @@ class TestKMIPClient(TestCase):
         self._test_process_discover_versions_batch_item(protocol_versions)
 
     def test_process_get_attributes_batch_item(self):
-        uuid = '00000000-1111-2222-3333-444444444444'
+        uuid = "00000000-1111-2222-3333-444444444444"
         attributes = []
         payload = payloads.GetAttributesResponsePayload(
-            unique_identifier=uuid,
-            attributes=attributes
+            unique_identifier=uuid, attributes=attributes
         )
         batch_item = ResponseBatchItem(
-            operation=Operation(OperationEnum.GET_ATTRIBUTES),
-            response_payload=payload
+            operation=Operation(OperationEnum.GET_ATTRIBUTES), response_payload=payload
         )
         result = self.client._process_get_attributes_batch_item(batch_item)
 
@@ -680,13 +639,15 @@ class TestKMIPClient(TestCase):
         self.assertEqual(attributes, result.attributes)
 
     def test_process_get_attribute_list_batch_item(self):
-        uid = '00000000-1111-2222-3333-444444444444'
-        names = ['Cryptographic Algorithm', 'Cryptographic Length']
+        uid = "00000000-1111-2222-3333-444444444444"
+        names = ["Cryptographic Algorithm", "Cryptographic Length"]
         payload = payloads.GetAttributeListResponsePayload(
-            unique_identifier=uid, attribute_names=names)
+            unique_identifier=uid, attribute_names=names
+        )
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.GET_ATTRIBUTE_LIST),
-            response_payload=payload)
+            response_payload=payload,
+        )
         result = self.client._process_get_attribute_list_batch_item(batch_item)
 
         self.assertIsInstance(result, GetAttributeListResult)
@@ -700,8 +661,8 @@ class TestKMIPClient(TestCase):
         unnecessary spaces are ignored.
         """
 
-        host_list_string = '127.0.0.1,127.0.0.3,  127.0.0.5'
-        host_list_expected = ['127.0.0.1', '127.0.0.3', '127.0.0.5']
+        host_list_string = "127.0.0.1,127.0.0.3,  127.0.0.5"
+        host_list_expected = ["127.0.0.1", "127.0.0.3", "127.0.0.5"]
 
         self.client._set_variables(
             host=host_list_string,
@@ -716,7 +677,7 @@ class TestKMIPClient(TestCase):
             username=None,
             password=None,
             timeout=None,
-            config_file=None
+            config_file=None,
         )
         self.assertEqual(host_list_expected, self.client.host_list)
 
@@ -728,16 +689,24 @@ class TestKMIPClient(TestCase):
         host = 1337
         expected_error = TypeError
 
-        kwargs = {'host': host, 'port': None, 'keyfile': None,
-                  'certfile': None, 'cert_reqs': None, 'ssl_version': None,
-                  'ca_certs': None, 'do_handshake_on_connect': False,
-                  'suppress_ragged_eofs': None, 'username': None,
-                  'password': None, 'timeout': None}
+        kwargs = {
+            "host": host,
+            "port": None,
+            "keyfile": None,
+            "certfile": None,
+            "cert_reqs": None,
+            "ssl_version": None,
+            "ca_certs": None,
+            "do_handshake_on_connect": False,
+            "suppress_ragged_eofs": None,
+            "username": None,
+            "password": None,
+            "timeout": None,
+        }
 
-        self.assertRaises(expected_error, self.client._set_variables,
-                          **kwargs)
+        self.assertRaises(expected_error, self.client._set_variables, **kwargs)
 
-    @mock.patch.object(KMIPProxy, '_create_socket')
+    @mock.patch.object(KMIPProxy, "_create_socket")
     def test_open_server_conn_failover_fail(self, mock_create_socket):
         """
         This test verifies that the KMIP client throws an exception if no
@@ -750,7 +719,7 @@ class TestKMIPClient(TestCase):
 
         self.assertRaises(Exception, self.mock_client.open)
 
-    @mock.patch.object(KMIPProxy, '_create_socket')
+    @mock.patch.object(KMIPProxy, "_create_socket")
     def test_open_server_conn_failover_succeed(self, mock_create_socket):
         """
         This test verifies that the KMIP client can setup a connection if at
@@ -763,7 +732,7 @@ class TestKMIPClient(TestCase):
 
         self.mock_client.open()
 
-        self.assertEqual('IP_ADDR_2', self.mock_client.host)
+        self.assertEqual("IP_ADDR_2", self.mock_client.host)
 
     def test_socket_ssl_wrap(self):
         """
@@ -774,31 +743,24 @@ class TestKMIPClient(TestCase):
         self.client._create_socket(sock)
         self.assertEqual(ssl.SSLSocket, type(self.client.socket))
 
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._build_request_message"
-    )
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_send_request_payload(self, send_mock, build_mock):
         """
         Test that the client can send a request payload and correctly handle
         the resulting response messsage.
         """
         request_payload = payloads.DeleteAttributeRequestPayload(
-            unique_identifier="1",
-            attribute_name="Object Group",
-            attribute_index=2
+            unique_identifier="1", attribute_name="Object Group", attribute_index=2
         )
         response_payload = payloads.DeleteAttributeResponsePayload(
-            unique_identifier="1",
-            attribute=None
+            unique_identifier="1", attribute=None
         )
 
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.DELETE_ATTRIBUTE),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=response_payload
+            response_payload=response_payload,
         )
         response_message = ResponseMessage(batch_items=[batch_item])
 
@@ -806,8 +768,7 @@ class TestKMIPClient(TestCase):
         send_mock.return_value = response_message
 
         result = self.client.send_request_payload(
-            OperationEnum.DELETE_ATTRIBUTE,
-            request_payload
+            OperationEnum.DELETE_ATTRIBUTE, request_payload
         )
 
         self.assertIsInstance(result, payloads.DeleteAttributeResponsePayload)
@@ -831,10 +792,7 @@ class TestKMIPClient(TestCase):
         Test that a TypeError is raised when the operation and request payload
         do not match up when used to send a request.
         """
-        args = (
-            OperationEnum.DELETE_ATTRIBUTE,
-            payloads.CreateRequestPayload()
-        )
+        args = (OperationEnum.DELETE_ATTRIBUTE, payloads.CreateRequestPayload())
         self.assertRaisesRegex(
             TypeError,
             "The request payload for the DeleteAttribute operation must be a "
@@ -843,10 +801,7 @@ class TestKMIPClient(TestCase):
             *args
         )
 
-        args = (
-            OperationEnum.SET_ATTRIBUTE,
-            payloads.CreateRequestPayload()
-        )
+        args = (OperationEnum.SET_ATTRIBUTE, payloads.CreateRequestPayload())
         self.assertRaisesRegex(
             TypeError,
             "The request payload for the SetAttribute operation must be a "
@@ -855,10 +810,7 @@ class TestKMIPClient(TestCase):
             *args
         )
 
-        args = (
-            OperationEnum.MODIFY_ATTRIBUTE,
-            payloads.CreateRequestPayload()
-        )
+        args = (OperationEnum.MODIFY_ATTRIBUTE, payloads.CreateRequestPayload())
         self.assertRaisesRegex(
             TypeError,
             "The request payload for the ModifyAttribute operation must be a "
@@ -867,16 +819,10 @@ class TestKMIPClient(TestCase):
             *args
         )
 
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._build_request_message"
-    )
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_send_request_payload_incorrect_number_of_batch_items(
-        self,
-        send_mock,
-        build_mock
+        self, send_mock, build_mock
     ):
         """
         Test that an InvalidMessage error is raised when the wrong number of
@@ -888,10 +834,8 @@ class TestKMIPClient(TestCase):
         args = (
             OperationEnum.DELETE_ATTRIBUTE,
             payloads.DeleteAttributeRequestPayload(
-                unique_identifier="1",
-                attribute_name="Object Group",
-                attribute_index=2
-            )
+                unique_identifier="1", attribute_name="Object Group", attribute_index=2
+            ),
         )
 
         self.assertRaisesRegex(
@@ -902,30 +846,23 @@ class TestKMIPClient(TestCase):
             *args
         )
 
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._build_request_message"
-    )
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_send_request_payload_mismatch_response_operation(
-        self,
-        send_mock,
-        build_mock
+        self, send_mock, build_mock
     ):
         """
         Test that an InvalidMessage error is raised when the wrong operation
         is returned from the server.
         """
         response_payload = payloads.DeleteAttributeResponsePayload(
-            unique_identifier="1",
-            attribute=None
+            unique_identifier="1", attribute=None
         )
 
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CREATE),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=response_payload
+            response_payload=response_payload,
         )
         build_mock.return_value = None
         send_mock.return_value = ResponseMessage(batch_items=[batch_item])
@@ -933,10 +870,8 @@ class TestKMIPClient(TestCase):
         args = (
             OperationEnum.DELETE_ATTRIBUTE,
             payloads.DeleteAttributeRequestPayload(
-                unique_identifier="1",
-                attribute_name="Object Group",
-                attribute_index=2
-            )
+                unique_identifier="1", attribute_name="Object Group", attribute_index=2
+            ),
         )
 
         self.assertRaisesRegex(
@@ -946,29 +881,21 @@ class TestKMIPClient(TestCase):
             *args
         )
 
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._build_request_message"
-    )
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_send_request_payload_mismatch_response_payload(
-        self,
-        send_mock,
-        build_mock
+        self, send_mock, build_mock
     ):
         """
         Test that an InvalidMessage error is raised when the wrong payload
         is returned from the server.
         """
-        response_payload = payloads.DestroyResponsePayload(
-            unique_identifier="1"
-        )
+        response_payload = payloads.DestroyResponsePayload(unique_identifier="1")
 
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.DELETE_ATTRIBUTE),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=response_payload
+            response_payload=response_payload,
         )
         build_mock.return_value = None
         send_mock.return_value = ResponseMessage(batch_items=[batch_item])
@@ -976,15 +903,12 @@ class TestKMIPClient(TestCase):
         args = (
             OperationEnum.DELETE_ATTRIBUTE,
             payloads.DeleteAttributeRequestPayload(
-                unique_identifier="1",
-                attribute_name="Object Group",
-                attribute_index=2
-            )
+                unique_identifier="1", attribute_name="Object Group", attribute_index=2
+            ),
         )
         self.assertRaisesRegex(
             exceptions.InvalidMessage,
-            "Invalid response payload received for the DeleteAttribute "
-            "operation.",
+            "Invalid response payload received for the DeleteAttribute " "operation.",
             self.client.send_request_payload,
             *args
         )
@@ -993,7 +917,7 @@ class TestKMIPClient(TestCase):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.SET_ATTRIBUTE),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=response_payload
+            response_payload=response_payload,
         )
         send_mock.return_value = ResponseMessage(batch_items=[batch_item])
         args = (
@@ -1001,17 +925,13 @@ class TestKMIPClient(TestCase):
             payloads.SetAttributeRequestPayload(
                 unique_identifier="1",
                 new_attribute=objects.NewAttribute(
-                    attribute=primitives.Boolean(
-                        value=True,
-                        tag=enums.Tags.SENSITIVE
-                    )
-                )
-            )
+                    attribute=primitives.Boolean(value=True, tag=enums.Tags.SENSITIVE)
+                ),
+            ),
         )
         self.assertRaisesRegex(
             exceptions.InvalidMessage,
-            "Invalid response payload received for the SetAttribute "
-            "operation.",
+            "Invalid response payload received for the SetAttribute " "operation.",
             self.client.send_request_payload,
             *args
         )
@@ -1020,7 +940,7 @@ class TestKMIPClient(TestCase):
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.MODIFY_ATTRIBUTE),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=response_payload
+            response_payload=response_payload,
         )
         send_mock.return_value = ResponseMessage(batch_items=[batch_item])
         args = (
@@ -1028,32 +948,20 @@ class TestKMIPClient(TestCase):
             payloads.ModifyAttributeRequestPayload(
                 unique_identifier="1",
                 new_attribute=objects.NewAttribute(
-                    attribute=primitives.Boolean(
-                        value=True,
-                        tag=enums.Tags.SENSITIVE
-                    )
-                )
-            )
+                    attribute=primitives.Boolean(value=True, tag=enums.Tags.SENSITIVE)
+                ),
+            ),
         )
         self.assertRaisesRegex(
             exceptions.InvalidMessage,
-            "Invalid response payload received for the ModifyAttribute "
-            "operation.",
+            "Invalid response payload received for the ModifyAttribute " "operation.",
             self.client.send_request_payload,
             *args
         )
 
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._build_request_message"
-    )
-    @mock.patch(
-        "kmip.services.kmip_client.KMIPProxy._send_and_receive_message"
-    )
-    def test_send_request_payload_operation_failure(
-        self,
-        send_mock,
-        build_mock
-    ):
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
+    def test_send_request_payload_operation_failure(self, send_mock, build_mock):
         """
         Test that a KmipOperationFailure error is raised when a payload
         with a failure status is returned.
@@ -1062,7 +970,7 @@ class TestKMIPClient(TestCase):
             operation=Operation(OperationEnum.DELETE_ATTRIBUTE),
             result_status=ResultStatus(ResultStatusEnum.OPERATION_FAILED),
             result_reason=ResultReason(ResultReasonEnum.GENERAL_FAILURE),
-            result_message=ResultMessage("Test failed!")
+            result_message=ResultMessage("Test failed!"),
         )
         build_mock.return_value = None
         send_mock.return_value = ResponseMessage(batch_items=[batch_item])
@@ -1070,10 +978,8 @@ class TestKMIPClient(TestCase):
         args = (
             OperationEnum.DELETE_ATTRIBUTE,
             payloads.DeleteAttributeRequestPayload(
-                unique_identifier="1",
-                attribute_name="Object Group",
-                attribute_index=2
-            )
+                unique_identifier="1", attribute_name="Object Group", attribute_index=2
+            ),
         )
 
         self.assertRaisesRegex(
@@ -1083,27 +989,23 @@ class TestKMIPClient(TestCase):
             *args
         )
 
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._build_request_message'
-    )
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_check(self, send_mock, build_mock):
         """
         Test that the client can correctly build, send, and process a Check
         request.
         """
         payload = payloads.CheckResponsePayload(
-            unique_identifier='1',
+            unique_identifier="1",
             usage_limits_count=100,
             cryptographic_usage_mask=12,
-            lease_time=10000
+            lease_time=10000,
         )
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.CHECK),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=payload
+            response_payload=payload,
         )
         response = ResponseMessage(batch_items=[batch_item])
 
@@ -1111,73 +1013,65 @@ class TestKMIPClient(TestCase):
         send_mock.return_value = response
 
         result = self.client.check(
-            '1',
+            "1",
             100,
             [
                 enums.CryptographicUsageMask.ENCRYPT,
-                enums.CryptographicUsageMask.DECRYPT
+                enums.CryptographicUsageMask.DECRYPT,
             ],
-            10000
+            10000,
         )
 
-        self.assertEqual('1', result.get('unique_identifier'))
-        self.assertEqual(100, result.get('usage_limits_count'))
+        self.assertEqual("1", result.get("unique_identifier"))
+        self.assertEqual(100, result.get("usage_limits_count"))
         self.assertEqual(
             [
                 enums.CryptographicUsageMask.ENCRYPT,
-                enums.CryptographicUsageMask.DECRYPT
+                enums.CryptographicUsageMask.DECRYPT,
             ],
-            result.get('cryptographic_usage_mask')
+            result.get("cryptographic_usage_mask"),
         )
-        self.assertEqual(10000, result.get('lease_time'))
-        self.assertEqual(
-            ResultStatusEnum.SUCCESS,
-            result.get('result_status')
-        )
-        self.assertEqual(None, result.get('result_reason'))
-        self.assertEqual(None, result.get('result_message'))
+        self.assertEqual(10000, result.get("lease_time"))
+        self.assertEqual(ResultStatusEnum.SUCCESS, result.get("result_status"))
+        self.assertEqual(None, result.get("result_reason"))
+        self.assertEqual(None, result.get("result_message"))
 
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._build_request_message'
-    )
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_rekey(self, send_mock, build_mock):
         """
         Test that the client can correctly build, send, and process a Rekey
         request.
         """
         payload = payloads.RekeyResponsePayload(
-            unique_identifier='1',
+            unique_identifier="1",
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ]
-            )
+            ),
         )
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.REKEY),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=payload
+            response_payload=payload,
         )
         response = ResponseMessage(batch_items=[batch_item])
 
@@ -1185,61 +1079,54 @@ class TestKMIPClient(TestCase):
         send_mock.return_value = response
 
         result = self.client.rekey(
-            uuid='1',
+            uuid="1",
             offset=0,
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Activation Date'
+                            "Activation Date"
                         ),
                         attribute_value=primitives.DateTime(
-                            value=1136113200,
-                            tag=enums.Tags.ACTIVATION_DATE
-                        )
+                            value=1136113200, tag=enums.Tags.ACTIVATION_DATE
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
-        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual("1", result.get("unique_identifier"))
         self.assertEqual(
             objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ]
             ),
-            result.get('template_attribute')
+            result.get("template_attribute"),
         )
-        self.assertEqual(
-            ResultStatusEnum.SUCCESS,
-            result.get('result_status')
-        )
-        self.assertEqual(None, result.get('result_reason'))
-        self.assertEqual(None, result.get('result_message'))
+        self.assertEqual(ResultStatusEnum.SUCCESS, result.get("result_status"))
+        self.assertEqual(None, result.get("result_reason"))
+        self.assertEqual(None, result.get("result_message"))
 
-    @mock.patch('kmip.services.kmip_client.KMIPProxy._build_request_message')
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_rekey_with_no_payload(self, send_mock, build_mock):
         """
         Test that the client correctly handles responses with no payload data.
@@ -1249,7 +1136,7 @@ class TestKMIPClient(TestCase):
             result_status=ResultStatus(ResultStatusEnum.OPERATION_FAILED),
             result_reason=ResultReason(ResultReasonEnum.PERMISSION_DENIED),
             result_message=ResultMessage("Permission denied."),
-            response_payload=None
+            response_payload=None,
         )
         response = ResponseMessage(batch_items=[batch_item])
 
@@ -1257,48 +1144,41 @@ class TestKMIPClient(TestCase):
         send_mock.return_value = response
 
         result = self.client.rekey(
-            uuid='1',
+            uuid="1",
             offset=0,
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Activation Date'
+                            "Activation Date"
                         ),
                         attribute_value=primitives.DateTime(
-                            value=1136113200,
-                            tag=enums.Tags.ACTIVATION_DATE
-                        )
+                            value=1136113200, tag=enums.Tags.ACTIVATION_DATE
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
+        self.assertEqual(ResultStatusEnum.OPERATION_FAILED, result.get("result_status"))
         self.assertEqual(
-            ResultStatusEnum.OPERATION_FAILED,
-            result.get('result_status')
+            ResultReasonEnum.PERMISSION_DENIED, result.get("result_reason")
         )
-        self.assertEqual(
-            ResultReasonEnum.PERMISSION_DENIED,
-            result.get('result_reason')
-        )
-        self.assertEqual("Permission denied.", result.get('result_message'))
+        self.assertEqual("Permission denied.", result.get("result_message"))
 
-    @mock.patch('kmip.services.kmip_client.KMIPProxy._build_request_message')
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_derive_key(self, send_mock, build_mock):
         """
         Test that the client can derive a key.
         """
         payload = payloads.DeriveKeyResponsePayload(
-            unique_identifier='1',
+            unique_identifier="1",
         )
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.DERIVE_KEY),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=payload
+            response_payload=payload,
         )
         response = ResponseMessage(batch_items=[batch_item])
 
@@ -1307,62 +1187,51 @@ class TestKMIPClient(TestCase):
 
         result = self.client.derive_key(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifiers=['2', '3'],
+            unique_identifiers=["2", "3"],
             derivation_method=enums.DerivationMethod.ENCRYPT,
             derivation_parameters=DerivationParameters(
                 cryptographic_parameters=CryptographicParameters(
                     block_cipher_mode=enums.BlockCipherMode.CBC,
                     padding_method=enums.PaddingMethod.PKCS1v15,
-                    cryptographic_algorithm=enums.CryptographicAlgorithm.AES
+                    cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
                 ),
-                initialization_vector=b'\x01\x02\x03\x04',
-                derivation_data=b'\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8'
+                initialization_vector=b"\x01\x02\x03\x04",
+                derivation_data=b"\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8",
             ),
             template_attribute=TemplateAttribute(
                 attributes=[
+                    self.attr_factory.create_attribute("Cryptographic Length", 128),
                     self.attr_factory.create_attribute(
-                        'Cryptographic Length',
-                        128
+                        "Cryptographic Algorithm", enums.CryptographicAlgorithm.AES
                     ),
-                    self.attr_factory.create_attribute(
-                        'Cryptographic Algorithm',
-                        enums.CryptographicAlgorithm.AES
-                    )
                 ]
             ),
         )
 
-        self.assertEqual('1', result.get('unique_identifier'))
-        self.assertEqual(
-            ResultStatusEnum.SUCCESS,
-            result.get('result_status')
-        )
-        self.assertEqual(None, result.get('result_reason'))
-        self.assertEqual(None, result.get('result_message'))
+        self.assertEqual("1", result.get("unique_identifier"))
+        self.assertEqual(ResultStatusEnum.SUCCESS, result.get("result_status"))
+        self.assertEqual(None, result.get("result_reason"))
+        self.assertEqual(None, result.get("result_message"))
 
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._build_request_message'
-    )
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_encrypt(self, send_mock, build_mock):
         """
         Test that the client can encrypt data.
         """
         payload = payloads.EncryptResponsePayload(
-            unique_identifier='1',
+            unique_identifier="1",
             data=(
-                b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
-                b'\x05\xB1\x56\xE2\x74\x03\x97\x93'
-                b'\x58\xDE\xB9\xE7\x15\x46\x16\xD9'
-                b'\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B'
-            )
+                b"\x6B\x77\xB4\xD6\x30\x06\xDE\xE6"
+                b"\x05\xB1\x56\xE2\x74\x03\x97\x93"
+                b"\x58\xDE\xB9\xE7\x15\x46\x16\xD9"
+                b"\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B"
+            ),
         )
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.ENCRYPT),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=payload
+            response_payload=payload,
         )
         response = ResponseMessage(batch_items=[batch_item])
 
@@ -1371,61 +1240,54 @@ class TestKMIPClient(TestCase):
 
         result = self.client.encrypt(
             (
-                b'\x37\x36\x35\x34\x33\x32\x31\x20'
-                b'\x4E\x6F\x77\x20\x69\x73\x20\x74'
-                b'\x68\x65\x20\x74\x69\x6D\x65\x20'
-                b'\x66\x6F\x72\x20\x00'
+                b"\x37\x36\x35\x34\x33\x32\x31\x20"
+                b"\x4E\x6F\x77\x20\x69\x73\x20\x74"
+                b"\x68\x65\x20\x74\x69\x6D\x65\x20"
+                b"\x66\x6F\x72\x20\x00"
             ),
-            unique_identifier='1',
+            unique_identifier="1",
             cryptographic_parameters=CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
                 padding_method=enums.PaddingMethod.PKCS5,
-                cryptographic_algorithm=enums.CryptographicAlgorithm.BLOWFISH
+                cryptographic_algorithm=enums.CryptographicAlgorithm.BLOWFISH,
             ),
-            iv_counter_nonce=b'\xFE\xDC\xBA\x98\x76\x54\x32\x10'
+            iv_counter_nonce=b"\xFE\xDC\xBA\x98\x76\x54\x32\x10",
         )
 
-        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual("1", result.get("unique_identifier"))
         self.assertEqual(
             (
-                b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
-                b'\x05\xB1\x56\xE2\x74\x03\x97\x93'
-                b'\x58\xDE\xB9\xE7\x15\x46\x16\xD9'
-                b'\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B'
+                b"\x6B\x77\xB4\xD6\x30\x06\xDE\xE6"
+                b"\x05\xB1\x56\xE2\x74\x03\x97\x93"
+                b"\x58\xDE\xB9\xE7\x15\x46\x16\xD9"
+                b"\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B"
             ),
-            result.get('data')
+            result.get("data"),
         )
-        self.assertEqual(None, result.get('iv_counter_nonce'))
-        self.assertEqual(
-            ResultStatusEnum.SUCCESS,
-            result.get('result_status')
-        )
-        self.assertEqual(None, result.get('result_reason'))
-        self.assertEqual(None, result.get('result_message'))
+        self.assertEqual(None, result.get("iv_counter_nonce"))
+        self.assertEqual(ResultStatusEnum.SUCCESS, result.get("result_status"))
+        self.assertEqual(None, result.get("result_reason"))
+        self.assertEqual(None, result.get("result_message"))
 
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._build_request_message'
-    )
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_decrypt(self, send_mock, build_mock):
         """
         Test that the client can decrypt data.
         """
         payload = payloads.DecryptResponsePayload(
-            unique_identifier='1',
+            unique_identifier="1",
             data=(
-                b'\x37\x36\x35\x34\x33\x32\x31\x20'
-                b'\x4E\x6F\x77\x20\x69\x73\x20\x74'
-                b'\x68\x65\x20\x74\x69\x6D\x65\x20'
-                b'\x66\x6F\x72\x20\x00'
-            )
+                b"\x37\x36\x35\x34\x33\x32\x31\x20"
+                b"\x4E\x6F\x77\x20\x69\x73\x20\x74"
+                b"\x68\x65\x20\x74\x69\x6D\x65\x20"
+                b"\x66\x6F\x72\x20\x00"
+            ),
         )
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.DECRYPT),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=payload
+            response_payload=payload,
         )
         response = ResponseMessage(batch_items=[batch_item])
 
@@ -1434,55 +1296,47 @@ class TestKMIPClient(TestCase):
 
         result = self.client.decrypt(
             (
-                b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
-                b'\x05\xB1\x56\xE2\x74\x03\x97\x93'
-                b'\x58\xDE\xB9\xE7\x15\x46\x16\xD9'
-                b'\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B'
+                b"\x6B\x77\xB4\xD6\x30\x06\xDE\xE6"
+                b"\x05\xB1\x56\xE2\x74\x03\x97\x93"
+                b"\x58\xDE\xB9\xE7\x15\x46\x16\xD9"
+                b"\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B"
             ),
-            unique_identifier='1',
+            unique_identifier="1",
             cryptographic_parameters=CryptographicParameters(
                 block_cipher_mode=enums.BlockCipherMode.CBC,
                 padding_method=enums.PaddingMethod.PKCS5,
-                cryptographic_algorithm=enums.CryptographicAlgorithm.BLOWFISH
+                cryptographic_algorithm=enums.CryptographicAlgorithm.BLOWFISH,
             ),
-            iv_counter_nonce=b'\xFE\xDC\xBA\x98\x76\x54\x32\x10'
+            iv_counter_nonce=b"\xFE\xDC\xBA\x98\x76\x54\x32\x10",
         )
 
-        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual("1", result.get("unique_identifier"))
         self.assertEqual(
             (
-                b'\x37\x36\x35\x34\x33\x32\x31\x20'
-                b'\x4E\x6F\x77\x20\x69\x73\x20\x74'
-                b'\x68\x65\x20\x74\x69\x6D\x65\x20'
-                b'\x66\x6F\x72\x20\x00'
+                b"\x37\x36\x35\x34\x33\x32\x31\x20"
+                b"\x4E\x6F\x77\x20\x69\x73\x20\x74"
+                b"\x68\x65\x20\x74\x69\x6D\x65\x20"
+                b"\x66\x6F\x72\x20\x00"
             ),
-            result.get('data')
+            result.get("data"),
         )
-        self.assertEqual(
-            ResultStatusEnum.SUCCESS,
-            result.get('result_status')
-        )
-        self.assertEqual(None, result.get('result_reason'))
-        self.assertEqual(None, result.get('result_message'))
+        self.assertEqual(ResultStatusEnum.SUCCESS, result.get("result_status"))
+        self.assertEqual(None, result.get("result_reason"))
+        self.assertEqual(None, result.get("result_message"))
 
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._build_request_message'
-    )
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_signature_verify(self, send_mock, build_mock):
         """
         Test that the client can verify a signature.
         """
         payload = payloads.SignatureVerifyResponsePayload(
-            unique_identifier='1',
-            validity_indicator=enums.ValidityIndicator.INVALID
+            unique_identifier="1", validity_indicator=enums.ValidityIndicator.INVALID
         )
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.SIGNATURE_VERIFY),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=payload
+            response_payload=payload,
         )
         response = ResponseMessage(batch_items=[batch_item])
 
@@ -1491,52 +1345,41 @@ class TestKMIPClient(TestCase):
 
         result = self.client.signature_verify(
             (
-                b'\x6B\x77\xB4\xD6\x30\x06\xDE\xE6'
-                b'\x05\xB1\x56\xE2\x74\x03\x97\x93'
-                b'\x58\xDE\xB9\xE7\x15\x46\x16\xD9'
-                b'\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B'
+                b"\x6B\x77\xB4\xD6\x30\x06\xDE\xE6"
+                b"\x05\xB1\x56\xE2\x74\x03\x97\x93"
+                b"\x58\xDE\xB9\xE7\x15\x46\x16\xD9"
+                b"\x74\x9D\xEC\xBE\xC0\x5D\x26\x4B"
             ),
-            (
-                b'\x11\x11\x11\x11\x11\x11\x11\x11'
-            ),
-            unique_identifier='1',
+            (b"\x11\x11\x11\x11\x11\x11\x11\x11"),
+            unique_identifier="1",
             cryptographic_parameters=CryptographicParameters(
                 padding_method=enums.PaddingMethod.PKCS1v15,
                 cryptographic_algorithm=enums.CryptographicAlgorithm.RSA,
-                hashing_algorithm=enums.HashingAlgorithm.SHA_224
-            )
+                hashing_algorithm=enums.HashingAlgorithm.SHA_224,
+            ),
         )
 
-        self.assertEqual('1', result.get('unique_identifier'))
+        self.assertEqual("1", result.get("unique_identifier"))
         self.assertEqual(
-            enums.ValidityIndicator.INVALID,
-            result.get('validity_indicator')
+            enums.ValidityIndicator.INVALID, result.get("validity_indicator")
         )
-        self.assertEqual(
-            ResultStatusEnum.SUCCESS,
-            result.get('result_status')
-        )
-        self.assertEqual(None, result.get('result_reason'))
-        self.assertEqual(None, result.get('result_message'))
+        self.assertEqual(ResultStatusEnum.SUCCESS, result.get("result_status"))
+        self.assertEqual(None, result.get("result_reason"))
+        self.assertEqual(None, result.get("result_message"))
 
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._build_request_message'
-    )
-    @mock.patch(
-        'kmip.services.kmip_client.KMIPProxy._send_and_receive_message'
-    )
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._build_request_message")
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_and_receive_message")
     def test_sign(self, send_mock, build_mock):
         """
         Test that the client can sign data
         """
         payload = payloads.SignResponsePayload(
-            unique_identifier='1',
-            signature_data=b'aaaaaaaaaaaaaaaa'
+            unique_identifier="1", signature_data=b"aaaaaaaaaaaaaaaa"
         )
         batch_item = ResponseBatchItem(
             operation=Operation(OperationEnum.SIGN),
             result_status=ResultStatus(ResultStatusEnum.SUCCESS),
-            response_payload=payload
+            response_payload=payload,
         )
         response = ResponseMessage(batch_items=[batch_item])
 
@@ -1544,92 +1387,88 @@ class TestKMIPClient(TestCase):
         send_mock.return_value = response
 
         result = self.client.sign(
-            b'\x11\x11\x11\x11\x11\x11\x11\x11',
-            unique_identifier='1',
+            b"\x11\x11\x11\x11\x11\x11\x11\x11",
+            unique_identifier="1",
             cryptographic_parameters=CryptographicParameters(
                 padding_method=enums.PaddingMethod.PKCS1v15,
                 cryptographic_algorithm=enums.CryptographicAlgorithm.RSA,
-                hashing_algorithm=enums.HashingAlgorithm.SHA_224
-            )
+                hashing_algorithm=enums.HashingAlgorithm.SHA_224,
+            ),
         )
 
-        self.assertEqual('1', result.get('unique_identifier'))
-        self.assertEqual(
-            b'aaaaaaaaaaaaaaaa',
-            result.get('signature')
-        )
-        self.assertEqual(
-            ResultStatusEnum.SUCCESS,
-            result.get('result_status')
-        )
-        self.assertEqual(None, result.get('result_reason'))
-        self.assertEqual(None, result.get('result_message'))
+        self.assertEqual("1", result.get("unique_identifier"))
+        self.assertEqual(b"aaaaaaaaaaaaaaaa", result.get("signature"))
+        self.assertEqual(ResultStatusEnum.SUCCESS, result.get("result_status"))
+        self.assertEqual(None, result.get("result_reason"))
+        self.assertEqual(None, result.get("result_message"))
 
-    @mock.patch('kmip.services.kmip_client.KMIPProxy._send_message',
-                mock.MagicMock())
-    @mock.patch('kmip.services.kmip_client.KMIPProxy._receive_message',
-                mock.MagicMock())
+    @mock.patch("kmip.services.kmip_client.KMIPProxy._send_message", mock.MagicMock())
+    @mock.patch(
+        "kmip.services.kmip_client.KMIPProxy._receive_message", mock.MagicMock()
+    )
     def test_mac(self):
 
         from kmip.core.utils import BytearrayStream
 
         request_expected = (
-            b'\x42\x00\x78\x01\x00\x00\x00\xa0\x42\x00\x77\x01\x00\x00\x00\x38'
-            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x02\x00\x00\x00\x00\x42\x00\x0d\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x58'
-            b'\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x23\x00\x00\x00\x00'
-            b'\x42\x00\x79\x01\x00\x00\x00\x40\x42\x00\x94\x07\x00\x00\x00\x01'
-            b'\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\x2b\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x0b\x00\x00\x00\x00'
-            b'\x42\x00\xc2\x08\x00\x00\x00\x10\x00\x01\x02\x03\x04\x05\x06\x07'
-            b'\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f')
+            b"\x42\x00\x78\x01\x00\x00\x00\xa0\x42\x00\x77\x01\x00\x00\x00\x38"
+            b"\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04"
+            b"\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04"
+            b"\x00\x00\x00\x02\x00\x00\x00\x00\x42\x00\x0d\x02\x00\x00\x00\x04"
+            b"\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x58"
+            b"\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x23\x00\x00\x00\x00"
+            b"\x42\x00\x79\x01\x00\x00\x00\x40\x42\x00\x94\x07\x00\x00\x00\x01"
+            b"\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\x2b\x01\x00\x00\x00\x10"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x0b\x00\x00\x00\x00"
+            b"\x42\x00\xc2\x08\x00\x00\x00\x10\x00\x01\x02\x03\x04\x05\x06\x07"
+            b"\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
+        )
         response = (
-            b'\x42\x00\x7b\x01\x00\x00\x00\xd8\x42\x00\x7a\x01\x00\x00\x00\x48'
-            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x02\x00\x00\x00\x00\x42\x00\x92\x09\x00\x00\x00\x08'
-            b'\x00\x00\x00\x00\x58\x8a\x3f\x23\x42\x00\x0d\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x80'
-            b'\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x23\x00\x00\x00\x00'
-            b'\x42\x00\x7f\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x7c\x01\x00\x00\x00\x58\x42\x00\x94\x07\x00\x00\x00\x01'
-            b'\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\xc6\x08\x00\x00\x00\x40'
-            b'\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb\x32\x9f'
-            b'\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2\x2a\x5b'
-            b'\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe\xc8\x23'
-            b'\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51\xff\x7c'
+            b"\x42\x00\x7b\x01\x00\x00\x00\xd8\x42\x00\x7a\x01\x00\x00\x00\x48"
+            b"\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04"
+            b"\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04"
+            b"\x00\x00\x00\x02\x00\x00\x00\x00\x42\x00\x92\x09\x00\x00\x00\x08"
+            b"\x00\x00\x00\x00\x58\x8a\x3f\x23\x42\x00\x0d\x02\x00\x00\x00\x04"
+            b"\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x80"
+            b"\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x23\x00\x00\x00\x00"
+            b"\x42\x00\x7f\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x7c\x01\x00\x00\x00\x58\x42\x00\x94\x07\x00\x00\x00\x01"
+            b"\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\xc6\x08\x00\x00\x00\x40"
+            b"\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb\x32\x9f"
+            b"\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2\x2a\x5b"
+            b"\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe\xc8\x23"
+            b"\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51\xff\x7c"
         )
         response_no_payload = (
-            b'\x42\x00\x7b\x01\x00\x00\x00\x78\x42\x00\x7a\x01\x00\x00\x00\x48'
-            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x02\x00\x00\x00\x00\x42\x00\x92\x09\x00\x00\x00\x08'
-            b'\x00\x00\x00\x00\x58\x8a\x3f\x23\x42\x00\x0d\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x80'
-            b'\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x23\x00\x00\x00\x00'
-            b'\x42\x00\x7f\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x7b\x01\x00\x00\x00\x78\x42\x00\x7a\x01\x00\x00\x00\x48"
+            b"\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6a\x02\x00\x00\x00\x04"
+            b"\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6b\x02\x00\x00\x00\x04"
+            b"\x00\x00\x00\x02\x00\x00\x00\x00\x42\x00\x92\x09\x00\x00\x00\x08"
+            b"\x00\x00\x00\x00\x58\x8a\x3f\x23\x42\x00\x0d\x02\x00\x00\x00\x04"
+            b"\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x0f\x01\x00\x00\x00\x80"
+            b"\x42\x00\x5c\x05\x00\x00\x00\x04\x00\x00\x00\x23\x00\x00\x00\x00"
+            b"\x42\x00\x7f\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
         )
 
-        data = (b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B'
-                b'\x0C\x0D\x0E\x0F')
+        data = b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B" b"\x0C\x0D\x0E\x0F"
 
-        mdata = (b'\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13'
-                 b'\x12\xbb\x32\x9f'
-                 b'\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19'
-                 b'\x28\xf2\x2a\x5b'
-                 b'\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23'
-                 b'\xb9\xbe\xc8\x23'
-                 b'\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55'
-                 b'\xf4\x51\xff\x7c')
+        mdata = (
+            b"\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13"
+            b"\x12\xbb\x32\x9f"
+            b"\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19"
+            b"\x28\xf2\x2a\x5b"
+            b"\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23"
+            b"\xb9\xbe\xc8\x23"
+            b"\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55"
+            b"\xf4\x51\xff\x7c"
+        )
 
         def verify_request(message):
             stream = BytearrayStream()
             message.write(stream)
             self.assertEqual(stream.buffer, request_expected)
 
-        uuid = '1'
+        uuid = "1"
 
         cryptographic_parameters = CryptographicParameters(
             cryptographic_algorithm=CryptographicAlgorithmEnum.HMAC_SHA512
@@ -1642,8 +1481,7 @@ class TestKMIPClient(TestCase):
         self.assertEqual(result.uuid.value, uuid)
         self.assertEqual(result.mac_data.value, mdata)
 
-        self.client._receive_message.return_value = \
-            BytearrayStream(response_no_payload)
+        self.client._receive_message.return_value = BytearrayStream(response_no_payload)
 
         result = self.client.mac(data, uuid, cryptographic_parameters)
         self.assertEqual(result.uuid, None)
@@ -1726,8 +1564,8 @@ class TestClientProfileInformation(TestCase):
         components.
         """
         supported = self.client.is_profile_supported(
-            ConformanceClause.DISCOVER_VERSIONS,
-            AuthenticationSuite.BASIC)
+            ConformanceClause.DISCOVER_VERSIONS, AuthenticationSuite.BASIC
+        )
         self.assertTrue(supported)
 
     # TODO (peter-hamilton) Replace following 3 tests with 1 parameterized test
@@ -1737,8 +1575,8 @@ class TestClientProfileInformation(TestCase):
         conformance clause.
         """
         supported = self.client.is_profile_supported(
-            ConformanceClause.BASELINE,
-            AuthenticationSuite.BASIC)
+            ConformanceClause.BASELINE, AuthenticationSuite.BASIC
+        )
         self.assertFalse(supported)
 
     def test_is_profile_supported_with_invalid_authentication_suite(self):
@@ -1747,8 +1585,8 @@ class TestClientProfileInformation(TestCase):
         authentication suite.
         """
         supported = self.client.is_profile_supported(
-            ConformanceClause.DISCOVER_VERSIONS,
-            AuthenticationSuite.TLS12)
+            ConformanceClause.DISCOVER_VERSIONS, AuthenticationSuite.TLS12
+        )
         self.assertFalse(supported)
 
     def test_is_profile_supported_with_invalid_profile_components(self):
@@ -1757,6 +1595,6 @@ class TestClientProfileInformation(TestCase):
         profile components.
         """
         supported = self.client.is_profile_supported(
-            ConformanceClause.BASELINE,
-            AuthenticationSuite.TLS12)
+            ConformanceClause.BASELINE, AuthenticationSuite.TLS12
+        )
         self.assertFalse(supported)

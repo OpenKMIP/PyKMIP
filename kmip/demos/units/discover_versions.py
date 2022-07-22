@@ -27,7 +27,7 @@ import sys
 import re
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -40,8 +40,8 @@ if __name__ == '__main__':
 
     protocol_versions = list()
     if opts.protocol_versions is not None:
-        for version in re.split(',| ', opts.protocol_versions):
-            mm = re.split(r'\.', version)
+        for version in re.split(",| ", opts.protocol_versions):
+            mm = re.split(r"\.", version)
             protocol_versions.append(ProtocolVersion(int(mm[0]), int(mm[1])))
 
     # Build the client and connect to the server
@@ -52,21 +52,28 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.info('discover_versions() result status: {0}'.format(
-        result.result_status.value))
+    logger.info(
+        "discover_versions() result status: {0}".format(result.result_status.value)
+    )
 
     if result.result_status.value == ResultStatus.SUCCESS:
         protocol_versions = result.protocol_versions
         if isinstance(protocol_versions, list):
-            logger.info('number of protocol versions returned: {0}'.format(
-                len(protocol_versions)))
+            logger.info(
+                "number of protocol versions returned: {0}".format(
+                    len(protocol_versions)
+                )
+            )
             for protocol_version in protocol_versions:
-                logger.info('protocol version supported: {0}'.format(
-                            protocol_version))
+                logger.info("protocol version supported: {0}".format(protocol_version))
         else:
-            logger.info('number of protocol versions returned: 0')
+            logger.info("number of protocol versions returned: 0")
     else:
-        logger.info('discover_versions() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('discover_versions() result message: {0}'.format(
-            result.result_message.value))
+        logger.info(
+            "discover_versions() result reason: {0}".format(result.result_reason.value)
+        )
+        logger.info(
+            "discover_versions() result message: {0}".format(
+                result.result_message.value
+            )
+        )

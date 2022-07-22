@@ -41,25 +41,23 @@ class TestSignRequestPayload(testtools.TestCase):
         # Data - 01020304050607080910111213141516
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x60'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30'
-            b'\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D'
-            b'\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\xC2\x08\x00\x00\x00\x10\x01\x02\x03\x04\x05\x06\x07\x08'
-            b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            b"\x42\x00\x79\x01\x00\x00\x00\x60"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30"
+            b"\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D"
+            b"\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\xC2\x08\x00\x00\x00\x10\x01\x02\x03\x04\x05\x06\x07\x08"
+            b"\x09\x10\x11\x12\x13\x14\x15\x16"
         )
 
         self.minimum_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x18'
-            b'\x42\x00\xC2\x08\x00\x00\x00\x10\x01\x02\x03\x04\x05\x06\x07\x08'
-            b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            b"\x42\x00\x79\x01\x00\x00\x00\x18"
+            b"\x42\x00\xC2\x08\x00\x00\x00\x10\x01\x02\x03\x04\x05\x06\x07\x08"
+            b"\x09\x10\x11\x12\x13\x14\x15\x16"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestSignRequestPayload, self).tearDown()
@@ -79,20 +77,18 @@ class TestSignRequestPayload(testtools.TestCase):
         Test that a Sign request payload can be constructed with valid values.
         """
         payload = sign.SignRequestPayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
+            unique_identifier="00000000-1111-2222-3333-444444444444",
             cryptographic_parameters=attributes.CryptographicParameters(),
-            data=b'\x01\x02\x03'
+            data=b"\x01\x02\x03",
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
         self.assertEqual(
-            attributes.CryptographicParameters(),
-            payload.cryptographic_parameters
+            attributes.CryptographicParameters(), payload.cryptographic_parameters
         )
-        self.assertEqual(b'\x01\x02\x03', payload.data)
+        self.assertEqual(b"\x01\x02\x03", payload.data)
 
     def test_invalid_unique_identifier(self):
         """
@@ -100,12 +96,9 @@ class TestSignRequestPayload(testtools.TestCase):
         the unique identifier of a Sign request payload.
         """
         payload = sign.SignRequestPayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "unique identifier must be a string",
-            setattr,
-            *args
+            TypeError, "unique identifier must be a string", setattr, *args
         )
 
     def test_invalid_cryptographic_parameters(self):
@@ -114,11 +107,10 @@ class TestSignRequestPayload(testtools.TestCase):
         the cryptographic parameters of a Sign request payload.
         """
         payload = sign.SignRequestPayload()
-        args = (payload, 'cryptographic_parameters', b'\x01\x02\x03')
+        args = (payload, "cryptographic_parameters", b"\x01\x02\x03")
         self.assertRaisesRegex(
             TypeError,
-            "cryptographic parameters must be a CryptographicParameters "
-            "struct",
+            "cryptographic parameters must be a CryptographicParameters " "struct",
             setattr,
             *args
         )
@@ -129,13 +121,8 @@ class TestSignRequestPayload(testtools.TestCase):
         the data of a Sign request payload.
         """
         payload = sign.SignRequestPayload()
-        args = (payload, 'data', 0)
-        self.assertRaisesRegex(
-            TypeError,
-            "data must be bytes",
-            setattr,
-            *args
-        )
+        args = (payload, "data", 0)
+        self.assertRaisesRegex(TypeError, "data must be bytes", setattr, *args)
 
     def test_read(self):
         """
@@ -150,18 +137,16 @@ class TestSignRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            'b4faee10-aa2a-4446-8ad4-0881f3422959',
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertIsNotNone(payload.cryptographic_parameters)
         self.assertEqual(
             enums.CryptographicAlgorithm.ECDSA,
-            payload.cryptographic_parameters.cryptographic_algorithm
+            payload.cryptographic_parameters.cryptographic_algorithm,
         )
         self.assertEqual(
-            b'\x01\x02\x03\x04\x05\x06\x07\x08'
-            b'\x09\x10\x11\x12\x13\x14\x15\x16',
-            payload.data
+            b"\x01\x02\x03\x04\x05\x06\x07\x08" b"\x09\x10\x11\x12\x13\x14\x15\x16",
+            payload.data,
         )
 
     def test_read_partial(self):
@@ -178,9 +163,8 @@ class TestSignRequestPayload(testtools.TestCase):
         payload.read(self.minimum_encoding)
 
         self.assertEqual(
-            b'\x01\x02\x03\x04\x05\x06\x07\x08'
-            b'\x09\x10\x11\x12\x13\x14\x15\x16',
-            payload.data
+            b"\x01\x02\x03\x04\x05\x06\x07\x08" b"\x09\x10\x11\x12\x13\x14\x15\x16",
+            payload.data,
         )
 
     def test_read_invalid(self):
@@ -189,7 +173,7 @@ class TestSignRequestPayload(testtools.TestCase):
         payload attribute is missing from the payload encoding.
         """
         payload = sign.SignRequestPayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the data attribute",
@@ -202,12 +186,12 @@ class TestSignRequestPayload(testtools.TestCase):
         Test that a Sign request payload can be written to a data stream.
         """
         payload = sign.SignRequestPayload(
-            unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             cryptographic_parameters=attributes.CryptographicParameters(
                 cryptographic_algorithm=enums.CryptographicAlgorithm.ECDSA
             ),
-            data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
-                 b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            data=b"\x01\x02\x03\x04\x05\x06\x07\x08"
+            b"\x09\x10\x11\x12\x13\x14\x15\x16",
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -221,8 +205,7 @@ class TestSignRequestPayload(testtools.TestCase):
         to a data stream.
         """
         payload = sign.SignRequestPayload(
-            data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
-                 b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            data=b"\x01\x02\x03\x04\x05\x06\x07\x08" b"\x09\x10\x11\x12\x13\x14\x15\x16"
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -237,7 +220,7 @@ class TestSignRequestPayload(testtools.TestCase):
         """
         payload = sign.SignRequestPayload()
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the data attribute",
@@ -257,20 +240,20 @@ class TestSignRequestPayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = sign.SignRequestPayload(
-            unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             cryptographic_parameters=attributes.CryptographicParameters(
                 cryptographic_algorithm=enums.CryptographicAlgorithm.ECDSA
             ),
-            data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
-                 b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            data=b"\x01\x02\x03\x04\x05\x06\x07\x08"
+            b"\x09\x10\x11\x12\x13\x14\x15\x16",
         )
         b = sign.SignRequestPayload(
-            unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             cryptographic_parameters=attributes.CryptographicParameters(
                 cryptographic_algorithm=enums.CryptographicAlgorithm.ECDSA
             ),
-            data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
-                 b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            data=b"\x01\x02\x03\x04\x05\x06\x07\x08"
+            b"\x09\x10\x11\x12\x13\x14\x15\x16",
         )
 
         self.assertTrue(a == b)
@@ -281,12 +264,8 @@ class TestSignRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Sign request payloads with different unique identifiers.
         """
-        a = sign.SignRequestPayload(
-            unique_identifier='a'
-        )
-        b = sign.SignRequestPayload(
-            unique_identifier='b'
-        )
+        a = sign.SignRequestPayload(unique_identifier="a")
+        b = sign.SignRequestPayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -315,8 +294,8 @@ class TestSignRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Sign request payloads with different data.
         """
-        a = sign.SignRequestPayload(data=b'\x01')
-        b = sign.SignRequestPayload(data=b'\xFF')
+        a = sign.SignRequestPayload(data=b"\x01")
+        b = sign.SignRequestPayload(data=b"\xFF")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -327,7 +306,7 @@ class TestSignRequestPayload(testtools.TestCase):
         Sign request payloads with different types.
         """
         a = sign.SignRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -344,20 +323,20 @@ class TestSignRequestPayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = sign.SignRequestPayload(
-            unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             cryptographic_parameters=attributes.CryptographicParameters(
                 cryptographic_algorithm=enums.CryptographicAlgorithm.ECDSA
             ),
-            data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
-                 b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            data=b"\x01\x02\x03\x04\x05\x06\x07\x08"
+            b"\x09\x10\x11\x12\x13\x14\x15\x16",
         )
         b = sign.SignRequestPayload(
-            unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             cryptographic_parameters=attributes.CryptographicParameters(
                 cryptographic_algorithm=enums.CryptographicAlgorithm.ECDSA
             ),
-            data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
-                 b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            data=b"\x01\x02\x03\x04\x05\x06\x07\x08"
+            b"\x09\x10\x11\x12\x13\x14\x15\x16",
         )
 
         self.assertFalse(a != b)
@@ -368,12 +347,8 @@ class TestSignRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Sign request payloads with different unique identifiers.
         """
-        a = sign.SignRequestPayload(
-            unique_identifier='a'
-        )
-        b = sign.SignRequestPayload(
-            unique_identifier='b'
-        )
+        a = sign.SignRequestPayload(unique_identifier="a")
+        b = sign.SignRequestPayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -402,8 +377,8 @@ class TestSignRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Sign request payloads with different data.
         """
-        a = sign.SignRequestPayload(data=b'\x01')
-        b = sign.SignRequestPayload(data=b'\xFF')
+        a = sign.SignRequestPayload(data=b"\x01")
+        b = sign.SignRequestPayload(data=b"\xFF")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -414,7 +389,7 @@ class TestSignRequestPayload(testtools.TestCase):
         Sign request payloads with different types.
         """
         a = sign.SignRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -424,11 +399,11 @@ class TestSignRequestPayload(testtools.TestCase):
         Test that repr can be applied to a Sign request payload.
         """
         payload = sign.SignRequestPayload(
-            unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             cryptographic_parameters=attributes.CryptographicParameters(
                 cryptographic_algorithm=enums.CryptographicAlgorithm.ECDSA
             ),
-            data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
+            data=b"\x01\x02\x03\x04\x05\x06\x07\x08",
         )
         expected = (
             "SignRequestPayload("
@@ -441,7 +416,7 @@ class TestSignRequestPayload(testtools.TestCase):
             "random_iv=None, iv_length=None, tag_length=None, "
             "fixed_field_length=None, invocation_field_length=None, "
             "counter_length=None, initial_counter_value=None), "
-            "data=" + str(b'\x01\x02\x03\x04\x05\x06\x07\x08') + ")"
+            "data=" + str(b"\x01\x02\x03\x04\x05\x06\x07\x08") + ")"
         )
         observed = repr(payload)
 
@@ -452,19 +427,21 @@ class TestSignRequestPayload(testtools.TestCase):
         Test that str can be applied to a Sign request payload.
         """
         crypto_params = attributes.CryptographicParameters(
-             cryptographic_algorithm=enums.CryptographicAlgorithm.ECDSA
+            cryptographic_algorithm=enums.CryptographicAlgorithm.ECDSA
         )
         payload = sign.SignRequestPayload(
-            unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             cryptographic_parameters=crypto_params,
-            data=b'\x01\x02\x03\x04\x05\x06\x07\x08',
+            data=b"\x01\x02\x03\x04\x05\x06\x07\x08",
         )
 
-        expected = str({
-            'unique_identifier': 'b4faee10-aa2a-4446-8ad4-0881f3422959',
-            'cryptographic_parameters': crypto_params,
-            'data': b'\x01\x02\x03\x04\x05\x06\x07\x08'
-        })
+        expected = str(
+            {
+                "unique_identifier": "b4faee10-aa2a-4446-8ad4-0881f3422959",
+                "cryptographic_parameters": crypto_params,
+                "data": b"\x01\x02\x03\x04\x05\x06\x07\x08",
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)
@@ -486,22 +463,20 @@ class TestSignResponsePayload(testtools.TestCase):
         # Signature Data - 01020304050607080910111213141516
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30'
-            b'\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D'
-            b'\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x00\xC3\x08\x00\x00\x00\x10\x01\x02\x03\x04\x05\x06\x07\x08'
-            b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30"
+            b"\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D"
+            b"\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x00\xC3\x08\x00\x00\x00\x10\x01\x02\x03\x04\x05\x06\x07\x08"
+            b"\x09\x10\x11\x12\x13\x14\x15\x16"
         )
         self.incomplete_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30'
-            b'\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D'
-            b'\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30"
+            b"\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D"
+            b"\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00"
         )
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestSignResponsePayload, self).tearDown()
@@ -522,15 +497,14 @@ class TestSignResponsePayload(testtools.TestCase):
         values.
         """
         payload = sign.SignResponsePayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
-            signature_data=b'\x01\x02\x03'
+            unique_identifier="00000000-1111-2222-3333-444444444444",
+            signature_data=b"\x01\x02\x03",
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
-        self.assertEqual(b'\x01\x02\x03', payload.signature_data)
+        self.assertEqual(b"\x01\x02\x03", payload.signature_data)
 
     def test_invalid_unique_identifier(self):
         """
@@ -538,12 +512,9 @@ class TestSignResponsePayload(testtools.TestCase):
         the unique identifier of a Sign response payload.
         """
         payload = sign.SignResponsePayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "unique identifier must be a string",
-            setattr,
-            *args
+            TypeError, "unique identifier must be a string", setattr, *args
         )
 
     def test_invalid_signature_data(self):
@@ -552,12 +523,9 @@ class TestSignResponsePayload(testtools.TestCase):
         the signature data of a Sign response payload.
         """
         payload = sign.SignResponsePayload()
-        args = (payload, 'signature_data', 0)
+        args = (payload, "signature_data", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "signature data must be bytes",
-            setattr,
-            *args
+            TypeError, "signature data must be bytes", setattr, *args
         )
 
     def test_read(self):
@@ -572,13 +540,11 @@ class TestSignResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            'b4faee10-aa2a-4446-8ad4-0881f3422959',
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertEqual(
-            b'\x01\x02\x03\x04\x05\x06\x07\x08'
-            b'\x09\x10\x11\x12\x13\x14\x15\x16',
-            payload.signature_data
+            b"\x01\x02\x03\x04\x05\x06\x07\x08" b"\x09\x10\x11\x12\x13\x14\x15\x16",
+            payload.signature_data,
         )
 
     def test_read_invalid(self):
@@ -587,7 +553,7 @@ class TestSignResponsePayload(testtools.TestCase):
         payload attributes are missing from the payload encoding.
         """
         payload = sign.SignResponsePayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the unique identifier attribute",
@@ -596,7 +562,7 @@ class TestSignResponsePayload(testtools.TestCase):
         )
 
         payload = sign.SignResponsePayload()
-        args = (self.incomplete_encoding, )
+        args = (self.incomplete_encoding,)
         self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the signature data attribute",
@@ -609,9 +575,9 @@ class TestSignResponsePayload(testtools.TestCase):
         Test that a Sign response payload can be written to a data stream.
         """
         payload = sign.SignResponsePayload(
-            unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959',
-            signature_data=b'\x01\x02\x03\x04\x05\x06\x07\x08'
-                           b'\x09\x10\x11\x12\x13\x14\x15\x16'
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
+            signature_data=b"\x01\x02\x03\x04\x05\x06\x07\x08"
+            b"\x09\x10\x11\x12\x13\x14\x15\x16",
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -626,7 +592,7 @@ class TestSignResponsePayload(testtools.TestCase):
         """
         payload = sign.SignResponsePayload()
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             ValueError,
             "invalid payload missing the unique identifier attribute",
@@ -657,11 +623,9 @@ class TestSignResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         sign response payloads with different unique_identifier.
         """
-        a = sign.SignResponsePayload(unique_identifier='a',
-                                     signature_data=b'\x01')
+        a = sign.SignResponsePayload(unique_identifier="a", signature_data=b"\x01")
 
-        b = sign.SignResponsePayload(unique_identifier='b',
-                                     signature_data=b'\x01')
+        b = sign.SignResponsePayload(unique_identifier="b", signature_data=b"\x01")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -671,10 +635,8 @@ class TestSignResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         sign response payloads with different signature_data.
         """
-        a = sign.SignResponsePayload(unique_identifier='a',
-                                     signature_data=b'\x01')
-        b = sign.SignResponsePayload(unique_identifier='a',
-                                     signature_data=b'\x02')
+        a = sign.SignResponsePayload(unique_identifier="a", signature_data=b"\x01")
+        b = sign.SignResponsePayload(unique_identifier="a", signature_data=b"\x02")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -685,7 +647,7 @@ class TestSignResponsePayload(testtools.TestCase):
         response payload to another type.
         """
         a = sign.SignResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -713,11 +675,9 @@ class TestSignResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         sign response payloads with different unique_identifier.
         """
-        a = sign.SignResponsePayload(unique_identifier='a',
-                                     signature_data=b'\x01')
+        a = sign.SignResponsePayload(unique_identifier="a", signature_data=b"\x01")
 
-        b = sign.SignResponsePayload(unique_identifier='b',
-                                     signature_data=b'\x01')
+        b = sign.SignResponsePayload(unique_identifier="b", signature_data=b"\x01")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -727,10 +687,8 @@ class TestSignResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         sign response payloads with different signature_data.
         """
-        a = sign.SignResponsePayload(unique_identifier='a',
-                                     signature_data=b'\x01')
-        b = sign.SignResponsePayload(unique_identifier='a',
-                                     signature_data=b'\x02')
+        a = sign.SignResponsePayload(unique_identifier="a", signature_data=b"\x01")
+        b = sign.SignResponsePayload(unique_identifier="a", signature_data=b"\x02")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -741,7 +699,7 @@ class TestSignResponsePayload(testtools.TestCase):
         sign response payload to a different type.
         """
         a = sign.SignResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -751,14 +709,14 @@ class TestSignResponsePayload(testtools.TestCase):
         Test that repr can applied to a sign response payload.
         """
         payload = sign.SignResponsePayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
-            signature_data=b'\x01\x02\x03'
+            unique_identifier="00000000-1111-2222-3333-444444444444",
+            signature_data=b"\x01\x02\x03",
         )
 
         expected = (
             "SignResponsePayload("
             "unique_identifier='00000000-1111-2222-3333-444444444444', "
-            "signature_data="+str(b'\x01\x02\x03') + ")"
+            "signature_data=" + str(b"\x01\x02\x03") + ")"
         )
 
         observed = repr(payload)
@@ -769,14 +727,16 @@ class TestSignResponsePayload(testtools.TestCase):
         Test that str can be applied to a sign response payload.
         """
         payload = sign.SignResponsePayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
-            signature_data=b'\x01\x02\x03'
+            unique_identifier="00000000-1111-2222-3333-444444444444",
+            signature_data=b"\x01\x02\x03",
         )
 
-        expected = str({
-            'unique_identifier': '00000000-1111-2222-3333-444444444444',
-            'signature_data': b'\x01\x02\x03'
-        })
+        expected = str(
+            {
+                "unique_identifier": "00000000-1111-2222-3333-444444444444",
+                "signature_data": b"\x01\x02\x03",
+            }
+        )
 
         observed = str(payload)
         self.assertEqual(expected, observed)

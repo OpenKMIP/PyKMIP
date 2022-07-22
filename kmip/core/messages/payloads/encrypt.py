@@ -38,12 +38,14 @@ class EncryptRequestPayload(base.RequestPayload):
             Authenticated Encryption Tag. Added in KMIP 1.4.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 cryptographic_parameters=None,
-                 data=None,
-                 iv_counter_nonce=None,
-                 auth_additional_data=None):
+    def __init__(
+        self,
+        unique_identifier=None,
+        cryptographic_parameters=None,
+        data=None,
+        iv_counter_nonce=None,
+        auth_additional_data=None,
+    ):
         """
         Construct an Encrypt request payload struct.
 
@@ -91,8 +93,7 @@ class EncryptRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("unique identifier must be a string")
@@ -109,8 +110,7 @@ class EncryptRequestPayload(base.RequestPayload):
             self._cryptographic_parameters = value
         else:
             raise TypeError(
-                "cryptographic parameters must be a CryptographicParameters "
-                "struct"
+                "cryptographic parameters must be a CryptographicParameters " "struct"
             )
 
     @property
@@ -125,10 +125,7 @@ class EncryptRequestPayload(base.RequestPayload):
         if value is None:
             self._data = None
         elif isinstance(value, six.binary_type):
-            self._data = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.DATA
-            )
+            self._data = primitives.ByteString(value=value, tag=enums.Tags.DATA)
         else:
             raise TypeError("data must be bytes")
 
@@ -145,8 +142,7 @@ class EncryptRequestPayload(base.RequestPayload):
             self._iv_counter_nonce = None
         elif isinstance(value, six.binary_type):
             self._iv_counter_nonce = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.IV_COUNTER_NONCE
+                value=value, tag=enums.Tags.IV_COUNTER_NONCE
             )
         else:
             raise TypeError("IV/counter/nonce must be bytes")
@@ -164,8 +160,7 @@ class EncryptRequestPayload(base.RequestPayload):
             self._auth_additional_data = None
         elif isinstance(value, six.binary_type):
             self._auth_additional_data = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA
+                value=value, tag=enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA
             )
         else:
             raise TypeError("authenticated additional data must be bytes")
@@ -187,31 +182,18 @@ class EncryptRequestPayload(base.RequestPayload):
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(EncryptRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(EncryptRequestPayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
 
-        if self.is_tag_next(
-                enums.Tags.CRYPTOGRAPHIC_PARAMETERS,
-                local_stream
-        ):
-            self._cryptographic_parameters = \
-                attributes.CryptographicParameters()
-            self._cryptographic_parameters.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+        if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_PARAMETERS, local_stream):
+            self._cryptographic_parameters = attributes.CryptographicParameters()
+            self._cryptographic_parameters.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
@@ -223,23 +205,16 @@ class EncryptRequestPayload(base.RequestPayload):
             self._iv_counter_nonce = primitives.ByteString(
                 tag=enums.Tags.IV_COUNTER_NONCE
             )
-            self._iv_counter_nonce.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._iv_counter_nonce.read(local_stream, kmip_version=kmip_version)
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_4:
             if self.is_tag_next(
-                    enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA,
-                    local_stream
+                enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA, local_stream
             ):
                 self._auth_additional_data = primitives.ByteString(
                     tag=enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA
                 )
-                self._auth_additional_data.read(
-                    local_stream,
-                    kmip_version=kmip_version
-                )
+                self._auth_additional_data.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -261,14 +236,10 @@ class EncryptRequestPayload(base.RequestPayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._cryptographic_parameters:
             self._cryptographic_parameters.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         if self._data:
@@ -277,22 +248,17 @@ class EncryptRequestPayload(base.RequestPayload):
             raise ValueError("invalid payload missing the data attribute")
 
         if self._iv_counter_nonce:
-            self._iv_counter_nonce.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._iv_counter_nonce.write(local_stream, kmip_version=kmip_version)
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_4:
             if self._auth_additional_data:
                 self._auth_additional_data.write(
-                    local_stream,
-                    kmip_version=kmip_version
+                    local_stream, kmip_version=kmip_version
                 )
 
         self.length = local_stream.length()
         super(EncryptRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -300,8 +266,7 @@ class EncryptRequestPayload(base.RequestPayload):
         if isinstance(other, EncryptRequestPayload):
             if self.unique_identifier != other.unique_identifier:
                 return False
-            elif self.cryptographic_parameters !=\
-                    other.cryptographic_parameters:
+            elif self.cryptographic_parameters != other.cryptographic_parameters:
                 return False
             elif self.data != other.data:
                 return False
@@ -321,25 +286,29 @@ class EncryptRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "cryptographic_parameters={0}".format(
-                repr(self.cryptographic_parameters)
-            ),
-            "data={0}".format(self.data),
-            "iv_counter_nonce={0}".format(self.iv_counter_nonce),
-            "auth_additional_data={0}".format(self.auth_additional_data)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "cryptographic_parameters={0}".format(
+                    repr(self.cryptographic_parameters)
+                ),
+                "data={0}".format(self.data),
+                "iv_counter_nonce={0}".format(self.iv_counter_nonce),
+                "auth_additional_data={0}".format(self.auth_additional_data),
+            ]
+        )
         return "EncryptRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'cryptographic_parameters': self.cryptographic_parameters,
-            'data': self.data,
-            'iv_counter_nonce': self.iv_counter_nonce,
-            'auth_additional_data': self.auth_additional_data
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "cryptographic_parameters": self.cryptographic_parameters,
+                "data": self.data,
+                "iv_counter_nonce": self.iv_counter_nonce,
+                "auth_additional_data": self.auth_additional_data,
+            }
+        )
 
 
 class EncryptResponsePayload(base.ResponsePayload):
@@ -359,11 +328,9 @@ class EncryptResponsePayload(base.ResponsePayload):
             Added in KMIP 1.4.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 data=None,
-                 iv_counter_nonce=None,
-                 auth_tag=None):
+    def __init__(
+        self, unique_identifier=None, data=None, iv_counter_nonce=None, auth_tag=None
+    ):
         """
         Construct an Encrypt response payload struct.
 
@@ -408,8 +375,7 @@ class EncryptResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("unique identifier must be a string")
@@ -426,10 +392,7 @@ class EncryptResponsePayload(base.ResponsePayload):
         if value is None:
             self._data = None
         elif isinstance(value, six.binary_type):
-            self._data = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.DATA
-            )
+            self._data = primitives.ByteString(value=value, tag=enums.Tags.DATA)
         else:
             raise TypeError("data must be bytes")
 
@@ -446,8 +409,7 @@ class EncryptResponsePayload(base.ResponsePayload):
             self._iv_counter_nonce = None
         elif isinstance(value, six.binary_type):
             self._iv_counter_nonce = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.IV_COUNTER_NONCE
+                value=value, tag=enums.Tags.IV_COUNTER_NONCE
             )
         else:
             raise TypeError("IV/counter/nonce must be bytes")
@@ -465,8 +427,7 @@ class EncryptResponsePayload(base.ResponsePayload):
             self._auth_tag = None
         elif isinstance(value, six.binary_type):
             self._auth_tag = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.AUTHENTICATED_ENCRYPTION_TAG
+                value=value, tag=enums.Tags.AUTHENTICATED_ENCRYPTION_TAG
             )
         else:
             raise TypeError("authenticated encryption tag must be bytes")
@@ -489,8 +450,7 @@ class EncryptResponsePayload(base.ResponsePayload):
                 are missing from the encoded payload.
         """
         super(EncryptResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
@@ -498,21 +458,13 @@ class EncryptResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "invalid payload missing the unique identifier attribute"
-            )
+            raise ValueError("invalid payload missing the unique identifier attribute")
 
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
-            self._data.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._data.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError("invalid payload missing the data attribute")
 
@@ -520,22 +472,14 @@ class EncryptResponsePayload(base.ResponsePayload):
             self._iv_counter_nonce = primitives.ByteString(
                 tag=enums.Tags.IV_COUNTER_NONCE
             )
-            self._iv_counter_nonce.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._iv_counter_nonce.read(local_stream, kmip_version=kmip_version)
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_4:
-            if self.is_tag_next(
-                    enums.Tags.AUTHENTICATED_ENCRYPTION_TAG, local_stream
-            ):
+            if self.is_tag_next(enums.Tags.AUTHENTICATED_ENCRYPTION_TAG, local_stream):
                 self._auth_tag = primitives.ByteString(
                     tag=enums.Tags.AUTHENTICATED_ENCRYPTION_TAG
                 )
-                self._auth_tag.read(
-                    local_stream,
-                    kmip_version=kmip_version
-                )
+                self._auth_tag.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -558,14 +502,9 @@ class EncryptResponsePayload(base.ResponsePayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "invalid payload missing the unique identifier attribute"
-            )
+            raise ValueError("invalid payload missing the unique identifier attribute")
 
         if self._data:
             self._data.write(local_stream, kmip_version=kmip_version)
@@ -573,22 +512,15 @@ class EncryptResponsePayload(base.ResponsePayload):
             raise ValueError("invalid payload missing the data attribute")
 
         if self._iv_counter_nonce:
-            self._iv_counter_nonce.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._iv_counter_nonce.write(local_stream, kmip_version=kmip_version)
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_4:
             if self._auth_tag:
-                self._auth_tag.write(
-                    local_stream,
-                    kmip_version=kmip_version
-                )
+                self._auth_tag.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(EncryptResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -614,18 +546,22 @@ class EncryptResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "data={0}".format(self.data),
-            "iv_counter_nonce={0}".format(self.iv_counter_nonce),
-            "auth_tag={0}".format(self.auth_tag)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "data={0}".format(self.data),
+                "iv_counter_nonce={0}".format(self.iv_counter_nonce),
+                "auth_tag={0}".format(self.auth_tag),
+            ]
+        )
         return "EncryptResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'data': self.data,
-            'iv_counter_nonce': self.iv_counter_nonce,
-            'auth_tag': self.auth_tag
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "data": self.data,
+                "iv_counter_nonce": self.iv_counter_nonce,
+                "auth_tag": self.auth_tag,
+            }
+        )

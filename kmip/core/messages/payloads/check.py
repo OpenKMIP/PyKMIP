@@ -35,11 +35,13 @@ class CheckRequestPayload(base.RequestPayload):
             available for on the checked object.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 usage_limits_count=None,
-                 cryptographic_usage_mask=None,
-                 lease_time=None):
+    def __init__(
+        self,
+        unique_identifier=None,
+        usage_limits_count=None,
+        cryptographic_usage_mask=None,
+        lease_time=None,
+    ):
         """
         Construct a Check request payload struct.
 
@@ -81,8 +83,7 @@ class CheckRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -100,8 +101,7 @@ class CheckRequestPayload(base.RequestPayload):
             self._usage_limits_count = None
         elif isinstance(value, six.integer_types):
             self._usage_limits_count = primitives.LongInteger(
-                value=value,
-                tag=enums.Tags.USAGE_LIMITS_COUNT
+                value=value, tag=enums.Tags.USAGE_LIMITS_COUNT
             )
         else:
             raise TypeError("Usage limits count must be an integer.")
@@ -119,8 +119,7 @@ class CheckRequestPayload(base.RequestPayload):
             self._cryptographic_usage_mask = None
         elif isinstance(value, six.integer_types):
             self._cryptographic_usage_mask = primitives.Integer(
-                value=value,
-                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                value=value, tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
             )
         else:
             raise TypeError("Cryptographic usage mask must be an integer.")
@@ -138,8 +137,7 @@ class CheckRequestPayload(base.RequestPayload):
             self._lease_time = None
         elif isinstance(value, six.integer_types):
             self._lease_time = primitives.Interval(
-                value=value,
-                tag=enums.Tags.LEASE_TIME
+                value=value, tag=enums.Tags.LEASE_TIME
             )
         else:
             raise TypeError("Lease time must be an integer.")
@@ -161,40 +159,26 @@ class CheckRequestPayload(base.RequestPayload):
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(CheckRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(CheckRequestPayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.USAGE_LIMITS_COUNT, local_stream):
             self._usage_limits_count = primitives.LongInteger(
                 tag=enums.Tags.USAGE_LIMITS_COUNT
             )
-            self._usage_limits_count.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._usage_limits_count.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_USAGE_MASK, local_stream):
             self._cryptographic_usage_mask = primitives.Integer(
                 tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
             )
-            self._cryptographic_usage_mask.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_usage_mask.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.LEASE_TIME, local_stream):
-            self._lease_time = primitives.Interval(
-                tag=enums.Tags.LEASE_TIME
-            )
+            self._lease_time = primitives.Interval(tag=enums.Tags.LEASE_TIME)
             self._lease_time.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
@@ -217,31 +201,18 @@ class CheckRequestPayload(base.RequestPayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._usage_limits_count:
-            self._usage_limits_count.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._usage_limits_count.write(local_stream, kmip_version=kmip_version)
         if self._cryptographic_usage_mask:
             self._cryptographic_usage_mask.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self._lease_time:
-            self._lease_time.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._lease_time.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
-        super(CheckRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(CheckRequestPayload, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -250,8 +221,7 @@ class CheckRequestPayload(base.RequestPayload):
                 return False
             elif self.usage_limits_count != other.usage_limits_count:
                 return False
-            elif self.cryptographic_usage_mask != \
-                    other.cryptographic_usage_mask:
+            elif self.cryptographic_usage_mask != other.cryptographic_usage_mask:
                 return False
             elif self.lease_time != other.lease_time:
                 return False
@@ -267,23 +237,25 @@ class CheckRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "usage_limits_count={0}".format(self.usage_limits_count),
-            "cryptographic_usage_mask={0}".format(
-                self.cryptographic_usage_mask
-            ),
-            "lease_time={0}".format(self.lease_time)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "usage_limits_count={0}".format(self.usage_limits_count),
+                "cryptographic_usage_mask={0}".format(self.cryptographic_usage_mask),
+                "lease_time={0}".format(self.lease_time),
+            ]
+        )
         return "CheckRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'usage_limits_count': self.usage_limits_count,
-            'cryptographic_usage_mask': self.cryptographic_usage_mask,
-            'lease_time': self.lease_time
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "usage_limits_count": self.usage_limits_count,
+                "cryptographic_usage_mask": self.cryptographic_usage_mask,
+                "lease_time": self.lease_time,
+            }
+        )
 
 
 class CheckResponsePayload(base.ResponsePayload):
@@ -300,11 +272,13 @@ class CheckResponsePayload(base.ResponsePayload):
             available for on the checked object.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 usage_limits_count=None,
-                 cryptographic_usage_mask=None,
-                 lease_time=None):
+    def __init__(
+        self,
+        unique_identifier=None,
+        usage_limits_count=None,
+        cryptographic_usage_mask=None,
+        lease_time=None,
+    ):
         """
         Construct a Check response payload struct.
 
@@ -346,8 +320,7 @@ class CheckResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -365,8 +338,7 @@ class CheckResponsePayload(base.ResponsePayload):
             self._usage_limits_count = None
         elif isinstance(value, six.integer_types):
             self._usage_limits_count = primitives.LongInteger(
-                value=value,
-                tag=enums.Tags.USAGE_LIMITS_COUNT
+                value=value, tag=enums.Tags.USAGE_LIMITS_COUNT
             )
         else:
             raise TypeError("Usage limits count must be an integer.")
@@ -384,8 +356,7 @@ class CheckResponsePayload(base.ResponsePayload):
             self._cryptographic_usage_mask = None
         elif isinstance(value, six.integer_types):
             self._cryptographic_usage_mask = primitives.Integer(
-                value=value,
-                tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                value=value, tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
             )
         else:
             raise TypeError("Cryptographic usage mask must be an integer.")
@@ -403,8 +374,7 @@ class CheckResponsePayload(base.ResponsePayload):
             self._lease_time = None
         elif isinstance(value, six.integer_types):
             self._lease_time = primitives.Interval(
-                value=value,
-                tag=enums.Tags.LEASE_TIME
+                value=value, tag=enums.Tags.LEASE_TIME
             )
         else:
             raise TypeError("Lease time must be an integer.")
@@ -426,44 +396,27 @@ class CheckResponsePayload(base.ResponsePayload):
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(CheckResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(CheckResponsePayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.USAGE_LIMITS_COUNT, local_stream):
             self._usage_limits_count = primitives.LongInteger(
                 tag=enums.Tags.USAGE_LIMITS_COUNT
             )
-            self._usage_limits_count.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._usage_limits_count.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_USAGE_MASK, local_stream):
             self._cryptographic_usage_mask = primitives.Integer(
                 tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
             )
-            self._cryptographic_usage_mask.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_usage_mask.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.LEASE_TIME, local_stream):
-            self._lease_time = primitives.Interval(
-                tag=enums.Tags.LEASE_TIME
-            )
-            self._lease_time.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._lease_time = primitives.Interval(tag=enums.Tags.LEASE_TIME)
+            self._lease_time.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -485,30 +438,19 @@ class CheckResponsePayload(base.ResponsePayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._usage_limits_count:
-            self._usage_limits_count.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._usage_limits_count.write(local_stream, kmip_version=kmip_version)
         if self._cryptographic_usage_mask:
             self._cryptographic_usage_mask.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self._lease_time:
-            self._lease_time.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._lease_time.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(CheckResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -518,8 +460,7 @@ class CheckResponsePayload(base.ResponsePayload):
                 return False
             elif self.usage_limits_count != other.usage_limits_count:
                 return False
-            elif self.cryptographic_usage_mask != \
-                    other.cryptographic_usage_mask:
+            elif self.cryptographic_usage_mask != other.cryptographic_usage_mask:
                 return False
             elif self.lease_time != other.lease_time:
                 return False
@@ -535,20 +476,22 @@ class CheckResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "usage_limits_count={0}".format(self.usage_limits_count),
-            "cryptographic_usage_mask={0}".format(
-                self.cryptographic_usage_mask
-            ),
-            "lease_time={0}".format(self.lease_time)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "usage_limits_count={0}".format(self.usage_limits_count),
+                "cryptographic_usage_mask={0}".format(self.cryptographic_usage_mask),
+                "lease_time={0}".format(self.lease_time),
+            ]
+        )
         return "CheckResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'usage_limits_count': self.usage_limits_count,
-            'cryptographic_usage_mask': self.cryptographic_usage_mask,
-            'lease_time': self.lease_time
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "usage_limits_count": self.usage_limits_count,
+                "cryptographic_usage_mask": self.cryptographic_usage_mask,
+                "lease_time": self.lease_time,
+            }
+        )

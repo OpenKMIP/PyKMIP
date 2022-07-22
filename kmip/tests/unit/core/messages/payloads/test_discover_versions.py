@@ -24,7 +24,6 @@ from kmip.core.messages import payloads
 
 
 class TestDiscoverVersionsRequestPayload(TestCase):
-
     def setUp(self):
         super(TestDiscoverVersionsRequestPayload, self).setUp()
 
@@ -35,20 +34,27 @@ class TestDiscoverVersionsRequestPayload(TestCase):
         self.protocol_versions_two.append(ProtocolVersion(1, 1))
         self.protocol_versions_two.append(ProtocolVersion(1, 0))
 
-        self.encoding_empty = utils.BytearrayStream((
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'))
-        self.encoding_one = utils.BytearrayStream((
-            b'\x42\x00\x79\x01\x00\x00\x00\x28\x42\x00\x69\x01\x00\x00\x00\x20'
-            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00'))
-        self.encoding_two = utils.BytearrayStream((
-            b'\x42\x00\x79\x01\x00\x00\x00\x50\x42\x00\x69\x01\x00\x00\x00\x20'
-            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6A\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6B\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x00\x00\x00\x00\x00'))
+        self.encoding_empty = utils.BytearrayStream(
+            (b"\x42\x00\x79\x01\x00\x00\x00\x00")
+        )
+        self.encoding_one = utils.BytearrayStream(
+            (
+                b"\x42\x00\x79\x01\x00\x00\x00\x28\x42\x00\x69\x01\x00\x00\x00\x20"
+                b"\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+                b"\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00"
+                b"\x00"
+            )
+        )
+        self.encoding_two = utils.BytearrayStream(
+            (
+                b"\x42\x00\x79\x01\x00\x00\x00\x50\x42\x00\x69\x01\x00\x00\x00\x20"
+                b"\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+                b"\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+                b"\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6A\x02\x00\x00\x00\x04"
+                b"\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6B\x02\x00\x00\x00\x04"
+                b"\x00\x00\x00\x00\x00\x00\x00\x00"
+            )
+        )
 
     def tearDown(self):
         super(TestDiscoverVersionsRequestPayload, self).tearDown()
@@ -57,20 +63,25 @@ class TestDiscoverVersionsRequestPayload(TestCase):
         payloads.DiscoverVersionsRequestPayload()
 
     def test_init_with_args(self):
-        payloads.DiscoverVersionsRequestPayload(
-            self.protocol_versions_empty)
+        payloads.DiscoverVersionsRequestPayload(self.protocol_versions_empty)
 
     def test_validate_with_invalid_protocol_versions(self):
-        kwargs = {'protocol_versions': 'invalid'}
+        kwargs = {"protocol_versions": "invalid"}
         self.assertRaisesRegex(
-            TypeError, "invalid protocol versions list",
-            payloads.DiscoverVersionsRequestPayload, **kwargs)
+            TypeError,
+            "invalid protocol versions list",
+            payloads.DiscoverVersionsRequestPayload,
+            **kwargs
+        )
 
     def test_validate_with_invalid_protocol_version(self):
-        kwargs = {'protocol_versions': ['invalid']}
+        kwargs = {"protocol_versions": ["invalid"]}
         self.assertRaisesRegex(
-            TypeError, "invalid protocol version",
-            payloads.DiscoverVersionsRequestPayload, **kwargs)
+            TypeError,
+            "invalid protocol version",
+            payloads.DiscoverVersionsRequestPayload,
+            **kwargs
+        )
 
     def _test_read(self, stream, payload, protocol_versions):
         payload.read(stream)
@@ -78,8 +89,7 @@ class TestDiscoverVersionsRequestPayload(TestCase):
         observed = len(payload.protocol_versions)
 
         msg = "protocol versions list decoding mismatch"
-        msg += "; expected {0} results, received {1}".format(
-            expected, observed)
+        msg += "; expected {0} results, received {1}".format(expected, observed)
         self.assertEqual(expected, observed, msg)
 
         for i in xrange(len(protocol_versions)):
@@ -119,8 +129,7 @@ class TestDiscoverVersionsRequestPayload(TestCase):
         length_received = len(stream)
 
         msg = "encoding lengths not equal"
-        msg += "; expected {0}, received {1}".format(
-            length_expected, length_received)
+        msg += "; expected {0}, received {1}".format(length_expected, length_received)
         self.assertEqual(length_expected, length_received, msg)
 
         msg = "encoding mismatch"
@@ -129,29 +138,25 @@ class TestDiscoverVersionsRequestPayload(TestCase):
         self.assertEqual(expected, stream, msg)
 
     def test_write_with_empty_protocol_list(self):
-        payload = payloads.DiscoverVersionsRequestPayload(
-            self.protocol_versions_empty)
+        payload = payloads.DiscoverVersionsRequestPayload(self.protocol_versions_empty)
         expected = self.encoding_empty
 
         self._test_write(payload, expected)
 
     def test_write_with_one_protocol_version(self):
-        payload = payloads.DiscoverVersionsRequestPayload(
-            self.protocol_versions_one)
+        payload = payloads.DiscoverVersionsRequestPayload(self.protocol_versions_one)
         expected = self.encoding_one
 
         self._test_write(payload, expected)
 
     def test_write_with_two_protocol_versions(self):
-        payload = payloads.DiscoverVersionsRequestPayload(
-            self.protocol_versions_two)
+        payload = payloads.DiscoverVersionsRequestPayload(self.protocol_versions_two)
         expected = self.encoding_two
 
         self._test_write(payload, expected)
 
 
 class TestDiscoverVersionsResponsePayload(TestCase):
-
     def setUp(self):
         super(TestDiscoverVersionsResponsePayload, self).setUp()
 
@@ -162,20 +167,27 @@ class TestDiscoverVersionsResponsePayload(TestCase):
         self.protocol_versions_two.append(ProtocolVersion(1, 1))
         self.protocol_versions_two.append(ProtocolVersion(1, 0))
 
-        self.encoding_empty = utils.BytearrayStream((
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'))
-        self.encoding_one = utils.BytearrayStream((
-            b'\x42\x00\x7C\x01\x00\x00\x00\x28\x42\x00\x69\x01\x00\x00\x00\x20'
-            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00'))
-        self.encoding_two = utils.BytearrayStream((
-            b'\x42\x00\x7C\x01\x00\x00\x00\x50\x42\x00\x69\x01\x00\x00\x00\x20'
-            b'\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6A\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6B\x02\x00\x00\x00\x04'
-            b'\x00\x00\x00\x00\x00\x00\x00\x00'))
+        self.encoding_empty = utils.BytearrayStream(
+            (b"\x42\x00\x7C\x01\x00\x00\x00\x00")
+        )
+        self.encoding_one = utils.BytearrayStream(
+            (
+                b"\x42\x00\x7C\x01\x00\x00\x00\x28\x42\x00\x69\x01\x00\x00\x00\x20"
+                b"\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+                b"\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00"
+                b"\x00"
+            )
+        )
+        self.encoding_two = utils.BytearrayStream(
+            (
+                b"\x42\x00\x7C\x01\x00\x00\x00\x50\x42\x00\x69\x01\x00\x00\x00\x20"
+                b"\x42\x00\x6A\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+                b"\x42\x00\x6B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+                b"\x42\x00\x69\x01\x00\x00\x00\x20\x42\x00\x6A\x02\x00\x00\x00\x04"
+                b"\x00\x00\x00\x01\x00\x00\x00\x00\x42\x00\x6B\x02\x00\x00\x00\x04"
+                b"\x00\x00\x00\x00\x00\x00\x00\x00"
+            )
+        )
 
     def tearDown(self):
         super(TestDiscoverVersionsResponsePayload, self).tearDown()
@@ -184,20 +196,25 @@ class TestDiscoverVersionsResponsePayload(TestCase):
         payloads.DiscoverVersionsResponsePayload()
 
     def test_init_with_args(self):
-        payloads.DiscoverVersionsResponsePayload(
-            self.protocol_versions_empty)
+        payloads.DiscoverVersionsResponsePayload(self.protocol_versions_empty)
 
     def test_validate_with_invalid_protocol_versions(self):
-        kwargs = {'protocol_versions': 'invalid'}
+        kwargs = {"protocol_versions": "invalid"}
         self.assertRaisesRegex(
-            TypeError, "invalid protocol versions list",
-            payloads.DiscoverVersionsResponsePayload, **kwargs)
+            TypeError,
+            "invalid protocol versions list",
+            payloads.DiscoverVersionsResponsePayload,
+            **kwargs
+        )
 
     def test_validate_with_invalid_protocol_version(self):
-        kwargs = {'protocol_versions': ['invalid']}
+        kwargs = {"protocol_versions": ["invalid"]}
         self.assertRaisesRegex(
-            TypeError, "invalid protocol version",
-            payloads.DiscoverVersionsResponsePayload, **kwargs)
+            TypeError,
+            "invalid protocol version",
+            payloads.DiscoverVersionsResponsePayload,
+            **kwargs
+        )
 
     def _test_read(self, stream, payload, protocol_versions):
         payload.read(stream)
@@ -205,8 +222,7 @@ class TestDiscoverVersionsResponsePayload(TestCase):
         observed = len(payload.protocol_versions)
 
         msg = "protocol versions list decoding mismatch"
-        msg += "; expected {0} results, received {1}".format(
-            expected, observed)
+        msg += "; expected {0} results, received {1}".format(expected, observed)
         self.assertEqual(expected, observed, msg)
 
         for i in xrange(len(protocol_versions)):
@@ -246,8 +262,7 @@ class TestDiscoverVersionsResponsePayload(TestCase):
         length_received = len(stream)
 
         msg = "encoding lengths not equal"
-        msg += "; expected {0}, received {1}".format(
-            length_expected, length_received)
+        msg += "; expected {0}, received {1}".format(length_expected, length_received)
         self.assertEqual(length_expected, length_received, msg)
 
         msg = "encoding mismatch"
@@ -256,22 +271,19 @@ class TestDiscoverVersionsResponsePayload(TestCase):
         self.assertEqual(expected, stream, msg)
 
     def test_write_with_empty_protocol_list(self):
-        payload = payloads.DiscoverVersionsResponsePayload(
-            self.protocol_versions_empty)
+        payload = payloads.DiscoverVersionsResponsePayload(self.protocol_versions_empty)
         expected = self.encoding_empty
 
         self._test_write(payload, expected)
 
     def test_write_with_one_protocol_version(self):
-        payload = payloads.DiscoverVersionsResponsePayload(
-            self.protocol_versions_one)
+        payload = payloads.DiscoverVersionsResponsePayload(self.protocol_versions_one)
         expected = self.encoding_one
 
         self._test_write(payload, expected)
 
     def test_write_with_two_protocol_versions(self):
-        payload = payloads.DiscoverVersionsResponsePayload(
-            self.protocol_versions_two)
+        payload = payloads.DiscoverVersionsResponsePayload(self.protocol_versions_two)
         expected = self.encoding_two
 
         self._test_write(payload, expected)

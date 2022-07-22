@@ -45,13 +45,15 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
             Added in KMIP 2.0.
     """
 
-    def __init__(self,
-                 common_template_attribute=None,
-                 private_key_template_attribute=None,
-                 public_key_template_attribute=None,
-                 common_protection_storage_masks=None,
-                 private_protection_storage_masks=None,
-                 public_protection_storage_masks=None):
+    def __init__(
+        self,
+        common_template_attribute=None,
+        private_key_template_attribute=None,
+        public_key_template_attribute=None,
+        common_protection_storage_masks=None,
+        private_protection_storage_masks=None,
+        public_protection_storage_masks=None,
+    ):
         """
         Construct a CreateKeyPair request payload structure.
 
@@ -94,8 +96,7 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
         self.private_key_template_attribute = private_key_template_attribute
         self.public_key_template_attribute = public_key_template_attribute
         self.common_protection_storage_masks = common_protection_storage_masks
-        self.private_protection_storage_masks = \
-            private_protection_storage_masks
+        self.private_protection_storage_masks = private_protection_storage_masks
         self.public_protection_storage_masks = public_protection_storage_masks
 
     @property
@@ -116,8 +117,7 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
                 )
         else:
             raise TypeError(
-                "Common template attribute must be a TemplateAttribute "
-                "structure."
+                "Common template attribute must be a TemplateAttribute " "structure."
             )
 
     @property
@@ -248,92 +248,63 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
                 defaults to KMIP 1.0.
         """
         super(CreateKeyPairRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
-            if self.is_tag_next(
-                    enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
-                    local_buffer
-            ):
+            if self.is_tag_next(enums.Tags.COMMON_TEMPLATE_ATTRIBUTE, local_buffer):
                 self._common_template_attribute = objects.TemplateAttribute(
                     tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
                 )
                 self._common_template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
         else:
             if self.is_tag_next(enums.Tags.COMMON_ATTRIBUTES, local_buffer):
-                attributes = objects.Attributes(
-                    tag=enums.Tags.COMMON_ATTRIBUTES
-                )
+                attributes = objects.Attributes(tag=enums.Tags.COMMON_ATTRIBUTES)
                 attributes.read(local_buffer, kmip_version=kmip_version)
-                self._common_template_attribute = \
-                    objects.convert_attributes_to_template_attribute(
-                        attributes
-                    )
+                self._common_template_attribute = (
+                    objects.convert_attributes_to_template_attribute(attributes)
+                )
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(
-                    enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
-                    local_buffer
+                enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE, local_buffer
             ):
-                self._private_key_template_attribute = \
-                    objects.TemplateAttribute(
-                        tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
-                    )
+                self._private_key_template_attribute = objects.TemplateAttribute(
+                    tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                )
                 self._private_key_template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
         else:
-            if self.is_tag_next(
-                    enums.Tags.PRIVATE_KEY_ATTRIBUTES,
-                    local_buffer
-            ):
-                attributes = objects.Attributes(
-                    tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES
-                )
+            if self.is_tag_next(enums.Tags.PRIVATE_KEY_ATTRIBUTES, local_buffer):
+                attributes = objects.Attributes(tag=enums.Tags.PRIVATE_KEY_ATTRIBUTES)
                 attributes.read(local_buffer, kmip_version=kmip_version)
-                self._private_key_template_attribute = \
-                    objects.convert_attributes_to_template_attribute(
-                        attributes
-                    )
+                self._private_key_template_attribute = (
+                    objects.convert_attributes_to_template_attribute(attributes)
+                )
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
-            if self.is_tag_next(
-                    enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
-                    local_buffer
-            ):
-                self._public_key_template_attribute = \
-                    objects.TemplateAttribute(
-                        tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-                    )
+            if self.is_tag_next(enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE, local_buffer):
+                self._public_key_template_attribute = objects.TemplateAttribute(
+                    tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                )
                 self._public_key_template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
         else:
-            if self.is_tag_next(
-                    enums.Tags.PUBLIC_KEY_ATTRIBUTES,
-                    local_buffer
-            ):
-                attributes = objects.Attributes(
-                    tag=enums.Tags.PUBLIC_KEY_ATTRIBUTES
-                )
+            if self.is_tag_next(enums.Tags.PUBLIC_KEY_ATTRIBUTES, local_buffer):
+                attributes = objects.Attributes(tag=enums.Tags.PUBLIC_KEY_ATTRIBUTES)
                 attributes.read(local_buffer, kmip_version=kmip_version)
-                self._public_key_template_attribute = \
-                    objects.convert_attributes_to_template_attribute(
-                        attributes
-                    )
+                self._public_key_template_attribute = (
+                    objects.convert_attributes_to_template_attribute(attributes)
+                )
 
         if kmip_version >= enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(
-                enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
-                local_buffer
+                enums.Tags.COMMON_PROTECTION_STORAGE_MASKS, local_buffer
             ):
                 storage_masks = objects.ProtectionStorageMasks(
                     tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
@@ -341,8 +312,7 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
                 storage_masks.read(local_buffer, kmip_version=kmip_version)
                 self._common_protection_storage_masks = storage_masks
             if self.is_tag_next(
-                enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
-                local_buffer
+                enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS, local_buffer
             ):
                 storage_masks = objects.ProtectionStorageMasks(
                     tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
@@ -350,8 +320,7 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
                 storage_masks.read(local_buffer, kmip_version=kmip_version)
                 self._private_protection_storage_masks = storage_masks
             if self.is_tag_next(
-                enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
-                local_buffer
+                enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS, local_buffer
             ):
                 storage_masks = objects.ProtectionStorageMasks(
                     tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
@@ -377,8 +346,7 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._common_template_attribute is not None:
                 self._common_template_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
         else:
             if self._common_template_attribute is not None:
@@ -390,8 +358,7 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._private_key_template_attribute is not None:
                 self._private_key_template_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
         else:
             if self._private_key_template_attribute is not None:
@@ -403,8 +370,7 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._public_key_template_attribute is not None:
                 self._public_key_template_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
         else:
             if self._public_key_template_attribute is not None:
@@ -416,46 +382,51 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
         if kmip_version >= enums.KMIPVersion.KMIP_2_0:
             if self._common_protection_storage_masks:
                 self._common_protection_storage_masks.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
             if self._private_protection_storage_masks:
                 self._private_protection_storage_masks.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
             if self._public_protection_storage_masks:
                 self._public_protection_storage_masks.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
 
         self.length = local_buffer.length()
         super(CreateKeyPairRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __eq__(self, other):
         if isinstance(other, CreateKeyPairRequestPayload):
-            if self.common_template_attribute != \
-                    other.common_template_attribute:
+            if self.common_template_attribute != other.common_template_attribute:
                 return False
-            elif self.private_key_template_attribute != \
-                    other.private_key_template_attribute:
+            elif (
+                self.private_key_template_attribute
+                != other.private_key_template_attribute
+            ):
                 return False
-            elif self.public_key_template_attribute != \
-                    other.public_key_template_attribute:
+            elif (
+                self.public_key_template_attribute
+                != other.public_key_template_attribute
+            ):
                 return False
-            elif self.common_protection_storage_masks != \
-                    other.common_protection_storage_masks:
+            elif (
+                self.common_protection_storage_masks
+                != other.common_protection_storage_masks
+            ):
                 return False
-            elif self.private_protection_storage_masks != \
-                    other.private_protection_storage_masks:
+            elif (
+                self.private_protection_storage_masks
+                != other.private_protection_storage_masks
+            ):
                 return False
-            elif self.public_protection_storage_masks != \
-                    other.public_protection_storage_masks:
+            elif (
+                self.public_protection_storage_masks
+                != other.public_protection_storage_masks
+            ):
                 return False
             else:
                 return True
@@ -469,26 +440,26 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "common_template_attribute={}".format(
-                self.common_template_attribute
-            ),
-            "private_key_template_attribute={}".format(
-                self.private_key_template_attribute
-            ),
-            "public_key_template_attribute={}".format(
-                self.public_key_template_attribute
-            ),
-            "common_protection_storage_masks={}".format(
-                repr(self.common_protection_storage_masks)
-            ),
-            "private_protection_storage_masks={}".format(
-                repr(self.private_protection_storage_masks)
-            ),
-            "public_protection_storage_masks={}".format(
-                repr(self.public_protection_storage_masks)
-            )
-        ])
+        args = ", ".join(
+            [
+                "common_template_attribute={}".format(self.common_template_attribute),
+                "private_key_template_attribute={}".format(
+                    self.private_key_template_attribute
+                ),
+                "public_key_template_attribute={}".format(
+                    self.public_key_template_attribute
+                ),
+                "common_protection_storage_masks={}".format(
+                    repr(self.common_protection_storage_masks)
+                ),
+                "private_protection_storage_masks={}".format(
+                    repr(self.private_protection_storage_masks)
+                ),
+                "public_protection_storage_masks={}".format(
+                    repr(self.public_protection_storage_masks)
+                ),
+            ]
+        )
         return "CreateKeyPairRequestPayload({})".format(args)
 
     def __str__(self):
@@ -511,10 +482,10 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
                 ),
                 '"public_protection_storage_masks": {}'.format(
                     str(self.public_protection_storage_masks)
-                )
+                ),
             ]
         )
-        return '{' + value + '}'
+        return "{" + value + "}"
 
 
 class CreateKeyPairResponsePayload(base.ResponsePayload):
@@ -530,11 +501,13 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
             public key.
     """
 
-    def __init__(self,
-                 private_key_unique_identifier=None,
-                 public_key_unique_identifier=None,
-                 private_key_template_attribute=None,
-                 public_key_template_attribute=None):
+    def __init__(
+        self,
+        private_key_unique_identifier=None,
+        public_key_unique_identifier=None,
+        private_key_template_attribute=None,
+        public_key_template_attribute=None,
+    ):
         """
         Construct a CreateKeyPair response payload structure.
 
@@ -580,8 +553,7 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
             self._private_key_unique_identifier = None
         elif isinstance(value, six.string_types):
             self._private_key_unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Private key unique identifier must be a string.")
@@ -599,8 +571,7 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
             self._public_key_unique_identifier = None
         elif isinstance(value, six.string_types):
             self._public_key_unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Public key unique identifier must be a string.")
@@ -669,21 +640,16 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
                 payload.
         """
         super(CreateKeyPairResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        if self.is_tag_next(
-                enums.Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER,
-                local_buffer
-        ):
+        if self.is_tag_next(enums.Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER, local_buffer):
             self._private_key_unique_identifier = primitives.TextString(
                 tag=enums.Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER
             )
             self._private_key_unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
         else:
             raise exceptions.InvalidKmipEncoding(
@@ -691,16 +657,12 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
                 "private key unique identifier."
             )
 
-        if self.is_tag_next(
-                enums.Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER,
-                local_buffer
-        ):
+        if self.is_tag_next(enums.Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER, local_buffer):
             self._public_key_unique_identifier = primitives.TextString(
                 tag=enums.Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER
             )
             self._public_key_unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
         else:
             raise exceptions.InvalidKmipEncoding(
@@ -710,29 +672,21 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(
-                    enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
-                    local_buffer
+                enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE, local_buffer
             ):
-                self._private_key_template_attribute = \
-                    objects.TemplateAttribute(
-                        tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
-                    )
+                self._private_key_template_attribute = objects.TemplateAttribute(
+                    tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                )
                 self._private_key_template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
 
-            if self.is_tag_next(
-                    enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
-                    local_buffer
-            ):
-                self._public_key_template_attribute = \
-                    objects.TemplateAttribute(
-                        tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-                    )
+            if self.is_tag_next(enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE, local_buffer):
+                self._public_key_template_attribute = objects.TemplateAttribute(
+                    tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                )
                 self._public_key_template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
 
         self.is_oversized(local_buffer)
@@ -756,8 +710,7 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
 
         if self._private_key_unique_identifier:
             self._private_key_unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
         else:
             raise exceptions.InvalidField(
@@ -767,8 +720,7 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
 
         if self._public_key_unique_identifier:
             self._public_key_unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
         else:
             raise exceptions.InvalidField(
@@ -778,36 +730,40 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
 
         if self._private_key_template_attribute:
             self._private_key_template_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
 
         if self._public_key_template_attribute:
             self._public_key_template_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
 
         self.length = local_buffer.length()
         super(CreateKeyPairResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __eq__(self, other):
         if isinstance(other, CreateKeyPairResponsePayload):
-            if self.private_key_unique_identifier != \
-                    other.private_key_unique_identifier:
+            if (
+                self.private_key_unique_identifier
+                != other.private_key_unique_identifier
+            ):
                 return False
-            elif self.public_key_unique_identifier != \
-                    other.public_key_unique_identifier:
+            elif (
+                self.public_key_unique_identifier != other.public_key_unique_identifier
+            ):
                 return False
-            elif self.private_key_template_attribute != \
-                    other.private_key_template_attribute:
+            elif (
+                self.private_key_template_attribute
+                != other.private_key_template_attribute
+            ):
                 return False
-            elif self.public_key_template_attribute != \
-                    other.public_key_template_attribute:
+            elif (
+                self.public_key_template_attribute
+                != other.public_key_template_attribute
+            ):
                 return False
             else:
                 return True
@@ -821,20 +777,22 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "private_key_unique_identifier='{}'".format(
-                self.private_key_unique_identifier
-            ),
-            "public_key_unique_identifier='{}'".format(
-                self.public_key_unique_identifier
-            ),
-            "private_key_template_attribute={}".format(
-                self.private_key_template_attribute
-            ),
-            "public_key_template_attribute={}".format(
-                self.public_key_template_attribute
-            )
-        ])
+        args = ", ".join(
+            [
+                "private_key_unique_identifier='{}'".format(
+                    self.private_key_unique_identifier
+                ),
+                "public_key_unique_identifier='{}'".format(
+                    self.public_key_unique_identifier
+                ),
+                "private_key_template_attribute={}".format(
+                    self.private_key_template_attribute
+                ),
+                "public_key_template_attribute={}".format(
+                    self.public_key_template_attribute
+                ),
+            ]
+        )
         return "CreateKeyPairResponsePayload({})".format(args)
 
     def __str__(self):
@@ -851,7 +809,7 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
                 ),
                 '"public_key_template_attribute": {}'.format(
                     self.public_key_template_attribute
-                )
+                ),
             ]
         )
-        return '{' + value + '}'
+        return "{" + value + "}"

@@ -40,8 +40,8 @@ class TestKmipServer(testtools.TestCase):
     def tearDown(self):
         super(TestKmipServer, self).tearDown()
 
-    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
-    @mock.patch('kmip.services.server.server.KmipServer._setup_configuration')
+    @mock.patch("kmip.services.server.server.KmipServer._setup_logging")
+    @mock.patch("kmip.services.server.server.KmipServer._setup_configuration")
     def test_init(self, config_mock, logging_mock):
         """
         Test that a KmipServer can be instantiated without error.
@@ -54,20 +54,21 @@ class TestKmipServer(testtools.TestCase):
         self.assertEqual(1, s._session_id)
         self.assertFalse(s._is_serving)
 
-    @mock.patch('logging.getLogger', side_effect=mock.MagicMock())
-    @mock.patch('logging.handlers.RotatingFileHandler')
-    @mock.patch('kmip.services.server.server.KmipServer._setup_configuration')
-    @mock.patch('os.path.exists')
-    @mock.patch('os.path.isdir')
-    @mock.patch('os.makedirs')
+    @mock.patch("logging.getLogger", side_effect=mock.MagicMock())
+    @mock.patch("logging.handlers.RotatingFileHandler")
+    @mock.patch("kmip.services.server.server.KmipServer._setup_configuration")
+    @mock.patch("os.path.exists")
+    @mock.patch("os.path.isdir")
+    @mock.patch("os.makedirs")
     def test_setup_logging(
-            self,
-            makedirs_mock,
-            isdir_mock,
-            path_mock,
-            config_mock,
-            handler_mock,
-            logging_mock):
+        self,
+        makedirs_mock,
+        isdir_mock,
+        path_mock,
+        config_mock,
+        handler_mock,
+        logging_mock,
+    ):
         """
         Verify that the server logger is setup correctly.
         """
@@ -80,106 +81,77 @@ class TestKmipServer(testtools.TestCase):
         try:
             # For Python3+
             import builtins  # NOQA
-            module = 'builtins'
+
+            module = "builtins"
         except ImportError:
             # For Python2+
-            module = '__builtin__'
+            module = "__builtin__"
 
-        with mock.patch('{0}.open'.format(module), open_mock):
-            s = server.KmipServer(log_path='/test/path/server.log')
+        with mock.patch("{0}.open".format(module), open_mock):
+            s = server.KmipServer(log_path="/test/path/server.log")
 
-        path_mock.assert_called_once_with('/test/path/server.log')
-        isdir_mock.assert_called_once_with('/test/path')
-        makedirs_mock.assert_called_once_with('/test/path')
-        open_mock.assert_called_once_with('/test/path/server.log', 'w')
+        path_mock.assert_called_once_with("/test/path/server.log")
+        isdir_mock.assert_called_once_with("/test/path")
+        makedirs_mock.assert_called_once_with("/test/path")
+        open_mock.assert_called_once_with("/test/path/server.log", "w")
 
         self.assertTrue(s._logger.addHandler.called)
         s._logger.setLevel.assert_any_call(logging.DEBUG)
 
-    @mock.patch('kmip.services.server.engine.KmipEngine')
-    @mock.patch('kmip.services.auth.TLS12AuthenticationSuite')
-    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
+    @mock.patch("kmip.services.server.engine.KmipEngine")
+    @mock.patch("kmip.services.auth.TLS12AuthenticationSuite")
+    @mock.patch("kmip.services.server.server.KmipServer._setup_logging")
     def test_setup_configuration(self, logging_mock, auth_mock, engine_mock):
         """
         Test that the server setup configuration works without error.
         """
-        s = server.KmipServer(
-            config_path=None,
-            policy_path=None
-        )
+        s = server.KmipServer(config_path=None, policy_path=None)
         s.config = mock.MagicMock()
 
         # Test the right calls are made when reinvoking config setup
         s._setup_configuration(
-            '/etc/pykmip/server.conf',
-            '127.0.0.1',
+            "/etc/pykmip/server.conf",
+            "127.0.0.1",
             5696,
-            '/etc/pykmip/certs/server.crt',
-            '/etc/pykmip/certs/server.key',
-            '/etc/pykmip/certs/ca.crt',
-            'Basic',
-            '/etc/pykmip/policies',
+            "/etc/pykmip/certs/server.crt",
+            "/etc/pykmip/certs/server.key",
+            "/etc/pykmip/certs/ca.crt",
+            "Basic",
+            "/etc/pykmip/policies",
             False,
-            'TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA',
-            'DEBUG',
-            '/var/pykmip/pykmip.db'
+            "TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA",
+            "DEBUG",
+            "/var/pykmip/pykmip.db",
         )
 
-        s.config.load_settings.assert_called_with('/etc/pykmip/server.conf')
-        s.config.set_setting.assert_any_call('hostname', '127.0.0.1')
-        s.config.set_setting.assert_any_call('port', 5696)
+        s.config.load_settings.assert_called_with("/etc/pykmip/server.conf")
+        s.config.set_setting.assert_any_call("hostname", "127.0.0.1")
+        s.config.set_setting.assert_any_call("port", 5696)
         s.config.set_setting.assert_any_call(
-            'certificate_path',
-            '/etc/pykmip/certs/server.crt'
+            "certificate_path", "/etc/pykmip/certs/server.crt"
         )
+        s.config.set_setting.assert_any_call("key_path", "/etc/pykmip/certs/server.key")
+        s.config.set_setting.assert_any_call("ca_path", "/etc/pykmip/certs/ca.crt")
+        s.config.set_setting.assert_any_call("auth_suite", "Basic")
+        s.config.set_setting.assert_any_call("policy_path", "/etc/pykmip/policies")
+        s.config.set_setting.assert_any_call("enable_tls_client_auth", False)
         s.config.set_setting.assert_any_call(
-            'key_path',
-            '/etc/pykmip/certs/server.key'
+            "tls_cipher_suites",
+            ["TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA"],
         )
-        s.config.set_setting.assert_any_call(
-            'ca_path',
-            '/etc/pykmip/certs/ca.crt'
-        )
-        s.config.set_setting.assert_any_call('auth_suite', 'Basic')
-        s.config.set_setting.assert_any_call(
-            'policy_path',
-            '/etc/pykmip/policies'
-        )
-        s.config.set_setting.assert_any_call(
-            'enable_tls_client_auth',
-            False
-        )
-        s.config.set_setting.assert_any_call(
-            'tls_cipher_suites',
-            [
-                'TLS_RSA_WITH_AES_128_CBC_SHA',
-                'TLS_RSA_WITH_AES_256_CBC_SHA'
-            ]
-        )
-        s.config.set_setting.assert_any_call('logging_level', 'DEBUG')
-        s.config.set_setting.assert_any_call(
-            'database_path',
-            '/var/pykmip/pykmip.db'
-        )
+        s.config.set_setting.assert_any_call("logging_level", "DEBUG")
+        s.config.set_setting.assert_any_call("database_path", "/var/pykmip/pykmip.db")
 
         # Test that an attempt is made to instantiate the TLS 1.2 auth suite
-        s = server.KmipServer(
-            auth_suite='TLS1.2',
-            config_path=None,
-            policy_path=None
-        )
-        self.assertEqual('TLS1.2', s.config.settings.get('auth_suite'))
+        s = server.KmipServer(auth_suite="TLS1.2", config_path=None, policy_path=None)
+        self.assertEqual("TLS1.2", s.config.settings.get("auth_suite"))
         self.assertIsNotNone(s.auth_suite)
 
-    @mock.patch('multiprocessing.Manager')
-    @mock.patch('kmip.services.server.monitor.PolicyDirectoryMonitor')
-    @mock.patch('kmip.services.server.engine.KmipEngine')
-    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
-    def test_start(self,
-                   logging_mock,
-                   engine_mock,
-                   monitor_mock,
-                   manager_mock):
+    @mock.patch("multiprocessing.Manager")
+    @mock.patch("kmip.services.server.monitor.PolicyDirectoryMonitor")
+    @mock.patch("kmip.services.server.engine.KmipEngine")
+    @mock.patch("kmip.services.server.server.KmipServer._setup_logging")
+    def test_start(self, logging_mock, engine_mock, monitor_mock, manager_mock):
         """
         Test that starting the KmipServer either runs as expected or generates
         the expected error.
@@ -196,12 +168,12 @@ class TestKmipServer(testtools.TestCase):
         b_mock = mock.MagicMock()
 
         s = server.KmipServer(
-            hostname='127.0.0.1',
+            hostname="127.0.0.1",
             port=5696,
-            auth_suite='Basic',
+            auth_suite="Basic",
             config_path=None,
             policy_path=None,
-            tls_cipher_suites='TLS_RSA_WITH_AES_128_CBC_SHA'
+            tls_cipher_suites="TLS_RSA_WITH_AES_128_CBC_SHA",
         )
         s._logger = mock.MagicMock()
 
@@ -209,8 +181,8 @@ class TestKmipServer(testtools.TestCase):
 
         # Test that in ideal cases no errors are generated and the right
         # log messages are.
-        with mock.patch('socket.socket') as socket_mock:
-            with mock.patch('ssl.wrap_socket') as ssl_mock:
+        with mock.patch("socket.socket") as socket_mock:
+            with mock.patch("ssl.wrap_socket") as ssl_mock:
                 socket_mock.return_value = a_mock
                 ssl_mock.return_value = b_mock
 
@@ -220,15 +192,9 @@ class TestKmipServer(testtools.TestCase):
                 s.start()
 
                 manager_mock.assert_called_once_with()
-                monitor_mock.assert_called_once_with(
-                    None,
-                    dict_mock,
-                    False
-                )
+                monitor_mock.assert_called_once_with(None, dict_mock, False)
                 self.assertIsNotNone(s._engine)
-                s._logger.info.assert_any_call(
-                    "Starting server socket handler."
-                )
+                s._logger.info.assert_any_call("Starting server socket handler.")
                 s._logger.debug.assert_any_call("Configured cipher suites: 1")
                 s._logger.debug.assert_any_call("TLS_RSA_WITH_AES_128_CBC_SHA")
                 s._logger.debug.assert_any_call(
@@ -236,20 +202,14 @@ class TestKmipServer(testtools.TestCase):
                 )
                 s._logger.debug.assert_any_call("AES128-SHA")
 
-                socket_mock.assert_called_once_with(
-                    socket.AF_INET,
-                    socket.SOCK_STREAM
-                )
+                socket_mock.assert_called_once_with(socket.AF_INET, socket.SOCK_STREAM)
                 a_mock.setsockopt.assert_called_once_with(
-                    socket.SOL_SOCKET,
-                    socket.SO_REUSEADDR,
-                    1
+                    socket.SOL_SOCKET, socket.SO_REUSEADDR, 1
                 )
                 self.assertTrue(ssl_mock.called)
-                b_mock.bind.assert_called_once_with(('127.0.0.1', 5696))
+                b_mock.bind.assert_called_once_with(("127.0.0.1", 5696))
                 s._logger.info.assert_called_with(
-                    "Server successfully bound socket handler to "
-                    "127.0.0.1:5696"
+                    "Server successfully bound socket handler to " "127.0.0.1:5696"
                 )
 
         monitor_instance_mock.stop.assert_not_called()
@@ -270,8 +230,8 @@ class TestKmipServer(testtools.TestCase):
         b_mock.reset_mock()
 
         # Test that a NetworkingError is generated if the socket bind fails.
-        with mock.patch('socket.socket') as socket_mock:
-            with mock.patch('ssl.wrap_socket') as ssl_mock:
+        with mock.patch("socket.socket") as socket_mock:
+            with mock.patch("ssl.wrap_socket") as ssl_mock:
                 socket_mock.return_value = a_mock
                 ssl_mock.return_value = b_mock
 
@@ -281,38 +241,23 @@ class TestKmipServer(testtools.TestCase):
                 manager_mock.assert_not_called()
                 monitor_mock.assert_not_called()
 
-                regex = (
-                    "Server failed to bind socket handler to 127.0.0.1:5696"
-                )
-                self.assertRaisesRegex(
-                    exceptions.NetworkingError,
-                    regex,
-                    s.start
-                )
+                regex = "Server failed to bind socket handler to 127.0.0.1:5696"
+                self.assertRaisesRegex(exceptions.NetworkingError, regex, s.start)
 
                 manager_mock.assert_called_once_with()
-                monitor_mock.assert_called_once_with(
-                    None,
-                    dict_mock,
-                    False
-                )
-                s._logger.info.assert_any_call(
-                    "Starting server socket handler."
-                )
+                monitor_mock.assert_called_once_with(None, dict_mock, False)
+                s._logger.info.assert_any_call("Starting server socket handler.")
                 s._logger.exception.assert_called_once_with(test_exception)
 
-    @mock.patch('kmip.services.server.engine.KmipEngine')
-    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
+    @mock.patch("kmip.services.server.engine.KmipEngine")
+    @mock.patch("kmip.services.server.server.KmipServer._setup_logging")
     def test_stop(self, logging_mock, engine_mock):
         """
         Test that the right calls and log messages are triggered while
         cleaning up the server and any remaining sessions.
         """
         s = server.KmipServer(
-            hostname='127.0.0.1',
-            port=5696,
-            config_path=None,
-            policy_path=None
+            hostname="127.0.0.1", port=5696, config_path=None, policy_path=None
         )
         s._logger = mock.MagicMock()
         s._socket = mock.MagicMock()
@@ -321,23 +266,17 @@ class TestKmipServer(testtools.TestCase):
         thread_mock = mock.MagicMock()
         thread_mock.join = mock.MagicMock()
         thread_mock.is_alive = mock.MagicMock(return_value=False)
-        thread_mock.name = 'TestThread'
+        thread_mock.name = "TestThread"
 
-        with mock.patch('threading.enumerate') as threading_mock:
+        with mock.patch("threading.enumerate") as threading_mock:
             threading_mock.return_value = [thread_mock]
 
             s.stop()
-            s._logger.info.assert_any_call(
-                "Cleaning up remaining connection threads."
-            )
+            s._logger.info.assert_any_call("Cleaning up remaining connection threads.")
             self.assertTrue(threading_mock.called)
             thread_mock.join.assert_called_once_with(10.0)
-            s._logger.info.assert_any_call(
-                "Cleanup succeeded for thread: TestThread"
-            )
-            s._logger.info.assert_any_call(
-                "Shutting down server socket handler."
-            )
+            s._logger.info.assert_any_call("Cleanup succeeded for thread: TestThread")
+            s._logger.info.assert_any_call("Shutting down server socket handler.")
             s._socket.shutdown.assert_called_once_with(socket.SHUT_RDWR)
             s._socket.close.assert_called_once_with()
 
@@ -350,22 +289,18 @@ class TestKmipServer(testtools.TestCase):
         s._logger.reset_mock()
         s._socket.reset_mock()
 
-        with mock.patch('threading.enumerate') as threading_mock:
+        with mock.patch("threading.enumerate") as threading_mock:
             threading_mock.return_value = [thread_mock]
 
             s.stop()
-            s._logger.info.assert_any_call(
-                "Cleaning up remaining connection threads."
-            )
+            s._logger.info.assert_any_call("Cleaning up remaining connection threads.")
             self.assertTrue(threading_mock.called)
             thread_mock.join.assert_called_once_with(10.0)
             s._logger.info.assert_any_call(
                 "Error occurred while attempting to cleanup thread: TestThread"
             )
             s._logger.exception.assert_called_once_with(test_exception)
-            s._logger.info.assert_any_call(
-                "Shutting down server socket handler."
-            )
+            s._logger.info.assert_any_call("Shutting down server socket handler.")
             s._socket.shutdown.assert_called_once_with(socket.SHUT_RDWR)
             s._socket.close.assert_called_once_with()
 
@@ -377,21 +312,17 @@ class TestKmipServer(testtools.TestCase):
         s._logger.reset_mock()
         s._socket.reset_mock()
 
-        with mock.patch('threading.enumerate') as threading_mock:
+        with mock.patch("threading.enumerate") as threading_mock:
             threading_mock.return_value = [thread_mock]
 
             s.stop()
-            s._logger.info.assert_any_call(
-                "Cleaning up remaining connection threads."
-            )
+            s._logger.info.assert_any_call("Cleaning up remaining connection threads.")
             self.assertTrue(threading_mock.called)
             thread_mock.join.assert_called_once_with(10.0)
             s._logger.warning.assert_any_call(
                 "Cleanup failed for thread: TestThread. Thread is still alive"
             )
-            s._logger.info.assert_any_call(
-                "Shutting down server socket handler."
-            )
+            s._logger.info.assert_any_call("Shutting down server socket handler.")
             s._socket.shutdown.assert_called_once_with(socket.SHUT_RDWR)
             s._socket.close.assert_called_once_with()
 
@@ -404,33 +335,22 @@ class TestKmipServer(testtools.TestCase):
         s._socket.close = mock.MagicMock(side_effect=test_exception)
 
         regex = "Server failed to shutdown socket handler."
-        self.assertRaisesRegex(
-            exceptions.NetworkingError,
-            regex,
-            s.stop
-        )
-        s._logger.info.assert_any_call(
-            "Cleaning up remaining connection threads."
-        )
-        s._logger.info.assert_any_call(
-            "Shutting down server socket handler."
-        )
+        self.assertRaisesRegex(exceptions.NetworkingError, regex, s.stop)
+        s._logger.info.assert_any_call("Cleaning up remaining connection threads.")
+        s._logger.info.assert_any_call("Shutting down server socket handler.")
         s._socket.shutdown.assert_called_once_with(socket.SHUT_RDWR)
         s._socket.close.assert_called_once_with()
         s._logger.exception(test_exception)
 
-    @mock.patch('kmip.services.server.engine.KmipEngine')
-    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
+    @mock.patch("kmip.services.server.engine.KmipEngine")
+    @mock.patch("kmip.services.server.server.KmipServer._setup_logging")
     def test_stop_with_monitor_shutdown_error(self, logging_mock, engine_mock):
         """
         Test that the right calls and log messages are triggered when stopping
         the server results in an error while shutting down the policy monitor.
         """
         s = server.KmipServer(
-            hostname='127.0.0.1',
-            port=5696,
-            config_path=None,
-            policy_path=None
+            hostname="127.0.0.1", port=5696, config_path=None, policy_path=None
         )
         s._logger = mock.MagicMock()
         s._socket = mock.MagicMock()
@@ -442,20 +362,12 @@ class TestKmipServer(testtools.TestCase):
         thread_mock = mock.MagicMock()
         thread_mock.join = mock.MagicMock()
         thread_mock.is_alive = mock.MagicMock(return_value=False)
-        thread_mock.name = 'TestThread'
+        thread_mock.name = "TestThread"
 
         regex = "Server failed to clean up the policy monitor."
-        self.assertRaisesRegex(
-            exceptions.ShutdownError,
-            regex,
-            s.stop
-        )
-        s._logger.info.assert_any_call(
-            "Cleaning up remaining connection threads."
-        )
-        s._logger.info.assert_any_call(
-            "Shutting down server socket handler."
-        )
+        self.assertRaisesRegex(exceptions.ShutdownError, regex, s.stop)
+        s._logger.info.assert_any_call("Cleaning up remaining connection threads.")
+        s._logger.info.assert_any_call("Shutting down server socket handler.")
         s._socket.shutdown.assert_called_once_with(socket.SHUT_RDWR)
         s._socket.close.assert_called_once_with()
 
@@ -463,18 +375,15 @@ class TestKmipServer(testtools.TestCase):
         s.policy_monitor.join.assert_called_once_with()
         s._logger.exception(test_exception)
 
-    @mock.patch('kmip.services.server.engine.KmipEngine')
-    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
+    @mock.patch("kmip.services.server.engine.KmipEngine")
+    @mock.patch("kmip.services.server.server.KmipServer._setup_logging")
     def test_serve(self, logging_mock, engine_mock):
         """
         Test that the right calls and log messages are triggered while
         serving connections.
         """
         s = server.KmipServer(
-            hostname='127.0.0.1',
-            port=5696,
-            config_path=None,
-            policy_path=None
+            hostname="127.0.0.1", port=5696, config_path=None, policy_path=None
         )
         s._is_serving = True
         s._logger = mock.MagicMock()
@@ -485,23 +394,14 @@ class TestKmipServer(testtools.TestCase):
 
         # Test the expected behavior for a normal server/interrupt sequence
         s._socket.accept = mock.MagicMock(
-            side_effect=[
-                ('connection', 'address'),
-                socket.timeout,
-                expected_error
-            ]
+            side_effect=[("connection", "address"), socket.timeout, expected_error]
         )
 
         s.serve()
         s._socket.listen.assert_called_once_with(5)
         s._socket.accept.assert_any_call()
-        s._setup_connection_handler.assert_called_once_with(
-            'connection',
-            'address'
-        )
-        s._logger.warning.assert_called_with(
-            "Interrupting connection service."
-        )
+        s._setup_connection_handler.assert_called_once_with("connection", "address")
+        s._logger.warning.assert_called_with("Interrupting connection service.")
         s._logger.info.assert_called_with("Stopping connection service.")
 
         # Test the behavior for an unexpected socket error.
@@ -540,12 +440,7 @@ class TestKmipServer(testtools.TestCase):
         s._is_serving = True
         handler = signal.getsignal(signal.SIGINT)
         args = (signal.SIGINT, None)
-        self.assertRaisesRegex(
-            KeyboardInterrupt,
-            "SIGINT received",
-            handler,
-            *args
-        )
+        self.assertRaisesRegex(KeyboardInterrupt, "SIGINT received", handler, *args)
         self.assertFalse(s._is_serving)
 
         s._is_serving = True
@@ -553,18 +448,15 @@ class TestKmipServer(testtools.TestCase):
         handler(None, None)
         self.assertFalse(s._is_serving)
 
-    @mock.patch('kmip.services.server.engine.KmipEngine')
-    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
+    @mock.patch("kmip.services.server.engine.KmipEngine")
+    @mock.patch("kmip.services.server.server.KmipServer._setup_logging")
     def test_setup_connection_handler(self, logging_mock, engine_mock):
         """
         Test that a KmipSession can be successfully created and spun off from
         the KmipServer.
         """
         s = server.KmipServer(
-            hostname='127.0.0.1',
-            port=5696,
-            config_path=None,
-            policy_path=None
+            hostname="127.0.0.1", port=5696, config_path=None, policy_path=None
         )
         s._logger = mock.MagicMock()
         s._engine = engine_mock
@@ -572,9 +464,9 @@ class TestKmipServer(testtools.TestCase):
         # Test that the right calls and log messages are made when
         # starting a new session.
         with mock.patch(
-            'kmip.services.server.session.KmipSession.start'
+            "kmip.services.server.session.KmipSession.start"
         ) as session_mock:
-            address = ('127.0.0.1', 5696)
+            address = ("127.0.0.1", 5696)
             s._setup_connection_handler(None, address)
 
             s._logger.info.assert_any_call(
@@ -591,10 +483,9 @@ class TestKmipServer(testtools.TestCase):
         # fails to start.
         test_exception = Exception()
         with mock.patch(
-            'kmip.services.server.session.KmipSession.start',
-            side_effect=test_exception
+            "kmip.services.server.session.KmipSession.start", side_effect=test_exception
         ) as session_mock:
-            address = ('127.0.0.1', 5696)
+            address = ("127.0.0.1", 5696)
             s._setup_connection_handler(None, address)
 
             s._logger.info.assert_any_call(
@@ -611,18 +502,15 @@ class TestKmipServer(testtools.TestCase):
 
         self.assertEqual(3, s._session_id)
 
-    @mock.patch('kmip.services.server.engine.KmipEngine')
-    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
+    @mock.patch("kmip.services.server.engine.KmipEngine")
+    @mock.patch("kmip.services.server.server.KmipServer._setup_logging")
     def test_as_context_manager(self, logging_mock, engine_mock):
         """
         Test that the right methods are called when the KmipServer is used
         as a context manager.
         """
         s = server.KmipServer(
-            hostname='127.0.0.1',
-            port=5696,
-            config_path=None,
-            policy_path=None
+            hostname="127.0.0.1", port=5696, config_path=None, policy_path=None
         )
         s._logger = mock.MagicMock()
         s.start = mock.MagicMock()

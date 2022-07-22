@@ -30,17 +30,13 @@ def parse_policy(policy):
                 enum_operation = enums.Operation[operation]
             except Exception:
                 raise ValueError(
-                    "'{0}' is not a valid Operation value.".format(
-                        operation
-                    )
+                    "'{0}' is not a valid Operation value.".format(operation)
                 )
             try:
                 enum_policy = enums.Policy[permission]
             except Exception:
                 raise ValueError(
-                    "'{0}' is not a valid Policy value.".format(
-                        permission
-                    )
+                    "'{0}' is not a valid Policy value.".format(permission)
                 )
 
             processed_operation_policies[enum_operation] = enum_policy
@@ -49,9 +45,7 @@ def parse_policy(policy):
             enum_type = enums.ObjectType[object_type]
         except Exception:
             raise ValueError(
-                "'{0}' is not a valid ObjectType value.".format(
-                    object_type
-                )
+                "'{0}' is not a valid ObjectType value.".format(object_type)
             )
 
         result[enum_type] = processed_operation_policies
@@ -62,7 +56,7 @@ def parse_policy(policy):
 def read_policy_from_file(path):
     policy_blob = {}
 
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         try:
             policy_blob = json.loads(f.read())
         except Exception as e:
@@ -71,7 +65,7 @@ def read_policy_from_file(path):
                 "{}".format(path, e)
             )
 
-    policy_sections = {'groups', 'preset'}
+    policy_sections = {"groups", "preset"}
     object_types = set([t.name for t in enums.ObjectType])
     result = {}
 
@@ -84,23 +78,21 @@ def read_policy_from_file(path):
         if sections <= policy_sections:
             parsed_policies = dict()
 
-            default_policy = object_policy.get('preset')
+            default_policy = object_policy.get("preset")
             if default_policy:
-                parsed_policies['preset'] = parse_policy(default_policy)
+                parsed_policies["preset"] = parse_policy(default_policy)
 
-            group_policies = object_policy.get('groups')
+            group_policies = object_policy.get("groups")
             if group_policies:
                 parsed_group_policies = dict()
                 for group_name, group_policy in six.iteritems(group_policies):
-                    parsed_group_policies[group_name] = parse_policy(
-                        group_policy
-                    )
-                parsed_policies['groups'] = parsed_group_policies
+                    parsed_group_policies[group_name] = parse_policy(group_policy)
+                parsed_policies["groups"] = parsed_group_policies
 
             result[name] = parsed_policies
         elif sections <= object_types:
             policy = parse_policy(object_policy)
-            result[name] = {'preset': policy}
+            result[name] = {"preset": policy}
         else:
             invalid_sections = sections - policy_sections - object_types
             raise ValueError(
@@ -112,194 +104,194 @@ def read_policy_from_file(path):
 
 
 policies = {
-    'default': {
-        'preset': {
+    "default": {
+        "preset": {
             enums.ObjectType.CERTIFICATE: {
-                enums.Operation.LOCATE:             enums.Policy.ALLOW_ALL,
-                enums.Operation.CHECK:              enums.Policy.ALLOW_ALL,
-                enums.Operation.GET:                enums.Policy.ALLOW_ALL,
-                enums.Operation.GET_ATTRIBUTES:     enums.Policy.ALLOW_ALL,
+                enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
+                enums.Operation.CHECK: enums.Policy.ALLOW_ALL,
+                enums.Operation.GET: enums.Policy.ALLOW_ALL,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_ALL,
                 enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_ALL,
-                enums.Operation.ADD_ATTRIBUTE:      enums.Policy.ALLOW_OWNER,
-                enums.Operation.MODIFY_ATTRIBUTE:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.DELETE_ATTRIBUTE:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.SET_ATTRIBUTE:      enums.Policy.ALLOW_OWNER,
-                enums.Operation.OBTAIN_LEASE:       enums.Policy.ALLOW_ALL,
-                enums.Operation.ACTIVATE:           enums.Policy.ALLOW_OWNER,
-                enums.Operation.REVOKE:             enums.Policy.ALLOW_OWNER,
-                enums.Operation.DESTROY:            enums.Policy.ALLOW_OWNER,
-                enums.Operation.ARCHIVE:            enums.Policy.ALLOW_OWNER,
-                enums.Operation.RECOVER:            enums.Policy.ALLOW_OWNER
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.OBTAIN_LEASE: enums.Policy.ALLOW_ALL,
+                enums.Operation.ACTIVATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REVOKE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DESTROY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ARCHIVE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.RECOVER: enums.Policy.ALLOW_OWNER,
             },
             enums.ObjectType.SYMMETRIC_KEY: {
-                enums.Operation.REKEY:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.REKEY_KEY_PAIR:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.DERIVE_KEY:           enums.Policy.ALLOW_OWNER,
-                enums.Operation.LOCATE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.CHECK:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET:                  enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTES:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTE_LIST:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.ADD_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.MODIFY_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.DELETE_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.SET_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.OBTAIN_LEASE:         enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY_KEY_PAIR: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DERIVE_KEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.LOCATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.CHECK: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.OBTAIN_LEASE: enums.Policy.ALLOW_OWNER,
                 enums.Operation.GET_USAGE_ALLOCATION: enums.Policy.ALLOW_OWNER,
-                enums.Operation.ACTIVATE:             enums.Policy.ALLOW_OWNER,
-                enums.Operation.REVOKE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.DESTROY:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.ARCHIVE:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.RECOVER:              enums.Policy.ALLOW_OWNER
+                enums.Operation.ACTIVATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REVOKE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DESTROY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ARCHIVE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.RECOVER: enums.Policy.ALLOW_OWNER,
             },
             enums.ObjectType.PUBLIC_KEY: {
-                enums.Operation.LOCATE:             enums.Policy.ALLOW_ALL,
-                enums.Operation.CHECK:              enums.Policy.ALLOW_ALL,
-                enums.Operation.GET:                enums.Policy.ALLOW_ALL,
-                enums.Operation.GET_ATTRIBUTES:     enums.Policy.ALLOW_ALL,
+                enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
+                enums.Operation.CHECK: enums.Policy.ALLOW_ALL,
+                enums.Operation.GET: enums.Policy.ALLOW_ALL,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_ALL,
                 enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_ALL,
-                enums.Operation.ADD_ATTRIBUTE:      enums.Policy.ALLOW_OWNER,
-                enums.Operation.MODIFY_ATTRIBUTE:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.DELETE_ATTRIBUTE:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.SET_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.OBTAIN_LEASE:       enums.Policy.ALLOW_ALL,
-                enums.Operation.ACTIVATE:           enums.Policy.ALLOW_OWNER,
-                enums.Operation.REVOKE:             enums.Policy.ALLOW_OWNER,
-                enums.Operation.DESTROY:            enums.Policy.ALLOW_OWNER,
-                enums.Operation.ARCHIVE:            enums.Policy.ALLOW_OWNER,
-                enums.Operation.RECOVER:            enums.Policy.ALLOW_OWNER
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.OBTAIN_LEASE: enums.Policy.ALLOW_ALL,
+                enums.Operation.ACTIVATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REVOKE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DESTROY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ARCHIVE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.RECOVER: enums.Policy.ALLOW_OWNER,
             },
             enums.ObjectType.PRIVATE_KEY: {
-                enums.Operation.REKEY:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.REKEY_KEY_PAIR:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.DERIVE_KEY:           enums.Policy.ALLOW_OWNER,
-                enums.Operation.LOCATE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.CHECK:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET:                  enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTES:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTE_LIST:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.ADD_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.MODIFY_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.DELETE_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.SET_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.OBTAIN_LEASE:         enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY_KEY_PAIR: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DERIVE_KEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.LOCATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.CHECK: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.OBTAIN_LEASE: enums.Policy.ALLOW_OWNER,
                 enums.Operation.GET_USAGE_ALLOCATION: enums.Policy.ALLOW_OWNER,
-                enums.Operation.ACTIVATE:             enums.Policy.ALLOW_OWNER,
-                enums.Operation.REVOKE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.DESTROY:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.ARCHIVE:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.RECOVER:              enums.Policy.ALLOW_OWNER
+                enums.Operation.ACTIVATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REVOKE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DESTROY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ARCHIVE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.RECOVER: enums.Policy.ALLOW_OWNER,
             },
             enums.ObjectType.SPLIT_KEY: {
-                enums.Operation.REKEY:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.REKEY_KEY_PAIR:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.DERIVE_KEY:           enums.Policy.ALLOW_OWNER,
-                enums.Operation.LOCATE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.CHECK:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET:                  enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTES:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTE_LIST:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.ADD_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.MODIFY_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.DELETE_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.SET_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.OBTAIN_LEASE:         enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY_KEY_PAIR: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DERIVE_KEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.LOCATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.CHECK: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.OBTAIN_LEASE: enums.Policy.ALLOW_OWNER,
                 enums.Operation.GET_USAGE_ALLOCATION: enums.Policy.ALLOW_OWNER,
-                enums.Operation.ACTIVATE:             enums.Policy.ALLOW_OWNER,
-                enums.Operation.REVOKE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.DESTROY:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.ARCHIVE:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.RECOVER:              enums.Policy.ALLOW_OWNER
+                enums.Operation.ACTIVATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REVOKE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DESTROY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ARCHIVE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.RECOVER: enums.Policy.ALLOW_OWNER,
             },
             enums.ObjectType.TEMPLATE: {
-                enums.Operation.LOCATE:             enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTES:     enums.Policy.ALLOW_OWNER,
+                enums.Operation.LOCATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_OWNER,
                 enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_OWNER,
-                enums.Operation.ADD_ATTRIBUTE:      enums.Policy.ALLOW_OWNER,
-                enums.Operation.MODIFY_ATTRIBUTE:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.DELETE_ATTRIBUTE:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.SET_ATTRIBUTE:      enums.Policy.ALLOW_OWNER,
-                enums.Operation.DESTROY:            enums.Policy.ALLOW_OWNER
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DESTROY: enums.Policy.ALLOW_OWNER,
             },
             enums.ObjectType.SECRET_DATA: {
-                enums.Operation.REKEY:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.REKEY_KEY_PAIR:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.DERIVE_KEY:           enums.Policy.ALLOW_OWNER,
-                enums.Operation.LOCATE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.CHECK:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET:                  enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTES:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTE_LIST:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.ADD_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.MODIFY_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.DELETE_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.SET_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.OBTAIN_LEASE:         enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY_KEY_PAIR: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DERIVE_KEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.LOCATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.CHECK: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.OBTAIN_LEASE: enums.Policy.ALLOW_OWNER,
                 enums.Operation.GET_USAGE_ALLOCATION: enums.Policy.ALLOW_OWNER,
-                enums.Operation.ACTIVATE:             enums.Policy.ALLOW_OWNER,
-                enums.Operation.REVOKE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.DESTROY:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.ARCHIVE:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.RECOVER:              enums.Policy.ALLOW_OWNER
+                enums.Operation.ACTIVATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REVOKE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DESTROY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ARCHIVE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.RECOVER: enums.Policy.ALLOW_OWNER,
             },
             enums.ObjectType.OPAQUE_DATA: {
-                enums.Operation.REKEY:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.REKEY_KEY_PAIR:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.DERIVE_KEY:           enums.Policy.ALLOW_OWNER,
-                enums.Operation.LOCATE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.CHECK:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET:                  enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTES:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTE_LIST:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.ADD_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.MODIFY_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.DELETE_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.SET_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.OBTAIN_LEASE:         enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY_KEY_PAIR: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DERIVE_KEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.LOCATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.CHECK: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.OBTAIN_LEASE: enums.Policy.ALLOW_OWNER,
                 enums.Operation.GET_USAGE_ALLOCATION: enums.Policy.ALLOW_OWNER,
-                enums.Operation.ACTIVATE:             enums.Policy.ALLOW_OWNER,
-                enums.Operation.REVOKE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.DESTROY:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.ARCHIVE:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.RECOVER:              enums.Policy.ALLOW_OWNER
+                enums.Operation.ACTIVATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REVOKE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DESTROY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ARCHIVE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.RECOVER: enums.Policy.ALLOW_OWNER,
             },
             enums.ObjectType.PGP_KEY: {
-                enums.Operation.REKEY:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.REKEY_KEY_PAIR:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.DERIVE_KEY:           enums.Policy.ALLOW_OWNER,
-                enums.Operation.LOCATE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.CHECK:                enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET:                  enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTES:       enums.Policy.ALLOW_OWNER,
-                enums.Operation.GET_ATTRIBUTE_LIST:   enums.Policy.ALLOW_OWNER,
-                enums.Operation.ADD_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.MODIFY_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.DELETE_ATTRIBUTE:     enums.Policy.ALLOW_OWNER,
-                enums.Operation.SET_ATTRIBUTE:        enums.Policy.ALLOW_OWNER,
-                enums.Operation.OBTAIN_LEASE:         enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REKEY_KEY_PAIR: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DERIVE_KEY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.LOCATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.CHECK: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_OWNER,
+                enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.OBTAIN_LEASE: enums.Policy.ALLOW_OWNER,
                 enums.Operation.GET_USAGE_ALLOCATION: enums.Policy.ALLOW_OWNER,
-                enums.Operation.ACTIVATE:             enums.Policy.ALLOW_OWNER,
-                enums.Operation.REVOKE:               enums.Policy.ALLOW_OWNER,
-                enums.Operation.DESTROY:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.ARCHIVE:              enums.Policy.ALLOW_OWNER,
-                enums.Operation.RECOVER:              enums.Policy.ALLOW_OWNER
+                enums.Operation.ACTIVATE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.REVOKE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.DESTROY: enums.Policy.ALLOW_OWNER,
+                enums.Operation.ARCHIVE: enums.Policy.ALLOW_OWNER,
+                enums.Operation.RECOVER: enums.Policy.ALLOW_OWNER,
+            },
+        }
+    },
+    "public": {
+        "preset": {
+            enums.ObjectType.TEMPLATE: {
+                enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
+                enums.Operation.GET: enums.Policy.ALLOW_ALL,
+                enums.Operation.GET_ATTRIBUTES: enums.Policy.ALLOW_ALL,
+                enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_ALL,
+                enums.Operation.ADD_ATTRIBUTE: enums.Policy.DISALLOW_ALL,
+                enums.Operation.MODIFY_ATTRIBUTE: enums.Policy.DISALLOW_ALL,
+                enums.Operation.DELETE_ATTRIBUTE: enums.Policy.DISALLOW_ALL,
+                enums.Operation.SET_ATTRIBUTE: enums.Policy.DISALLOW_ALL,
+                enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
             }
         }
     },
-    'public': {
-        'preset': {
-            enums.ObjectType.TEMPLATE: {
-                enums.Operation.LOCATE:             enums.Policy.ALLOW_ALL,
-                enums.Operation.GET:                enums.Policy.ALLOW_ALL,
-                enums.Operation.GET_ATTRIBUTES:     enums.Policy.ALLOW_ALL,
-                enums.Operation.GET_ATTRIBUTE_LIST: enums.Policy.ALLOW_ALL,
-                enums.Operation.ADD_ATTRIBUTE:      enums.Policy.DISALLOW_ALL,
-                enums.Operation.MODIFY_ATTRIBUTE:   enums.Policy.DISALLOW_ALL,
-                enums.Operation.DELETE_ATTRIBUTE:   enums.Policy.DISALLOW_ALL,
-                enums.Operation.SET_ATTRIBUTE:      enums.Policy.DISALLOW_ALL,
-                enums.Operation.DESTROY:            enums.Policy.DISALLOW_ALL
-            }
-        }
-    }
 }

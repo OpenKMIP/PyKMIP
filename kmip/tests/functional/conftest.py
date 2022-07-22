@@ -20,7 +20,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--config-file",
         action="store",
-        help="Config file path for client configuration settings"
+        help="Config file path for client configuration settings",
     )
 
 

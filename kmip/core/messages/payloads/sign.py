@@ -34,10 +34,9 @@ class SignRequestPayload(base.RequestPayload):
         data: The data to be signed in the form of a binary string.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 cryptographic_parameters=None,
-                 data=None):
+    def __init__(
+        self, unique_identifier=None, cryptographic_parameters=None, data=None
+    ):
         """
         Construct a Sign request payload struct.
 
@@ -75,8 +74,7 @@ class SignRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("unique identifier must be a string")
@@ -93,8 +91,7 @@ class SignRequestPayload(base.RequestPayload):
             self._cryptographic_parameters = value
         else:
             raise TypeError(
-                "cryptographic parameters must be a CryptographicParameters "
-                "struct"
+                "cryptographic parameters must be a CryptographicParameters " "struct"
             )
 
     @property
@@ -109,10 +106,7 @@ class SignRequestPayload(base.RequestPayload):
         if value is None:
             self._data is None
         elif isinstance(value, six.binary_type):
-            self._data = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.DATA
-            )
+            self._data = primitives.ByteString(value=value, tag=enums.Tags.DATA)
         else:
             raise TypeError("data must be bytes")
 
@@ -132,10 +126,7 @@ class SignRequestPayload(base.RequestPayload):
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(SignRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(SignRequestPayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
@@ -143,30 +134,18 @@ class SignRequestPayload(base.RequestPayload):
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
 
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
 
-        if self.is_tag_next(
-               enums.Tags.CRYPTOGRAPHIC_PARAMETERS,
-               local_stream
-        ):
-            self._cryptographic_parameters = \
-                attributes.CryptographicParameters()
-            self._cryptographic_parameters.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+        if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_PARAMETERS, local_stream):
+            self._cryptographic_parameters = attributes.CryptographicParameters()
+            self._cryptographic_parameters.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
             self._data.read(local_stream, kmip_version=kmip_version)
 
         else:
-            raise ValueError(
-                "invalid payload missing the data attribute"
-            )
+            raise ValueError("invalid payload missing the data attribute")
 
     def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -186,14 +165,10 @@ class SignRequestPayload(base.RequestPayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._cryptographic_parameters:
             self._cryptographic_parameters.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         if self._data:
@@ -202,18 +177,14 @@ class SignRequestPayload(base.RequestPayload):
             raise ValueError("invalid payload missing the data attribute")
 
         self.length = local_stream.length()
-        super(SignRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(SignRequestPayload, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
         if isinstance(other, SignRequestPayload):
             if self.unique_identifier != other.unique_identifier:
                 return False
-            elif self.cryptographic_parameters !=\
-                    other.cryptographic_parameters:
+            elif self.cryptographic_parameters != other.cryptographic_parameters:
                 return False
             elif self.data != other.data:
                 return False
@@ -229,21 +200,25 @@ class SignRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "cryptographic_parameters={0}".format(
-                repr(self.cryptographic_parameters)
-            ),
-            "data={0}".format(self.data)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "cryptographic_parameters={0}".format(
+                    repr(self.cryptographic_parameters)
+                ),
+                "data={0}".format(self.data),
+            ]
+        )
         return "SignRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'cryptographic_parameters': self.cryptographic_parameters,
-            'data': self.data
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "cryptographic_parameters": self.cryptographic_parameters,
+                "data": self.data,
+            }
+        )
 
 
 class SignResponsePayload(base.ResponsePayload):
@@ -256,9 +231,7 @@ class SignResponsePayload(base.ResponsePayload):
         signature_data: The signature data as a byte string.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 signature_data=None):
+    def __init__(self, unique_identifier=None, signature_data=None):
         super(SignResponsePayload, self).__init__()
 
         self._unique_identifier = None
@@ -280,8 +253,7 @@ class SignResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("unique identifier must be a string")
@@ -299,8 +271,7 @@ class SignResponsePayload(base.ResponsePayload):
             self._signature_data = None
         elif isinstance(value, six.binary_type):
             self._signature_data = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.SIGNATURE_DATA
+                value=value, tag=enums.Tags.SIGNATURE_DATA
             )
         else:
             raise TypeError("signature data must be bytes")
@@ -322,34 +293,22 @@ class SignResponsePayload(base.ResponsePayload):
                 are missing from the encoded payload.
         """
 
-        super(SignResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(SignResponsePayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "invalid payload missing the unique identifier attribute"
-            )
+            raise ValueError("invalid payload missing the unique identifier attribute")
 
         if self.is_tag_next(enums.Tags.SIGNATURE_DATA, local_stream):
-            self._signature_data = primitives.ByteString(
-                tag=enums.Tags.SIGNATURE_DATA
-            )
+            self._signature_data = primitives.ByteString(tag=enums.Tags.SIGNATURE_DATA)
             self._signature_data.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "invalid payload missing the signature data attribute"
-            )
+            raise ValueError("invalid payload missing the signature data attribute")
 
     def write(self, output_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -368,30 +327,17 @@ class SignResponsePayload(base.ResponsePayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "invalid payload missing the unique identifier attribute"
-            )
+            raise ValueError("invalid payload missing the unique identifier attribute")
 
         if self._signature_data:
-            self._signature_data.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._signature_data.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "invalid payload missing the signature attribute"
-            )
+            raise ValueError("invalid payload missing the signature attribute")
 
         self.length = local_stream.length()
-        super(SignResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(SignResponsePayload, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -412,14 +358,18 @@ class SignResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "signature_data={0}".format(self.signature_data)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "signature_data={0}".format(self.signature_data),
+            ]
+        )
         return "SignResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'signature_data': self.signature_data
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "signature_data": self.signature_data,
+            }
+        )

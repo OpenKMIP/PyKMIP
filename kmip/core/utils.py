@@ -21,7 +21,7 @@ from kmip.core import exceptions
 
 def bit_length(num):
     s = bin(num)
-    s = s.lstrip('0b')
+    s = s.lstrip("0b")
     return len(s)
 
 
@@ -35,7 +35,7 @@ def count_bytes(num):
 
 def print_bytearray(array):
     sbuffer = hexlify_bytearray(array)
-    print('buffer: {0}'.format(sbuffer))
+    print("buffer: {0}".format(sbuffer))
 
 
 def hexlify_bytearray(array):
@@ -50,14 +50,13 @@ def is_stream_empty(stream):
         return True
 
 
-def build_er_error(class_object, descriptor, expected, received,
-                   attribute=None):
+def build_er_error(class_object, descriptor, expected, received, attribute=None):
     msg = exceptions.ErrorStrings.BAD_EXP_RECV
 
     if attribute is None:
-        class_string = '{0}'.format(class_object.__name__)
+        class_string = "{0}".format(class_object.__name__)
     else:
-        class_string = '{0}.{1}'.format(class_object.__name__, attribute)
+        class_string = "{0}.{1}".format(class_object.__name__, attribute)
 
     return msg.format(class_string, descriptor, expected, received)
 

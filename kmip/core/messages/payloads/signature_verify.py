@@ -42,15 +42,17 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             the last in a series for a multi-payload operation.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 cryptographic_parameters=None,
-                 data=None,
-                 digested_data=None,
-                 signature_data=None,
-                 correlation_value=None,
-                 init_indicator=None,
-                 final_indicator=None):
+    def __init__(
+        self,
+        unique_identifier=None,
+        cryptographic_parameters=None,
+        data=None,
+        digested_data=None,
+        signature_data=None,
+        correlation_value=None,
+        init_indicator=None,
+        final_indicator=None,
+    ):
         """
         Construct a SignatureVerify request payload struct.
 
@@ -111,8 +113,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -129,8 +130,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             self._cryptographic_parameters = value
         else:
             raise TypeError(
-                "Cryptographic parameters must be a CryptographicParameters "
-                "struct."
+                "Cryptographic parameters must be a CryptographicParameters " "struct."
             )
 
     @property
@@ -145,10 +145,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
         if value is None:
             self._data = None
         elif isinstance(value, six.binary_type):
-            self._data = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.DATA
-            )
+            self._data = primitives.ByteString(value=value, tag=enums.Tags.DATA)
         else:
             raise TypeError("Data must be bytes.")
 
@@ -165,8 +162,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             self._digested_data = None
         elif isinstance(value, six.binary_type):
             self._digested_data = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.DIGESTED_DATA
+                value=value, tag=enums.Tags.DIGESTED_DATA
             )
         else:
             raise TypeError("Digested data must be bytes.")
@@ -184,8 +180,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             self._signature_data = None
         elif isinstance(value, six.binary_type):
             self._signature_data = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.SIGNATURE_DATA
+                value=value, tag=enums.Tags.SIGNATURE_DATA
             )
         else:
             raise TypeError("Signature data must be bytes.")
@@ -203,8 +198,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             self._correlation_value = None
         elif isinstance(value, six.binary_type):
             self._correlation_value = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.CORRELATION_VALUE
+                value=value, tag=enums.Tags.CORRELATION_VALUE
             )
         else:
             raise TypeError("Correlation value must be bytes.")
@@ -222,8 +216,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             self._init_indicator = None
         elif isinstance(value, bool):
             self._init_indicator = primitives.Boolean(
-                value=value,
-                tag=enums.Tags.INIT_INDICATOR
+                value=value, tag=enums.Tags.INIT_INDICATOR
             )
         else:
             raise TypeError("Init indicator must be a boolean.")
@@ -241,8 +234,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             self._final_indicator = None
         elif isinstance(value, bool):
             self._final_indicator = primitives.Boolean(
-                value=value,
-                tag=enums.Tags.FINAL_INDICATOR
+                value=value, tag=enums.Tags.FINAL_INDICATOR
             )
         else:
             raise TypeError("Final indicator must be a boolean.")
@@ -265,8 +257,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
                 encoded payload.
         """
         super(SignatureVerifyRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
@@ -274,47 +265,29 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_PARAMETERS, local_stream):
-            self._cryptographic_parameters = \
-                attributes.CryptographicParameters()
-            self._cryptographic_parameters.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_parameters = attributes.CryptographicParameters()
+            self._cryptographic_parameters.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
             self._data.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.DIGESTED_DATA, local_stream):
-            self._digested_data = primitives.ByteString(
-                tag=enums.Tags.DIGESTED_DATA
-            )
+            self._digested_data = primitives.ByteString(tag=enums.Tags.DIGESTED_DATA)
             self._digested_data.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.SIGNATURE_DATA, local_stream):
-            self._signature_data = primitives.ByteString(
-                tag=enums.Tags.SIGNATURE_DATA
-            )
+            self._signature_data = primitives.ByteString(tag=enums.Tags.SIGNATURE_DATA)
             self._signature_data.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.CORRELATION_VALUE, local_stream):
             self._correlation_value = primitives.ByteString(
                 tag=enums.Tags.CORRELATION_VALUE
             )
-            self._correlation_value.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._correlation_value.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.INIT_INDICATOR, local_stream):
-            self._init_indicator = primitives.Boolean(
-                tag=enums.Tags.INIT_INDICATOR
-            )
+            self._init_indicator = primitives.Boolean(tag=enums.Tags.INIT_INDICATOR)
             self._init_indicator.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.FINAL_INDICATOR, local_stream):
-            self._final_indicator = primitives.Boolean(
-                tag=enums.Tags.FINAL_INDICATOR
-            )
+            self._final_indicator = primitives.Boolean(tag=enums.Tags.FINAL_INDICATOR)
             self._final_indicator.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
@@ -338,44 +311,27 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._cryptographic_parameters:
             self._cryptographic_parameters.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self._data:
             self._data.write(local_stream, kmip_version=kmip_version)
         if self._digested_data:
             self._digested_data.write(local_stream, kmip_version=kmip_version)
         if self._signature_data:
-            self._signature_data.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._signature_data.write(local_stream, kmip_version=kmip_version)
         if self._correlation_value:
-            self._correlation_value.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._correlation_value.write(local_stream, kmip_version=kmip_version)
         if self._init_indicator:
-            self._init_indicator.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._init_indicator.write(local_stream, kmip_version=kmip_version)
         if self._final_indicator:
-            self._final_indicator.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._final_indicator.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(SignatureVerifyRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -383,8 +339,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
         if isinstance(other, SignatureVerifyRequestPayload):
             if self.unique_identifier != other.unique_identifier:
                 return False
-            elif self.cryptographic_parameters != \
-                    other.cryptographic_parameters:
+            elif self.cryptographic_parameters != other.cryptographic_parameters:
                 return False
             elif self.data != other.data:
                 return False
@@ -410,31 +365,35 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "cryptographic_parameters={0}".format(
-                repr(self.cryptographic_parameters)
-            ),
-            "data={0}".format(self.data),
-            "digested_data={0}".format(self.digested_data),
-            "signature_data={0}".format(self.signature_data),
-            "correlation_value={0}".format(self.correlation_value),
-            "init_indicator={0}".format(self.init_indicator),
-            "final_indicator={0}".format(self.final_indicator)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "cryptographic_parameters={0}".format(
+                    repr(self.cryptographic_parameters)
+                ),
+                "data={0}".format(self.data),
+                "digested_data={0}".format(self.digested_data),
+                "signature_data={0}".format(self.signature_data),
+                "correlation_value={0}".format(self.correlation_value),
+                "init_indicator={0}".format(self.init_indicator),
+                "final_indicator={0}".format(self.final_indicator),
+            ]
+        )
         return "SignatureVerifyRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'cryptographic_parameters': self.cryptographic_parameters,
-            'data': self.data,
-            'digested_data': self.digested_data,
-            'signature_data': self.signature_data,
-            'correlation_value': self.correlation_value,
-            'init_indicator': self.init_indicator,
-            'final_indicator': self.final_indicator
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "cryptographic_parameters": self.cryptographic_parameters,
+                "data": self.data,
+                "digested_data": self.digested_data,
+                "signature_data": self.signature_data,
+                "correlation_value": self.correlation_value,
+                "init_indicator": self.init_indicator,
+                "final_indicator": self.final_indicator,
+            }
+        )
 
 
 class SignatureVerifyResponsePayload(base.ResponsePayload):
@@ -450,11 +409,13 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
             this payload is a part of.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 validity_indicator=None,
-                 data=None,
-                 correlation_value=None):
+    def __init__(
+        self,
+        unique_identifier=None,
+        validity_indicator=None,
+        data=None,
+        correlation_value=None,
+    ):
         """
         Construct a SignatureVerify response payload struct.
 
@@ -496,8 +457,7 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -515,9 +475,7 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
             self._validity_indicator = None
         elif isinstance(value, enums.ValidityIndicator):
             self._validity_indicator = primitives.Enumeration(
-                enums.ValidityIndicator,
-                value=value,
-                tag=enums.Tags.VALIDITY_INDICATOR
+                enums.ValidityIndicator, value=value, tag=enums.Tags.VALIDITY_INDICATOR
             )
         else:
             raise TypeError(
@@ -536,10 +494,7 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
         if value is None:
             self._data = None
         elif isinstance(value, six.binary_type):
-            self._data = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.DATA
-            )
+            self._data = primitives.ByteString(value=value, tag=enums.Tags.DATA)
         else:
             raise TypeError("Data must be bytes.")
 
@@ -556,8 +511,7 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
             self._correlation_value = None
         elif isinstance(value, six.binary_type):
             self._correlation_value = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.CORRELATION_VALUE
+                value=value, tag=enums.Tags.CORRELATION_VALUE
             )
         else:
             raise TypeError("Correlation value must be bytes.")
@@ -580,8 +534,7 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
                 encoded payload.
         """
         super(SignatureVerifyResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
@@ -589,28 +542,19 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
-                "Parsed payload encoding is missing the unique identifier "
-                "field."
+                "Parsed payload encoding is missing the unique identifier " "field."
             )
         if self.is_tag_next(enums.Tags.VALIDITY_INDICATOR, local_stream):
             self._validity_indicator = primitives.Enumeration(
-                enums.ValidityIndicator,
-                tag=enums.Tags.VALIDITY_INDICATOR
+                enums.ValidityIndicator, tag=enums.Tags.VALIDITY_INDICATOR
             )
-            self._validity_indicator.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._validity_indicator.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
-                "Parsed payload encoding is missing the validity indicator "
-                "field."
+                "Parsed payload encoding is missing the validity indicator " "field."
             )
         if self.is_tag_next(enums.Tags.DATA, local_stream):
             self._data = primitives.ByteString(tag=enums.Tags.DATA)
@@ -619,10 +563,7 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
             self._correlation_value = primitives.ByteString(
                 tag=enums.Tags.CORRELATION_VALUE
             )
-            self._correlation_value.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._correlation_value.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -645,35 +586,21 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Payload is missing the unique identifier field."
-            )
+            raise ValueError("Payload is missing the unique identifier field.")
         if self._validity_indicator:
-            self._validity_indicator.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._validity_indicator.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Payload is missing the validity indicator field."
-            )
+            raise ValueError("Payload is missing the validity indicator field.")
         if self._data:
             self._data.write(local_stream, kmip_version=kmip_version)
         if self._correlation_value:
-            self._correlation_value.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._correlation_value.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(SignatureVerifyResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -699,18 +626,22 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "validity_indicator={0}".format(self.validity_indicator),
-            "data={0}".format(self.data),
-            "correlation_value={0}".format(self.correlation_value)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "validity_indicator={0}".format(self.validity_indicator),
+                "data={0}".format(self.data),
+                "correlation_value={0}".format(self.correlation_value),
+            ]
+        )
         return "SignatureVerifyResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'validity_indicator': self.validity_indicator,
-            'data': self.data,
-            'correlation_value': self.correlation_value
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "validity_indicator": self.validity_indicator,
+                "data": self.data,
+                "correlation_value": self.correlation_value,
+            }
+        )

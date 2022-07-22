@@ -38,11 +38,13 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
             Used in KMIP 2.0+.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 attribute=None,
-                 current_attribute=None,
-                 new_attribute=None):
+    def __init__(
+        self,
+        unique_identifier=None,
+        attribute=None,
+        current_attribute=None,
+        new_attribute=None,
+    ):
         """
         Construct a ModifyAttribute request payload.
 
@@ -86,8 +88,7 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("The unique identifier must be a string.")
@@ -120,9 +121,7 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
         elif isinstance(value, objects.CurrentAttribute):
             self._current_attribute = value
         else:
-            raise TypeError(
-                "The current attribute must be a CurrentAttribute object."
-            )
+            raise TypeError("The current attribute must be a CurrentAttribute object.")
 
     @property
     def new_attribute(self):
@@ -137,9 +136,7 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
         elif isinstance(value, objects.NewAttribute):
             self._new_attribute = value
         else:
-            raise TypeError(
-                "The new attribute must be a NewAttribute object."
-            )
+            raise TypeError("The new attribute must be a NewAttribute object.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -159,8 +156,7 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
                 encoding.
         """
         super(ModifyAttributeRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -168,10 +164,7 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             self._unique_identifier = None
 
@@ -187,19 +180,13 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
         else:
             if self.is_tag_next(enums.Tags.CURRENT_ATTRIBUTE, local_buffer):
                 self._current_attribute = objects.CurrentAttribute()
-                self._current_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._current_attribute.read(local_buffer, kmip_version=kmip_version)
             else:
                 self._current_attribute = None
 
             if self.is_tag_next(enums.Tags.NEW_ATTRIBUTE, local_buffer):
                 self._new_attribute = objects.NewAttribute()
-                self._new_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._new_attribute.read(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidKmipEncoding(
                     "The ModifyAttribute request payload encoding is missing "
@@ -228,17 +215,11 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._attribute:
-                self._attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._attribute.write(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidField(
                     "The ModifyAttribute request payload is missing the "
@@ -246,16 +227,10 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
                 )
         else:
             if self._current_attribute:
-                self._current_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._current_attribute.write(local_buffer, kmip_version=kmip_version)
 
             if self._new_attribute:
-                self._new_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._new_attribute.write(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidField(
                     "The ModifyAttribute request payload is missing the new "
@@ -264,24 +239,20 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
 
         self.length = local_buffer.length()
         super(ModifyAttributeRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         args = [
             "unique_identifier='{}'".format(self.unique_identifier),
-            "attribute={}".format(
-                repr(self.attribute) if self.attribute else None
-            ),
+            "attribute={}".format(repr(self.attribute) if self.attribute else None),
             "current_attribute={}".format(
-                repr(self.current_attribute) if self.current_attribute
-                else None
+                repr(self.current_attribute) if self.current_attribute else None
             ),
             "new_attribute={}".format(
                 repr(self.new_attribute) if self.new_attribute else None
-            )
+            ),
         ]
         return "ModifyAttributeRequestPayload({})".format(", ".join(args))
 
@@ -290,12 +261,12 @@ class ModifyAttributeRequestPayload(base.RequestPayload):
             {
                 "unique_identifier": self.unique_identifier,
                 "attribute": str(self.attribute) if self.attribute else None,
-                "current_attribute": str(
-                    self.current_attribute
-                ) if self.current_attribute else None,
-                "new_attribute": str(
-                    self.new_attribute
-                ) if self.new_attribute else None
+                "current_attribute": str(self.current_attribute)
+                if self.current_attribute
+                else None,
+                "new_attribute": str(self.new_attribute)
+                if self.new_attribute
+                else None,
             }
         )
 
@@ -363,8 +334,7 @@ class ModifyAttributeResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("The unique identifier must be a string.")
@@ -402,8 +372,7 @@ class ModifyAttributeResponsePayload(base.ResponsePayload):
                 from the encoding.
         """
         super(ModifyAttributeResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -411,10 +380,7 @@ class ModifyAttributeResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The ModifyAttribute response payload encoding is missing the "
@@ -453,10 +419,7 @@ class ModifyAttributeResponsePayload(base.ResponsePayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The ModifyAttribute response payload is missing the unique "
@@ -474,17 +437,14 @@ class ModifyAttributeResponsePayload(base.ResponsePayload):
 
         self.length = local_buffer.length()
         super(ModifyAttributeResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         args = [
             "unique_identifier='{}'".format(self.unique_identifier),
-            "attribute={}".format(
-                repr(self.attribute) if self.attribute else None
-            )
+            "attribute={}".format(repr(self.attribute) if self.attribute else None),
         ]
         return "ModifyAttributeResponsePayload({})".format(", ".join(args))
 
@@ -492,7 +452,7 @@ class ModifyAttributeResponsePayload(base.ResponsePayload):
         return str(
             {
                 "unique_identifier": self.unique_identifier,
-                "attribute": str(self.attribute) if self.attribute else None
+                "attribute": str(self.attribute) if self.attribute else None,
             }
         )
 

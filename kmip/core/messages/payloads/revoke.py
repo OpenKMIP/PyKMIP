@@ -35,10 +35,12 @@ class RevokeRequestPayload(base.RequestPayload):
         compromised_date: The date of compromise if the object was compromised
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 revocation_reason=None,
-                 compromise_occurrence_date=None):
+    def __init__(
+        self,
+        unique_identifier=None,
+        revocation_reason=None,
+        compromise_occurrence_date=None,
+    ):
         """
         Construct a RevokeRequestPayload object.
         Args:
@@ -68,10 +70,7 @@ class RevokeRequestPayload(base.RequestPayload):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(RevokeRequestPayload, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(RevokeRequestPayload, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
@@ -82,11 +81,9 @@ class RevokeRequestPayload(base.RequestPayload):
 
         if self.is_tag_next(enums.Tags.COMPROMISE_OCCURRENCE_DATE, tstream):
             self.compromise_occurrence_date = primitives.DateTime(
-                tag=enums.Tags.COMPROMISE_OCCURRENCE_DATE)
-            self.compromise_occurrence_date.read(
-                tstream,
-                kmip_version=kmip_version
+                tag=enums.Tags.COMPROMISE_OCCURRENCE_DATE
             )
+            self.compromise_occurrence_date.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
         self.validate()
@@ -110,17 +107,11 @@ class RevokeRequestPayload(base.RequestPayload):
         self.revocation_reason.write(tstream, kmip_version=kmip_version)
 
         if self.compromise_occurrence_date is not None:
-            self.compromise_occurrence_date.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.compromise_occurrence_date.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(RevokeRequestPayload, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(RevokeRequestPayload, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -128,13 +119,11 @@ class RevokeRequestPayload(base.RequestPayload):
         Error check the attributes of the ActivateRequestPayload object.
         """
         if self.unique_identifier is not None:
-            if not isinstance(self.unique_identifier,
-                              attributes.UniqueIdentifier):
+            if not isinstance(self.unique_identifier, attributes.UniqueIdentifier):
                 msg = "invalid unique identifier"
                 raise TypeError(msg)
         if self.compromise_occurrence_date is not None:
-            if not isinstance(self.compromise_occurrence_date,
-                              primitives.DateTime):
+            if not isinstance(self.compromise_occurrence_date, primitives.DateTime):
                 msg = "invalid compromise time"
                 raise TypeError(msg)
         if not isinstance(self.revocation_reason, objects.RevocationReason):
@@ -150,8 +139,8 @@ class RevokeResponsePayload(base.ResponsePayload):
     Attributes:
         unique_identifier: The UUID of a managed cryptographic object.
     """
-    def __init__(self,
-                 unique_identifier=None):
+
+    def __init__(self, unique_identifier=None):
         """
         Construct a RevokeResponsePayload object.
         Args:
@@ -176,10 +165,7 @@ class RevokeResponsePayload(base.ResponsePayload):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(RevokeResponsePayload, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(RevokeResponsePayload, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
@@ -205,10 +191,7 @@ class RevokeResponsePayload(base.ResponsePayload):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(RevokeResponsePayload, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(RevokeResponsePayload, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):

@@ -22,7 +22,6 @@ from kmip.core.utils import BytearrayStream
 
 
 class DiscoverVersionsRequestPayload(base.RequestPayload):
-
     def __init__(self, protocol_versions=None):
         super(DiscoverVersionsRequestPayload, self).__init__()
 
@@ -35,12 +34,11 @@ class DiscoverVersionsRequestPayload(base.RequestPayload):
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(DiscoverVersionsRequestPayload, self).read(
-            istream,
-            kmip_version=kmip_version
+            istream, kmip_version=kmip_version
         )
         tstream = BytearrayStream(istream.read(self.length))
 
-        while(self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream)):
+        while self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream):
             protocol_version = ProtocolVersion()
             protocol_version.read(tstream, kmip_version=kmip_version)
             self.protocol_versions.append(protocol_version)
@@ -56,8 +54,7 @@ class DiscoverVersionsRequestPayload(base.RequestPayload):
 
         self.length = tstream.length()
         super(DiscoverVersionsRequestPayload, self).write(
-            ostream,
-            kmip_version=kmip_version
+            ostream, kmip_version=kmip_version
         )
         ostream.write(tstream.buffer)
 
@@ -71,17 +68,16 @@ class DiscoverVersionsRequestPayload(base.RequestPayload):
                 if not isinstance(protocol_version, ProtocolVersion):
                     msg = "invalid protocol version ({0} in list)".format(i)
                     msg += "; expected {0}, received {1}".format(
-                        ProtocolVersion, protocol_version)
+                        ProtocolVersion, protocol_version
+                    )
                     raise TypeError(msg)
         else:
             msg = "invalid protocol versions list"
-            msg += "; expected {0}, received {1}".format(
-                list, self.protocol_versions)
+            msg += "; expected {0}, received {1}".format(list, self.protocol_versions)
             raise TypeError(msg)
 
 
 class DiscoverVersionsResponsePayload(base.ResponsePayload):
-
     def __init__(self, protocol_versions=None):
         super(DiscoverVersionsResponsePayload, self).__init__()
 
@@ -94,12 +90,11 @@ class DiscoverVersionsResponsePayload(base.ResponsePayload):
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(DiscoverVersionsResponsePayload, self).read(
-            istream,
-            kmip_version=kmip_version
+            istream, kmip_version=kmip_version
         )
         tstream = BytearrayStream(istream.read(self.length))
 
-        while(self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream)):
+        while self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream):
             protocol_version = ProtocolVersion()
             protocol_version.read(tstream, kmip_version=kmip_version)
             self.protocol_versions.append(protocol_version)
@@ -115,8 +110,7 @@ class DiscoverVersionsResponsePayload(base.ResponsePayload):
 
         self.length = tstream.length()
         super(DiscoverVersionsResponsePayload, self).write(
-            ostream,
-            kmip_version=kmip_version
+            ostream, kmip_version=kmip_version
         )
         ostream.write(tstream.buffer)
 
@@ -130,10 +124,10 @@ class DiscoverVersionsResponsePayload(base.ResponsePayload):
                 if not isinstance(protocol_version, ProtocolVersion):
                     msg = "invalid protocol version ({0} in list)".format(i)
                     msg += "; expected {0}, received {1}".format(
-                        ProtocolVersion, protocol_version)
+                        ProtocolVersion, protocol_version
+                    )
                     raise TypeError(msg)
         else:
             msg = "invalid protocol versions list"
-            msg += "; expected {0}, received {1}".format(
-                list, self.protocol_versions)
+            msg += "; expected {0}, received {1}".format(list, self.protocol_versions)
             raise TypeError(msg)

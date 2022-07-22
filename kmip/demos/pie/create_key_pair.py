@@ -21,7 +21,7 @@ from kmip.demos import utils
 from kmip.pie import client
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # Exit early if the arguments are not specified
     if algorithm is None:
-        logger.error('No algorithm provided, exiting early from demo')
+        logger.error("No algorithm provided, exiting early from demo")
         sys.exit()
     if length is None:
         logger.error("No key length provided, exiting early from demo")
@@ -43,21 +43,20 @@ if __name__ == '__main__':
     algorithm = getattr(enums.CryptographicAlgorithm, algorithm, None)
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(
-            config=config,
-            config_file=opts.config_file
-    ) as client:
+    with client.ProxyKmipClient(config=config, config_file=opts.config_file) as client:
         try:
             public_uid, private_uid = client.create_key_pair(
                 algorithm,
                 length,
                 operation_policy_name=opts.operation_policy_name,
                 public_usage_mask=[enums.CryptographicUsageMask.VERIFY],
-                private_usage_mask=[enums.CryptographicUsageMask.SIGN]
+                private_usage_mask=[enums.CryptographicUsageMask.SIGN],
             )
-            logger.info("Successfully created public key with ID: {0}".format(
-                public_uid))
-            logger.info("Successfully created private key with ID: {0}".format(
-                private_uid))
+            logger.info(
+                "Successfully created public key with ID: {0}".format(public_uid)
+            )
+            logger.info(
+                "Successfully created private key with ID: {0}".format(private_uid)
+            )
         except Exception as e:
             logger.error(e)

@@ -25,7 +25,6 @@ from kmip.core.messages import payloads
 
 
 class TestCreateRequestPayload(testtools.TestCase):
-
     def setUp(self):
         super(TestCreateRequestPayload, self).setUp()
 
@@ -46,24 +45,24 @@ class TestCreateRequestPayload(testtools.TestCase):
         #             Attribute Name - Cryptographic Usage Mask
         #             Attribute Value - Encrypt | Decrypt
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\xC0'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x91\x01\x00\x00\x00\xA8'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x17'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C'
-            b'\x67\x6F\x72\x69\x74\x68\x6D\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x14'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65'
-            b'\x6E\x67\x74\x68\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\xC0"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x91\x01\x00\x00\x00\xA8"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x17"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C"
+            b"\x67\x6F\x72\x69\x74\x68\x6D\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x14"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65"
+            b"\x6E\x67\x74\x68\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
@@ -79,14 +78,14 @@ class TestCreateRequestPayload(testtools.TestCase):
         #     Protection Storage Masks
         #         Protection Storage Mask - Software | Hardware
         self.full_encoding_with_attributes = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x60'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x01\x25\x01\x00\x00\x00\x30'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x01\x5F\x01\x00\x00\x00\x10'
-            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x60"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x01\x25\x01\x00\x00\x00\x30"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
+            b"\x42\x01\x5F\x01\x00\x00\x00\x10"
+            b"\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
@@ -105,23 +104,23 @@ class TestCreateRequestPayload(testtools.TestCase):
         #             Attribute Name - Cryptographic Usage Mask
         #             Attribute Value - Encrypt | Decrypt
         self.no_object_type_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\xB0'
-            b'\x42\x00\x91\x01\x00\x00\x00\xA8'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x17'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C'
-            b'\x67\x6F\x72\x69\x74\x68\x6D\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x14'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65'
-            b'\x6E\x67\x74\x68\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\xB0"
+            b"\x42\x00\x91\x01\x00\x00\x00\xA8"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x17"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C"
+            b"\x67\x6F\x72\x69\x74\x68\x6D\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x14"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65"
+            b"\x6E\x67\x74\x68\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
@@ -131,8 +130,8 @@ class TestCreateRequestPayload(testtools.TestCase):
         # Request Payload
         #     Object Type - Symmetric Key
         self.no_template_attribute_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x10'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x10"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -143,7 +142,7 @@ class TestCreateRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the object type of a Create request payload.
         """
-        kwargs = {'object_type': 'invalid'}
+        kwargs = {"object_type": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Object type must be an ObjectType enumeration.",
@@ -151,16 +150,9 @@ class TestCreateRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.CreateRequestPayload(),
-            'object_type',
-            'invalid'
-        )
+        args = (payloads.CreateRequestPayload(), "object_type", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Object type must be an ObjectType enumeration.",
-            setattr,
-            *args
+            TypeError, "Object type must be an ObjectType enumeration.", setattr, *args
         )
 
     def test_invalid_template_attribute(self):
@@ -168,7 +160,7 @@ class TestCreateRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the template attribute of a Create request payload.
         """
-        kwargs = {'template_attribute': 'invalid'}
+        kwargs = {"template_attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute structure.",
@@ -176,11 +168,7 @@ class TestCreateRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.CreateRequestPayload(),
-            'template_attribute',
-            'invalid'
-        )
+        args = (payloads.CreateRequestPayload(), "template_attribute", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute structure.",
@@ -214,11 +202,7 @@ class TestCreateRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.CreateRequestPayload(),
-            "protection_storage_masks",
-            "invalid"
-        )
+        args = (payloads.CreateRequestPayload(), "protection_storage_masks", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The protection storage masks must be a ProtectionStorageMasks "
@@ -231,7 +215,7 @@ class TestCreateRequestPayload(testtools.TestCase):
             "protection_storage_masks",
             objects.ProtectionStorageMasks(
                 tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
-            )
+            ),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -253,47 +237,43 @@ class TestCreateRequestPayload(testtools.TestCase):
 
         payload.read(self.full_encoding)
 
-        self.assertEqual(
-            enums.ObjectType.SYMMETRIC_KEY,
-            payload.object_type
-        )
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, payload.object_type)
         self.assertEqual(
             objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Usage Mask'
+                            "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ]
             ),
-            payload.template_attribute
+            payload.template_attribute,
         )
         self.assertIsNone(payload.protection_storage_masks)
 
@@ -309,55 +289,50 @@ class TestCreateRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.protection_storage_masks)
 
         payload.read(
-            self.full_encoding_with_attributes,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding_with_attributes, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
-        self.assertEqual(
-            enums.ObjectType.SYMMETRIC_KEY,
-            payload.object_type
-        )
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, payload.object_type)
         self.assertEqual(
             objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Usage Mask'
+                            "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ]
             ),
-            payload.template_attribute
+            payload.template_attribute,
         )
         self.assertEqual(
             objects.ProtectionStorageMasks(protection_storage_masks=[3]),
-            payload.protection_storage_masks
+            payload.protection_storage_masks,
         )
 
     def test_read_missing_object_type(self):
@@ -371,7 +346,7 @@ class TestCreateRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.object_type)
         self.assertIsNone(payload.template_attribute)
 
-        args = (self.no_object_type_encoding, )
+        args = (self.no_object_type_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The Create request payload encoding is missing the object type.",
@@ -390,11 +365,10 @@ class TestCreateRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.object_type)
         self.assertIsNone(payload.template_attribute)
 
-        args = (self.no_template_attribute_encoding, )
+        args = (self.no_template_attribute_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "The Create request payload encoding is missing the template "
-            "attribute.",
+            "The Create request payload encoding is missing the template " "attribute.",
             payload.read,
             *args
         )
@@ -410,7 +384,7 @@ class TestCreateRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.object_type)
         self.assertIsNone(payload.template_attribute)
 
-        args = (self.no_template_attribute_encoding, )
+        args = (self.no_template_attribute_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
@@ -431,37 +405,36 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Usage Mask'
+                            "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ]
-            )
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -481,45 +454,44 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Usage Mask'
+                            "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ]
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -538,29 +510,28 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ]
             )
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The Create request payload is missing the object type field.",
@@ -579,11 +550,10 @@ class TestCreateRequestPayload(testtools.TestCase):
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The Create request payload is missing the template attribute "
-            "field.",
+            "The Create request payload is missing the template attribute " "field.",
             payload.write,
             *args
         )
@@ -599,12 +569,11 @@ class TestCreateRequestPayload(testtools.TestCase):
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The Create request payload is missing the template attribute "
-            "field.",
+            "The Create request payload is missing the template attribute " "field.",
             payload.write,
             *args,
             **kwargs
@@ -620,33 +589,32 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ]
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
         self.assertEqual(
             "CreateRequestPayload("
@@ -654,7 +622,7 @@ class TestCreateRequestPayload(testtools.TestCase):
             "template_attribute=Struct(), "
             "protection_storage_masks=ProtectionStorageMasks("
             "protection_storage_masks=[3]))",
-            repr(payload)
+            repr(payload),
         )
 
     def test_str(self):
@@ -667,41 +635,40 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ]
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
         self.assertEqual(
-            '{'
+            "{"
             '"object_type": ObjectType.SYMMETRIC_KEY, '
             '"template_attribute": Struct(), '
             '"protection_storage_masks": {"protection_storage_masks": [3]}'
-            '}',
-            str(payload)
+            "}",
+            str(payload),
         )
 
     def test_equal_on_equal(self):
@@ -721,45 +688,44 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Usage Mask'
+                            "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ]
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
         b = payloads.CreateRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
@@ -767,45 +733,44 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Usage Mask'
+                            "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ]
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
 
         self.assertTrue(a == b)
@@ -816,12 +781,8 @@ class TestCreateRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two Create
         request payloads with different object types.
         """
-        a = payloads.CreateRequestPayload(
-            object_type=enums.ObjectType.SYMMETRIC_KEY
-        )
-        b = payloads.CreateRequestPayload(
-            object_type=enums.ObjectType.SECRET_DATA
-        )
+        a = payloads.CreateRequestPayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
+        b = payloads.CreateRequestPayload(object_type=enums.ObjectType.SECRET_DATA)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -836,13 +797,13 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     )
                 ]
             )
@@ -852,12 +813,11 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     )
                 ]
             )
@@ -875,8 +835,8 @@ class TestCreateRequestPayload(testtools.TestCase):
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
             )
@@ -885,8 +845,8 @@ class TestCreateRequestPayload(testtools.TestCase):
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.ON_SYSTEM.value |
-                        enums.ProtectionStorageMask.OFF_SYSTEM.value
+                        enums.ProtectionStorageMask.ON_SYSTEM.value
+                        | enums.ProtectionStorageMask.OFF_SYSTEM.value
                     )
                 ]
             )
@@ -901,7 +861,7 @@ class TestCreateRequestPayload(testtools.TestCase):
         request payloads with different types.
         """
         a = payloads.CreateRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -923,45 +883,44 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Usage Mask'
+                            "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ]
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
         b = payloads.CreateRequestPayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
@@ -969,45 +928,44 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Usage Mask'
+                            "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
                             value=(
-                                enums.CryptographicUsageMask.ENCRYPT.value |
-                                enums.CryptographicUsageMask.DECRYPT.value
+                                enums.CryptographicUsageMask.ENCRYPT.value
+                                | enums.CryptographicUsageMask.DECRYPT.value
                             ),
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ]
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
 
         self.assertFalse(a != b)
@@ -1018,12 +976,8 @@ class TestCreateRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Create request payloads with different object types.
         """
-        a = payloads.CreateRequestPayload(
-            object_type=enums.ObjectType.SYMMETRIC_KEY
-        )
-        b = payloads.CreateRequestPayload(
-            object_type=enums.ObjectType.SECRET_DATA
-        )
+        a = payloads.CreateRequestPayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
+        b = payloads.CreateRequestPayload(object_type=enums.ObjectType.SECRET_DATA)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1038,13 +992,13 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.AES,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     )
                 ]
             )
@@ -1054,12 +1008,11 @@ class TestCreateRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=128,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     )
                 ]
             )
@@ -1077,8 +1030,8 @@ class TestCreateRequestPayload(testtools.TestCase):
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
             )
@@ -1087,8 +1040,8 @@ class TestCreateRequestPayload(testtools.TestCase):
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.ON_SYSTEM.value |
-                        enums.ProtectionStorageMask.OFF_SYSTEM.value
+                        enums.ProtectionStorageMask.ON_SYSTEM.value
+                        | enums.ProtectionStorageMask.OFF_SYSTEM.value
                     )
                 ]
             )
@@ -1103,14 +1056,13 @@ class TestCreateRequestPayload(testtools.TestCase):
         Create request payloads with different types.
         """
         a = payloads.CreateRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
 
 class TestCreateResponsePayload(testtools.TestCase):
-
     def setUp(self):
         super(TestCreateResponsePayload, self).setUp()
 
@@ -1127,17 +1079,17 @@ class TestCreateResponsePayload(testtools.TestCase):
         #             Attribute Name - State
         #             Attribute Value - PRE_ACTIVE
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x70'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x66\x62\x34\x62\x35\x62\x39\x63\x2D\x36\x31\x38\x38\x2D\x34\x63'
-            b'\x36\x33\x2D\x38\x31\x34\x32\x2D\x66\x65\x39\x63\x33\x32\x38\x31'
-            b'\x32\x39\x66\x63\x00\x00\x00\x00'
-            b'\x42\x00\x91\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x70"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x66\x62\x34\x62\x35\x62\x39\x63\x2D\x36\x31\x38\x38\x2D\x34\x63"
+            b"\x36\x33\x2D\x38\x31\x34\x32\x2D\x66\x65\x39\x63\x33\x32\x38\x31"
+            b"\x32\x39\x66\x63\x00\x00\x00\x00"
+            b"\x42\x00\x91\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained in part from the KMIP 1.1 testing document,
@@ -1152,16 +1104,16 @@ class TestCreateResponsePayload(testtools.TestCase):
         #             Attribute Name - State
         #             Attribute Value - PRE_ACTIVE
         self.no_object_type_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x60'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x66\x62\x34\x62\x35\x62\x39\x63\x2D\x36\x31\x38\x38\x2D\x34\x63'
-            b'\x36\x33\x2D\x38\x31\x34\x32\x2D\x66\x65\x39\x63\x33\x32\x38\x31'
-            b'\x32\x39\x66\x63\x00\x00\x00\x00'
-            b'\x42\x00\x91\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x60"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x66\x62\x34\x62\x35\x62\x39\x63\x2D\x36\x31\x38\x38\x2D\x34\x63"
+            b"\x36\x33\x2D\x38\x31\x34\x32\x2D\x66\x65\x39\x63\x33\x32\x38\x31"
+            b"\x32\x39\x66\x63\x00\x00\x00\x00"
+            b"\x42\x00\x91\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained in part from the KMIP 1.1 testing document,
@@ -1176,13 +1128,13 @@ class TestCreateResponsePayload(testtools.TestCase):
         #             Attribute Name - State
         #             Attribute Value - PRE_ACTIVE
         self.no_unique_identifier_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x50'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x91\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x50"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x91\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained in part from the KMIP 1.1 testing document,
@@ -1193,12 +1145,12 @@ class TestCreateResponsePayload(testtools.TestCase):
         #     Object Type - Symmetric Key
         #     Unique Identifier - fb4b5b9c-6188-4c63-8142-fe9c328129fc
         self.no_template_attribute_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x40'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x66\x62\x34\x62\x35\x62\x39\x63\x2D\x36\x31\x38\x38\x2D\x34\x63'
-            b'\x36\x33\x2D\x38\x31\x34\x32\x2D\x66\x65\x39\x63\x33\x32\x38\x31'
-            b'\x32\x39\x66\x63\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x40"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x66\x62\x34\x62\x35\x62\x39\x63\x2D\x36\x31\x38\x38\x2D\x34\x63"
+            b"\x36\x33\x2D\x38\x31\x34\x32\x2D\x66\x65\x39\x63\x33\x32\x38\x31"
+            b"\x32\x39\x66\x63\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -1209,7 +1161,7 @@ class TestCreateResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the object type of a Create response payload.
         """
-        kwargs = {'object_type': 'invalid'}
+        kwargs = {"object_type": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Object type must be an ObjectType enumeration.",
@@ -1217,16 +1169,9 @@ class TestCreateResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.CreateResponsePayload(),
-            'object_type',
-            'invalid'
-        )
+        args = (payloads.CreateResponsePayload(), "object_type", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Object type must be an ObjectType enumeration.",
-            setattr,
-            *args
+            TypeError, "Object type must be an ObjectType enumeration.", setattr, *args
         )
 
     def test_invalid_unique_identifier(self):
@@ -1234,7 +1179,7 @@ class TestCreateResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a Create response payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -1242,12 +1187,9 @@ class TestCreateResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (payloads.CreateResponsePayload(), 'unique_identifier', 0)
+        args = (payloads.CreateResponsePayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_template_attribute(self):
@@ -1255,7 +1197,7 @@ class TestCreateResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the template attribute of a Create response payload.
         """
-        kwargs = {'template_attribute': 'invalid'}
+        kwargs = {"template_attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute structure.",
@@ -1263,11 +1205,7 @@ class TestCreateResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.CreateResponsePayload(),
-            'template_attribute',
-            'invalid'
-        )
+        args = (payloads.CreateResponsePayload(), "template_attribute", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute structure.",
@@ -1287,30 +1225,24 @@ class TestCreateResponsePayload(testtools.TestCase):
 
         payload.read(self.full_encoding)
 
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, payload.object_type)
         self.assertEqual(
-            enums.ObjectType.SYMMETRIC_KEY,
-            payload.object_type
-        )
-        self.assertEqual(
-            'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
-            payload.unique_identifier
+            "fb4b5b9c-6188-4c63-8142-fe9c328129fc", payload.unique_identifier
         )
         self.assertEqual(
             objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            'State'
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
             ),
-            payload.template_attribute
+            payload.template_attribute,
         )
 
     def test_read_kmip_2_0(self):
@@ -1325,17 +1257,12 @@ class TestCreateResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.template_attribute)
 
         payload.read(
-            self.no_template_attribute_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.no_template_attribute_encoding, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, payload.object_type)
         self.assertEqual(
-            enums.ObjectType.SYMMETRIC_KEY,
-            payload.object_type
-        )
-        self.assertEqual(
-            'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
-            payload.unique_identifier
+            "fb4b5b9c-6188-4c63-8142-fe9c328129fc", payload.unique_identifier
         )
         self.assertIsNone(payload.template_attribute)
 
@@ -1351,7 +1278,7 @@ class TestCreateResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.unique_identifier)
         self.assertIsNone(payload.template_attribute)
 
-        args = (self.no_object_type_encoding, )
+        args = (self.no_object_type_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The Create response payload encoding is missing the object type.",
@@ -1371,11 +1298,10 @@ class TestCreateResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.unique_identifier)
         self.assertIsNone(payload.template_attribute)
 
-        args = (self.no_unique_identifier_encoding, )
+        args = (self.no_unique_identifier_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "The Create response payload encoding is missing the unique "
-            "identifier.",
+            "The Create response payload encoding is missing the unique " "identifier.",
             payload.read,
             *args
         )
@@ -1393,13 +1319,9 @@ class TestCreateResponsePayload(testtools.TestCase):
 
         payload.read(self.no_template_attribute_encoding)
 
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, payload.object_type)
         self.assertEqual(
-            enums.ObjectType.SYMMETRIC_KEY,
-            payload.object_type
-        )
-        self.assertEqual(
-            'fb4b5b9c-6188-4c63-8142-fe9c328129fc',
-            payload.unique_identifier
+            "fb4b5b9c-6188-4c63-8142-fe9c328129fc", payload.unique_identifier
         )
         self.assertIsNone(payload.template_attribute)
 
@@ -1413,17 +1335,15 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -1443,17 +1363,15 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -1472,21 +1390,19 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The Create response payload is missing the object type field.",
@@ -1505,25 +1421,22 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The Create response payload is missing the unique identifier "
-            "field.",
+            "The Create response payload is missing the unique identifier " "field.",
             payload.write,
             *args
         )
@@ -1535,7 +1448,7 @@ class TestCreateResponsePayload(testtools.TestCase):
         """
         payload = payloads.CreateResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier="fb4b5b9c-6188-4c63-8142-fe9c328129fc"
+            unique_identifier="fb4b5b9c-6188-4c63-8142-fe9c328129fc",
         )
 
         stream = utils.BytearrayStream()
@@ -1554,24 +1467,22 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
         self.assertEqual(
             "CreateResponsePayload("
             "object_type=ObjectType.SYMMETRIC_KEY, "
             "unique_identifier='fb4b5b9c-6188-4c63-8142-fe9c328129fc', "
             "template_attribute=Struct())",
-            repr(payload)
+            repr(payload),
         )
 
     def test_str(self):
@@ -1584,25 +1495,23 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
         self.assertEqual(
-            '{'
+            "{"
             '"object_type": ObjectType.SYMMETRIC_KEY, '
             '"unique_identifier": "fb4b5b9c-6188-4c63-8142-fe9c328129fc", '
             '"template_attribute": Struct()'
-            '}',
-            str(payload)
+            "}",
+            str(payload),
         )
 
     def test_equal_on_equal(self):
@@ -1622,17 +1531,15 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
         b = payloads.CreateResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
@@ -1640,17 +1547,15 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         self.assertTrue(a == b)
@@ -1661,12 +1566,8 @@ class TestCreateResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two Create
         response payloads with different object types.
         """
-        a = payloads.CreateResponsePayload(
-            object_type=enums.ObjectType.SYMMETRIC_KEY
-        )
-        b = payloads.CreateResponsePayload(
-            object_type=enums.ObjectType.SECRET_DATA
-        )
+        a = payloads.CreateResponsePayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
+        b = payloads.CreateResponsePayload(object_type=enums.ObjectType.SECRET_DATA)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1691,14 +1592,12 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
             )
@@ -1707,14 +1606,10 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
-                            enums.State,
-                            value=enums.State.ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            enums.State, value=enums.State.ACTIVE, tag=enums.Tags.STATE
+                        ),
                     )
                 ]
             )
@@ -1751,17 +1646,15 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
         b = payloads.CreateResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
@@ -1769,17 +1662,15 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         self.assertFalse(a != b)
@@ -1790,12 +1681,8 @@ class TestCreateResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Create response payloads with different object types.
         """
-        a = payloads.CreateResponsePayload(
-            object_type=enums.ObjectType.SYMMETRIC_KEY
-        )
-        b = payloads.CreateResponsePayload(
-            object_type=enums.ObjectType.SECRET_DATA
-        )
+        a = payloads.CreateResponsePayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
+        b = payloads.CreateResponsePayload(object_type=enums.ObjectType.SECRET_DATA)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1820,14 +1707,12 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
             )
@@ -1836,14 +1721,10 @@ class TestCreateResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
-                            enums.State,
-                            value=enums.State.ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            enums.State, value=enums.State.ACTIVE, tag=enums.Tags.STATE
+                        ),
                     )
                 ]
             )

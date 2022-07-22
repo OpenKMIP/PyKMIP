@@ -22,23 +22,27 @@ FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # TODO (peter-hamilton): Remove support for kmipconfig.ini on future release.
 CONFIG_FILE = [
-    os.path.join(os.path.expanduser('~'), '.pykmip', 'pykmip.conf'),
-    os.path.join(os.sep, 'etc', 'pykmip', 'pykmip.conf'),
-    os.path.normpath(os.path.join(FILE_PATH, '../pykmip.conf')),
-    os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))]
+    os.path.join(os.path.expanduser("~"), ".pykmip", "pykmip.conf"),
+    os.path.join(os.sep, "etc", "pykmip", "pykmip.conf"),
+    os.path.normpath(os.path.join(FILE_PATH, "../pykmip.conf")),
+    os.path.normpath(os.path.join(FILE_PATH, "../kmipconfig.ini")),
+]
 
 
 class ConfigHelper(object):
-    NONE_VALUE = 'None'
+    NONE_VALUE = "None"
     DEFAULT_HOST = "127.0.0.1"
     DEFAULT_PORT = 5696
-    DEFAULT_CERTFILE = os.path.normpath(os.path.join(
-        FILE_PATH, '../demos/certs/server.crt'))
-    DEFAULT_KEYFILE = os.path.normpath(os.path.join(
-        FILE_PATH, '../demos/certs/server.key'))
-    DEFAULT_CA_CERTS = os.path.normpath(os.path.join(
-        FILE_PATH, '../demos/certs/server.crt'))
-    DEFAULT_SSL_VERSION = 'PROTOCOL_SSLv23'
+    DEFAULT_CERTFILE = os.path.normpath(
+        os.path.join(FILE_PATH, "../demos/certs/server.crt")
+    )
+    DEFAULT_KEYFILE = os.path.normpath(
+        os.path.join(FILE_PATH, "../demos/certs/server.key")
+    )
+    DEFAULT_CA_CERTS = os.path.normpath(
+        os.path.join(FILE_PATH, "../demos/certs/server.crt")
+    )
+    DEFAULT_SSL_VERSION = "PROTOCOL_SSLv23"
     DEFAULT_USERNAME = None
     DEFAULT_PASSWORD = None
 
@@ -61,11 +65,11 @@ class ConfigHelper(object):
         if self.conf.read(filenames):
             self.logger.debug("Using config file at {0}".format(filenames))
         else:
-            self.logger.warning(
-                "Config file {0} not found".format(filenames))
+            self.logger.warning("Config file {0} not found".format(filenames))
 
-    def get_valid_value(self, direct_value, config_section,
-                        config_option_name, default_value):
+    def get_valid_value(
+        self, direct_value, config_section, config_option_name, default_value
+    ):
         """Returns a value that can be used as a parameter in client or
         server. If a direct_value is given, that value will be returned
         instead of the value from the config file. If the appropriate config
@@ -87,15 +91,13 @@ class ConfigHelper(object):
             self.logger.debug(ARG_MSG.format(direct_value, config_option_name))
         else:
             try:
-                return_value = self.conf.get(config_section,
-                                             config_option_name)
-                self.logger.debug(CONF_MSG.format(return_value,
-                                                  CONFIG_FILE,
-                                                  config_option_name))
+                return_value = self.conf.get(config_section, config_option_name)
+                self.logger.debug(
+                    CONF_MSG.format(return_value, CONFIG_FILE, config_option_name)
+                )
             except Exception:
                 return_value = default_value
-                self.logger.debug(DEFAULT_MSG.format(default_value,
-                                                     config_option_name))
+                self.logger.debug(DEFAULT_MSG.format(default_value, config_option_name))
         # TODO (peter-hamilton): Think about adding better value validation
         if return_value == self.NONE_VALUE:
             return None

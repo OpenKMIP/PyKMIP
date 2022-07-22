@@ -62,8 +62,11 @@ class TestKMIPClientIntegration(TestCase):
     STARTUP_TIME = 1.0
     SHUTDOWN_TIME = 0.1
     KMIP_PORT = 9090
-    CA_CERTS_PATH = os.path.normpath(os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), '../utils/certs/server.crt'))
+    CA_CERTS_PATH = os.path.normpath(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "../utils/certs/server.crt"
+        )
+    )
 
     def setUp(self):
         super(TestKMIPClientIntegration, self).setUp()
@@ -73,10 +76,13 @@ class TestKMIPClientIntegration(TestCase):
         self.secret_factory = SecretFactory()
 
         # Set up the KMIP server process
-        path = os.path.join(os.path.dirname(__file__), os.path.pardir,
-                            'utils', 'server.py')
-        self.server = Popen(['python', '{0}'.format(path), '-p',
-                             '{0}'.format(self.KMIP_PORT)], stderr=sys.stdout)
+        path = os.path.join(
+            os.path.dirname(__file__), os.path.pardir, "utils", "server.py"
+        )
+        self.server = Popen(
+            ["python", "{0}".format(path), "-p", "{0}".format(self.KMIP_PORT)],
+            stderr=sys.stdout,
+        )
 
         time.sleep(self.STARTUP_TIME)
 
@@ -85,8 +91,7 @@ class TestKMIPClientIntegration(TestCase):
 
         # Set up and open the client proxy; shutdown the server if open fails
         try:
-            self.client = KMIPProxy(port=self.KMIP_PORT,
-                                    ca_certs=self.CA_CERTS_PATH)
+            self.client = KMIPProxy(port=self.KMIP_PORT, ca_certs=self.CA_CERTS_PATH)
             self.client.open()
         except Exception as e:
             self._shutdown_server()
@@ -102,113 +107,129 @@ class TestKMIPClientIntegration(TestCase):
     def test_create(self):
         result = self._create_symmetric_key()
 
-        self._check_result_status(result.result_status.value, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
+        self._check_result_status(
+            result.result_status.value, ResultStatus, ResultStatus.SUCCESS
+        )
+        self._check_object_type(
+            result.object_type, ObjectType, ObjectType.SYMMETRIC_KEY
+        )
         self._check_uuid(result.uuid, str)
 
         # Check the template attribute type
-        self._check_template_attribute(result.template_attribute,
-                                       TemplateAttribute, 2,
-                                       [[str, 'Cryptographic Length', int,
-                                         256],
-                                        [str, 'Unique Identifier', str,
-                                         None]])
+        self._check_template_attribute(
+            result.template_attribute,
+            TemplateAttribute,
+            2,
+            [
+                [str, "Cryptographic Length", int, 256],
+                [str, "Unique Identifier", str, None],
+            ],
+        )
 
     def test_get(self):
         credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-        credential = self.cred_factory.create_credential(credential_type,
-                                                         credential_value)
+        credential_value = {"Username": "Peter", "Password": "abc123"}
+        credential = self.cred_factory.create_credential(
+            credential_type, credential_value
+        )
         result = self._create_symmetric_key()
         uuid = result.uuid
 
         result = self.client.get(uuid=uuid, credential=credential)
 
-        self._check_result_status(result.result_status.value, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.value, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
+        self._check_result_status(
+            result.result_status.value, ResultStatus, ResultStatus.SUCCESS
+        )
+        self._check_object_type(
+            result.object_type.value, ObjectType, ObjectType.SYMMETRIC_KEY
+        )
         self._check_uuid(result.uuid.value, str)
 
         # Check the secret type
         secret = result.secret
 
         expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
+        message = utils.build_er_error(
+            result.__class__, "type", expected, secret, "secret"
+        )
         self.assertIsInstance(secret, expected, message)
 
     def test_destroy(self):
         credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-        credential = self.cred_factory.create_credential(credential_type,
-                                                         credential_value)
+        credential_value = {"Username": "Peter", "Password": "abc123"}
+        credential = self.cred_factory.create_credential(
+            credential_type, credential_value
+        )
         result = self._create_symmetric_key()
         uuid = result.uuid
 
         # Verify the secret was created
         result = self.client.get(uuid=uuid, credential=credential)
 
-        self._check_result_status(result.result_status.value, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.value, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
+        self._check_result_status(
+            result.result_status.value, ResultStatus, ResultStatus.SUCCESS
+        )
+        self._check_object_type(
+            result.object_type.value, ObjectType, ObjectType.SYMMETRIC_KEY
+        )
         self._check_uuid(result.uuid.value, str)
 
         secret = result.secret
 
         expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
+        message = utils.build_er_error(
+            result.__class__, "type", expected, secret, "secret"
+        )
         self.assertIsInstance(secret, expected, message)
 
         # Destroy the SYMMETRIC_KEY object
         result = self.client.destroy(uuid, credential)
-        self._check_result_status(result.result_status.value, ResultStatus,
-                                  ResultStatus.SUCCESS)
+        self._check_result_status(
+            result.result_status.value, ResultStatus, ResultStatus.SUCCESS
+        )
         self._check_uuid(result.uuid.value, str)
 
         # Verify the secret was destroyed
         result = self.client.get(uuid=uuid, credential=credential)
 
-        self._check_result_status(result.result_status.value, ResultStatus,
-                                  ResultStatus.OPERATION_FAILED)
+        self._check_result_status(
+            result.result_status.value, ResultStatus, ResultStatus.OPERATION_FAILED
+        )
 
         expected = ResultReason
         observed = type(result.result_reason.value)
-        message = utils.build_er_error(result.result_reason.__class__, 'type',
-                                       expected, observed)
+        message = utils.build_er_error(
+            result.result_reason.__class__, "type", expected, observed
+        )
         self.assertEqual(expected, observed, message)
 
         expected = ResultReason.ITEM_NOT_FOUND
         observed = result.result_reason.value
-        message = utils.build_er_error(result.result_reason.__class__,
-                                       'value', expected, observed)
+        message = utils.build_er_error(
+            result.result_reason.__class__, "value", expected, observed
+        )
         self.assertEqual(expected, observed, message)
 
     def test_register(self):
         credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-        credential = self.cred_factory.create_credential(credential_type,
-                                                         credential_value)
+        credential_value = {"Username": "Peter", "Password": "abc123"}
+        credential = self.cred_factory.create_credential(
+            credential_type, credential_value
+        )
 
         object_type = ObjectType.SYMMETRIC_KEY
         algorithm_value = CryptoAlgorithmEnum.AES
-        mask_flags = [CryptographicUsageMask.ENCRYPT,
-                      CryptographicUsageMask.DECRYPT]
+        mask_flags = [CryptographicUsageMask.ENCRYPT, CryptographicUsageMask.DECRYPT]
         attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
-        usage_mask = self.attr_factory.create_attribute(attribute_type,
-                                                        mask_flags)
+        usage_mask = self.attr_factory.create_attribute(attribute_type, mask_flags)
         attributes = [usage_mask]
         template_attribute = TemplateAttribute(attributes=attributes)
 
         key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
 
         key_data = (
-            b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
 
         key_material = KeyMaterial(key_data)
         key_value = KeyValue(key_material)
@@ -221,38 +242,46 @@ class TestKMIPClientIntegration(TestCase):
             key_value=key_value,
             cryptographic_algorithm=cryptographic_algorithm,
             cryptographic_length=cryptographic_length,
-            key_wrapping_data=None)
+            key_wrapping_data=None,
+        )
 
         secret = SymmetricKey(key_block)
 
-        result = self.client.register(object_type, template_attribute, secret,
-                                      credential)
+        result = self.client.register(
+            object_type, template_attribute, secret, credential
+        )
 
-        self._check_result_status(result.result_status.value, ResultStatus,
-                                  ResultStatus.SUCCESS)
+        self._check_result_status(
+            result.result_status.value, ResultStatus, ResultStatus.SUCCESS
+        )
         self._check_uuid(result.uuid, str)
 
         # Check the template attribute type
-        self._check_template_attribute(result.template_attribute,
-                                       TemplateAttribute, 1,
-                                       [[str, 'Unique Identifier', str,
-                                         None]])
+        self._check_template_attribute(
+            result.template_attribute,
+            TemplateAttribute,
+            1,
+            [[str, "Unique Identifier", str, None]],
+        )
         # Check that the returned key bytes match what was provided
         uuid = result.uuid
         result = self.client.get(uuid=uuid, credential=credential)
 
-        self._check_result_status(result.result_status.value, ResultStatus,
-                                  ResultStatus.SUCCESS)
-        self._check_object_type(result.object_type.value, ObjectType,
-                                ObjectType.SYMMETRIC_KEY)
+        self._check_result_status(
+            result.result_status.value, ResultStatus, ResultStatus.SUCCESS
+        )
+        self._check_object_type(
+            result.object_type.value, ObjectType, ObjectType.SYMMETRIC_KEY
+        )
         self._check_uuid(result.uuid.value, str)
 
         # Check the secret type
         secret = result.secret
 
         expected = SymmetricKey
-        message = utils.build_er_error(result.__class__, 'type', expected,
-                                       secret, 'secret')
+        message = utils.build_er_error(
+            result.__class__, "type", expected, secret, "secret"
+        )
         self.assertIsInstance(secret, expected, message)
 
         key_block = result.secret.key_block
@@ -261,8 +290,9 @@ class TestKMIPClientIntegration(TestCase):
 
         expected = key_data
         observed = key_material.value
-        message = utils.build_er_error(key_material.__class__, 'value',
-                                       expected, observed, 'value')
+        message = utils.build_er_error(
+            key_material.__class__, "value", expected, observed, "value"
+        )
         self.assertEqual(expected, observed, message)
 
     def _shutdown_server(self):
@@ -279,126 +309,141 @@ class TestKMIPClientIntegration(TestCase):
 
     def _create_symmetric_key(self):
         credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': 'Peter', 'Password': 'abc123'}
-        credential = self.cred_factory.create_credential(credential_type,
-                                                         credential_value)
+        credential_value = {"Username": "Peter", "Password": "abc123"}
+        credential = self.cred_factory.create_credential(
+            credential_type, credential_value
+        )
 
         object_type = ObjectType.SYMMETRIC_KEY
         attribute_type = AttributeType.CRYPTOGRAPHIC_ALGORITHM
         algorithm = self.attr_factory.create_attribute(
-            attribute_type,
-            CryptoAlgorithmEnum.AES)
+            attribute_type, CryptoAlgorithmEnum.AES
+        )
 
-        mask_flags = [CryptographicUsageMask.ENCRYPT,
-                      CryptographicUsageMask.DECRYPT]
+        mask_flags = [CryptographicUsageMask.ENCRYPT, CryptographicUsageMask.DECRYPT]
         attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
-        usage_mask = self.attr_factory.create_attribute(attribute_type,
-                                                        mask_flags)
+        usage_mask = self.attr_factory.create_attribute(attribute_type, mask_flags)
         attributes = [algorithm, usage_mask]
         template_attribute = TemplateAttribute(attributes=attributes)
 
-        return self.client.create(object_type, template_attribute,
-                                  credential)
+        return self.client.create(object_type, template_attribute, credential)
 
-    def _check_result_status(self, result_status, result_status_type,
-                             result_status_value):
+    def _check_result_status(
+        self, result_status, result_status_type, result_status_value
+    ):
         # Error check the result status type and value
         expected = result_status_type
-        message = utils.build_er_error(result_status_type, 'type', expected,
-                                       result_status)
+        message = utils.build_er_error(
+            result_status_type, "type", expected, result_status
+        )
         self.assertIsInstance(result_status, expected, message)
 
         expected = result_status_value
-        message = utils.build_er_error(result_status_type, 'value', expected,
-                                       result_status)
+        message = utils.build_er_error(
+            result_status_type, "value", expected, result_status
+        )
         self.assertEqual(expected, result_status, message)
 
     def _check_uuid(self, uuid, uuid_type):
         # Error check the UUID type and value
         not_expected = None
-        message = utils.build_er_error(uuid_type, 'type',
-                                       'not {0}'.format(not_expected), uuid)
+        message = utils.build_er_error(
+            uuid_type, "type", "not {0}".format(not_expected), uuid
+        )
         self.assertNotEqual(not_expected, uuid, message)
 
         expected = uuid_type
-        message = utils.build_er_error(uuid_type, 'type', expected, uuid)
+        message = utils.build_er_error(uuid_type, "type", expected, uuid)
         self.assertEqual(expected, type(uuid), message)
 
-    def _check_object_type(self, object_type, object_type_type,
-                           object_type_value):
+    def _check_object_type(self, object_type, object_type_type, object_type_value):
         # Error check the object type type and value
         expected = object_type_type
-        message = utils.build_er_error(object_type_type, 'type', expected,
-                                       object_type)
+        message = utils.build_er_error(object_type_type, "type", expected, object_type)
         self.assertIsInstance(object_type, expected, message)
 
         expected = object_type_value
-        message = utils.build_er_error(object_type_type, 'value', expected,
-                                       object_type)
+        message = utils.build_er_error(object_type_type, "value", expected, object_type)
         self.assertEqual(expected, object_type, message)
 
-    def _check_template_attribute(self, template_attribute,
-                                  template_attribute_type, num_attributes,
-                                  attribute_features):
+    def _check_template_attribute(
+        self,
+        template_attribute,
+        template_attribute_type,
+        num_attributes,
+        attribute_features,
+    ):
         # Error check the template attribute type
         expected = template_attribute_type
-        message = utils.build_er_error(template_attribute.__class__, 'type',
-                                       expected, template_attribute)
+        message = utils.build_er_error(
+            template_attribute.__class__, "type", expected, template_attribute
+        )
         self.assertIsInstance(template_attribute, expected, message)
 
         attributes = template_attribute.attributes
 
         expected = num_attributes
         observed = len(attributes)
-        message = utils.build_er_error(TemplateAttribute.__class__, 'number',
-                                       expected, observed, 'attributes')
+        message = utils.build_er_error(
+            TemplateAttribute.__class__, "number", expected, observed, "attributes"
+        )
 
         for i in range(num_attributes):
             features = attribute_features[i]
-            self._check_attribute(attributes[i], features[0], features[1],
-                                  features[2], features[3])
+            self._check_attribute(
+                attributes[i], features[0], features[1], features[2], features[3]
+            )
 
-    def _check_attribute(self, attribute, attribute_name_type,
-                         attribute_name_value, attribute_value_type,
-                         attribute_value_value):
+    def _check_attribute(
+        self,
+        attribute,
+        attribute_name_type,
+        attribute_name_value,
+        attribute_value_type,
+        attribute_value_value,
+    ):
         # Error check the attribute name and value type and value
         attribute_name = attribute.attribute_name
         attribute_value = attribute.attribute_value
 
-        self._check_attribute_name(attribute_name, attribute_name_type,
-                                   attribute_name_value)
+        self._check_attribute_name(
+            attribute_name, attribute_name_type, attribute_name_value
+        )
 
-        if attribute_name_value == 'Unique Identifier':
+        if attribute_name_value == "Unique Identifier":
             self._check_uuid(attribute_value.value, attribute_value_type)
         else:
-            self._check_attribute_value(attribute_value, attribute_value_type,
-                                        attribute_value_value)
+            self._check_attribute_value(
+                attribute_value, attribute_value_type, attribute_value_value
+            )
 
-    def _check_attribute_name(self, attribute_name, attribute_name_type,
-                              attribute_name_value):
+    def _check_attribute_name(
+        self, attribute_name, attribute_name_type, attribute_name_value
+    ):
         # Error check the attribute name type and value
         expected = attribute_name_type
         observed = type(attribute_name.value)
-        message = utils.build_er_error(attribute_name_type, 'type', expected,
-                                       observed)
+        message = utils.build_er_error(attribute_name_type, "type", expected, observed)
         self.assertEqual(expected, observed, message)
 
         expected = attribute_name_value
         observed = attribute_name.value
-        message = utils.build_er_error(attribute_name_type, 'value', expected,
-                                       observed)
+        message = utils.build_er_error(attribute_name_type, "value", expected, observed)
         self.assertEqual(expected, observed, message)
 
-    def _check_attribute_value(self, attribute_value, attribute_value_type,
-                               attribute_value_value):
+    def _check_attribute_value(
+        self, attribute_value, attribute_value_type, attribute_value_value
+    ):
         expected = attribute_value_type
         observed = type(attribute_value.value)
-        message = utils.build_er_error(Attribute, 'type', expected, observed,
-                                       'attribute_value')
+        message = utils.build_er_error(
+            Attribute, "type", expected, observed, "attribute_value"
+        )
         self.assertEqual(expected, observed, message)
 
         expected = attribute_value_value
         observed = attribute_value.value
-        message = utils.build_er_error(Attribute, 'value', expected, observed,
-                                       'attribute_value')
+        message = utils.build_er_error(
+            Attribute, "value", expected, observed, "attribute_value"
+        )
         self.assertEqual(expected, observed, message)

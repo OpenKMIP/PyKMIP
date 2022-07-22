@@ -31,7 +31,7 @@ import logging
 import sys
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     # Exit early if the UUID is not specified
     if uuid is None:
-        logger.error('No UUID provided, exiting early from demo')
+        logger.error("No UUID provided, exiting early from demo")
         sys.exit()
 
     format_type_enum = None
@@ -54,8 +54,7 @@ if __name__ == '__main__':
         format_type_enum = getattr(KeyFormatTypeEnum, format_type, None)
 
         if format_type_enum is None:
-            logger.error(
-                "Invalid key format type specified; exiting early from demo")
+            logger.error("Invalid key format type specified; exiting early from demo")
             sys.exit()
 
     attribute_factory = AttributeFactory()
@@ -67,10 +66,10 @@ if __name__ == '__main__':
         credential = None
     else:
         credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': username,
-                            'Password': password}
-        credential = credential_factory.create_credential(credential_type,
-                                                          credential_value)
+        credential_value = {"Username": username, "Password": password}
+        credential = credential_factory.create_credential(
+            credential_type, credential_value
+        )
 
     key_format_type = None
     if format_type_enum is not None:
@@ -81,22 +80,19 @@ if __name__ == '__main__':
     client.open()
 
     # Retrieve the SYMMETRIC_KEY object
-    result = client.get(uuid=uuid, key_format_type=key_format_type,
-                        credential=credential)
+    result = client.get(
+        uuid=uuid, key_format_type=key_format_type, credential=credential
+    )
     client.close()
 
     # Display operation results
-    logger.info('get() result status: {0}'.format(
-        result.result_status.value))
+    logger.info("get() result status: {0}".format(result.result_status.value))
 
     if result.result_status.value == ResultStatus.SUCCESS:
-        logger.info('retrieved object type: {0}'.format(
-            result.object_type.value))
-        logger.info('retrieved UUID: {0}'.format(result.uuid))
+        logger.info("retrieved object type: {0}".format(result.object_type.value))
+        logger.info("retrieved UUID: {0}".format(result.uuid))
 
         utils.log_secret(logger, result.object_type, result.secret)
     else:
-        logger.info('get() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('get() result message: {0}'.format(
-            result.result_message.value))
+        logger.info("get() result reason: {0}".format(result.result_reason.value))
+        logger.info("get() result message: {0}".format(result.result_message.value))

@@ -39,7 +39,7 @@ import logging
 import sys
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     # Exit early if the arguments are not specified
     if algorithm is None:
-        logger.error('No algorithm provided, exiting early from demo')
+        logger.error("No algorithm provided, exiting early from demo")
         sys.exit()
     if length is None:
         logger.error("No key length provided, exiting early from demo")
@@ -80,83 +80,73 @@ if __name__ == '__main__':
         credential = None
     else:
         credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': username,
-                            'Password': password}
-        credential = credential_factory.create_credential(credential_type,
-                                                          credential_value)
+        credential_value = {"Username": username, "Password": password}
+        credential = credential_factory.create_credential(
+            credential_type, credential_value
+        )
     # Build the client and connect to the server
     client = KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
 
-    algorithm_obj = attribute_factory.create_attribute(attribute_type,
-                                                       algorithm_enum)
+    algorithm_obj = attribute_factory.create_attribute(attribute_type, algorithm_enum)
 
     name_value = Name.NameValue(name)
-    name = Attribute.AttributeName('Name')
+    name = Attribute.AttributeName("Name")
     name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
     value = Name(name_value=name_value, name_type=name_type)
     name = Attribute(attribute_name=name, attribute_value=value)
 
-    usage_mask = Attribute.AttributeName('Cryptographic Usage Mask')
+    usage_mask = Attribute.AttributeName("Cryptographic Usage Mask")
     value = CryptographicUsageMask(
-        UsageMaskEnum.ENCRYPT.value | UsageMaskEnum.DECRYPT.value)
+        UsageMaskEnum.ENCRYPT.value | UsageMaskEnum.DECRYPT.value
+    )
     usage_mask = Attribute(attribute_name=usage_mask, attribute_value=value)
 
     attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
-    length_obj = attribute_factory.create_attribute(attribute_type,
-                                                    length)
+    length_obj = attribute_factory.create_attribute(attribute_type, length)
 
     attributes = [algorithm_obj, length_obj, name, usage_mask]
 
     if opts.operation_policy_name is not None:
         opn = attribute_factory.create_attribute(
-            enums.AttributeType.OPERATION_POLICY_NAME,
-            opts.operation_policy_name
+            enums.AttributeType.OPERATION_POLICY_NAME, opts.operation_policy_name
         )
         attributes.append(opn)
 
     common = TemplateAttribute(
-        attributes=attributes,
-        tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+        attributes=attributes, tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
     )
     private = TemplateAttribute(
-        attributes=attributes,
-        tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+        attributes=attributes, tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
     )
     public = TemplateAttribute(
-        attributes=attributes,
-        tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+        attributes=attributes, tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
     )
 
     # Create the SYMMETRIC_KEY object
     result = client.create_key_pair(
         common_template_attribute=common,
         private_key_template_attribute=private,
-        public_key_template_attribute=public
+        public_key_template_attribute=public,
     )
     client.close()
 
     # Display operation results
-    logger.info('create_key_pair() result status: {0}'.format(
-        result.result_status.value))
+    logger.info(
+        "create_key_pair() result status: {0}".format(result.result_status.value)
+    )
 
     if result.result_status.value == ResultStatus.SUCCESS:
-        logger.info('created private key UUID: {0}'.format(
-            result.private_key_uuid))
-        logger.info('created public key UUID: {0}'.format(
-            result.public_key_uuid))
+        logger.info("created private key UUID: {0}".format(result.private_key_uuid))
+        logger.info("created public key UUID: {0}".format(result.public_key_uuid))
 
         if result.private_key_template_attribute is not None:
-            logger.info('private key template attribute:')
-            utils.log_template_attribute(
-                logger, result.private_key_template_attribute)
+            logger.info("private key template attribute:")
+            utils.log_template_attribute(logger, result.private_key_template_attribute)
 
         if result.public_key_template_attribute is not None:
-            logger.info('public key template attribute:')
-            utils.log_template_attribute(
-                logger, result.public_key_template_attribute)
+            logger.info("public key template attribute:")
+            utils.log_template_attribute(logger, result.public_key_template_attribute)
     else:
-        logger.info('create() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('create() result message: {0}'.format(
-            result.result_message.value))
+        logger.info("create() result reason: {0}".format(result.result_reason.value))
+        logger.info("create() result message: {0}".format(result.result_message.value))

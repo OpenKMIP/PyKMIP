@@ -18,6 +18,7 @@ class ClientConnectionFailure(Exception):
     """
     An exception raised for errors with the client socket connection.
     """
+
     pass
 
 
@@ -25,18 +26,19 @@ class ClientConnectionNotOpen(Exception):
     """
     An exception raised when operations are issued to a closed connection.
     """
+
     def __init__(self):
         """
         Construct the closed client connection error message.
         """
-        super(ClientConnectionNotOpen, self).__init__(
-            "client connection not open")
+        super(ClientConnectionNotOpen, self).__init__("client connection not open")
 
 
 class KmipOperationFailure(Exception):
     """
     An exception raised upon the failure of a KMIP appliance operation.
     """
+
     def __init__(self, status, reason, message):
         """
         Construct the error message and attributes for the KMIP operation

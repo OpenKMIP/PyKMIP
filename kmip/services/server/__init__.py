@@ -16,6 +16,4 @@
 from kmip.services.server.server import KmipServer
 
 
-__all__ = [
-    "KmipServer"
-]
+__all__ = ["KmipServer"]

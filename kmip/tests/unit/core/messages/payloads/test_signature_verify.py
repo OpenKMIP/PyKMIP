@@ -61,42 +61,42 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         #     Final Indicator - False
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x02\x00'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xC2\x08\x00\x00\x00\xD9'
-            b'\xCD\xC8\x7D\xA2\x23\xD7\x86\xDF\x3B\x45\xE0\xBB\xBC\x72\x13\x26'
-            b'\xD1\xEE\x2A\xF8\x06\xCC\x31\x54\x75\xCC\x6F\x0D\x9C\x66\xE1\xB6'
-            b'\x23\x71\xD4\x5C\xE2\x39\x2E\x1A\xC9\x28\x44\xC3\x10\x10\x2F\x15'
-            b'\x6A\x0D\x8D\x52\xC1\xF4\xC4\x0B\xA3\xAA\x65\x09\x57\x86\xCB\x76'
-            b'\x97\x57\xA6\x56\x3B\xA9\x58\xFE\xD0\xBC\xC9\x84\xE8\xB5\x17\xA3'
-            b'\xD5\xF5\x15\xB2\x3B\x8A\x41\xE7\x4A\xA8\x67\x69\x3F\x90\xDF\xB0'
-            b'\x61\xA6\xE8\x6D\xFA\xAE\xE6\x44\x72\xC0\x0E\x5F\x20\x94\x57\x29'
-            b'\xCB\xEB\xE7\x7F\x06\xCE\x78\xE0\x8F\x40\x98\xFB\xA4\x1F\x9D\x61'
-            b'\x93\xC0\x31\x7E\x8B\x60\xD4\xB6\x08\x4A\xCB\x42\xD2\x9E\x38\x08'
-            b'\xA3\xBC\x37\x2D\x85\xE3\x31\x17\x0F\xCB\xF7\xCC\x72\xD0\xB7\x1C'
-            b'\x29\x66\x48\xB3\xA4\xD1\x0F\x41\x62\x95\xD0\x80\x7A\xA6\x25\xCA'
-            b'\xB2\x74\x4F\xD9\xEA\x8F\xD2\x23\xC4\x25\x37\x02\x98\x28\xBD\x16'
-            b'\xBE\x02\x54\x6F\x13\x0F\xD2\xE3\x3B\x93\x6D\x26\x76\xE0\x8A\xED'
-            b'\x1B\x73\x31\x8B\x75\x0A\x01\x67\xD0\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x01\x07\x08\x00\x00\x00\x10'
-            b'\x01\x02\x03\x04\x05\x06\x07\x08\x09\x10\x11\x12\x13\x14\x15\x16'
-            b'\x42\x00\xC3\x08\x00\x00\x00\x80'
-            b'\x6B\xC3\xA0\x66\x56\x84\x29\x30\xA2\x47\xE3\x0D\x58\x64\xB4\xD8'
-            b'\x19\x23\x6B\xA7\xC6\x89\x65\x86\x2A\xD7\xDB\xC4\xE2\x4A\xF2\x8E'
-            b'\x86\xBB\x53\x1F\x03\x35\x8B\xE5\xFB\x74\x77\x7C\x60\x86\xF8\x50'
-            b'\xCA\xEF\x89\x3F\x0D\x6F\xCC\x2D\x0C\x91\xEC\x01\x36\x93\xB4\xEA'
-            b'\x00\xB8\x0C\xD4\x9A\xAC\x4E\xCB\x5F\x89\x11\xAF\xE5\x39\xAD\xA4'
-            b'\xA8\xF3\x82\x3D\x1D\x13\xE4\x72\xD1\x49\x05\x47\xC6\x59\xC7\x61'
-            b'\x7F\x3D\x24\x08\x7D\xDB\x6F\x2B\x72\x09\x61\x67\xFC\x09\x7C\xAB'
-            b'\x18\xE9\xA4\x58\xFC\xB6\x34\xCD\xCE\x8E\xE3\x58\x94\xC4\x84\xD7'
-            b'\x42\x00\xD6\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xD7\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xD8\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x02\x00"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xC2\x08\x00\x00\x00\xD9"
+            b"\xCD\xC8\x7D\xA2\x23\xD7\x86\xDF\x3B\x45\xE0\xBB\xBC\x72\x13\x26"
+            b"\xD1\xEE\x2A\xF8\x06\xCC\x31\x54\x75\xCC\x6F\x0D\x9C\x66\xE1\xB6"
+            b"\x23\x71\xD4\x5C\xE2\x39\x2E\x1A\xC9\x28\x44\xC3\x10\x10\x2F\x15"
+            b"\x6A\x0D\x8D\x52\xC1\xF4\xC4\x0B\xA3\xAA\x65\x09\x57\x86\xCB\x76"
+            b"\x97\x57\xA6\x56\x3B\xA9\x58\xFE\xD0\xBC\xC9\x84\xE8\xB5\x17\xA3"
+            b"\xD5\xF5\x15\xB2\x3B\x8A\x41\xE7\x4A\xA8\x67\x69\x3F\x90\xDF\xB0"
+            b"\x61\xA6\xE8\x6D\xFA\xAE\xE6\x44\x72\xC0\x0E\x5F\x20\x94\x57\x29"
+            b"\xCB\xEB\xE7\x7F\x06\xCE\x78\xE0\x8F\x40\x98\xFB\xA4\x1F\x9D\x61"
+            b"\x93\xC0\x31\x7E\x8B\x60\xD4\xB6\x08\x4A\xCB\x42\xD2\x9E\x38\x08"
+            b"\xA3\xBC\x37\x2D\x85\xE3\x31\x17\x0F\xCB\xF7\xCC\x72\xD0\xB7\x1C"
+            b"\x29\x66\x48\xB3\xA4\xD1\x0F\x41\x62\x95\xD0\x80\x7A\xA6\x25\xCA"
+            b"\xB2\x74\x4F\xD9\xEA\x8F\xD2\x23\xC4\x25\x37\x02\x98\x28\xBD\x16"
+            b"\xBE\x02\x54\x6F\x13\x0F\xD2\xE3\x3B\x93\x6D\x26\x76\xE0\x8A\xED"
+            b"\x1B\x73\x31\x8B\x75\x0A\x01\x67\xD0\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x01\x07\x08\x00\x00\x00\x10"
+            b"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x10\x11\x12\x13\x14\x15\x16"
+            b"\x42\x00\xC3\x08\x00\x00\x00\x80"
+            b"\x6B\xC3\xA0\x66\x56\x84\x29\x30\xA2\x47\xE3\x0D\x58\x64\xB4\xD8"
+            b"\x19\x23\x6B\xA7\xC6\x89\x65\x86\x2A\xD7\xDB\xC4\xE2\x4A\xF2\x8E"
+            b"\x86\xBB\x53\x1F\x03\x35\x8B\xE5\xFB\x74\x77\x7C\x60\x86\xF8\x50"
+            b"\xCA\xEF\x89\x3F\x0D\x6F\xCC\x2D\x0C\x91\xEC\x01\x36\x93\xB4\xEA"
+            b"\x00\xB8\x0C\xD4\x9A\xAC\x4E\xCB\x5F\x89\x11\xAF\xE5\x39\xAD\xA4"
+            b"\xA8\xF3\x82\x3D\x1D\x13\xE4\x72\xD1\x49\x05\x47\xC6\x59\xC7\x61"
+            b"\x7F\x3D\x24\x08\x7D\xDB\x6F\x2B\x72\x09\x61\x67\xFC\x09\x7C\xAB"
+            b"\x18\xE9\xA4\x58\xFC\xB6\x34\xCD\xCE\x8E\xE3\x58\x94\xC4\x84\xD7"
+            b"\x42\x00\xD6\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xD7\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xD8\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # Encoding obtained in part from the KMIP 1.1 testing document,
@@ -116,56 +116,54 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         #         CDCE8EE35894C484D7
 
         self.partial_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\xD0'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xC3\x08\x00\x00\x00\x80'
-            b'\x6B\xC3\xA0\x66\x56\x84\x29\x30\xA2\x47\xE3\x0D\x58\x64\xB4\xD8'
-            b'\x19\x23\x6B\xA7\xC6\x89\x65\x86\x2A\xD7\xDB\xC4\xE2\x4A\xF2\x8E'
-            b'\x86\xBB\x53\x1F\x03\x35\x8B\xE5\xFB\x74\x77\x7C\x60\x86\xF8\x50'
-            b'\xCA\xEF\x89\x3F\x0D\x6F\xCC\x2D\x0C\x91\xEC\x01\x36\x93\xB4\xEA'
-            b'\x00\xB8\x0C\xD4\x9A\xAC\x4E\xCB\x5F\x89\x11\xAF\xE5\x39\xAD\xA4'
-            b'\xA8\xF3\x82\x3D\x1D\x13\xE4\x72\xD1\x49\x05\x47\xC6\x59\xC7\x61'
-            b'\x7F\x3D\x24\x08\x7D\xDB\x6F\x2B\x72\x09\x61\x67\xFC\x09\x7C\xAB'
-            b'\x18\xE9\xA4\x58\xFC\xB6\x34\xCD\xCE\x8E\xE3\x58\x94\xC4\x84\xD7'
+            b"\x42\x00\x79\x01\x00\x00\x00\xD0"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xC3\x08\x00\x00\x00\x80"
+            b"\x6B\xC3\xA0\x66\x56\x84\x29\x30\xA2\x47\xE3\x0D\x58\x64\xB4\xD8"
+            b"\x19\x23\x6B\xA7\xC6\x89\x65\x86\x2A\xD7\xDB\xC4\xE2\x4A\xF2\x8E"
+            b"\x86\xBB\x53\x1F\x03\x35\x8B\xE5\xFB\x74\x77\x7C\x60\x86\xF8\x50"
+            b"\xCA\xEF\x89\x3F\x0D\x6F\xCC\x2D\x0C\x91\xEC\x01\x36\x93\xB4\xEA"
+            b"\x00\xB8\x0C\xD4\x9A\xAC\x4E\xCB\x5F\x89\x11\xAF\xE5\x39\xAD\xA4"
+            b"\xA8\xF3\x82\x3D\x1D\x13\xE4\x72\xD1\x49\x05\x47\xC6\x59\xC7\x61"
+            b"\x7F\x3D\x24\x08\x7D\xDB\x6F\x2B\x72\x09\x61\x67\xFC\x09\x7C\xAB"
+            b"\x18\xE9\xA4\x58\xFC\xB6\x34\xCD\xCE\x8E\xE3\x58\x94\xC4\x84\xD7"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
         self.data = (
-            b'\xCD\xC8\x7D\xA2\x23\xD7\x86\xDF\x3B\x45\xE0\xBB\xBC\x72\x13\x26'
-            b'\xD1\xEE\x2A\xF8\x06\xCC\x31\x54\x75\xCC\x6F\x0D\x9C\x66\xE1\xB6'
-            b'\x23\x71\xD4\x5C\xE2\x39\x2E\x1A\xC9\x28\x44\xC3\x10\x10\x2F\x15'
-            b'\x6A\x0D\x8D\x52\xC1\xF4\xC4\x0B\xA3\xAA\x65\x09\x57\x86\xCB\x76'
-            b'\x97\x57\xA6\x56\x3B\xA9\x58\xFE\xD0\xBC\xC9\x84\xE8\xB5\x17\xA3'
-            b'\xD5\xF5\x15\xB2\x3B\x8A\x41\xE7\x4A\xA8\x67\x69\x3F\x90\xDF\xB0'
-            b'\x61\xA6\xE8\x6D\xFA\xAE\xE6\x44\x72\xC0\x0E\x5F\x20\x94\x57\x29'
-            b'\xCB\xEB\xE7\x7F\x06\xCE\x78\xE0\x8F\x40\x98\xFB\xA4\x1F\x9D\x61'
-            b'\x93\xC0\x31\x7E\x8B\x60\xD4\xB6\x08\x4A\xCB\x42\xD2\x9E\x38\x08'
-            b'\xA3\xBC\x37\x2D\x85\xE3\x31\x17\x0F\xCB\xF7\xCC\x72\xD0\xB7\x1C'
-            b'\x29\x66\x48\xB3\xA4\xD1\x0F\x41\x62\x95\xD0\x80\x7A\xA6\x25\xCA'
-            b'\xB2\x74\x4F\xD9\xEA\x8F\xD2\x23\xC4\x25\x37\x02\x98\x28\xBD\x16'
-            b'\xBE\x02\x54\x6F\x13\x0F\xD2\xE3\x3B\x93\x6D\x26\x76\xE0\x8A\xED'
-            b'\x1B\x73\x31\x8B\x75\x0A\x01\x67\xD0'
+            b"\xCD\xC8\x7D\xA2\x23\xD7\x86\xDF\x3B\x45\xE0\xBB\xBC\x72\x13\x26"
+            b"\xD1\xEE\x2A\xF8\x06\xCC\x31\x54\x75\xCC\x6F\x0D\x9C\x66\xE1\xB6"
+            b"\x23\x71\xD4\x5C\xE2\x39\x2E\x1A\xC9\x28\x44\xC3\x10\x10\x2F\x15"
+            b"\x6A\x0D\x8D\x52\xC1\xF4\xC4\x0B\xA3\xAA\x65\x09\x57\x86\xCB\x76"
+            b"\x97\x57\xA6\x56\x3B\xA9\x58\xFE\xD0\xBC\xC9\x84\xE8\xB5\x17\xA3"
+            b"\xD5\xF5\x15\xB2\x3B\x8A\x41\xE7\x4A\xA8\x67\x69\x3F\x90\xDF\xB0"
+            b"\x61\xA6\xE8\x6D\xFA\xAE\xE6\x44\x72\xC0\x0E\x5F\x20\x94\x57\x29"
+            b"\xCB\xEB\xE7\x7F\x06\xCE\x78\xE0\x8F\x40\x98\xFB\xA4\x1F\x9D\x61"
+            b"\x93\xC0\x31\x7E\x8B\x60\xD4\xB6\x08\x4A\xCB\x42\xD2\x9E\x38\x08"
+            b"\xA3\xBC\x37\x2D\x85\xE3\x31\x17\x0F\xCB\xF7\xCC\x72\xD0\xB7\x1C"
+            b"\x29\x66\x48\xB3\xA4\xD1\x0F\x41\x62\x95\xD0\x80\x7A\xA6\x25\xCA"
+            b"\xB2\x74\x4F\xD9\xEA\x8F\xD2\x23\xC4\x25\x37\x02\x98\x28\xBD\x16"
+            b"\xBE\x02\x54\x6F\x13\x0F\xD2\xE3\x3B\x93\x6D\x26\x76\xE0\x8A\xED"
+            b"\x1B\x73\x31\x8B\x75\x0A\x01\x67\xD0"
         )
         self.digested_data = (
-            b'\x01\x02\x03\x04\x05\x06\x07\x08\x09\x10\x11\x12\x13\x14\x15\x16'
+            b"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x10\x11\x12\x13\x14\x15\x16"
         )
         self.signature_data = (
-            b'\x6B\xC3\xA0\x66\x56\x84\x29\x30\xA2\x47\xE3\x0D\x58\x64\xB4\xD8'
-            b'\x19\x23\x6B\xA7\xC6\x89\x65\x86\x2A\xD7\xDB\xC4\xE2\x4A\xF2\x8E'
-            b'\x86\xBB\x53\x1F\x03\x35\x8B\xE5\xFB\x74\x77\x7C\x60\x86\xF8\x50'
-            b'\xCA\xEF\x89\x3F\x0D\x6F\xCC\x2D\x0C\x91\xEC\x01\x36\x93\xB4\xEA'
-            b'\x00\xB8\x0C\xD4\x9A\xAC\x4E\xCB\x5F\x89\x11\xAF\xE5\x39\xAD\xA4'
-            b'\xA8\xF3\x82\x3D\x1D\x13\xE4\x72\xD1\x49\x05\x47\xC6\x59\xC7\x61'
-            b'\x7F\x3D\x24\x08\x7D\xDB\x6F\x2B\x72\x09\x61\x67\xFC\x09\x7C\xAB'
-            b'\x18\xE9\xA4\x58\xFC\xB6\x34\xCD\xCE\x8E\xE3\x58\x94\xC4\x84\xD7'
+            b"\x6B\xC3\xA0\x66\x56\x84\x29\x30\xA2\x47\xE3\x0D\x58\x64\xB4\xD8"
+            b"\x19\x23\x6B\xA7\xC6\x89\x65\x86\x2A\xD7\xDB\xC4\xE2\x4A\xF2\x8E"
+            b"\x86\xBB\x53\x1F\x03\x35\x8B\xE5\xFB\x74\x77\x7C\x60\x86\xF8\x50"
+            b"\xCA\xEF\x89\x3F\x0D\x6F\xCC\x2D\x0C\x91\xEC\x01\x36\x93\xB4\xEA"
+            b"\x00\xB8\x0C\xD4\x9A\xAC\x4E\xCB\x5F\x89\x11\xAF\xE5\x39\xAD\xA4"
+            b"\xA8\xF3\x82\x3D\x1D\x13\xE4\x72\xD1\x49\x05\x47\xC6\x59\xC7\x61"
+            b"\x7F\x3D\x24\x08\x7D\xDB\x6F\x2B\x72\x09\x61\x67\xFC\x09\x7C\xAB"
+            b"\x18\xE9\xA4\x58\xFC\xB6\x34\xCD\xCE\x8E\xE3\x58\x94\xC4\x84\xD7"
         )
 
     def tearDown(self):
@@ -193,28 +191,26 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         valid values
         """
         payload = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
+            unique_identifier="00000000-1111-2222-3333-444444444444",
             cryptographic_parameters=attributes.CryptographicParameters(),
-            data=b'\x01\x02\x03',
-            digested_data=b'\x11\x22\x33',
-            signature_data=b'\x10\x20\x30',
-            correlation_value=b'\xFF',
+            data=b"\x01\x02\x03",
+            digested_data=b"\x11\x22\x33",
+            signature_data=b"\x10\x20\x30",
+            correlation_value=b"\xFF",
             init_indicator=False,
-            final_indicator=True
+            final_indicator=True,
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
         self.assertEqual(
-            attributes.CryptographicParameters(),
-            payload.cryptographic_parameters
+            attributes.CryptographicParameters(), payload.cryptographic_parameters
         )
-        self.assertEqual(b'\x01\x02\x03', payload.data)
-        self.assertEqual(b'\x11\x22\x33', payload.digested_data)
-        self.assertEqual(b'\x10\x20\x30', payload.signature_data)
-        self.assertEqual(b'\xFF', payload.correlation_value)
+        self.assertEqual(b"\x01\x02\x03", payload.data)
+        self.assertEqual(b"\x11\x22\x33", payload.digested_data)
+        self.assertEqual(b"\x10\x20\x30", payload.signature_data)
+        self.assertEqual(b"\xFF", payload.correlation_value)
         self.assertEqual(False, payload.init_indicator)
         self.assertEqual(True, payload.final_indicator)
 
@@ -223,7 +219,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a SignatureVerify request payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -232,12 +228,9 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyRequestPayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_cryptographic_parameters(self):
@@ -245,21 +238,19 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the cryptographic parameters of a SignatureVerify request payload.
         """
-        kwargs = {'cryptographic_parameters': 0}
+        kwargs = {"cryptographic_parameters": 0}
         self.assertRaisesRegex(
             TypeError,
-            "Cryptographic parameters must be a CryptographicParameters "
-            "struct.",
+            "Cryptographic parameters must be a CryptographicParameters " "struct.",
             signature_verify.SignatureVerifyRequestPayload,
             **kwargs
         )
 
         payload = signature_verify.SignatureVerifyRequestPayload()
-        args = (payload, 'cryptographic_parameters', 'invalid')
+        args = (payload, "cryptographic_parameters", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "Cryptographic parameters must be a CryptographicParameters "
-            "struct.",
+            "Cryptographic parameters must be a CryptographicParameters " "struct.",
             setattr,
             *args
         )
@@ -269,7 +260,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the data of a SignatureVerify request payload.
         """
-        kwargs = {'data': 0}
+        kwargs = {"data": 0}
         self.assertRaisesRegex(
             TypeError,
             "Data must be bytes.",
@@ -278,20 +269,15 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyRequestPayload()
-        args = (payload, 'data', 0)
-        self.assertRaisesRegex(
-            TypeError,
-            "Data must be bytes.",
-            setattr,
-            *args
-        )
+        args = (payload, "data", 0)
+        self.assertRaisesRegex(TypeError, "Data must be bytes.", setattr, *args)
 
     def test_invalid_digested_data(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
         the digested data of a SignatureVerify request payload.
         """
-        kwargs = {'digested_data': 0}
+        kwargs = {"digested_data": 0}
         self.assertRaisesRegex(
             TypeError,
             "Digested data must be bytes.",
@@ -300,12 +286,9 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyRequestPayload()
-        args = (payload, 'digested_data', 0)
+        args = (payload, "digested_data", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Digested data must be bytes.",
-            setattr,
-            *args
+            TypeError, "Digested data must be bytes.", setattr, *args
         )
 
     def test_invalid_signature_data(self):
@@ -313,7 +296,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the signature data of a SignatureVerify request payload.
         """
-        kwargs = {'signature_data': 0}
+        kwargs = {"signature_data": 0}
         self.assertRaisesRegex(
             TypeError,
             "Signature data must be bytes.",
@@ -322,12 +305,9 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyRequestPayload()
-        args = (payload, 'signature_data', 0)
+        args = (payload, "signature_data", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Signature data must be bytes.",
-            setattr,
-            *args
+            TypeError, "Signature data must be bytes.", setattr, *args
         )
 
     def test_invalid_correlation_value(self):
@@ -335,7 +315,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the correlation value of a SignatureVerify request payload.
         """
-        kwargs = {'correlation_value': 0}
+        kwargs = {"correlation_value": 0}
         self.assertRaisesRegex(
             TypeError,
             "Correlation value must be bytes.",
@@ -344,12 +324,9 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyRequestPayload()
-        args = (payload, 'correlation_value', 0)
+        args = (payload, "correlation_value", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Correlation value must be bytes.",
-            setattr,
-            *args
+            TypeError, "Correlation value must be bytes.", setattr, *args
         )
 
     def test_invalid_init_indicator(self):
@@ -357,7 +334,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the init indicator of a SignatureVerify request payload.
         """
-        kwargs = {'init_indicator': 'invalid'}
+        kwargs = {"init_indicator": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Init indicator must be a boolean.",
@@ -366,12 +343,9 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyRequestPayload()
-        args = (payload, 'init_indicator', 'invalid')
+        args = (payload, "init_indicator", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Init indicator must be a boolean.",
-            setattr,
-            *args
+            TypeError, "Init indicator must be a boolean.", setattr, *args
         )
 
     def test_invalid_final_indicator(self):
@@ -379,7 +353,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the final indicator of a SignatureVerify request payload.
         """
-        kwargs = {'final_indicator': 'invalid'}
+        kwargs = {"final_indicator": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Final indicator must be a boolean.",
@@ -388,12 +362,9 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyRequestPayload()
-        args = (payload, 'final_indicator', 'invalid')
+        args = (payload, "final_indicator", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Final indicator must be a boolean.",
-            setattr,
-            *args
+            TypeError, "Final indicator must be a boolean.", setattr, *args
         )
 
     def test_read(self):
@@ -415,21 +386,19 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            payload.unique_identifier
+            "49a1ca88-6bea-4fb2-b450-7e58802c3038", payload.unique_identifier
         )
         self.assertIsInstance(
-            payload.cryptographic_parameters,
-            attributes.CryptographicParameters
+            payload.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
-            payload.cryptographic_parameters.digital_signature_algorithm
+            payload.cryptographic_parameters.digital_signature_algorithm,
         )
         self.assertEqual(self.data, payload.data)
         self.assertEqual(self.digested_data, payload.digested_data)
         self.assertEqual(self.signature_data, payload.signature_data)
-        self.assertEqual(b'\x01', payload.correlation_value)
+        self.assertEqual(b"\x01", payload.correlation_value)
         self.assertEqual(True, payload.init_indicator)
         self.assertEqual(False, payload.final_indicator)
 
@@ -452,16 +421,14 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         payload.read(self.partial_encoding)
 
         self.assertEqual(
-            '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            payload.unique_identifier
+            "49a1ca88-6bea-4fb2-b450-7e58802c3038", payload.unique_identifier
         )
         self.assertIsInstance(
-            payload.cryptographic_parameters,
-            attributes.CryptographicParameters
+            payload.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
-            payload.cryptographic_parameters.digital_signature_algorithm
+            payload.cryptographic_parameters.digital_signature_algorithm,
         )
         self.assertEqual(None, payload.data)
         self.assertEqual(None, payload.digested_data)
@@ -503,17 +470,16 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         stream.
         """
         payload = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             ),
             data=self.data,
             digested_data=self.digested_data,
             signature_data=self.signature_data,
-            correlation_value=b'\x01',
+            correlation_value=b"\x01",
             init_indicator=True,
-            final_indicator=False
+            final_indicator=False,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -527,12 +493,11 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         written to a data stream.
         """
         payload = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             ),
-            signature_data=self.signature_data
+            signature_data=self.signature_data,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -564,30 +529,28 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             ),
             data=self.data,
             digested_data=self.digested_data,
             signature_data=self.signature_data,
-            correlation_value=b'\x01',
+            correlation_value=b"\x01",
             init_indicator=True,
-            final_indicator=False
+            final_indicator=False,
         )
         b = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             ),
             data=self.data,
             digested_data=self.digested_data,
             signature_data=self.signature_data,
-            correlation_value=b'\x01',
+            correlation_value=b"\x01",
             init_indicator=True,
-            final_indicator=False
+            final_indicator=False,
         )
 
         self.assertTrue(a == b)
@@ -598,12 +561,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SignatureVerify request payloads with different unique identifiers.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='a'
-        )
-        b = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='b'
-        )
+        a = signature_verify.SignatureVerifyRequestPayload(unique_identifier="a")
+        b = signature_verify.SignatureVerifyRequestPayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -616,14 +575,12 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         """
         a = signature_verify.SignatureVerifyRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.
-                DigitalSignatureAlgorithm.DSA_WITH_SHA1
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.DSA_WITH_SHA1
             )
         )
         b = signature_verify.SignatureVerifyRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.
-                DigitalSignatureAlgorithm.ECDSA_WITH_SHA256
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA256
             )
         )
 
@@ -635,8 +592,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SignatureVerify request payloads with different data.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(data=b'\x11')
-        b = signature_verify.SignatureVerifyRequestPayload(data=b'\xFF')
+        a = signature_verify.SignatureVerifyRequestPayload(data=b"\x11")
+        b = signature_verify.SignatureVerifyRequestPayload(data=b"\xFF")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -647,10 +604,10 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         SignatureVerify request payloads with different digested data.
         """
         a = signature_verify.SignatureVerifyRequestPayload(
-            digested_data=b'\x00\x01\x02\x03'
+            digested_data=b"\x00\x01\x02\x03"
         )
         b = signature_verify.SignatureVerifyRequestPayload(
-            digested_data=b'\xAA\xBB\xCC\xDD'
+            digested_data=b"\xAA\xBB\xCC\xDD"
         )
 
         self.assertFalse(a == b)
@@ -662,10 +619,10 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         SignatureVerify request payloads with different signature data.
         """
         a = signature_verify.SignatureVerifyRequestPayload(
-            signature_data=b'\x00\x00\x00\x00'
+            signature_data=b"\x00\x00\x00\x00"
         )
         b = signature_verify.SignatureVerifyRequestPayload(
-            signature_data=b'\xFF\xFF\xFF\xFF'
+            signature_data=b"\xFF\xFF\xFF\xFF"
         )
 
         self.assertFalse(a == b)
@@ -676,12 +633,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SignatureVerify request payloads with different correlation values.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(
-            correlation_value=b'\x01'
-        )
-        b = signature_verify.SignatureVerifyRequestPayload(
-            correlation_value=b'\x02'
-        )
+        a = signature_verify.SignatureVerifyRequestPayload(correlation_value=b"\x01")
+        b = signature_verify.SignatureVerifyRequestPayload(correlation_value=b"\x02")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -691,12 +644,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SignatureVerify request payloads with different init indicators.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(
-            init_indicator=True
-        )
-        b = signature_verify.SignatureVerifyRequestPayload(
-            init_indicator=False
-        )
+        a = signature_verify.SignatureVerifyRequestPayload(init_indicator=True)
+        b = signature_verify.SignatureVerifyRequestPayload(init_indicator=False)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -706,12 +655,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SignatureVerify request payloads with different final indicators.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(
-            final_indicator=False
-        )
-        b = signature_verify.SignatureVerifyRequestPayload(
-            final_indicator=True
-        )
+        a = signature_verify.SignatureVerifyRequestPayload(final_indicator=False)
+        b = signature_verify.SignatureVerifyRequestPayload(final_indicator=True)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -722,7 +667,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         SignatureVerify request payloads with different types.
         """
         a = signature_verify.SignatureVerifyRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -739,30 +684,28 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             ),
             data=self.data,
             digested_data=self.digested_data,
             signature_data=self.signature_data,
-            correlation_value=b'\x01',
+            correlation_value=b"\x01",
             init_indicator=True,
-            final_indicator=False
+            final_indicator=False,
         )
         b = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             ),
             data=self.data,
             digested_data=self.digested_data,
             signature_data=self.signature_data,
-            correlation_value=b'\x01',
+            correlation_value=b"\x01",
             init_indicator=True,
-            final_indicator=False
+            final_indicator=False,
         )
 
         self.assertFalse(a != b)
@@ -773,12 +716,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SignatureVerify request payloads with different unique identifiers.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='a'
-        )
-        b = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='b'
-        )
+        a = signature_verify.SignatureVerifyRequestPayload(unique_identifier="a")
+        b = signature_verify.SignatureVerifyRequestPayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -791,14 +730,12 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         """
         a = signature_verify.SignatureVerifyRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.
-                DigitalSignatureAlgorithm.DSA_WITH_SHA1
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.DSA_WITH_SHA1
             )
         )
         b = signature_verify.SignatureVerifyRequestPayload(
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.
-                DigitalSignatureAlgorithm.ECDSA_WITH_SHA256
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA256
             )
         )
 
@@ -810,8 +747,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SignatureVerify request payloads with different data.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(data=b'\x11')
-        b = signature_verify.SignatureVerifyRequestPayload(data=b'\xFF')
+        a = signature_verify.SignatureVerifyRequestPayload(data=b"\x11")
+        b = signature_verify.SignatureVerifyRequestPayload(data=b"\xFF")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -822,10 +759,10 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         SignatureVerify request payloads with different digested data.
         """
         a = signature_verify.SignatureVerifyRequestPayload(
-            digested_data=b'\x00\x01\x02\x03'
+            digested_data=b"\x00\x01\x02\x03"
         )
         b = signature_verify.SignatureVerifyRequestPayload(
-            digested_data=b'\xAA\xBB\xCC\xDD'
+            digested_data=b"\xAA\xBB\xCC\xDD"
         )
 
         self.assertTrue(a != b)
@@ -837,10 +774,10 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         SignatureVerify request payloads with different signature data.
         """
         a = signature_verify.SignatureVerifyRequestPayload(
-            signature_data=b'\x00\x00\x00\x00'
+            signature_data=b"\x00\x00\x00\x00"
         )
         b = signature_verify.SignatureVerifyRequestPayload(
-            signature_data=b'\xFF\xFF\xFF\xFF'
+            signature_data=b"\xFF\xFF\xFF\xFF"
         )
 
         self.assertTrue(a != b)
@@ -851,12 +788,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SignatureVerify request payloads with different correlation values.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(
-            correlation_value=b'\x01'
-        )
-        b = signature_verify.SignatureVerifyRequestPayload(
-            correlation_value=b'\x02'
-        )
+        a = signature_verify.SignatureVerifyRequestPayload(correlation_value=b"\x01")
+        b = signature_verify.SignatureVerifyRequestPayload(correlation_value=b"\x02")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -866,12 +799,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SignatureVerify request payloads with different init indicators.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(
-            init_indicator=True
-        )
-        b = signature_verify.SignatureVerifyRequestPayload(
-            init_indicator=False
-        )
+        a = signature_verify.SignatureVerifyRequestPayload(init_indicator=True)
+        b = signature_verify.SignatureVerifyRequestPayload(init_indicator=False)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -881,12 +810,8 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SignatureVerify request payloads with different final indicators.
         """
-        a = signature_verify.SignatureVerifyRequestPayload(
-            final_indicator=False
-        )
-        b = signature_verify.SignatureVerifyRequestPayload(
-            final_indicator=True
-        )
+        a = signature_verify.SignatureVerifyRequestPayload(final_indicator=False)
+        b = signature_verify.SignatureVerifyRequestPayload(final_indicator=True)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -897,7 +822,7 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         SignatureVerify request payloads with different types.
         """
         a = signature_verify.SignatureVerifyRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -907,17 +832,16 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that repr can be applied to a SignatureVerify request payload.
         """
         payload = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             cryptographic_parameters=attributes.CryptographicParameters(
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             ),
-            data=b'\x00\x11\x22\x33',
-            digested_data=b'\x01\x03\x05\x07',
-            signature_data=b'\xFF\xFF\xFF\xFF',
-            correlation_value=b'\x01',
+            data=b"\x00\x11\x22\x33",
+            digested_data=b"\x01\x03\x05\x07",
+            signature_data=b"\xFF\xFF\xFF\xFF",
+            correlation_value=b"\x01",
             init_indicator=True,
-            final_indicator=False
+            final_indicator=False,
         )
         expected = (
             "SignatureVerifyRequestPayload("
@@ -937,10 +861,10 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
             "invocation_field_length=None, "
             "counter_length=None, "
             "initial_counter_value=None), "
-            "data=" + str(b'\x00\x11\x22\x33') + ", "
-            "digested_data=" + str(b'\x01\x03\x05\x07') + ", "
-            "signature_data=" + str(b'\xFF\xFF\xFF\xFF') + ", "
-            "correlation_value=" + str(b'\x01') + ", "
+            "data=" + str(b"\x00\x11\x22\x33") + ", "
+            "digested_data=" + str(b"\x01\x03\x05\x07") + ", "
+            "signature_data=" + str(b"\xFF\xFF\xFF\xFF") + ", "
+            "correlation_value=" + str(b"\x01") + ", "
             "init_indicator=True, "
             "final_indicator=False)"
         )
@@ -953,30 +877,31 @@ class TestSignatureVerifyRequestPayload(testtools.TestCase):
         Test that str can be applied to a SignatureVerify request payload
         """
         cryptographic_parameters = attributes.CryptographicParameters(
-            digital_signature_algorithm=enums.
-            DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION
         )
         payload = signature_verify.SignatureVerifyRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             cryptographic_parameters=cryptographic_parameters,
-            data=b'\x00\x11\x22\x33',
-            digested_data=b'\x01\x03\x05\x07',
-            signature_data=b'\xFF\xFF\xFF\xFF',
-            correlation_value=b'\x01',
+            data=b"\x00\x11\x22\x33",
+            digested_data=b"\x01\x03\x05\x07",
+            signature_data=b"\xFF\xFF\xFF\xFF",
+            correlation_value=b"\x01",
             init_indicator=True,
-            final_indicator=False
+            final_indicator=False,
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            'cryptographic_parameters': cryptographic_parameters,
-            'data': b'\x00\x11\x22\x33',
-            'digested_data': b'\x01\x03\x05\x07',
-            'signature_data': b'\xFF\xFF\xFF\xFF',
-            'correlation_value': b'\x01',
-            'init_indicator': True,
-            'final_indicator': False
-        })
+        expected = str(
+            {
+                "unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038",
+                "cryptographic_parameters": cryptographic_parameters,
+                "data": b"\x00\x11\x22\x33",
+                "digested_data": b"\x01\x03\x05\x07",
+                "signature_data": b"\xFF\xFF\xFF\xFF",
+                "correlation_value": b"\x01",
+                "init_indicator": True,
+                "final_indicator": False,
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)
@@ -1010,28 +935,28 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         #     Correlation Value - 1
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x01\x38'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
-            b'\x42\x00\x9B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xC2\x08\x00\x00\x00\xD9'
-            b'\xCD\xC8\x7D\xA2\x23\xD7\x86\xDF\x3B\x45\xE0\xBB\xBC\x72\x13\x26'
-            b'\xD1\xEE\x2A\xF8\x06\xCC\x31\x54\x75\xCC\x6F\x0D\x9C\x66\xE1\xB6'
-            b'\x23\x71\xD4\x5C\xE2\x39\x2E\x1A\xC9\x28\x44\xC3\x10\x10\x2F\x15'
-            b'\x6A\x0D\x8D\x52\xC1\xF4\xC4\x0B\xA3\xAA\x65\x09\x57\x86\xCB\x76'
-            b'\x97\x57\xA6\x56\x3B\xA9\x58\xFE\xD0\xBC\xC9\x84\xE8\xB5\x17\xA3'
-            b'\xD5\xF5\x15\xB2\x3B\x8A\x41\xE7\x4A\xA8\x67\x69\x3F\x90\xDF\xB0'
-            b'\x61\xA6\xE8\x6D\xFA\xAE\xE6\x44\x72\xC0\x0E\x5F\x20\x94\x57\x29'
-            b'\xCB\xEB\xE7\x7F\x06\xCE\x78\xE0\x8F\x40\x98\xFB\xA4\x1F\x9D\x61'
-            b'\x93\xC0\x31\x7E\x8B\x60\xD4\xB6\x08\x4A\xCB\x42\xD2\x9E\x38\x08'
-            b'\xA3\xBC\x37\x2D\x85\xE3\x31\x17\x0F\xCB\xF7\xCC\x72\xD0\xB7\x1C'
-            b'\x29\x66\x48\xB3\xA4\xD1\x0F\x41\x62\x95\xD0\x80\x7A\xA6\x25\xCA'
-            b'\xB2\x74\x4F\xD9\xEA\x8F\xD2\x23\xC4\x25\x37\x02\x98\x28\xBD\x16'
-            b'\xBE\x02\x54\x6F\x13\x0F\xD2\xE3\x3B\x93\x6D\x26\x76\xE0\x8A\xED'
-            b'\x1B\x73\x31\x8B\x75\x0A\x01\x67\xD0\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xD6\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x01\x38"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
+            b"\x42\x00\x9B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xC2\x08\x00\x00\x00\xD9"
+            b"\xCD\xC8\x7D\xA2\x23\xD7\x86\xDF\x3B\x45\xE0\xBB\xBC\x72\x13\x26"
+            b"\xD1\xEE\x2A\xF8\x06\xCC\x31\x54\x75\xCC\x6F\x0D\x9C\x66\xE1\xB6"
+            b"\x23\x71\xD4\x5C\xE2\x39\x2E\x1A\xC9\x28\x44\xC3\x10\x10\x2F\x15"
+            b"\x6A\x0D\x8D\x52\xC1\xF4\xC4\x0B\xA3\xAA\x65\x09\x57\x86\xCB\x76"
+            b"\x97\x57\xA6\x56\x3B\xA9\x58\xFE\xD0\xBC\xC9\x84\xE8\xB5\x17\xA3"
+            b"\xD5\xF5\x15\xB2\x3B\x8A\x41\xE7\x4A\xA8\x67\x69\x3F\x90\xDF\xB0"
+            b"\x61\xA6\xE8\x6D\xFA\xAE\xE6\x44\x72\xC0\x0E\x5F\x20\x94\x57\x29"
+            b"\xCB\xEB\xE7\x7F\x06\xCE\x78\xE0\x8F\x40\x98\xFB\xA4\x1F\x9D\x61"
+            b"\x93\xC0\x31\x7E\x8B\x60\xD4\xB6\x08\x4A\xCB\x42\xD2\x9E\x38\x08"
+            b"\xA3\xBC\x37\x2D\x85\xE3\x31\x17\x0F\xCB\xF7\xCC\x72\xD0\xB7\x1C"
+            b"\x29\x66\x48\xB3\xA4\xD1\x0F\x41\x62\x95\xD0\x80\x7A\xA6\x25\xCA"
+            b"\xB2\x74\x4F\xD9\xEA\x8F\xD2\x23\xC4\x25\x37\x02\x98\x28\xBD\x16"
+            b"\xBE\x02\x54\x6F\x13\x0F\xD2\xE3\x3B\x93\x6D\x26\x76\xE0\x8A\xED"
+            b"\x1B\x73\x31\x8B\x75\x0A\x01\x67\xD0\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xD6\x08\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # Encoding obtained in part from the KMIP 1.1 testing document,
@@ -1044,42 +969,42 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         #     Validity Indicator - Valid
 
         self.partial_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x40'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
-            b'\x42\x00\x9B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x40"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
+            b"\x42\x00\x9B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         self.partial_encoding_missing_unique_id = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x10'
-            b'\x42\x00\x9B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x10"
+            b"\x42\x00\x9B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         self.partial_encoding_missing_validity_ind = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
         )
 
         self.data = (
-            b'\xCD\xC8\x7D\xA2\x23\xD7\x86\xDF\x3B\x45\xE0\xBB\xBC\x72\x13\x26'
-            b'\xD1\xEE\x2A\xF8\x06\xCC\x31\x54\x75\xCC\x6F\x0D\x9C\x66\xE1\xB6'
-            b'\x23\x71\xD4\x5C\xE2\x39\x2E\x1A\xC9\x28\x44\xC3\x10\x10\x2F\x15'
-            b'\x6A\x0D\x8D\x52\xC1\xF4\xC4\x0B\xA3\xAA\x65\x09\x57\x86\xCB\x76'
-            b'\x97\x57\xA6\x56\x3B\xA9\x58\xFE\xD0\xBC\xC9\x84\xE8\xB5\x17\xA3'
-            b'\xD5\xF5\x15\xB2\x3B\x8A\x41\xE7\x4A\xA8\x67\x69\x3F\x90\xDF\xB0'
-            b'\x61\xA6\xE8\x6D\xFA\xAE\xE6\x44\x72\xC0\x0E\x5F\x20\x94\x57\x29'
-            b'\xCB\xEB\xE7\x7F\x06\xCE\x78\xE0\x8F\x40\x98\xFB\xA4\x1F\x9D\x61'
-            b'\x93\xC0\x31\x7E\x8B\x60\xD4\xB6\x08\x4A\xCB\x42\xD2\x9E\x38\x08'
-            b'\xA3\xBC\x37\x2D\x85\xE3\x31\x17\x0F\xCB\xF7\xCC\x72\xD0\xB7\x1C'
-            b'\x29\x66\x48\xB3\xA4\xD1\x0F\x41\x62\x95\xD0\x80\x7A\xA6\x25\xCA'
-            b'\xB2\x74\x4F\xD9\xEA\x8F\xD2\x23\xC4\x25\x37\x02\x98\x28\xBD\x16'
-            b'\xBE\x02\x54\x6F\x13\x0F\xD2\xE3\x3B\x93\x6D\x26\x76\xE0\x8A\xED'
-            b'\x1B\x73\x31\x8B\x75\x0A\x01\x67\xD0'
+            b"\xCD\xC8\x7D\xA2\x23\xD7\x86\xDF\x3B\x45\xE0\xBB\xBC\x72\x13\x26"
+            b"\xD1\xEE\x2A\xF8\x06\xCC\x31\x54\x75\xCC\x6F\x0D\x9C\x66\xE1\xB6"
+            b"\x23\x71\xD4\x5C\xE2\x39\x2E\x1A\xC9\x28\x44\xC3\x10\x10\x2F\x15"
+            b"\x6A\x0D\x8D\x52\xC1\xF4\xC4\x0B\xA3\xAA\x65\x09\x57\x86\xCB\x76"
+            b"\x97\x57\xA6\x56\x3B\xA9\x58\xFE\xD0\xBC\xC9\x84\xE8\xB5\x17\xA3"
+            b"\xD5\xF5\x15\xB2\x3B\x8A\x41\xE7\x4A\xA8\x67\x69\x3F\x90\xDF\xB0"
+            b"\x61\xA6\xE8\x6D\xFA\xAE\xE6\x44\x72\xC0\x0E\x5F\x20\x94\x57\x29"
+            b"\xCB\xEB\xE7\x7F\x06\xCE\x78\xE0\x8F\x40\x98\xFB\xA4\x1F\x9D\x61"
+            b"\x93\xC0\x31\x7E\x8B\x60\xD4\xB6\x08\x4A\xCB\x42\xD2\x9E\x38\x08"
+            b"\xA3\xBC\x37\x2D\x85\xE3\x31\x17\x0F\xCB\xF7\xCC\x72\xD0\xB7\x1C"
+            b"\x29\x66\x48\xB3\xA4\xD1\x0F\x41\x62\x95\xD0\x80\x7A\xA6\x25\xCA"
+            b"\xB2\x74\x4F\xD9\xEA\x8F\xD2\x23\xC4\x25\x37\x02\x98\x28\xBD\x16"
+            b"\xBE\x02\x54\x6F\x13\x0F\xD2\xE3\x3B\x93\x6D\x26\x76\xE0\x8A\xED"
+            b"\x1B\x73\x31\x8B\x75\x0A\x01\x67\xD0"
         )
 
     def tearDown(self):
@@ -1103,29 +1028,25 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         valid values
         """
         payload = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444',
+            unique_identifier="00000000-1111-2222-3333-444444444444",
             validity_indicator=enums.ValidityIndicator.VALID,
-            data=b'\x01\x02\x03',
-            correlation_value=b'\xFF'
+            data=b"\x01\x02\x03",
+            correlation_value=b"\xFF",
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
-        self.assertEqual(
-            enums.ValidityIndicator.VALID,
-            payload.validity_indicator
-        )
-        self.assertEqual(b'\x01\x02\x03', payload.data)
-        self.assertEqual(b'\xFF', payload.correlation_value)
+        self.assertEqual(enums.ValidityIndicator.VALID, payload.validity_indicator)
+        self.assertEqual(b"\x01\x02\x03", payload.data)
+        self.assertEqual(b"\xFF", payload.correlation_value)
 
     def test_invalid_unique_identifier(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a SignatureVerify response payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -1134,12 +1055,9 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyResponsePayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_validity_indicator(self):
@@ -1147,7 +1065,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the validity indicator of a SignatureVerify response payload.
         """
-        kwargs = {'validity_indicator': 'invalid'}
+        kwargs = {"validity_indicator": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Validity indicator must be a ValidityIndicator enumeration.",
@@ -1156,7 +1074,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyResponsePayload()
-        args = (payload, 'validity_indicator', 'invalid')
+        args = (payload, "validity_indicator", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Validity indicator must be a ValidityIndicator enumeration.",
@@ -1169,7 +1087,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the data of a SignatureVerify request payload.
         """
-        kwargs = {'data': 0}
+        kwargs = {"data": 0}
         self.assertRaisesRegex(
             TypeError,
             "Data must be bytes.",
@@ -1178,20 +1096,15 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyResponsePayload()
-        args = (payload, 'data', 0)
-        self.assertRaisesRegex(
-            TypeError,
-            "Data must be bytes.",
-            setattr,
-            *args
-        )
+        args = (payload, "data", 0)
+        self.assertRaisesRegex(TypeError, "Data must be bytes.", setattr, *args)
 
     def test_invalid_correlation_value(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
         the correlation value of a SignatureVerify request payload.
         """
-        kwargs = {'correlation_value': 0}
+        kwargs = {"correlation_value": 0}
         self.assertRaisesRegex(
             TypeError,
             "Correlation value must be bytes.",
@@ -1200,12 +1113,9 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         )
 
         payload = signature_verify.SignatureVerifyResponsePayload()
-        args = (payload, 'correlation_value', 0)
+        args = (payload, "correlation_value", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Correlation value must be bytes.",
-            setattr,
-            *args
+            TypeError, "Correlation value must be bytes.", setattr, *args
         )
 
     def test_read(self):
@@ -1223,15 +1133,11 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            payload.unique_identifier
+            "49a1ca88-6bea-4fb2-b450-7e58802c3038", payload.unique_identifier
         )
-        self.assertEqual(
-            enums.ValidityIndicator.VALID,
-            payload.validity_indicator
-        )
+        self.assertEqual(enums.ValidityIndicator.VALID, payload.validity_indicator)
         self.assertEqual(self.data, payload.data)
-        self.assertEqual(b'\x01', payload.correlation_value)
+        self.assertEqual(b"\x01", payload.correlation_value)
 
     def test_read_partial(self):
         """
@@ -1248,13 +1154,9 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         payload.read(self.partial_encoding)
 
         self.assertEqual(
-            '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            payload.unique_identifier
+            "49a1ca88-6bea-4fb2-b450-7e58802c3038", payload.unique_identifier
         )
-        self.assertEqual(
-            enums.ValidityIndicator.VALID,
-            payload.validity_indicator
-        )
+        self.assertEqual(enums.ValidityIndicator.VALID, payload.validity_indicator)
         self.assertEqual(None, payload.data)
         self.assertEqual(None, payload.correlation_value)
 
@@ -1265,7 +1167,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         struct.
         """
         payload = signature_verify.SignatureVerifyResponsePayload()
-        args = (self.partial_encoding_missing_unique_id, )
+        args = (self.partial_encoding_missing_unique_id,)
         self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the unique identifier field.",
@@ -1280,7 +1182,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         struct.
         """
         payload = signature_verify.SignatureVerifyResponsePayload()
-        args = (self.partial_encoding_missing_validity_ind, )
+        args = (self.partial_encoding_missing_validity_ind,)
         self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the validity indicator field.",
@@ -1294,10 +1196,10 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         stream.
         """
         payload = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             validity_indicator=enums.ValidityIndicator.VALID,
             data=self.data,
-            correlation_value=b'\x01'
+            correlation_value=b"\x01",
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -1311,8 +1213,8 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         written to a data stream.
         """
         payload = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            validity_indicator=enums.ValidityIndicator.VALID
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            validity_indicator=enums.ValidityIndicator.VALID,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -1328,7 +1230,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         """
         payload = signature_verify.SignatureVerifyResponsePayload()
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             ValueError,
             "Payload is missing the unique identifier field.",
@@ -1343,10 +1245,10 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         struct.
         """
         payload = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             ValueError,
             "Payload is missing the validity indicator field.",
@@ -1366,16 +1268,16 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             validity_indicator=enums.ValidityIndicator.INVALID,
             data=self.data,
-            correlation_value=b'\x01'
+            correlation_value=b"\x01",
         )
         b = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             validity_indicator=enums.ValidityIndicator.INVALID,
             data=self.data,
-            correlation_value=b'\x01'
+            correlation_value=b"\x01",
         )
 
         self.assertTrue(a == b)
@@ -1386,12 +1288,8 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SignatureVerify response payloads with different unique identifiers.
         """
-        a = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='a'
-        )
-        b = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='b'
-        )
+        a = signature_verify.SignatureVerifyResponsePayload(unique_identifier="a")
+        b = signature_verify.SignatureVerifyResponsePayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1416,8 +1314,8 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SignatureVerify response payloads with different data.
         """
-        a = signature_verify.SignatureVerifyResponsePayload(data=b'\x11')
-        b = signature_verify.SignatureVerifyResponsePayload(data=b'\xFF')
+        a = signature_verify.SignatureVerifyResponsePayload(data=b"\x11")
+        b = signature_verify.SignatureVerifyResponsePayload(data=b"\xFF")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1427,12 +1325,8 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         SignatureVerify response payloads with different correlation values.
         """
-        a = signature_verify.SignatureVerifyResponsePayload(
-            correlation_value=b'\x01'
-        )
-        b = signature_verify.SignatureVerifyResponsePayload(
-            correlation_value=b'\x02'
-        )
+        a = signature_verify.SignatureVerifyResponsePayload(correlation_value=b"\x01")
+        b = signature_verify.SignatureVerifyResponsePayload(correlation_value=b"\x02")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1443,7 +1337,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         SignatureVerify response payloads with different types.
         """
         a = signature_verify.SignatureVerifyResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1460,16 +1354,16 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             validity_indicator=enums.ValidityIndicator.INVALID,
             data=self.data,
-            correlation_value=b'\x01'
+            correlation_value=b"\x01",
         )
         b = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             validity_indicator=enums.ValidityIndicator.INVALID,
             data=self.data,
-            correlation_value=b'\x01'
+            correlation_value=b"\x01",
         )
 
         self.assertFalse(a != b)
@@ -1480,12 +1374,8 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SignatureVerify response payloads with different unique identifiers.
         """
-        a = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='a'
-        )
-        b = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='b'
-        )
+        a = signature_verify.SignatureVerifyResponsePayload(unique_identifier="a")
+        b = signature_verify.SignatureVerifyResponsePayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1510,8 +1400,8 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SignatureVerify response payloads with different data.
         """
-        a = signature_verify.SignatureVerifyResponsePayload(data=b'\x11')
-        b = signature_verify.SignatureVerifyResponsePayload(data=b'\xFF')
+        a = signature_verify.SignatureVerifyResponsePayload(data=b"\x11")
+        b = signature_verify.SignatureVerifyResponsePayload(data=b"\xFF")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1521,12 +1411,8 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         SignatureVerify response payloads with different correlation values.
         """
-        a = signature_verify.SignatureVerifyResponsePayload(
-            correlation_value=b'\x01'
-        )
-        b = signature_verify.SignatureVerifyResponsePayload(
-            correlation_value=b'\x02'
-        )
+        a = signature_verify.SignatureVerifyResponsePayload(correlation_value=b"\x01")
+        b = signature_verify.SignatureVerifyResponsePayload(correlation_value=b"\x02")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1537,7 +1423,7 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         SignatureVerify response payloads with different types.
         """
         a = signature_verify.SignatureVerifyResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1547,17 +1433,17 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that repr can be applied to a SignatureVerify response payload.
         """
         payload = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             validity_indicator=enums.ValidityIndicator.VALID,
-            data=b'\x00\x11\x22\x33',
-            correlation_value=b'\x01'
+            data=b"\x00\x11\x22\x33",
+            correlation_value=b"\x01",
         )
         expected = (
             "SignatureVerifyResponsePayload("
             "unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038', "
             "validity_indicator=ValidityIndicator.VALID, "
-            "data=" + str(b'\x00\x11\x22\x33') + ", "
-            "correlation_value=" + str(b'\x01') + ")"
+            "data=" + str(b"\x00\x11\x22\x33") + ", "
+            "correlation_value=" + str(b"\x01") + ")"
         )
         observed = repr(payload)
 
@@ -1568,18 +1454,20 @@ class TestSignatureVerifyResponsePayload(testtools.TestCase):
         Test that str can be applied to a SignatureVerify response payload
         """
         payload = signature_verify.SignatureVerifyResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             validity_indicator=enums.ValidityIndicator.VALID,
-            data=b'\x00\x11\x22\x33',
-            correlation_value=b'\x01'
+            data=b"\x00\x11\x22\x33",
+            correlation_value=b"\x01",
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            'validity_indicator': enums.ValidityIndicator.VALID,
-            'data': b'\x00\x11\x22\x33',
-            'correlation_value': b'\x01'
-        })
+        expected = str(
+            {
+                "unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038",
+                "validity_indicator": enums.ValidityIndicator.VALID,
+                "data": b"\x00\x11\x22\x33",
+                "correlation_value": b"\x01",
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)

@@ -83,13 +83,15 @@ class CryptographicEngine(object):
         """
 
     @abstractmethod
-    def encrypt(self,
-                encryption_algorithm,
-                encryption_key,
-                plain_text,
-                cipher_mode=None,
-                padding_method=None,
-                iv_nonce=None):
+    def encrypt(
+        self,
+        encryption_algorithm,
+        encryption_key,
+        plain_text,
+        cipher_mode=None,
+        padding_method=None,
+        iv_nonce=None,
+    ):
         """
         Encrypt data using symmetric encryption.
 
@@ -123,13 +125,15 @@ class CryptographicEngine(object):
         """
 
     @abstractmethod
-    def decrypt(self,
-                decryption_algorithm,
-                decryption_key,
-                cipher_text,
-                cipher_mode=None,
-                padding_method=None,
-                iv_nonce=None):
+    def decrypt(
+        self,
+        decryption_algorithm,
+        decryption_key,
+        cipher_text,
+        cipher_mode=None,
+        padding_method=None,
+        iv_nonce=None,
+    ):
         """
         Decrypt data using symmetric decryption.
 
@@ -156,12 +160,14 @@ class CryptographicEngine(object):
         """
 
     @abstractmethod
-    def sign(self,
-             digital_signature_algorithm,
-             cryptographic_algorithm,
-             hash_algorithm,
-             signing_key,
-             data):
+    def sign(
+        self,
+        digital_signature_algorithm,
+        cryptographic_algorithm,
+        hash_algorithm,
+        signing_key,
+        data,
+    ):
         """
         Generate a signature for the provided data.
 

@@ -37,6 +37,7 @@ class GetAttributesRequestPayload(base.RequestPayload):
         attribute_names: A list of strings identifying the names of the
             attributes associated with the managed object.
     """
+
     def __init__(self, unique_identifier=None, attribute_names=None):
         """
         Construct a GetAttributes request payload.
@@ -70,8 +71,7 @@ class GetAttributesRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -104,10 +104,7 @@ class GetAttributesRequestPayload(base.RequestPayload):
             self._attribute_names = list()
             for name in names:
                 self._attribute_names.append(
-                    primitives.TextString(
-                        value=name,
-                        tag=enums.Tags.ATTRIBUTE_NAME
-                    )
+                    primitives.TextString(value=name, tag=enums.Tags.ATTRIBUTE_NAME)
                 )
         else:
             raise TypeError("Attribute names must be a list of strings.")
@@ -130,8 +127,7 @@ class GetAttributesRequestPayload(base.RequestPayload):
                 AttributeReference encoding for KMIP 2.0+ encodings.
         """
         super(GetAttributesRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -139,10 +135,7 @@ class GetAttributesRequestPayload(base.RequestPayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             self._unique_identifier = None
 
@@ -154,31 +147,24 @@ class GetAttributesRequestPayload(base.RequestPayload):
                 names.append(name)
             self._attribute_names = names
         else:
-            while self.is_tag_next(
-                    enums.Tags.ATTRIBUTE_REFERENCE,
-                    local_buffer
-            ):
+            while self.is_tag_next(enums.Tags.ATTRIBUTE_REFERENCE, local_buffer):
                 if self.is_type_next(enums.Types.STRUCTURE, local_buffer):
                     reference = objects.AttributeReference()
                     reference.read(local_buffer, kmip_version=kmip_version)
                     names.append(
                         primitives.TextString(
                             value=reference.attribute_name,
-                            tag=enums.Tags.ATTRIBUTE_NAME
+                            tag=enums.Tags.ATTRIBUTE_NAME,
                         )
                     )
                 elif self.is_type_next(enums.Types.ENUMERATION, local_buffer):
                     reference = primitives.Enumeration(
-                        enums.Tags,
-                        tag=enums.Tags.ATTRIBUTE_REFERENCE
+                        enums.Tags, tag=enums.Tags.ATTRIBUTE_REFERENCE
                     )
                     reference.read(local_buffer, kmip_version=kmip_version)
                     name = enums.convert_attribute_tag_to_name(reference.value)
                     names.append(
-                        primitives.TextString(
-                            value=name,
-                            tag=enums.Tags.ATTRIBUTE_NAME
-                        )
+                        primitives.TextString(value=name, tag=enums.Tags.ATTRIBUTE_NAME)
                     )
                 else:
                     raise exceptions.InvalidKmipEncoding(
@@ -205,10 +191,7 @@ class GetAttributesRequestPayload(base.RequestPayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             for attribute_name in self._attribute_names:
@@ -224,34 +207,30 @@ class GetAttributesRequestPayload(base.RequestPayload):
             for attribute_name in self._attribute_names:
                 t = enums.convert_attribute_name_to_tag(attribute_name.value)
                 e = primitives.Enumeration(
-                    enums.Tags,
-                    value=t,
-                    tag=enums.Tags.ATTRIBUTE_REFERENCE
+                    enums.Tags, value=t, tag=enums.Tags.ATTRIBUTE_REFERENCE
                 )
                 e.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(GetAttributesRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
-        unique_identifier = "unique_identifier={0}".format(
-            self.unique_identifier
-        )
+        unique_identifier = "unique_identifier={0}".format(self.unique_identifier)
         attribute_names = "attribute_names={0}".format(self.attribute_names)
         return "GetAttributesRequestPayload({0}, {1})".format(
-            unique_identifier,
-            attribute_names
+            unique_identifier, attribute_names
         )
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'attribute_names': self.attribute_names
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "attribute_names": self.attribute_names,
+            }
+        )
 
     def __eq__(self, other):
         if isinstance(other, GetAttributesRequestPayload):
@@ -286,6 +265,7 @@ class GetAttributesResponsePayload(base.ResponsePayload):
         attributes: The list of attributes associated with managed object
             identified by the unique identifier above.
     """
+
     def __init__(self, unique_identifier=None, attributes=None):
         """
         Construct a GetAttributes response payload.
@@ -318,8 +298,7 @@ class GetAttributesResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -358,15 +337,12 @@ class GetAttributesResponsePayload(base.ResponsePayload):
                 defaults to KMIP 1.0.
         """
         super(GetAttributesResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_buffer):
-            unique_identifier = primitives.TextString(
-                tag=enums.Tags.UNIQUE_IDENTIFIER
-            )
+            unique_identifier = primitives.TextString(tag=enums.Tags.UNIQUE_IDENTIFIER)
             unique_identifier.read(local_buffer, kmip_version=kmip_version)
             self.unique_identifier = unique_identifier.value
         else:
@@ -386,9 +362,7 @@ class GetAttributesResponsePayload(base.ResponsePayload):
                 attributes = objects.Attributes()
                 attributes.read(local_buffer, kmip_version=kmip_version)
                 # TODO (ph) Add a new utility to avoid using TemplateAttributes
-                temp_attr = objects.convert_attributes_to_template_attribute(
-                    attributes
-                )
+                temp_attr = objects.convert_attributes_to_template_attribute(attributes)
                 self._attributes = temp_attr.attributes
             else:
                 raise exceptions.InvalidKmipEncoding(
@@ -414,10 +388,7 @@ class GetAttributesResponsePayload(base.ResponsePayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The GetAttributes response payload is missing the unique "
@@ -445,26 +416,19 @@ class GetAttributesResponsePayload(base.ResponsePayload):
 
         self.length = local_buffer.length()
         super(GetAttributesResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
-        unique_identifier = "unique_identifier={0}".format(
-            self.unique_identifier
-        )
+        unique_identifier = "unique_identifier={0}".format(self.unique_identifier)
         names = "attributes={0}".format(self.attributes)
-        return "GetAttributesResponsePayload({0}, {1})".format(
-            unique_identifier,
-            names
-        )
+        return "GetAttributesResponsePayload({0}, {1})".format(unique_identifier, names)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'attributes': self.attributes
-        })
+        return str(
+            {"unique_identifier": self.unique_identifier, "attributes": self.attributes}
+        )
 
     def __eq__(self, other):
         if isinstance(other, GetAttributesResponsePayload):

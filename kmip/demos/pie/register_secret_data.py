@@ -24,7 +24,7 @@ from kmip.pie import client
 from kmip.pie import objects
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     parser = utils.build_cli_parser(enums.Operation.REGISTER)
@@ -32,22 +32,18 @@ if __name__ == '__main__':
 
     config = opts.config
 
-    value = (b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64')
+    value = b"\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64"
     data_type = enums.SecretDataType.PASSWORD
     usage_mask = [enums.CryptographicUsageMask.VERIFY]
-    name = 'Demo Secret Data'
+    name = "Demo Secret Data"
 
     secret = objects.SecretData(value, data_type, None, usage_mask, name)
     secret.operation_policy_name = opts.operation_policy_name
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(
-            config=config,
-            config_file=opts.config_file
-    ) as client:
+    with client.ProxyKmipClient(config=config, config_file=opts.config_file) as client:
         try:
             uid = client.register(secret)
-            logger.info(
-                "Successfully registered secret data with ID: {0}".format(uid))
+            logger.info("Successfully registered secret data with ID: {0}".format(uid))
         except Exception as e:
             logger.error(e)

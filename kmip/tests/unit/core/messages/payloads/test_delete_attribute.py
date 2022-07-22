@@ -41,14 +41,14 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         #     Attribute Name - x-attribute1
         #     Attribute Index - 1
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x58'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00'
-            b'\x42\x00\x09\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x58"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00"
+            b"\x42\x00\x09\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # This encoding was taken from test case 3.1.4-7 from the KMIP 1.1
@@ -59,13 +59,13 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         #     Unique Identifier - b4faee10-aa2a-4446-8ad4-0881f3422959
         #     Attribute Name - x-attribute1
         self.no_attribute_index_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00"
         )
 
         # This encoding was adapted from test case 3.1.4-7 from the KMIP 1.1
@@ -81,18 +81,18 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         #         Vendor Identification - Acme Corporation
         #         Attribute Name - Delivery Date
         self.full_encoding_kmip_2_0 = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x80'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x01\x3C\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x01\x3B\x01\x00\x00\x00\x30'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x10'
-            b'\x41\x63\x6D\x65\x20\x43\x6F\x72\x70\x6F\x72\x61\x74\x69\x6F\x6E'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0D'
-            b'\x44\x65\x6C\x69\x76\x65\x72\x79\x20\x44\x61\x74\x65\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x80"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x01\x3C\x01\x00\x00\x00\x10"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x01\x3B\x01\x00\x00\x00\x30"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x10"
+            b"\x41\x63\x6D\x65\x20\x43\x6F\x72\x70\x6F\x72\x61\x74\x69\x6F\x6E"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0D"
+            b"\x44\x65\x6C\x69\x76\x65\x72\x79\x20\x44\x61\x74\x65\x00\x00\x00"
         )
 
         # This encoding was adapted from test case 3.1.4-7 from the KMIP 1.1
@@ -106,16 +106,16 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         #         Vendor Identification - Acme Corporation
         #         Attribute Name - Delivery Date
         self.no_current_attribute_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x68'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x01\x3B\x01\x00\x00\x00\x30'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x10'
-            b'\x41\x63\x6D\x65\x20\x43\x6F\x72\x70\x6F\x72\x61\x74\x69\x6F\x6E'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0D'
-            b'\x44\x65\x6C\x69\x76\x65\x72\x79\x20\x44\x61\x74\x65\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x68"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x01\x3B\x01\x00\x00\x00\x30"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x10"
+            b"\x41\x63\x6D\x65\x20\x43\x6F\x72\x70\x6F\x72\x61\x74\x69\x6F\x6E"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0D"
+            b"\x44\x65\x6C\x69\x76\x65\x72\x79\x20\x44\x61\x74\x65\x00\x00\x00"
         )
 
         # This encoding was adapted from test case 3.1.4-7 from the KMIP 1.1
@@ -128,18 +128,16 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         #     Current Attribute
         #         Cryptographic Algorithm - AES
         self.no_attribute_reference_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x01\x3C\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x01\x3C\x01\x00\x00\x00\x10"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestDeleteAttributeRequestPayload, self).tearDown()
@@ -157,16 +155,9 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.DeleteAttributeRequestPayload(),
-            "unique_identifier",
-            0
-        )
+        args = (payloads.DeleteAttributeRequestPayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "The unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_attribute_name(self):
@@ -182,16 +173,9 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.DeleteAttributeRequestPayload(),
-            "attribute_name",
-            0
-        )
+        args = (payloads.DeleteAttributeRequestPayload(), "attribute_name", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The attribute name must be a string.",
-            setattr,
-            *args
+            TypeError, "The attribute name must be a string.", setattr, *args
         )
 
     def test_invalid_attribute_index(self):
@@ -207,16 +191,9 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.DeleteAttributeRequestPayload(),
-            "attribute_index",
-            "invalid"
-        )
+        args = (payloads.DeleteAttributeRequestPayload(), "attribute_index", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The attribute index must be an integer.",
-            setattr,
-            *args
+            TypeError, "The attribute index must be an integer.", setattr, *args
         )
 
     def test_invalid_current_attribute(self):
@@ -235,7 +212,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         args = (
             payloads.DeleteAttributeRequestPayload(),
             "current_attribute",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -260,7 +237,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         args = (
             payloads.DeleteAttributeRequestPayload(),
             "attribute_reference",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -284,8 +261,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertEqual("x-attribute1", payload.attribute_name)
         self.assertEqual(1, payload.attribute_index)
@@ -306,13 +282,11 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.attribute_reference)
 
         payload.read(
-            self.full_encoding_kmip_2_0,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding_kmip_2_0, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertIsNone(payload.attribute_name)
         self.assertIsNone(payload.attribute_index)
@@ -321,17 +295,16 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
-            payload.current_attribute
+            payload.current_attribute,
         )
         self.assertEqual(
             objects.AttributeReference(
-                vendor_identification="Acme Corporation",
-                attribute_name="Delivery Date"
+                vendor_identification="Acme Corporation", attribute_name="Delivery Date"
             ),
-            payload.attribute_reference
+            payload.attribute_reference,
         )
 
     def test_read_no_attribute_name(self):
@@ -341,7 +314,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         a DeleteAttribute request payload.
         """
         payload = payloads.DeleteAttributeRequestPayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The DeleteAttribute request payload encoding is missing the "
@@ -357,7 +330,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         reference is used to decode a DeleteAttribute request payload.
         """
         payload = payloads.DeleteAttributeRequestPayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
@@ -384,8 +357,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         payload.read(self.no_attribute_index_encoding)
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertEqual("x-attribute1", payload.attribute_name)
         self.assertIsNone(payload.attribute_index)
@@ -406,23 +378,20 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.attribute_reference)
 
         payload.read(
-            self.no_current_attribute_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.no_current_attribute_encoding, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertIsNone(payload.attribute_name)
         self.assertIsNone(payload.attribute_index)
         self.assertIsNone(payload.current_attribute)
         self.assertEqual(
             objects.AttributeReference(
-                vendor_identification="Acme Corporation",
-                attribute_name="Delivery Date"
+                vendor_identification="Acme Corporation", attribute_name="Delivery Date"
             ),
-            payload.attribute_reference
+            payload.attribute_reference,
         )
 
     def test_read_no_attribute_reference(self):
@@ -440,12 +409,11 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
 
         payload.read(
             self.no_attribute_reference_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            kmip_version=enums.KMIPVersion.KMIP_2_0,
         )
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertIsNone(payload.attribute_name)
         self.assertIsNone(payload.attribute_index)
@@ -454,10 +422,10 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
-            payload.current_attribute
+            payload.current_attribute,
         )
         self.assertIsNone(payload.attribute_reference)
 
@@ -468,7 +436,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         payload = payloads.DeleteAttributeRequestPayload(
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             attribute_name="x-attribute1",
-            attribute_index=1
+            attribute_index=1,
         )
 
         buffer = utils.BytearrayStream()
@@ -488,13 +456,12 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
             attribute_reference=objects.AttributeReference(
-                vendor_identification="Acme Corporation",
-                attribute_name="Delivery Date"
-            )
+                vendor_identification="Acme Corporation", attribute_name="Delivery Date"
+            ),
         )
 
         buffer = utils.BytearrayStream()
@@ -511,7 +478,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         """
         payload = payloads.DeleteAttributeRequestPayload()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The DeleteAttribute request payload is missing the attribute "
@@ -528,7 +495,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         """
         payload = payloads.DeleteAttributeRequestPayload()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidField,
@@ -546,7 +513,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         payload = payloads.DeleteAttributeRequestPayload(
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             attribute_name="x-attribute1",
-            attribute_index=1
+            attribute_index=1,
         )
 
         args = [
@@ -554,11 +521,10 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
             "attribute_name='x-attribute1'",
             "attribute_index=1",
             "current_attribute=None",
-            "attribute_reference=None"
+            "attribute_reference=None",
         ]
         self.assertEqual(
-            "DeleteAttributeRequestPayload({})".format(", ".join(args)),
-            repr(payload)
+            "DeleteAttributeRequestPayload({})".format(", ".join(args)), repr(payload)
         )
 
     def test_str(self):
@@ -568,7 +534,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         payload = payloads.DeleteAttributeRequestPayload(
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             attribute_name="x-attribute1",
-            attribute_index=1
+            attribute_index=1,
         )
         s = str(
             {
@@ -576,7 +542,7 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
                 "attribute_name": "x-attribute1",
                 "attribute_index": 1,
                 "current_attribute": None,
-                "attribute_reference": None
+                "attribute_reference": None,
             }
         )
         self.assertEqual(s, str(payload))
@@ -602,13 +568,12 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
             attribute_reference=objects.AttributeReference(
-                vendor_identification="Acme Corporation",
-                attribute_name="Delivery Date"
-            )
+                vendor_identification="Acme Corporation", attribute_name="Delivery Date"
+            ),
         )
         b = payloads.DeleteAttributeRequestPayload(
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
@@ -618,13 +583,12 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
             attribute_reference=objects.AttributeReference(
-                vendor_identification="Acme Corporation",
-                attribute_name="Delivery Date"
-            )
+                vendor_identification="Acme Corporation", attribute_name="Delivery Date"
+            ),
         )
 
         self.assertTrue(a == b)
@@ -685,16 +649,13 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             )
         )
         b = payloads.DeleteAttributeRequestPayload(
             current_attribute=objects.CurrentAttribute(
-                attribute=primitives.Integer(
-                    128,
-                    enums.Tags.CRYPTOGRAPHIC_LENGTH
-                )
+                attribute=primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH)
             )
         )
 
@@ -711,14 +672,13 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         """
         a = payloads.DeleteAttributeRequestPayload(
             attribute_reference=objects.AttributeReference(
-                vendor_identification="Acme Corporation",
-                attribute_name="Delivery Date"
+                vendor_identification="Acme Corporation", attribute_name="Delivery Date"
             )
         )
         b = payloads.DeleteAttributeRequestPayload(
             attribute_reference=objects.AttributeReference(
                 vendor_identification="Acme Corporation",
-                attribute_name="Delivery Estimate"
+                attribute_name="Delivery Estimate",
             )
         )
 
@@ -759,16 +719,16 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         #         Attribute Name - x-attribute1
         #         Attribute Value - ModifiedValue1
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x68'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x0E'
-            b'\x4D\x6F\x64\x69\x66\x69\x65\x64\x56\x61\x6C\x75\x65\x31\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x68"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x0E"
+            b"\x4D\x6F\x64\x69\x66\x69\x65\x64\x56\x61\x6C\x75\x65\x31\x00\x00"
         )
 
         # This encoding was adapted from test case 3.1.4-7 from the KMIP 1.1
@@ -778,11 +738,11 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         # Response Payload
         #     Unique Identifier - b4faee10-aa2a-4446-8ad4-0881f3422959
         self.no_attribute_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
         )
 
         # This encoding was adapt from test case 3.1.4-7 from the KMIP 1.1
@@ -792,17 +752,14 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         # Response Payload
         #     Unique Identifier - b4faee10-aa2a-4446-8ad4-0881f3422959
         self.full_encoding_kmip_2_0 = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestDeleteAttributeResponsePayload, self).tearDown()
@@ -820,16 +777,9 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.DeleteAttributeResponsePayload(),
-            "unique_identifier",
-            0
-        )
+        args = (payloads.DeleteAttributeResponsePayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "The unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_attribute(self):
@@ -845,16 +795,9 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.DeleteAttributeResponsePayload(),
-            "attribute",
-            0
-        )
+        args = (payloads.DeleteAttributeResponsePayload(), "attribute", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The attribute must be an Attribute object.",
-            setattr,
-            *args
+            TypeError, "The attribute must be an Attribute object.", setattr, *args
         )
 
     def test_read(self):
@@ -869,18 +812,16 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertEqual(
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    "ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
+                    "ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
             ),
-            payload.attribute
+            payload.attribute,
         )
 
     def test_read_kmip_2_0(self):
@@ -894,13 +835,11 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.attribute)
 
         payload.read(
-            self.full_encoding_kmip_2_0,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding_kmip_2_0, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertIsNone(payload.attribute)
 
@@ -911,7 +850,7 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         a DeleteAttribute response payload.
         """
         payload = payloads.DeleteAttributeResponsePayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The DeleteAttribute response payload encoding is missing the "
@@ -927,7 +866,7 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         DeleteAttribute response payload.
         """
         payload = payloads.DeleteAttributeResponsePayload()
-        args = (self.no_attribute_encoding, )
+        args = (self.no_attribute_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The DeleteAttribute response payload encoding is missing the "
@@ -946,10 +885,9 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    "ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            )
+                    "ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            ),
         )
 
         buffer = utils.BytearrayStream()
@@ -981,7 +919,7 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         """
         payload = payloads.DeleteAttributeResponsePayload()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The DeleteAttribute response payload is missing the unique "
@@ -996,15 +934,12 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         a DeleteAttribute response payload to a buffer with no attribute field
         specified.
         """
-        payload = payloads.DeleteAttributeResponsePayload(
-            unique_identifier="1"
-        )
+        payload = payloads.DeleteAttributeResponsePayload(unique_identifier="1")
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The DeleteAttribute response payload is missing the attribute "
-            "field.",
+            "The DeleteAttribute response payload is missing the attribute " "field.",
             payload.write,
             *args
         )
@@ -1018,10 +953,9 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    "ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            )
+                    "ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            ),
         )
 
         args = [
@@ -1029,11 +963,10 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
             "attribute=Attribute("
             "attribute_name=AttributeName(value='x-attribute1'), "
             "attribute_index=None, "
-            "attribute_value=TextString(value='ModifiedValue1'))"
+            "attribute_value=TextString(value='ModifiedValue1'))",
         ]
         self.assertEqual(
-            "DeleteAttributeResponsePayload({})".format(", ".join(args)),
-            repr(payload)
+            "DeleteAttributeResponsePayload({})".format(", ".join(args)), repr(payload)
         )
 
     def test_str(self):
@@ -1045,25 +978,21 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    "ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            )
+                    "ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            ),
         )
         s = str(
             {
                 "unique_identifier": "b4faee10-aa2a-4446-8ad4-0881f3422959",
                 "attribute": str(
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "x-attribute1"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                         attribute_value=primitives.TextString(
-                            "ModifiedValue1",
-                            tag=enums.Tags.ATTRIBUTE_VALUE
-                        )
+                            "ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                        ),
                     )
-                )
+                ),
             }
         )
         self.assertEqual(s, str(payload))
@@ -1086,20 +1015,18 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    "ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            )
+                    "ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            ),
         )
         b = payloads.DeleteAttributeResponsePayload(
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    "ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            )
+                    "ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            ),
         )
 
         self.assertTrue(a == b)
@@ -1131,18 +1058,16 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    "ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
+                    "ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
             )
         )
         b = payloads.DeleteAttributeResponsePayload(
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute2"),
                 attribute_value=primitives.TextString(
-                    "ModifiedValue2",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
+                    "ModifiedValue2", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
             )
         )
 

@@ -36,13 +36,15 @@ class KmipSession(threading.Thread):
     A session thread representing a single KMIP client/server interaction.
     """
 
-    def __init__(self,
-                 engine,
-                 connection,
-                 address,
-                 name=None,
-                 enable_tls_client_auth=True,
-                 auth_settings=None):
+    def __init__(
+        self,
+        engine,
+        connection,
+        address,
+        name=None,
+        enable_tls_client_auth=True,
+        auth_settings=None,
+    ):
         """
         Create a KmipSession.
 
@@ -66,16 +68,10 @@ class KmipSession(threading.Thread):
                 authentication plugin. Optional, defaults to None.
         """
         super(KmipSession, self).__init__(
-            group=None,
-            target=None,
-            name=name,
-            args=(),
-            kwargs={}
+            group=None, target=None, name=name, args=(), kwargs={}
         )
 
-        self._logger = logging.getLogger(
-            'kmip.server.session.{0}'.format(self.name)
-        )
+        self._logger = logging.getLogger("kmip.server.session.{0}".format(self.name))
 
         self._engine = engine
         self._connection = connection
@@ -127,7 +123,7 @@ class KmipSession(threading.Thread):
         )
 
         try:
-            if hasattr(self._connection, 'shared_ciphers'):
+            if hasattr(self._connection, "shared_ciphers"):
                 shared_ciphers = self._connection.shared_ciphers()
                 self._logger.debug(
                     "Possible session ciphers: {0}".format(len(shared_ciphers))
@@ -135,14 +131,10 @@ class KmipSession(threading.Thread):
                 for cipher in shared_ciphers:
                     self._logger.debug(cipher)
             self._logger.debug(
-                "Session cipher selected: {0}".format(
-                    self._connection.cipher()
-                )
+                "Session cipher selected: {0}".format(self._connection.cipher())
             )
 
-            certificate = auth.get_certificate_from_connection(
-                self._connection
-            )
+            certificate = auth.get_certificate_from_connection(self._connection)
             if certificate is None:
                 raise exceptions.PermissionDenied(
                     "The client certificate could not be loaded from the "
@@ -150,9 +142,7 @@ class KmipSession(threading.Thread):
                 )
 
             if self._enable_tls_client_auth:
-                extension = auth.get_extended_key_usage_from_certificate(
-                    certificate
-                )
+                extension = auth.get_extended_key_usage_from_certificate(certificate)
                 if extension is None:
                     raise exceptions.PermissionDenied(
                         "The extended key usage extension is missing from "
@@ -172,7 +162,7 @@ class KmipSession(threading.Thread):
                 contents.ProtocolVersion(1, 0),
                 enums.ResultReason.AUTHENTICATION_NOT_SUCCESSFUL,
                 "Error verifying the client certificate. "
-                "See server logs for more information."
+                "See server logs for more information.",
             )
         except Exception as e:
             self._logger.warning("Failure parsing request message.")
@@ -181,7 +171,7 @@ class KmipSession(threading.Thread):
                 contents.ProtocolVersion(1, 0),
                 enums.ResultReason.INVALID_MESSAGE,
                 "Error parsing request message. See server logs for more "
-                "information."
+                "information.",
             )
         else:
             try:
@@ -195,14 +185,11 @@ class KmipSession(threading.Thread):
                     request.request_header.protocol_version,
                     enums.ResultReason.AUTHENTICATION_NOT_SUCCESSFUL,
                     "An error occurred during client authentication. "
-                    "See server logs for more information."
+                    "See server logs for more information.",
                 )
             else:
                 try:
-                    results = self._engine.process_request(
-                        request,
-                        client_identity
-                    )
+                    results = self._engine.process_request(request, client_identity)
                     response, max_response_size, protocol_version = results
                     kmip_version = contents.protocol_version_to_kmip_version(
                         protocol_version
@@ -212,21 +199,18 @@ class KmipSession(threading.Thread):
                         max_size = max_response_size
                 except exceptions.KmipError as e:
                     response = self._engine.build_error_response(
-                        request.request_header.protocol_version,
-                        e.reason,
-                        str(e)
+                        request.request_header.protocol_version, e.reason, str(e)
                     )
                 except Exception as e:
                     self._logger.warning(
-                        "An unexpected error occurred while processing "
-                        "request."
+                        "An unexpected error occurred while processing " "request."
                     )
                     self._logger.exception(e)
                     response = self._engine.build_error_response(
                         request.request_header.protocol_version,
                         enums.ResultReason.GENERAL_FAILURE,
                         "An unexpected error occurred while processing "
-                        "request. See server logs for more information."
+                        "request. See server logs for more information.",
                     )
 
         response_data = utils.BytearrayStream()
@@ -236,15 +220,14 @@ class KmipSession(threading.Thread):
             self._logger.warning(
                 "Response message length too large: "
                 "{0} bytes, max {1} bytes".format(
-                    len(response_data),
-                    self._max_response_size
+                    len(response_data), self._max_response_size
                 )
             )
             response = self._engine.build_error_response(
                 request.request_header.protocol_version,
                 enums.ResultReason.RESPONSE_TOO_LARGE,
                 "Response message length too large. See server logs for "
-                "more information."
+                "more information.",
             )
             response_data = utils.BytearrayStream()
             response.write(response_data, kmip_version=kmip_version)
@@ -272,12 +255,10 @@ class KmipSession(threading.Thread):
                         client_identity = plugin.authenticate(
                             certificate,
                             (self._address, self._session_time),
-                            credentials
+                            credentials,
                         )
                     except Exception as e:
-                        self._logger.warning(
-                            "Authentication failed."
-                        )
+                        self._logger.warning("Authentication failed.")
                         self._logger.error(e)
                         self._logger.exception(e)
                     else:
@@ -298,9 +279,7 @@ class KmipSession(threading.Thread):
                 "will be extracted from the client certificate."
             )
             try:
-                client_identity = auth.get_client_identity_from_certificate(
-                    certificate
-                )
+                client_identity = auth.get_client_identity_from_certificate(certificate)
             except Exception as e:
                 self._logger.warning("Client identity extraction failed.")
                 self._logger.exception(e)
@@ -316,7 +295,7 @@ class KmipSession(threading.Thread):
 
     def _receive_request(self):
         header = self._receive_bytes(8)
-        message_size = struct.unpack('!I', header[4:])[0]
+        message_size = struct.unpack("!I", header[4:])[0]
 
         payload = self._receive_bytes(message_size)
         data = utils.BytearrayStream(header + payload)
@@ -325,7 +304,7 @@ class KmipSession(threading.Thread):
 
     def _receive_bytes(self, message_size):
         bytes_received = 0
-        message = b''
+        message = b""
 
         while bytes_received < message_size:
             partial_message = self._connection.recv(
@@ -346,9 +325,7 @@ class KmipSession(threading.Thread):
                 "does not match the advertised header length."
             )
         else:
-            self._logger.debug(
-                "Request encoding: {}".format(binascii.hexlify(message))
-            )
+            self._logger.debug("Request encoding: {}".format(binascii.hexlify(message)))
             return message
 
     def _send_response(self, data):

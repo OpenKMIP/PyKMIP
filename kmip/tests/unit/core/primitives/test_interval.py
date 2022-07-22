@@ -32,14 +32,14 @@ class TestInterval(testtools.TestCase):
         # specification.
         self.value = 864000
         self.encoding = (
-            b'\x42\x00\x00\x0A\x00\x00\x00\x04\x00\x0D\x2F\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x0A\x00\x00\x00\x04\x00\x0D\x2F\x00\x00\x00\x00" b"\x00"
+        )
         self.encoding_bad_length = (
-            b'\x42\x00\x00\x0A\x00\x00\x00\x05\x00\x0D\x2F\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x0A\x00\x00\x00\x05\x00\x0D\x2F\x00\x00\x00\x00" b"\x00"
+        )
         self.encoding_bad_padding = (
-            b'\x42\x00\x00\x0A\x00\x00\x00\x04\x00\x0D\x2F\x00\x00\x00\x00'
-            b'\xFF')
+            b"\x42\x00\x00\x0A\x00\x00\x00\x04\x00\x0D\x2F\x00\x00\x00\x00" b"\xFF"
+        )
 
     def tearDown(self):
         super(TestInterval, self).tearDown()
@@ -62,21 +62,19 @@ class TestInterval(testtools.TestCase):
         """
         Test that a TypeError is thrown on input of invalid type (e.g., str).
         """
-        self.assertRaises(TypeError, primitives.Interval, 'invalid')
+        self.assertRaises(TypeError, primitives.Interval, "invalid")
 
     def test_validate_on_invalid_value_too_big(self):
         """
         Test that a ValueError is thrown on input that is too large.
         """
-        self.assertRaises(
-            ValueError, primitives.Interval, primitives.Interval.MAX + 1)
+        self.assertRaises(ValueError, primitives.Interval, primitives.Interval.MAX + 1)
 
     def test_validate_on_invalid_value_too_small(self):
         """
         Test that a ValueError is thrown on input that is too small.
         """
-        self.assertRaises(
-            ValueError, primitives.Interval, primitives.Interval.MIN - 1)
+        self.assertRaises(ValueError, primitives.Interval, primitives.Interval.MIN - 1)
 
     def test_read(self):
         """
@@ -94,8 +92,7 @@ class TestInterval(testtools.TestCase):
         """
         stream = utils.BytearrayStream(self.encoding_bad_length)
         interval = primitives.Interval()
-        self.assertRaises(
-            exceptions.InvalidPrimitiveLength, interval.read, stream)
+        self.assertRaises(exceptions.InvalidPrimitiveLength, interval.read, stream)
 
     def test_read_on_invalid_padding(self):
         """
@@ -104,8 +101,7 @@ class TestInterval(testtools.TestCase):
         """
         stream = utils.BytearrayStream(self.encoding_bad_padding)
         interval = primitives.Interval()
-        self.assertRaises(
-            exceptions.InvalidPaddingBytes, interval.read, stream)
+        self.assertRaises(exceptions.InvalidPaddingBytes, interval.read, stream)
 
     def test_write(self):
         """
@@ -126,8 +122,7 @@ class TestInterval(testtools.TestCase):
         long_int = primitives.Interval()
         value = "value={0}".format(long_int.value)
         tag = "tag={0}".format(long_int.tag)
-        self.assertEqual(
-            "Interval({0}, {1})".format(value, tag), repr(long_int))
+        self.assertEqual("Interval({0}, {1})".format(value, tag), repr(long_int))
 
     def test_str(self):
         """
@@ -175,7 +170,7 @@ class TestInterval(testtools.TestCase):
         Interval to a non-Interval object.
         """
         a = primitives.Interval()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -219,7 +214,7 @@ class TestInterval(testtools.TestCase):
         Interval to a non-Interval object.
         """
         a = primitives.Interval()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)

@@ -53,16 +53,9 @@ class TestApplicationSpecificInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ApplicationSpecificInformation(),
-            "application_namespace",
-            []
-        )
+        args = (objects.ApplicationSpecificInformation(), "application_namespace", [])
         self.assertRaisesRegex(
-            TypeError,
-            "The application namespace must be a string.",
-            setattr,
-            *args
+            TypeError, "The application namespace must be a string.", setattr, *args
         )
 
     def test_invalid_application_data(self):
@@ -78,16 +71,9 @@ class TestApplicationSpecificInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ApplicationSpecificInformation(),
-            "application_data",
-            []
-        )
+        args = (objects.ApplicationSpecificInformation(), "application_data", [])
         self.assertRaisesRegex(
-            TypeError,
-            "The application data must be a string.",
-            setattr,
-            *args
+            TypeError, "The application data must be a string.", setattr, *args
         )
 
     def test_repr(self):
@@ -96,13 +82,12 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         attribute.
         """
         app_specific_info = objects.ApplicationSpecificInformation(
-            application_namespace="ssl",
-            application_data="www.example.com"
+            application_namespace="ssl", application_data="www.example.com"
         )
 
         args = [
             "application_namespace='{}'".format("ssl"),
-            "application_data='{}'".format("www.example.com")
+            "application_data='{}'".format("www.example.com"),
         ]
 
         expected = "ApplicationSpecificInformation({})".format(", ".join(args))
@@ -116,15 +101,11 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         attribute.
         """
         app_specific_info = objects.ApplicationSpecificInformation(
-            application_namespace="ssl",
-            application_data="www.example.com"
+            application_namespace="ssl", application_data="www.example.com"
         )
 
         expected = str(
-            {
-                "application_namespace": "ssl",
-                "application_data": "www.example.com"
-            }
+            {"application_namespace": "ssl", "application_data": "www.example.com"}
         )
         observed = str(app_specific_info)
 
@@ -145,12 +126,10 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = objects.ApplicationSpecificInformation(
-            application_namespace="ssl",
-            application_data="www.example.com"
+            application_namespace="ssl", application_data="www.example.com"
         )
         b = objects.ApplicationSpecificInformation(
-            application_namespace="ssl",
-            application_data="www.example.com"
+            application_namespace="ssl", application_data="www.example.com"
         )
 
         self.assertTrue(a == b)
@@ -164,12 +143,8 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         comparing two ApplicationSpecificInformation attributes with different
         application namespaces.
         """
-        a = objects.ApplicationSpecificInformation(
-            application_namespace="a"
-        )
-        b = objects.ApplicationSpecificInformation(
-            application_namespace="b"
-        )
+        a = objects.ApplicationSpecificInformation(application_namespace="a")
+        b = objects.ApplicationSpecificInformation(application_namespace="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -182,12 +157,8 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         comparing two ApplicationSpecificInformation attributes with different
         application data.
         """
-        a = objects.ApplicationSpecificInformation(
-            application_data="a"
-        )
-        b = objects.ApplicationSpecificInformation(
-            application_data="b"
-        )
+        a = objects.ApplicationSpecificInformation(application_data="a")
+        b = objects.ApplicationSpecificInformation(application_data="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -216,8 +187,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         ID was set.
         """
         app_specific_info = objects.ApplicationSpecificInformation(
-            application_namespace="ssl",
-            application_data="www.example.com"
+            application_namespace="ssl", application_data="www.example.com"
         )
 
         engine = sqlalchemy.create_engine("sqlite:///:memory:", echo=True)
@@ -236,8 +206,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         the database and then retrieves it by ID and verifies its values.
         """
         app_specific_info = objects.ApplicationSpecificInformation(
-            application_namespace="ssl",
-            application_data="www.example.com"
+            application_namespace="ssl", application_data="www.example.com"
         )
 
         engine = sqlalchemy.create_engine("sqlite:///:memory:", echo=True)
@@ -252,11 +221,11 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         app_specific_info_id = app_specific_info.id
 
         session = sqlalchemy.orm.sessionmaker(bind=engine)()
-        retrieved_info = session.query(
-            objects.ApplicationSpecificInformation
-        ).filter(
-            objects.ApplicationSpecificInformation.id == app_specific_info_id
-        ).one()
+        retrieved_info = (
+            session.query(objects.ApplicationSpecificInformation)
+            .filter(objects.ApplicationSpecificInformation.id == app_specific_info_id)
+            .one()
+        )
         session.commit()
 
         self.assertEqual("ssl", retrieved_info.application_namespace)

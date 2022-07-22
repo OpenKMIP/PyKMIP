@@ -52,16 +52,9 @@ class TestObjectGroup(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.ObjectGroup(),
-            "object_group",
-            []
-        )
+        args = (objects.ObjectGroup(), "object_group", [])
         self.assertRaisesRegex(
-            TypeError,
-            "The object group must be a string.",
-            setattr,
-            *args
+            TypeError, "The object group must be a string.", setattr, *args
         )
 
     def test_repr(self):
@@ -70,9 +63,7 @@ class TestObjectGroup(testtools.TestCase):
         """
         object_group = objects.ObjectGroup(object_group="Group1")
 
-        expected = "ObjectGroup({})".format(
-            "object_group='{}'".format("Group1")
-        )
+        expected = "ObjectGroup({})".format("object_group='{}'".format("Group1"))
         observed = repr(object_group)
 
         self.assertEqual(expected, observed)
@@ -83,11 +74,7 @@ class TestObjectGroup(testtools.TestCase):
         """
         object_group = objects.ObjectGroup(object_group="Group1")
 
-        expected = str(
-            {
-                "object_group": "Group1"
-            }
-        )
+        expected = str({"object_group": "Group1"})
         observed = str(object_group)
 
         self.assertEqual(expected, observed)
@@ -177,11 +164,11 @@ class TestObjectGroup(testtools.TestCase):
         object_group_id = object_group.id
 
         session = sqlalchemy.orm.sessionmaker(bind=engine)()
-        retrieved_group = session.query(
-            objects.ObjectGroup
-        ).filter(
-            objects.ObjectGroup.id == object_group_id
-        ).one()
+        retrieved_group = (
+            session.query(objects.ObjectGroup)
+            .filter(objects.ObjectGroup.id == object_group_id)
+            .one()
+        )
         session.commit()
 
         self.assertEqual("Group1", retrieved_group.object_group)

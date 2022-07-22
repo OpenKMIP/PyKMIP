@@ -29,8 +29,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the equality operator returns True when comparing two
         ManagedObjectName objects with the same data.
         """
-        a = ManagedObjectName('a', 0)
-        b = ManagedObjectName('a', 0)
+        a = ManagedObjectName("a", 0)
+        b = ManagedObjectName("a", 0)
         self.assertTrue(a == b)
         self.assertTrue(b == a)
 
@@ -39,8 +39,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         ManagedObjectName objects with different names.
         """
-        a = ManagedObjectName('a', 0)
-        b = ManagedObjectName('b', 0)
+        a = ManagedObjectName("a", 0)
+        b = ManagedObjectName("b", 0)
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
@@ -49,8 +49,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         ManagedObjectName objects with different indices.
         """
-        a = ManagedObjectName('a', 0)
-        b = ManagedObjectName('a', 1)
+        a = ManagedObjectName("a", 0)
+        b = ManagedObjectName("a", 1)
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
@@ -59,8 +59,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         ManagedObjectName objects with different name types.
         """
-        a = ManagedObjectName('a', 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
-        b = ManagedObjectName('a', 0, enums.NameType.URI)
+        a = ManagedObjectName("a", 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
+        b = ManagedObjectName("a", 0, enums.NameType.URI)
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
@@ -69,8 +69,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the equality operator returns False when comparing a
         ManagedObjectName object with a different type of object.
         """
-        a = ManagedObjectName('a', 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
-        b = 'foo'
+        a = ManagedObjectName("a", 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
+        b = "foo"
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
@@ -79,8 +79,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the not equal operator returns False when comparing two
         ManagedObjectName objects with the same data.
         """
-        a = ManagedObjectName('a', 0)
-        b = ManagedObjectName('a', 0)
+        a = ManagedObjectName("a", 0)
+        b = ManagedObjectName("a", 0)
         self.assertFalse(a != b)
         self.assertFalse(b != a)
 
@@ -89,8 +89,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the not equal operator returns True when comparing two
         ManagedObjectName objects with different names.
         """
-        a = ManagedObjectName('a', 0)
-        b = ManagedObjectName('b', 0)
+        a = ManagedObjectName("a", 0)
+        b = ManagedObjectName("b", 0)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
@@ -99,8 +99,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the not equal operator returns True when comparing two
         ManagedObjectName objects with different indices.
         """
-        a = ManagedObjectName('a', 0)
-        b = ManagedObjectName('a', 1)
+        a = ManagedObjectName("a", 0)
+        b = ManagedObjectName("a", 1)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
@@ -109,8 +109,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the not equal operator returns True when comparing two
         ManagedObjectName objects with different name types.
         """
-        a = ManagedObjectName('a', 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
-        b = ManagedObjectName('a', 0, enums.NameType.URI)
+        a = ManagedObjectName("a", 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
+        b = ManagedObjectName("a", 0, enums.NameType.URI)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
@@ -119,8 +119,8 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         Test that the not equal operator returns False when comparing a
         ManagedObjectName object with a different type of object.
         """
-        a = ManagedObjectName('a', 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
-        b = 'foo'
+        a = ManagedObjectName("a", 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
+        b = "foo"
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
@@ -128,5 +128,5 @@ class TestSqlTypesManagedObjectName(testtools.TestCase):
         """
         Test that __repr__ is implemented.
         """
-        a = ManagedObjectName('a', 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
+        a = ManagedObjectName("a", 0, enums.NameType.UNINTERPRETED_TEXT_STRING)
         repr(a)

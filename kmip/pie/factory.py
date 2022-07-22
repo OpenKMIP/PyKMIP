@@ -96,15 +96,15 @@ class ObjectFactory:
                 algorithm,
                 length,
                 value,
-                key_wrapping_data=self._build_key_wrapping_data(
-                    key_wrapping_data
-                )
+                key_wrapping_data=self._build_key_wrapping_data(key_wrapping_data),
             )
             if key.key_format_type != format_type:
                 raise TypeError(
                     "core key format type not compatible with Pie "
                     "SymmetricKey; expected {0}, observed {1}".format(
-                        key.key_format_type, format_type))
+                        key.key_format_type, format_type
+                    )
+                )
             else:
                 return key
         else:
@@ -113,9 +113,7 @@ class ObjectFactory:
                 length,
                 value,
                 format_type,
-                key_wrapping_data=self._build_key_wrapping_data(
-                    key_wrapping_data
-                )
+                key_wrapping_data=self._build_key_wrapping_data(key_wrapping_data),
             )
 
     def _build_pie_secret_data(self, secret):
@@ -143,7 +141,7 @@ class ObjectFactory:
             key_part_identifier=secret.key_part_identifier,
             split_key_threshold=secret.split_key_threshold,
             split_key_method=secret.split_key_method,
-            prime_field_size=secret.prime_field_size
+            prime_field_size=secret.prime_field_size,
         )
 
     def _build_core_key(self, key, cls):
@@ -156,17 +154,14 @@ class ObjectFactory:
         key_value = cobjects.KeyValue(key_material)
         key_wrapping_data = None
         if key.key_wrapping_data:
-            key_wrapping_data = cobjects.KeyWrappingData(
-                **key.key_wrapping_data
-            )
+            key_wrapping_data = cobjects.KeyWrappingData(**key.key_wrapping_data)
         key_block = cobjects.KeyBlock(
             key_format_type=misc.KeyFormatType(format_type),
             key_compression_type=None,
             key_value=key_value,
-            cryptographic_algorithm=attributes.CryptographicAlgorithm(
-                algorithm),
+            cryptographic_algorithm=attributes.CryptographicAlgorithm(algorithm),
             cryptographic_length=attributes.CryptographicLength(length),
-            key_wrapping_data=key_wrapping_data
+            key_wrapping_data=key_wrapping_data,
         )
 
         return cls(key_block)
@@ -186,7 +181,8 @@ class ObjectFactory:
             key_value=key_value,
             cryptographic_algorithm=None,
             cryptographic_length=None,
-            key_wrapping_data=None)
+            key_wrapping_data=None,
+        )
         data_type = secrets.SecretData.SecretDataType(secret_data_type)
 
         return secrets.SecretData(data_type, key_block)
@@ -196,9 +192,7 @@ class ObjectFactory:
         key_value = cobjects.KeyValue(key_material)
         key_wrapping_data = None
         if secret.key_wrapping_data:
-            key_wrapping_data = cobjects.KeyWrappingData(
-                **secret.key_wrapping_data
-            )
+            key_wrapping_data = cobjects.KeyWrappingData(**secret.key_wrapping_data)
         key_block = cobjects.KeyBlock(
             key_format_type=misc.KeyFormatType(secret.key_format_type),
             key_compression_type=None,
@@ -209,7 +203,7 @@ class ObjectFactory:
             cryptographic_length=attributes.CryptographicLength(
                 secret.cryptographic_length
             ),
-            key_wrapping_data=key_wrapping_data
+            key_wrapping_data=key_wrapping_data,
         )
         return secrets.SplitKey(
             split_key_parts=secret.split_key_parts,
@@ -217,7 +211,7 @@ class ObjectFactory:
             split_key_threshold=secret.split_key_threshold,
             split_key_method=secret.split_key_method,
             prime_field_size=secret.prime_field_size,
-            key_block=key_block
+            key_block=key_block,
         )
 
     def _build_core_opaque_object(self, obj):
@@ -230,19 +224,19 @@ class ObjectFactory:
 
     def _build_cryptographic_parameters(self, value):
         cryptographic_parameters = {
-            'block_cipher_mode': value.block_cipher_mode,
-            'padding_method': value.padding_method,
-            'hashing_algorithm': value.hashing_algorithm,
-            'key_role_type': value.key_role_type,
-            'digital_signature_algorithm': value.digital_signature_algorithm,
-            'cryptographic_algorithm': value.cryptographic_algorithm,
-            'random_iv': value.random_iv,
-            'iv_length': value.iv_length,
-            'tag_length': value.tag_length,
-            'fixed_field_length': value.fixed_field_length,
-            'invocation_field_length': value.invocation_field_length,
-            'counter_length': value.counter_length,
-            'initial_counter_value': value.initial_counter_value
+            "block_cipher_mode": value.block_cipher_mode,
+            "padding_method": value.padding_method,
+            "hashing_algorithm": value.hashing_algorithm,
+            "key_role_type": value.key_role_type,
+            "digital_signature_algorithm": value.digital_signature_algorithm,
+            "cryptographic_algorithm": value.cryptographic_algorithm,
+            "random_iv": value.random_iv,
+            "iv_length": value.iv_length,
+            "tag_length": value.tag_length,
+            "fixed_field_length": value.fixed_field_length,
+            "invocation_field_length": value.invocation_field_length,
+            "counter_length": value.counter_length,
+            "initial_counter_value": value.initial_counter_value,
         }
         return cryptographic_parameters
 
@@ -253,28 +247,26 @@ class ObjectFactory:
         encryption_key_information = {}
         if encryption_key_info:
             encryption_key_information = {
-                'unique_identifier': encryption_key_info.unique_identifier,
-                'cryptographic_parameters':
-                    self._build_cryptographic_parameters(
-                        encryption_key_info.cryptographic_parameters
-                    )
+                "unique_identifier": encryption_key_info.unique_identifier,
+                "cryptographic_parameters": self._build_cryptographic_parameters(
+                    encryption_key_info.cryptographic_parameters
+                ),
             }
         mac_signature_key_info = value.mac_signature_key_information
         mac_signature_key_information = {}
         if mac_signature_key_info:
             mac_signature_key_information = {
-                'unique_identifier': mac_signature_key_info.unique_identifier,
-                'cryptographic_parameters':
-                    self._build_cryptographic_parameters(
-                        mac_signature_key_info.cryptographic_parameters
-                    )
+                "unique_identifier": mac_signature_key_info.unique_identifier,
+                "cryptographic_parameters": self._build_cryptographic_parameters(
+                    mac_signature_key_info.cryptographic_parameters
+                ),
             }
         key_wrapping_data = {
-            'wrapping_method': value.wrapping_method,
-            'encryption_key_information': encryption_key_information,
-            'mac_signature_key_information': mac_signature_key_information,
-            'mac_signature': value.mac_signature,
-            'iv_counter_nonce': value.iv_counter_nonce,
-            'encoding_option': value.encoding_option
+            "wrapping_method": value.wrapping_method,
+            "encryption_key_information": encryption_key_information,
+            "mac_signature_key_information": mac_signature_key_information,
+            "mac_signature": value.mac_signature,
+            "iv_counter_nonce": value.iv_counter_nonce,
+            "encoding_option": value.encoding_option,
         }
         return key_wrapping_data

@@ -27,7 +27,6 @@ from kmip.services.server import monitor
 
 
 class TestMonitorUtilities(testtools.TestCase):
-
     def setUp(self):
         super(TestMonitorUtilities, self).setUp()
 
@@ -206,17 +205,18 @@ def side_effects(effects):
 def build_write_effect(path, file_name, content):
     def side_effect():
         write_file(path, file_name, content)
+
     return side_effect
 
 
 def build_delete_effect(path, file_name):
     def side_effect():
         os.remove(os.path.join(path, file_name))
+
     return side_effect
 
 
 class TestPolicyDirectoryMonitor(testtools.TestCase):
-
     def setUp(self):
         super(TestPolicyDirectoryMonitor, self).setUp()
 
@@ -228,21 +228,17 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         Test that the PolicyDirectoryMonitor can be instantiated without error.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
 
-        self.assertIsInstance(
-            m.halt_trigger,
-            multiprocessing.synchronize.Event
-        )
+        self.assertIsInstance(m.halt_trigger, multiprocessing.synchronize.Event)
         self.assertEqual(self.tmp_dir, m.policy_directory)
         self.assertEqual({}, m.file_timestamps)
         self.assertEqual({}, m.policy_cache)
         self.assertEqual([], m.policy_files)
         self.assertEqual({}, m.policy_map)
         self.assertEqual([], m.policy_store.keys())
-        self.assertEqual(['default', 'public'], m.reserved_policies)
+        self.assertEqual(["default", "public"], m.reserved_policies)
         self.assertIsInstance(m.logger, logging.Logger)
 
     def test_signal_handler(self):
@@ -251,8 +247,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         the monitor.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.stop = mock.MagicMock()
         handler = signal.getsignal(signal.SIGINT)
@@ -266,8 +261,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         Test that the PolicyDirectoryMonitor processes stop calls correctly.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
 
         self.assertFalse(m.halt_trigger.is_set())
@@ -282,8 +276,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         them properly.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
@@ -300,9 +293,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -316,35 +307,22 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         )
         m.logger.info.assert_any_call("Loading policy: policy_B")
         m.logger.info.assert_any_call("Loading policy: policy_C")
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(2, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
         self.assertEqual(
-            {
-                "policy_A": [],
-                "policy_B": [],
-                "policy_C": []
-            },
-            m.policy_cache
+            {"policy_A": [], "policy_B": [], "policy_C": []}, m.policy_cache
         )
 
         self.assertEqual(3, len(m.policy_store.keys()))
@@ -354,12 +332,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -368,12 +346,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -381,12 +359,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
 
     def test_run_with_policy_overloading(self):
@@ -395,8 +373,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         them properly, even when one policy overloads another existing policy.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
@@ -414,9 +391,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -439,32 +414,21 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         m.logger.debug.assert_any_call(
             "Policy 'policy_B' overwrites an existing policy."
         )
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(3, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
         path = os.path.join(self.tmp_dir, "policy_3.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
 
@@ -472,26 +436,20 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         self.assertEqual(0, len(cache))
         cache = m.policy_cache.get("policy_B")
         self.assertEqual(1, len(cache))
-        self.assertEqual(
-            os.path.join(self.tmp_dir, "policy_2.json"),
-            cache[0][1]
-        )
+        self.assertEqual(os.path.join(self.tmp_dir, "policy_2.json"), cache[0][1])
         self.assertEqual(
             {
-                'groups': {
-                    'group_B': {
+                "groups": {
+                    "group_B": {
                         enums.ObjectType.SYMMETRIC_KEY: {
-                            enums.Operation.GET:
-                                enums.Policy.ALLOW_ALL,
-                            enums.Operation.LOCATE:
-                                enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY:
-                                enums.Policy.ALLOW_ALL
+                            enums.Operation.GET: enums.Policy.ALLOW_ALL,
+                            enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            cache[0][2]
+            cache[0][2],
         )
 
         self.assertEqual(3, len(m.policy_store.keys()))
@@ -501,12 +459,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -515,12 +473,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.DISALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.DISALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -528,12 +486,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
 
     def test_run_with_policy_load_failure(self):
@@ -542,8 +500,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         them properly, even when one policy can't be loaded properly.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
@@ -560,9 +517,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -580,32 +535,19 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
             )
         )
         m.logger.debug.assert_called()
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(2, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
 
-        self.assertEqual(
-            {
-                "policy_A": []
-            },
-            m.policy_cache
-        )
+        self.assertEqual({"policy_A": []}, m.policy_cache)
 
         self.assertEqual(1, len(m.policy_store.keys()))
         self.assertEqual(
@@ -614,12 +556,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
 
     def test_run_with_policy_load_failure_and_fix(self):
@@ -629,23 +571,18 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         then fixed while tracking is active.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
         m.halt_trigger.is_set.side_effect = side_effects(
             [
                 False,
-                build_write_effect(
-                    self.tmp_dir,
-                    "policy_2.json",
-                    "invalid JSON"
-                ),
+                build_write_effect(self.tmp_dir, "policy_2.json", "invalid JSON"),
                 False,
                 build_write_effect(self.tmp_dir, "policy_2.json", POLICY_2),
                 False,
-                True
+                True,
             ]
         )
 
@@ -659,9 +596,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -686,35 +621,22 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         )
         m.logger.info.assert_any_call("Loading policy: policy_B")
         m.logger.info.assert_any_call("Loading policy: policy_C")
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(2, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
         self.assertEqual(
-            {
-                "policy_A": [],
-                "policy_B": [],
-                "policy_C": []
-            },
-            m.policy_cache
+            {"policy_A": [], "policy_B": [], "policy_C": []}, m.policy_cache
         )
 
         self.assertEqual(3, len(m.policy_store.keys()))
@@ -724,12 +646,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -738,12 +660,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -751,12 +673,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
 
     def test_run_with_policy_overloading_reserved(self):
@@ -765,8 +687,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         them properly, even when one policy can't be loaded properly.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
@@ -783,9 +704,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_3.json")
@@ -799,35 +718,21 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         )
         m.logger.info.assert_any_call("Loading policy: default")
         m.logger.warning.assert_any_call(
-            "Policy 'default' overwrites a reserved policy and will be "
-            "thrown out."
+            "Policy 'default' overwrites a reserved policy and will be " "thrown out."
         )
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(2, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_3.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
 
         path = os.path.join(self.tmp_dir, "policy_4.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
 
-        self.assertEqual(
-            {
-                "policy_B": []
-            },
-            m.policy_cache
-        )
+        self.assertEqual({"policy_B": []}, m.policy_cache)
 
         self.assertEqual(1, len(m.policy_store.keys()))
         self.assertEqual(
@@ -837,12 +742,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.DISALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.DISALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
 
     def test_run_with_edit_modifying_existing_file(self):
@@ -852,17 +757,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         tracking is active.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
         m.halt_trigger.is_set.side_effect = side_effects(
-            [
-                False,
-                build_write_effect(self.tmp_dir, "policy_2.json", POLICY_5),
-                True
-            ]
+            [False, build_write_effect(self.tmp_dir, "policy_2.json", POLICY_5), True]
         )
 
         write_file(self.tmp_dir, "policy_1.json", POLICY_1)
@@ -876,9 +776,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -900,35 +798,22 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         m.logger.info.assert_any_call("Loading policy: policy_B")
         m.logger.info.assert_any_call("Loading policy: policy_D")
         m.logger.info.assert_any_call("Removing policy: policy_C")
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(2, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
         self.assertEqual(path, m.policy_map.get("policy_D", None))
 
         self.assertEqual(
-            {
-                "policy_A": [],
-                "policy_B": [],
-                "policy_D": []
-            },
-            m.policy_cache
+            {"policy_A": [], "policy_B": [], "policy_D": []}, m.policy_cache
         )
 
         self.assertEqual(3, len(m.policy_store.keys()))
@@ -938,12 +823,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -952,12 +837,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -965,12 +850,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_D": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_D", None)
+            m.policy_store.get("policy_D", None),
         )
 
     def test_run_with_edit_adding_to_existing_file(self):
@@ -980,17 +865,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         tracking is active.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
         m.halt_trigger.is_set.side_effect = side_effects(
-            [
-                False,
-                build_write_effect(self.tmp_dir, "policy_1.json", POLICY_6),
-                True
-            ]
+            [False, build_write_effect(self.tmp_dir, "policy_1.json", POLICY_6), True]
         )
 
         write_file(self.tmp_dir, "policy_1.json", POLICY_1)
@@ -1004,9 +884,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -1027,37 +905,24 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         )
         m.logger.info.assert_any_call("Loading policy: policy_A")
         m.logger.info.assert_any_call("Loading policy: policy_E")
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(2, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
         self.assertEqual(path, m.policy_map.get("policy_E", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
         self.assertEqual(
-            {
-                "policy_A": [],
-                "policy_B": [],
-                "policy_C": [],
-                "policy_E": []
-            },
-            m.policy_cache
+            {"policy_A": [], "policy_B": [], "policy_C": [], "policy_E": []},
+            m.policy_cache,
         )
 
         self.assertEqual(4, len(m.policy_store.keys()))
@@ -1067,12 +932,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -1081,12 +946,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -1094,12 +959,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
         self.assertEqual(
             {
@@ -1108,12 +973,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.CHECK: enums.Policy.ALLOW_OWNER,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_E", None)
+            m.policy_store.get("policy_E", None),
         )
 
     def test_run_with_edit_deleting_from_existing_file(self):
@@ -1123,17 +988,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         while tracking is active.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
         m.halt_trigger.is_set.side_effect = side_effects(
-            [
-                False,
-                build_write_effect(self.tmp_dir, "policy_1.json", POLICY_1),
-                True
-            ]
+            [False, build_write_effect(self.tmp_dir, "policy_1.json", POLICY_1), True]
         )
 
         write_file(self.tmp_dir, "policy_1.json", POLICY_6)
@@ -1147,9 +1007,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -1171,35 +1029,22 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         )
         m.logger.info.assert_any_call("Loading policy: policy_A")
         m.logger.info.assert_any_call("Removing policy: policy_E")
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(2, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
         self.assertEqual(
-            {
-                "policy_A": [],
-                "policy_B": [],
-                "policy_C": []
-            },
-            m.policy_cache
+            {"policy_A": [], "policy_B": [], "policy_C": []}, m.policy_cache
         )
 
         self.assertEqual(3, len(m.policy_store.keys()))
@@ -1209,12 +1054,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -1223,12 +1068,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -1236,12 +1081,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
 
     def test_run_with_deleting_existing_file(self):
@@ -1251,17 +1096,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         tracking is active.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
         m.halt_trigger.is_set.side_effect = side_effects(
-            [
-                False,
-                build_delete_effect(self.tmp_dir, "policy_1.json"),
-                True
-            ]
+            [False, build_delete_effect(self.tmp_dir, "policy_1.json"), True]
         )
 
         write_file(self.tmp_dir, "policy_1.json", POLICY_6)
@@ -1275,9 +1115,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -1299,28 +1137,17 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         )
         m.logger.info.assert_any_call("Removing policy: policy_A")
         m.logger.info.assert_any_call("Removing policy: policy_E")
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(1, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(2, len(m.policy_map.keys()))
         self.assertEqual(path, m.policy_map.get("policy_B", None))
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
-        self.assertEqual(
-            {
-                "policy_B": [],
-                "policy_C": []
-            },
-            m.policy_cache
-        )
+        self.assertEqual({"policy_B": [], "policy_C": []}, m.policy_cache)
 
         self.assertEqual(2, len(m.policy_store.keys()))
         self.assertEqual(
@@ -1330,12 +1157,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -1343,12 +1170,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
 
     def test_run_with_adding_new_file(self):
@@ -1358,17 +1185,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         active.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
         m.halt_trigger.is_set.side_effect = side_effects(
-            [
-                False,
-                build_write_effect(self.tmp_dir, "policy_2.json", POLICY_2),
-                True
-            ]
+            [False, build_write_effect(self.tmp_dir, "policy_2.json", POLICY_2), True]
         )
 
         write_file(self.tmp_dir, "policy_1.json", POLICY_1)
@@ -1381,9 +1203,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -1398,35 +1218,22 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         m.logger.debug.assert_not_called()
         m.logger.info.assert_any_call("Loading policy: policy_B")
         m.logger.info.assert_any_call("Loading policy: policy_C")
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(2, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
         self.assertEqual(
-            {
-                "policy_A": [],
-                "policy_B": [],
-                "policy_C": []
-            },
-            m.policy_cache
+            {"policy_A": [], "policy_B": [], "policy_C": []}, m.policy_cache
         )
 
         self.assertEqual(3, len(m.policy_store.keys()))
@@ -1436,12 +1243,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -1450,12 +1257,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -1463,12 +1270,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
 
     def test_run_with_adding_new_file_overloading(self):
@@ -1478,8 +1285,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         existing policies while tracking is active.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
@@ -1488,7 +1294,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                 False,
                 build_write_effect(self.tmp_dir, "policy_3.json", POLICY_2),
                 build_write_effect(self.tmp_dir, "policy_4.json", POLICY_3),
-                True
+                True,
             ]
         )
 
@@ -1503,9 +1309,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -1543,107 +1347,76 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
             "Policy 'policy_B' overwrites an existing policy."
         )
 
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(4, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
 
         path = os.path.join(self.tmp_dir, "policy_3.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
         path = os.path.join(self.tmp_dir, "policy_4.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
 
         self.assertEqual([], m.policy_cache.get("policy_A"))
         cache = m.policy_cache.get("policy_B")
         self.assertEqual(2, len(cache))
-        self.assertEqual(
-            os.path.join(self.tmp_dir, "policy_2.json"),
-            cache[0][1]
-        )
+        self.assertEqual(os.path.join(self.tmp_dir, "policy_2.json"), cache[0][1])
         self.assertEqual(
             {
-                'groups': {
-                    'group_B': {
+                "groups": {
+                    "group_B": {
                         enums.ObjectType.SYMMETRIC_KEY: {
-                            enums.Operation.GET:
-                                enums.Policy.ALLOW_ALL,
-                            enums.Operation.LOCATE:
-                                enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY:
-                                enums.Policy.ALLOW_ALL
+                            enums.Operation.GET: enums.Policy.ALLOW_ALL,
+                            enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            cache[0][2]
+            cache[0][2],
         )
-        self.assertEqual(
-            os.path.join(self.tmp_dir, "policy_3.json"),
-            cache[1][1]
-        )
+        self.assertEqual(os.path.join(self.tmp_dir, "policy_3.json"), cache[1][1])
         self.assertEqual(
             {
-                'groups': {
-                    'group_B': {
+                "groups": {
+                    "group_B": {
                         enums.ObjectType.SYMMETRIC_KEY: {
-                            enums.Operation.GET:
-                                enums.Policy.ALLOW_ALL,
-                            enums.Operation.LOCATE:
-                                enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY:
-                                enums.Policy.ALLOW_ALL
+                            enums.Operation.GET: enums.Policy.ALLOW_ALL,
+                            enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            cache[1][2]
+            cache[1][2],
         )
         cache = m.policy_cache.get("policy_C")
         self.assertEqual(1, len(cache))
-        self.assertEqual(
-            os.path.join(self.tmp_dir, "policy_2.json"),
-            cache[0][1]
-        )
+        self.assertEqual(os.path.join(self.tmp_dir, "policy_2.json"), cache[0][1])
         self.assertEqual(
             {
-                'groups': {
-                    'group_C': {
+                "groups": {
+                    "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
-                            enums.Operation.GET:
-                                enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY:
-                                enums.Policy.DISALLOW_ALL
+                            enums.Operation.GET: enums.Policy.ALLOW_ALL,
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            cache[0][2]
+            cache[0][2],
         )
 
         self.assertEqual(3, len(m.policy_store.keys()))
@@ -1653,12 +1426,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -1667,12 +1440,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.DISALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.DISALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -1680,12 +1453,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
 
     def test_run_with_adding_new_file_editing_overloading(self):
@@ -1695,8 +1468,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         existing policies while tracking is active.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
@@ -1707,7 +1479,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                 build_write_effect(self.tmp_dir, "policy_4.json", POLICY_3),
                 build_delete_effect(self.tmp_dir, "policy_2.json"),
                 build_write_effect(self.tmp_dir, "policy_4.json", POLICY_7),
-                True
+                True,
             ]
         )
 
@@ -1722,9 +1494,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         m.run()
 
-        m.logger.info.assert_any_call(
-            "Starting up the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Starting up the operation policy file monitor.")
         m.logger.info.assert_any_call(
             "Loading policies for file: {}".format(
                 os.path.join(self.tmp_dir, "policy_1.json")
@@ -1771,33 +1541,22 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
             )
         )
         m.logger.info.assert_any_call("Loading policy: policy_D")
-        m.logger.info.assert_any_call(
-            "Stopping the operation policy file monitor."
-        )
+        m.logger.info.assert_any_call("Stopping the operation policy file monitor.")
 
         self.assertEqual(3, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_3.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
         path = os.path.join(self.tmp_dir, "policy_4.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_D", None))
 
@@ -1812,12 +1571,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -1826,12 +1585,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -1839,12 +1598,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
         self.assertEqual(
             {
@@ -1853,12 +1612,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.DISALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.DISALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_D", None)
+            m.policy_store.get("policy_D", None),
         )
 
     def test_run_without_live_monitoring(self):
@@ -1867,9 +1626,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         them properly even when operating in a one-shot scanning mode.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict(),
-            live_monitoring=False
+            self.tmp_dir, multiprocessing.Manager().dict(), live_monitoring=False
         )
         m.logger = mock.MagicMock(logging.Logger)
         m.halt_trigger = mock.MagicMock(multiprocessing.synchronize.Event)
@@ -1902,29 +1659,18 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
 
         self.assertEqual(2, len(m.policy_files))
         path = os.path.join(self.tmp_dir, "policy_1.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_A", None))
 
         path = os.path.join(self.tmp_dir, "policy_2.json")
-        self.assertEqual(
-            os.path.getmtime(path),
-            m.file_timestamps.get(path, None)
-        )
+        self.assertEqual(os.path.getmtime(path), m.file_timestamps.get(path, None))
         self.assertIn(path, m.policy_files)
         self.assertEqual(path, m.policy_map.get("policy_B", None))
         self.assertEqual(path, m.policy_map.get("policy_C", None))
 
         self.assertEqual(
-            {
-                "policy_A": [],
-                "policy_B": [],
-                "policy_C": []
-            },
-            m.policy_cache
+            {"policy_A": [], "policy_B": [], "policy_C": []}, m.policy_cache
         )
 
         self.assertEqual(3, len(m.policy_store.keys()))
@@ -1934,12 +1680,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_A": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_A", None)
+            m.policy_store.get("policy_A", None),
         )
         self.assertEqual(
             {
@@ -1948,12 +1694,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
                             enums.Operation.LOCATE: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.ALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_B", None)
+            m.policy_store.get("policy_B", None),
         )
         self.assertEqual(
             {
@@ -1961,12 +1707,12 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                     "group_C": {
                         enums.ObjectType.SYMMETRIC_KEY: {
                             enums.Operation.GET: enums.Policy.ALLOW_ALL,
-                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL
+                            enums.Operation.DESTROY: enums.Policy.DISALLOW_ALL,
                         }
                     }
                 }
             },
-            m.policy_store.get("policy_C", None)
+            m.policy_store.get("policy_C", None),
         )
 
     def test_initialize_tracking_structures(self):
@@ -1975,8 +1721,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         various tracking structures used for file monitoring.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
 
         m.file_timestamps["a"] = 1234
@@ -2001,71 +1746,35 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         a policy file in its tracking structures.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
 
         m.policy_cache = {
             "policy_A": [
-                (
-                    1480043060.870089,
-                    os.path.join(self.tmp_dir, "policy_1.json"),
-                    {}
-                ),
-                (
-                    1480043062.02171,
-                    os.path.join(self.tmp_dir, "policy_2.json"),
-                    {}
-                ),
-                (
-                    1480043062.645776,
-                    os.path.join(self.tmp_dir, "policy_1.json"),
-                    {}
-                ),
-                (
-                    1480043063.453713,
-                    os.path.join(self.tmp_dir, "policy_3.json"),
-                    {}
-                )
+                (1480043060.870089, os.path.join(self.tmp_dir, "policy_1.json"), {}),
+                (1480043062.02171, os.path.join(self.tmp_dir, "policy_2.json"), {}),
+                (1480043062.645776, os.path.join(self.tmp_dir, "policy_1.json"), {}),
+                (1480043063.453713, os.path.join(self.tmp_dir, "policy_3.json"), {}),
             ],
             "policy_B": [
-                (
-                    1480043123.65311,
-                    os.path.join(self.tmp_dir, "policy_1.json"),
-                    {}
-                )
-            ]
+                (1480043123.65311, os.path.join(self.tmp_dir, "policy_1.json"), {})
+            ],
         }
 
         m.disassociate_policy_and_file(
-            "policy_A",
-            os.path.join(self.tmp_dir, "policy_1.json")
+            "policy_A", os.path.join(self.tmp_dir, "policy_1.json")
         )
 
         self.assertEqual(
             [
-                (
-                    1480043062.02171,
-                    os.path.join(self.tmp_dir, "policy_2.json"),
-                    {}
-                ),
-                (
-                    1480043063.453713,
-                    os.path.join(self.tmp_dir, "policy_3.json"),
-                    {}
-                )
+                (1480043062.02171, os.path.join(self.tmp_dir, "policy_2.json"), {}),
+                (1480043063.453713, os.path.join(self.tmp_dir, "policy_3.json"), {}),
             ],
-            m.policy_cache.get("policy_A", [])
+            m.policy_cache.get("policy_A", []),
         )
         self.assertEqual(
-            [
-                (
-                    1480043123.65311,
-                    os.path.join(self.tmp_dir, "policy_1.json"),
-                    {}
-                )
-            ],
-            m.policy_cache.get("policy_B", [])
+            [(1480043123.65311, os.path.join(self.tmp_dir, "policy_1.json"), {})],
+            m.policy_cache.get("policy_B", []),
         )
 
     def test_restore_or_delete_policy_restore(self):
@@ -2074,8 +1783,7 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         upon a policy file change.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
 
@@ -2084,18 +1792,18 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                 (
                     1480043060.870089,
                     os.path.join(self.tmp_dir, "policy_1.json"),
-                    {'{"policy_1"}'}
+                    {'{"policy_1"}'},
                 ),
                 (
                     1480043062.02171,
                     os.path.join(self.tmp_dir, "policy_2.json"),
-                    {'{"policy_2"}'}
+                    {'{"policy_2"}'},
                 ),
                 (
                     1480043063.453713,
                     os.path.join(self.tmp_dir, "policy_3.json"),
-                    {'{"policy_3"}'}
-                )
+                    {'{"policy_3"}'},
+                ),
             ]
         }
         m.policy_store["policy_A"] = {'{"policy_4"}'}
@@ -2109,23 +1817,20 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
                 (
                     1480043060.870089,
                     os.path.join(self.tmp_dir, "policy_1.json"),
-                    {'{"policy_1"}'}
+                    {'{"policy_1"}'},
                 ),
                 (
                     1480043062.02171,
                     os.path.join(self.tmp_dir, "policy_2.json"),
-                    {'{"policy_2"}'}
-                )
+                    {'{"policy_2"}'},
+                ),
             ],
-            m.policy_cache.get("policy_A", [])
+            m.policy_cache.get("policy_A", []),
         )
-        self.assertEqual(
-            {'{"policy_3"}'},
-            m.policy_store.get("policy_A", {})
-        )
+        self.assertEqual({'{"policy_3"}'}, m.policy_store.get("policy_A", {}))
         self.assertEqual(
             os.path.join(self.tmp_dir, "policy_3.json"),
-            m.policy_map.get("policy_A", None)
+            m.policy_map.get("policy_A", None),
         )
 
     def test_restore_or_delete_policy_delete(self):
@@ -2134,14 +1839,11 @@ class TestPolicyDirectoryMonitor(testtools.TestCase):
         upon a policy file change.
         """
         m = monitor.PolicyDirectoryMonitor(
-            self.tmp_dir,
-            multiprocessing.Manager().dict()
+            self.tmp_dir, multiprocessing.Manager().dict()
         )
         m.logger = mock.MagicMock(logging.Logger)
 
-        m.policy_cache = {
-            "policy_A": []
-        }
+        m.policy_cache = {"policy_A": []}
         m.policy_store["policy_A"] = {'{"policy_4"}'}
         m.policy_map["policy_A"] = os.path.join(self.tmp_dir, "policy_4.json")
 

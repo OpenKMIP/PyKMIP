@@ -51,23 +51,23 @@ class TestGetRequestPayload(testtools.TestCase):
         #         Encoding Option - No Encoding
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\xC8'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
-            b'\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x41\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x47\x01\x00\x00\x00\x70'
-            b'\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x36\x01\x00\x00\x00\x48'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37'
-            b'\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32'
-            b'\x65\x39\x38\x61\x00\x00\x00\x00'
-            b'\x42\x00\x2B\x01\x00\x00\x00\x10'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\xC8"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
+            b"\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x41\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x47\x01\x00\x00\x00\x70"
+            b"\x42\x00\x9E\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x36\x01\x00\x00\x00\x48"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x30\x30\x31\x38\x32\x64\x35\x2D\x37\x32\x62\x38\x2D\x34\x37"
+            b"\x61\x61\x2D\x38\x33\x38\x33\x2D\x34\x64\x39\x37\x64\x35\x31\x32"
+            b"\x65\x39\x38\x61\x00\x00\x00\x00"
+            b"\x42\x00\x2B\x01\x00\x00\x00\x10"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\xA3\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 3.1.3.
@@ -77,16 +77,14 @@ class TestGetRequestPayload(testtools.TestCase):
         #     Unique Identifier - 49a1ca88-6bea-4fb2-b450-7e58802c3038
 
         self.partial_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestGetRequestPayload, self).tearDown()
@@ -107,31 +105,28 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that a Get request payload can be constructed with valid values.
         """
         payload = payloads.GetRequestPayload(
-            unique_identifier='00000000-2222-4444-6666-888888888888',
+            unique_identifier="00000000-2222-4444-6666-888888888888",
             key_format_type=enums.KeyFormatType.RAW,
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT
-            )
+            ),
         )
 
         self.assertEqual(
-            '00000000-2222-4444-6666-888888888888',
-            payload.unique_identifier
+            "00000000-2222-4444-6666-888888888888", payload.unique_identifier
         )
         self.assertEqual(enums.KeyFormatType.RAW, payload.key_format_type)
         self.assertEqual(
             enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
-            payload.key_compression_type
+            payload.key_compression_type,
         )
         self.assertIsInstance(
-            payload.key_wrapping_specification,
-            objects.KeyWrappingSpecification
+            payload.key_wrapping_specification, objects.KeyWrappingSpecification
         )
         self.assertEqual(
             enums.WrappingMethod.ENCRYPT,
-            payload.key_wrapping_specification.wrapping_method
+            payload.key_wrapping_specification.wrapping_method,
         )
 
     def test_invalid_unique_identifier(self):
@@ -139,7 +134,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a Get request payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -147,12 +142,9 @@ class TestGetRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (payloads.GetRequestPayload(), 'unique_identifier', 0)
+        args = (payloads.GetRequestPayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_key_format_type(self):
@@ -160,7 +152,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the key format type of a Get request payload.
         """
-        kwargs = {'key_format_type': 'invalid'}
+        kwargs = {"key_format_type": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Key format type must be a KeyFormatType enumeration.",
@@ -168,7 +160,7 @@ class TestGetRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (payloads.GetRequestPayload(), 'key_format_type', 'invalid')
+        args = (payloads.GetRequestPayload(), "key_format_type", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Key format type must be a KeyFormatType enumeration.",
@@ -181,7 +173,7 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the key compression type of a Get request payload.
         """
-        kwargs = {'key_compression_type': 'invalid'}
+        kwargs = {"key_compression_type": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Key compression type must be a KeyCompressionType enumeration.",
@@ -189,11 +181,7 @@ class TestGetRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.GetRequestPayload(),
-            'key_compression_type',
-            'invalid'
-        )
+        args = (payloads.GetRequestPayload(), "key_compression_type", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Key compression type must be a KeyCompressionType enumeration.",
@@ -206,24 +194,18 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the key wrapping specification of a Get request payload.
         """
-        kwargs = {'key_wrapping_specification': 'invalid'}
+        kwargs = {"key_wrapping_specification": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "Key wrapping specification must be a KeyWrappingSpecification "
-            "struct.",
+            "Key wrapping specification must be a KeyWrappingSpecification " "struct.",
             payloads.GetRequestPayload,
             **kwargs
         )
 
-        args = (
-            payloads.GetRequestPayload(),
-            'key_wrapping_specification',
-            'invalid'
-        )
+        args = (payloads.GetRequestPayload(), "key_wrapping_specification", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "Key wrapping specification must be a KeyWrappingSpecification "
-            "struct.",
+            "Key wrapping specification must be a KeyWrappingSpecification " "struct.",
             setattr,
             *args
         )
@@ -242,44 +224,31 @@ class TestGetRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            payload.unique_identifier
+            "49a1ca88-6bea-4fb2-b450-7e58802c3038", payload.unique_identifier
         )
         self.assertEqual(enums.KeyFormatType.RAW, payload.key_format_type)
         self.assertEqual(
             enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
-            payload.key_compression_type
+            payload.key_compression_type,
         )
         self.assertIsInstance(
-            payload.key_wrapping_specification,
-            objects.KeyWrappingSpecification
+            payload.key_wrapping_specification, objects.KeyWrappingSpecification
         )
         k = payload.key_wrapping_specification
-        self.assertEqual(
-            enums.WrappingMethod.ENCRYPT,
-            k.wrapping_method
-        )
+        self.assertEqual(enums.WrappingMethod.ENCRYPT, k.wrapping_method)
         self.assertIsInstance(
-            k.encryption_key_information,
-            objects.EncryptionKeyInformation
+            k.encryption_key_information, objects.EncryptionKeyInformation
         )
         e = k.encryption_key_information
-        self.assertEqual(
-            '100182d5-72b8-47aa-8383-4d97d512e98a',
-            e.unique_identifier
-        )
+        self.assertEqual("100182d5-72b8-47aa-8383-4d97d512e98a", e.unique_identifier)
         self.assertIsInstance(
-            e.cryptographic_parameters,
-            attributes.CryptographicParameters
+            e.cryptographic_parameters, attributes.CryptographicParameters
         )
         self.assertEqual(
             enums.BlockCipherMode.NIST_KEY_WRAP,
-            e.cryptographic_parameters.block_cipher_mode
+            e.cryptographic_parameters.block_cipher_mode,
         )
-        self.assertEqual(
-            k.encoding_option,
-            enums.EncodingOption.NO_ENCODING
-        )
+        self.assertEqual(k.encoding_option, enums.EncodingOption.NO_ENCODING)
 
     def test_read_partial(self):
         """
@@ -296,8 +265,7 @@ class TestGetRequestPayload(testtools.TestCase):
         payload.read(self.partial_encoding)
 
         self.assertEqual(
-            '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            payload.unique_identifier
+            "49a1ca88-6bea-4fb2-b450-7e58802c3038", payload.unique_identifier
         )
         self.assertEqual(None, payload.key_format_type)
         self.assertEqual(None, payload.key_compression_type)
@@ -327,21 +295,19 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that a GetRequestPayload struct can be written to a data stream.
         """
         payload = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             key_format_type=enums.KeyFormatType.RAW,
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
-            )
+                encoding_option=enums.EncodingOption.NO_ENCODING,
+            ),
         )
         stream = utils.BytearrayStream()
 
@@ -356,7 +322,7 @@ class TestGetRequestPayload(testtools.TestCase):
         to a data stream.
         """
         payload = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         stream = utils.BytearrayStream()
 
@@ -390,38 +356,34 @@ class TestGetRequestPayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             key_format_type=enums.KeyFormatType.RAW,
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
-            )
+                encoding_option=enums.EncodingOption.NO_ENCODING,
+            ),
         )
         b = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             key_format_type=enums.KeyFormatType.RAW,
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
-            )
+                encoding_option=enums.EncodingOption.NO_ENCODING,
+            ),
         )
 
         self.assertTrue(a == b)
@@ -433,10 +395,10 @@ class TestGetRequestPayload(testtools.TestCase):
         GetRequestPayload structs with different unique identifiers.
         """
         a = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c303f'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c303f"
         )
 
         self.assertFalse(a == b)
@@ -447,12 +409,8 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetRequestPayload structs with different key format types.
         """
-        a = payloads.GetRequestPayload(
-            key_format_type=enums.KeyFormatType.RAW
-        )
-        b = payloads.GetRequestPayload(
-            key_format_type=enums.KeyFormatType.OPAQUE
-        )
+        a = payloads.GetRequestPayload(key_format_type=enums.KeyFormatType.RAW)
+        b = payloads.GetRequestPayload(key_format_type=enums.KeyFormatType.OPAQUE)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -463,12 +421,10 @@ class TestGetRequestPayload(testtools.TestCase):
         GetRequestPayload structs with different key compression types.
         """
         a = payloads.GetRequestPayload(
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED
         )
         b = payloads.GetRequestPayload(
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_X9_62_HYBRID
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_X9_62_HYBRID
         )
 
         self.assertFalse(a == b)
@@ -483,26 +439,24 @@ class TestGetRequestPayload(testtools.TestCase):
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT_THEN_MAC_SIGN,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-ffff-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-ffff-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
+                encoding_option=enums.EncodingOption.NO_ENCODING,
             )
         )
         b = payloads.GetRequestPayload(
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
+                encoding_option=enums.EncodingOption.NO_ENCODING,
             )
         )
 
@@ -515,7 +469,7 @@ class TestGetRequestPayload(testtools.TestCase):
         GetRequestPayload structs with different types.
         """
         a = payloads.GetRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -532,38 +486,34 @@ class TestGetRequestPayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             key_format_type=enums.KeyFormatType.RAW,
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
-            )
+                encoding_option=enums.EncodingOption.NO_ENCODING,
+            ),
         )
         b = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             key_format_type=enums.KeyFormatType.RAW,
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
-            )
+                encoding_option=enums.EncodingOption.NO_ENCODING,
+            ),
         )
 
         self.assertFalse(a != b)
@@ -575,10 +525,10 @@ class TestGetRequestPayload(testtools.TestCase):
         GetRequestPayload structs with different unique identifiers.
         """
         a = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c303f'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c303f"
         )
 
         self.assertTrue(a != b)
@@ -589,12 +539,8 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetRequestPayload structs with different key format types.
         """
-        a = payloads.GetRequestPayload(
-            key_format_type=enums.KeyFormatType.RAW
-        )
-        b = payloads.GetRequestPayload(
-            key_format_type=enums.KeyFormatType.OPAQUE
-        )
+        a = payloads.GetRequestPayload(key_format_type=enums.KeyFormatType.RAW)
+        b = payloads.GetRequestPayload(key_format_type=enums.KeyFormatType.OPAQUE)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -605,12 +551,10 @@ class TestGetRequestPayload(testtools.TestCase):
         GetRequestPayload structs with different key compression types.
         """
         a = payloads.GetRequestPayload(
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED
         )
         b = payloads.GetRequestPayload(
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_X9_62_HYBRID
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_X9_62_HYBRID
         )
 
         self.assertTrue(a != b)
@@ -625,26 +569,24 @@ class TestGetRequestPayload(testtools.TestCase):
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT_THEN_MAC_SIGN,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-ffff-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-ffff-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
+                encoding_option=enums.EncodingOption.NO_ENCODING,
             )
         )
         b = payloads.GetRequestPayload(
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
+                encoding_option=enums.EncodingOption.NO_ENCODING,
             )
         )
 
@@ -657,7 +599,7 @@ class TestGetRequestPayload(testtools.TestCase):
         GetRequestPayload structs with different types.
         """
         a = payloads.GetRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -667,21 +609,19 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that repr can be applied to a GetRequestPayload struct.
         """
         payload = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             key_format_type=enums.KeyFormatType.RAW,
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
-            )
+                encoding_option=enums.EncodingOption.NO_ENCODING,
+            ),
         )
 
         expected = (
@@ -722,40 +662,38 @@ class TestGetRequestPayload(testtools.TestCase):
         Test that str can be applied to a GetRequestPayload struct.
         """
         payload = payloads.GetRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             key_format_type=enums.KeyFormatType.RAW,
-            key_compression_type=enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
+            key_compression_type=enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
             key_wrapping_specification=objects.KeyWrappingSpecification(
                 wrapping_method=enums.WrappingMethod.ENCRYPT,
                 encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
+                    unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                    cryptographic_parameters=attributes.CryptographicParameters(
                         block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+                    ),
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
-            )
+                encoding_option=enums.EncodingOption.NO_ENCODING,
+            ),
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            'key_format_type': enums.KeyFormatType.RAW,
-            'key_compression_type': enums.KeyCompressionType.
-            EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
-            'key_wrapping_specification': objects.KeyWrappingSpecification(
-                wrapping_method=enums.WrappingMethod.ENCRYPT,
-                encryption_key_information=objects.EncryptionKeyInformation(
-                    unique_identifier='100182d5-72b8-47aa-8383-4d97d512e98a',
-                    cryptographic_parameters=attributes.
-                    CryptographicParameters(
-                        block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
-                    )
+        expected = str(
+            {
+                "unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038",
+                "key_format_type": enums.KeyFormatType.RAW,
+                "key_compression_type": enums.KeyCompressionType.EC_PUBLIC_KEY_TYPE_UNCOMPRESSED,
+                "key_wrapping_specification": objects.KeyWrappingSpecification(
+                    wrapping_method=enums.WrappingMethod.ENCRYPT,
+                    encryption_key_information=objects.EncryptionKeyInformation(
+                        unique_identifier="100182d5-72b8-47aa-8383-4d97d512e98a",
+                        cryptographic_parameters=attributes.CryptographicParameters(
+                            block_cipher_mode=enums.BlockCipherMode.NIST_KEY_WRAP
+                        ),
+                    ),
+                    encoding_option=enums.EncodingOption.NO_ENCODING,
                 ),
-                encoding_option=enums.EncodingOption.NO_ENCODING
-            )
-        })
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)
@@ -785,59 +723,59 @@ class TestGetResponsePayload(testtools.TestCase):
         #             Cryptographic Length - 168
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\xA8'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
-            b'\x42\x00\x8F\x01\x00\x00\x00\x60'
-            b'\x42\x00\x40\x01\x00\x00\x00\x58'
-            b'\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x45\x01\x00\x00\x00\x20'
-            b'\x42\x00\x43\x08\x00\x00\x00\x18'
-            b'\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\xA8\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\xA8"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
+            b"\x42\x00\x8F\x01\x00\x00\x00\x60"
+            b"\x42\x00\x40\x01\x00\x00\x00\x58"
+            b"\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x45\x01\x00\x00\x00\x20"
+            b"\x42\x00\x43\x08\x00\x00\x00\x18"
+            b"\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\xA8\x00\x00\x00\x00"
         )
 
         self.partial_encoding_missing_object_type = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\xA0'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
-            b'\x42\x00\x8F\x01\x00\x00\x00\x60'
-            b'\x42\x00\x40\x01\x00\x00\x00\x58'
-            b'\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x45\x01\x00\x00\x00\x20'
-            b'\x42\x00\x43\x08\x00\x00\x00\x18'
-            b'\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\xA8\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\xA0"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
+            b"\x42\x00\x8F\x01\x00\x00\x00\x60"
+            b"\x42\x00\x40\x01\x00\x00\x00\x58"
+            b"\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x45\x01\x00\x00\x00\x20"
+            b"\x42\x00\x43\x08\x00\x00\x00\x18"
+            b"\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\xA8\x00\x00\x00\x00"
         )
         self.partial_encoding_missing_unique_id = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x78'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x8F\x01\x00\x00\x00\x60'
-            b'\x42\x00\x40\x01\x00\x00\x00\x58'
-            b'\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x45\x01\x00\x00\x00\x20'
-            b'\x42\x00\x43\x08\x00\x00\x00\x18'
-            b'\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\xA8\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x78"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x8F\x01\x00\x00\x00\x60"
+            b"\x42\x00\x40\x01\x00\x00\x00\x58"
+            b"\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x45\x01\x00\x00\x00\x20"
+            b"\x42\x00\x43\x08\x00\x00\x00\x18"
+            b"\x73\x67\x57\x80\x51\x01\x2A\x6D\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\xA8\x00\x00\x00\x00"
         )
         self.partial_encoding_missing_secret = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x40'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66'
-            b'\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63'
-            b'\x33\x30\x33\x38\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x40"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x34\x39\x61\x31\x63\x61\x38\x38\x2D\x36\x62\x65\x61\x2D\x34\x66"
+            b"\x62\x32\x2D\x62\x34\x35\x30\x2D\x37\x65\x35\x38\x38\x30\x32\x63"
+            b"\x33\x30\x33\x38\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -861,84 +799,69 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier='11111111-3333-5555-7777-999999999999',
+            unique_identifier="11111111-3333-5555-7777-999999999999",
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
-                    key_format_type=misc.KeyFormatType(
-                        enums.KeyFormatType.RAW
-                    ),
+                    key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
                     key_value=objects.KeyValue(
                         key_material=objects.KeyMaterial(
-                            b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                            b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                            b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                            b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
                         )
                     ),
                     cryptographic_algorithm=attributes.CryptographicAlgorithm(
                         enums.CryptographicAlgorithm.TRIPLE_DES
                     ),
-                    cryptographic_length=attributes.CryptographicLength(168)
+                    cryptographic_length=attributes.CryptographicLength(168),
                 )
-            )
+            ),
         )
 
+        self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, payload.object_type)
         self.assertEqual(
-            enums.ObjectType.SYMMETRIC_KEY,
-            payload.object_type
-        )
-        self.assertEqual(
-            '11111111-3333-5555-7777-999999999999',
-            payload.unique_identifier
+            "11111111-3333-5555-7777-999999999999", payload.unique_identifier
         )
         self.assertIsInstance(payload.secret, secrets.SymmetricKey)
         self.assertIsInstance(payload.secret.key_block, objects.KeyBlock)
         self.assertIsInstance(
-            payload.secret.key_block.key_format_type,
-            misc.KeyFormatType
+            payload.secret.key_block.key_format_type, misc.KeyFormatType
         )
         self.assertEqual(
-            enums.KeyFormatType.RAW,
-            payload.secret.key_block.key_format_type.value
+            enums.KeyFormatType.RAW, payload.secret.key_block.key_format_type.value
         )
+        self.assertIsInstance(payload.secret.key_block.key_value, objects.KeyValue)
         self.assertIsInstance(
-            payload.secret.key_block.key_value,
-            objects.KeyValue
-        )
-        self.assertIsInstance(
-            payload.secret.key_block.key_value.key_material,
-            objects.KeyMaterial
+            payload.secret.key_block.key_value.key_material, objects.KeyMaterial
         )
         self.assertEqual(
             (
-                b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
             ),
-            payload.secret.key_block.key_value.key_material.value
+            payload.secret.key_block.key_value.key_material.value,
         )
         self.assertIsInstance(
             payload.secret.key_block.cryptographic_algorithm,
-            attributes.CryptographicAlgorithm
+            attributes.CryptographicAlgorithm,
         )
         self.assertEqual(
             enums.CryptographicAlgorithm.TRIPLE_DES,
-            payload.secret.key_block.cryptographic_algorithm.value
+            payload.secret.key_block.cryptographic_algorithm.value,
         )
         self.assertIsInstance(
             payload.secret.key_block.cryptographic_length,
-            attributes.CryptographicLength
+            attributes.CryptographicLength,
         )
-        self.assertEqual(
-            168,
-            payload.secret.key_block.cryptographic_length.value
-        )
+        self.assertEqual(168, payload.secret.key_block.cryptographic_length.value)
 
     def test_invalid_object_type(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
         the object type of a GetResponsePayload struct.
         """
-        kwargs = {'object_type': 'invalid'}
+        kwargs = {"object_type": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Object type must be an ObjectType enumeration.",
@@ -946,12 +869,9 @@ class TestGetResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (payloads.GetResponsePayload(), 'object_type', 'invalid')
+        args = (payloads.GetResponsePayload(), "object_type", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Object type must be an ObjectType enumeration.",
-            setattr,
-            *args
+            TypeError, "Object type must be an ObjectType enumeration.", setattr, *args
         )
 
     def test_invalid_unique_identifier(self):
@@ -959,7 +879,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a GetResponsePayload struct.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -967,12 +887,9 @@ class TestGetResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (payloads.GetResponsePayload(), 'unique_identifier', 0)
+        args = (payloads.GetResponsePayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_secret(self):
@@ -980,7 +897,7 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the secret of a GetResponsePayload struct.
         """
-        kwargs = {'secret': 0}
+        kwargs = {"secret": 0}
         self.assertRaisesRegex(
             TypeError,
             "Secret must be one of the following structs: Certificate, "
@@ -990,7 +907,7 @@ class TestGetResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (payloads.GetResponsePayload(), 'secret', 0)
+        args = (payloads.GetResponsePayload(), "secret", 0)
         self.assertRaisesRegex(
             TypeError,
             "Secret must be one of the following structs: Certificate, "
@@ -1014,51 +931,41 @@ class TestGetResponsePayload(testtools.TestCase):
 
         self.assertEqual(enums.ObjectType.SYMMETRIC_KEY, payload.object_type)
         self.assertEqual(
-            '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            payload.unique_identifier
+            "49a1ca88-6bea-4fb2-b450-7e58802c3038", payload.unique_identifier
         )
         self.assertIsInstance(payload.secret, secrets.SymmetricKey)
         self.assertIsInstance(payload.secret.key_block, objects.KeyBlock)
         self.assertIsInstance(
-            payload.secret.key_block.key_format_type,
-            misc.KeyFormatType
+            payload.secret.key_block.key_format_type, misc.KeyFormatType
         )
         self.assertEqual(
-            enums.KeyFormatType.RAW,
-            payload.secret.key_block.key_format_type.value
+            enums.KeyFormatType.RAW, payload.secret.key_block.key_format_type.value
         )
+        self.assertIsInstance(payload.secret.key_block.key_value, objects.KeyValue)
         self.assertIsInstance(
-            payload.secret.key_block.key_value,
-            objects.KeyValue
-        )
-        self.assertIsInstance(
-            payload.secret.key_block.key_value.key_material,
-            objects.KeyMaterial
+            payload.secret.key_block.key_value.key_material, objects.KeyMaterial
         )
         self.assertEqual(
             (
-                b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
             ),
-            payload.secret.key_block.key_value.key_material.value
+            payload.secret.key_block.key_value.key_material.value,
         )
         self.assertIsInstance(
             payload.secret.key_block.cryptographic_algorithm,
-            attributes.CryptographicAlgorithm
+            attributes.CryptographicAlgorithm,
         )
         self.assertEqual(
             enums.CryptographicAlgorithm.TRIPLE_DES,
-            payload.secret.key_block.cryptographic_algorithm.value
+            payload.secret.key_block.cryptographic_algorithm.value,
         )
         self.assertIsInstance(
             payload.secret.key_block.cryptographic_length,
-            attributes.CryptographicLength
+            attributes.CryptographicLength,
         )
-        self.assertEqual(
-            168,
-            payload.secret.key_block.cryptographic_length.value
-        )
+        self.assertEqual(168, payload.secret.key_block.cryptographic_length.value)
 
     def test_read_missing_object_type(self):
         """
@@ -1066,7 +973,7 @@ class TestGetResponsePayload(testtools.TestCase):
         field is missing when decoding the struct.
         """
         payload = payloads.GetResponsePayload()
-        args = (self.partial_encoding_missing_object_type, )
+        args = (self.partial_encoding_missing_object_type,)
         self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the object type field.",
@@ -1080,7 +987,7 @@ class TestGetResponsePayload(testtools.TestCase):
         field is missing when decoding the struct.
         """
         payload = payloads.GetResponsePayload()
-        args = (self.partial_encoding_missing_unique_id, )
+        args = (self.partial_encoding_missing_unique_id,)
         self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the unique identifier field.",
@@ -1094,7 +1001,7 @@ class TestGetResponsePayload(testtools.TestCase):
         field is missing when decoding the struct.
         """
         payload = payloads.GetResponsePayload()
-        args = (self.partial_encoding_missing_secret, )
+        args = (self.partial_encoding_missing_secret,)
         self.assertRaisesRegex(
             ValueError,
             "Parsed payload encoding is missing the secret field.",
@@ -1108,25 +1015,23 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
-                    key_format_type=misc.KeyFormatType(
-                        enums.KeyFormatType.RAW
-                    ),
+                    key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
                     key_value=objects.KeyValue(
                         key_material=objects.KeyMaterial(
-                            b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                            b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                            b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                            b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
                         )
                     ),
                     cryptographic_algorithm=attributes.CryptographicAlgorithm(
                         enums.CryptographicAlgorithm.TRIPLE_DES
                     ),
-                    cryptographic_length=attributes.CryptographicLength(168)
+                    cryptographic_length=attributes.CryptographicLength(168),
                 )
-            )
+            ),
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -1141,7 +1046,7 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetResponsePayload()
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             ValueError,
             "Payload is missing the object type field.",
@@ -1158,7 +1063,7 @@ class TestGetResponsePayload(testtools.TestCase):
             object_type=enums.ObjectType.SYMMETRIC_KEY
         )
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             ValueError,
             "Payload is missing the unique identifier field.",
@@ -1173,15 +1078,12 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
         )
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
-            ValueError,
-            "Payload is missing the secret field.",
-            payload.write,
-            *args
+            ValueError, "Payload is missing the secret field.", payload.write, *args
         )
 
     def test_equal_on_equal(self):
@@ -1198,33 +1100,31 @@ class TestGetResponsePayload(testtools.TestCase):
         # TODO (peter-hamilton): Update this once equality is supported for
         # SymmetricKeys.
         secret = secrets.SymmetricKey(
-                key_block=objects.KeyBlock(
-                    key_format_type=misc.KeyFormatType(
-                        enums.KeyFormatType.RAW
-                    ),
-                    key_value=objects.KeyValue(
-                        key_material=objects.KeyMaterial(
-                            b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                            b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
-                        )
-                    ),
-                    cryptographic_algorithm=attributes.CryptographicAlgorithm(
-                        enums.CryptographicAlgorithm.TRIPLE_DES
-                    ),
-                    cryptographic_length=attributes.CryptographicLength(168)
-                )
+            key_block=objects.KeyBlock(
+                key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
+                key_value=objects.KeyValue(
+                    key_material=objects.KeyMaterial(
+                        b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                        b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                        b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
+                    )
+                ),
+                cryptographic_algorithm=attributes.CryptographicAlgorithm(
+                    enums.CryptographicAlgorithm.TRIPLE_DES
+                ),
+                cryptographic_length=attributes.CryptographicLength(168),
             )
+        )
 
         a = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            secret=secret
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            secret=secret,
         )
         b = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            secret=secret
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            secret=secret,
         )
 
         self.assertTrue(a == b)
@@ -1235,12 +1135,8 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetResponsePayload structs with different object type fields.
         """
-        a = payloads.GetResponsePayload(
-            object_type=enums.ObjectType.SYMMETRIC_KEY
-        )
-        b = payloads.GetResponsePayload(
-            object_type=enums.ObjectType.OPAQUE_DATA
-        )
+        a = payloads.GetResponsePayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
+        b = payloads.GetResponsePayload(object_type=enums.ObjectType.OPAQUE_DATA)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1251,10 +1147,10 @@ class TestGetResponsePayload(testtools.TestCase):
         GetResponsePayload structs with different unique identifier fields.
         """
         a = payloads.GetResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.GetResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-ffff-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-ffff-7e58802c3038"
         )
 
         self.assertFalse(a == b)
@@ -1270,40 +1166,36 @@ class TestGetResponsePayload(testtools.TestCase):
         a = payloads.GetResponsePayload(
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
-                    key_format_type=misc.KeyFormatType(
-                        enums.KeyFormatType.RAW
-                    ),
+                    key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
                     key_value=objects.KeyValue(
                         key_material=objects.KeyMaterial(
-                            b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                            b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                            b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                            b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
                         )
                     ),
                     cryptographic_algorithm=attributes.CryptographicAlgorithm(
                         enums.CryptographicAlgorithm.TRIPLE_DES
                     ),
-                    cryptographic_length=attributes.CryptographicLength(168)
+                    cryptographic_length=attributes.CryptographicLength(168),
                 )
             )
         )
         b = payloads.GetResponsePayload(
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
-                    key_format_type=misc.KeyFormatType(
-                        enums.KeyFormatType.RAW
-                    ),
+                    key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
                     key_value=objects.KeyValue(
                         key_material=objects.KeyMaterial(
-                            b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                            b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                            b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                            b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
                         )
                     ),
                     cryptographic_algorithm=attributes.CryptographicAlgorithm(
                         enums.CryptographicAlgorithm.TRIPLE_DES
                     ),
-                    cryptographic_length=attributes.CryptographicLength(168)
+                    cryptographic_length=attributes.CryptographicLength(168),
                 )
             )
         )
@@ -1317,7 +1209,7 @@ class TestGetResponsePayload(testtools.TestCase):
         GetResponsePayload structs with different types.
         """
         a = payloads.GetResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1340,27 +1232,27 @@ class TestGetResponsePayload(testtools.TestCase):
                 key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
                 key_value=objects.KeyValue(
                     key_material=objects.KeyMaterial(
-                        b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                        b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                        b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                        b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                        b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                        b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
                     )
                 ),
                 cryptographic_algorithm=attributes.CryptographicAlgorithm(
                     enums.CryptographicAlgorithm.TRIPLE_DES
                 ),
-                cryptographic_length=attributes.CryptographicLength(168)
+                cryptographic_length=attributes.CryptographicLength(168),
             )
         )
 
         a = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            secret=secret
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            secret=secret,
         )
         b = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            secret=secret
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            secret=secret,
         )
 
         self.assertFalse(a != b)
@@ -1371,12 +1263,8 @@ class TestGetResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         GetResponsePayload structs with different object type fields.
         """
-        a = payloads.GetResponsePayload(
-            object_type=enums.ObjectType.SYMMETRIC_KEY
-        )
-        b = payloads.GetResponsePayload(
-            object_type=enums.ObjectType.OPAQUE_DATA
-        )
+        a = payloads.GetResponsePayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
+        b = payloads.GetResponsePayload(object_type=enums.ObjectType.OPAQUE_DATA)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1387,10 +1275,10 @@ class TestGetResponsePayload(testtools.TestCase):
         GetResponsePayload structs with different unique identifier fields.
         """
         a = payloads.GetResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.GetResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-ffff-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-ffff-7e58802c3038"
         )
 
         self.assertTrue(a != b)
@@ -1406,40 +1294,36 @@ class TestGetResponsePayload(testtools.TestCase):
         a = payloads.GetResponsePayload(
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
-                    key_format_type=misc.KeyFormatType(
-                        enums.KeyFormatType.RAW
-                    ),
+                    key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
                     key_value=objects.KeyValue(
                         key_material=objects.KeyMaterial(
-                            b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                            b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                            b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                            b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
                         )
                     ),
                     cryptographic_algorithm=attributes.CryptographicAlgorithm(
                         enums.CryptographicAlgorithm.TRIPLE_DES
                     ),
-                    cryptographic_length=attributes.CryptographicLength(168)
+                    cryptographic_length=attributes.CryptographicLength(168),
                 )
             )
         )
         b = payloads.GetResponsePayload(
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
-                    key_format_type=misc.KeyFormatType(
-                        enums.KeyFormatType.RAW
-                    ),
+                    key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
                     key_value=objects.KeyValue(
                         key_material=objects.KeyMaterial(
-                            b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                            b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                            b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                            b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
                         )
                     ),
                     cryptographic_algorithm=attributes.CryptographicAlgorithm(
                         enums.CryptographicAlgorithm.TRIPLE_DES
                     ),
-                    cryptographic_length=attributes.CryptographicLength(168)
+                    cryptographic_length=attributes.CryptographicLength(168),
                 )
             )
         )
@@ -1453,7 +1337,7 @@ class TestGetResponsePayload(testtools.TestCase):
         GetResponsePayload structs with different types.
         """
         a = payloads.GetResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1464,25 +1348,23 @@ class TestGetResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
             secret=secrets.SymmetricKey(
                 key_block=objects.KeyBlock(
-                    key_format_type=misc.KeyFormatType(
-                        enums.KeyFormatType.RAW
-                    ),
+                    key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
                     key_value=objects.KeyValue(
                         key_material=objects.KeyMaterial(
-                            b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                            b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                            b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                            b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                            b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                            b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
                         )
                     ),
                     cryptographic_algorithm=attributes.CryptographicAlgorithm(
                         enums.CryptographicAlgorithm.TRIPLE_DES
                     ),
-                    cryptographic_length=attributes.CryptographicLength(168)
+                    cryptographic_length=attributes.CryptographicLength(168),
                 )
-            )
+            ),
         )
 
         # TODO (peter-hamilton): Update the secret portion once SymmetricKeys
@@ -1507,30 +1389,32 @@ class TestGetResponsePayload(testtools.TestCase):
                 key_format_type=misc.KeyFormatType(enums.KeyFormatType.RAW),
                 key_value=objects.KeyValue(
                     key_material=objects.KeyMaterial(
-                        b'\x73\x67\x57\x80\x51\x01\x2A\x6D'
-                        b'\x13\x4A\x85\x5E\x25\xC8\xCD\x5E'
-                        b'\x4C\xA1\x31\x45\x57\x29\xD3\xC8'
+                        b"\x73\x67\x57\x80\x51\x01\x2A\x6D"
+                        b"\x13\x4A\x85\x5E\x25\xC8\xCD\x5E"
+                        b"\x4C\xA1\x31\x45\x57\x29\xD3\xC8"
                     )
                 ),
                 cryptographic_algorithm=attributes.CryptographicAlgorithm(
                     enums.CryptographicAlgorithm.TRIPLE_DES
                 ),
-                cryptographic_length=attributes.CryptographicLength(168)
+                cryptographic_length=attributes.CryptographicLength(168),
             )
         )
         payload = payloads.GetResponsePayload(
             object_type=enums.ObjectType.SYMMETRIC_KEY,
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            secret=secret
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038",
+            secret=secret,
         )
 
         # TODO (peter-hamilton): Update the secret portion once SymmetricKeys
         # support repr/str.
-        expected = str({
-            'object_type': enums.ObjectType.SYMMETRIC_KEY,
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038',
-            'secret': secret
-        })
+        expected = str(
+            {
+                "object_type": enums.ObjectType.SYMMETRIC_KEY,
+                "unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038",
+                "secret": secret,
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)

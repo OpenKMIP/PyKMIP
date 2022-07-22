@@ -20,7 +20,6 @@ from kmip.core import utils
 
 
 class TestBoolean(TestCase):
-
     def setUp(self):
         super(TestBoolean, self).setUp()
         self.stream = utils.BytearrayStream()
@@ -61,7 +60,7 @@ class TestBoolean(TestCase):
         Test that a TypeError is raised when a Boolean object is built with an
         invalid value.
         """
-        self.assertRaises(TypeError, primitives.Boolean, 'invalid')
+        self.assertRaises(TypeError, primitives.Boolean, "invalid")
 
     def test_read_true(self):
         """
@@ -69,8 +68,8 @@ class TestBoolean(TestCase):
         from a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
-            b'\x01')
+            b"\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00" b"\x01"
+        )
         stream = utils.BytearrayStream(encoding)
         boolean = primitives.Boolean()
         boolean.read(stream)
@@ -82,8 +81,8 @@ class TestBoolean(TestCase):
         from a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
         stream = utils.BytearrayStream(encoding)
         boolean = primitives.Boolean()
         boolean.read(stream)
@@ -94,7 +93,7 @@ class TestBoolean(TestCase):
         Test that an Exception is raised when the Boolean read operation fails
         on a bad encoding.
         """
-        encoding = (b'\x42\x00\x00\x06\x00\x00\x00\x08')
+        encoding = b"\x42\x00\x00\x06\x00\x00\x00\x08"
         stream = utils.BytearrayStream(encoding)
         boolean = primitives.Boolean()
         self.assertRaises(Exception, boolean.read, stream)
@@ -105,8 +104,8 @@ class TestBoolean(TestCase):
         reads a valid integer but invalid Boolean.
         """
         encoding = (
-            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
-            b'\x02')
+            b"\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00" b"\x02"
+        )
         stream = utils.BytearrayStream(encoding)
         boolean = primitives.Boolean()
         self.assertRaises(ValueError, boolean.read, stream)
@@ -117,8 +116,8 @@ class TestBoolean(TestCase):
         to a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
-            b'\x01')
+            b"\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00" b"\x01"
+        )
         stream = utils.BytearrayStream()
         boolean = primitives.Boolean(True)
         boolean.write(stream)
@@ -130,8 +129,8 @@ class TestBoolean(TestCase):
         to a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
         stream = utils.BytearrayStream()
         boolean = primitives.Boolean(False)
         boolean.write(stream)
@@ -144,7 +143,7 @@ class TestBoolean(TestCase):
         """
         stream = utils.BytearrayStream()
         boolean = primitives.Boolean()
-        boolean.value = 'invalid'
+        boolean.value = "invalid"
         self.assertRaises(Exception, boolean.write, stream)
 
     def test_repr_default(self):
@@ -230,7 +229,7 @@ class TestBoolean(TestCase):
         Boolean object to a non-Boolean object.
         """
         a = primitives.Boolean()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -274,7 +273,7 @@ class TestBoolean(TestCase):
         Boolean object to a non-Boolean object.
         """
         a = primitives.Boolean()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)

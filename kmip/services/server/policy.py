@@ -47,17 +47,19 @@ class AttributeRuleSet(object):
             attribute was deprecated.
     """
 
-    def __init__(self,
-                 always_has_value,
-                 initially_set_by,
-                 modifiable_by_server,
-                 modifiable_by_client,
-                 deletable_by_client,
-                 multivalued,
-                 implicitly_set_by,
-                 applies_to_object_types,
-                 version_added,
-                 version_deprecated=None):
+    def __init__(
+        self,
+        always_has_value,
+        initially_set_by,
+        modifiable_by_server,
+        modifiable_by_client,
+        deletable_by_client,
+        multivalued,
+        implicitly_set_by,
+        applies_to_object_types,
+        version_added,
+        version_deprecated=None,
+    ):
         """
         Create an AttributeRuleSet.
 
@@ -131,9 +133,9 @@ class AttributePolicy(object):
 
         # TODO (peterhamilton) Alphabetize these
         self._attribute_rule_sets = {
-            'Unique Identifier': AttributeRuleSet(
+            "Unique Identifier": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -146,7 +148,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -156,13 +158,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Name': AttributeRuleSet(
+            "Name": AttributeRuleSet(
                 False,
-                ('client', ),
+                ("client",),
                 True,
                 True,
                 True,
@@ -170,7 +172,7 @@ class AttributePolicy(object):
                 (
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -180,13 +182,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Object Type': AttributeRuleSet(
+            "Object Type": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -199,7 +201,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -209,13 +211,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Cryptographic Algorithm': AttributeRuleSet(
+            "Cryptographic Algorithm": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -228,7 +230,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -236,13 +238,13 @@ class AttributePolicy(object):
                     enums.ObjectType.PUBLIC_KEY,
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
-                    enums.ObjectType.TEMPLATE
+                    enums.ObjectType.TEMPLATE,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Cryptographic Length': AttributeRuleSet(
+            "Cryptographic Length": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -255,7 +257,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -263,13 +265,13 @@ class AttributePolicy(object):
                     enums.ObjectType.PUBLIC_KEY,
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
-                    enums.ObjectType.TEMPLATE
+                    enums.ObjectType.TEMPLATE,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Cryptographic Parameters': AttributeRuleSet(
+            "Cryptographic Parameters": AttributeRuleSet(
                 False,
-                ('client', ),
+                ("client",),
                 False,
                 True,
                 True,
@@ -277,7 +279,7 @@ class AttributePolicy(object):
                 (
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -285,31 +287,28 @@ class AttributePolicy(object):
                     enums.ObjectType.PUBLIC_KEY,
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
-                    enums.ObjectType.TEMPLATE
+                    enums.ObjectType.TEMPLATE,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Cryptographic Domain Parameters': AttributeRuleSet(
+            "Cryptographic Domain Parameters": AttributeRuleSet(
                 False,
-                ('client', ),
-                False,
-                False,
+                ("client",),
                 False,
                 False,
-                (
-                    enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
-                ),
+                False,
+                False,
+                (enums.Operation.REKEY, enums.Operation.REKEY_KEY_PAIR),
                 (
                     enums.ObjectType.PUBLIC_KEY,
                     enums.ObjectType.PRIVATE_KEY,
-                    enums.ObjectType.TEMPLATE
+                    enums.ObjectType.TEMPLATE,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Certificate Type': AttributeRuleSet(
+            "Certificate Type": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -317,16 +316,14 @@ class AttributePolicy(object):
                 (
                     enums.Operation.REGISTER,
                     enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY
+                    enums.Operation.RECERTIFY,
                 ),
-                (
-                    enums.ObjectType.CERTIFICATE,
-                ),
-                contents.ProtocolVersion(1, 0)
+                (enums.ObjectType.CERTIFICATE,),
+                contents.ProtocolVersion(1, 0),
             ),
-            'Certificate Length': AttributeRuleSet(
+            "Certificate Length": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -334,16 +331,14 @@ class AttributePolicy(object):
                 (
                     enums.Operation.REGISTER,
                     enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY
+                    enums.Operation.RECERTIFY,
                 ),
-                (
-                    enums.ObjectType.CERTIFICATE,
-                ),
-                contents.ProtocolVersion(1, 1)
+                (enums.ObjectType.CERTIFICATE,),
+                contents.ProtocolVersion(1, 1),
             ),
-            'X.509 Certificate Identifier': AttributeRuleSet(
+            "X.509 Certificate Identifier": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -351,17 +346,17 @@ class AttributePolicy(object):
                 (
                     enums.Operation.REGISTER,
                     enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY
+                    enums.Operation.RECERTIFY,
                 ),
                 (
                     # TODO (peterhamilton) Enforce only on X.509 certificates
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion(1, 1)
+                contents.ProtocolVersion(1, 1),
             ),
-            'X.509 Certificate Subject': AttributeRuleSet(
+            "X.509 Certificate Subject": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -369,17 +364,17 @@ class AttributePolicy(object):
                 (
                     enums.Operation.REGISTER,
                     enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY
+                    enums.Operation.RECERTIFY,
                 ),
                 (
                     # TODO (peterhamilton) Enforce only on X.509 certificates
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion(1, 1)
+                contents.ProtocolVersion(1, 1),
             ),
-            'X.509 Certificate Issuer': AttributeRuleSet(
+            "X.509 Certificate Issuer": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -387,17 +382,17 @@ class AttributePolicy(object):
                 (
                     enums.Operation.REGISTER,
                     enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY
+                    enums.Operation.RECERTIFY,
                 ),
                 (
                     # TODO (peterhamilton) Enforce only on X.509 certificates
                     enums.ObjectType.CERTIFICATE,
                 ),
-                contents.ProtocolVersion(1, 1)
+                contents.ProtocolVersion(1, 1),
             ),
-            'Certificate Identifier': AttributeRuleSet(
+            "Certificate Identifier": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -405,17 +400,15 @@ class AttributePolicy(object):
                 (
                     enums.Operation.REGISTER,
                     enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY
+                    enums.Operation.RECERTIFY,
                 ),
-                (
-                    enums.ObjectType.CERTIFICATE,
-                ),
+                (enums.ObjectType.CERTIFICATE,),
                 contents.ProtocolVersion(1, 0),
-                contents.ProtocolVersion(1, 1)
+                contents.ProtocolVersion(1, 1),
             ),
-            'Certificate Subject': AttributeRuleSet(
+            "Certificate Subject": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -423,17 +416,15 @@ class AttributePolicy(object):
                 (
                     enums.Operation.REGISTER,
                     enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY
+                    enums.Operation.RECERTIFY,
                 ),
-                (
-                    enums.ObjectType.CERTIFICATE,
-                ),
+                (enums.ObjectType.CERTIFICATE,),
                 contents.ProtocolVersion(1, 0),
-                contents.ProtocolVersion(1, 1)
+                contents.ProtocolVersion(1, 1),
             ),
-            'Certificate Issuer': AttributeRuleSet(
+            "Certificate Issuer": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -441,17 +432,15 @@ class AttributePolicy(object):
                 (
                     enums.Operation.REGISTER,
                     enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY
+                    enums.Operation.RECERTIFY,
                 ),
-                (
-                    enums.ObjectType.CERTIFICATE,
-                ),
+                (enums.ObjectType.CERTIFICATE,),
                 contents.ProtocolVersion(1, 0),
-                contents.ProtocolVersion(1, 1)
+                contents.ProtocolVersion(1, 1),
             ),
-            'Digital Signature Algorithm': AttributeRuleSet(
+            "Digital Signature Algorithm": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -460,16 +449,14 @@ class AttributePolicy(object):
                 (
                     enums.Operation.REGISTER,
                     enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY
+                    enums.Operation.RECERTIFY,
                 ),
-                (
-                    enums.ObjectType.CERTIFICATE,
-                ),
-                contents.ProtocolVersion(1, 1)
+                (enums.ObjectType.CERTIFICATE,),
+                contents.ProtocolVersion(1, 1),
             ),
-            'Digest': AttributeRuleSet(
+            "Digest": AttributeRuleSet(
                 True,  # If the server has access to the data
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -482,7 +469,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -491,43 +478,13 @@ class AttributePolicy(object):
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
-                ),
-                contents.ProtocolVersion(1, 0)
-            ),
-            'Operation Policy Name': AttributeRuleSet(
-                False,
-                ('server', 'client'),
-                True,
-                False,
-                False,
-                False,
-                (
-                    enums.Operation.CREATE,
-                    enums.Operation.CREATE_KEY_PAIR,
-                    enums.Operation.REGISTER,
-                    enums.Operation.DERIVE_KEY,
-                    enums.Operation.CERTIFY,
-                    enums.Operation.RECERTIFY,
-                    enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
-                ),
-                (
-                    enums.ObjectType.CERTIFICATE,
-                    enums.ObjectType.SYMMETRIC_KEY,
-                    enums.ObjectType.PUBLIC_KEY,
-                    enums.ObjectType.PRIVATE_KEY,
-                    enums.ObjectType.SPLIT_KEY,
-                    enums.ObjectType.TEMPLATE,
-                    enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
                 contents.ProtocolVersion(1, 0),
-                contents.ProtocolVersion(2, 0)
             ),
-            'Cryptographic Usage Mask': AttributeRuleSet(
-                True,
-                ('server', 'client'),
+            "Operation Policy Name": AttributeRuleSet(
+                False,
+                ("server", "client"),
                 True,
                 False,
                 False,
@@ -540,7 +497,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -549,13 +506,15 @@ class AttributePolicy(object):
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
-                    enums.ObjectType.SECRET_DATA
+                    enums.ObjectType.SECRET_DATA,
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
+                contents.ProtocolVersion(2, 0),
             ),
-            'Lease Time': AttributeRuleSet(
-                False,
-                ('server', ),
+            "Cryptographic Usage Mask": AttributeRuleSet(
+                True,
+                ("server", "client"),
                 True,
                 False,
                 False,
@@ -568,7 +527,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -576,13 +535,41 @@ class AttributePolicy(object):
                     enums.ObjectType.PUBLIC_KEY,
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
-                    enums.ObjectType.SECRET_DATA
+                    enums.ObjectType.TEMPLATE,
+                    enums.ObjectType.SECRET_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Usage Limits': AttributeRuleSet(
+            "Lease Time": AttributeRuleSet(
                 False,
-                ('server', 'client'),  # Values differ based on source
+                ("server",),
+                True,
+                False,
+                False,
+                False,
+                (
+                    enums.Operation.CREATE,
+                    enums.Operation.CREATE_KEY_PAIR,
+                    enums.Operation.REGISTER,
+                    enums.Operation.DERIVE_KEY,
+                    enums.Operation.CERTIFY,
+                    enums.Operation.RECERTIFY,
+                    enums.Operation.REKEY,
+                    enums.Operation.REKEY_KEY_PAIR,
+                ),
+                (
+                    enums.ObjectType.CERTIFICATE,
+                    enums.ObjectType.SYMMETRIC_KEY,
+                    enums.ObjectType.PUBLIC_KEY,
+                    enums.ObjectType.PRIVATE_KEY,
+                    enums.ObjectType.SPLIT_KEY,
+                    enums.ObjectType.SECRET_DATA,
+                ),
+                contents.ProtocolVersion(1, 0),
+            ),
+            "Usage Limits": AttributeRuleSet(
+                False,
+                ("server", "client"),  # Values differ based on source
                 True,
                 True,  # Conditional on values and operations used
                 True,  # Conditional on operations used
@@ -594,20 +581,20 @@ class AttributePolicy(object):
                     enums.Operation.DERIVE_KEY,
                     enums.Operation.REKEY,
                     enums.Operation.REKEY_KEY_PAIR,
-                    enums.Operation.GET_USAGE_ALLOCATION
+                    enums.Operation.GET_USAGE_ALLOCATION,
                 ),
                 (
                     enums.ObjectType.SYMMETRIC_KEY,
                     enums.ObjectType.PUBLIC_KEY,
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
-                    enums.ObjectType.TEMPLATE
+                    enums.ObjectType.TEMPLATE,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'State': AttributeRuleSet(
+            "State": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 True,
                 False,  # Only modifiable by server for certain requests
                 False,
@@ -623,7 +610,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -631,13 +618,13 @@ class AttributePolicy(object):
                     enums.ObjectType.PUBLIC_KEY,
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
-                    enums.ObjectType.SECRET_DATA
+                    enums.ObjectType.SECRET_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Initial Date': AttributeRuleSet(
+            "Initial Date": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 False,
                 False,
                 False,
@@ -650,7 +637,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -660,13 +647,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Activation Date': AttributeRuleSet(
+            "Activation Date": AttributeRuleSet(
                 False,
-                ('server', 'client'),
+                ("server", "client"),
                 True,  # Only while in Pre-Active state
                 True,  # Only while in Pre-Active state
                 False,
@@ -680,7 +667,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -689,13 +676,13 @@ class AttributePolicy(object):
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
-                    enums.ObjectType.SECRET_DATA
+                    enums.ObjectType.SECRET_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Process Start Date': AttributeRuleSet(
+            "Process Start Date": AttributeRuleSet(
                 False,
-                ('server', 'client'),
+                ("server", "client"),
                 True,  # Only while in Pre-Active / Active state and more
                 True,  # Only while in Pre-Active / Active state and more
                 False,
@@ -704,19 +691,19 @@ class AttributePolicy(object):
                     enums.Operation.CREATE,
                     enums.Operation.REGISTER,
                     enums.Operation.DERIVE_KEY,
-                    enums.Operation.REKEY
+                    enums.Operation.REKEY,
                 ),
                 (
                     enums.ObjectType.SYMMETRIC_KEY,
                     # Only SplitKeys of SymmetricKeys
                     enums.ObjectType.SPLIT_KEY,
-                    enums.ObjectType.TEMPLATE
+                    enums.ObjectType.TEMPLATE,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Protect Stop Date': AttributeRuleSet(
+            "Protect Stop Date": AttributeRuleSet(
                 False,
-                ('server', 'client'),
+                ("server", "client"),
                 True,  # Only while in Pre-Active / Active state and more
                 True,  # Only while in Pre-Active / Active state and more
                 False,
@@ -725,19 +712,19 @@ class AttributePolicy(object):
                     enums.Operation.CREATE,
                     enums.Operation.REGISTER,
                     enums.Operation.DERIVE_KEY,
-                    enums.Operation.REKEY
+                    enums.Operation.REKEY,
                 ),
                 (
                     enums.ObjectType.SYMMETRIC_KEY,
                     # Only SplitKeys of SymmetricKeys
                     enums.ObjectType.SPLIT_KEY,
-                    enums.ObjectType.TEMPLATE
+                    enums.ObjectType.TEMPLATE,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Deactivation Date': AttributeRuleSet(
+            "Deactivation Date": AttributeRuleSet(
                 False,
-                ('server', 'client'),
+                ("server", "client"),
                 True,  # Only while in Pre-Active / Active state
                 True,  # Only while in Pre-Active / Active state
                 False,
@@ -751,7 +738,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -760,20 +747,18 @@ class AttributePolicy(object):
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
-                    enums.ObjectType.SECRET_DATA
+                    enums.ObjectType.SECRET_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Destroy Date': AttributeRuleSet(
+            "Destroy Date": AttributeRuleSet(
                 False,
-                ('server', ),
-                False,
-                False,
+                ("server",),
                 False,
                 False,
-                (
-                    enums.Operation.DESTROY,
-                ),
+                False,
+                False,
+                (enums.Operation.DESTROY,),
                 (
                     enums.ObjectType.CERTIFICATE,
                     enums.ObjectType.SYMMETRIC_KEY,
@@ -781,20 +766,18 @@ class AttributePolicy(object):
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Compromise Occurrence Date': AttributeRuleSet(
+            "Compromise Occurrence Date": AttributeRuleSet(
                 False,
-                ('server', ),
-                False,
-                False,
+                ("server",),
                 False,
                 False,
-                (
-                    enums.Operation.REVOKE,
-                ),
+                False,
+                False,
+                (enums.Operation.REVOKE,),
                 (
                     enums.ObjectType.CERTIFICATE,
                     enums.ObjectType.SYMMETRIC_KEY,
@@ -802,20 +785,18 @@ class AttributePolicy(object):
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Compromise Date': AttributeRuleSet(
+            "Compromise Date": AttributeRuleSet(
                 False,
-                ('server', ),
-                False,
-                False,
+                ("server",),
                 False,
                 False,
-                (
-                    enums.Operation.REVOKE,
-                ),
+                False,
+                False,
+                (enums.Operation.REVOKE,),
                 (
                     enums.ObjectType.CERTIFICATE,
                     enums.ObjectType.SYMMETRIC_KEY,
@@ -823,20 +804,18 @@ class AttributePolicy(object):
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Revocation Reason': AttributeRuleSet(
+            "Revocation Reason": AttributeRuleSet(
                 False,
-                ('server', ),
+                ("server",),
                 True,
                 False,
                 False,
                 False,
-                (
-                    enums.Operation.REVOKE,
-                ),
+                (enums.Operation.REVOKE,),
                 (
                     enums.ObjectType.CERTIFICATE,
                     enums.ObjectType.SYMMETRIC_KEY,
@@ -844,20 +823,18 @@ class AttributePolicy(object):
                     enums.ObjectType.PRIVATE_KEY,
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Archive Date': AttributeRuleSet(
+            "Archive Date": AttributeRuleSet(
                 False,
-                ('server', ),
-                False,
-                False,
+                ("server",),
                 False,
                 False,
-                (
-                    enums.Operation.ARCHIVE,
-                ),
+                False,
+                False,
+                (enums.Operation.ARCHIVE,),
                 (
                     enums.ObjectType.CERTIFICATE,
                     enums.ObjectType.SYMMETRIC_KEY,
@@ -866,13 +843,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Object Group': AttributeRuleSet(
+            "Object Group": AttributeRuleSet(
                 False,
-                ('server', 'client'),
+                ("server", "client"),
                 True,
                 True,
                 True,
@@ -885,7 +862,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -895,13 +872,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Fresh': AttributeRuleSet(
+            "Fresh": AttributeRuleSet(
                 False,
-                ('server', 'client'),
+                ("server", "client"),
                 True,
                 False,
                 False,
@@ -914,7 +891,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -924,13 +901,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 1)
+                contents.ProtocolVersion(1, 1),
             ),
-            'Link': AttributeRuleSet(
+            "Link": AttributeRuleSet(
                 False,
-                ('server', ),
+                ("server",),
                 True,
                 True,
                 True,
@@ -941,7 +918,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -951,13 +928,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Application Specific Information': AttributeRuleSet(
+            "Application Specific Information": AttributeRuleSet(
                 False,
-                ('server', 'client'),  # Only if omitted in client request
+                ("server", "client"),  # Only if omitted in client request
                 True,  # Only if attribute omitted in client request
                 True,
                 True,
@@ -965,7 +942,7 @@ class AttributePolicy(object):
                 (
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -975,13 +952,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Contact Information': AttributeRuleSet(
+            "Contact Information": AttributeRuleSet(
                 False,
-                ('server', 'client'),
+                ("server", "client"),
                 True,
                 True,
                 True,
@@ -994,7 +971,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -1004,13 +981,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Last Change Date': AttributeRuleSet(
+            "Last Change Date": AttributeRuleSet(
                 True,
-                ('server', ),
+                ("server",),
                 True,
                 False,
                 False,
@@ -1032,7 +1009,7 @@ class AttributePolicy(object):
                     enums.Operation.ADD_ATTRIBUTE,
                     enums.Operation.MODIFY_ATTRIBUTE,
                     enums.Operation.DELETE_ATTRIBUTE,
-                    enums.Operation.GET_USAGE_ALLOCATION
+                    enums.Operation.GET_USAGE_ALLOCATION,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -1042,13 +1019,13 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
-            'Custom Attribute': AttributeRuleSet(
+            "Custom Attribute": AttributeRuleSet(
                 False,
-                ('server', 'client'),
+                ("server", "client"),
                 True,  # Only for server-created attributes
                 True,  # Only for client-created attributes
                 True,  # Only for client-created attributes
@@ -1064,7 +1041,7 @@ class AttributePolicy(object):
                     enums.Operation.CERTIFY,
                     enums.Operation.RECERTIFY,
                     enums.Operation.REKEY,
-                    enums.Operation.REKEY_KEY_PAIR
+                    enums.Operation.REKEY_KEY_PAIR,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -1074,9 +1051,9 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 0)
+                contents.ProtocolVersion(1, 0),
             ),
             "Sensitive": AttributeRuleSet(
                 True,
@@ -1088,7 +1065,7 @@ class AttributePolicy(object):
                 (
                     enums.Operation.CREATE,
                     enums.Operation.CREATE_KEY_PAIR,
-                    enums.Operation.REGISTER
+                    enums.Operation.REGISTER,
                 ),
                 (
                     enums.ObjectType.CERTIFICATE,
@@ -1098,10 +1075,10 @@ class AttributePolicy(object):
                     enums.ObjectType.SPLIT_KEY,
                     enums.ObjectType.TEMPLATE,
                     enums.ObjectType.SECRET_DATA,
-                    enums.ObjectType.OPAQUE_DATA
+                    enums.ObjectType.OPAQUE_DATA,
                 ),
-                contents.ProtocolVersion(1, 4)
-            )
+                contents.ProtocolVersion(1, 4),
+            ),
         }
 
     def is_attribute_supported(self, attribute):

@@ -36,10 +36,10 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         #     Application Namespace - ssl
         #     Application Data - www.example.com
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x04\x01\x00\x00\x00\x28'
-            b'\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00'
-            b'\x42\x00\x02\x07\x00\x00\x00\x0F'
-            b'\x77\x77\x77\x2E\x65\x78\x61\x6D\x70\x6C\x65\x2E\x63\x6F\x6D\x00'
+            b"\x42\x00\x04\x01\x00\x00\x00\x28"
+            b"\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00"
+            b"\x42\x00\x02\x07\x00\x00\x00\x0F"
+            b"\x77\x77\x77\x2E\x65\x78\x61\x6D\x70\x6C\x65\x2E\x63\x6F\x6D\x00"
         )
 
         # This encoding was adapted from test case 3.1.2 from the KMIP 1.1 test
@@ -49,9 +49,9 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         # Application Specific Information
         #     Application Data - www.example.com
         self.no_application_namespace_encoding = utils.BytearrayStream(
-            b'\x42\x00\x04\x01\x00\x00\x00\x18'
-            b'\x42\x00\x02\x07\x00\x00\x00\x0F'
-            b'\x77\x77\x77\x2E\x65\x78\x61\x6D\x70\x6C\x65\x2E\x63\x6F\x6D\x00'
+            b"\x42\x00\x04\x01\x00\x00\x00\x18"
+            b"\x42\x00\x02\x07\x00\x00\x00\x0F"
+            b"\x77\x77\x77\x2E\x65\x78\x61\x6D\x70\x6C\x65\x2E\x63\x6F\x6D\x00"
         )
 
         # This encoding was adapted from test case 3.1.2 from the KMIP 1.1 test
@@ -61,8 +61,8 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         # Application Specific Information
         #     Application Namespace - ssl
         self.no_application_data_encoding = utils.BytearrayStream(
-            b'\x42\x00\x04\x01\x00\x00\x00\x10'
-            b'\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00'
+            b"\x42\x00\x04\x01\x00\x00\x00\x10"
+            b"\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -78,8 +78,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         self.assertIsNone(app_specific_info.application_data)
 
         app_specific_info = attributes.ApplicationSpecificInformation(
-            application_namespace="namespace",
-            application_data="data"
+            application_namespace="namespace", application_data="data"
         )
 
         self.assertEqual("namespace", app_specific_info.application_namespace)
@@ -101,13 +100,10 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         args = (
             attributes.ApplicationSpecificInformation(),
             "application_namespace",
-            []
+            [],
         )
         self.assertRaisesRegex(
-            TypeError,
-            "The application namespace must be a string.",
-            setattr,
-            *args
+            TypeError, "The application namespace must be a string.", setattr, *args
         )
 
     def test_invalid_application_data(self):
@@ -123,16 +119,9 @@ class TestApplicationSpecificInformation(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            attributes.ApplicationSpecificInformation(),
-            "application_data",
-            []
-        )
+        args = (attributes.ApplicationSpecificInformation(), "application_data", [])
         self.assertRaisesRegex(
-            TypeError,
-            "The application data must be a string.",
-            setattr,
-            *args
+            TypeError, "The application data must be a string.", setattr, *args
         )
 
     def test_read(self):
@@ -160,7 +149,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
 
         self.assertIsNone(app_specific_info.application_namespace)
 
-        args = (self.no_application_namespace_encoding, )
+        args = (self.no_application_namespace_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The ApplicationSpecificInformation encoding is missing the "
@@ -179,7 +168,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
 
         self.assertIsNone(app_specific_info.application_data)
 
-        args = (self.no_application_data_encoding, )
+        args = (self.no_application_data_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The ApplicationSpecificInformation encoding is missing the "
@@ -194,8 +183,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         buffer.
         """
         app_specific_info = attributes.ApplicationSpecificInformation(
-            application_namespace="ssl",
-            application_data="www.example.com"
+            application_namespace="ssl", application_data="www.example.com"
         )
 
         buff = utils.BytearrayStream()
@@ -215,7 +203,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         )
 
         buff = utils.BytearrayStream()
-        args = (buff, )
+        args = (buff,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The ApplicationSpecificInformation object is missing the "
@@ -235,7 +223,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         )
 
         buff = utils.BytearrayStream()
-        args = (buff, )
+        args = (buff,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The ApplicationSpecificInformation object is missing the "
@@ -250,17 +238,13 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         object.
         """
         app_specific_info = attributes.ApplicationSpecificInformation(
-            application_namespace="ssl",
-            application_data="www.example.com"
+            application_namespace="ssl", application_data="www.example.com"
         )
 
-        args = [
-            "application_namespace='ssl'",
-            "application_data='www.example.com'"
-        ]
+        args = ["application_namespace='ssl'", "application_data='www.example.com'"]
         self.assertEqual(
             "ApplicationSpecificInformation({})".format(", ".join(args)),
-            repr(app_specific_info)
+            repr(app_specific_info),
         )
 
     def test_str(self):
@@ -269,21 +253,17 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         object.
         """
         app_specific_info = attributes.ApplicationSpecificInformation(
-            application_namespace="ssl",
-            application_data="www.example.com"
+            application_namespace="ssl", application_data="www.example.com"
         )
 
         args = [
             ("application_namespace", "ssl"),
-            ("application_data", "www.example.com")
+            ("application_data", "www.example.com"),
         ]
         value = "{}".format(
             ", ".join(['"{}": "{}"'.format(arg[0], arg[1]) for arg in args])
         )
-        self.assertEqual(
-            "{" + value + "}",
-            str(app_specific_info)
-        )
+        self.assertEqual("{" + value + "}", str(app_specific_info))
 
     def test_comparison(self):
         """
@@ -300,12 +280,10 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = attributes.ApplicationSpecificInformation(
-            application_namespace="test_namespace",
-            application_data="test_data"
+            application_namespace="test_namespace", application_data="test_data"
         )
         b = attributes.ApplicationSpecificInformation(
-            application_namespace="test_namespace",
-            application_data="test_data"
+            application_namespace="test_namespace", application_data="test_data"
         )
 
         self.assertTrue(a == b)
@@ -337,12 +315,8 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         comparing two ApplicationSpecificInformation objects with different
         data.
         """
-        a = attributes.ApplicationSpecificInformation(
-            application_data="test_data_1"
-        )
-        b = attributes.ApplicationSpecificInformation(
-            application_data="test_data_2"
-        )
+        a = attributes.ApplicationSpecificInformation(application_data="test_data_1")
+        b = attributes.ApplicationSpecificInformation(application_data="test_data_2")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -356,8 +330,7 @@ class TestApplicationSpecificInformation(testtools.TestCase):
         non-ApplicationSpecificInformation object.
         """
         a = attributes.ApplicationSpecificInformation(
-            application_namespace="test_namespace",
-            application_data="test_data"
+            application_namespace="test_namespace", application_data="test_data"
         )
         b = "invalid"
 

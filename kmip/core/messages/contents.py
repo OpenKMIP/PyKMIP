@@ -69,13 +69,10 @@ class ProtocolVersion(primitives.Struct):
             self._major = None
         elif isinstance(value, six.integer_types):
             self._major = primitives.Integer(
-                value=value,
-                tag=enums.Tags.PROTOCOL_VERSION_MAJOR
+                value=value, tag=enums.Tags.PROTOCOL_VERSION_MAJOR
             )
         else:
-            raise TypeError(
-                "Major protocol version number must be an integer."
-            )
+            raise TypeError("Major protocol version number must be an integer.")
 
     @property
     def minor(self):
@@ -90,13 +87,10 @@ class ProtocolVersion(primitives.Struct):
             self._minor = None
         elif isinstance(value, six.integer_types):
             self._minor = primitives.Integer(
-                value=value,
-                tag=enums.Tags.PROTOCOL_VERSION_MINOR
+                value=value, tag=enums.Tags.PROTOCOL_VERSION_MINOR
             )
         else:
-            raise TypeError(
-                "Minor protocol version number must be an integer."
-            )
+            raise TypeError("Minor protocol version number must be an integer.")
 
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -115,16 +109,11 @@ class ProtocolVersion(primitives.Struct):
             ValueError: Raised if either the major or minor protocol versions
                 are missing from the encoding.
         """
-        super(ProtocolVersion, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(ProtocolVersion, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.PROTOCOL_VERSION_MAJOR, local_stream):
-            self._major = primitives.Integer(
-                tag=enums.Tags.PROTOCOL_VERSION_MAJOR
-            )
+            self._major = primitives.Integer(tag=enums.Tags.PROTOCOL_VERSION_MAJOR)
             self._major.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
@@ -132,9 +121,7 @@ class ProtocolVersion(primitives.Struct):
             )
 
         if self.is_tag_next(enums.Tags.PROTOCOL_VERSION_MINOR, local_stream):
-            self._minor = primitives.Integer(
-                tag=enums.Tags.PROTOCOL_VERSION_MINOR
-            )
+            self._minor = primitives.Integer(tag=enums.Tags.PROTOCOL_VERSION_MINOR)
             self._minor.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
@@ -175,10 +162,7 @@ class ProtocolVersion(primitives.Struct):
             )
 
         self.length = local_stream.length()
-        super(ProtocolVersion, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(ProtocolVersion, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -239,10 +223,7 @@ class ProtocolVersion(primitives.Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "major={}".format(self.major),
-            "minor={}".format(self.minor)
-        ])
+        args = ", ".join(["major={}".format(self.major), "minor={}".format(self.minor)])
         return "ProtocolVersion({})".format(args)
 
     def __str__(self):
@@ -288,24 +269,22 @@ def protocol_version_to_kmip_version(value):
 
 # 6.2
 class Operation(Enumeration):
-
     def __init__(self, value=None):
-        super(Operation, self).__init__(
-            enums.Operation, value, enums.Tags.OPERATION)
+        super(Operation, self).__init__(enums.Operation, value, enums.Tags.OPERATION)
 
 
 # 6.3
 class MaximumResponseSize(Integer):
     def __init__(self, value=None):
-        super(MaximumResponseSize, self).\
-            __init__(value, enums.Tags.MAXIMUM_RESPONSE_SIZE)
+        super(MaximumResponseSize, self).__init__(
+            value, enums.Tags.MAXIMUM_RESPONSE_SIZE
+        )
 
 
 # 6.4
 class UniqueBatchItemID(ByteString):
     def __init__(self, value=None):
-        super(UniqueBatchItemID, self)\
-            .__init__(value, enums.Tags.UNIQUE_BATCH_ITEM_ID)
+        super(UniqueBatchItemID, self).__init__(value, enums.Tags.UNIQUE_BATCH_ITEM_ID)
 
 
 # 6.5
@@ -356,9 +335,7 @@ class Authentication(Struct):
                 credentials.append(credential)
             self._credentials = credentials
         else:
-            raise TypeError(
-                "Credentials must be a list of Credential structs."
-            )
+            raise TypeError("Credentials must be a list of Credential structs.")
 
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -373,10 +350,7 @@ class Authentication(Struct):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(Authentication, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(Authentication, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         credentials = []
@@ -410,10 +384,7 @@ class Authentication(Struct):
             credential.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
-        super(Authentication, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(Authentication, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -432,9 +403,7 @@ class Authentication(Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "credentials={}".format([x for x in self.credentials])
-        ])
+        args = ", ".join(["credentials={}".format([x for x in self.credentials])])
         return "Authentication({})".format(args)
 
     def __str__(self):
@@ -445,31 +414,33 @@ class Authentication(Struct):
 # 6.7
 class AsynchronousIndicator(Boolean):
     def __init__(self, value=None):
-        super(AsynchronousIndicator, self).\
-            __init__(value, enums.Tags.ASYNCHRONOUS_INDICATOR)
+        super(AsynchronousIndicator, self).__init__(
+            value, enums.Tags.ASYNCHRONOUS_INDICATOR
+        )
 
 
 # 6.8
 class AsynchronousCorrelationValue(ByteString):
     def __init__(self, value=None):
-        super(AsynchronousCorrelationValue, self).\
-            __init__(value, enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE)
+        super(AsynchronousCorrelationValue, self).__init__(
+            value, enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
+        )
 
 
 # 6.9
 class ResultStatus(Enumeration):
-
     def __init__(self, value=None):
         super(ResultStatus, self).__init__(
-            enums.ResultStatus, value, enums.Tags.RESULT_STATUS)
+            enums.ResultStatus, value, enums.Tags.RESULT_STATUS
+        )
 
 
 # 6.10
 class ResultReason(Enumeration):
-
     def __init__(self, value=None):
         super(ResultReason, self).__init__(
-            enums.ResultReason, value, enums.Tags.RESULT_REASON)
+            enums.ResultReason, value, enums.Tags.RESULT_REASON
+        )
 
 
 # 6.11
@@ -481,17 +452,17 @@ class ResultMessage(TextString):
 # 6.12
 class BatchOrderOption(Boolean):
     def __init__(self, value=None):
-        super(BatchOrderOption, self).\
-            __init__(value, enums.Tags.BATCH_ORDER_OPTION)
+        super(BatchOrderOption, self).__init__(value, enums.Tags.BATCH_ORDER_OPTION)
 
 
 # 6.13
 class BatchErrorContinuationOption(Enumeration):
-
     def __init__(self, value=None):
         super(BatchErrorContinuationOption, self).__init__(
-            enums.BatchErrorContinuationOption, value,
-            enums.Tags.BATCH_ERROR_CONTINUATION_OPTION)
+            enums.BatchErrorContinuationOption,
+            value,
+            enums.Tags.BATCH_ERROR_CONTINUATION_OPTION,
+        )
 
 
 # 6.14
@@ -508,7 +479,7 @@ class MessageExtension(Struct):
 
 # 9.1.3.2.2
 class KeyCompressionType(Enumeration):
-
     def __init__(self, value=None):
         super(KeyCompressionType, self).__init__(
-            enums.KeyCompressionType, value, enums.Tags.KEY_COMPRESSION_TYPE)
+            enums.KeyCompressionType, value, enums.Tags.KEY_COMPRESSION_TYPE
+        )

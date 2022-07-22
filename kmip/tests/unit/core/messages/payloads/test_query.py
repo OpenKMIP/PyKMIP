@@ -45,16 +45,14 @@ class TestQueryRequestPayload(testtools.TestCase):
         #         Query Operations
         #         Query Objects
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x20'
-            b'\x42\x00\x74\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x74\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x20"
+            b"\x42\x00\x74\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x74\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         # Request Payload
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestQueryRequestPayload, self).tearDown()
@@ -67,41 +65,29 @@ class TestQueryRequestPayload(testtools.TestCase):
         kwargs = {"query_functions": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "The query functions must be a list of QueryFunction "
-            "enumerations.",
+            "The query functions must be a list of QueryFunction " "enumerations.",
             payloads.QueryRequestPayload,
             **kwargs
         )
         kwargs = {"query_functions": ["invalid"]}
         self.assertRaisesRegex(
             TypeError,
-            "The query functions must be a list of QueryFunction "
-            "enumerations.",
+            "The query functions must be a list of QueryFunction " "enumerations.",
             payloads.QueryRequestPayload,
             **kwargs
         )
 
-        args = (
-            payloads.QueryRequestPayload(),
-            "query_functions",
-            "invalid"
-        )
+        args = (payloads.QueryRequestPayload(), "query_functions", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "The query functions must be a list of QueryFunction "
-            "enumerations.",
+            "The query functions must be a list of QueryFunction " "enumerations.",
             setattr,
             *args
         )
-        args = (
-            payloads.QueryRequestPayload(),
-            "query_functions",
-            ["invalid"]
-        )
+        args = (payloads.QueryRequestPayload(), "query_functions", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
-            "The query functions must be a list of QueryFunction "
-            "enumerations.",
+            "The query functions must be a list of QueryFunction " "enumerations.",
             setattr,
             *args
         )
@@ -118,11 +104,8 @@ class TestQueryRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            [
-                enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
-            ],
-            payload.query_functions
+            [enums.QueryFunction.QUERY_OPERATIONS, enums.QueryFunction.QUERY_OBJECTS],
+            payload.query_functions,
         )
 
     def test_read_missing_query_functions(self):
@@ -133,11 +116,10 @@ class TestQueryRequestPayload(testtools.TestCase):
         """
         payload = payloads.QueryRequestPayload()
 
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "The Query request payload encoding is missing the query "
-            "functions.",
+            "The Query request payload encoding is missing the query " "functions.",
             payload.read,
             *args
         )
@@ -150,7 +132,7 @@ class TestQueryRequestPayload(testtools.TestCase):
         payload = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
+                enums.QueryFunction.QUERY_OBJECTS,
             ]
         )
 
@@ -168,7 +150,7 @@ class TestQueryRequestPayload(testtools.TestCase):
         """
         payload = payloads.QueryRequestPayload()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The Query request payload is missing the query functions field.",
@@ -183,17 +165,16 @@ class TestQueryRequestPayload(testtools.TestCase):
         payload = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
+                enums.QueryFunction.QUERY_OBJECTS,
             ]
         )
 
-        v = "query_functions=" + \
-            "[QueryFunction.QUERY_OPERATIONS, QueryFunction.QUERY_OBJECTS]"
-
-        self.assertEqual(
-            "QueryRequestPayload({})".format(v),
-            repr(payload)
+        v = (
+            "query_functions="
+            + "[QueryFunction.QUERY_OPERATIONS, QueryFunction.QUERY_OBJECTS]"
         )
+
+        self.assertEqual("QueryRequestPayload({})".format(v), repr(payload))
 
     def test_str(self):
         """
@@ -202,12 +183,14 @@ class TestQueryRequestPayload(testtools.TestCase):
         payload = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
+                enums.QueryFunction.QUERY_OBJECTS,
             ]
         )
 
-        v = '"query_functions": ' + \
-            '[QueryFunction.QUERY_OPERATIONS, QueryFunction.QUERY_OBJECTS]'
+        v = (
+            '"query_functions": '
+            + "[QueryFunction.QUERY_OPERATIONS, QueryFunction.QUERY_OBJECTS]"
+        )
 
         self.assertEqual("{" + v + "}", str(payload))
 
@@ -225,13 +208,13 @@ class TestQueryRequestPayload(testtools.TestCase):
         a = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
+                enums.QueryFunction.QUERY_OBJECTS,
             ]
         )
         b = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
+                enums.QueryFunction.QUERY_OBJECTS,
             ]
         )
 
@@ -246,13 +229,13 @@ class TestQueryRequestPayload(testtools.TestCase):
         a = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
+                enums.QueryFunction.QUERY_OBJECTS,
             ]
         )
         b = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OBJECTS,
-                enums.QueryFunction.QUERY_OPERATIONS
+                enums.QueryFunction.QUERY_OPERATIONS,
             ]
         )
 
@@ -284,13 +267,13 @@ class TestQueryRequestPayload(testtools.TestCase):
         a = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
+                enums.QueryFunction.QUERY_OBJECTS,
             ]
         )
         b = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
+                enums.QueryFunction.QUERY_OBJECTS,
             ]
         )
 
@@ -305,13 +288,13 @@ class TestQueryRequestPayload(testtools.TestCase):
         a = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OPERATIONS,
-                enums.QueryFunction.QUERY_OBJECTS
+                enums.QueryFunction.QUERY_OBJECTS,
             ]
         )
         b = payloads.QueryRequestPayload(
             query_functions=[
                 enums.QueryFunction.QUERY_OBJECTS,
-                enums.QueryFunction.QUERY_OPERATIONS
+                enums.QueryFunction.QUERY_OPERATIONS,
             ]
         )
 
@@ -386,48 +369,48 @@ class TestQueryResponsePayload(testtools.TestCase):
         #         Namespace 1
         #         Namespace 2
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x02\x70'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x2E'
-            b'\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C'
-            b'\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E'
-            b'\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00'
-            b'\x42\x00\x88\x01\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x02\x70"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x2E"
+            b"\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C"
+            b"\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E"
+            b"\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00"
+            b"\x42\x00\x88\x01\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
@@ -485,58 +468,58 @@ class TestQueryResponsePayload(testtools.TestCase):
         #         Extension Tag - 0x0054AA02
         #         Extension Type - 2
         self.full_encoding_kmip_1_1 = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x02\xF0'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x2E'
-            b'\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C'
-            b'\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E'
-            b'\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00'
-            b'\x42\x00\x88\x01\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00'
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
-            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
-            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x02\xF0"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x2E"
+            b"\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C"
+            b"\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E"
+            b"\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00"
+            b"\x42\x00\x88\x01\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00"
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38"
+            b"\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38"
+            b"\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
@@ -599,61 +582,61 @@ class TestQueryResponsePayload(testtools.TestCase):
         #         TCG Integrity Report
         #         SAML Assertion
         self.full_encoding_kmip_1_2 = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x03\x20'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x2E'
-            b'\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C'
-            b'\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E'
-            b'\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00'
-            b'\x42\x00\x88\x01\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00'
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
-            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
-            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x03\x20"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x2E"
+            b"\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C"
+            b"\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E"
+            b"\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00"
+            b"\x42\x00\x88\x01\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00"
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38"
+            b"\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38"
+            b"\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
@@ -757,109 +740,109 @@ class TestQueryResponsePayload(testtools.TestCase):
         #         Client Generated
         #         Client Registered
         self.full_encoding_kmip_1_3 = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x05\xA8'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x2E'
-            b'\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C'
-            b'\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E'
-            b'\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00'
-            b'\x42\x00\x88\x01\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00'
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
-            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
-            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xD9\x01\x00\x00\x00\x80'
-            b'\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00'
-            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xEB\x01\x00\x00\x00\x40'
-            b'\x42\x00\xEC\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xED\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEE\x02\x00\x00\x00\x04\x00\x00\x16\x40\x00\x00\x00\x00'
-            b'\x42\x00\xDF\x01\x00\x00\x01\x18'
-            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
-            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
-            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
-            b'\x31\x33\x39\x36\x00\x00\x00\x00'
-            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
-            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
-            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xF7\x01\x00\x00\x00\x70'
-            b'\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x05\xA8"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x2E"
+            b"\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C"
+            b"\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E"
+            b"\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00"
+            b"\x42\x00\x88\x01\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00"
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38"
+            b"\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38"
+            b"\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xD9\x01\x00\x00\x00\x80"
+            b"\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00"
+            b"\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xEB\x01\x00\x00\x00\x40"
+            b"\x42\x00\xEC\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xED\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEE\x02\x00\x00\x00\x04\x00\x00\x16\x40\x00\x00\x00\x00"
+            b"\x42\x00\xDF\x01\x00\x00\x01\x18"
+            b"\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE2\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE7\x07\x00\x00\x00\x24"
+            b"\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31"
+            b"\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63"
+            b"\x31\x33\x39\x36\x00\x00\x00\x00"
+            b"\x42\x00\xE8\x07\x00\x00\x00\x10"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D"
+            b"\x42\x00\xE9\x07\x00\x00\x00\x12"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63"
+            b"\x6F\x6D\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xF7\x01\x00\x00\x00\x70"
+            b"\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document,
@@ -972,124 +955,122 @@ class TestQueryResponsePayload(testtools.TestCase):
         #                 Cryptographic Usage Mask - Encrypt | Decrypt
         #     Protection Storage Mask - Software | Hardware
         self.full_encoding_kmip_2_0 = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x06\x10'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00'
-            b'\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x2E'
-            b'\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C'
-            b'\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E'
-            b'\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00'
-            b'\x42\x00\x88\x01\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x03\x07\x00\x00\x00\x0B'
-            b'\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00'
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
-            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38'
-            b'\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xD9\x01\x00\x00\x00\x80'
-            b'\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00'
-            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00'
-            b'\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xEB\x01\x00\x00\x00\x40'
-            b'\x42\x00\xEC\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xED\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEE\x02\x00\x00\x00\x04\x00\x00\x16\x40\x00\x00\x00\x00'
-            b'\x42\x00\xDF\x01\x00\x00\x01\x18'
-            b'\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE2\x07\x00\x00\x00\x13'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E'
-            b'\x63\x6F\x6D\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\xE7\x07\x00\x00\x00\x24'
-            b'\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31'
-            b'\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63'
-            b'\x31\x33\x39\x36\x00\x00\x00\x00'
-            b'\x42\x00\xE8\x07\x00\x00\x00\x10'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D'
-            b'\x42\x00\xE9\x07\x00\x00\x00\x12'
-            b'\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63'
-            b'\x6F\x6D\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xEA\x07\x00\x00\x00\x09'
-            b'\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xF7\x01\x00\x00\x00\x70'
-            b'\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00'
-            b'\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x01\x52\x01\x00\x00\x00\x50'
-            b'\x42\x01\x53\x01\x00\x00\x00\x48'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x01\x25\x01\x00\x00\x00\x30'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00'
-            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x06\x10"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x08\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x09\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0E\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x0F\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x10\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x11\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x12\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x13\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x14\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x15\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x18\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x19\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1A\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1D\x00\x00\x00\x00"
+            b"\x42\x00\x5C\x05\x00\x00\x00\x04\x00\x00\x00\x1E\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x2E"
+            b"\x49\x42\x4D\x20\x74\x65\x73\x74\x20\x73\x65\x72\x76\x65\x72\x2C"
+            b"\x20\x6E\x6F\x74\x2D\x54\x4B\x4C\x4D\x20\x32\x2E\x30\x2E\x31\x2E"
+            b"\x31\x20\x4B\x4D\x49\x50\x20\x32\x2E\x30\x2E\x30\x2E\x31\x00\x00"
+            b"\x42\x00\x88\x01\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x03\x07\x00\x00\x00\x0B"
+            b"\x4E\x61\x6D\x65\x73\x70\x61\x63\x65\x20\x32\x00\x00\x00\x00\x00"
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38"
+            b"\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38"
+            b"\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xC7\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xD9\x01\x00\x00\x00\x80"
+            b"\x42\x00\xDA\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x01\x00\x00\x00\x00\x00"
+            b"\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00"
+            b"\x42\x00\xDB\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x75\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xDC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xDD\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xEB\x01\x00\x00\x00\x40"
+            b"\x42\x00\xEC\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xED\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEE\x02\x00\x00\x00\x04\x00\x00\x16\x40\x00\x00\x00\x00"
+            b"\x42\x00\xDF\x01\x00\x00\x01\x18"
+            b"\x42\x00\xE0\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xE1\x07\x00\x00\x00\x02\x55\x53\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE2\x07\x00\x00\x00\x13"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x65\x78\x61\x6D\x70\x6C\x65\x2E"
+            b"\x63\x6F\x6D\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE3\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xE4\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xE5\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE6\x02\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\xE7\x07\x00\x00\x00\x24"
+            b"\x63\x30\x30\x35\x64\x33\x39\x65\x2D\x36\x30\x34\x66\x2D\x31\x31"
+            b"\x65\x39\x2D\x39\x39\x64\x66\x2D\x30\x38\x30\x30\x32\x37\x66\x63"
+            b"\x31\x33\x39\x36\x00\x00\x00\x00"
+            b"\x42\x00\xE8\x07\x00\x00\x00\x10"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x65\x73\x74\x2E\x63\x6F\x6D"
+            b"\x42\x00\xE9\x07\x00\x00\x00\x12"
+            b"\x68\x74\x74\x70\x73\x3A\x2F\x2F\x76\x65\x6E\x64\x6F\x72\x2E\x63"
+            b"\x6F\x6D\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x31\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xEA\x07\x00\x00\x00\x09"
+            b"\x50\x72\x6F\x66\x69\x6C\x65\x20\x32\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xF7\x01\x00\x00\x00\x70"
+            b"\x42\x00\xEF\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xF0\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xF1\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xF2\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xF3\x05\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00\x00"
+            b"\x42\x00\xF4\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\xF5\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\xF6\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x01\x52\x01\x00\x00\x00\x50"
+            b"\x42\x01\x53\x01\x00\x00\x00\x48"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x01\x25\x01\x00\x00\x00\x30"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x0C\x00\x00\x00\x00"
+            b"\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         # Response Payload
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestQueryResponsePayload, self).tearDown()
@@ -1114,22 +1095,14 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "operations",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "operations", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The operations must be a list of Operation enumerations.",
             setattr,
             *args
         )
-        args = (
-            payloads.QueryResponsePayload(),
-            "operations",
-            ["invalid"]
-        )
+        args = (payloads.QueryResponsePayload(), "operations", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
             "The operations must be a list of Operation enumerations.",
@@ -1157,22 +1130,14 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "object_types",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "object_types", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The object types must be a list of ObjectType enumerations.",
             setattr,
             *args
         )
-        args = (
-            payloads.QueryResponsePayload(),
-            "object_types",
-            ["invalid"]
-        )
+        args = (payloads.QueryResponsePayload(), "object_types", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
             "The object types must be a list of ObjectType enumerations.",
@@ -1193,16 +1158,9 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "vendor_identification",
-            0
-        )
+        args = (payloads.QueryResponsePayload(), "vendor_identification", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The vendor identification must be a string.",
-            setattr,
-            *args
+            TypeError, "The vendor identification must be a string.", setattr, *args
         )
 
     def test_invalid_server_information(self):
@@ -1218,11 +1176,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "server_information",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "server_information", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The server information must be a ServerInformation structure.",
@@ -1250,22 +1204,14 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "application_namespaces",
-            0
-        )
+        args = (payloads.QueryResponsePayload(), "application_namespaces", 0)
         self.assertRaisesRegex(
             TypeError,
             "The application namespaces must be a list of strings.",
             setattr,
             *args
         )
-        args = (
-            payloads.QueryResponsePayload(),
-            "application_namespaces",
-            [0]
-        )
+        args = (payloads.QueryResponsePayload(), "application_namespaces", [0])
         self.assertRaisesRegex(
             TypeError,
             "The application namespaces must be a list of strings.",
@@ -1295,11 +1241,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "extension_information",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "extension_information", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The extension information must be a list of "
@@ -1307,11 +1249,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             setattr,
             *args
         )
-        args = (
-            payloads.QueryResponsePayload(),
-            "extension_information",
-            ["invalid"]
-        )
+        args = (payloads.QueryResponsePayload(), "extension_information", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
             "The extension information must be a list of "
@@ -1328,41 +1266,29 @@ class TestQueryResponsePayload(testtools.TestCase):
         kwargs = {"attestation_types": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "The attestation types must be a list of AttestationType "
-            "enumerations.",
+            "The attestation types must be a list of AttestationType " "enumerations.",
             payloads.QueryResponsePayload,
             **kwargs
         )
         kwargs = {"attestation_types": ["invalid"]}
         self.assertRaisesRegex(
             TypeError,
-            "The attestation types must be a list of AttestationType "
-            "enumerations.",
+            "The attestation types must be a list of AttestationType " "enumerations.",
             payloads.QueryResponsePayload,
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "attestation_types",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "attestation_types", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "The attestation types must be a list of AttestationType "
-            "enumerations.",
+            "The attestation types must be a list of AttestationType " "enumerations.",
             setattr,
             *args
         )
-        args = (
-            payloads.QueryResponsePayload(),
-            "attestation_types",
-            ["invalid"]
-        )
+        args = (payloads.QueryResponsePayload(), "attestation_types", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
-            "The attestation types must be a list of AttestationType "
-            "enumerations.",
+            "The attestation types must be a list of AttestationType " "enumerations.",
             setattr,
             *args
         )
@@ -1387,22 +1313,14 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "rng_parameters",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "rng_parameters", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The RNG parameters must be a list of RNGParameters structures.",
             setattr,
             *args
         )
-        args = (
-            payloads.QueryResponsePayload(),
-            "rng_parameters",
-            ["invalid"]
-        )
+        args = (payloads.QueryResponsePayload(), "rng_parameters", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
             "The RNG parameters must be a list of RNGParameters structures.",
@@ -1432,11 +1350,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "profile_information",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "profile_information", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The profile information must be a list of ProfileInformation "
@@ -1444,11 +1358,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             setattr,
             *args
         )
-        args = (
-            payloads.QueryResponsePayload(),
-            "profile_information",
-            ["invalid"]
-        )
+        args = (payloads.QueryResponsePayload(), "profile_information", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
             "The profile information must be a list of ProfileInformation "
@@ -1479,11 +1389,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "validation_information",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "validation_information", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The validation information must be a list of "
@@ -1491,11 +1397,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             setattr,
             *args
         )
-        args = (
-            payloads.QueryResponsePayload(),
-            "validation_information",
-            ["invalid"]
-        )
+        args = (payloads.QueryResponsePayload(), "validation_information", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
             "The validation information must be a list of "
@@ -1526,11 +1428,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "capability_information",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "capability_information", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The capability information must be a list of "
@@ -1538,11 +1436,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             setattr,
             *args
         )
-        args = (
-            payloads.QueryResponsePayload(),
-            "capability_information",
-            ["invalid"]
-        )
+        args = (payloads.QueryResponsePayload(), "capability_information", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
             "The capability information must be a list of "
@@ -1576,7 +1470,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         args = (
             payloads.QueryResponsePayload(),
             "client_registration_methods",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -1588,7 +1482,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         args = (
             payloads.QueryResponsePayload(),
             "client_registration_methods",
-            ["invalid"]
+            ["invalid"],
         )
         self.assertRaisesRegex(
             TypeError,
@@ -1606,21 +1500,15 @@ class TestQueryResponsePayload(testtools.TestCase):
         kwargs = {"defaults_information": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "The defaults information must be a DefaultsInformation "
-            "structure.",
+            "The defaults information must be a DefaultsInformation " "structure.",
             payloads.QueryResponsePayload,
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "defaults_information",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "defaults_information", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "The defaults information must be a DefaultsInformation "
-            "structure.",
+            "The defaults information must be a DefaultsInformation " "structure.",
             setattr,
             *args
         )
@@ -1645,11 +1533,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.QueryResponsePayload(),
-            "protection_storage_masks",
-            "invalid"
-        )
+        args = (payloads.QueryResponsePayload(), "protection_storage_masks", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The protection storage masks must be a list of integers.",
@@ -1659,7 +1543,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         args = (
             payloads.QueryResponsePayload(),
             "protection_storage_masks",
-            ["invalid"]
+            ["invalid"],
         )
         self.assertRaisesRegex(
             TypeError,
@@ -1710,9 +1594,9 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
-            payload.operations
+            payload.operations,
         )
         self.assertEqual(
             [
@@ -1721,25 +1605,16 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            payload.object_types
+            payload.object_types,
         )
         self.assertEqual(
             "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1",
-            payload.vendor_identification
+            payload.vendor_identification,
         )
-        self.assertEqual(
-            misc.ServerInformation(),
-            payload.server_information
-        )
-        self.assertEqual(
-            [
-                "Namespace 1",
-                "Namespace 2"
-            ],
-            payload.application_namespaces
-        )
+        self.assertEqual(misc.ServerInformation(), payload.server_information)
+        self.assertEqual(["Namespace 1", "Namespace 2"], payload.application_namespaces)
 
     def test_read_kmip_1_1(self):
         """
@@ -1756,8 +1631,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.extension_information)
 
         payload.read(
-            self.full_encoding_kmip_1_1,
-            kmip_version=enums.KMIPVersion.KMIP_1_1
+            self.full_encoding_kmip_1_1, kmip_version=enums.KMIPVersion.KMIP_1_1
         )
 
         self.assertEqual(
@@ -1787,9 +1661,9 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
-            payload.operations
+            payload.operations,
         )
         self.assertEqual(
             [
@@ -1798,39 +1672,30 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            payload.object_types
+            payload.object_types,
         )
         self.assertEqual(
             "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1",
-            payload.vendor_identification
+            payload.vendor_identification,
         )
-        self.assertEqual(
-            misc.ServerInformation(),
-            payload.server_information
-        )
-        self.assertEqual(
-            [
-                "Namespace 1",
-                "Namespace 2"
-            ],
-            payload.application_namespaces
-        )
+        self.assertEqual(misc.ServerInformation(), payload.server_information)
+        self.assertEqual(["Namespace 1", "Namespace 2"], payload.application_namespaces)
         self.assertEqual(
             [
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
-            payload.extension_information
+            payload.extension_information,
         )
 
     def test_read_kmip_1_2(self):
@@ -1849,8 +1714,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.attestation_types)
 
         payload.read(
-            self.full_encoding_kmip_1_2,
-            kmip_version=enums.KMIPVersion.KMIP_1_2
+            self.full_encoding_kmip_1_2, kmip_version=enums.KMIPVersion.KMIP_1_2
         )
 
         self.assertEqual(
@@ -1880,9 +1744,9 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
-            payload.operations
+            payload.operations,
         )
         self.assertEqual(
             [
@@ -1891,47 +1755,38 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            payload.object_types
+            payload.object_types,
         )
         self.assertEqual(
             "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1",
-            payload.vendor_identification
+            payload.vendor_identification,
         )
-        self.assertEqual(
-            misc.ServerInformation(),
-            payload.server_information
-        )
-        self.assertEqual(
-            [
-                "Namespace 1",
-                "Namespace 2"
-            ],
-            payload.application_namespaces
-        )
+        self.assertEqual(misc.ServerInformation(), payload.server_information)
+        self.assertEqual(["Namespace 1", "Namespace 2"], payload.application_namespaces)
         self.assertEqual(
             [
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
-            payload.extension_information
+            payload.extension_information,
         )
         self.assertEqual(
             [
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
-            payload.attestation_types
+            payload.attestation_types,
         )
 
     def test_read_kmip_1_3(self):
@@ -1955,8 +1810,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.client_registration_methods)
 
         payload.read(
-            self.full_encoding_kmip_1_3,
-            kmip_version=enums.KMIPVersion.KMIP_1_3
+            self.full_encoding_kmip_1_3, kmip_version=enums.KMIPVersion.KMIP_1_3
         )
 
         self.assertEqual(
@@ -1986,9 +1840,9 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
-            payload.operations
+            payload.operations,
         )
         self.assertEqual(
             [
@@ -1997,47 +1851,38 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            payload.object_types
+            payload.object_types,
         )
         self.assertEqual(
             "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1",
-            payload.vendor_identification
+            payload.vendor_identification,
         )
-        self.assertEqual(
-            misc.ServerInformation(),
-            payload.server_information
-        )
-        self.assertEqual(
-            [
-                "Namespace 1",
-                "Namespace 2"
-            ],
-            payload.application_namespaces
-        )
+        self.assertEqual(misc.ServerInformation(), payload.server_information)
+        self.assertEqual(["Namespace 1", "Namespace 2"], payload.application_namespaces)
         self.assertEqual(
             [
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
-            payload.extension_information
+            payload.extension_information,
         )
         self.assertEqual(
             [
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
-            payload.attestation_types
+            payload.attestation_types,
         )
         self.assertEqual(
             [
@@ -2049,22 +1894,20 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
-            payload.rng_parameters
+            payload.rng_parameters,
         )
         self.assertEqual(
             [
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
-            payload.profile_information
+            payload.profile_information,
         )
         self.assertEqual(
             [
@@ -2083,10 +1926,10 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
-            payload.validation_information
+            payload.validation_information,
         )
         self.assertEqual(
             [
@@ -2097,17 +1940,17 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
-            payload.capability_information
+            payload.capability_information,
         )
         self.assertEqual(
             [
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ],
-            payload.client_registration_methods
+            payload.client_registration_methods,
         )
 
     def test_read_kmip_2_0(self):
@@ -2133,8 +1976,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.protection_storage_masks)
 
         payload.read(
-            self.full_encoding_kmip_2_0,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding_kmip_2_0, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(
@@ -2164,9 +2006,9 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
-            payload.operations
+            payload.operations,
         )
         self.assertEqual(
             [
@@ -2175,47 +2017,38 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            payload.object_types
+            payload.object_types,
         )
         self.assertEqual(
             "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1",
-            payload.vendor_identification
+            payload.vendor_identification,
         )
-        self.assertEqual(
-            misc.ServerInformation(),
-            payload.server_information
-        )
-        self.assertEqual(
-            [
-                "Namespace 1",
-                "Namespace 2"
-            ],
-            payload.application_namespaces
-        )
+        self.assertEqual(misc.ServerInformation(), payload.server_information)
+        self.assertEqual(["Namespace 1", "Namespace 2"], payload.application_namespaces)
         self.assertEqual(
             [
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
-            payload.extension_information
+            payload.extension_information,
         )
         self.assertEqual(
             [
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
-            payload.attestation_types
+            payload.attestation_types,
         )
         self.assertEqual(
             [
@@ -2227,22 +2060,20 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
-            payload.rng_parameters
+            payload.rng_parameters,
         )
         self.assertEqual(
             [
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
-            payload.profile_information
+            payload.profile_information,
         )
         self.assertEqual(
             [
@@ -2261,10 +2092,10 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
-            payload.validation_information
+            payload.validation_information,
         )
         self.assertEqual(
             [
@@ -2275,17 +2106,17 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
-            payload.capability_information
+            payload.capability_information,
         )
         self.assertEqual(
             [
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ],
-            payload.client_registration_methods
+            payload.client_registration_methods,
         )
         self.assertEqual(
             objects.DefaultsInformation(
@@ -2297,27 +2128,24 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             ),
-            payload.defaults_information
+            payload.defaults_information,
         )
         self.assertEqual([3], payload.protection_storage_masks)
 
@@ -2374,7 +2202,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -2382,16 +2210,11 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ]
+            application_namespaces=["Namespace 1", "Namespace 2"],
         )
 
         buffer = utils.BytearrayStream()
@@ -2432,7 +2255,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -2440,28 +2263,23 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
-            ]
+                    extension_type=objects.ExtensionType(2),
+                ),
+            ],
         )
 
         buffer = utils.BytearrayStream()
@@ -2502,7 +2320,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -2510,33 +2328,28 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
-            ]
+                enums.AttestationType.SAML_ASSERTION,
+            ],
         )
 
         buffer = utils.BytearrayStream()
@@ -2577,7 +2390,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -2585,32 +2398,27 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
             rng_parameters=[
                 objects.RNGParameters(
@@ -2621,16 +2429,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
             validation_information=[
@@ -2649,7 +2455,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
             capability_information=[
@@ -2660,13 +2466,13 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
-            ]
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
+            ],
         )
 
         buffer = utils.BytearrayStream()
@@ -2707,7 +2513,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -2715,32 +2521,27 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
             rng_parameters=[
                 objects.RNGParameters(
@@ -2751,16 +2552,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
             validation_information=[
@@ -2779,7 +2578,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
             capability_information=[
@@ -2790,12 +2589,12 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ],
             defaults_information=objects.DefaultsInformation(
                 object_defaults=[
@@ -2806,27 +2605,24 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             ),
-            protection_storage_masks=[3]
+            protection_storage_masks=[3],
         )
 
         buffer = utils.BytearrayStream()
@@ -2879,7 +2675,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -2887,32 +2683,27 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
             rng_parameters=[
                 objects.RNGParameters(
@@ -2923,16 +2714,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
             validation_information=[
@@ -2951,7 +2740,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
             capability_information=[
@@ -2962,12 +2751,12 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ],
             defaults_information=objects.DefaultsInformation(
                 object_defaults=[
@@ -2978,27 +2767,24 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             ),
-            protection_storage_masks=[3]
+            protection_storage_masks=[3],
         )
 
         operations = [
@@ -3027,7 +2813,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             "Operation.CANCEL",
             "Operation.POLL",
             "Operation.REKEY_KEY_PAIR",
-            "Operation.DISCOVER_VERSIONS"
+            "Operation.DISCOVER_VERSIONS",
         ]
         v = ", ".join(operations)
         ops = "operations=[{}]".format(v)
@@ -3038,7 +2824,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             "ObjectType.PUBLIC_KEY",
             "ObjectType.PRIVATE_KEY",
             "ObjectType.TEMPLATE",
-            "ObjectType.SECRET_DATA"
+            "ObjectType.SECRET_DATA",
         ]
         v = ", ".join(object_types)
         ot = "object_types=[{}]".format(v)
@@ -3049,29 +2835,26 @@ class TestQueryResponsePayload(testtools.TestCase):
 
         sei = "server_information=ServerInformation()"
 
-        an = 'application_namespaces=["{}", "{}"]'.format(
-            "Namespace 1",
-            "Namespace 2"
-        )
+        an = 'application_namespaces=["{}", "{}"]'.format("Namespace 1", "Namespace 2")
 
         extensions = [
             objects.ExtensionInformation(
                 extension_name=objects.ExtensionName("ACME LOCATION"),
                 extension_tag=objects.ExtensionTag(0x0054AA01),
-                extension_type=objects.ExtensionType(7)
+                extension_type=objects.ExtensionType(7),
             ),
             objects.ExtensionInformation(
                 extension_name=objects.ExtensionName("ACME ZIP CODE"),
                 extension_tag=objects.ExtensionTag(0x0054AA02),
-                extension_type=objects.ExtensionType(2)
-            )
+                extension_type=objects.ExtensionType(2),
+            ),
         ]
         ei = "extension_information={}".format(repr(extensions))
 
         values = [
             "AttestationType.TPM_QUOTE",
             "AttestationType.TCG_INTEGRITY_REPORT",
-            "AttestationType.SAML_ASSERTION"
+            "AttestationType.SAML_ASSERTION",
         ]
         v = ", ".join(values)
         att = "attestation_types=[{}]".format(v)
@@ -3095,16 +2878,17 @@ class TestQueryResponsePayload(testtools.TestCase):
         v = ", ".join([n, u, p])
         pi = "profile_information=[ProfileInformation({})]".format(v)
 
-        vat = "validation_authority_type=" + \
-              "ValidationAuthorityType.COMMON_CRITERIA"
+        vat = "validation_authority_type=" + "ValidationAuthorityType.COMMON_CRITERIA"
         vac = 'validation_authority_country="US"'
         vau = 'validation_authority_uri="https://example.com"'
         vvj = "validation_version_major=1"
         vvn = "validation_version_minor=0"
         vt = "validation_type=ValidationType.HYBRID"
         vl = "validation_level=5"
-        vci = 'validation_certificate_identifier=' + \
-              '"c005d39e-604f-11e9-99df-080027fc1396"'
+        vci = (
+            "validation_certificate_identifier="
+            + '"c005d39e-604f-11e9-99df-080027fc1396"'
+        )
         vcu = 'validation_certificate_uri="https://test.com"'
         vvu = 'validation_vendor_uri="https://vendor.com"'
         vp = 'validation_profiles=["Profile 1", "Profile 2"]'
@@ -3147,14 +2931,9 @@ class TestQueryResponsePayload(testtools.TestCase):
 
         psm = "protection_storage_masks=[3]"
 
-        v = ", ".join(
-            [ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, psm]
-        )
+        v = ", ".join([ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, psm])
 
-        self.assertEqual(
-            "QueryResponsePayload({})".format(v),
-            repr(payload)
-        )
+        self.assertEqual("QueryResponsePayload({})".format(v), repr(payload))
 
     def test_str(self):
         """
@@ -3187,7 +2966,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -3195,32 +2974,27 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
             rng_parameters=[
                 objects.RNGParameters(
@@ -3231,16 +3005,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
             validation_information=[
@@ -3259,7 +3031,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
             capability_information=[
@@ -3270,12 +3042,12 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ],
             defaults_information=objects.DefaultsInformation(
                 object_defaults=[
@@ -3286,27 +3058,24 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             ),
-            protection_storage_masks=[3]
+            protection_storage_masks=[3],
         )
 
         operations = [
@@ -3335,7 +3104,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             "Operation.CANCEL",
             "Operation.POLL",
             "Operation.REKEY_KEY_PAIR",
-            "Operation.DISCOVER_VERSIONS"
+            "Operation.DISCOVER_VERSIONS",
         ]
         v = ", ".join(operations)
         ops = '"operations": [{}]'.format(v)
@@ -3346,7 +3115,7 @@ class TestQueryResponsePayload(testtools.TestCase):
             "ObjectType.PUBLIC_KEY",
             "ObjectType.PRIVATE_KEY",
             "ObjectType.TEMPLATE",
-            "ObjectType.SECRET_DATA"
+            "ObjectType.SECRET_DATA",
         ]
         v = ", ".join(object_types)
         ot = '"object_types": [{}]'.format(v)
@@ -3358,28 +3127,27 @@ class TestQueryResponsePayload(testtools.TestCase):
         sei = '"server_information": ServerInformation()'
 
         an = '"application_namespaces": ["{}", "{}"]'.format(
-            "Namespace 1",
-            "Namespace 2"
+            "Namespace 1", "Namespace 2"
         )
 
         extensions = [
             objects.ExtensionInformation(
                 extension_name=objects.ExtensionName("ACME LOCATION"),
                 extension_tag=objects.ExtensionTag(0x0054AA01),
-                extension_type=objects.ExtensionType(7)
+                extension_type=objects.ExtensionType(7),
             ),
             objects.ExtensionInformation(
                 extension_name=objects.ExtensionName("ACME ZIP CODE"),
                 extension_tag=objects.ExtensionTag(0x0054AA02),
-                extension_type=objects.ExtensionType(2)
-            )
+                extension_type=objects.ExtensionType(2),
+            ),
         ]
         ei = '"extension_information": {}'.format(repr(extensions))
 
         values = [
             "AttestationType.TPM_QUOTE",
             "AttestationType.TCG_INTEGRITY_REPORT",
-            "AttestationType.SAML_ASSERTION"
+            "AttestationType.SAML_ASSERTION",
         ]
         v = ", ".join(values)
         att = '"attestation_types": [{}]'.format(v)
@@ -3405,16 +3173,19 @@ class TestQueryResponsePayload(testtools.TestCase):
         v = "{" + v + "}"
         pi = '"profile_information": [{}]'.format(v)
 
-        vat = '"validation_authority_type": ' + \
-              'ValidationAuthorityType.COMMON_CRITERIA'
+        vat = (
+            '"validation_authority_type": ' + "ValidationAuthorityType.COMMON_CRITERIA"
+        )
         vac = '"validation_authority_country": "US"'
         vau = '"validation_authority_uri": "https://example.com"'
         vvj = '"validation_version_major": 1'
         vvn = '"validation_version_minor": 0'
         vt = '"validation_type": ValidationType.HYBRID'
         vl = '"validation_level": 5'
-        vci = '"validation_certificate_identifier": ' + \
-              '"c005d39e-604f-11e9-99df-080027fc1396"'
+        vci = (
+            '"validation_certificate_identifier": '
+            + '"c005d39e-604f-11e9-99df-080027fc1396"'
+        )
         vcu = '"validation_certificate_uri": "https://test.com"'
         vvu = '"validation_vendor_uri": "https://vendor.com"'
         vp = '"validation_profiles": ["Profile 1", "Profile 2"]'
@@ -3451,9 +3222,7 @@ class TestQueryResponsePayload(testtools.TestCase):
 
         psm = '"protection_storage_masks": [3]'
 
-        v = ", ".join(
-            [ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, psm]
-        )
+        v = ", ".join([ops, ot, vei, sei, an, ei, att, rp, pi, vi, ci, crm, di, psm])
 
         self.assertEqual("{" + v + "}", str(payload))
 
@@ -3495,7 +3264,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -3503,32 +3272,27 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
             rng_parameters=[
                 objects.RNGParameters(
@@ -3539,16 +3303,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
             validation_information=[
@@ -3567,7 +3329,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
             capability_information=[
@@ -3578,12 +3340,12 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ],
             defaults_information=objects.DefaultsInformation(
                 object_defaults=[
@@ -3594,27 +3356,24 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             ),
-            protection_storage_masks=[3]
+            protection_storage_masks=[3],
         )
         b = payloads.QueryResponsePayload(
             operations=[
@@ -3643,7 +3402,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -3651,32 +3410,27 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
             rng_parameters=[
                 objects.RNGParameters(
@@ -3687,16 +3441,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
             validation_information=[
@@ -3715,7 +3467,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
             capability_information=[
@@ -3726,12 +3478,12 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ],
             defaults_information=objects.DefaultsInformation(
                 object_defaults=[
@@ -3742,27 +3494,24 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             ),
-            protection_storage_masks=[3]
+            protection_storage_masks=[3],
         )
 
         self.assertTrue(a == b)
@@ -3800,7 +3549,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ]
         )
         b = payloads.QueryResponsePayload(
@@ -3816,7 +3565,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.GET,
                 enums.Operation.GET_ATTRIBUTES,
                 enums.Operation.GET_ATTRIBUTE_LIST,
-                enums.Operation.ADD_ATTRIBUTE
+                enums.Operation.ADD_ATTRIBUTE,
             ]
         )
 
@@ -3835,14 +3584,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ]
         )
         b = payloads.QueryResponsePayload(
             object_types=[
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ]
         )
 
@@ -3871,12 +3620,8 @@ class TestQueryResponsePayload(testtools.TestCase):
         QueryResponsePayload structures with different server information
         fields.
         """
-        a = payloads.QueryResponsePayload(
-            server_information=misc.ServerInformation()
-        )
-        b = payloads.QueryResponsePayload(
-            server_information=None
-        )
+        a = payloads.QueryResponsePayload(server_information=misc.ServerInformation())
+        b = payloads.QueryResponsePayload(server_information=None)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3888,14 +3633,9 @@ class TestQueryResponsePayload(testtools.TestCase):
         fields.
         """
         a = payloads.QueryResponsePayload(
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ]
+            application_namespaces=["Namespace 1", "Namespace 2"]
         )
-        b = payloads.QueryResponsePayload(
-            application_namespaces=["Namespace 3"]
-        )
+        b = payloads.QueryResponsePayload(application_namespaces=["Namespace 3"])
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3911,7 +3651,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 )
             ]
         )
@@ -3920,7 +3660,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
+                    extension_type=objects.ExtensionType(2),
                 )
             ]
         )
@@ -3938,13 +3678,11 @@ class TestQueryResponsePayload(testtools.TestCase):
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ]
         )
         b = payloads.QueryResponsePayload(
-            attestation_types=[
-                enums.AttestationType.TPM_QUOTE
-            ]
+            attestation_types=[enums.AttestationType.TPM_QUOTE]
         )
 
         self.assertFalse(a == b)
@@ -3966,7 +3704,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ]
         )
@@ -3980,7 +3718,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=False
+                    prediction_resistance=False,
                 )
             ]
         )
@@ -3997,22 +3735,18 @@ class TestQueryResponsePayload(testtools.TestCase):
         a = payloads.QueryResponsePayload(
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ]
         )
         b = payloads.QueryResponsePayload(
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.TAPE_LIBRARY_SERVER_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.TAPE_LIBRARY_SERVER_KMIPv12),
                     server_uri="https://test.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ]
         )
@@ -4043,7 +3777,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ]
         )
@@ -4064,7 +3798,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://certificate.com",
                     validation_vendor_uri="https://example.com",
-                    validation_profiles=["Profile 3", "Profile 4"]
+                    validation_profiles=["Profile 3", "Profile 4"],
                 )
             ]
         )
@@ -4087,7 +3821,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ]
         )
@@ -4100,7 +3834,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ]
         )
@@ -4117,7 +3851,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         a = payloads.QueryResponsePayload(
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ]
         )
         b = payloads.QueryResponsePayload(
@@ -4145,23 +3879,20 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             )
@@ -4176,21 +3907,17 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.RSA,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=1024,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
-                                    value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value
-                                    ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    value=(enums.CryptographicUsageMask.ENCRYPT.value),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             )
@@ -4260,7 +3987,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -4268,32 +3995,27 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
             rng_parameters=[
                 objects.RNGParameters(
@@ -4304,16 +4026,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
             validation_information=[
@@ -4332,7 +4052,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
             capability_information=[
@@ -4343,12 +4063,12 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ],
             defaults_information=objects.DefaultsInformation(
                 object_defaults=[
@@ -4359,27 +4079,24 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             ),
-            protection_storage_masks=[3]
+            protection_storage_masks=[3],
         )
         b = payloads.QueryResponsePayload(
             operations=[
@@ -4408,7 +4125,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ],
             object_types=[
                 enums.ObjectType.CERTIFICATE,
@@ -4416,32 +4133,27 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ],
-            vendor_identification=(
-                "IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"
-            ),
+            vendor_identification=("IBM test server, not-TKLM 2.0.1.1 KMIP 2.0.0.1"),
             server_information=misc.ServerInformation(),
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ],
+            application_namespaces=["Namespace 1", "Namespace 2"],
             extension_information=[
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 ),
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
-                )
+                    extension_type=objects.ExtensionType(2),
+                ),
             ],
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ],
             rng_parameters=[
                 objects.RNGParameters(
@@ -4452,16 +4164,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ],
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ],
             validation_information=[
@@ -4480,7 +4190,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ],
             capability_information=[
@@ -4491,12 +4201,12 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ],
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ],
             defaults_information=objects.DefaultsInformation(
                 object_defaults=[
@@ -4507,27 +4217,24 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             ),
-            protection_storage_masks=[3]
+            protection_storage_masks=[3],
         )
 
         self.assertFalse(a != b)
@@ -4565,7 +4272,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.CANCEL,
                 enums.Operation.POLL,
                 enums.Operation.REKEY_KEY_PAIR,
-                enums.Operation.DISCOVER_VERSIONS
+                enums.Operation.DISCOVER_VERSIONS,
             ]
         )
         b = payloads.QueryResponsePayload(
@@ -4581,7 +4288,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.Operation.GET,
                 enums.Operation.GET_ATTRIBUTES,
                 enums.Operation.GET_ATTRIBUTE_LIST,
-                enums.Operation.ADD_ATTRIBUTE
+                enums.Operation.ADD_ATTRIBUTE,
             ]
         )
 
@@ -4600,14 +4307,14 @@ class TestQueryResponsePayload(testtools.TestCase):
                 enums.ObjectType.PUBLIC_KEY,
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ]
         )
         b = payloads.QueryResponsePayload(
             object_types=[
                 enums.ObjectType.PRIVATE_KEY,
                 enums.ObjectType.TEMPLATE,
-                enums.ObjectType.SECRET_DATA
+                enums.ObjectType.SECRET_DATA,
             ]
         )
 
@@ -4636,12 +4343,8 @@ class TestQueryResponsePayload(testtools.TestCase):
         QueryResponsePayload structures with different server information
         fields.
         """
-        a = payloads.QueryResponsePayload(
-            server_information=misc.ServerInformation()
-        )
-        b = payloads.QueryResponsePayload(
-            server_information=None
-        )
+        a = payloads.QueryResponsePayload(server_information=misc.ServerInformation())
+        b = payloads.QueryResponsePayload(server_information=None)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -4653,14 +4356,9 @@ class TestQueryResponsePayload(testtools.TestCase):
         fields.
         """
         a = payloads.QueryResponsePayload(
-            application_namespaces=[
-                "Namespace 1",
-                "Namespace 2"
-            ]
+            application_namespaces=["Namespace 1", "Namespace 2"]
         )
-        b = payloads.QueryResponsePayload(
-            application_namespaces=["Namespace 3"]
-        )
+        b = payloads.QueryResponsePayload(application_namespaces=["Namespace 3"])
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -4676,7 +4374,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME LOCATION"),
                     extension_tag=objects.ExtensionTag(0x0054AA01),
-                    extension_type=objects.ExtensionType(7)
+                    extension_type=objects.ExtensionType(7),
                 )
             ]
         )
@@ -4685,7 +4383,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                 objects.ExtensionInformation(
                     extension_name=objects.ExtensionName("ACME ZIP CODE"),
                     extension_tag=objects.ExtensionTag(0x0054AA02),
-                    extension_type=objects.ExtensionType(2)
+                    extension_type=objects.ExtensionType(2),
                 )
             ]
         )
@@ -4703,13 +4401,11 @@ class TestQueryResponsePayload(testtools.TestCase):
             attestation_types=[
                 enums.AttestationType.TPM_QUOTE,
                 enums.AttestationType.TCG_INTEGRITY_REPORT,
-                enums.AttestationType.SAML_ASSERTION
+                enums.AttestationType.SAML_ASSERTION,
             ]
         )
         b = payloads.QueryResponsePayload(
-            attestation_types=[
-                enums.AttestationType.TPM_QUOTE
-            ]
+            attestation_types=[enums.AttestationType.TPM_QUOTE]
         )
 
         self.assertTrue(a != b)
@@ -4731,7 +4427,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=True
+                    prediction_resistance=True,
                 )
             ]
         )
@@ -4745,7 +4441,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     drbg_algorithm=enums.DRBGAlgorithm.HASH,
                     recommended_curve=enums.RecommendedCurve.P_192,
                     fips186_variation=enums.FIPS186Variation.GP_X_ORIGINAL,
-                    prediction_resistance=False
+                    prediction_resistance=False,
                 )
             ]
         )
@@ -4762,22 +4458,18 @@ class TestQueryResponsePayload(testtools.TestCase):
         a = payloads.QueryResponsePayload(
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.BASELINE_SERVER_BASIC_KMIPv12),
                     server_uri="https://example.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ]
         )
         b = payloads.QueryResponsePayload(
             profile_information=[
                 objects.ProfileInformation(
-                    profile_name=(
-                        enums.ProfileName.TAPE_LIBRARY_SERVER_KMIPv12
-                    ),
+                    profile_name=(enums.ProfileName.TAPE_LIBRARY_SERVER_KMIPv12),
                     server_uri="https://test.com",
-                    server_port=5696
+                    server_port=5696,
                 )
             ]
         )
@@ -4808,7 +4500,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://test.com",
                     validation_vendor_uri="https://vendor.com",
-                    validation_profiles=["Profile 1", "Profile 2"]
+                    validation_profiles=["Profile 1", "Profile 2"],
                 )
             ]
         )
@@ -4829,7 +4521,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     ),
                     validation_certificate_uri="https://certificate.com",
                     validation_vendor_uri="https://example.com",
-                    validation_profiles=["Profile 3", "Profile 4"]
+                    validation_profiles=["Profile 3", "Profile 4"],
                 )
             ]
         )
@@ -4852,7 +4544,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ]
         )
@@ -4865,7 +4557,7 @@ class TestQueryResponsePayload(testtools.TestCase):
                     unwrap_mode=enums.UnwrapMode.PROCESSED,
                     destroy_action=enums.DestroyAction.SHREDDED,
                     shredding_algorithm=enums.ShreddingAlgorithm.CRYPTOGRAPHIC,
-                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION
+                    rng_mode=enums.RNGMode.NON_SHARED_INSTANTIATION,
                 )
             ]
         )
@@ -4882,7 +4574,7 @@ class TestQueryResponsePayload(testtools.TestCase):
         a = payloads.QueryResponsePayload(
             client_registration_methods=[
                 enums.ClientRegistrationMethod.CLIENT_GENERATED,
-                enums.ClientRegistrationMethod.CLIENT_REGISTERED
+                enums.ClientRegistrationMethod.CLIENT_REGISTERED,
             ]
         )
         b = payloads.QueryResponsePayload(
@@ -4910,23 +4602,20 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.AES,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=128,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
                                     value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value |
-                                        enums.CryptographicUsageMask.DECRYPT.
-                                        value
+                                        enums.CryptographicUsageMask.ENCRYPT.value
+                                        | enums.CryptographicUsageMask.DECRYPT.value
                                     ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             )
@@ -4941,21 +4630,17 @@ class TestQueryResponsePayload(testtools.TestCase):
                                 primitives.Enumeration(
                                     enums.CryptographicAlgorithm,
                                     value=enums.CryptographicAlgorithm.RSA,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                                 ),
                                 primitives.Integer(
-                                    value=1024,
-                                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                                    value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
                                 ),
                                 primitives.Integer(
-                                    value=(
-                                        enums.CryptographicUsageMask.ENCRYPT.
-                                        value
-                                    ),
-                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                                )
+                                    value=(enums.CryptographicUsageMask.ENCRYPT.value),
+                                    tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                                ),
                             ]
-                        )
+                        ),
                     )
                 ]
             )
