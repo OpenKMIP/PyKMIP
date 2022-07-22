@@ -30,6 +30,7 @@ def attribute_append_factory(index_attribute):
         list_attribute.index = index
         setattr(list_container, index_attribute, index + 1)
         return list_attribute
+
     return attribute_append
 
 
@@ -130,24 +131,28 @@ class EnumType(types.TypeDecorator):
 
 class ManagedObjectName(Base):
 
-    __tablename__ = 'managed_object_names'
-    id = Column('id', Integer, primary_key=True)
-    mo_uid = Column('mo_uid', Integer, ForeignKey('managed_objects.uid'))
-    name = Column('name', String)
-    index = Column('name_index', Integer)
-    name_type = Column('name_type', EnumType(enums.NameType))
+    __tablename__ = "managed_object_names"
+    id = Column("id", Integer, primary_key=True)
+    mo_uid = Column("mo_uid", Integer, ForeignKey("managed_objects.uid"))
+    name = Column("name", String)
+    index = Column("name_index", Integer)
+    name_type = Column("name_type", EnumType(enums.NameType))
 
-    mo = relationship('ManagedObject', back_populates='_names')
+    mo = relationship("ManagedObject", back_populates="_names")
 
-    def __init__(self, name, index=0,
-                 name_type=enums.NameType.UNINTERPRETED_TEXT_STRING):
+    def __init__(
+        self, name, index=0, name_type=enums.NameType.UNINTERPRETED_TEXT_STRING
+    ):
         self.name = name
         self.index = index
         self.name_type = name_type
 
     def __repr__(self):
-        return ("<ManagedObjectName(name='%s', index='%d', type='%s')>" %
-                (self.name, self.index, self.name_type))
+        return "<ManagedObjectName(name='%s', index='%d', type='%s')>" % (
+            self.name,
+            self.index,
+            self.name_type,
+        )
 
     def __eq__(self, other):
         if isinstance(other, ManagedObjectName):

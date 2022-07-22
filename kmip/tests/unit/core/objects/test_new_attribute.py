@@ -34,30 +34,28 @@ class TestNewAttribute(testtools.TestCase):
         # NewAttribute
         #     Cryptographic Algorithm - AES
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x01\x3D\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x01\x3D\x01\x00\x00\x00\x10"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x01\x3D\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x01\x3D\x01\x00\x00\x00\x00")
 
         # This encoding matches the following set of values:
         # NewAttribute
         #     Non-existent Tag
         self.invalid_encoding = utils.BytearrayStream(
-            b'\x42\x01\x3D\x01\x00\x00\x00\x10'
-            b'\x42\xFF\xFF\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x01\x3D\x01\x00\x00\x00\x10"
+            b"\x42\xFF\xFF\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         # NewAttribute
         #     Operation Policy Name - b4faee10-aa2a-4446-8ad4-0881f3422959
         self.unsupported_encoding = utils.BytearrayStream(
-            b'\x42\x01\x3D\x01\x00\x00\x00\x30'
-            b'\x42\x00\x5D\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30'
-            b'\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D'
-            b'\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00'
+            b"\x42\x01\x3D\x01\x00\x00\x00\x30"
+            b"\x42\x00\x5D\x07\x00\x00\x00\x24\x62\x34\x66\x61\x65\x65\x31\x30"
+            b"\x2D\x61\x61\x32\x61\x2D\x34\x34\x34\x36\x2D\x38\x61\x64\x34\x2D"
+            b"\x30\x38\x38\x31\x66\x33\x34\x32\x32\x39\x35\x39\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -74,7 +72,7 @@ class TestNewAttribute(testtools.TestCase):
             "attribute": primitives.Enumeration(
                 enums.WrappingMethod,
                 enums.WrappingMethod.ENCRYPT,
-                enums.Tags.WRAPPING_METHOD
+                enums.Tags.WRAPPING_METHOD,
             )
         }
         self.assertRaisesRegex(
@@ -90,8 +88,8 @@ class TestNewAttribute(testtools.TestCase):
             primitives.Enumeration(
                 enums.WrappingMethod,
                 enums.WrappingMethod.ENCRYPT,
-                enums.Tags.WRAPPING_METHOD
-            )
+                enums.Tags.WRAPPING_METHOD,
+            ),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -109,23 +107,15 @@ class TestNewAttribute(testtools.TestCase):
         kwargs = {"attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "The attribute must be a Base object, not a {}.".format(
-                type("invalid")
-            ),
+            "The attribute must be a Base object, not a {}.".format(type("invalid")),
             objects.NewAttribute,
             **kwargs
         )
 
-        args = (
-            objects.NewAttribute(),
-            "attribute",
-            "invalid"
-        )
+        args = (objects.NewAttribute(), "attribute", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "The attribute must be a Base object, not a {}.".format(
-                type("invalid")
-            ),
+            "The attribute must be a Base object, not a {}.".format(type("invalid")),
             setattr,
             *args
         )
@@ -141,13 +131,9 @@ class TestNewAttribute(testtools.TestCase):
 
         new_attribute.read(self.full_encoding)
 
-        self.assertIsInstance(
-            new_attribute.attribute,
-            primitives.Enumeration
-        )
+        self.assertIsInstance(new_attribute.attribute, primitives.Enumeration)
         self.assertEqual(
-            new_attribute.attribute.value,
-            enums.CryptographicAlgorithm.AES
+            new_attribute.attribute.value, enums.CryptographicAlgorithm.AES
         )
 
     def test_read_no_attribute(self):
@@ -157,7 +143,7 @@ class TestNewAttribute(testtools.TestCase):
         object.
         """
         new_attribute = objects.NewAttribute()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The NewAttribute encoding is missing the attribute field.",
@@ -172,7 +158,7 @@ class TestNewAttribute(testtools.TestCase):
         NewAttribute object.
         """
         new_attribute = objects.NewAttribute()
-        args = (self.invalid_encoding, )
+        args = (self.invalid_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The NewAttribute encoding is missing the attribute field.",
@@ -188,7 +174,7 @@ class TestNewAttribute(testtools.TestCase):
         supported by a newer version of KMIP, or vice versa.
         """
         new_attribute = objects.NewAttribute()
-        args = (self.unsupported_encoding, )
+        args = (self.unsupported_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.AttributeNotSupported,
@@ -206,7 +192,7 @@ class TestNewAttribute(testtools.TestCase):
         in KMIP 2.0+.
         """
         new_attribute = objects.NewAttribute()
-        args = (self.full_encoding, )
+        args = (self.full_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_2}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -224,7 +210,7 @@ class TestNewAttribute(testtools.TestCase):
             attribute=primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             )
         )
 
@@ -240,7 +226,7 @@ class TestNewAttribute(testtools.TestCase):
         NewAttribute object is written to a data stream.
         """
         new_attribute = objects.NewAttribute()
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The NewAttribute object is missing the attribute field.",
@@ -257,11 +243,10 @@ class TestNewAttribute(testtools.TestCase):
         """
         new_attribute = objects.NewAttribute(
             attribute=primitives.TextString(
-                "default",
-                tag=enums.Tags.OPERATION_POLICY_NAME
+                "default", tag=enums.Tags.OPERATION_POLICY_NAME
             )
         )
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.AttributeNotSupported,
@@ -279,7 +264,7 @@ class TestNewAttribute(testtools.TestCase):
         KMIP 2.0+.
         """
         new_attribute = objects.NewAttribute()
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_1_4}
         self.assertRaisesRegex(
             exceptions.VersionNotSupported,
@@ -297,7 +282,7 @@ class TestNewAttribute(testtools.TestCase):
             attribute=primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             )
         )
         self.assertEqual(
@@ -306,7 +291,7 @@ class TestNewAttribute(testtools.TestCase):
             "enum=CryptographicAlgorithm, "
             "value=CryptographicAlgorithm.AES, "
             "tag=Tags.CRYPTOGRAPHIC_ALGORITHM))",
-            repr(new_attribute)
+            repr(new_attribute),
         )
 
     def test_str(self):
@@ -317,15 +302,15 @@ class TestNewAttribute(testtools.TestCase):
             attribute=primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             )
         )
         self.assertEqual(
             '{"attribute": Enumeration('
-            'enum=CryptographicAlgorithm, '
-            'value=CryptographicAlgorithm.AES, '
-            'tag=Tags.CRYPTOGRAPHIC_ALGORITHM)}',
-            str(new_attribute)
+            "enum=CryptographicAlgorithm, "
+            "value=CryptographicAlgorithm.AES, "
+            "tag=Tags.CRYPTOGRAPHIC_ALGORITHM)}",
+            str(new_attribute),
         )
 
     def test_comparison(self):
@@ -345,14 +330,14 @@ class TestNewAttribute(testtools.TestCase):
             attribute=primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             )
         )
         b = objects.NewAttribute(
             attribute=primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             )
         )
 
@@ -370,14 +355,11 @@ class TestNewAttribute(testtools.TestCase):
             attribute=primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 enums.CryptographicAlgorithm.AES,
-                enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             )
         )
         b = objects.NewAttribute(
-            attribute=primitives.Integer(
-                128,
-                enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
+            attribute=primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH)
         )
 
         self.assertFalse(a == b)

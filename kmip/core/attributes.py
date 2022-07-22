@@ -40,30 +40,27 @@ from enum import Enum
 
 # 3.1
 class UniqueIdentifier(TextString):
-
     def __init__(self, value=None, tag=Tags.UNIQUE_IDENTIFIER):
         super(UniqueIdentifier, self).__init__(value, tag)
 
 
 class PrivateKeyUniqueIdentifier(UniqueIdentifier):
-
     def __init__(self, value=None):
         super(PrivateKeyUniqueIdentifier, self).__init__(
-            value, Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER)
+            value, Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER
+        )
 
 
 class PublicKeyUniqueIdentifier(UniqueIdentifier):
-
     def __init__(self, value=None):
         super(PublicKeyUniqueIdentifier, self).__init__(
-            value, Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER)
+            value, Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER
+        )
 
 
 # 3.2
 class Name(Struct):
-
     class NameValue(TextString):
-
         def __init__(self, value=None):
             super(Name.NameValue, self).__init__(value, Tags.NAME_VALUE)
 
@@ -77,17 +74,14 @@ class Name(Struct):
                 return NotImplemented
 
         def __repr__(self):
-            return "{0}(value={1})".format(
-                    type(self).__name__, repr(self.value))
+            return "{0}(value={1})".format(type(self).__name__, repr(self.value))
 
         def __str__(self):
             return "{0}".format(self.value)
 
     class NameType(Enumeration):
-
         def __init__(self, value=None):
-            super(Name.NameType, self).__init__(
-                enums.NameType, value, Tags.NAME_TYPE)
+            super(Name.NameType, self).__init__(enums.NameType, value, Tags.NAME_TYPE)
 
         def __eq__(self, other):
             if isinstance(other, Name.NameType):
@@ -99,8 +93,7 @@ class Name(Struct):
                 return NotImplemented
 
         def __repr__(self):
-            return "{0}(value={1})".format(
-                    type(self).__name__, repr(self.value))
+            return "{0}(value={1})".format(type(self).__name__, repr(self.value))
 
         def __str__(self):
             return "{0}".format(self.value)
@@ -141,66 +134,90 @@ class Name(Struct):
     def __validate(self):
         name = Name.__name__
         msg = exceptions.ErrorStrings.BAD_EXP_RECV
-        if self.name_value and \
-                not isinstance(self.name_value, Name.NameValue) and \
-                not isinstance(self.name_value, str):
-            member = 'name_value'
-            raise TypeError(msg.format('{0}.{1}'.format(name, member),
-                                       'name_value', type(Name.NameValue),
-                                       type(self.name_value)))
-        if self.name_type and \
-                not isinstance(self.name_type, Name.NameType) and \
-                not isinstance(self.name_type, str):
-            member = 'name_type'
-            raise TypeError(msg.format('{0}.{1}'.format(name, member),
-                                       'name_type', type(Name.NameType),
-                                       type(self.name_type)))
+        if (
+            self.name_value
+            and not isinstance(self.name_value, Name.NameValue)
+            and not isinstance(self.name_value, str)
+        ):
+            member = "name_value"
+            raise TypeError(
+                msg.format(
+                    "{0}.{1}".format(name, member),
+                    "name_value",
+                    type(Name.NameValue),
+                    type(self.name_value),
+                )
+            )
+        if (
+            self.name_type
+            and not isinstance(self.name_type, Name.NameType)
+            and not isinstance(self.name_type, str)
+        ):
+            member = "name_type"
+            raise TypeError(
+                msg.format(
+                    "{0}.{1}".format(name, member),
+                    "name_type",
+                    type(Name.NameType),
+                    type(self.name_type),
+                )
+            )
 
     @classmethod
     def create(cls, name_value, name_type):
-        '''
-            Returns a Name object, populated with the given value and type
-        '''
+        """
+        Returns a Name object, populated with the given value and type
+        """
         if isinstance(name_value, Name.NameValue):
             value = name_value
         elif isinstance(name_value, str):
             value = cls.NameValue(name_value)
         else:
-            name = 'Name'
+            name = "Name"
             msg = exceptions.ErrorStrings.BAD_EXP_RECV
-            member = 'name_value'
-            raise TypeError(msg.format('{0}.{1}'.format(name, member),
-                                       'name_value', type(Name.NameValue),
-                                       type(name_value)))
+            member = "name_value"
+            raise TypeError(
+                msg.format(
+                    "{0}.{1}".format(name, member),
+                    "name_value",
+                    type(Name.NameValue),
+                    type(name_value),
+                )
+            )
 
         if isinstance(name_type, Name.NameType):
             n_type = name_type
         elif isinstance(name_type, Enum):
             n_type = cls.NameType(name_type)
         else:
-            name = 'Name'
+            name = "Name"
             msg = exceptions.ErrorStrings.BAD_EXP_RECV
-            member = 'name_type'
-            raise TypeError(msg.format('{0}.{1}'.format(name, member),
-                                       'name_type', type(Name.NameType),
-                                       type(name_type)))
+            member = "name_type"
+            raise TypeError(
+                msg.format(
+                    "{0}.{1}".format(name, member),
+                    "name_type",
+                    type(Name.NameType),
+                    type(name_type),
+                )
+            )
 
-        return Name(name_value=value,
-                    name_type=n_type)
+        return Name(name_value=value, name_type=n_type)
 
     def __repr__(self):
         return "{0}(type={1},value={2})".format(
-                type(self).__name__,
-                repr(self.name_type),
-                repr(self.name_value))
+            type(self).__name__, repr(self.name_type), repr(self.name_value)
+        )
 
     def __str__(self):
         return "{0}".format(self.name_value.value)
 
     def __eq__(self, other):
         if isinstance(other, Name):
-            if self.name_value == other.name_value and \
-                        self.name_type == other.name_type:
+            if (
+                self.name_value == other.name_value
+                and self.name_type == other.name_type
+            ):
                 return True
             else:
                 return False
@@ -213,26 +230,22 @@ class Name(Struct):
 
 # 3.3
 class ObjectType(Enumeration):
-
     def __init__(self, value=None):
-        super(ObjectType, self).__init__(
-            enums.ObjectType, value, Tags.OBJECT_TYPE)
+        super(ObjectType, self).__init__(enums.ObjectType, value, Tags.OBJECT_TYPE)
 
 
 # 3.4
 class CryptographicAlgorithm(Enumeration):
-
     def __init__(self, value=None):
         super(CryptographicAlgorithm, self).__init__(
-            enums.CryptographicAlgorithm, value, Tags.CRYPTOGRAPHIC_ALGORITHM)
+            enums.CryptographicAlgorithm, value, Tags.CRYPTOGRAPHIC_ALGORITHM
+        )
 
 
 # 3.5
 class CryptographicLength(Integer):
-
     def __init__(self, value=None):
-        super(CryptographicLength, self).__init__(
-            value, Tags.CRYPTOGRAPHIC_LENGTH)
+        super(CryptographicLength, self).__init__(value, Tags.CRYPTOGRAPHIC_LENGTH)
 
 
 # 3.6
@@ -255,7 +268,8 @@ class HashingAlgorithm(Enumeration):
                 HashingAlgorithm.SHA_256.
         """
         super(HashingAlgorithm, self).__init__(
-            enums.HashingAlgorithm, value, Tags.HASHING_ALGORITHM)
+            enums.HashingAlgorithm, value, Tags.HASHING_ALGORITHM
+        )
 
 
 class CryptographicParameters(Struct):
@@ -267,22 +281,23 @@ class CryptographicParameters(Struct):
     associated KMIP object.
     """
 
-    def __init__(self,
-                 block_cipher_mode=None,
-                 padding_method=None,
-                 hashing_algorithm=None,
-                 key_role_type=None,
-                 digital_signature_algorithm=None,
-                 cryptographic_algorithm=None,
-                 random_iv=None,
-                 iv_length=None,
-                 tag_length=None,
-                 fixed_field_length=None,
-                 invocation_field_length=None,
-                 counter_length=None,
-                 initial_counter_value=None):
-        super(CryptographicParameters, self).__init__(
-            tag=Tags.CRYPTOGRAPHIC_PARAMETERS)
+    def __init__(
+        self,
+        block_cipher_mode=None,
+        padding_method=None,
+        hashing_algorithm=None,
+        key_role_type=None,
+        digital_signature_algorithm=None,
+        cryptographic_algorithm=None,
+        random_iv=None,
+        iv_length=None,
+        tag_length=None,
+        fixed_field_length=None,
+        invocation_field_length=None,
+        counter_length=None,
+        initial_counter_value=None,
+    ):
+        super(CryptographicParameters, self).__init__(tag=Tags.CRYPTOGRAPHIC_PARAMETERS)
 
         self._block_cipher_mode = None
         self._padding_method = None
@@ -325,14 +340,10 @@ class CryptographicParameters(Struct):
             self._block_cipher_mode = None
         elif isinstance(value, enums.BlockCipherMode):
             self._block_cipher_mode = Enumeration(
-                enums.BlockCipherMode,
-                value=value,
-                tag=Tags.BLOCK_CIPHER_MODE
+                enums.BlockCipherMode, value=value, tag=Tags.BLOCK_CIPHER_MODE
             )
         else:
-            raise TypeError(
-                "block cipher mode must be a BlockCipherMode enumeration"
-            )
+            raise TypeError("block cipher mode must be a BlockCipherMode enumeration")
 
     @property
     def padding_method(self):
@@ -347,14 +358,10 @@ class CryptographicParameters(Struct):
             self._padding_method = None
         elif isinstance(value, enums.PaddingMethod):
             self._padding_method = Enumeration(
-                enums.PaddingMethod,
-                value=value,
-                tag=Tags.PADDING_METHOD
+                enums.PaddingMethod, value=value, tag=Tags.PADDING_METHOD
             )
         else:
-            raise TypeError(
-                "padding method must be a PaddingMethod enumeration"
-            )
+            raise TypeError("padding method must be a PaddingMethod enumeration")
 
     @property
     def hashing_algorithm(self):
@@ -369,14 +376,10 @@ class CryptographicParameters(Struct):
             self._hashing_algorithm = None
         elif isinstance(value, enums.HashingAlgorithm):
             self._hashing_algorithm = Enumeration(
-                enums.HashingAlgorithm,
-                value=value,
-                tag=Tags.HASHING_ALGORITHM
+                enums.HashingAlgorithm, value=value, tag=Tags.HASHING_ALGORITHM
             )
         else:
-            raise TypeError(
-                "hashing algorithm must be a HashingAlgorithm enumeration"
-            )
+            raise TypeError("hashing algorithm must be a HashingAlgorithm enumeration")
 
     @property
     def key_role_type(self):
@@ -391,14 +394,10 @@ class CryptographicParameters(Struct):
             self._key_role_type = None
         elif isinstance(value, enums.KeyRoleType):
             self._key_role_type = Enumeration(
-                enums.KeyRoleType,
-                value=value,
-                tag=Tags.KEY_ROLE_TYPE
+                enums.KeyRoleType, value=value, tag=Tags.KEY_ROLE_TYPE
             )
         else:
-            raise TypeError(
-                "key role type must be a KeyRoleType enumeration"
-            )
+            raise TypeError("key role type must be a KeyRoleType enumeration")
 
     @property
     def digital_signature_algorithm(self):
@@ -415,7 +414,7 @@ class CryptographicParameters(Struct):
             self._digital_signature_algorithm = Enumeration(
                 enums.DigitalSignatureAlgorithm,
                 value=value,
-                tag=Tags.DIGITAL_SIGNATURE_ALGORITHM
+                tag=Tags.DIGITAL_SIGNATURE_ALGORITHM,
             )
         else:
             raise TypeError(
@@ -438,7 +437,7 @@ class CryptographicParameters(Struct):
             self._cryptographic_algorithm = Enumeration(
                 enums.CryptographicAlgorithm,
                 value=value,
-                tag=Tags.CRYPTOGRAPHIC_ALGORITHM
+                tag=Tags.CRYPTOGRAPHIC_ALGORITHM,
             )
         else:
             raise TypeError(
@@ -458,10 +457,7 @@ class CryptographicParameters(Struct):
         if value is None:
             self._random_iv = None
         elif isinstance(value, bool):
-            self._random_iv = Boolean(
-                value=value,
-                tag=Tags.RANDOM_IV
-            )
+            self._random_iv = Boolean(value=value, tag=Tags.RANDOM_IV)
         else:
             raise TypeError("random iv must be a boolean")
 
@@ -477,10 +473,7 @@ class CryptographicParameters(Struct):
         if value is None:
             self._iv_length = None
         elif isinstance(value, six.integer_types):
-            self._iv_length = Integer(
-                value=value,
-                tag=Tags.IV_LENGTH
-            )
+            self._iv_length = Integer(value=value, tag=Tags.IV_LENGTH)
         else:
             raise TypeError("iv length must be an integer")
 
@@ -496,10 +489,7 @@ class CryptographicParameters(Struct):
         if value is None:
             self._tag_length = None
         elif isinstance(value, six.integer_types):
-            self._tag_length = Integer(
-                value=value,
-                tag=Tags.TAG_LENGTH
-            )
+            self._tag_length = Integer(value=value, tag=Tags.TAG_LENGTH)
         else:
             raise TypeError("tag length must be an integer")
 
@@ -515,10 +505,7 @@ class CryptographicParameters(Struct):
         if value is None:
             self._fixed_field_length = None
         elif isinstance(value, six.integer_types):
-            self._fixed_field_length = Integer(
-                value=value,
-                tag=Tags.FIXED_FIELD_LENGTH
-            )
+            self._fixed_field_length = Integer(value=value, tag=Tags.FIXED_FIELD_LENGTH)
         else:
             raise TypeError("fixed field length must be an integer")
 
@@ -535,8 +522,7 @@ class CryptographicParameters(Struct):
             self._invocation_field_length = None
         elif isinstance(value, six.integer_types):
             self._invocation_field_length = Integer(
-                value=value,
-                tag=Tags.INVOCATION_FIELD_LENGTH
+                value=value, tag=Tags.INVOCATION_FIELD_LENGTH
             )
         else:
             raise TypeError("invocation field length must be an integer")
@@ -553,10 +539,7 @@ class CryptographicParameters(Struct):
         if value is None:
             self._counter_length = None
         elif isinstance(value, six.integer_types):
-            self._counter_length = Integer(
-                value=value,
-                tag=Tags.COUNTER_LENGTH
-            )
+            self._counter_length = Integer(value=value, tag=Tags.COUNTER_LENGTH)
         else:
             raise TypeError("counter length must be an integer")
 
@@ -573,66 +556,48 @@ class CryptographicParameters(Struct):
             self._initial_counter_value = None
         elif isinstance(value, six.integer_types):
             self._initial_counter_value = Integer(
-                value=value,
-                tag=Tags.INITIAL_COUNTER_VALUE
+                value=value, tag=Tags.INITIAL_COUNTER_VALUE
             )
         else:
             raise TypeError("initial counter value must be an integer")
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(CryptographicParameters, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(CryptographicParameters, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.BLOCK_CIPHER_MODE, tstream):
             self._block_cipher_mode = Enumeration(
-                enums.BlockCipherMode,
-                tag=Tags.BLOCK_CIPHER_MODE
+                enums.BlockCipherMode, tag=Tags.BLOCK_CIPHER_MODE
             )
             self._block_cipher_mode.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.PADDING_METHOD, tstream):
             self._padding_method = Enumeration(
-                enums.PaddingMethod,
-                tag=Tags.PADDING_METHOD
+                enums.PaddingMethod, tag=Tags.PADDING_METHOD
             )
             self._padding_method.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.HASHING_ALGORITHM, tstream):
             self._hashing_algorithm = Enumeration(
-                enums.HashingAlgorithm,
-                tag=Tags.HASHING_ALGORITHM
+                enums.HashingAlgorithm, tag=Tags.HASHING_ALGORITHM
             )
             self._hashing_algorithm.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.KEY_ROLE_TYPE, tstream):
-            self._key_role_type = Enumeration(
-                enums.KeyRoleType,
-                tag=Tags.KEY_ROLE_TYPE
-            )
+            self._key_role_type = Enumeration(enums.KeyRoleType, tag=Tags.KEY_ROLE_TYPE)
             self._key_role_type.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.DIGITAL_SIGNATURE_ALGORITHM, tstream):
             self._digital_signature_algorithm = Enumeration(
-                enums.DigitalSignatureAlgorithm,
-                tag=Tags.DIGITAL_SIGNATURE_ALGORITHM
+                enums.DigitalSignatureAlgorithm, tag=Tags.DIGITAL_SIGNATURE_ALGORITHM
             )
-            self._digital_signature_algorithm.read(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self._digital_signature_algorithm.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_ALGORITHM, tstream):
             self._cryptographic_algorithm = Enumeration(
-                enums.CryptographicAlgorithm,
-                tag=Tags.CRYPTOGRAPHIC_ALGORITHM
+                enums.CryptographicAlgorithm, tag=Tags.CRYPTOGRAPHIC_ALGORITHM
             )
-            self._cryptographic_algorithm.read(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_algorithm.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.RANDOM_IV, tstream):
             self._random_iv = Boolean(tag=Tags.RANDOM_IV)
@@ -651,26 +616,16 @@ class CryptographicParameters(Struct):
             self._fixed_field_length.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.INVOCATION_FIELD_LENGTH, tstream):
-            self._invocation_field_length = Integer(
-                tag=Tags.INVOCATION_FIELD_LENGTH
-            )
-            self._invocation_field_length.read(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self._invocation_field_length = Integer(tag=Tags.INVOCATION_FIELD_LENGTH)
+            self._invocation_field_length.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.COUNTER_LENGTH, tstream):
             self._counter_length = Integer(tag=Tags.COUNTER_LENGTH)
             self._counter_length.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.INITIAL_COUNTER_VALUE, tstream):
-            self._initial_counter_value = Integer(
-                tag=Tags.INITIAL_COUNTER_VALUE
-            )
-            self._initial_counter_value.read(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self._initial_counter_value = Integer(tag=Tags.INITIAL_COUNTER_VALUE)
+            self._initial_counter_value.read(tstream, kmip_version=kmip_version)
 
         self.is_oversized(tstream)
 
@@ -686,15 +641,9 @@ class CryptographicParameters(Struct):
         if self._key_role_type:
             self._key_role_type.write(tstream, kmip_version=kmip_version)
         if self._digital_signature_algorithm:
-            self._digital_signature_algorithm.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self._digital_signature_algorithm.write(tstream, kmip_version=kmip_version)
         if self._cryptographic_algorithm:
-            self._cryptographic_algorithm.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_algorithm.write(tstream, kmip_version=kmip_version)
         if self._random_iv:
             self._random_iv.write(tstream, kmip_version=kmip_version)
         if self._iv_length:
@@ -704,23 +653,14 @@ class CryptographicParameters(Struct):
         if self._fixed_field_length:
             self._fixed_field_length.write(tstream, kmip_version=kmip_version)
         if self._invocation_field_length:
-            self._invocation_field_length.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self._invocation_field_length.write(tstream, kmip_version=kmip_version)
         if self._counter_length:
             self._counter_length.write(tstream, kmip_version=kmip_version)
         if self._initial_counter_value:
-            self._initial_counter_value.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self._initial_counter_value.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(CryptographicParameters, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(CryptographicParameters, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def __eq__(self, other):
@@ -733,8 +673,7 @@ class CryptographicParameters(Struct):
                 return False
             elif self.key_role_type != other.key_role_type:
                 return False
-            elif self.digital_signature_algorithm \
-                    != other.digital_signature_algorithm:
+            elif self.digital_signature_algorithm != other.digital_signature_algorithm:
                 return False
             elif self.cryptographic_algorithm != other.cryptographic_algorithm:
                 return False
@@ -762,45 +701,45 @@ class CryptographicParameters(Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "block_cipher_mode={0}".format(self.block_cipher_mode),
-            "padding_method={0}".format(self.padding_method),
-            "hashing_algorithm={0}".format(self.hashing_algorithm),
-            "key_role_type={0}".format(self.key_role_type),
-            "digital_signature_algorithm={0}".format(
-                self.digital_signature_algorithm
-            ),
-            "cryptographic_algorithm={0}".format(
-                self.cryptographic_algorithm
-            ),
-            "random_iv={0}".format(self.random_iv),
-            "iv_length={0}".format(self.iv_length),
-            "tag_length={0}".format(self.tag_length),
-            "fixed_field_length={0}".format(self.fixed_field_length),
-            "invocation_field_length={0}".format(
-                self.invocation_field_length
-            ),
-            "counter_length={0}".format(self.counter_length),
-            "initial_counter_value={0}".format(self.initial_counter_value)
-        ])
+        args = ", ".join(
+            [
+                "block_cipher_mode={0}".format(self.block_cipher_mode),
+                "padding_method={0}".format(self.padding_method),
+                "hashing_algorithm={0}".format(self.hashing_algorithm),
+                "key_role_type={0}".format(self.key_role_type),
+                "digital_signature_algorithm={0}".format(
+                    self.digital_signature_algorithm
+                ),
+                "cryptographic_algorithm={0}".format(self.cryptographic_algorithm),
+                "random_iv={0}".format(self.random_iv),
+                "iv_length={0}".format(self.iv_length),
+                "tag_length={0}".format(self.tag_length),
+                "fixed_field_length={0}".format(self.fixed_field_length),
+                "invocation_field_length={0}".format(self.invocation_field_length),
+                "counter_length={0}".format(self.counter_length),
+                "initial_counter_value={0}".format(self.initial_counter_value),
+            ]
+        )
         return "CryptographicParameters({0})".format(args)
 
     def __str__(self):
-        return str({
-            'block_cipher_mode': self.block_cipher_mode,
-            'padding_method': self.padding_method,
-            'hashing_algorithm': self.hashing_algorithm,
-            'key_role_type': self.key_role_type,
-            'digital_signature_algorithm': self.digital_signature_algorithm,
-            'cryptographic_algorithm': self.cryptographic_algorithm,
-            'random_iv': self.random_iv,
-            'iv_length': self.iv_length,
-            'tag_length': self.tag_length,
-            'fixed_field_length': self.fixed_field_length,
-            'invocation_field_length': self.invocation_field_length,
-            'counter_length': self.counter_length,
-            'initial_counter_value': self.initial_counter_value
-        })
+        return str(
+            {
+                "block_cipher_mode": self.block_cipher_mode,
+                "padding_method": self.padding_method,
+                "hashing_algorithm": self.hashing_algorithm,
+                "key_role_type": self.key_role_type,
+                "digital_signature_algorithm": self.digital_signature_algorithm,
+                "cryptographic_algorithm": self.cryptographic_algorithm,
+                "random_iv": self.random_iv,
+                "iv_length": self.iv_length,
+                "tag_length": self.tag_length,
+                "fixed_field_length": self.fixed_field_length,
+                "invocation_field_length": self.invocation_field_length,
+                "counter_length": self.counter_length,
+                "initial_counter_value": self.initial_counter_value,
+            }
+        )
 
 
 class CertificateType(Enumeration):
@@ -822,7 +761,8 @@ class CertificateType(Enumeration):
                 CertificateType.X_509.
         """
         super(CertificateType, self).__init__(
-            enums.CertificateType, value, Tags.CERTIFICATE_TYPE)
+            enums.CertificateType, value, Tags.CERTIFICATE_TYPE
+        )
 
 
 class DigestValue(ByteString):
@@ -838,7 +778,7 @@ class DigestValue(ByteString):
         value: The bytes of the hash.
     """
 
-    def __init__(self, value=b''):
+    def __init__(self, value=b""):
         """
         Construct a DigestValue object.
 
@@ -864,10 +804,7 @@ class Digest(Struct):
         key_format_type: The type of the key the hash was generated for.
     """
 
-    def __init__(self,
-                 hashing_algorithm=None,
-                 digest_value=None,
-                 key_format_type=None):
+    def __init__(self, hashing_algorithm=None, digest_value=None, key_format_type=None):
         """
         Construct a Digest object.
 
@@ -954,19 +891,20 @@ class Digest(Struct):
         if not isinstance(self.hashing_algorithm, HashingAlgorithm):
             msg = "invalid hashing algorithm"
             msg += "; expected {0}, received {1}".format(
-                HashingAlgorithm, self.hashing_algorithm)
+                HashingAlgorithm, self.hashing_algorithm
+            )
             raise TypeError(msg)
 
         if not isinstance(self.digest_value, DigestValue):
             msg = "invalid digest value"
-            msg += "; expected {0}, received {1}".format(
-                DigestValue, self.digest_value)
+            msg += "; expected {0}, received {1}".format(DigestValue, self.digest_value)
             raise TypeError(msg)
 
         if not isinstance(self.key_format_type, KeyFormatType):
             msg = "invalid key format type"
             msg += "; expected {0}, received {1}".format(
-                KeyFormatType, self.key_format_type)
+                KeyFormatType, self.key_format_type
+            )
             raise TypeError(msg)
 
     def __eq__(self, other):
@@ -989,24 +927,24 @@ class Digest(Struct):
             return NotImplemented
 
     def __repr__(self):
-        hashing_algorithm = "hashing_algorithm={0}".format(
-            repr(self.hashing_algorithm))
-        digest_value = "digest_value={0}".format(
-            repr(self.digest_value))
-        key_format_type = "key_format_type={0}".format(
-            repr(self.key_format_type))
+        hashing_algorithm = "hashing_algorithm={0}".format(repr(self.hashing_algorithm))
+        digest_value = "digest_value={0}".format(repr(self.digest_value))
+        key_format_type = "key_format_type={0}".format(repr(self.key_format_type))
 
         return "Digest({0}, {1}, {2})".format(
-            hashing_algorithm, digest_value, key_format_type)
+            hashing_algorithm, digest_value, key_format_type
+        )
 
     def __str__(self):
         return str(self.digest_value)
 
     @classmethod
-    def create(cls,
-               hashing_algorithm=HashingAlgorithmEnum.SHA_256,
-               digest_value=b'',
-               key_format_type=KeyFormatTypeEnum.RAW):
+    def create(
+        cls,
+        hashing_algorithm=HashingAlgorithmEnum.SHA_256,
+        digest_value=b"",
+        key_format_type=KeyFormatTypeEnum.RAW,
+    ):
         """
         Construct a Digest object from provided digest values.
 
@@ -1037,17 +975,15 @@ class Digest(Struct):
         value = DigestValue(bytearray(digest_value))
         format_type = KeyFormatType(key_format_type)
 
-        return Digest(hashing_algorithm=algorithm,
-                      digest_value=value,
-                      key_format_type=format_type)
+        return Digest(
+            hashing_algorithm=algorithm, digest_value=value, key_format_type=format_type
+        )
 
 
 # 3.18
 class OperationPolicyName(TextString):
-
     def __init__(self, value=None):
-        super(OperationPolicyName, self).__init__(
-            value, Tags.OPERATION_POLICY_NAME)
+        super(OperationPolicyName, self).__init__(value, Tags.OPERATION_POLICY_NAME)
 
 
 # 3.19
@@ -1057,11 +993,11 @@ class CryptographicUsageMask(Integer):
 
     def __init__(self, value=None):
         super(CryptographicUsageMask, self).__init__(
-            value, Tags.CRYPTOGRAPHIC_USAGE_MASK)
+            value, Tags.CRYPTOGRAPHIC_USAGE_MASK
+        )
 
 
 class State(Enumeration):
-
     def __init__(self, value=None):
         super(State, self).__init__(enums.State, value, Tags.STATE)
 
@@ -1114,8 +1050,7 @@ class ApplicationSpecificInformation(primitives.Struct):
             self._application_namespace = None
         elif isinstance(value, six.string_types):
             self._application_namespace = primitives.TextString(
-                value=value,
-                tag=enums.Tags.APPLICATION_NAMESPACE
+                value=value, tag=enums.Tags.APPLICATION_NAMESPACE
             )
         else:
             raise TypeError("The application namespace must be a string.")
@@ -1132,8 +1067,7 @@ class ApplicationSpecificInformation(primitives.Struct):
             self._application_data = None
         elif isinstance(value, six.string_types):
             self._application_data = primitives.TextString(
-                value=value,
-                tag=enums.Tags.APPLICATION_DATA
+                value=value, tag=enums.Tags.APPLICATION_DATA
             )
         else:
             raise TypeError("The application data must be a string.")
@@ -1152,8 +1086,7 @@ class ApplicationSpecificInformation(primitives.Struct):
                 defaults to KMIP 1.0.
         """
         super(ApplicationSpecificInformation, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -1161,10 +1094,7 @@ class ApplicationSpecificInformation(primitives.Struct):
             self._application_namespace = primitives.TextString(
                 tag=enums.Tags.APPLICATION_NAMESPACE
             )
-            self._application_namespace.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._application_namespace.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The ApplicationSpecificInformation encoding is missing the "
@@ -1174,10 +1104,7 @@ class ApplicationSpecificInformation(primitives.Struct):
             self._application_data = primitives.TextString(
                 tag=enums.Tags.APPLICATION_DATA
             )
-            self._application_data.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._application_data.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The ApplicationSpecificInformation encoding is missing the "
@@ -1202,20 +1129,14 @@ class ApplicationSpecificInformation(primitives.Struct):
         local_buffer = utils.BytearrayStream()
 
         if self._application_namespace:
-            self._application_namespace.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._application_namespace.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The ApplicationSpecificInformation object is missing the "
                 "ApplicationNamespace field."
             )
         if self._application_data:
-            self._application_data.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._application_data.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The ApplicationSpecificInformation object is missing the "
@@ -1224,27 +1145,22 @@ class ApplicationSpecificInformation(primitives.Struct):
 
         self.length = local_buffer.length()
         super(ApplicationSpecificInformation, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         args = [
-            "application_namespace={}".format(
-                repr(self.application_namespace)
-            ),
-            "application_data={}".format(repr(self.application_data))
+            "application_namespace={}".format(repr(self.application_namespace)),
+            "application_data={}".format(repr(self.application_data)),
         ]
         return "ApplicationSpecificInformation({})".format(", ".join(args))
 
     def __str__(self):
         value = ", ".join(
             [
-                '"application_namespace": "{}"'.format(
-                    self.application_namespace
-                ),
-                '"application_data": "{}"'.format(self.application_data)
+                '"application_namespace": "{}"'.format(self.application_namespace),
+                '"application_data": "{}"'.format(self.application_data),
             ]
         )
         return "{" + value + "}"
@@ -1268,10 +1184,8 @@ class ApplicationSpecificInformation(primitives.Struct):
 
 # 3.37
 class ContactInformation(TextString):
-
     def __init__(self, value=None):
-        super(ContactInformation, self).__init__(
-            value, Tags.CONTACT_INFORMATION)
+        super(ContactInformation, self).__init__(value, Tags.CONTACT_INFORMATION)
 
 
 # 3.39
@@ -1279,7 +1193,6 @@ class ContactInformation(TextString):
 # TODO (peter-hamilton) cover all potential custom attributes. This is a
 # TODO (peter-hamilton) temporary stopgap.
 class CustomAttribute(TextString):
-
     def __init__(self, value=None):
         super(CustomAttribute, self).__init__(value, Tags.ATTRIBUTE_VALUE)
 
@@ -1292,12 +1205,14 @@ class DerivationParameters(Struct):
     parameters to be used when performing key or secret derivation operations.
     """
 
-    def __init__(self,
-                 cryptographic_parameters=None,
-                 initialization_vector=None,
-                 derivation_data=None,
-                 salt=None,
-                 iteration_count=None):
+    def __init__(
+        self,
+        cryptographic_parameters=None,
+        initialization_vector=None,
+        derivation_data=None,
+        salt=None,
+        iteration_count=None,
+    ):
         """
         Construct a DerivationParameters struct.
 
@@ -1318,9 +1233,7 @@ class DerivationParameters(Struct):
             iteration_count (bytes): An iteration count value required by
                 the PBKDF2 algorithm. Optional, defaults to None.
         """
-        super(DerivationParameters, self).__init__(
-            tag=Tags.DERIVATION_PARAMETERS
-        )
+        super(DerivationParameters, self).__init__(tag=Tags.DERIVATION_PARAMETERS)
 
         self._cryptographic_parameters = None
         self._initialization_vector = None
@@ -1346,8 +1259,7 @@ class DerivationParameters(Struct):
             self._cryptographic_parameters = value
         else:
             raise TypeError(
-                "cryptographic parameters must be a CryptographicParameters "
-                "struct"
+                "cryptographic parameters must be a CryptographicParameters " "struct"
             )
 
     @property
@@ -1363,8 +1275,7 @@ class DerivationParameters(Struct):
             self._initialization_vector = None
         elif isinstance(value, six.binary_type):
             self._initialization_vector = ByteString(
-                value=value,
-                tag=enums.Tags.INITIALIZATION_VECTOR
+                value=value, tag=enums.Tags.INITIALIZATION_VECTOR
             )
         else:
             raise TypeError("initialization vector must be bytes")
@@ -1382,8 +1293,7 @@ class DerivationParameters(Struct):
             self._derivation_data = None
         elif isinstance(value, six.binary_type):
             self._derivation_data = ByteString(
-                value=value,
-                tag=enums.Tags.DERIVATION_DATA
+                value=value, tag=enums.Tags.DERIVATION_DATA
             )
         else:
             raise TypeError("derivation data must be bytes")
@@ -1400,10 +1310,7 @@ class DerivationParameters(Struct):
         if value is None:
             self._salt = None
         elif isinstance(value, six.binary_type):
-            self._salt = ByteString(
-                value=value,
-                tag=enums.Tags.SALT
-            )
+            self._salt = ByteString(value=value, tag=enums.Tags.SALT)
         else:
             raise TypeError("salt must be bytes")
 
@@ -1419,10 +1326,7 @@ class DerivationParameters(Struct):
         if value is None:
             self._iteration_count = None
         elif isinstance(value, six.integer_types):
-            self._iteration_count = Integer(
-                value=value,
-                tag=Tags.ITERATION_COUNT
-            )
+            self._iteration_count = Integer(value=value, tag=Tags.ITERATION_COUNT)
         else:
             raise TypeError("iteration count must be an integer")
 
@@ -1439,30 +1343,18 @@ class DerivationParameters(Struct):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(DerivationParameters, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(DerivationParameters, self).read(input_stream, kmip_version=kmip_version)
         local_stream = BytearrayStream(input_stream.read(self.length))
 
-        if self.is_tag_next(
-                enums.Tags.CRYPTOGRAPHIC_PARAMETERS,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_PARAMETERS, local_stream):
             self._cryptographic_parameters = CryptographicParameters()
-            self._cryptographic_parameters.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_parameters.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.INITIALIZATION_VECTOR, local_stream):
             self._initialization_vector = ByteString(
                 tag=enums.Tags.INITIALIZATION_VECTOR
             )
-            self._initialization_vector.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._initialization_vector.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.DERIVATION_DATA, local_stream):
             self._derivation_data = ByteString(tag=enums.Tags.DERIVATION_DATA)
@@ -1494,34 +1386,20 @@ class DerivationParameters(Struct):
 
         if self._cryptographic_parameters:
             self._cryptographic_parameters.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self._initialization_vector:
-            self._initialization_vector.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._initialization_vector.write(local_stream, kmip_version=kmip_version)
         if self._derivation_data:
-            self._derivation_data.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._derivation_data.write(local_stream, kmip_version=kmip_version)
         if self._salt:
-            self._salt.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._salt.write(local_stream, kmip_version=kmip_version)
         if self._iteration_count:
-            self._iteration_count.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._iteration_count.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(DerivationParameters, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -1547,24 +1425,26 @@ class DerivationParameters(Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "cryptographic_parameters={0}".format(
-                repr(self.cryptographic_parameters)
-            ),
-            "initialization_vector={0}".format(self.initialization_vector),
-            "derivation_data={0}".format(self.derivation_data),
-            "salt={0}".format(self.salt),
-            "iteration_count={0}".format(
-                self.iteration_count
-            )
-        ])
+        args = ", ".join(
+            [
+                "cryptographic_parameters={0}".format(
+                    repr(self.cryptographic_parameters)
+                ),
+                "initialization_vector={0}".format(self.initialization_vector),
+                "derivation_data={0}".format(self.derivation_data),
+                "salt={0}".format(self.salt),
+                "iteration_count={0}".format(self.iteration_count),
+            ]
+        )
         return "DerivationParameters({0})".format(args)
 
     def __str__(self):
-        return str({
-            'cryptographic_parameters': self.cryptographic_parameters,
-            'initialization_vector': self.initialization_vector,
-            'derivation_data': self.derivation_data,
-            'salt': self.salt,
-            'iteration_count': self.iteration_count
-        })
+        return str(
+            {
+                "cryptographic_parameters": self.cryptographic_parameters,
+                "initialization_vector": self.initialization_vector,
+                "derivation_data": self.derivation_data,
+                "salt": self.salt,
+                "iteration_count": self.iteration_count,
+            }
+        )

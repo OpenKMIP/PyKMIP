@@ -33,9 +33,7 @@ class SetAttributeRequestPayload(base.RequestPayload):
         new_attribute: The attribute to set on the specified object.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 new_attribute=None):
+    def __init__(self, unique_identifier=None, new_attribute=None):
         """
         Construct a SetAttribute request payload.
 
@@ -67,8 +65,7 @@ class SetAttributeRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("The unique identifier must be a string.")
@@ -86,9 +83,7 @@ class SetAttributeRequestPayload(base.RequestPayload):
         elif isinstance(value, objects.NewAttribute):
             self._new_attribute = value
         else:
-            raise TypeError(
-                "The new attribute must be a NewAttribute object."
-            )
+            raise TypeError("The new attribute must be a NewAttribute object.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
         """
@@ -117,8 +112,7 @@ class SetAttributeRequestPayload(base.RequestPayload):
             )
 
         super(SetAttributeRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -126,19 +120,13 @@ class SetAttributeRequestPayload(base.RequestPayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             self._unique_identifier = None
 
         if self.is_tag_next(enums.Tags.NEW_ATTRIBUTE, local_buffer):
             self._new_attribute = objects.NewAttribute()
-            self._new_attribute.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._new_attribute.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The SetAttribute request payload encoding is missing the new "
@@ -176,16 +164,10 @@ class SetAttributeRequestPayload(base.RequestPayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
 
         if self._new_attribute:
-            self._new_attribute.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._new_attribute.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The SetAttribute request payload is missing the new "
@@ -194,8 +176,7 @@ class SetAttributeRequestPayload(base.RequestPayload):
 
         self.length = local_buffer.length()
         super(SetAttributeRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -204,7 +185,7 @@ class SetAttributeRequestPayload(base.RequestPayload):
             "unique_identifier='{}'".format(self.unique_identifier),
             "new_attribute={}".format(
                 repr(self.new_attribute) if self.new_attribute else None
-            )
+            ),
         ]
         return "SetAttributeRequestPayload({})".format(", ".join(args))
 
@@ -212,9 +193,9 @@ class SetAttributeRequestPayload(base.RequestPayload):
         return str(
             {
                 "unique_identifier": self.unique_identifier,
-                "new_attribute": str(
-                    self.new_attribute
-                ) if self.new_attribute else None
+                "new_attribute": str(self.new_attribute)
+                if self.new_attribute
+                else None,
             }
         )
 
@@ -272,8 +253,7 @@ class SetAttributeResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("The unique identifier must be a string.")
@@ -305,8 +285,7 @@ class SetAttributeResponsePayload(base.ResponsePayload):
             )
 
         super(SetAttributeResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -314,10 +293,7 @@ class SetAttributeResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The SetAttribute response payload encoding is missing the "
@@ -355,10 +331,7 @@ class SetAttributeResponsePayload(base.ResponsePayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The SetAttribute response payload is missing the unique "
@@ -367,23 +340,16 @@ class SetAttributeResponsePayload(base.ResponsePayload):
 
         self.length = local_buffer.length()
         super(SetAttributeResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
-        args = [
-            "unique_identifier='{}'".format(self.unique_identifier)
-        ]
+        args = ["unique_identifier='{}'".format(self.unique_identifier)]
         return "SetAttributeResponsePayload({})".format(", ".join(args))
 
     def __str__(self):
-        return str(
-            {
-                "unique_identifier": self.unique_identifier
-            }
-        )
+        return str({"unique_identifier": self.unique_identifier})
 
     def __eq__(self, other):
         if isinstance(other, SetAttributeResponsePayload):

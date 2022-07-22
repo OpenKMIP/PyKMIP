@@ -17,6 +17,6 @@ from kmip.services.server.crypto.api import CryptographicEngine
 from kmip.services.server.crypto.engine import CryptographyEngine
 
 __all__ = [
-    'CryptographicEngine',
-    'CryptographyEngine',
+    "CryptographicEngine",
+    "CryptographyEngine",
 ]

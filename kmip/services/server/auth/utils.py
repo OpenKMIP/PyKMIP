@@ -25,10 +25,7 @@ def get_certificate_from_connection(connection):
     """
     certificate = connection.getpeercert(binary_form=True)
     if certificate:
-        return x509.load_der_x509_certificate(
-            certificate,
-            backends.default_backend()
-        )
+        return x509.load_der_x509_certificate(certificate, backends.default_backend())
     return None
 
 
@@ -64,9 +61,7 @@ def get_client_identity_from_certificate(certificate):
 
     if len(client_ids) > 0:
         if len(client_ids) > 1:
-            raise exceptions.PermissionDenied(
-                "Multiple client identities found."
-            )
+            raise exceptions.PermissionDenied("Multiple client identities found.")
         return client_ids[0]
     else:
         raise exceptions.PermissionDenied(

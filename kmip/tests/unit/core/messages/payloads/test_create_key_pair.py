@@ -26,7 +26,6 @@ from kmip.core.messages import payloads
 
 
 class TestCreateKeyPairRequestPayload(testtools.TestCase):
-
     def setUp(self):
         super(TestCreateKeyPairRequestPayload, self).setUp()
 
@@ -60,44 +59,44 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         #             Attribute Name - Cryptographic Usage Mask
         #             Attribute Value - Verify
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x01\x88'
-            b'\x42\x00\x1F\x01\x00\x00\x00\x70'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x17'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C'
-            b'\x67\x6F\x72\x69\x74\x68\x6D\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x14'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65'
-            b'\x6E\x67\x74\x68\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00'
-            b'\x42\x00\x65\x01\x00\x00\x00\x80'
-            b'\x42\x00\x08\x01\x00\x00\x00\x40'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x04'
-            b'\x4E\x61\x6D\x65\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0B'
-            b'\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6E\x01\x00\x00\x00\x80'
-            b'\x42\x00\x08\x01\x00\x00\x00\x40'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x04'
-            b'\x4E\x61\x6D\x65\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0A'
-            b'\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x01\x88"
+            b"\x42\x00\x1F\x01\x00\x00\x00\x70"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x17"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C"
+            b"\x67\x6F\x72\x69\x74\x68\x6D\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x14"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65"
+            b"\x6E\x67\x74\x68\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00"
+            b"\x42\x00\x65\x01\x00\x00\x00\x80"
+            b"\x42\x00\x08\x01\x00\x00\x00\x40"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x04"
+            b"\x4E\x61\x6D\x65\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0B"
+            b"\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x6E\x01\x00\x00\x00\x80"
+            b"\x42\x00\x08\x01\x00\x00\x00\x40"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x04"
+            b"\x4E\x61\x6D\x65\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0A"
+            b"\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
@@ -119,22 +118,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         #             Name Type - Uninterpreted Text String
         #         Cryptographic Usage Mask - Verify
         self.full_encoding_with_attributes = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\xB8'
-            b'\x42\x01\x26\x01\x00\x00\x00\x20'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00'
-            b'\x42\x01\x27\x01\x00\x00\x00\x40'
-            b'\x42\x00\x53\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0B'
-            b'\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x01\x28\x01\x00\x00\x00\x40'
-            b'\x42\x00\x53\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0A'
-            b'\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\xB8"
+            b"\x42\x01\x26\x01\x00\x00\x00\x20"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00"
+            b"\x42\x01\x27\x01\x00\x00\x00\x40"
+            b"\x42\x00\x53\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0B"
+            b"\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x01\x28\x01\x00\x00\x00\x40"
+            b"\x42\x00\x53\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0A"
+            b"\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
@@ -163,29 +162,29 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         #     Public Protection Storage Masks
         #         Protection Storage Mask - Software | Hardware
         self.full_encoding_with_protection_masks = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x01\x10'
-            b'\x42\x01\x26\x01\x00\x00\x00\x20'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00'
-            b'\x42\x01\x27\x01\x00\x00\x00\x40'
-            b'\x42\x00\x53\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0B'
-            b'\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x01\x28\x01\x00\x00\x00\x40'
-            b'\x42\x00\x53\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0A'
-            b'\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x01\x63\x01\x00\x00\x00\x20'
-            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x03\x00\x00\x00\x00\x00'
-            b'\x42\x01\x64\x01\x00\x00\x00\x10'
-            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x03\x00\x00\x00\x00\x00'
-            b'\x42\x01\x65\x01\x00\x00\x00\x10'
-            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x01\x10"
+            b"\x42\x01\x26\x01\x00\x00\x00\x20"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00"
+            b"\x42\x01\x27\x01\x00\x00\x00\x40"
+            b"\x42\x00\x53\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0B"
+            b"\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x01\x28\x01\x00\x00\x00\x40"
+            b"\x42\x00\x53\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0A"
+            b"\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x01\x63\x01\x00\x00\x00\x20"
+            b"\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x03\x00\x00\x00\x00\x00"
+            b"\x42\x01\x64\x01\x00\x00\x00\x10"
+            b"\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x03\x00\x00\x00\x00\x00"
+            b"\x42\x01\x65\x01\x00\x00\x00\x10"
+            b"\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
@@ -211,33 +210,33 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         #             Attribute Name - Cryptographic Usage Mask
         #             Attribute Value - Verify
         self.no_common_template_attribute_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x01\x10'
-            b'\x42\x00\x65\x01\x00\x00\x00\x80'
-            b'\x42\x00\x08\x01\x00\x00\x00\x40'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x04'
-            b'\x4E\x61\x6D\x65\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0B'
-            b'\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6E\x01\x00\x00\x00\x80'
-            b'\x42\x00\x08\x01\x00\x00\x00\x40'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x04'
-            b'\x4E\x61\x6D\x65\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0A'
-            b'\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x01\x10"
+            b"\x42\x00\x65\x01\x00\x00\x00\x80"
+            b"\x42\x00\x08\x01\x00\x00\x00\x40"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x04"
+            b"\x4E\x61\x6D\x65\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0B"
+            b"\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x6E\x01\x00\x00\x00\x80"
+            b"\x42\x00\x08\x01\x00\x00\x00\x40"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x04"
+            b"\x4E\x61\x6D\x65\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0A"
+            b"\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
@@ -261,31 +260,31 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         #             Attribute Name - Cryptographic Usage Mask
         #             Attribute Value - Verify
         self.no_private_key_template_attr_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x01\x00'
-            b'\x42\x00\x1F\x01\x00\x00\x00\x70'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x17'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C'
-            b'\x67\x6F\x72\x69\x74\x68\x6D\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x14'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65'
-            b'\x6E\x67\x74\x68\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00'
-            b'\x42\x00\x6E\x01\x00\x00\x00\x80'
-            b'\x42\x00\x08\x01\x00\x00\x00\x40'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x04'
-            b'\x4E\x61\x6D\x65\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0A'
-            b'\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x01\x00"
+            b"\x42\x00\x1F\x01\x00\x00\x00\x70"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x17"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C"
+            b"\x67\x6F\x72\x69\x74\x68\x6D\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x14"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65"
+            b"\x6E\x67\x74\x68\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00"
+            b"\x42\x00\x6E\x01\x00\x00\x00\x80"
+            b"\x42\x00\x08\x01\x00\x00\x00\x40"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x04"
+            b"\x4E\x61\x6D\x65\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0A"
+            b"\x50\x75\x62\x6C\x69\x63\x4B\x65\x79\x31\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
@@ -318,38 +317,36 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         #             Attribute Name - Cryptographic Usage Mask
         #             Attribute Value - Verify
         self.no_public_key_template_attribute_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x01\x00'
-            b'\x42\x00\x1F\x01\x00\x00\x00\x70'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x17'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C'
-            b'\x67\x6F\x72\x69\x74\x68\x6D\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x14'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65'
-            b'\x6E\x67\x74\x68\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00'
-            b'\x42\x00\x65\x01\x00\x00\x00\x80'
-            b'\x42\x00\x08\x01\x00\x00\x00\x40'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x04'
-            b'\x4E\x61\x6D\x65\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x01\x00\x00\x00\x28'
-            b'\x42\x00\x55\x07\x00\x00\x00\x0B'
-            b'\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00'
-            b'\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x01\x00"
+            b"\x42\x00\x1F\x01\x00\x00\x00\x70"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x17"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x41\x6C"
+            b"\x67\x6F\x72\x69\x74\x68\x6D\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x14"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x4C\x65"
+            b"\x6E\x67\x74\x68\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x04\x00\x00\x00\x00\x00"
+            b"\x42\x00\x65\x01\x00\x00\x00\x80"
+            b"\x42\x00\x08\x01\x00\x00\x00\x40"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x04"
+            b"\x4E\x61\x6D\x65\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x01\x00\x00\x00\x28"
+            b"\x42\x00\x55\x07\x00\x00\x00\x0B"
+            b"\x50\x72\x69\x76\x61\x74\x65\x4B\x65\x79\x31\x00\x00\x00\x00\x00"
+            b"\x42\x00\x54\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         # Request Payload
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestCreateKeyPairRequestPayload, self).tearDown()
@@ -359,7 +356,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the common template attribute of a CreateKeyPair request payload.
         """
-        kwargs = {'common_template_attribute': 'invalid'}
+        kwargs = {"common_template_attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Common template attribute must be a TemplateAttribute structure.",
@@ -367,7 +364,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        kwargs = {'common_template_attribute': objects.TemplateAttribute()}
+        kwargs = {"common_template_attribute": objects.TemplateAttribute()}
         self.assertRaisesRegex(
             TypeError,
             "Common template attribute must be a TemplateAttribute structure "
@@ -378,8 +375,8 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
 
         args = (
             payloads.CreateKeyPairRequestPayload(),
-            'common_template_attribute',
-            'invalid'
+            "common_template_attribute",
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -390,8 +387,8 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
 
         args = (
             payloads.CreateKeyPairRequestPayload(),
-            'common_template_attribute',
-            objects.TemplateAttribute()
+            "common_template_attribute",
+            objects.TemplateAttribute(),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -409,15 +406,12 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         kwargs = {"private_key_template_attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "Private key template attribute must be a TemplateAttribute "
-            "structure.",
+            "Private key template attribute must be a TemplateAttribute " "structure.",
             payloads.CreateKeyPairRequestPayload,
             **kwargs
         )
 
-        kwargs = {
-            "private_key_template_attribute": objects.TemplateAttribute()
-        }
+        kwargs = {"private_key_template_attribute": objects.TemplateAttribute()}
         self.assertRaisesRegex(
             TypeError,
             "Private key template attribute must be a TemplateAttribute "
@@ -429,12 +423,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "private_key_template_attribute",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
-            "Private key template attribute must be a TemplateAttribute "
-            "structure.",
+            "Private key template attribute must be a TemplateAttribute " "structure.",
             setattr,
             *args
         )
@@ -442,7 +435,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "private_key_template_attribute",
-            objects.TemplateAttribute()
+            objects.TemplateAttribute(),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -460,8 +453,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         kwargs = {"public_key_template_attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "Public key template attribute must be a TemplateAttribute "
-            "structure.",
+            "Public key template attribute must be a TemplateAttribute " "structure.",
             payloads.CreateKeyPairRequestPayload,
             **kwargs
         )
@@ -478,12 +470,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "public_key_template_attribute",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
-            "Public key template attribute must be a TemplateAttribute "
-            "structure.",
+            "Public key template attribute must be a TemplateAttribute " "structure.",
             setattr,
             *args
         )
@@ -491,7 +482,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "public_key_template_attribute",
-            objects.TemplateAttribute()
+            objects.TemplateAttribute(),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -514,9 +505,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
             payloads.CreateKeyPairRequestPayload,
             **kwargs
         )
-        kwargs = {
-            "common_protection_storage_masks": objects.ProtectionStorageMasks()
-        }
+        kwargs = {"common_protection_storage_masks": objects.ProtectionStorageMasks()}
         self.assertRaisesRegex(
             TypeError,
             "The common protection storage masks must be a "
@@ -529,7 +518,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "common_protection_storage_masks",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -541,7 +530,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "common_protection_storage_masks",
-            objects.ProtectionStorageMasks()
+            objects.ProtectionStorageMasks(),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -566,10 +555,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
             payloads.CreateKeyPairRequestPayload,
             **kwargs
         )
-        kwargs = {
-            "private_protection_storage_masks":
-            objects.ProtectionStorageMasks()
-        }
+        kwargs = {"private_protection_storage_masks": objects.ProtectionStorageMasks()}
         self.assertRaisesRegex(
             TypeError,
             "The private protection storage masks must be a "
@@ -582,7 +568,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "private_protection_storage_masks",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -594,7 +580,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "private_protection_storage_masks",
-            objects.ProtectionStorageMasks()
+            objects.ProtectionStorageMasks(),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -619,9 +605,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
             payloads.CreateKeyPairRequestPayload,
             **kwargs
         )
-        kwargs = {
-            "public_protection_storage_masks": objects.ProtectionStorageMasks()
-        }
+        kwargs = {"public_protection_storage_masks": objects.ProtectionStorageMasks()}
         self.assertRaisesRegex(
             TypeError,
             "The public protection storage masks must be a "
@@ -634,7 +618,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "public_protection_storage_masks",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -646,7 +630,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairRequestPayload(),
             "public_protection_storage_masks",
-            objects.ProtectionStorageMasks()
+            objects.ProtectionStorageMasks(),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -675,27 +659,26 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
-            payload.common_template_attribute
+            payload.common_template_attribute,
         )
         self.assertEqual(
             objects.TemplateAttribute(
@@ -703,13 +686,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -717,13 +698,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.private_key_template_attribute
+            payload.private_key_template_attribute,
         )
         self.assertEqual(
             objects.TemplateAttribute(
@@ -731,13 +712,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -745,13 +724,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.public_key_template_attribute
+            payload.public_key_template_attribute,
         )
 
     def test_read_kmip_2_0(self):
@@ -770,7 +749,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
 
         payload.read(
             self.full_encoding_with_protection_masks,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            kmip_version=enums.KMIPVersion.KMIP_2_0,
         )
 
         self.assertEqual(
@@ -778,27 +757,26 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
-            payload.common_template_attribute
+            payload.common_template_attribute,
         )
         self.assertEqual(
             objects.TemplateAttribute(
@@ -806,13 +784,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -820,13 +796,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.private_key_template_attribute
+            payload.private_key_template_attribute,
         )
         self.assertEqual(
             objects.TemplateAttribute(
@@ -834,13 +810,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -848,34 +822,34 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.public_key_template_attribute
+            payload.public_key_template_attribute,
         )
         self.assertEqual(
             objects.ProtectionStorageMasks(
                 protection_storage_masks=[3, 768],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             ),
-            payload.common_protection_storage_masks
+            payload.common_protection_storage_masks,
         )
         self.assertEqual(
             objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             ),
-            payload.private_protection_storage_masks
+            payload.private_protection_storage_masks,
         )
         self.assertEqual(
             objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
             ),
-            payload.public_protection_storage_masks
+            payload.public_protection_storage_masks,
         )
 
     def test_read_missing_common_template_attribute(self):
@@ -898,13 +872,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -912,13 +884,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.private_key_template_attribute
+            payload.private_key_template_attribute,
         )
         self.assertEqual(
             objects.TemplateAttribute(
@@ -926,13 +898,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -940,13 +910,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.public_key_template_attribute
+            payload.public_key_template_attribute,
         )
 
     def test_read_missing_private_key_template_attribute(self):
@@ -967,27 +937,26 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
-            payload.common_template_attribute
+            payload.common_template_attribute,
         )
         self.assertIsNone(payload.private_key_template_attribute)
         self.assertEqual(
@@ -996,13 +965,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1010,13 +977,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.public_key_template_attribute
+            payload.public_key_template_attribute,
         )
 
     def test_read_missing_public_key_template_attribute(self):
@@ -1037,27 +1004,26 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
-            payload.common_template_attribute
+            payload.common_template_attribute,
         )
         self.assertEqual(
             objects.TemplateAttribute(
@@ -1065,13 +1031,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1079,13 +1043,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.private_key_template_attribute
+            payload.private_key_template_attribute,
         )
         self.assertIsNone(payload.public_key_template_attribute)
 
@@ -1116,38 +1080,35 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1155,24 +1116,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1180,12 +1139,12 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -1204,38 +1163,35 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1243,24 +1199,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1268,37 +1222,31 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
             common_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3, 768],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             ),
             private_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             ),
             public_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
-            )
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
+            ),
         )
 
         stream = utils.BytearrayStream()
         payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
 
-        self.assertEqual(
-            len(self.full_encoding_with_protection_masks),
-            len(stream)
-        )
-        self.assertEqual(
-            str(self.full_encoding_with_protection_masks),
-            str(stream)
-        )
+        self.assertEqual(len(self.full_encoding_with_protection_masks), len(stream))
+        self.assertEqual(str(self.full_encoding_with_protection_masks), str(stream))
 
     def test_write_missing_common_template_attribute(self):
         """
@@ -1311,13 +1259,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1325,24 +1271,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1350,25 +1294,19 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         stream = utils.BytearrayStream()
         payload.write(stream)
 
-        self.assertEqual(
-            len(self.no_common_template_attribute_encoding),
-            len(stream)
-        )
-        self.assertEqual(
-            str(self.no_common_template_attribute_encoding),
-            str(stream)
-        )
+        self.assertEqual(len(self.no_common_template_attribute_encoding), len(stream))
+        self.assertEqual(str(self.no_common_template_attribute_encoding), str(stream))
 
     def test_write_missing_private_key_template_attribute(self):
         """
@@ -1380,38 +1318,35 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1419,25 +1354,19 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         stream = utils.BytearrayStream()
         payload.write(stream)
 
-        self.assertEqual(
-            len(self.no_private_key_template_attr_encoding),
-            len(stream)
-        )
-        self.assertEqual(
-            str(self.no_private_key_template_attr_encoding),
-            str(stream)
-        )
+        self.assertEqual(len(self.no_private_key_template_attr_encoding), len(stream))
+        self.assertEqual(str(self.no_private_key_template_attr_encoding), str(stream))
 
     def test_write_missing_public_key_template_attribute(self):
         """
@@ -1449,38 +1378,35 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1488,24 +1414,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         stream = utils.BytearrayStream()
         payload.write(stream)
 
         self.assertEqual(
-            len(self.no_public_key_template_attribute_encoding),
-            len(stream)
+            len(self.no_public_key_template_attribute_encoding), len(stream)
         )
         self.assertEqual(
-            str(self.no_public_key_template_attribute_encoding),
-            str(stream)
+            str(self.no_public_key_template_attribute_encoding), str(stream)
         )
 
     def test_write_missing_everything(self):
@@ -1531,38 +1455,35 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1570,24 +1491,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1595,12 +1514,12 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
         self.assertEqual(
             "CreateKeyPairRequestPayload("
@@ -1610,7 +1529,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
             "common_protection_storage_masks=None, "
             "private_protection_storage_masks=None, "
             "public_protection_storage_masks=None)",
-            repr(payload)
+            repr(payload),
         )
 
     def test_str(self):
@@ -1623,38 +1542,35 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1662,24 +1578,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1687,23 +1601,23 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
         self.assertEqual(
-            '{'
+            "{"
             '"common_template_attribute": Struct(), '
             '"private_key_template_attribute": Struct(), '
             '"public_key_template_attribute": Struct(), '
             '"common_protection_storage_masks": None, '
             '"private_protection_storage_masks": None, '
             '"public_protection_storage_masks": None'
-            '}',
-            str(payload)
+            "}",
+            str(payload),
         )
 
     def test_equal_on_equal(self):
@@ -1722,38 +1636,35 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1761,24 +1672,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1786,62 +1695,59 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
             common_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3, 768],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             ),
             private_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             ),
             public_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
-            )
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
+            ),
         )
         b = payloads.CreateKeyPairRequestPayload(
             common_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1849,24 +1755,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -1874,24 +1778,24 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
             common_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3, 768],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             ),
             private_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             ),
             public_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
-            )
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
+            ),
         )
 
         self.assertTrue(a == b)
@@ -1908,16 +1812,16 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     )
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
@@ -1925,15 +1829,14 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     )
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -1952,16 +1855,14 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
@@ -1973,11 +1874,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -1996,16 +1897,14 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
@@ -2017,11 +1916,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -2037,13 +1936,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         a = payloads.CreateKeyPairRequestPayload(
             common_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
             common_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             )
         )
 
@@ -2059,13 +1958,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         a = payloads.CreateKeyPairRequestPayload(
             private_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
             private_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             )
         )
 
@@ -2081,13 +1980,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         a = payloads.CreateKeyPairRequestPayload(
             public_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
             public_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
             )
         )
 
@@ -2100,7 +1999,7 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         CreateKeyPair request payloads with different types.
         """
         a = payloads.CreateKeyPairRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -2121,38 +2020,35 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -2160,24 +2056,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -2185,62 +2079,59 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
             common_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3, 768],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             ),
             private_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             ),
             public_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
-            )
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
+            ),
         )
         b = payloads.CreateKeyPairRequestPayload(
             common_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
-                    )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             ),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -2248,24 +2139,22 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     ),
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
@@ -2273,24 +2162,24 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
-                    )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
+                    ),
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
             common_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3, 768],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             ),
             private_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             ),
             public_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
-            )
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
+            ),
         )
 
         self.assertFalse(a != b)
@@ -2307,16 +2196,16 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Algorithm'
+                            "Cryptographic Algorithm"
                         ),
                         attribute_value=primitives.Enumeration(
                             enums.CryptographicAlgorithm,
                             value=enums.CryptographicAlgorithm.RSA,
-                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                        ),
                     )
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
@@ -2324,15 +2213,14 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                 attributes=[
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName(
-                            'Cryptographic Length'
+                            "Cryptographic Length"
                         ),
                         attribute_value=primitives.Integer(
-                            value=1024,
-                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                        )
+                            value=1024, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        ),
                     )
                 ],
-                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -2351,16 +2239,14 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PrivateKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PrivateKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
@@ -2372,11 +2258,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -2395,16 +2281,14 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                     objects.Attribute(
                         attribute_name=objects.Attribute.AttributeName("Name"),
                         attribute_value=attributes.Name(
-                            name_value=attributes.Name.NameValue(
-                                "PublicKey1"
-                            ),
+                            name_value=attributes.Name.NameValue("PublicKey1"),
                             name_type=attributes.Name.NameType(
                                 enums.NameType.UNINTERPRETED_TEXT_STRING
-                            )
-                        )
+                            ),
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
@@ -2416,11 +2300,11 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -2436,13 +2320,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         a = payloads.CreateKeyPairRequestPayload(
             common_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
             common_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS,
             )
         )
 
@@ -2458,13 +2342,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         a = payloads.CreateKeyPairRequestPayload(
             private_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
             private_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PRIVATE_PROTECTION_STORAGE_MASKS,
             )
         )
 
@@ -2480,13 +2364,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         a = payloads.CreateKeyPairRequestPayload(
             public_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[3],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
             )
         )
         b = payloads.CreateKeyPairRequestPayload(
             public_protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[768],
-                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS
+                tag=enums.Tags.PUBLIC_PROTECTION_STORAGE_MASKS,
             )
         )
 
@@ -2499,14 +2383,13 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         CreateKeyPair request payloads with different types.
         """
         a = payloads.CreateKeyPairRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
 
 class TestCreateKeyPairResponsePayload(testtools.TestCase):
-
     def setUp(self):
         super(TestCreateKeyPairResponsePayload, self).setUp()
 
@@ -2530,25 +2413,25 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         #             Attribute Value
         #                 Name Value - Pre-Active
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\xC0'
-            b'\x42\x00\x66\x07\x00\x00\x00\x24'
-            b'\x37\x66\x37\x65\x65\x33\x39\x34\x2D\x34\x30\x66\x39\x2D\x34\x34'
-            b'\x34\x63\x2D\x38\x31\x38\x63\x2D\x66\x62\x31\x61\x65\x35\x37\x62'
-            b'\x64\x66\x31\x35\x00\x00\x00\x00'
-            b'\x42\x00\x6F\x07\x00\x00\x00\x24'
-            b'\x37\x39\x63\x30\x65\x62\x35\x35\x2D\x64\x30\x32\x30\x2D\x34\x33'
-            b'\x64\x65\x2D\x62\x37\x32\x66\x2D\x35\x65\x31\x38\x63\x38\x36\x32'
-            b'\x36\x34\x37\x63\x00\x00\x00\x00'
-            b'\x42\x00\x65\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6E\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\xC0"
+            b"\x42\x00\x66\x07\x00\x00\x00\x24"
+            b"\x37\x66\x37\x65\x65\x33\x39\x34\x2D\x34\x30\x66\x39\x2D\x34\x34"
+            b"\x34\x63\x2D\x38\x31\x38\x63\x2D\x66\x62\x31\x61\x65\x35\x37\x62"
+            b"\x64\x66\x31\x35\x00\x00\x00\x00"
+            b"\x42\x00\x6F\x07\x00\x00\x00\x24"
+            b"\x37\x39\x63\x30\x65\x62\x35\x35\x2D\x64\x30\x32\x30\x2D\x34\x33"
+            b"\x64\x65\x2D\x62\x37\x32\x66\x2D\x35\x65\x31\x38\x63\x38\x36\x32"
+            b"\x36\x34\x37\x63\x00\x00\x00\x00"
+            b"\x42\x00\x65\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x6E\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
@@ -2569,21 +2452,21 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         #             Attribute Value
         #                 Name Value - Pre-Active
         self.no_private_key_unique_identifier_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x90'
-            b'\x42\x00\x6F\x07\x00\x00\x00\x24'
-            b'\x37\x39\x63\x30\x65\x62\x35\x35\x2D\x64\x30\x32\x30\x2D\x34\x33'
-            b'\x64\x65\x2D\x62\x37\x32\x66\x2D\x35\x65\x31\x38\x63\x38\x36\x32'
-            b'\x36\x34\x37\x63\x00\x00\x00\x00'
-            b'\x42\x00\x65\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6E\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x90"
+            b"\x42\x00\x6F\x07\x00\x00\x00\x24"
+            b"\x37\x39\x63\x30\x65\x62\x35\x35\x2D\x64\x30\x32\x30\x2D\x34\x33"
+            b"\x64\x65\x2D\x62\x37\x32\x66\x2D\x35\x65\x31\x38\x63\x38\x36\x32"
+            b"\x36\x34\x37\x63\x00\x00\x00\x00"
+            b"\x42\x00\x65\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x6E\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
@@ -2604,21 +2487,21 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         #             Attribute Value
         #                 Name Value - Pre-Active
         self.no_public_key_unique_identifier_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x90'
-            b'\x42\x00\x66\x07\x00\x00\x00\x24'
-            b'\x37\x66\x37\x65\x65\x33\x39\x34\x2D\x34\x30\x66\x39\x2D\x34\x34'
-            b'\x34\x63\x2D\x38\x31\x38\x63\x2D\x66\x62\x31\x61\x65\x35\x37\x62'
-            b'\x64\x66\x31\x35\x00\x00\x00\x00'
-            b'\x42\x00\x65\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x6E\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x90"
+            b"\x42\x00\x66\x07\x00\x00\x00\x24"
+            b"\x37\x66\x37\x65\x65\x33\x39\x34\x2D\x34\x30\x66\x39\x2D\x34\x34"
+            b"\x34\x63\x2D\x38\x31\x38\x63\x2D\x66\x62\x31\x61\x65\x35\x37\x62"
+            b"\x64\x66\x31\x35\x00\x00\x00\x00"
+            b"\x42\x00\x65\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x6E\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
@@ -2636,20 +2519,20 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         #             Attribute Value
         #                 Name Value - Pre-Active
         self.no_private_key_template_attr_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x90'
-            b'\x42\x00\x66\x07\x00\x00\x00\x24'
-            b'\x37\x66\x37\x65\x65\x33\x39\x34\x2D\x34\x30\x66\x39\x2D\x34\x34'
-            b'\x34\x63\x2D\x38\x31\x38\x63\x2D\x66\x62\x31\x61\x65\x35\x37\x62'
-            b'\x64\x66\x31\x35\x00\x00\x00\x00'
-            b'\x42\x00\x6F\x07\x00\x00\x00\x24'
-            b'\x37\x39\x63\x30\x65\x62\x35\x35\x2D\x64\x30\x32\x30\x2D\x34\x33'
-            b'\x64\x65\x2D\x62\x37\x32\x66\x2D\x35\x65\x31\x38\x63\x38\x36\x32'
-            b'\x36\x34\x37\x63\x00\x00\x00\x00'
-            b'\x42\x00\x6E\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x90"
+            b"\x42\x00\x66\x07\x00\x00\x00\x24"
+            b"\x37\x66\x37\x65\x65\x33\x39\x34\x2D\x34\x30\x66\x39\x2D\x34\x34"
+            b"\x34\x63\x2D\x38\x31\x38\x63\x2D\x66\x62\x31\x61\x65\x35\x37\x62"
+            b"\x64\x66\x31\x35\x00\x00\x00\x00"
+            b"\x42\x00\x6F\x07\x00\x00\x00\x24"
+            b"\x37\x39\x63\x30\x65\x62\x35\x35\x2D\x64\x30\x32\x30\x2D\x34\x33"
+            b"\x64\x65\x2D\x62\x37\x32\x66\x2D\x35\x65\x31\x38\x63\x38\x36\x32"
+            b"\x36\x34\x37\x63\x00\x00\x00\x00"
+            b"\x42\x00\x6E\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 8.1.0.
@@ -2666,20 +2549,20 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         #             Attribute Name - State
         #             Attribute Value - Pre-Active
         self.no_public_key_template_attribute_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x90'
-            b'\x42\x00\x66\x07\x00\x00\x00\x24'
-            b'\x37\x66\x37\x65\x65\x33\x39\x34\x2D\x34\x30\x66\x39\x2D\x34\x34'
-            b'\x34\x63\x2D\x38\x31\x38\x63\x2D\x66\x62\x31\x61\x65\x35\x37\x62'
-            b'\x64\x66\x31\x35\x00\x00\x00\x00'
-            b'\x42\x00\x6F\x07\x00\x00\x00\x24'
-            b'\x37\x39\x63\x30\x65\x62\x35\x35\x2D\x64\x30\x32\x30\x2D\x34\x33'
-            b'\x64\x65\x2D\x62\x37\x32\x66\x2D\x35\x65\x31\x38\x63\x38\x36\x32'
-            b'\x36\x34\x37\x63\x00\x00\x00\x00'
-            b'\x42\x00\x65\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x90"
+            b"\x42\x00\x66\x07\x00\x00\x00\x24"
+            b"\x37\x66\x37\x65\x65\x33\x39\x34\x2D\x34\x30\x66\x39\x2D\x34\x34"
+            b"\x34\x63\x2D\x38\x31\x38\x63\x2D\x66\x62\x31\x61\x65\x35\x37\x62"
+            b"\x64\x66\x31\x35\x00\x00\x00\x00"
+            b"\x42\x00\x6F\x07\x00\x00\x00\x24"
+            b"\x37\x39\x63\x30\x65\x62\x35\x35\x2D\x64\x30\x32\x30\x2D\x34\x33"
+            b"\x64\x65\x2D\x62\x37\x32\x66\x2D\x35\x65\x31\x38\x63\x38\x36\x32"
+            b"\x36\x34\x37\x63\x00\x00\x00\x00"
+            b"\x42\x00\x65\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -2701,13 +2584,10 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairResponsePayload(),
             "private_key_unique_identifier",
-            0
+            0,
         )
         self.assertRaisesRegex(
-            TypeError,
-            "Private key unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Private key unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_public_key_unique_identifier(self):
@@ -2726,13 +2606,10 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairResponsePayload(),
             "public_key_unique_identifier",
-            0
+            0,
         )
         self.assertRaisesRegex(
-            TypeError,
-            "Public key unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Public key unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_private_key_template_attribute(self):
@@ -2743,15 +2620,12 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         kwargs = {"private_key_template_attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "Private key template attribute must be a TemplateAttribute "
-            "structure.",
+            "Private key template attribute must be a TemplateAttribute " "structure.",
             payloads.CreateKeyPairResponsePayload,
             **kwargs
         )
 
-        kwargs = {
-            "private_key_template_attribute": objects.TemplateAttribute()
-        }
+        kwargs = {"private_key_template_attribute": objects.TemplateAttribute()}
         self.assertRaisesRegex(
             TypeError,
             "Private key template attribute must be a TemplateAttribute "
@@ -2763,12 +2637,11 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairResponsePayload(),
             "private_key_template_attribute",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
-            "Private key template attribute must be a TemplateAttribute "
-            "structure.",
+            "Private key template attribute must be a TemplateAttribute " "structure.",
             setattr,
             *args
         )
@@ -2776,7 +2649,7 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairResponsePayload(),
             "private_key_template_attribute",
-            objects.TemplateAttribute()
+            objects.TemplateAttribute(),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -2794,8 +2667,7 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         kwargs = {"public_key_template_attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "Public key template attribute must be a TemplateAttribute "
-            "structure.",
+            "Public key template attribute must be a TemplateAttribute " "structure.",
             payloads.CreateKeyPairResponsePayload,
             **kwargs
         )
@@ -2812,12 +2684,11 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairResponsePayload(),
             "public_key_template_attribute",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
-            "Public key template attribute must be a TemplateAttribute "
-            "structure.",
+            "Public key template attribute must be a TemplateAttribute " "structure.",
             setattr,
             *args
         )
@@ -2825,7 +2696,7 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         args = (
             payloads.CreateKeyPairResponsePayload(),
             "public_key_template_attribute",
-            objects.TemplateAttribute()
+            objects.TemplateAttribute(),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -2851,47 +2722,42 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
 
         self.assertEqual(
             "7f7ee394-40f9-444c-818c-fb1ae57bdf15",
-            payload.private_key_unique_identifier
+            payload.private_key_unique_identifier,
         )
         self.assertEqual(
-            "79c0eb55-d020-43de-b72f-5e18c862647c",
-            payload.public_key_unique_identifier
-        )
-        self.assertEqual(
-            objects.TemplateAttribute(
-                attributes=[
-                    objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
-                        attribute_value=primitives.Enumeration(
-                            enums.State,
-                            value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
-                    )
-                ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
-            ),
-            payload.private_key_template_attribute
+            "79c0eb55-d020-43de-b72f-5e18c862647c", payload.public_key_unique_identifier
         )
         self.assertEqual(
             objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.public_key_template_attribute
+            payload.private_key_template_attribute,
+        )
+        self.assertEqual(
+            objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName("State"),
+                        attribute_value=primitives.Enumeration(
+                            enums.State,
+                            value=enums.State.PRE_ACTIVE,
+                            tag=enums.Tags.STATE,
+                        ),
+                    )
+                ],
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
+            payload.public_key_template_attribute,
         )
 
     def test_read_missing_private_key_unique_identifier(self):
@@ -2904,7 +2770,7 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
 
         self.assertEqual(None, payload.private_key_unique_identifier)
 
-        args = (self.no_private_key_unique_identifier_encoding, )
+        args = (self.no_private_key_unique_identifier_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The CreateKeyPair response payload encoding is missing the "
@@ -2923,7 +2789,7 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
 
         self.assertEqual(None, payload.public_key_unique_identifier)
 
-        args = (self.no_public_key_unique_identifier_encoding, )
+        args = (self.no_public_key_unique_identifier_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The CreateKeyPair response payload encoding is missing the "
@@ -2948,30 +2814,27 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
 
         self.assertEqual(
             "7f7ee394-40f9-444c-818c-fb1ae57bdf15",
-            payload.private_key_unique_identifier
+            payload.private_key_unique_identifier,
         )
         self.assertEqual(
-            "79c0eb55-d020-43de-b72f-5e18c862647c",
-            payload.public_key_unique_identifier
+            "79c0eb55-d020-43de-b72f-5e18c862647c", payload.public_key_unique_identifier
         )
         self.assertIsNone(payload.private_key_template_attribute)
         self.assertEqual(
             objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.public_key_template_attribute
+            payload.public_key_template_attribute,
         )
 
     def test_read_missing_public_key_template_attribute(self):
@@ -2990,29 +2853,26 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
 
         self.assertEqual(
             "7f7ee394-40f9-444c-818c-fb1ae57bdf15",
-            payload.private_key_unique_identifier
+            payload.private_key_unique_identifier,
         )
         self.assertEqual(
-            "79c0eb55-d020-43de-b72f-5e18c862647c",
-            payload.public_key_unique_identifier
+            "79c0eb55-d020-43de-b72f-5e18c862647c", payload.public_key_unique_identifier
         )
         self.assertEqual(
             objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
-            payload.private_key_template_attribute
+            payload.private_key_template_attribute,
         )
         self.assertIsNone(payload.public_key_template_attribute)
 
@@ -3022,42 +2882,34 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         stream.
         """
         payload = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -3073,43 +2925,37 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         key unique identifier.
         """
         payload = payloads.CreateKeyPairResponsePayload(
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The CreateKeyPair response payload is missing the private key "
@@ -3125,43 +2971,37 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         key unique identifier.
         """
         payload = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The CreateKeyPair response payload is missing the public key "
@@ -3176,40 +3016,28 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         stream even when missing the private key template attribute.
         """
         payload = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         stream = utils.BytearrayStream()
         payload.write(stream)
 
-        self.assertEqual(
-            len(self.no_private_key_template_attr_encoding),
-            len(stream)
-        )
-        self.assertEqual(
-            str(self.no_private_key_template_attr_encoding),
-            str(stream)
-        )
+        self.assertEqual(len(self.no_private_key_template_attr_encoding), len(stream))
+        self.assertEqual(str(self.no_private_key_template_attr_encoding), str(stream))
 
     def test_write_missing_public_key_template_attribute(self):
         """
@@ -3217,39 +3045,31 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         stream even when missing the public key template attribute.
         """
         payload = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         stream = utils.BytearrayStream()
         payload.write(stream)
 
         self.assertEqual(
-            len(self.no_public_key_template_attribute_encoding),
-            len(stream)
+            len(self.no_public_key_template_attribute_encoding), len(stream)
         )
         self.assertEqual(
-            str(self.no_public_key_template_attribute_encoding),
-            str(stream)
+            str(self.no_public_key_template_attribute_encoding), str(stream)
         )
 
     def test_repr(self):
@@ -3258,42 +3078,34 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         structure.
         """
         payload = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
         self.assertEqual(
             "CreateKeyPairResponsePayload("
@@ -3303,7 +3115,7 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
             "'79c0eb55-d020-43de-b72f-5e18c862647c', "
             "private_key_template_attribute=Struct(), "
             "public_key_template_attribute=Struct())",
-            repr(payload)
+            repr(payload),
         )
 
     def test_str(self):
@@ -3312,53 +3124,45 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         structure.
         """
         payload = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
         self.assertEqual(
-            '{'
+            "{"
             '"private_key_unique_identifier": '
             '"7f7ee394-40f9-444c-818c-fb1ae57bdf15", '
             '"public_key_unique_identifier": '
             '"79c0eb55-d020-43de-b72f-5e18c862647c", '
             '"private_key_template_attribute": Struct(), '
             '"public_key_template_attribute": Struct()'
-            '}',
-            str(payload)
+            "}",
+            str(payload),
         )
 
     def test_equal_on_equal(self):
@@ -3373,80 +3177,64 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
         b = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         self.assertTrue(a == b)
@@ -3458,12 +3246,8 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         CreateKeyPair response payloads with different private key unique
         identifiers.
         """
-        a = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier="a"
-        )
-        b = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier="b"
-        )
+        a = payloads.CreateKeyPairResponsePayload(private_key_unique_identifier="a")
+        b = payloads.CreateKeyPairResponsePayload(private_key_unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3474,12 +3258,8 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         CreateKeyPair response payloads with different public key unique
         identifiers.
         """
-        a = payloads.CreateKeyPairResponsePayload(
-            public_key_unique_identifier="a"
-        )
-        b = payloads.CreateKeyPairResponsePayload(
-            public_key_unique_identifier="b"
-        )
+        a = payloads.CreateKeyPairResponsePayload(public_key_unique_identifier="a")
+        b = payloads.CreateKeyPairResponsePayload(public_key_unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3494,34 +3274,28 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairResponsePayload(
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
-                            enums.State,
-                            value=enums.State.ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            enums.State, value=enums.State.ACTIVE, tag=enums.Tags.STATE
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -3538,34 +3312,28 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairResponsePayload(
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
-                            enums.State,
-                            value=enums.State.ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            enums.State, value=enums.State.ACTIVE, tag=enums.Tags.STATE
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -3578,7 +3346,7 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         CreateKeyPair response payloads with different types.
         """
         a = payloads.CreateKeyPairResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -3595,80 +3363,64 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
         b = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier=(
-                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
-            ),
-            public_key_unique_identifier=(
-                "79c0eb55-d020-43de-b72f-5e18c862647c"
-            ),
+            private_key_unique_identifier=("7f7ee394-40f9-444c-818c-fb1ae57bdf15"),
+            public_key_unique_identifier=("79c0eb55-d020-43de-b72f-5e18c862647c"),
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             ),
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
-            )
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
+            ),
         )
 
         self.assertFalse(a != b)
@@ -3680,12 +3432,8 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         CreateKeyPair response payloads with different private key unique
         identifiers.
         """
-        a = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier="a"
-        )
-        b = payloads.CreateKeyPairResponsePayload(
-            private_key_unique_identifier="b"
-        )
+        a = payloads.CreateKeyPairResponsePayload(private_key_unique_identifier="a")
+        b = payloads.CreateKeyPairResponsePayload(private_key_unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -3696,12 +3444,8 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         CreateKeyPair response payloads with different public key unique
         identifiers.
         """
-        a = payloads.CreateKeyPairResponsePayload(
-            public_key_unique_identifier="a"
-        )
-        b = payloads.CreateKeyPairResponsePayload(
-            public_key_unique_identifier="b"
-        )
+        a = payloads.CreateKeyPairResponsePayload(public_key_unique_identifier="a")
+        b = payloads.CreateKeyPairResponsePayload(public_key_unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -3716,34 +3460,28 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairResponsePayload(
             private_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
-                            enums.State,
-                            value=enums.State.ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            enums.State, value=enums.State.ACTIVE, tag=enums.Tags.STATE
+                        ),
                     )
                 ],
-                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -3760,34 +3498,28 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
         b = payloads.CreateKeyPairResponsePayload(
             public_key_template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
-                            enums.State,
-                            value=enums.State.ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            enums.State, value=enums.State.ACTIVE, tag=enums.Tags.STATE
+                        ),
                     )
                 ],
-                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE,
             )
         )
 
@@ -3800,7 +3532,7 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
         CreateKeyPair response payloads with different types.
         """
         a = payloads.CreateKeyPairResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)

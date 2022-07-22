@@ -30,10 +30,8 @@ class RekeyRequestPayload(base.RequestPayload):
         template_attribute: A collection of attributes that should be set on
             the replacement key.
     """
-    def __init__(self,
-                 unique_identifier=None,
-                 offset=None,
-                 template_attribute=None):
+
+    def __init__(self, unique_identifier=None, offset=None, template_attribute=None):
         """
         Construct a Rekey request payload struct.
 
@@ -71,8 +69,7 @@ class RekeyRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -89,10 +86,7 @@ class RekeyRequestPayload(base.RequestPayload):
         if value is None:
             self._offset = None
         elif isinstance(value, six.integer_types):
-            self._offset = primitives.Interval(
-                value=value,
-                tag=enums.Tags.OFFSET
-            )
+            self._offset = primitives.Interval(value=value, tag=enums.Tags.OFFSET)
         else:
             raise TypeError("Offset must be an integer.")
 
@@ -110,9 +104,7 @@ class RekeyRequestPayload(base.RequestPayload):
         elif isinstance(value, objects.TemplateAttribute):
             self._template_attribute = value
         else:
-            raise TypeError(
-                "Template attribute must be a TemplateAttribute struct."
-            )
+            raise TypeError("Template attribute must be a TemplateAttribute struct.")
 
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -127,33 +119,22 @@ class RekeyRequestPayload(base.RequestPayload):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(RekeyRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(RekeyRequestPayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.OFFSET, local_stream):
-            self._offset = primitives.Interval(
-                tag=enums.Tags.OFFSET
-            )
+            self._offset = primitives.Interval(tag=enums.Tags.OFFSET)
             self._offset.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_stream):
             self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._template_attribute.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -172,23 +153,14 @@ class RekeyRequestPayload(base.RequestPayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier is not None:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._offset is not None:
             self._offset.write(local_stream, kmip_version=kmip_version)
         if self._template_attribute is not None:
-            self._template_attribute.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._template_attribute.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
-        super(RekeyRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(RekeyRequestPayload, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -211,19 +183,23 @@ class RekeyRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "offset={0}".format(self.offset),
-            "template_attribute={0}".format(repr(self.template_attribute))
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "offset={0}".format(self.offset),
+                "template_attribute={0}".format(repr(self.template_attribute)),
+            ]
+        )
         return "RekeyRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'offset': self.offset,
-            'template_attribute': str(self.template_attribute)
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "offset": self.offset,
+                "template_attribute": str(self.template_attribute),
+            }
+        )
 
 
 class RekeyResponsePayload(base.ResponsePayload):
@@ -235,9 +211,8 @@ class RekeyResponsePayload(base.ResponsePayload):
         template_attribute: A collection of server attributes that were set on
             the replacement key.
     """
-    def __init__(self,
-                 unique_identifier=None,
-                 template_attribute=None):
+
+    def __init__(self, unique_identifier=None, template_attribute=None):
         """
         Construct a Rekey response payload struct.
 
@@ -270,8 +245,7 @@ class RekeyResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -290,9 +264,7 @@ class RekeyResponsePayload(base.ResponsePayload):
         elif isinstance(value, objects.TemplateAttribute):
             self._template_attribute = value
         else:
-            raise TypeError(
-                "Template attribute must be a TemplateAttribute struct."
-            )
+            raise TypeError("Template attribute must be a TemplateAttribute struct.")
 
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -311,20 +283,14 @@ class RekeyResponsePayload(base.ResponsePayload):
             ValueError: Raised if the unique identifier attribute is missing
                 from the encoded payload.
         """
-        super(RekeyResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(RekeyResponsePayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "The Rekey response payload encoding is missing the unique "
@@ -333,10 +299,7 @@ class RekeyResponsePayload(base.ResponsePayload):
 
         if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_stream):
             self._template_attribute = objects.TemplateAttribute()
-            self._template_attribute.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._template_attribute.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -358,24 +321,17 @@ class RekeyResponsePayload(base.ResponsePayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier is not None:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
                 "The Rekey response payload is missing the unique identifier."
             )
         if self._template_attribute is not None:
-            self._template_attribute.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._template_attribute.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(RekeyResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -397,14 +353,18 @@ class RekeyResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "template_attribute={0}".format(repr(self.template_attribute))
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "template_attribute={0}".format(repr(self.template_attribute)),
+            ]
+        )
         return "RekeyResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'template_attribute': str(self.template_attribute)
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "template_attribute": str(self.template_attribute),
+            }
+        )

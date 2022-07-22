@@ -34,24 +34,22 @@ class TestDigest(TestCase):
     def setUp(self):
         super(TestDigest, self).setUp()
 
-        self.hashing_algorithm_a = HashingAlgorithm(
-            HashingAlgorithmEnum.SHA_256)
-        self.hashing_algorithm_b = HashingAlgorithm(
-            HashingAlgorithmEnum.SHA_256)
-        self.hashing_algorithm_c = HashingAlgorithm(
-            HashingAlgorithmEnum.SHA_256)
-        self.hashing_algorithm_d = HashingAlgorithm(
-            HashingAlgorithmEnum.SHA_1)
+        self.hashing_algorithm_a = HashingAlgorithm(HashingAlgorithmEnum.SHA_256)
+        self.hashing_algorithm_b = HashingAlgorithm(HashingAlgorithmEnum.SHA_256)
+        self.hashing_algorithm_c = HashingAlgorithm(HashingAlgorithmEnum.SHA_256)
+        self.hashing_algorithm_d = HashingAlgorithm(HashingAlgorithmEnum.SHA_1)
 
-        self.digest_value_a = DigestValue(b'')
+        self.digest_value_a = DigestValue(b"")
         self.digest_value_b = DigestValue(
-            b'\x6C\x06\x4F\xE0\x51\xAD\xD1\x1E\xDC\x07\x72\x7B\x59\x4E\xB4\x87'
-            b'\x11\xDF\x84\x3E\x08\x44\x5B\xBA\x2C\xD7\x86\xBC\x16\xBC\x58'
-            b'\xE8')
+            b"\x6C\x06\x4F\xE0\x51\xAD\xD1\x1E\xDC\x07\x72\x7B\x59\x4E\xB4\x87"
+            b"\x11\xDF\x84\x3E\x08\x44\x5B\xBA\x2C\xD7\x86\xBC\x16\xBC\x58"
+            b"\xE8"
+        )
         self.digest_value_c = DigestValue(
-            b'\x11\x11\x0A\x01\xED\x45\x89\xD9\x98\x7C\x9A\xD6\x03\x68\xE2\xB7'
-            b'\x62\xF2\xB2\x0C\x00\x94\x6E\x19\x32\xC1\x60\x5A\x18\x17\x2F'
-            b'\x55')
+            b"\x11\x11\x0A\x01\xED\x45\x89\xD9\x98\x7C\x9A\xD6\x03\x68\xE2\xB7"
+            b"\x62\xF2\xB2\x0C\x00\x94\x6E\x19\x32\xC1\x60\x5A\x18\x17\x2F"
+            b"\x55"
+        )
 
         self.key_format_type_a = KeyFormatType(KeyFormatTypeEnum.RAW)
         self.key_format_type_b = KeyFormatType(KeyFormatTypeEnum.RAW)
@@ -59,25 +57,34 @@ class TestDigest(TestCase):
 
         # Encodings obtained from Section 18.1 and 18.2 of the KMIP 1.1 Test
         # Cases document.
-        self.encoding_a = BytearrayStream((
-            b'\x42\x00\x34\x01\x00\x00\x00\x28\x42\x00\x38\x05\x00\x00\x00\x04'
-            b'\x00\x00\x00\x06\x00\x00\x00\x00\x42\x00\x35\x08\x00\x00\x00\x00'
-            b'\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00'
-            b'\x00'))
-        self.encoding_b = BytearrayStream((
-            b'\x42\x00\x34\x01\x00\x00\x00\x48\x42\x00\x38\x05\x00\x00\x00\x04'
-            b'\x00\x00\x00\x06\x00\x00\x00\x00\x42\x00\x35\x08\x00\x00\x00\x20'
-            b'\x6C\x06\x4F\xE0\x51\xAD\xD1\x1E\xDC\x07\x72\x7B\x59\x4E\xB4\x87'
-            b'\x11\xDF\x84\x3E\x08\x44\x5B\xBA\x2C\xD7\x86\xBC\x16\xBC\x58\xE8'
-            b'\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00'
-            b'\x00'))
-        self.encoding_c = BytearrayStream((
-            b'\x42\x00\x34\x01\x00\x00\x00\x48\x42\x00\x38\x05\x00\x00\x00\x04'
-            b'\x00\x00\x00\x06\x00\x00\x00\x00\x42\x00\x35\x08\x00\x00\x00\x20'
-            b'\x11\x11\x0A\x01\xED\x45\x89\xD9\x98\x7C\x9A\xD6\x03\x68\xE2\xB7'
-            b'\x62\xF2\xB2\x0C\x00\x94\x6E\x19\x32\xC1\x60\x5A\x18\x17\x2F\x55'
-            b'\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00'
-            b'\x00'))
+        self.encoding_a = BytearrayStream(
+            (
+                b"\x42\x00\x34\x01\x00\x00\x00\x28\x42\x00\x38\x05\x00\x00\x00\x04"
+                b"\x00\x00\x00\x06\x00\x00\x00\x00\x42\x00\x35\x08\x00\x00\x00\x00"
+                b"\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00"
+                b"\x00"
+            )
+        )
+        self.encoding_b = BytearrayStream(
+            (
+                b"\x42\x00\x34\x01\x00\x00\x00\x48\x42\x00\x38\x05\x00\x00\x00\x04"
+                b"\x00\x00\x00\x06\x00\x00\x00\x00\x42\x00\x35\x08\x00\x00\x00\x20"
+                b"\x6C\x06\x4F\xE0\x51\xAD\xD1\x1E\xDC\x07\x72\x7B\x59\x4E\xB4\x87"
+                b"\x11\xDF\x84\x3E\x08\x44\x5B\xBA\x2C\xD7\x86\xBC\x16\xBC\x58\xE8"
+                b"\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00"
+                b"\x00"
+            )
+        )
+        self.encoding_c = BytearrayStream(
+            (
+                b"\x42\x00\x34\x01\x00\x00\x00\x48\x42\x00\x38\x05\x00\x00\x00\x04"
+                b"\x00\x00\x00\x06\x00\x00\x00\x00\x42\x00\x35\x08\x00\x00\x00\x20"
+                b"\x11\x11\x0A\x01\xED\x45\x89\xD9\x98\x7C\x9A\xD6\x03\x68\xE2\xB7"
+                b"\x62\xF2\xB2\x0C\x00\x94\x6E\x19\x32\xC1\x60\x5A\x18\x17\x2F\x55"
+                b"\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00"
+                b"\x00"
+            )
+        )
 
     def tearDown(self):
         super(TestDigest, self).tearDown()
@@ -92,9 +99,11 @@ class TestDigest(TestCase):
         """
         Test that a Digest object can be constructed with valid values.
         """
-        Digest(hashing_algorithm=HashingAlgorithm(),
-               digest_value=DigestValue(),
-               key_format_type=KeyFormatType())
+        Digest(
+            hashing_algorithm=HashingAlgorithm(),
+            digest_value=DigestValue(),
+            key_format_type=KeyFormatType(),
+        )
 
     def test_validate_with_invalid_hashing_algorithm(self):
         """
@@ -102,10 +111,9 @@ class TestDigest(TestCase):
         HashingAlgorithm is used to construct a Digest object.
         """
         hashing_algorithm = "invalid"
-        kwargs = {'hashing_algorithm': hashing_algorithm}
+        kwargs = {"hashing_algorithm": hashing_algorithm}
 
-        self.assertRaisesRegex(
-            TypeError, "invalid hashing algorithm", Digest, **kwargs)
+        self.assertRaisesRegex(TypeError, "invalid hashing algorithm", Digest, **kwargs)
 
     def test_validate_with_invalid_digest_value(self):
         """
@@ -113,10 +121,9 @@ class TestDigest(TestCase):
         is used to construct a Digest object.
         """
         digest_value = "invalid"
-        kwargs = {'digest_value': digest_value}
+        kwargs = {"digest_value": digest_value}
 
-        self.assertRaisesRegex(
-            TypeError, "invalid digest value", Digest, **kwargs)
+        self.assertRaisesRegex(TypeError, "invalid digest value", Digest, **kwargs)
 
     def test_validate_with_invalid_key_format_type(self):
         """
@@ -124,82 +131,86 @@ class TestDigest(TestCase):
         KeyFormatType is used to construct a Digeest object.
         """
         key_format_type = "invalid"
-        kwargs = {'key_format_type': key_format_type}
+        kwargs = {"key_format_type": key_format_type}
 
-        self.assertRaisesRegex(
-            TypeError, "invalid key format type", Digest, **kwargs)
+        self.assertRaisesRegex(TypeError, "invalid key format type", Digest, **kwargs)
 
-    def _test_read(self, stream, hashing_algorithm, digest_value,
-                   key_format_type):
+    def _test_read(self, stream, hashing_algorithm, digest_value, key_format_type):
         digest = Digest()
         digest.read(stream)
 
         msg = "hashing algorithm encoding mismatch"
         msg += "; expected {0}, observed {1}".format(
-            hashing_algorithm,
-            digest.hashing_algorithm)
-        self.assertEqual(
-            hashing_algorithm,
-            digest.hashing_algorithm, msg)
+            hashing_algorithm, digest.hashing_algorithm
+        )
+        self.assertEqual(hashing_algorithm, digest.hashing_algorithm, msg)
 
         msg = "digest value encoding mismatch"
-        msg += "; expected {0}, observed {1}".format(
-            digest_value,
-            digest.digest_value)
-        self.assertEqual(
-            digest_value,
-            digest.digest_value, msg)
+        msg += "; expected {0}, observed {1}".format(digest_value, digest.digest_value)
+        self.assertEqual(digest_value, digest.digest_value, msg)
 
         msg = "key format type encoding mismatch"
         msg += "; expected {0}, observed {1}".format(
-            key_format_type,
-            digest.key_format_type)
-        self.assertEqual(
-            key_format_type,
-            digest.key_format_type, msg)
+            key_format_type, digest.key_format_type
+        )
+        self.assertEqual(key_format_type, digest.key_format_type, msg)
 
     def test_read_a(self):
         """
         Test that a Digest object with some data can be read from a data
         stream.
         """
-        self._test_read(self.encoding_a, self.hashing_algorithm_a,
-                        self.digest_value_a, self.key_format_type_a)
+        self._test_read(
+            self.encoding_a,
+            self.hashing_algorithm_a,
+            self.digest_value_a,
+            self.key_format_type_a,
+        )
 
     def test_read_b(self):
         """
         Test that a Digest object with data can be read from a data stream.
         """
-        self._test_read(self.encoding_b, self.hashing_algorithm_b,
-                        self.digest_value_b, self.key_format_type_b)
+        self._test_read(
+            self.encoding_b,
+            self.hashing_algorithm_b,
+            self.digest_value_b,
+            self.key_format_type_b,
+        )
 
     def test_read_c(self):
         """
         Test that a Digest object with data can be read from a data stream.
         """
-        self._test_read(self.encoding_c, self.hashing_algorithm_c,
-                        self.digest_value_c, self.key_format_type_c)
+        self._test_read(
+            self.encoding_c,
+            self.hashing_algorithm_c,
+            self.digest_value_c,
+            self.key_format_type_c,
+        )
 
-    def _test_write(self, stream_expected, hashing_algorithm, digest_value,
-                    key_format_type):
+    def _test_write(
+        self, stream_expected, hashing_algorithm, digest_value, key_format_type
+    ):
         stream_observed = BytearrayStream()
         digest = Digest(
             hashing_algorithm=hashing_algorithm,
             digest_value=digest_value,
-            key_format_type=key_format_type)
+            key_format_type=key_format_type,
+        )
         digest.write(stream_observed)
 
         length_expected = len(stream_expected)
         length_observed = len(stream_observed)
 
         msg = "encoding lengths not equal"
-        msg += "; expected {0}, observed {1}".format(
-            length_expected, length_observed)
+        msg += "; expected {0}, observed {1}".format(length_expected, length_observed)
         self.assertEqual(length_expected, length_observed, msg)
 
         msg = "encoding mismatch"
         msg += ";\nexpected:\n{0}\nobserved:\n{1}".format(
-            stream_expected, stream_observed)
+            stream_expected, stream_observed
+        )
         self.assertEqual(stream_expected, stream_observed, msg)
 
     def test_write_a(self):
@@ -207,22 +218,34 @@ class TestDigest(TestCase):
         Test that a Digest object with some data can be written to a data
         stream.
         """
-        self._test_write(self.encoding_a, self.hashing_algorithm_a,
-                         self.digest_value_a, self.key_format_type_a)
+        self._test_write(
+            self.encoding_a,
+            self.hashing_algorithm_a,
+            self.digest_value_a,
+            self.key_format_type_a,
+        )
 
     def test_write_b(self):
         """
         Test that a Digest object with data can be written to a data stream.
         """
-        self._test_write(self.encoding_b, self.hashing_algorithm_b,
-                         self.digest_value_b, self.key_format_type_b)
+        self._test_write(
+            self.encoding_b,
+            self.hashing_algorithm_b,
+            self.digest_value_b,
+            self.key_format_type_b,
+        )
 
     def test_write_c(self):
         """
         Test that a Digest object with data can be written to a data stream.
         """
-        self._test_write(self.encoding_c, self.hashing_algorithm_c,
-                         self.digest_value_c, self.key_format_type_c)
+        self._test_write(
+            self.encoding_c,
+            self.hashing_algorithm_c,
+            self.digest_value_c,
+            self.key_format_type_c,
+        )
 
     def test_equal_on_equal(self):
         """
@@ -232,11 +255,13 @@ class TestDigest(TestCase):
         a = Digest(
             hashing_algorithm=self.hashing_algorithm_b,
             digest_value=self.digest_value_b,
-            key_format_type=self.key_format_type_b)
+            key_format_type=self.key_format_type_b,
+        )
         b = Digest(
             hashing_algorithm=self.hashing_algorithm_b,
             digest_value=self.digest_value_b,
-            key_format_type=self.key_format_type_b)
+            key_format_type=self.key_format_type_b,
+        )
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
@@ -260,7 +285,8 @@ class TestDigest(TestCase):
         a = Digest(
             hashing_algorithm=self.hashing_algorithm_b,
             digest_value=self.digest_value_b,
-            key_format_type=self.key_format_type_b)
+            key_format_type=self.key_format_type_b,
+        )
         b = Digest()
 
         self.assertFalse(a == b)
@@ -274,7 +300,8 @@ class TestDigest(TestCase):
         a = Digest(
             hashing_algorithm=self.hashing_algorithm_b,
             digest_value=self.digest_value_b,
-            key_format_type=self.key_format_type_b)
+            key_format_type=self.key_format_type_b,
+        )
         b = "invalid"
 
         self.assertFalse(a == b)
@@ -288,11 +315,13 @@ class TestDigest(TestCase):
         a = Digest(
             hashing_algorithm=self.hashing_algorithm_b,
             digest_value=self.digest_value_b,
-            key_format_type=self.key_format_type_b)
+            key_format_type=self.key_format_type_b,
+        )
         b = Digest(
             hashing_algorithm=self.hashing_algorithm_b,
             digest_value=self.digest_value_b,
-            key_format_type=self.key_format_type_b)
+            key_format_type=self.key_format_type_b,
+        )
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
@@ -316,14 +345,15 @@ class TestDigest(TestCase):
         a = Digest(
             hashing_algorithm=self.hashing_algorithm_b,
             digest_value=self.digest_value_b,
-            key_format_type=self.key_format_type_b)
+            key_format_type=self.key_format_type_b,
+        )
         b = Digest()
         c = Digest(
             hashing_algorithm=self.hashing_algorithm_d,
             digest_value=self.digest_value_b,
-            key_format_type=self.key_format_type_c)
-        d = Digest(
-            key_format_type=self.key_format_type_c)
+            key_format_type=self.key_format_type_c,
+        )
+        d = Digest(key_format_type=self.key_format_type_c)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -338,7 +368,8 @@ class TestDigest(TestCase):
         a = Digest(
             hashing_algorithm=self.hashing_algorithm_b,
             digest_value=self.digest_value_b,
-            key_format_type=self.key_format_type_b)
+            key_format_type=self.key_format_type_b,
+        )
         b = "invalid"
 
         self.assertTrue(a != b)
@@ -350,20 +381,21 @@ class TestDigest(TestCase):
         properly.
         """
         hashing_algorithm = HashingAlgorithm(HashingAlgorithmEnum.MD5)
-        digest_value = DigestValue(b'\x00\x01\x02\x03')
+        digest_value = DigestValue(b"\x00\x01\x02\x03")
         key_format_type = KeyFormatType(KeyFormatTypeEnum.RAW)
         digest = Digest(
             hashing_algorithm=hashing_algorithm,
             digest_value=digest_value,
-            key_format_type=key_format_type)
+            key_format_type=key_format_type,
+        )
 
-        hashing_algorithm = "hashing_algorithm={0}".format(
-            repr(hashing_algorithm))
+        hashing_algorithm = "hashing_algorithm={0}".format(repr(hashing_algorithm))
         digest_value = "digest_value={0}".format(repr(digest_value))
         key_format_type = "key_format_type={0}".format(repr(key_format_type))
 
         expected = "Digest({0}, {1}, {2})".format(
-            hashing_algorithm, digest_value, key_format_type)
+            hashing_algorithm, digest_value, key_format_type
+        )
         observed = repr(digest)
 
         msg = "expected:\n{0},\nobserved:\n{1}".format(expected, observed)
@@ -382,7 +414,7 @@ class TestDigest(TestCase):
         Test that the string representation of a Digest object is formatted
         properly when there is no internal data.
         """
-        data = b''
+        data = b""
         digest_value = DigestValue(data)
         self._test_str(digest_value, str(data))
 
@@ -391,12 +423,11 @@ class TestDigest(TestCase):
         Test that the string representation of a Digest object is formatted
         properly when there is internal data.
         """
-        data = b'\x00\x01\x02\x03'
+        data = b"\x00\x01\x02\x03"
         digest_value = DigestValue(data)
         self._test_str(digest_value, str(data))
 
-    def _test_create(self, digest, hashing_algorithm, digest_value,
-                     key_format_type):
+    def _test_create(self, digest, hashing_algorithm, digest_value, key_format_type):
         self.assertIsInstance(digest, Digest)
 
         expected = HashingAlgorithm(hashing_algorithm)
@@ -424,11 +455,10 @@ class TestDigest(TestCase):
         """
         digest = Digest.create()
         hashing_algorithm = HashingAlgorithmEnum.SHA_256
-        digest_value = b''
+        digest_value = b""
         key_format_type = KeyFormatTypeEnum.RAW
 
-        self._test_create(digest, hashing_algorithm, digest_value,
-                          key_format_type)
+        self._test_create(digest, hashing_algorithm, digest_value, key_format_type)
 
     def test_create_with_args(self):
         """
@@ -436,10 +466,8 @@ class TestDigest(TestCase):
         with arguments.
         """
         hashing_algorithm = HashingAlgorithmEnum.MD5
-        digest_value = b'\x00\x01\x02\x03'
+        digest_value = b"\x00\x01\x02\x03"
         key_format_type = KeyFormatTypeEnum.PKCS_1
-        digest = Digest.create(hashing_algorithm, digest_value,
-                               key_format_type)
+        digest = Digest.create(hashing_algorithm, digest_value, key_format_type)
 
-        self._test_create(digest, hashing_algorithm, digest_value,
-                          key_format_type)
+        self._test_create(digest, hashing_algorithm, digest_value, key_format_type)

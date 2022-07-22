@@ -40,11 +40,9 @@ from kmip.core import exceptions
 
 
 class SecretFactory(object):
-
     def __init__(self):
         self.base_error = exceptions.ErrorStrings.BAD_EXP_RECV
-        self.template_input = self.base_error.format('Template', '{0}', '{1}',
-                                                     '{2}')
+        self.template_input = self.base_error.format("Template", "{0}", "{1}", "{2}")
 
     def create(self, secret_type, value=None):
         """
@@ -83,14 +81,13 @@ class SecretFactory(object):
         elif secret_type is ObjectType.OPAQUE_DATA:
             return self._create_opaque_data(value)
         else:
-            raise TypeError("Unrecognized secret type: {0}".format(
-                secret_type))
+            raise TypeError("Unrecognized secret type: {0}".format(secret_type))
 
     def _create_certificate(self, value):
         if value:
             return Certificate(
-                certificate_type=value.get('certificate_type'),
-                certificate_value=value.get('certificate_value')
+                certificate_type=value.get("certificate_type"),
+                certificate_value=value.get("certificate_value"),
             )
         else:
             return Certificate()
@@ -127,7 +124,7 @@ class SecretFactory(object):
                 split_key_threshold=value.get("split_key_threshold"),
                 split_key_method=value.get("split_key_method"),
                 prime_field_size=value.get("prime_field_size"),
-                key_block=key_block
+                key_block=key_block,
             )
 
     def _create_template(self, value):
@@ -135,16 +132,16 @@ class SecretFactory(object):
             return Template()
         else:
             if not isinstance(value, list):
-                msg = utils.build_er_error(Template,
-                                           'constructor argument type', list,
-                                           type(value))
+                msg = utils.build_er_error(
+                    Template, "constructor argument type", list, type(value)
+                )
                 raise TypeError(msg)
             else:
                 for val in value:
                     if not isinstance(val, Attribute):
-                        msg = utils.build_er_error(Template,
-                                                   'constructor argument type',
-                                                   Attribute, type(val))
+                        msg = utils.build_er_error(
+                            Template, "constructor argument type", Attribute, type(val)
+                        )
                         raise TypeError(msg)
             return Template(value)
 
@@ -163,28 +160,25 @@ class SecretFactory(object):
         return OpaqueObject()
 
     def _build_key_block(self, value):
-        key_type = value.get('key_format_type')
-        key_compression_type = value.get('key_compression_type')
-        key_value = value.get('key_value')
-        cryptographic_algorithm = value.get('cryptographic_algorithm')
-        cryptographic_length = value.get('cryptographic_length')
-        key_wrapping_data = value.get('key_wrapping_data')
+        key_type = value.get("key_format_type")
+        key_compression_type = value.get("key_compression_type")
+        key_value = value.get("key_value")
+        cryptographic_algorithm = value.get("cryptographic_algorithm")
+        cryptographic_length = value.get("cryptographic_length")
+        key_wrapping_data = value.get("key_wrapping_data")
 
         key_format_type = KeyFormatType(key_type)
 
         key_comp_type = None
         if key_compression_type is not None:
-            key_comp_type = KeyBlock.KeyCompressionType(
-                key_compression_type)
+            key_comp_type = KeyBlock.KeyCompressionType(key_compression_type)
 
         key_material = KeyMaterial(key_value)
         key_value = KeyValue(key_material)
 
         crypto_algorithm = None
         if cryptographic_algorithm is not None:
-            crypto_algorithm = CryptographicAlgorithm(
-                cryptographic_algorithm
-            )
+            crypto_algorithm = CryptographicAlgorithm(cryptographic_algorithm)
 
         crypto_length = None
         if cryptographic_length is not None:
@@ -197,10 +191,12 @@ class SecretFactory(object):
             # TODO (peter-hamilton) create a KeyWrappingData object.
             key_wrap_data = KeyWrappingData(**key_wrapping_data)
 
-        key_block = KeyBlock(key_format_type,
-                             key_comp_type,
-                             key_value,
-                             crypto_algorithm,
-                             crypto_length,
-                             key_wrap_data)
+        key_block = KeyBlock(
+            key_format_type,
+            key_comp_type,
+            key_value,
+            crypto_algorithm,
+            crypto_length,
+            key_wrap_data,
+        )
         return key_block

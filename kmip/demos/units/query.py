@@ -25,7 +25,7 @@ from kmip.demos import utils
 from kmip.services.kmip_client import KMIPProxy
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -46,18 +46,14 @@ if __name__ == '__main__':
     query_functions.append(enums.QueryFunction.QUERY_EXTENSION_MAP)
 
     # Build the client and connect to the server
-    client = KMIPProxy(
-        config=config,
-        config_file=opts.config_file
-    )
+    client = KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
 
     result = client.query(query_functions=query_functions)
     client.close()
 
     # Display operation results
-    logger.info('query() result status: {0}'.format(
-        result.result_status.value))
+    logger.info("query() result status: {0}".format(result.result_status.value))
 
     if result.result_status.value == enums.ResultStatus.SUCCESS:
         operations = result.operations
@@ -67,33 +63,33 @@ if __name__ == '__main__':
         application_namespaces = result.application_namespaces
         extension_information = result.extension_information
 
-        logger.info('number of operations supported: {0}'.format(
-            len(operations)))
+        logger.info("number of operations supported: {0}".format(len(operations)))
         for i in xrange(len(operations)):
-            logger.info('operation supported: {0}'.format(operations[i]))
+            logger.info("operation supported: {0}".format(operations[i]))
 
-        logger.info('number of object types supported: {0}'.format(
-            len(object_types)))
+        logger.info("number of object types supported: {0}".format(len(object_types)))
         for i in xrange(len(object_types)):
-            logger.info('object type supported: {0}'.format(object_types[i]))
+            logger.info("object type supported: {0}".format(object_types[i]))
 
-        logger.info('vendor identification: {0}'.format(vendor_identification))
-        logger.info('server information: {0}'.format(server_information))
+        logger.info("vendor identification: {0}".format(vendor_identification))
+        logger.info("server information: {0}".format(server_information))
 
-        logger.info('number of application namespaces supported: {0}'.format(
-            len(application_namespaces)))
+        logger.info(
+            "number of application namespaces supported: {0}".format(
+                len(application_namespaces)
+            )
+        )
         for i in xrange(len(application_namespaces)):
-            logger.info('application namespace supported: {0}'.format(
-                application_namespaces[i]))
+            logger.info(
+                "application namespace supported: {0}".format(application_namespaces[i])
+            )
 
-        logger.info('number of extensions supported: {0}'.format(
-            len(extension_information)))
+        logger.info(
+            "number of extensions supported: {0}".format(len(extension_information))
+        )
         for i in xrange(len(extension_information)):
-            logger.info('extension supported: {0}'.format(
-                extension_information[i]))
+            logger.info("extension supported: {0}".format(extension_information[i]))
 
     else:
-        logger.info('query() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('query() result message: {0}'.format(
-            result.result_message.value))
+        logger.info("query() result reason: {0}".format(result.result_reason.value))
+        logger.info("query() result message: {0}".format(result.result_message.value))

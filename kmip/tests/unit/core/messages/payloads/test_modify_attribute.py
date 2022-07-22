@@ -42,16 +42,16 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         #         Attribute Name - x-attribute1
         #         Attribute Value - ModifiedValue1
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x68'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x0E'
-            b'\x4D\x6F\x64\x69\x66\x69\x65\x64\x56\x61\x6C\x75\x65\x31\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x68"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x0E"
+            b"\x4D\x6F\x64\x69\x66\x69\x65\x64\x56\x61\x6C\x75\x65\x31\x00\x00"
         )
 
         # This encoding was adapted from test case 3.1.4-6 from the KMIP 1.1
@@ -67,20 +67,18 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         #     New Attribute
         #         Cryptographic Algorithm - RSA
         self.full_encoding_kmip_2_0 = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x60'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x01\x3C\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x01\x3D\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x60"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x01\x3C\x01\x00\x00\x00\x10"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x01\x3D\x01\x00\x00\x00\x10"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestModifyAttributeRequestPayload, self).tearDown()
@@ -98,16 +96,9 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.ModifyAttributeRequestPayload(),
-            "unique_identifier",
-            0
-        )
+        args = (payloads.ModifyAttributeRequestPayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "The unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_attribute(self):
@@ -123,16 +114,9 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.ModifyAttributeRequestPayload(),
-            "attribute",
-            "invalid"
-        )
+        args = (payloads.ModifyAttributeRequestPayload(), "attribute", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The attribute must be an Attribute object.",
-            setattr,
-            *args
+            TypeError, "The attribute must be an Attribute object.", setattr, *args
         )
 
     def test_invalid_current_attribute(self):
@@ -151,7 +135,7 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         args = (
             payloads.ModifyAttributeRequestPayload(),
             "current_attribute",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -173,11 +157,7 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.ModifyAttributeRequestPayload(),
-            "new_attribute",
-            "invalid"
-        )
+        args = (payloads.ModifyAttributeRequestPayload(), "new_attribute", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The new attribute must be a NewAttribute object.",
@@ -199,18 +179,16 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertEqual(
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
             ),
-            payload.attribute
+            payload.attribute,
         )
         self.assertIsNone(payload.current_attribute)
         self.assertIsNone(payload.new_attribute)
@@ -228,13 +206,11 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.new_attribute)
 
         payload.read(
-            self.full_encoding_kmip_2_0,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding_kmip_2_0, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertIsNone(payload.attribute)
         self.assertEqual(
@@ -242,20 +218,20 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
-            payload.current_attribute
+            payload.current_attribute,
         )
         self.assertEqual(
             objects.NewAttribute(
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.RSA,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
-            payload.new_attribute
+            payload.new_attribute,
         )
 
     def test_read_no_attribute(self):
@@ -265,7 +241,7 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         ModifyAttribute request payload.
         """
         payload = payloads.ModifyAttributeRequestPayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The ModifyAttribute request payload encoding is missing the "
@@ -281,7 +257,7 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         ModifyAttribute request payload.
         """
         payload = payloads.ModifyAttributeRequestPayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
@@ -301,10 +277,9 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            )
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            ),
         )
 
         buffer = utils.BytearrayStream()
@@ -324,16 +299,16 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
             new_attribute=objects.NewAttribute(
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.RSA,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
-            )
+            ),
         )
 
         buffer = utils.BytearrayStream()
@@ -349,11 +324,10 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         specified.
         """
         payload = payloads.ModifyAttributeRequestPayload()
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The ModifyAttribute request payload is missing the attribute "
-            "field.",
+            "The ModifyAttribute request payload is missing the attribute " "field.",
             payload.write,
             *args
         )
@@ -365,7 +339,7 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         field specified.
         """
         payload = payloads.ModifyAttributeRequestPayload()
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidField,
@@ -388,11 +362,10 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
             "unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959'",
             "attribute=None",
             "current_attribute=None",
-            "new_attribute=None"
+            "new_attribute=None",
         ]
         self.assertEqual(
-            "ModifyAttributeRequestPayload({})".format(", ".join(args)),
-            repr(payload)
+            "ModifyAttributeRequestPayload({})".format(", ".join(args)), repr(payload)
         )
 
     def test_str(self):
@@ -407,7 +380,7 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
                 "unique_identifier": "b4faee10-aa2a-4446-8ad4-0881f3422959",
                 "attribute": None,
                 "current_attribute": None,
-                "new_attribute": None
+                "new_attribute": None,
             }
         )
         self.assertEqual(s, str(payload))
@@ -430,48 +403,46 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
             ),
             current_attribute=objects.CurrentAttribute(
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
             new_attribute=objects.NewAttribute(
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.RSA,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
-            )
+            ),
         )
         b = payloads.ModifyAttributeRequestPayload(
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
             ),
             current_attribute=objects.CurrentAttribute(
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             ),
             new_attribute=objects.NewAttribute(
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.RSA,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
-            )
+            ),
         )
 
         self.assertTrue(a == b)
@@ -503,18 +474,16 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
             )
         )
         b = payloads.ModifyAttributeRequestPayload(
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute2"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue2",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
+                    value="ModifiedValue2", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
             )
         )
 
@@ -534,16 +503,13 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             )
         )
         b = payloads.ModifyAttributeRequestPayload(
             current_attribute=objects.CurrentAttribute(
-                attribute=primitives.Integer(
-                    128,
-                    enums.Tags.CRYPTOGRAPHIC_LENGTH
-                )
+                attribute=primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH)
             )
         )
 
@@ -563,16 +529,13 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
                 attribute=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     enums.CryptographicAlgorithm.AES,
-                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 )
             )
         )
         b = payloads.ModifyAttributeRequestPayload(
             new_attribute=objects.NewAttribute(
-                attribute=primitives.Integer(
-                    128,
-                    enums.Tags.CRYPTOGRAPHIC_LENGTH
-                )
+                attribute=primitives.Integer(128, enums.Tags.CRYPTOGRAPHIC_LENGTH)
             )
         )
 
@@ -613,16 +576,16 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
         #         Attribute Name - x-attribute1
         #         Attribute Value - ModifiedValue1
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x68'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x0E'
-            b'\x4D\x6F\x64\x69\x66\x69\x65\x64\x56\x61\x6C\x75\x65\x31\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x68"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x78\x2D\x61\x74\x74\x72\x69\x62\x75\x74\x65\x31\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x0E"
+            b"\x4D\x6F\x64\x69\x66\x69\x65\x64\x56\x61\x6C\x75\x65\x31\x00\x00"
         )
 
         # This encoding was adapted from test case 3.1.4-6 from the KMIP 1.1
@@ -632,16 +595,14 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
         # Response Payload
         #     Unique Identifier - b4faee10-aa2a-4446-8ad4-0881f3422959
         self.full_encoding_kmip_2_0 = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34'
-            b'\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32'
-            b'\x32\x39\x35\x39\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x62\x34\x66\x61\x65\x65\x31\x30\x2D\x61\x61\x32\x61\x2D\x34\x34"
+            b"\x34\x36\x2D\x38\x61\x64\x34\x2D\x30\x38\x38\x31\x66\x33\x34\x32"
+            b"\x32\x39\x35\x39\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestModifyAttributeResponsePayload, self).tearDown()
@@ -659,16 +620,9 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.ModifyAttributeResponsePayload(),
-            "unique_identifier",
-            0
-        )
+        args = (payloads.ModifyAttributeResponsePayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "The unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "The unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_attribute(self):
@@ -684,16 +638,9 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.ModifyAttributeResponsePayload(),
-            "attribute",
-            "invalid"
-        )
+        args = (payloads.ModifyAttributeResponsePayload(), "attribute", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The attribute must be an Attribute object.",
-            setattr,
-            *args
+            TypeError, "The attribute must be an Attribute object.", setattr, *args
         )
 
     def test_read(self):
@@ -708,18 +655,16 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertEqual(
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
             ),
-            payload.attribute
+            payload.attribute,
         )
 
     def test_read_kmip_2_0(self):
@@ -732,13 +677,11 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.attribute)
 
         payload.read(
-            self.full_encoding_kmip_2_0,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding_kmip_2_0, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(
-            "b4faee10-aa2a-4446-8ad4-0881f3422959",
-            payload.unique_identifier
+            "b4faee10-aa2a-4446-8ad4-0881f3422959", payload.unique_identifier
         )
         self.assertIsNone(payload.attribute)
 
@@ -749,7 +692,7 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
         a ModifyAttribute response payload.
         """
         payload = payloads.ModifyAttributeResponsePayload()
-        args = (self.empty_encoding, )
+        args = (self.empty_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The ModifyAttribute response payload encoding is missing the "
@@ -765,7 +708,7 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
         ModifyAttribute response payload.
         """
         payload = payloads.ModifyAttributeResponsePayload()
-        args = (self.full_encoding_kmip_2_0, )
+        args = (self.full_encoding_kmip_2_0,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The ModifyAttribute response payload encoding is missing the "
@@ -784,10 +727,9 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            )
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            ),
         )
 
         buffer = utils.BytearrayStream()
@@ -819,7 +761,7 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
         """
         payload = payloads.ModifyAttributeResponsePayload()
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The ModifyAttribute response payload is missing the unique "
@@ -838,11 +780,10 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959"
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The ModifyAttribute response payload is missing the attribute "
-            "field.",
+            "The ModifyAttribute response payload is missing the attribute " "field.",
             payload.write,
             *args
         )
@@ -857,11 +798,10 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
 
         args = [
             "unique_identifier='b4faee10-aa2a-4446-8ad4-0881f3422959'",
-            "attribute=None"
+            "attribute=None",
         ]
         self.assertEqual(
-            "ModifyAttributeResponsePayload({})".format(", ".join(args)),
-            repr(payload)
+            "ModifyAttributeResponsePayload({})".format(", ".join(args)), repr(payload)
         )
 
     def test_str(self):
@@ -874,7 +814,7 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
         s = str(
             {
                 "unique_identifier": "b4faee10-aa2a-4446-8ad4-0881f3422959",
-                "attribute": None
+                "attribute": None,
             }
         )
         self.assertEqual(s, str(payload))
@@ -897,20 +837,18 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            )
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            ),
         )
         b = payloads.ModifyAttributeResponsePayload(
             unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            )
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            ),
         )
 
         self.assertTrue(a == b)
@@ -942,18 +880,18 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute1"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue1",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            ))
+                    value="ModifiedValue1", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            )
+        )
         b = payloads.ModifyAttributeResponsePayload(
             attribute=objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("x-attribute2"),
                 attribute_value=primitives.TextString(
-                    value="ModifiedValue2",
-                    tag=enums.Tags.ATTRIBUTE_VALUE
-                )
-            ))
+                    value="ModifiedValue2", tag=enums.Tags.ATTRIBUTE_VALUE
+                ),
+            )
+        )
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)

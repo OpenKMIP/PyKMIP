@@ -20,7 +20,6 @@ from kmip.core import utils
 
 
 class AttributeValueFactory(object):
-
     def create_attribute_value(self, name, value):
         # Switch on the name of the attribute
         if name is enums.AttributeType.UNIQUE_IDENTIFIER:
@@ -39,9 +38,7 @@ class AttributeValueFactory(object):
             raise NotImplementedError()
         elif name is enums.AttributeType.CERTIFICATE_TYPE:
             return primitives.Enumeration(
-                enums.CertificateType,
-                value=value,
-                tag=enums.Tags.CERTIFICATE_TYPE
+                enums.CertificateType, value=value, tag=enums.Tags.CERTIFICATE_TYPE
             )
         elif name is enums.AttributeType.CERTIFICATE_LENGTH:
             return primitives.Integer(value, enums.Tags.CERTIFICATE_LENGTH)
@@ -84,8 +81,7 @@ class AttributeValueFactory(object):
         elif name is enums.AttributeType.DESTROY_DATE:
             return primitives.DateTime(value, enums.Tags.DESTROY_DATE)
         elif name is enums.AttributeType.COMPROMISE_OCCURRENCE_DATE:
-            return primitives.DateTime(
-                value, enums.Tags.COMPROMISE_OCCURRENCE_DATE)
+            return primitives.DateTime(value, enums.Tags.COMPROMISE_OCCURRENCE_DATE)
         elif name is enums.AttributeType.COMPROMISE_DATE:
             return primitives.DateTime(value, enums.Tags.COMPROMISE_DATE)
         elif name is enums.AttributeType.REVOCATION_REASON:
@@ -110,9 +106,8 @@ class AttributeValueFactory(object):
             return attributes.CustomAttribute(value)
         else:
             if not isinstance(name, str):
-                raise ValueError('Unrecognized attribute type: '
-                                 '{0}'.format(name))
-            elif name.startswith('x-'):
+                raise ValueError("Unrecognized attribute type: " "{0}".format(name))
+            elif name.startswith("x-"):
                 # Custom attribute indicated
                 return attributes.CustomAttribute(value)
 
@@ -175,8 +170,7 @@ class AttributeValueFactory(object):
         elif enum is enums.Tags.DESTROY_DATE:
             return primitives.DateTime(value, enums.Tags.DESTROY_DATE)
         elif enum is enums.Tags.COMPROMISE_OCCURRENCE_DATE:
-            return primitives.DateTime(
-                value, enums.Tags.COMPROMISE_OCCURRENCE_DATE)
+            return primitives.DateTime(value, enums.Tags.COMPROMISE_OCCURRENCE_DATE)
         elif enum is enums.Tags.COMPROMISE_DATE:
             return primitives.DateTime(value, enums.Tags.COMPROMISE_DATE)
         elif enum is enums.Tags.REVOCATION_REASON:
@@ -210,20 +204,21 @@ class AttributeValueFactory(object):
 
             elif isinstance(name, str):
                 return attributes.Name.create(
-                            name,
-                            enums.NameType.UNINTERPRETED_TEXT_STRING
-                        )
+                    name, enums.NameType.UNINTERPRETED_TEXT_STRING
+                )
             else:
-                raise ValueError('Unrecognized attribute type: '
-                                 '{0}'.format(name))
+                raise ValueError("Unrecognized attribute type: " "{0}".format(name))
         else:
             return attributes.Name()
 
     def _create_cryptographic_length(self, length):
         if length is not None and not isinstance(length, int):
-            msg = utils.build_er_error(attributes.CryptographicLength,
-                                       'constructor argument type', int,
-                                       type(length))
+            msg = utils.build_er_error(
+                attributes.CryptographicLength,
+                "constructor argument type",
+                int,
+                type(length),
+            )
             raise TypeError(msg)
 
         return attributes.CryptographicLength(length)
@@ -234,31 +229,21 @@ class AttributeValueFactory(object):
 
         if isinstance(params, dict):
             return attributes.CryptographicParameters(
-                block_cipher_mode=params.get('block_cipher_mode', None),
-                padding_method=params.get('padding_method', None),
-                hashing_algorithm=params.get('hashing_algorithm', None),
-                key_role_type=params.get('key_role_type', None),
+                block_cipher_mode=params.get("block_cipher_mode", None),
+                padding_method=params.get("padding_method", None),
+                hashing_algorithm=params.get("hashing_algorithm", None),
+                key_role_type=params.get("key_role_type", None),
                 digital_signature_algorithm=params.get(
-                    'digital_signature_algorithm',
-                    None
+                    "digital_signature_algorithm", None
                 ),
-                cryptographic_algorithm=params.get(
-                    'cryptographic_algorithm',
-                    None
-                ),
-                random_iv=params.get('random_iv', None),
-                iv_length=params.get('iv_length', None),
-                tag_length=params.get('tag_length', None),
-                fixed_field_length=params.get('fixed_field_length', None),
-                invocation_field_length=params.get(
-                    'invocation_field_length',
-                    None
-                ),
-                counter_length=params.get('counter_length', None),
-                initial_counter_value=params.get(
-                    'initial_counter_value',
-                    None
-                )
+                cryptographic_algorithm=params.get("cryptographic_algorithm", None),
+                random_iv=params.get("random_iv", None),
+                iv_length=params.get("iv_length", None),
+                tag_length=params.get("tag_length", None),
+                fixed_field_length=params.get("fixed_field_length", None),
+                invocation_field_length=params.get("invocation_field_length", None),
+                counter_length=params.get("counter_length", None),
+                initial_counter_value=params.get("initial_counter_value", None),
             )
         else:
             raise TypeError("cryptographic parameters must be a dict")
@@ -276,7 +261,7 @@ class AttributeValueFactory(object):
         if info:
             return attributes.ApplicationSpecificInformation(
                 application_namespace=info.get("application_namespace"),
-                application_data=info.get("application_data")
+                application_data=info.get("application_data"),
             )
         else:
             return attributes.ApplicationSpecificInformation()
@@ -286,9 +271,12 @@ class AttributeValueFactory(object):
             return attributes.ContactInformation()
         else:
             if not isinstance(info, str):
-                msg = utils.build_er_error(attributes.ContactInformation,
-                                           'constructor argument type', str,
-                                           type(info))
+                msg = utils.build_er_error(
+                    attributes.ContactInformation,
+                    "constructor argument type",
+                    str,
+                    type(info),
+                )
                 raise TypeError(msg)
 
             return attributes.ContactInformation(info)

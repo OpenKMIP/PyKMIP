@@ -15,11 +15,7 @@
 
 
 class OperationResult(object):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None):
+    def __init__(self, result_status, result_reason=None, result_message=None):
         self.result_status = result_status
 
         if result_reason is not None:
@@ -34,16 +30,16 @@ class OperationResult(object):
 
 
 class CreateResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 object_type=None,
-                 uuid=None,
-                 template_attribute=None):
-        super(CreateResult, self).__init__(
-            result_status, result_reason, result_message)
+    def __init__(
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        object_type=None,
+        uuid=None,
+        template_attribute=None,
+    ):
+        super(CreateResult, self).__init__(result_status, result_reason, result_message)
         if object_type is not None:
             self.object_type = object_type
         else:
@@ -61,17 +57,19 @@ class CreateResult(OperationResult):
 
 
 class CreateKeyPairResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 private_key_uuid=None,
-                 public_key_uuid=None,
-                 private_key_template_attribute=None,
-                 public_key_template_attribute=None):
+    def __init__(
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        private_key_uuid=None,
+        public_key_uuid=None,
+        private_key_template_attribute=None,
+        public_key_template_attribute=None,
+    ):
         super(CreateKeyPairResult, self).__init__(
-            result_status, result_reason, result_message)
+            result_status, result_reason, result_message
+        )
         self.private_key_uuid = private_key_uuid
         self.public_key_uuid = public_key_uuid
         self.private_key_template_attribute = private_key_template_attribute
@@ -79,14 +77,12 @@ class CreateKeyPairResult(OperationResult):
 
 
 class ActivateResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 uuid=None):
+    def __init__(
+        self, result_status, result_reason=None, result_message=None, uuid=None
+    ):
         super(ActivateResult, self).__init__(
-            result_status, result_reason, result_message)
+            result_status, result_reason, result_message
+        )
 
         if uuid is not None:
             self.uuid = uuid
@@ -95,15 +91,17 @@ class ActivateResult(OperationResult):
 
 
 class RegisterResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 uuid=None,
-                 template_attribute=None):
+    def __init__(
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        uuid=None,
+        template_attribute=None,
+    ):
         super(RegisterResult, self).__init__(
-            result_status, result_reason, result_message)
+            result_status, result_reason, result_message
+        )
         if uuid is not None:
             self.uuid = uuid
         else:
@@ -116,32 +114,38 @@ class RegisterResult(OperationResult):
 
 
 class RekeyKeyPairResult(CreateKeyPairResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 private_key_uuid=None,
-                 public_key_uuid=None,
-                 private_key_template_attribute=None,
-                 public_key_template_attribute=None):
+    def __init__(
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        private_key_uuid=None,
+        public_key_uuid=None,
+        private_key_template_attribute=None,
+        public_key_template_attribute=None,
+    ):
         super(RekeyKeyPairResult, self).__init__(
-            result_status, result_reason, result_message, private_key_uuid,
-            public_key_uuid, private_key_template_attribute,
-            public_key_template_attribute)
+            result_status,
+            result_reason,
+            result_message,
+            private_key_uuid,
+            public_key_uuid,
+            private_key_template_attribute,
+            public_key_template_attribute,
+        )
 
 
 class GetResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 object_type=None,
-                 uuid=None,
-                 secret=None):
-        super(GetResult, self).__init__(
-            result_status, result_reason, result_message)
+    def __init__(
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        object_type=None,
+        uuid=None,
+        secret=None,
+    ):
+        super(GetResult, self).__init__(result_status, result_reason, result_message)
         if object_type is not None:
             self.object_type = object_type
         else:
@@ -159,48 +163,44 @@ class GetResult(OperationResult):
 
 
 class GetAttributesResult(OperationResult):
-
     def __init__(
-            self,
-            result_status,
-            result_reason=None,
-            result_message=None,
-            uuid=None,
-            attributes=None
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        uuid=None,
+        attributes=None,
     ):
         super(GetAttributesResult, self).__init__(
-            result_status,
-            result_reason,
-            result_message
+            result_status, result_reason, result_message
         )
         self.uuid = uuid
         self.attributes = attributes
 
 
 class GetAttributeListResult(OperationResult):
-
     def __init__(
-            self,
-            result_status,
-            result_reason=None,
-            result_message=None,
-            uid=None,
-            names=None):
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        uid=None,
+        names=None,
+    ):
         super(GetAttributeListResult, self).__init__(
-            result_status, result_reason, result_message)
+            result_status, result_reason, result_message
+        )
         self.uid = uid
         self.names = names
 
 
 class DestroyResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 uuid=None):
+    def __init__(
+        self, result_status, result_reason=None, result_message=None, uuid=None
+    ):
         super(DestroyResult, self).__init__(
-            result_status, result_reason, result_message)
+            result_status, result_reason, result_message
+        )
         if uuid is not None:
             self.uuid = uuid
         else:
@@ -208,14 +208,10 @@ class DestroyResult(OperationResult):
 
 
 class LocateResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 uuids=None):
-        super(LocateResult, self).__init__(
-            result_status, result_reason, result_message)
+    def __init__(
+        self, result_status, result_reason=None, result_message=None, uuids=None
+    ):
+        super(LocateResult, self).__init__(result_status, result_reason, result_message)
         self.uuids = uuids
 
 
@@ -236,18 +232,19 @@ class QueryResult(OperationResult):
         extension_information: A list of extensions supported by the server.
     """
 
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 operations=None,
-                 object_types=None,
-                 vendor_identification=None,
-                 server_information=None,
-                 application_namespaces=None,
-                 extension_information=None):
-        super(QueryResult, self).__init__(
-            result_status, result_reason, result_message)
+    def __init__(
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        operations=None,
+        object_types=None,
+        vendor_identification=None,
+        server_information=None,
+        application_namespaces=None,
+        extension_information=None,
+    ):
+        super(QueryResult, self).__init__(result_status, result_reason, result_message)
 
         if operations is None:
             self.operations = list()
@@ -274,41 +271,40 @@ class QueryResult(OperationResult):
 
 
 class DiscoverVersionsResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 protocol_versions=None):
+    def __init__(
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        protocol_versions=None,
+    ):
         super(DiscoverVersionsResult, self).__init__(
-            result_status, result_reason, result_message)
+            result_status, result_reason, result_message
+        )
         self.protocol_versions = protocol_versions
 
 
 class RevokeResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 unique_identifier=None):
-        super(RevokeResult, self).__init__(
-            result_status, result_reason, result_message)
+    def __init__(
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        unique_identifier=None,
+    ):
+        super(RevokeResult, self).__init__(result_status, result_reason, result_message)
         self.unique_identifier = unique_identifier
 
 
 class MACResult(OperationResult):
-
-    def __init__(self,
-                 result_status,
-                 result_reason=None,
-                 result_message=None,
-                 uuid=None,
-                 mac_data=None):
-        super(MACResult, self).__init__(
-            result_status,
-            result_reason,
-            result_message
-        )
+    def __init__(
+        self,
+        result_status,
+        result_reason=None,
+        result_message=None,
+        uuid=None,
+        mac_data=None,
+    ):
+        super(MACResult, self).__init__(result_status, result_reason, result_message)
         self.uuid = uuid
         self.mac_data = mac_data

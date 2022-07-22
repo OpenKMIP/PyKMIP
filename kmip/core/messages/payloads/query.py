@@ -35,6 +35,7 @@ class QueryRequestPayload(base.RequestPayload):
     Attributes:
         query_functions: A list of QueryFunction enumerations.
     """
+
     def __init__(self, query_functions=None):
         """
         Construct a QueryRequestPayload object.
@@ -64,9 +65,7 @@ class QueryRequestPayload(base.RequestPayload):
                 if isinstance(v, enums.QueryFunction):
                     query_functions.append(
                         primitives.Enumeration(
-                            enums.QueryFunction,
-                            value=v,
-                            tag=enums.Tags.QUERY_FUNCTION
+                            enums.QueryFunction, value=v, tag=enums.Tags.QUERY_FUNCTION
                         )
                     )
                 else:
@@ -77,8 +76,7 @@ class QueryRequestPayload(base.RequestPayload):
             self._query_functions = query_functions
         else:
             raise TypeError(
-                "The query functions must be a list of QueryFunction "
-                "enumerations."
+                "The query functions must be a list of QueryFunction " "enumerations."
             )
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -98,17 +96,13 @@ class QueryRequestPayload(base.RequestPayload):
             InvalidKmipEncoding: Raised if the query functions are missing
                 from the encoded payload.
         """
-        super(QueryRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(QueryRequestPayload, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         query_functions = []
-        while(self.is_tag_next(enums.Tags.QUERY_FUNCTION, local_buffer)):
+        while self.is_tag_next(enums.Tags.QUERY_FUNCTION, local_buffer):
             query_function = primitives.Enumeration(
-                enums.QueryFunction,
-                tag=enums.Tags.QUERY_FUNCTION
+                enums.QueryFunction, tag=enums.Tags.QUERY_FUNCTION
             )
             query_function.read(local_buffer, kmip_version=kmip_version)
             query_functions.append(query_function)
@@ -117,8 +111,7 @@ class QueryRequestPayload(base.RequestPayload):
             self._query_functions = query_functions
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The Query request payload encoding is missing the query "
-                "functions."
+                "The Query request payload encoding is missing the query " "functions."
             )
 
         self.is_oversized(local_buffer)
@@ -145,30 +138,26 @@ class QueryRequestPayload(base.RequestPayload):
                 query_function.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
-                "The Query request payload is missing the query functions "
-                "field."
+                "The Query request payload is missing the query functions " "field."
             )
 
         self.length = local_buffer.length()
-        super(QueryRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
-        )
+        super(QueryRequestPayload, self).write(output_buffer, kmip_version=kmip_version)
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         d = "query_functions={}".format(
-            "[{}]".format(
-                ", ".join(["{}".format(x) for x in self.query_functions])
-            ) if self.query_functions else None
+            "[{}]".format(", ".join(["{}".format(x) for x in self.query_functions]))
+            if self.query_functions
+            else None
         )
         return "QueryRequestPayload({})".format(d)
 
     def __str__(self):
         d = '"query_functions": {}'.format(
-            "[{}]".format(
-                ", ".join(["{}".format(x) for x in self.query_functions])
-            ) if self.query_functions else None
+            "[{}]".format(", ".join(["{}".format(x) for x in self.query_functions]))
+            if self.query_functions
+            else None
         )
         return "{" + d + "}"
 
@@ -229,21 +218,24 @@ class QueryResponsePayload(base.ResponsePayload):
             of ProtectionStorageMask enumerations detailing the storage
             protections supported by the server. Added in KMIP 2.0.
     """
-    def __init__(self,
-                 operations=None,
-                 object_types=None,
-                 vendor_identification=None,
-                 server_information=None,
-                 application_namespaces=None,
-                 extension_information=None,
-                 attestation_types=None,
-                 rng_parameters=None,
-                 profile_information=None,
-                 validation_information=None,
-                 capability_information=None,
-                 client_registration_methods=None,
-                 defaults_information=None,
-                 protection_storage_masks=None):
+
+    def __init__(
+        self,
+        operations=None,
+        object_types=None,
+        vendor_identification=None,
+        server_information=None,
+        application_namespaces=None,
+        extension_information=None,
+        attestation_types=None,
+        rng_parameters=None,
+        profile_information=None,
+        validation_information=None,
+        capability_information=None,
+        client_registration_methods=None,
+        defaults_information=None,
+        protection_storage_masks=None,
+    ):
         """
         Construct a QueryResponsePayload object.
 
@@ -338,21 +330,16 @@ class QueryResponsePayload(base.ResponsePayload):
                 if isinstance(i, enums.Operation):
                     operations.append(
                         primitives.Enumeration(
-                            enums.Operation,
-                            value=i,
-                            tag=enums.Tags.OPERATION
+                            enums.Operation, value=i, tag=enums.Tags.OPERATION
                         )
                     )
                 else:
                     raise TypeError(
-                        "The operations must be a list of Operation "
-                        "enumerations."
+                        "The operations must be a list of Operation " "enumerations."
                     )
             self._operations = operations
         else:
-            raise TypeError(
-                "The operations must be a list of Operation enumerations."
-            )
+            raise TypeError("The operations must be a list of Operation enumerations.")
 
     @property
     def object_types(self):
@@ -370,15 +357,12 @@ class QueryResponsePayload(base.ResponsePayload):
                 if isinstance(i, enums.ObjectType):
                     object_types.append(
                         primitives.Enumeration(
-                            enums.ObjectType,
-                            value=i,
-                            tag=enums.Tags.OBJECT_TYPE
+                            enums.ObjectType, value=i, tag=enums.Tags.OBJECT_TYPE
                         )
                     )
                 else:
                     raise TypeError(
-                        "The object types must be a list of ObjectType "
-                        "enumerations."
+                        "The object types must be a list of ObjectType " "enumerations."
                     )
             self._object_types = object_types
         else:
@@ -398,8 +382,7 @@ class QueryResponsePayload(base.ResponsePayload):
             self._vendor_identification = None
         elif isinstance(value, six.string_types):
             self._vendor_identification = primitives.TextString(
-                value=value,
-                tag=enums.Tags.VENDOR_IDENTIFICATION
+                value=value, tag=enums.Tags.VENDOR_IDENTIFICATION
             )
         else:
             raise TypeError("The vendor identification must be a string.")
@@ -435,8 +418,7 @@ class QueryResponsePayload(base.ResponsePayload):
                 if isinstance(i, six.string_types):
                     application_namespaces.append(
                         primitives.TextString(
-                            value=i,
-                            tag=enums.Tags.APPLICATION_NAMESPACE
+                            value=i, tag=enums.Tags.APPLICATION_NAMESPACE
                         )
                     )
                 else:
@@ -445,9 +427,7 @@ class QueryResponsePayload(base.ResponsePayload):
                     )
             self._application_namespaces = application_namespaces
         else:
-            raise TypeError(
-                "The application namespaces must be a list of strings."
-            )
+            raise TypeError("The application namespaces must be a list of strings.")
 
     @property
     def extension_information(self):
@@ -494,7 +474,7 @@ class QueryResponsePayload(base.ResponsePayload):
                         primitives.Enumeration(
                             enums.AttestationType,
                             value=i,
-                            tag=enums.Tags.ATTESTATION_TYPE
+                            tag=enums.Tags.ATTESTATION_TYPE,
                         )
                     )
                 else:
@@ -530,8 +510,7 @@ class QueryResponsePayload(base.ResponsePayload):
             self._rng_parameters = rng_parameters
         else:
             raise TypeError(
-                "The RNG parameters must be a list of RNGParameters "
-                "structures."
+                "The RNG parameters must be a list of RNGParameters " "structures."
             )
 
     @property
@@ -627,7 +606,7 @@ class QueryResponsePayload(base.ResponsePayload):
                         primitives.Enumeration(
                             enums.ClientRegistrationMethod,
                             value=i,
-                            tag=enums.Tags.CLIENT_REGISTRATION_METHOD
+                            tag=enums.Tags.CLIENT_REGISTRATION_METHOD,
                         )
                     )
                 else:
@@ -654,8 +633,7 @@ class QueryResponsePayload(base.ResponsePayload):
             self._defaults_information = value
         else:
             raise TypeError(
-                "The defaults information must be a DefaultsInformation "
-                "structure."
+                "The defaults information must be a DefaultsInformation " "structure."
             )
 
     @property
@@ -674,20 +652,16 @@ class QueryResponsePayload(base.ResponsePayload):
                 if isinstance(i, six.integer_types):
                     protection_storage_masks.append(
                         primitives.Integer(
-                            value=i,
-                            tag=enums.Tags.PROTECTION_STORAGE_MASK
+                            value=i, tag=enums.Tags.PROTECTION_STORAGE_MASK
                         )
                     )
                 else:
                     raise TypeError(
-                        "The protection storage masks must be a list of "
-                        "integers."
+                        "The protection storage masks must be a list of " "integers."
                     )
             self._protection_storage_masks = protection_storage_masks
         else:
-            raise TypeError(
-                "The protection storage masks must be a list of integers."
-            )
+            raise TypeError("The protection storage masks must be a list of integers.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -702,27 +676,22 @@ class QueryResponsePayload(base.ResponsePayload):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(QueryResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(QueryResponsePayload, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         operations = []
-        while(self.is_tag_next(enums.Tags.OPERATION, local_buffer)):
+        while self.is_tag_next(enums.Tags.OPERATION, local_buffer):
             operation = primitives.Enumeration(
-                enums.Operation,
-                tag=enums.Tags.OPERATION
+                enums.Operation, tag=enums.Tags.OPERATION
             )
             operation.read(local_buffer, kmip_version=kmip_version)
             operations.append(operation)
         self._operations = operations
 
         object_types = []
-        while(self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer)):
+        while self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
             object_type = primitives.Enumeration(
-                enums.ObjectType,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, tag=enums.Tags.OBJECT_TYPE
             )
             object_type.read(local_buffer, kmip_version=kmip_version)
             object_types.append(object_type)
@@ -732,26 +701,16 @@ class QueryResponsePayload(base.ResponsePayload):
             vendor_identification = primitives.TextString(
                 tag=enums.Tags.VENDOR_IDENTIFICATION
             )
-            vendor_identification.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            vendor_identification.read(local_buffer, kmip_version=kmip_version)
             self._vendor_identification = vendor_identification
 
         if self.is_tag_next(enums.Tags.SERVER_INFORMATION, local_buffer):
             server_information = misc.ServerInformation()
-            server_information.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            server_information.read(local_buffer, kmip_version=kmip_version)
             self._server_information = server_information
 
         application_namespaces = []
-        while(self.is_tag_next(
-                enums.Tags.APPLICATION_NAMESPACE,
-                local_buffer
-            )
-        ):
+        while self.is_tag_next(enums.Tags.APPLICATION_NAMESPACE, local_buffer):
             application_namespace = primitives.TextString(
                 tag=enums.Tags.APPLICATION_NAMESPACE
             )
@@ -761,25 +720,17 @@ class QueryResponsePayload(base.ResponsePayload):
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_1:
             extensions_information = []
-            while(self.is_tag_next(
-                    enums.Tags.EXTENSION_INFORMATION,
-                    local_buffer
-                )
-            ):
+            while self.is_tag_next(enums.Tags.EXTENSION_INFORMATION, local_buffer):
                 extension_information = objects.ExtensionInformation()
-                extension_information.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                extension_information.read(local_buffer, kmip_version=kmip_version)
                 extensions_information.append(extension_information)
             self._extension_information = extensions_information
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_2:
             attestation_types = []
-            while(self.is_tag_next(enums.Tags.ATTESTATION_TYPE, local_buffer)):
+            while self.is_tag_next(enums.Tags.ATTESTATION_TYPE, local_buffer):
                 attestation_type = primitives.Enumeration(
-                    enums.AttestationType,
-                    tag=enums.Tags.ATTESTATION_TYPE
+                    enums.AttestationType, tag=enums.Tags.ATTESTATION_TYPE
                 )
                 attestation_type.read(local_buffer, kmip_version=kmip_version)
                 attestation_types.append(attestation_type)
@@ -787,93 +738,55 @@ class QueryResponsePayload(base.ResponsePayload):
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_3:
             rngs_parameters = []
-            while(self.is_tag_next(enums.Tags.RNG_PARAMETERS, local_buffer)):
+            while self.is_tag_next(enums.Tags.RNG_PARAMETERS, local_buffer):
                 rng_parameters = objects.RNGParameters()
                 rng_parameters.read(local_buffer, kmip_version=kmip_version)
                 rngs_parameters.append(rng_parameters)
             self._rng_parameters = rngs_parameters
 
             profiles_information = []
-            while(self.is_tag_next(
-                    enums.Tags.PROFILE_INFORMATION,
-                    local_buffer
-                )
-            ):
+            while self.is_tag_next(enums.Tags.PROFILE_INFORMATION, local_buffer):
                 profile_information = objects.ProfileInformation()
-                profile_information.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                profile_information.read(local_buffer, kmip_version=kmip_version)
                 profiles_information.append(profile_information)
             self._profile_information = profiles_information
 
             validations_information = []
-            while(self.is_tag_next(
-                    enums.Tags.VALIDATION_INFORMATION,
-                    local_buffer
-                )
-            ):
+            while self.is_tag_next(enums.Tags.VALIDATION_INFORMATION, local_buffer):
                 validation_information = objects.ValidationInformation()
-                validation_information.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                validation_information.read(local_buffer, kmip_version=kmip_version)
                 validations_information.append(validation_information)
             self._validation_information = validations_information
 
             capabilities_information = []
-            while(self.is_tag_next(
-                    enums.Tags.CAPABILITY_INFORMATION,
-                    local_buffer
-                )
-            ):
+            while self.is_tag_next(enums.Tags.CAPABILITY_INFORMATION, local_buffer):
                 capability_information = objects.CapabilityInformation()
-                capability_information.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                capability_information.read(local_buffer, kmip_version=kmip_version)
                 capabilities_information.append(capability_information)
             self._capability_information = capabilities_information
 
             client_registration_methods = []
-            while(self.is_tag_next(
-                    enums.Tags.CLIENT_REGISTRATION_METHOD,
-                    local_buffer
-                )
-            ):
+            while self.is_tag_next(enums.Tags.CLIENT_REGISTRATION_METHOD, local_buffer):
                 client_registration_method = primitives.Enumeration(
                     enums.ClientRegistrationMethod,
-                    tag=enums.Tags.CLIENT_REGISTRATION_METHOD
+                    tag=enums.Tags.CLIENT_REGISTRATION_METHOD,
                 )
-                client_registration_method.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                client_registration_method.read(local_buffer, kmip_version=kmip_version)
                 client_registration_methods.append(client_registration_method)
             self._client_registration_methods = client_registration_methods
 
         if kmip_version >= enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(enums.Tags.DEFAULTS_INFORMATION, local_buffer):
                 defaults_information = objects.DefaultsInformation()
-                defaults_information.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                defaults_information.read(local_buffer, kmip_version=kmip_version)
                 self._defaults_information = defaults_information
 
             protection_storage_masks = []
-            while(self.is_tag_next(
-                    enums.Tags.PROTECTION_STORAGE_MASK,
-                    local_buffer
-                )
-            ):
+            while self.is_tag_next(enums.Tags.PROTECTION_STORAGE_MASK, local_buffer):
                 protection_storage_mask = primitives.Integer(
                     tag=enums.Tags.PROTECTION_STORAGE_MASK
                 )
-                protection_storage_mask.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                protection_storage_mask.read(local_buffer, kmip_version=kmip_version)
                 protection_storage_masks.append(protection_storage_mask)
             self._protection_storage_masks = protection_storage_masks
 
@@ -902,235 +815,202 @@ class QueryResponsePayload(base.ResponsePayload):
                 object_type.write(local_buffer, kmip_version=kmip_version)
 
         if self._vendor_identification:
-            self._vendor_identification.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._vendor_identification.write(local_buffer, kmip_version=kmip_version)
 
         if self._server_information:
-            self._server_information.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._server_information.write(local_buffer, kmip_version=kmip_version)
 
         if self._application_namespaces:
             for application_namespace in self._application_namespaces:
-                application_namespace.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                application_namespace.write(local_buffer, kmip_version=kmip_version)
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_1:
             if self._extension_information:
                 for extension_information in self._extension_information:
-                    extension_information.write(
-                        local_buffer,
-                        kmip_version=kmip_version
-                    )
+                    extension_information.write(local_buffer, kmip_version=kmip_version)
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_2:
             if self._attestation_types:
                 for attestation_type in self._attestation_types:
-                    attestation_type.write(
-                        local_buffer,
-                        kmip_version=kmip_version
-                    )
+                    attestation_type.write(local_buffer, kmip_version=kmip_version)
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_3:
             if self._rng_parameters:
                 for rng_parameters in self._rng_parameters:
-                    rng_parameters.write(
-                        local_buffer,
-                        kmip_version=kmip_version
-                    )
+                    rng_parameters.write(local_buffer, kmip_version=kmip_version)
             if self._profile_information:
                 for profile_information in self._profile_information:
-                    profile_information.write(
-                        local_buffer,
-                        kmip_version=kmip_version
-                    )
+                    profile_information.write(local_buffer, kmip_version=kmip_version)
             if self._validation_information:
                 for validation_information in self._validation_information:
                     validation_information.write(
-                        local_buffer,
-                        kmip_version=kmip_version
+                        local_buffer, kmip_version=kmip_version
                     )
             if self._capability_information:
                 for capability_information in self._capability_information:
                     capability_information.write(
-                        local_buffer,
-                        kmip_version=kmip_version
+                        local_buffer, kmip_version=kmip_version
                     )
             if self._client_registration_methods:
                 for client_reg_method in self._client_registration_methods:
-                    client_reg_method.write(
-                        local_buffer,
-                        kmip_version=kmip_version
-                    )
+                    client_reg_method.write(local_buffer, kmip_version=kmip_version)
 
         if kmip_version >= enums.KMIPVersion.KMIP_2_0:
             if self._defaults_information:
                 self._defaults_information.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
             if self._protection_storage_masks:
                 for protection_storage_mask in self._protection_storage_masks:
                     protection_storage_mask.write(
-                        local_buffer,
-                        kmip_version=kmip_version
+                        local_buffer, kmip_version=kmip_version
                     )
 
         self.length = local_buffer.length()
         super(QueryResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         o = "operations={}".format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.operations])
-            ) if self.operations else None
+            "[{}]".format(", ".join([str(x) for x in self.operations]))
+            if self.operations
+            else None
         )
         ot = "object_types={}".format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.object_types])
-            ) if self.object_types else None
+            "[{}]".format(", ".join([str(x) for x in self.object_types]))
+            if self.object_types
+            else None
         )
         vi = 'vendor_identification="{}"'.format(self.vendor_identification)
         si = "server_information={}".format(repr(self.server_information))
         an = "application_namespaces={}".format(
             "[{}]".format(
-                ", ".join(
-                    ['"{}"'.format(x) for x in self.application_namespaces]
-                )
-            ) if self.application_namespaces else None
+                ", ".join(['"{}"'.format(x) for x in self.application_namespaces])
+            )
+            if self.application_namespaces
+            else None
         )
         ei = "extension_information={}".format(
-            "[{}]".format(
-                ", ".join([repr(x) for x in self.extension_information])
-            ) if self.extension_information else None
+            "[{}]".format(", ".join([repr(x) for x in self.extension_information]))
+            if self.extension_information
+            else None
         )
         at = "attestation_types={}".format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.attestation_types])
-            ) if self.attestation_types else None
+            "[{}]".format(", ".join([str(x) for x in self.attestation_types]))
+            if self.attestation_types
+            else None
         )
         rp = "rng_parameters={}".format(
-            "[{}]".format(
-                ", ".join([repr(x) for x in self.rng_parameters])
-            ) if self.rng_parameters else None
+            "[{}]".format(", ".join([repr(x) for x in self.rng_parameters]))
+            if self.rng_parameters
+            else None
         )
         pi = "profile_information={}".format(
-            "[{}]".format(
-                ", ".join([repr(x) for x in self.profile_information])
-            ) if self.profile_information else None
+            "[{}]".format(", ".join([repr(x) for x in self.profile_information]))
+            if self.profile_information
+            else None
         )
         vai = "validation_information={}".format(
-            "[{}]".format(
-                ", ".join([repr(x) for x in self.validation_information])
-            ) if self.validation_information else None
+            "[{}]".format(", ".join([repr(x) for x in self.validation_information]))
+            if self.validation_information
+            else None
         )
         ci = "capability_information={}".format(
-            "[{}]".format(
-                ", ".join([repr(x) for x in self.capability_information])
-            ) if self.capability_information else None
+            "[{}]".format(", ".join([repr(x) for x in self.capability_information]))
+            if self.capability_information
+            else None
         )
         crm = "client_registration_methods={}".format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.client_registration_methods])
-            ) if self.client_registration_methods else None
+            "[{}]".format(", ".join([str(x) for x in self.client_registration_methods]))
+            if self.client_registration_methods
+            else None
         )
         di = "defaults_information={}".format(
-            "{}".format(
-                repr(self._defaults_information)
-            ) if self._defaults_information else None
+            "{}".format(repr(self._defaults_information))
+            if self._defaults_information
+            else None
         )
         spm = "protection_storage_masks={}".format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.protection_storage_masks])
-            ) if self._protection_storage_masks else None
+            "[{}]".format(", ".join([str(x) for x in self.protection_storage_masks]))
+            if self._protection_storage_masks
+            else None
         )
 
-        v = ", ".join(
-            [o, ot, vi, si, an, ei, at, rp, pi, vai, ci, crm, di, spm]
-        )
+        v = ", ".join([o, ot, vi, si, an, ei, at, rp, pi, vai, ci, crm, di, spm])
 
         return "QueryResponsePayload({})".format(v)
 
     def __str__(self):
         o = '"operations": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.operations])
-            ) if self.operations else None
+            "[{}]".format(", ".join([str(x) for x in self.operations]))
+            if self.operations
+            else None
         )
         ot = '"object_types": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.object_types])
-            ) if self.object_types else None
+            "[{}]".format(", ".join([str(x) for x in self.object_types]))
+            if self.object_types
+            else None
         )
         vi = '"vendor_identification": "{}"'.format(self.vendor_identification)
         si = '"server_information": {}'.format(repr(self.server_information))
         an = '"application_namespaces": {}'.format(
             "[{}]".format(
-                ", ".join(
-                    ['"{}"'.format(x) for x in self.application_namespaces]
-                )
-            ) if self.application_namespaces else None
+                ", ".join(['"{}"'.format(x) for x in self.application_namespaces])
+            )
+            if self.application_namespaces
+            else None
         )
         ei = '"extension_information": {}'.format(
-            "[{}]".format(
-                ", ".join([repr(x) for x in self.extension_information])
-            ) if self.extension_information else None
+            "[{}]".format(", ".join([repr(x) for x in self.extension_information]))
+            if self.extension_information
+            else None
         )
         at = '"attestation_types": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.attestation_types])
-            ) if self.attestation_types else None
+            "[{}]".format(", ".join([str(x) for x in self.attestation_types]))
+            if self.attestation_types
+            else None
         )
         rp = '"rng_parameters": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.rng_parameters])
-            ) if self.rng_parameters else None
+            "[{}]".format(", ".join([str(x) for x in self.rng_parameters]))
+            if self.rng_parameters
+            else None
         )
         pi = '"profile_information": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.profile_information])
-            ) if self.profile_information else None
+            "[{}]".format(", ".join([str(x) for x in self.profile_information]))
+            if self.profile_information
+            else None
         )
         vai = '"validation_information": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.validation_information])
-            ) if self.validation_information else None
+            "[{}]".format(", ".join([str(x) for x in self.validation_information]))
+            if self.validation_information
+            else None
         )
         ci = '"capability_information": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.capability_information])
-            ) if self.capability_information else None
+            "[{}]".format(", ".join([str(x) for x in self.capability_information]))
+            if self.capability_information
+            else None
         )
         crm = '"client_registration_methods": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.client_registration_methods])
-            ) if self.client_registration_methods else None
+            "[{}]".format(", ".join([str(x) for x in self.client_registration_methods]))
+            if self.client_registration_methods
+            else None
         )
         di = '"defaults_information": {}'.format(
-            "{}".format(
-                str(self.defaults_information)
-            ) if self._defaults_information else None
+            "{}".format(str(self.defaults_information))
+            if self._defaults_information
+            else None
         )
         spm = '"protection_storage_masks": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.protection_storage_masks])
-            ) if self._protection_storage_masks else None
+            "[{}]".format(", ".join([str(x) for x in self.protection_storage_masks]))
+            if self._protection_storage_masks
+            else None
         )
 
-        v = ", ".join(
-            [o, ot, vi, si, an, ei, at, rp, pi, vai, ci, crm, di, spm]
-        )
+        v = ", ".join([o, ot, vi, si, an, ei, at, rp, pi, vai, ci, crm, di, spm])
 
-        return '{' + v + '}'
+        return "{" + v + "}"
 
     def __eq__(self, other):
         if isinstance(other, QueryResponsePayload):
@@ -1156,13 +1036,11 @@ class QueryResponsePayload(base.ResponsePayload):
                 return False
             elif self.capability_information != other.capability_information:
                 return False
-            elif self.client_registration_methods != \
-                    other.client_registration_methods:
+            elif self.client_registration_methods != other.client_registration_methods:
                 return False
             elif self.defaults_information != other.defaults_information:
                 return False
-            elif self.protection_storage_masks != \
-                    other.protection_storage_masks:
+            elif self.protection_storage_masks != other.protection_storage_masks:
                 return False
             else:
                 return True

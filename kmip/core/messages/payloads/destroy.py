@@ -22,18 +22,13 @@ from kmip.core.utils import BytearrayStream
 
 # 4.21
 class DestroyRequestPayload(base.RequestPayload):
-
-    def __init__(self,
-                 unique_identifier=None):
+    def __init__(self, unique_identifier=None):
         super(DestroyRequestPayload, self).__init__()
         self.unique_identifier = unique_identifier
         self.validate()
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(DestroyRequestPayload, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(DestroyRequestPayload, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         if self.is_tag_next(Tags.UNIQUE_IDENTIFIER, tstream):
@@ -51,10 +46,7 @@ class DestroyRequestPayload(base.RequestPayload):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(DestroyRequestPayload, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(DestroyRequestPayload, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -66,18 +58,13 @@ class DestroyRequestPayload(base.RequestPayload):
 
 
 class DestroyResponsePayload(base.ResponsePayload):
-
-    def __init__(self,
-                 unique_identifier=None):
+    def __init__(self, unique_identifier=None):
         super(DestroyResponsePayload, self).__init__()
         self.unique_identifier = unique_identifier
         self.validate()
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(DestroyResponsePayload, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(DestroyResponsePayload, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.unique_identifier = attributes.UniqueIdentifier()
@@ -93,10 +80,7 @@ class DestroyResponsePayload(base.ResponsePayload):
 
         # Write the length and value of the request payload
         self.length = tstream.length()
-        super(DestroyResponsePayload, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(DestroyResponsePayload, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):

@@ -49,9 +49,7 @@ class Certificate(Struct):
         certificate_value: The bytes of the certificate.
     """
 
-    def __init__(self,
-                 certificate_type=None,
-                 certificate_value=None):
+    def __init__(self, certificate_type=None, certificate_value=None):
         """
         Construct a Certificate object.
 
@@ -135,9 +133,8 @@ class Certificate(Struct):
 
     def __repr__(self):
         return "{0}(certificate_type={1}, certificate_value=b'{2}')".format(
-            type(self).__name__,
-            str(self.certificate_type),
-            str(self.certificate_value))
+            type(self).__name__, str(self.certificate_type), str(self.certificate_value)
+        )
 
     def __str__(self):
         return "{0}".format(str(self.certificate_value))
@@ -145,7 +142,6 @@ class Certificate(Struct):
 
 # 2.2.2
 class KeyBlockKey(Struct):
-
     def __init__(self, key_block=None, tag=Tags.DEFAULT):
         super(KeyBlockKey, self).__init__(tag)
         self.key_block = key_block
@@ -180,7 +176,6 @@ class KeyBlockKey(Struct):
 
 
 class SymmetricKey(KeyBlockKey):
-
     def __init__(self, key_block=None):
         super(SymmetricKey, self).__init__(key_block, Tags.SYMMETRIC_KEY)
         self.validate()
@@ -195,7 +190,6 @@ class SymmetricKey(KeyBlockKey):
 
 # 2.2.3
 class PublicKey(KeyBlockKey):
-
     def __init__(self, key_block=None):
         super(PublicKey, self).__init__(key_block, Tags.PUBLIC_KEY)
         self.validate()
@@ -210,7 +204,6 @@ class PublicKey(KeyBlockKey):
 
 # 2.2.4
 class PrivateKey(KeyBlockKey):
-
     def __init__(self, key_block=None):
         super(PrivateKey, self).__init__(key_block, Tags.PRIVATE_KEY)
         self.validate()
@@ -243,13 +236,15 @@ class SplitKey(primitives.Struct):
         key_block: The split key part held by this object.
     """
 
-    def __init__(self,
-                 split_key_parts=None,
-                 key_part_identifier=None,
-                 split_key_threshold=None,
-                 split_key_method=None,
-                 prime_field_size=None,
-                 key_block=None):
+    def __init__(
+        self,
+        split_key_parts=None,
+        key_part_identifier=None,
+        split_key_threshold=None,
+        split_key_method=None,
+        prime_field_size=None,
+        key_block=None,
+    ):
         """
         Construct a SplitKey object.
 
@@ -303,8 +298,7 @@ class SplitKey(primitives.Struct):
             self._split_key_parts = None
         elif isinstance(value, six.integer_types):
             self._split_key_parts = primitives.Integer(
-                value=value,
-                tag=enums.Tags.SPLIT_KEY_PARTS
+                value=value, tag=enums.Tags.SPLIT_KEY_PARTS
             )
         else:
             raise TypeError("The split key parts must be an integer.")
@@ -321,8 +315,7 @@ class SplitKey(primitives.Struct):
             self._key_part_identifier = None
         elif isinstance(value, six.integer_types):
             self._key_part_identifier = primitives.Integer(
-                value=value,
-                tag=enums.Tags.KEY_PART_IDENTIFIER
+                value=value, tag=enums.Tags.KEY_PART_IDENTIFIER
             )
         else:
             raise TypeError("The key part identifier must be an integer.")
@@ -339,8 +332,7 @@ class SplitKey(primitives.Struct):
             self._split_key_threshold = None
         elif isinstance(value, six.integer_types):
             self._split_key_threshold = primitives.Integer(
-                value=value,
-                tag=enums.Tags.SPLIT_KEY_THRESHOLD
+                value=value, tag=enums.Tags.SPLIT_KEY_THRESHOLD
             )
         else:
             raise TypeError("The split key threshold must be an integer.")
@@ -357,9 +349,7 @@ class SplitKey(primitives.Struct):
             self._split_key_method = None
         elif isinstance(value, enums.SplitKeyMethod):
             self._split_key_method = primitives.Enumeration(
-                enums.SplitKeyMethod,
-                value=value,
-                tag=enums.Tags.SPLIT_KEY_METHOD
+                enums.SplitKeyMethod, value=value, tag=enums.Tags.SPLIT_KEY_METHOD
             )
         else:
             raise TypeError(
@@ -378,8 +368,7 @@ class SplitKey(primitives.Struct):
             self._prime_field_size = None
         elif isinstance(value, six.integer_types):
             self._prime_field_size = primitives.BigInteger(
-                value=value,
-                tag=enums.Tags.PRIME_FIELD_SIZE
+                value=value, tag=enums.Tags.PRIME_FIELD_SIZE
             )
         else:
             raise TypeError("The prime field size must be an integer.")
@@ -415,9 +404,7 @@ class SplitKey(primitives.Struct):
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.SPLIT_KEY_PARTS, local_buffer):
-            self._split_key_parts = primitives.Integer(
-                tag=enums.Tags.SPLIT_KEY_PARTS
-            )
+            self._split_key_parts = primitives.Integer(tag=enums.Tags.SPLIT_KEY_PARTS)
             self._split_key_parts.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
@@ -428,10 +415,7 @@ class SplitKey(primitives.Struct):
             self._key_part_identifier = primitives.Integer(
                 tag=enums.Tags.KEY_PART_IDENTIFIER
             )
-            self._key_part_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._key_part_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The SplitKey encoding is missing the KeyPartIdentifier field."
@@ -441,10 +425,7 @@ class SplitKey(primitives.Struct):
             self._split_key_threshold = primitives.Integer(
                 tag=enums.Tags.SPLIT_KEY_THRESHOLD
             )
-            self._split_key_threshold.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._split_key_threshold.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The SplitKey encoding is missing the SplitKeyThreshold field."
@@ -452,13 +433,9 @@ class SplitKey(primitives.Struct):
 
         if self.is_tag_next(enums.Tags.SPLIT_KEY_METHOD, local_buffer):
             self._split_key_method = primitives.Enumeration(
-                enums.SplitKeyMethod,
-                tag=enums.Tags.SPLIT_KEY_METHOD
+                enums.SplitKeyMethod, tag=enums.Tags.SPLIT_KEY_METHOD
             )
-            self._split_key_method.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._split_key_method.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The SplitKey encoding is missing the SplitKeyMethod field."
@@ -468,10 +445,7 @@ class SplitKey(primitives.Struct):
             self._prime_field_size = primitives.BigInteger(
                 tag=enums.Tags.PRIME_FIELD_SIZE
             )
-            self._prime_field_size.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._prime_field_size.read(local_buffer, kmip_version=kmip_version)
         else:
             corner_case = enums.SplitKeyMethod.POLYNOMIAL_SHARING_PRIME_FIELD
             if self.split_key_method == corner_case:
@@ -506,50 +480,35 @@ class SplitKey(primitives.Struct):
         local_buffer = utils.BytearrayStream()
 
         if self._split_key_parts:
-            self._split_key_parts.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._split_key_parts.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The SplitKey object is missing the SplitKeyParts field."
             )
 
         if self._key_part_identifier:
-            self._key_part_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._key_part_identifier.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The SplitKey object is missing the KeyPartIdentifier field."
             )
 
         if self._split_key_threshold:
-            self._split_key_threshold.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._split_key_threshold.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The SplitKey object is missing the SplitKeyThreshold field."
             )
 
         if self._split_key_method:
-            self._split_key_method.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._split_key_method.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The SplitKey object is missing the SplitKeyMethod field."
             )
 
         if self._prime_field_size:
-            self._prime_field_size.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._prime_field_size.write(local_buffer, kmip_version=kmip_version)
         else:
             corner_case = enums.SplitKeyMethod.POLYNOMIAL_SHARING_PRIME_FIELD
             if self.split_key_method == corner_case:
@@ -577,7 +536,7 @@ class SplitKey(primitives.Struct):
             "split_key_threshold={}".format(repr(self.split_key_threshold)),
             "split_key_method={}".format(self.split_key_method),
             "prime_field_size={}".format(repr(self.prime_field_size)),
-            "key_block={}".format(repr(self.key_block))
+            "key_block={}".format(repr(self.key_block)),
         ]
         return "SplitKey({})".format(", ".join(args))
 
@@ -590,7 +549,7 @@ class SplitKey(primitives.Struct):
                 '"split_key_threshold": {}'.format(self.split_key_threshold),
                 '"split_key_method": {}'.format(self.split_key_method),
                 '"prime_field_size": {}'.format(self.prime_field_size),
-                '"key_block": {}'.format(str(self.key_block))
+                '"key_block": {}'.format(str(self.key_block)),
             ]
         )
         return "{" + value + "}"
@@ -607,8 +566,8 @@ class SplitKey(primitives.Struct):
                 return False
             elif self.prime_field_size != other.prime_field_size:
                 return False
-#            elif self.key_block != other.key_block:
-#                return False
+            #            elif self.key_block != other.key_block:
+            #                return False
             return True
         else:
             return NotImplemented
@@ -622,7 +581,6 @@ class SplitKey(primitives.Struct):
 
 # 2.2.6
 class Template(Struct):
-
     def __init__(self, attributes=None):
         super(Template, self).__init__(Tags.TEMPLATE)
         self.attributes = attributes
@@ -667,16 +625,13 @@ class Template(Struct):
 
 # 2.2.7
 class SecretData(Struct):
-
     class SecretDataType(Enumeration):
-
         def __init__(self, value=None):
             super(SecretData.SecretDataType, self).__init__(
-                enums.SecretDataType, value, Tags.SECRET_DATA_TYPE)
+                enums.SecretDataType, value, Tags.SECRET_DATA_TYPE
+            )
 
-    def __init__(self,
-                 secret_data_type=None,
-                 key_block=None):
+    def __init__(self, secret_data_type=None, key_block=None):
         super(SecretData, self).__init__(Tags.SECRET_DATA)
         self.secret_data_type = secret_data_type
         self.key_block = key_block
@@ -716,22 +671,19 @@ class SecretData(Struct):
 
 # 2.2.8
 class OpaqueObject(Struct):
-
     class OpaqueDataType(Enumeration):
-
         def __init__(self, value=None):
             super(OpaqueObject.OpaqueDataType, self).__init__(
-                enums.OpaqueDataType, value, Tags.OPAQUE_DATA_TYPE)
+                enums.OpaqueDataType, value, Tags.OPAQUE_DATA_TYPE
+            )
 
     class OpaqueDataValue(ByteString):
-
         def __init__(self, value=None):
             super(OpaqueObject.OpaqueDataValue, self).__init__(
-                value, Tags.OPAQUE_DATA_VALUE)
+                value, Tags.OPAQUE_DATA_VALUE
+            )
 
-    def __init__(self,
-                 opaque_data_type=None,
-                 opaque_data_value=None):
+    def __init__(self, opaque_data_type=None, opaque_data_value=None):
         super(OpaqueObject, self).__init__(Tags.OPAQUE_OBJECT)
         self.opaque_data_type = opaque_data_type
         self.opaque_data_value = opaque_data_value

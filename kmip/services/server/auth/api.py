@@ -24,10 +24,12 @@ class AuthAPI:
     """
 
     @abc.abstractmethod
-    def authenticate(self,
-                     connection_certificate=None,
-                     connection_info=None,
-                     request_credentials=None):
+    def authenticate(
+        self,
+        connection_certificate=None,
+        connection_info=None,
+        request_credentials=None,
+    ):
         """
         Query the configured authentication service with the given credentials.
 

@@ -35,13 +35,11 @@ class TestCancelRequestPayload(testtools.TestCase):
         #     Asynchronous Correlation Value - 0x583B0036C1A2DD01
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x10'
-            b'\x42\x00\x06\x08\x00\x00\x00\x08\x58\x3B\x00\x36\xC1\xA2\xDD\x01'
+            b"\x42\x00\x79\x01\x00\x00\x00\x10"
+            b"\x42\x00\x06\x08\x00\x00\x00\x08\x58\x3B\x00\x36\xC1\xA2\xDD\x01"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestCancelRequestPayload, self).tearDown()
@@ -60,18 +58,16 @@ class TestCancelRequestPayload(testtools.TestCase):
         Test that a Cancel request payload can be constructed with valid
         values.
         """
-        payload = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\x01'
-        )
+        payload = payloads.CancelRequestPayload(asynchronous_correlation_value=b"\x01")
 
-        self.assertEqual(b'\x01', payload.asynchronous_correlation_value)
+        self.assertEqual(b"\x01", payload.asynchronous_correlation_value)
 
     def test_invalid_asynchronous_correlation_value(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
         the asynchronous correlation value of an Cancel request payload.
         """
-        kwargs = {'asynchronous_correlation_value': 0}
+        kwargs = {"asynchronous_correlation_value": 0}
         self.assertRaisesRegex(
             TypeError,
             "Asynchronous correlation value must be bytes.",
@@ -80,12 +76,9 @@ class TestCancelRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.CancelRequestPayload()
-        args = (payload, 'asynchronous_correlation_value', 0)
+        args = (payload, "asynchronous_correlation_value", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Asynchronous correlation value must be bytes.",
-            setattr,
-            *args
+            TypeError, "Asynchronous correlation value must be bytes.", setattr, *args
         )
 
     def test_read(self):
@@ -99,8 +92,7 @@ class TestCancelRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            b'\x58\x3B\x00\x36\xC1\xA2\xDD\x01',
-            payload.asynchronous_correlation_value
+            b"\x58\x3B\x00\x36\xC1\xA2\xDD\x01", payload.asynchronous_correlation_value
         )
 
     def test_read_empty(self):
@@ -121,7 +113,7 @@ class TestCancelRequestPayload(testtools.TestCase):
         Test that a Cancel request payload can be written to a data stream.
         """
         payload = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\x58\x3B\x00\x36\xC1\xA2\xDD\x01'
+            asynchronous_correlation_value=b"\x58\x3B\x00\x36\xC1\xA2\xDD\x01"
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -153,10 +145,10 @@ class TestCancelRequestPayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88'
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88"
         )
         b = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88'
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88"
         )
 
         self.assertTrue(a == b)
@@ -167,12 +159,8 @@ class TestCancelRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two Cancel
         request payloads with different asynchronous correlation values.
         """
-        a = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
-        b = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\xbb'
-        )
+        a = payloads.CancelRequestPayload(asynchronous_correlation_value=b"\xaa")
+        b = payloads.CancelRequestPayload(asynchronous_correlation_value=b"\xbb")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -183,7 +171,7 @@ class TestCancelRequestPayload(testtools.TestCase):
         request payloads with different types.
         """
         a = payloads.CancelRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -200,10 +188,10 @@ class TestCancelRequestPayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88'
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88"
         )
         b = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88'
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88"
         )
 
         self.assertFalse(a != b)
@@ -214,12 +202,8 @@ class TestCancelRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Cancel request payloads with different asynchronous correlation values.
         """
-        a = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
-        b = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\xbb'
-        )
+        a = payloads.CancelRequestPayload(asynchronous_correlation_value=b"\xaa")
+        b = payloads.CancelRequestPayload(asynchronous_correlation_value=b"\xbb")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -230,7 +214,7 @@ class TestCancelRequestPayload(testtools.TestCase):
         Cancel request payloads with different types.
         """
         a = payloads.CancelRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -239,12 +223,10 @@ class TestCancelRequestPayload(testtools.TestCase):
         """
         Test that repr can be applied to a Cancel request payload.
         """
-        payload = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
+        payload = payloads.CancelRequestPayload(asynchronous_correlation_value=b"\xaa")
         expected = (
             "CancelRequestPayload("
-            "asynchronous_correlation_value=" + str(b'\xaa') + ")"
+            "asynchronous_correlation_value=" + str(b"\xaa") + ")"
         )
         observed = repr(payload)
 
@@ -254,13 +236,9 @@ class TestCancelRequestPayload(testtools.TestCase):
         """
         Test that str can be applied to a Cancel request payload.
         """
-        payload = payloads.CancelRequestPayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
+        payload = payloads.CancelRequestPayload(asynchronous_correlation_value=b"\xaa")
 
-        expected = str({
-            'asynchronous_correlation_value': b'\xaa'
-        })
+        expected = str({"asynchronous_correlation_value": b"\xaa"})
         observed = str(payload)
 
         self.assertEqual(expected, observed)
@@ -282,14 +260,12 @@ class TestCancelResponsePayload(testtools.TestCase):
         #     Cancellation Result - 1 (Canceled)
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x20'
-            b'\x42\x00\x06\x08\x00\x00\x00\x08\x58\x3B\x00\x36\xC1\xA2\xDD\x01'
-            b'\x42\x00\x12\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x20"
+            b"\x42\x00\x06\x08\x00\x00\x00\x08\x58\x3B\x00\x36\xC1\xA2\xDD\x01"
+            b"\x42\x00\x12\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestCancelResponsePayload, self).tearDown()
@@ -309,22 +285,19 @@ class TestCancelResponsePayload(testtools.TestCase):
         values.
         """
         payload = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\x01',
-            cancellation_result=enums.CancellationResult.FAILED
+            asynchronous_correlation_value=b"\x01",
+            cancellation_result=enums.CancellationResult.FAILED,
         )
 
-        self.assertEqual(b'\x01', payload.asynchronous_correlation_value)
-        self.assertEqual(
-            enums.CancellationResult.FAILED,
-            payload.cancellation_result
-        )
+        self.assertEqual(b"\x01", payload.asynchronous_correlation_value)
+        self.assertEqual(enums.CancellationResult.FAILED, payload.cancellation_result)
 
     def test_invalid_asynchronous_correlation_value(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
         the asynchronous correlation value of an Cancel response payload.
         """
-        kwargs = {'asynchronous_correlation_value': 0}
+        kwargs = {"asynchronous_correlation_value": 0}
         self.assertRaisesRegex(
             TypeError,
             "Asynchronous correlation value must be bytes.",
@@ -333,12 +306,9 @@ class TestCancelResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.CancelResponsePayload()
-        args = (payload, 'asynchronous_correlation_value', 0)
+        args = (payload, "asynchronous_correlation_value", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Asynchronous correlation value must be bytes.",
-            setattr,
-            *args
+            TypeError, "Asynchronous correlation value must be bytes.", setattr, *args
         )
 
     def test_invalid_cancellation_result(self):
@@ -346,7 +316,7 @@ class TestCancelResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the cancellation result of an Cancel response payload.
         """
-        kwargs = {'cancellation_result': 'invalid'}
+        kwargs = {"cancellation_result": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Cancellation result must be a CancellationResult enumeration.",
@@ -355,7 +325,7 @@ class TestCancelResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.CancelResponsePayload()
-        args = (payload, 'cancellation_result', 'invalid')
+        args = (payload, "cancellation_result", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Cancellation result must be a CancellationResult enumeration.",
@@ -375,13 +345,9 @@ class TestCancelResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            b'\x58\x3B\x00\x36\xC1\xA2\xDD\x01',
-            payload.asynchronous_correlation_value
+            b"\x58\x3B\x00\x36\xC1\xA2\xDD\x01", payload.asynchronous_correlation_value
         )
-        self.assertEqual(
-            enums.CancellationResult.CANCELED,
-            payload.cancellation_result
-        )
+        self.assertEqual(enums.CancellationResult.CANCELED, payload.cancellation_result)
 
     def test_read_empty(self):
         """
@@ -403,8 +369,8 @@ class TestCancelResponsePayload(testtools.TestCase):
         Test that a Cancel response payload can be written to a data stream.
         """
         payload = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\x58\x3B\x00\x36\xC1\xA2\xDD\x01',
-            cancellation_result=enums.CancellationResult.CANCELED
+            asynchronous_correlation_value=b"\x58\x3B\x00\x36\xC1\xA2\xDD\x01",
+            cancellation_result=enums.CancellationResult.CANCELED,
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -436,12 +402,12 @@ class TestCancelResponsePayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88',
-            cancellation_result=enums.CancellationResult.COMPLETED
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88",
+            cancellation_result=enums.CancellationResult.COMPLETED,
         )
         b = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88',
-            cancellation_result=enums.CancellationResult.COMPLETED
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88",
+            cancellation_result=enums.CancellationResult.COMPLETED,
         )
 
         self.assertTrue(a == b)
@@ -452,12 +418,8 @@ class TestCancelResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two Cancel
         response payloads with different asynchronous correlation values.
         """
-        a = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
-        b = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\xbb'
-        )
+        a = payloads.CancelResponsePayload(asynchronous_correlation_value=b"\xaa")
+        b = payloads.CancelResponsePayload(asynchronous_correlation_value=b"\xbb")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -483,7 +445,7 @@ class TestCancelResponsePayload(testtools.TestCase):
         response payloads with different types.
         """
         a = payloads.CancelResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -500,12 +462,12 @@ class TestCancelResponsePayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88',
-            cancellation_result=enums.CancellationResult.COMPLETED
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88",
+            cancellation_result=enums.CancellationResult.COMPLETED,
         )
         b = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88',
-            cancellation_result=enums.CancellationResult.COMPLETED
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88",
+            cancellation_result=enums.CancellationResult.COMPLETED,
         )
 
         self.assertFalse(a != b)
@@ -517,12 +479,8 @@ class TestCancelResponsePayload(testtools.TestCase):
         Cancel response payloads with different asynchronous correlation
         values.
         """
-        a = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
-        b = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\xbb'
-        )
+        a = payloads.CancelResponsePayload(asynchronous_correlation_value=b"\xaa")
+        b = payloads.CancelResponsePayload(asynchronous_correlation_value=b"\xbb")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -548,7 +506,7 @@ class TestCancelResponsePayload(testtools.TestCase):
         Cancel response payloads with different types.
         """
         a = payloads.CancelResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -558,15 +516,15 @@ class TestCancelResponsePayload(testtools.TestCase):
         Test that repr can be applied to a Cancel response payload.
         """
         payload = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\xaa',
-            cancellation_result=enums.CancellationResult.UNABLE_TO_CANCEL
+            asynchronous_correlation_value=b"\xaa",
+            cancellation_result=enums.CancellationResult.UNABLE_TO_CANCEL,
         )
         expected = (
             "CancelResponsePayload("
-            "asynchronous_correlation_value=" + str(b'\xaa') + ", "
-            "cancellation_result=" + str(
-                enums.CancellationResult.UNABLE_TO_CANCEL
-            ) + ")"
+            "asynchronous_correlation_value=" + str(b"\xaa") + ", "
+            "cancellation_result="
+            + str(enums.CancellationResult.UNABLE_TO_CANCEL)
+            + ")"
         )
         observed = repr(payload)
 
@@ -577,14 +535,16 @@ class TestCancelResponsePayload(testtools.TestCase):
         Test that str can be applied to a Cancel response payload.
         """
         payload = payloads.CancelResponsePayload(
-            asynchronous_correlation_value=b'\xaa',
-            cancellation_result=enums.CancellationResult.UNAVAILABLE
+            asynchronous_correlation_value=b"\xaa",
+            cancellation_result=enums.CancellationResult.UNAVAILABLE,
         )
 
-        expected = str({
-            'asynchronous_correlation_value': b'\xaa',
-            'cancellation_result': enums.CancellationResult.UNAVAILABLE
-        })
+        expected = str(
+            {
+                "asynchronous_correlation_value": b"\xaa",
+                "cancellation_result": enums.CancellationResult.UNAVAILABLE,
+            }
+        )
         observed = str(payload)
 
         self.assertEqual(expected, observed)

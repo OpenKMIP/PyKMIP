@@ -34,10 +34,10 @@ class DummyKey(Key):
         return
 
     def __repr__(self):
-        return ''
+        return ""
 
     def __str__(self):
-        return ''
+        return ""
 
     def __eq__(self, other):
         return True
@@ -101,10 +101,7 @@ class TestKey(TestCase):
         data with an invalid value.
         """
         dummy = DummyKey()
-        args = (dummy, 'key_wrapping_data', 'invalid')
+        args = (dummy, "key_wrapping_data", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Key wrapping data must be a dictionary.",
-            setattr,
-            *args
+            TypeError, "Key wrapping data must be a dictionary.", setattr, *args
         )

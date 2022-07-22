@@ -41,11 +41,11 @@ class DummyManagedObject(ManagedObject):
 
     def __repr__(self):
         super(DummyManagedObject, self).__repr__()
-        return ''
+        return ""
 
     def __str__(self):
         super(DummyManagedObject, self).__str__()
-        return ''
+        return ""
 
     def __eq__(self, other):
         super(DummyManagedObject, self).__eq__(other)
@@ -80,7 +80,7 @@ class TestManagedObject(TestCase):
         """
         Test that the object type can be retrieved from the ManagedObject.
         """
-        expected = 'dummy'
+        expected = "dummy"
         dummy = DummyManagedObject(expected)
         observed = dummy.object_type
 
@@ -94,7 +94,7 @@ class TestManagedObject(TestCase):
         dummy = DummyManagedObject()
 
         def set_object_type():
-            dummy.object_type = 'placeholder'
+            dummy.object_type = "placeholder"
 
         self.assertRaises(AttributeError, set_object_type)
 

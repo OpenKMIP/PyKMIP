@@ -16,6 +16,4 @@
 from kmip.pie.client import ProxyKmipClient
 
 
-__all__ = [
-    "ProxyKmipClient"
-]
+__all__ = ["ProxyKmipClient"]

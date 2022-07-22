@@ -59,10 +59,12 @@ class SLUGSConnector(api.AuthAPI):
         else:
             raise TypeError("URL must be a string.")
 
-    def authenticate(self,
-                     connection_certificate=None,
-                     connection_info=None,
-                     request_credentials=None):
+    def authenticate(
+        self,
+        connection_certificate=None,
+        connection_info=None,
+        request_credentials=None,
+    ):
         """
         Query the configured SLUGS service with the provided credentials.
 
@@ -79,13 +81,9 @@ class SLUGSConnector(api.AuthAPI):
                 Optional, defaults to None. Ignored for SLUGS authentication.
         """
         if (self.users_url is None) or (self.groups_url is None):
-            raise exceptions.ConfigurationError(
-                "The SLUGS URL must be specified."
-            )
+            raise exceptions.ConfigurationError("The SLUGS URL must be specified.")
 
-        user_id = utils.get_client_identity_from_certificate(
-            connection_certificate
-        )
+        user_id = utils.get_client_identity_from_certificate(connection_certificate)
 
         try:
             response = requests.get(self.users_url.format(user_id))
@@ -105,4 +103,4 @@ class SLUGSConnector(api.AuthAPI):
                 "{}".format(user_id)
             )
 
-        return user_id, response.json().get('groups')
+        return user_id, response.json().get("groups")

@@ -43,9 +43,9 @@ class TestAttributePolicy(testtools.TestCase):
         cases.
         """
         rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
-        attribute_a = 'Unique Identifier'
-        attribute_b = 'Certificate Length'
-        attribute_c = 'invalid'
+        attribute_a = "Unique Identifier"
+        attribute_b = "Certificate Length"
+        attribute_c = "invalid"
 
         result = rules.is_attribute_supported(attribute_a)
         self.assertTrue(result)
@@ -62,8 +62,8 @@ class TestAttributePolicy(testtools.TestCase):
         cases.
         """
         rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
-        attribute_a = 'Name'
-        attribute_b = 'Certificate Subject'
+        attribute_a = "Name"
+        attribute_b = "Certificate Subject"
 
         result = rules.is_attribute_deprecated(attribute_a)
         self.assertFalse(result)
@@ -86,9 +86,7 @@ class TestAttributePolicy(testtools.TestCase):
         self.assertFalse(
             rules.is_attribute_deletable_by_client("Cryptographic Algorithm")
         )
-        self.assertTrue(
-            rules.is_attribute_deletable_by_client("Contact Information")
-        )
+        self.assertTrue(rules.is_attribute_deletable_by_client("Contact Information"))
 
     def test_is_attribute_modifiable_by_client(self):
         """
@@ -97,12 +95,8 @@ class TestAttributePolicy(testtools.TestCase):
         """
         rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
 
-        self.assertFalse(
-            rules.is_attribute_modifiable_by_client("Unique Identifier")
-        )
-        self.assertTrue(
-            rules.is_attribute_modifiable_by_client("Name")
-        )
+        self.assertFalse(rules.is_attribute_modifiable_by_client("Unique Identifier"))
+        self.assertTrue(rules.is_attribute_modifiable_by_client("Name"))
 
     def test_is_attribute_applicable_to_object_type(self):
         """
@@ -110,20 +104,14 @@ class TestAttributePolicy(testtools.TestCase):
         expected results in all cases.
         """
         rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
-        attribute = 'Cryptographic Algorithm'
+        attribute = "Cryptographic Algorithm"
         object_type_a = enums.ObjectType.SYMMETRIC_KEY
         object_type_b = enums.ObjectType.OPAQUE_DATA
 
-        result = rules.is_attribute_applicable_to_object_type(
-            attribute,
-            object_type_a
-        )
+        result = rules.is_attribute_applicable_to_object_type(attribute, object_type_a)
         self.assertTrue(result)
 
-        result = rules.is_attribute_applicable_to_object_type(
-            attribute,
-            object_type_b
-        )
+        result = rules.is_attribute_applicable_to_object_type(attribute, object_type_b)
         self.assertFalse(result)
 
     def test_is_attribute_multivalued(self):
@@ -132,8 +120,8 @@ class TestAttributePolicy(testtools.TestCase):
         all cases.
         """
         rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
-        attribute_a = 'Object Type'
-        attribute_b = 'Link'
+        attribute_a = "Object Type"
+        attribute_b = "Link"
 
         result = rules.is_attribute_multivalued(attribute_a)
         self.assertFalse(result)
@@ -148,46 +136,46 @@ class TestAttributePolicy(testtools.TestCase):
         """
         rules = policy.AttributePolicy(contents.ProtocolVersion(1, 0))
         attribute_names = [
-            'Unique Identifier',
-            'Name',
-            'Object Type',
-            'Cryptographic Algorithm',
-            'Cryptographic Length',
-            'Cryptographic Parameters',
-            'Cryptographic Domain Parameters',
-            'Certificate Type',
-            'Certificate Length',
-            'X.509 Certificate Identifier',
-            'X.509 Certificate Subject',
-            'X.509 Certificate Issuer',
-            'Certificate Identifier',
-            'Certificate Subject',
-            'Certificate Issuer',
-            'Digital Signature Algorithm',
-            'Digest',
-            'Operation Policy Name',
-            'Cryptographic Usage Mask',
-            'Lease Time',
-            'Usage Limits',
-            'State',
-            'Initial Date',
-            'Activation Date',
-            'Process Start Date',
-            'Protect Stop Date',
-            'Deactivation Date',
-            'Destroy Date',
-            'Compromise Occurrence Date',
-            'Compromise Date',
-            'Revocation Reason',
-            'Archive Date',
-            'Object Group',
-            'Fresh',
-            'Link',
-            'Application Specific Information',
-            'Contact Information',
-            'Last Change Date',
-            'Custom Attribute',
-            "Sensitive"
+            "Unique Identifier",
+            "Name",
+            "Object Type",
+            "Cryptographic Algorithm",
+            "Cryptographic Length",
+            "Cryptographic Parameters",
+            "Cryptographic Domain Parameters",
+            "Certificate Type",
+            "Certificate Length",
+            "X.509 Certificate Identifier",
+            "X.509 Certificate Subject",
+            "X.509 Certificate Issuer",
+            "Certificate Identifier",
+            "Certificate Subject",
+            "Certificate Issuer",
+            "Digital Signature Algorithm",
+            "Digest",
+            "Operation Policy Name",
+            "Cryptographic Usage Mask",
+            "Lease Time",
+            "Usage Limits",
+            "State",
+            "Initial Date",
+            "Activation Date",
+            "Process Start Date",
+            "Protect Stop Date",
+            "Deactivation Date",
+            "Destroy Date",
+            "Compromise Occurrence Date",
+            "Compromise Date",
+            "Revocation Reason",
+            "Archive Date",
+            "Object Group",
+            "Fresh",
+            "Link",
+            "Application Specific Information",
+            "Contact Information",
+            "Last Change Date",
+            "Custom Attribute",
+            "Sensitive",
         ]
 
         result = rules.get_all_attribute_names()

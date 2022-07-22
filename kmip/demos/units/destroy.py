@@ -28,7 +28,7 @@ import logging
 import sys
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     # Exit early if the UUID is not specified
     if uuid is None:
-        logger.error('No UUID provided, exiting early from demo')
+        logger.error("No UUID provided, exiting early from demo")
         sys.exit()
 
     attribute_factory = AttributeFactory()
@@ -54,10 +54,10 @@ if __name__ == '__main__':
         credential = None
     else:
         credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': username,
-                            'Password': password}
-        credential = credential_factory.create_credential(credential_type,
-                                                          credential_value)
+        credential_value = {"Username": username, "Password": password}
+        credential = credential_factory.create_credential(
+            credential_type, credential_value
+        )
     # Build the client and connect to the server
     client = KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
@@ -67,13 +67,10 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.info('destroy() result status: {0}'.format(
-        result.result_status.value))
+    logger.info("destroy() result status: {0}".format(result.result_status.value))
 
     if result.result_status.value == ResultStatus.SUCCESS:
-        logger.info('destroyed UUID: {0}'.format(result.uuid.value))
+        logger.info("destroyed UUID: {0}".format(result.uuid.value))
     else:
-        logger.info('destroy() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('destroy() result message: {0}'.format(
-            result.result_message.value))
+        logger.info("destroy() result reason: {0}".format(result.result_reason.value))
+        logger.info("destroy() result message: {0}".format(result.result_message.value))

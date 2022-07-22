@@ -21,7 +21,7 @@ from kmip.demos import utils
 from kmip.pie import client
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -33,18 +33,14 @@ if __name__ == '__main__':
 
     # Exit early if the UUID is not specified
     if uid is None:
-        logger.error('No UUID provided, exiting early from demo')
+        logger.error("No UUID provided, exiting early from demo")
         sys.exit()
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(
-            config=config,
-            config_file=opts.config_file
-    ) as client:
+    with client.ProxyKmipClient(config=config, config_file=opts.config_file) as client:
         try:
             secret = client.get(uid)
-            logger.info("Successfully retrieved secret with ID: {0}".format(
-                uid))
+            logger.info("Successfully retrieved secret with ID: {0}".format(uid))
             logger.info("Secret data: {0}".format(secret))
         except Exception as e:
             logger.error(e)

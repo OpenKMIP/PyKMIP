@@ -31,27 +31,26 @@ from kmip.core.utils import BytearrayStream
 
 
 class TestNameValue(TestCase):
-
     def setUp(self):
         super(TestNameValue, self).setUp()
         self.stream = BytearrayStream()
-        self.stringName1 = 'Jenny'
-        self.stringName2 = 'Johnny'
+        self.stringName1 = "Jenny"
+        self.stringName2 = "Johnny"
 
     def tearDown(self):
         super(TestNameValue, self).tearDown()
 
     def test_write_no_padding(self):
-        self.skipTest('Not implemented')
+        self.skipTest("Not implemented")
 
     def test_write_with_padding(self):
-        self.skipTest('Not implemented')
+        self.skipTest("Not implemented")
 
     def test_read_no_padding(self):
-        self.skipTest('Not implemented')
+        self.skipTest("Not implemented")
 
     def test_read_with_padding(self):
-        self.skipTest('Not implemented')
+        self.skipTest("Not implemented")
 
     def test__eq(self):
         name_val = Name.NameValue(self.stringName1)
@@ -60,14 +59,14 @@ class TestNameValue(TestCase):
 
         self.assertTrue(name_val == same_name_val)
         self.assertFalse(name_val == other_name_val)
-        self.assertFalse(name_val == 'invalid')
+        self.assertFalse(name_val == "invalid")
 
     def test__ne(self):
         name_val = Name.NameValue(self.stringName1)
         other_name_val = Name.NameValue(self.stringName2)
 
         self.assertTrue(name_val != other_name_val)
-        self.assertTrue(name_val != 'invalid')
+        self.assertTrue(name_val != "invalid")
 
     def test__str(self):
         name_val = Name.NameValue(self.stringName1)
@@ -78,7 +77,6 @@ class TestNameValue(TestCase):
 
 
 class TestNameType(TestCase):
-
     def setUp(self):
         super(TestNameType, self).setUp()
         self.stream = BytearrayStream()
@@ -89,16 +87,16 @@ class TestNameType(TestCase):
         super(TestNameType, self).tearDown()
 
     def test_write_no_padding(self):
-        self.skipTest('Not implemented')
+        self.skipTest("Not implemented")
 
     def test_write_with_padding(self):
-        self.skipTest('Not implemented')
+        self.skipTest("Not implemented")
 
     def test_read_no_padding(self):
-        self.skipTest('Not implemented')
+        self.skipTest("Not implemented")
 
     def test_read_with_padding(self):
-        self.skipTest('Not implemented')
+        self.skipTest("Not implemented")
 
     def test__eq(self):
         type_uri = Name.NameType(self.enum_uri)
@@ -107,7 +105,7 @@ class TestNameType(TestCase):
 
         self.assertTrue(type_uri == same_type)
         self.assertFalse(type_uri == type_txt)
-        self.assertFalse(type_uri == 'invalid')
+        self.assertFalse(type_uri == "invalid")
 
     def test__ne(self):
         type_uri = Name.NameType(self.enum_uri)
@@ -116,27 +114,26 @@ class TestNameType(TestCase):
 
         self.assertFalse(type_uri != same_type)
         self.assertTrue(type_uri != type_txt)
-        self.assertTrue(type_uri != 'invalid')
+        self.assertTrue(type_uri != "invalid")
 
     def test__str(self):
         type_uri = Name.NameType(self.enum_uri)
         str_uri = "{0}".format(self.enum_uri)
         repr_uri = "NameType(value=<{0}: {1}>)".format(
-                self.enum_uri,
-                self.enum_uri.value)
+            self.enum_uri, self.enum_uri.value
+        )
 
         self.assertEqual(str_uri, str(type_uri))
         self.assertEqual(repr_uri, repr(type_uri))
 
 
 class TestName(TestCase):
-
     def setUp(self):
         super(TestName, self).setUp()
         self.stream = BytearrayStream()
         self.badFormatName = 8675309
-        self.stringName1 = 'Jenny'
-        self.stringName2 = 'Johnny'
+        self.stringName1 = "Jenny"
+        self.stringName2 = "Johnny"
         self.enumNameType = NameType.UNINTERPRETED_TEXT_STRING
         self.enumNameTypeUri = NameType.URI
 
@@ -145,8 +142,8 @@ class TestName(TestCase):
 
     def test_bad_name_value_format(self):
         """
-         Test that an error is raised in for an incorrectly formatted name
-         value
+        Test that an error is raised in for an incorrectly formatted name
+        value
         """
         name_obj = Name()
         name_obj.name_value = self.badFormatName
@@ -156,7 +153,7 @@ class TestName(TestCase):
 
     def test_bad_name_type_format(self):
         """
-         Test that an error is raised for an incorrectly formatted name type
+        Test that an error is raised for an incorrectly formatted name type
         """
         name_obj = Name()
         name_obj.name_value = self.stringName1
@@ -166,7 +163,7 @@ class TestName(TestCase):
 
     def test_name_create_string_input(self):
         """
-         Test the creation of object names with an enum value for the name type
+        Test the creation of object names with an enum value for the name type
         """
         name_obj = Name.create(self.stringName1, self.enumNameType)
         self.assertIsInstance(name_obj.name_value, Name.NameValue)
@@ -174,7 +171,7 @@ class TestName(TestCase):
 
     def test_name_create_bad_input(self):
         """
-         Test the creation of object names with a bad value input
+        Test the creation of object names with a bad value input
         """
         name_value = self.badFormatName
         name_type = self.enumNameType
@@ -183,10 +180,11 @@ class TestName(TestCase):
 
     def test_name_create_bad_type_input(self):
         """
-         Test the creation of object names with a bad value input
+        Test the creation of object names with a bad value input
         """
-        self.assertRaises(TypeError, Name.create, *(self.stringName1,
-                                                    self.badFormatName))
+        self.assertRaises(
+            TypeError, Name.create, *(self.stringName1, self.badFormatName)
+        )
 
     def test__eq(self):
         name_obj = Name.create(self.stringName1, self.enumNameType)
@@ -197,7 +195,7 @@ class TestName(TestCase):
         self.assertTrue(name_obj == same_name)
         self.assertFalse(name_obj == other_name)
         self.assertFalse(name_obj == other_type)
-        self.assertFalse(name_obj == 'invalid')
+        self.assertFalse(name_obj == "invalid")
 
     def test__ne(self):
         name_obj = Name.create(self.stringName1, self.enumNameType)
@@ -212,17 +210,16 @@ class TestName(TestCase):
     def test__str(self):
         name_obj = Name.create(self.stringName1, self.enumNameType)
         repr_name = (
-                "Name(type=NameType(value="
-                "<NameType.UNINTERPRETED_TEXT_STRING: {0}>),"
-                "value=NameValue(value='{1}'))"
-                ).format(self.enumNameType.value, self.stringName1)
+            "Name(type=NameType(value="
+            "<NameType.UNINTERPRETED_TEXT_STRING: {0}>),"
+            "value=NameValue(value='{1}'))"
+        ).format(self.enumNameType.value, self.stringName1)
 
         self.assertEqual(self.stringName1, str(name_obj))
         self.assertEqual(repr_name, repr(name_obj))
 
 
 class TestOperationPolicyName(TestCase):
-
     def setUp(self):
         super(TestOperationPolicyName, self).setUp()
 
@@ -233,13 +230,13 @@ class TestOperationPolicyName(TestCase):
         opn = OperationPolicyName(value)
 
         if value is None:
-            value = ''
+            value = ""
 
         msg = "expected {0}, received {1}".format(value, opn.value)
         self.assertEqual(value, opn.value, msg)
 
     def test_operation_policy_name(self):
-        self._test_operation_policy_name('test')
+        self._test_operation_policy_name("test")
 
     def test_operation_policy_name_on_none(self):
         self._test_operation_policy_name(None)
@@ -263,8 +260,7 @@ class TestHashingAlgorithm(TestCase):
         if (isinstance(value, HashingAlgorithmEnum)) or (value is None):
             hashing_algorithm = HashingAlgorithm(value)
 
-            msg = "expected {0}, observed {1}".format(
-                value, hashing_algorithm.value)
+            msg = "expected {0}, observed {1}".format(value, hashing_algorithm.value)
             self.assertEqual(value, hashing_algorithm.value, msg)
         else:
             self.assertRaises(TypeError, HashingAlgorithm, value)
@@ -314,8 +310,7 @@ class TestCertificateType(TestCase):
             else:
                 certificate_type = CertificateType(value)
 
-            msg = "expected {0}, observed {1}".format(
-                value, certificate_type.value)
+            msg = "expected {0}, observed {1}".format(value, certificate_type.value)
             self.assertEqual(value, certificate_type.value, msg)
         else:
             self.assertRaises(TypeError, CertificateType, value)
@@ -356,8 +351,7 @@ class TestDigestValue(TestCase):
             if value is None:
                 value = bytes()
 
-            msg = "expected {0}, observed {1}".format(
-                value, digest_value.value)
+            msg = "expected {0}, observed {1}".format(value, digest_value.value)
             self.assertEqual(value, digest_value.value, msg)
         else:
             self.assertRaises(TypeError, DigestValue, value)
@@ -373,7 +367,7 @@ class TestDigestValue(TestCase):
         """
         Test that a DigestValue object can be constructed with valid byte data.
         """
-        self._test_init(b'\x00\x01\x02\x03')
+        self._test_init(b"\x00\x01\x02\x03")
 
 
 class TestCryptographicParameters(TestCase):
@@ -405,20 +399,20 @@ class TestCryptographicParameters(TestCase):
         # Initial Counter Value - 1
 
         self.full_encoding = BytearrayStream(
-            b'\x42\x00\x2B\x01\x00\x00\x00\xD0'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x5F\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
-            b'\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xC5\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xCD\x02\x00\x00\x00\x04\x00\x00\x00\x60\x00\x00\x00\x00'
-            b'\x42\x00\xCE\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\xCF\x02\x00\x00\x00\x04\x00\x00\x00\x20\x00\x00\x00\x00'
-            b'\x42\x00\xD2\x02\x00\x00\x00\x04\x00\x00\x00\x40\x00\x00\x00\x00'
-            b'\x42\x00\xD0\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xD1\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x2B\x01\x00\x00\x00\xD0"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x5F\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00"
+            b"\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xC5\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xCD\x02\x00\x00\x00\x04\x00\x00\x00\x60\x00\x00\x00\x00"
+            b"\x42\x00\xCE\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\xCF\x02\x00\x00\x00\x04\x00\x00\x00\x20\x00\x00\x00\x00"
+            b"\x42\x00\xD2\x02\x00\x00\x00\x04\x00\x00\x00\x40\x00\x00\x00\x00"
+            b"\x42\x00\xD0\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xD1\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Adapted from the full encoding above. This encoding matches the
@@ -433,20 +427,18 @@ class TestCryptographicParameters(TestCase):
         # Initial Counter Value - 1
 
         self.partial_encoding = BytearrayStream(
-            b'\x42\x00\x2B\x01\x00\x00\x00\x80'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x5F\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
-            b'\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xCE\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\xD1\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x2B\x01\x00\x00\x00\x80"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x5F\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00"
+            b"\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xCE\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\xD1\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = BytearrayStream(
-            b'\x42\x00\x2B\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = BytearrayStream(b"\x42\x00\x2B\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestCryptographicParameters, self).tearDown()
@@ -462,22 +454,13 @@ class TestCryptographicParameters(TestCase):
         self.assertEqual(None, cryptographic_parameters.padding_method)
         self.assertEqual(None, cryptographic_parameters.hashing_algorithm)
         self.assertEqual(None, cryptographic_parameters.key_role_type)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.digital_signature_algorithm
-        )
-        self.assertEqual(
-            None,
-            cryptographic_parameters.cryptographic_algorithm
-        )
+        self.assertEqual(None, cryptographic_parameters.digital_signature_algorithm)
+        self.assertEqual(None, cryptographic_parameters.cryptographic_algorithm)
         self.assertEqual(None, cryptographic_parameters.random_iv)
         self.assertEqual(None, cryptographic_parameters.iv_length)
         self.assertEqual(None, cryptographic_parameters.tag_length)
         self.assertEqual(None, cryptographic_parameters.fixed_field_length)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.invocation_field_length
-        )
+        self.assertEqual(None, cryptographic_parameters.invocation_field_length)
         self.assertEqual(None, cryptographic_parameters.counter_length)
         self.assertEqual(None, cryptographic_parameters.initial_counter_value)
 
@@ -491,8 +474,7 @@ class TestCryptographicParameters(TestCase):
             padding_method=enums.PaddingMethod.NONE,
             hashing_algorithm=enums.HashingAlgorithm.SHA_256,
             key_role_type=enums.KeyRoleType.BDK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA1_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.TRIPLE_DES,
             random_iv=False,
             iv_length=128,
@@ -500,32 +482,26 @@ class TestCryptographicParameters(TestCase):
             fixed_field_length=48,
             invocation_field_length=60,
             counter_length=20,
-            initial_counter_value=2
+            initial_counter_value=2,
         )
 
         self.assertEqual(
-            enums.BlockCipherMode.CTR,
-            cryptographic_parameters.block_cipher_mode
+            enums.BlockCipherMode.CTR, cryptographic_parameters.block_cipher_mode
         )
         self.assertEqual(
-            enums.PaddingMethod.NONE,
-            cryptographic_parameters.padding_method
+            enums.PaddingMethod.NONE, cryptographic_parameters.padding_method
         )
         self.assertEqual(
-            enums.HashingAlgorithm.SHA_256,
-            cryptographic_parameters.hashing_algorithm
+            enums.HashingAlgorithm.SHA_256, cryptographic_parameters.hashing_algorithm
         )
-        self.assertEqual(
-            enums.KeyRoleType.BDK,
-            cryptographic_parameters.key_role_type
-        )
+        self.assertEqual(enums.KeyRoleType.BDK, cryptographic_parameters.key_role_type)
         self.assertEqual(
             enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION,
-            cryptographic_parameters.digital_signature_algorithm
+            cryptographic_parameters.digital_signature_algorithm,
         )
         self.assertEqual(
             enums.CryptographicAlgorithm.TRIPLE_DES,
-            cryptographic_parameters.cryptographic_algorithm
+            cryptographic_parameters.cryptographic_algorithm,
         )
         self.assertEqual(False, cryptographic_parameters.random_iv)
         self.assertEqual(128, cryptographic_parameters.iv_length)
@@ -541,7 +517,7 @@ class TestCryptographicParameters(TestCase):
         the block cipher mode of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'block_cipher_mode', 'invalid')
+        args = (cryptographic_parameters, "block_cipher_mode", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "block cipher mode must be a BlockCipherMode enumeration",
@@ -555,7 +531,7 @@ class TestCryptographicParameters(TestCase):
         the padding method of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'padding_method', 'invalid')
+        args = (cryptographic_parameters, "padding_method", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "padding method must be a PaddingMethod enumeration",
@@ -569,7 +545,7 @@ class TestCryptographicParameters(TestCase):
         the hashing algorithm of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'hashing_algorithm', 'invalid')
+        args = (cryptographic_parameters, "hashing_algorithm", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "hashing algorithm must be a HashingAlgorithm enumeration",
@@ -583,12 +559,9 @@ class TestCryptographicParameters(TestCase):
         the key role type of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'key_role_type', 'invalid')
+        args = (cryptographic_parameters, "key_role_type", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "key role type must be a KeyRoleType enumeration",
-            setattr,
-            *args
+            TypeError, "key role type must be a KeyRoleType enumeration", setattr, *args
         )
 
     def test_invalid_digital_signature_algorithm(self):
@@ -597,11 +570,7 @@ class TestCryptographicParameters(TestCase):
         the digital signature algorithm of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (
-            cryptographic_parameters,
-            'digital_signature_algorithm',
-            'invalid'
-        )
+        args = (cryptographic_parameters, "digital_signature_algorithm", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "digital signature algorithm must be a "
@@ -616,11 +585,10 @@ class TestCryptographicParameters(TestCase):
         the cryptographic algorithm of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'cryptographic_algorithm', 'invalid')
+        args = (cryptographic_parameters, "cryptographic_algorithm", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "cryptographic algorithm must be a CryptographicAlgorithm "
-            "enumeration",
+            "cryptographic algorithm must be a CryptographicAlgorithm " "enumeration",
             setattr,
             *args
         )
@@ -631,13 +599,8 @@ class TestCryptographicParameters(TestCase):
         the random IV of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'random_iv', 'invalid')
-        self.assertRaisesRegex(
-            TypeError,
-            "random iv must be a boolean",
-            setattr,
-            *args
-        )
+        args = (cryptographic_parameters, "random_iv", "invalid")
+        self.assertRaisesRegex(TypeError, "random iv must be a boolean", setattr, *args)
 
     def test_invalid_iv_length(self):
         """
@@ -645,12 +608,9 @@ class TestCryptographicParameters(TestCase):
         the IV length of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'iv_length', 'invalid')
+        args = (cryptographic_parameters, "iv_length", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "iv length must be an integer",
-            setattr,
-            *args
+            TypeError, "iv length must be an integer", setattr, *args
         )
 
     def test_invalid_tag_length(self):
@@ -659,12 +619,9 @@ class TestCryptographicParameters(TestCase):
         the tag length of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'tag_length', 'invalid')
+        args = (cryptographic_parameters, "tag_length", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "tag length must be an integer",
-            setattr,
-            *args
+            TypeError, "tag length must be an integer", setattr, *args
         )
 
     def test_invalid_fixed_field_length(self):
@@ -673,12 +630,9 @@ class TestCryptographicParameters(TestCase):
         the fixed field length of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'fixed_field_length', 'invalid')
+        args = (cryptographic_parameters, "fixed_field_length", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "fixed field length must be an integer",
-            setattr,
-            *args
+            TypeError, "fixed field length must be an integer", setattr, *args
         )
 
     def test_invalid_invocation_field_length(self):
@@ -687,12 +641,9 @@ class TestCryptographicParameters(TestCase):
         the invocation field length of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'invocation_field_length', 'invalid')
+        args = (cryptographic_parameters, "invocation_field_length", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "invocation field length must be an integer",
-            setattr,
-            *args
+            TypeError, "invocation field length must be an integer", setattr, *args
         )
 
     def test_invalid_counter_length(self):
@@ -701,12 +652,9 @@ class TestCryptographicParameters(TestCase):
         the counter length of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'counter_length', 'invalid')
+        args = (cryptographic_parameters, "counter_length", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "counter length must be an integer",
-            setattr,
-            *args
+            TypeError, "counter length must be an integer", setattr, *args
         )
 
     def test_invalid_initial_counter_value(self):
@@ -715,12 +663,9 @@ class TestCryptographicParameters(TestCase):
         the counter value of a CryptographicParameters struct.
         """
         cryptographic_parameters = CryptographicParameters()
-        args = (cryptographic_parameters, 'initial_counter_value', 'invalid')
+        args = (cryptographic_parameters, "initial_counter_value", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "initial counter value must be an integer",
-            setattr,
-            *args
+            TypeError, "initial counter value must be an integer", setattr, *args
         )
 
     def test_read(self):
@@ -734,50 +679,35 @@ class TestCryptographicParameters(TestCase):
         self.assertEqual(None, cryptographic_parameters.padding_method)
         self.assertEqual(None, cryptographic_parameters.hashing_algorithm)
         self.assertEqual(None, cryptographic_parameters.key_role_type)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.digital_signature_algorithm
-        )
-        self.assertEqual(
-            None,
-            cryptographic_parameters.cryptographic_algorithm
-        )
+        self.assertEqual(None, cryptographic_parameters.digital_signature_algorithm)
+        self.assertEqual(None, cryptographic_parameters.cryptographic_algorithm)
         self.assertEqual(None, cryptographic_parameters.random_iv)
         self.assertEqual(None, cryptographic_parameters.iv_length)
         self.assertEqual(None, cryptographic_parameters.tag_length)
         self.assertEqual(None, cryptographic_parameters.fixed_field_length)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.invocation_field_length
-        )
+        self.assertEqual(None, cryptographic_parameters.invocation_field_length)
         self.assertEqual(None, cryptographic_parameters.counter_length)
         self.assertEqual(None, cryptographic_parameters.initial_counter_value)
 
         cryptographic_parameters.read(self.full_encoding)
 
         self.assertEqual(
-            enums.BlockCipherMode.CBC,
-            cryptographic_parameters.block_cipher_mode
+            enums.BlockCipherMode.CBC, cryptographic_parameters.block_cipher_mode
         )
         self.assertEqual(
-            enums.PaddingMethod.PKCS5,
-            cryptographic_parameters.padding_method
+            enums.PaddingMethod.PKCS5, cryptographic_parameters.padding_method
         )
         self.assertEqual(
-            enums.HashingAlgorithm.SHA_1,
-            cryptographic_parameters.hashing_algorithm
+            enums.HashingAlgorithm.SHA_1, cryptographic_parameters.hashing_algorithm
         )
-        self.assertEqual(
-            enums.KeyRoleType.KEK,
-            cryptographic_parameters.key_role_type
-        )
+        self.assertEqual(enums.KeyRoleType.KEK, cryptographic_parameters.key_role_type)
         self.assertEqual(
             enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
-            cryptographic_parameters.digital_signature_algorithm
+            cryptographic_parameters.digital_signature_algorithm,
         )
         self.assertEqual(
             enums.CryptographicAlgorithm.AES,
-            cryptographic_parameters.cryptographic_algorithm
+            cryptographic_parameters.cryptographic_algorithm,
         )
         self.assertEqual(True, cryptographic_parameters.random_iv)
         self.assertEqual(96, cryptographic_parameters.iv_length)
@@ -798,59 +728,41 @@ class TestCryptographicParameters(TestCase):
         self.assertEqual(None, cryptographic_parameters.padding_method)
         self.assertEqual(None, cryptographic_parameters.hashing_algorithm)
         self.assertEqual(None, cryptographic_parameters.key_role_type)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.digital_signature_algorithm
-        )
-        self.assertEqual(
-            None,
-            cryptographic_parameters.cryptographic_algorithm
-        )
+        self.assertEqual(None, cryptographic_parameters.digital_signature_algorithm)
+        self.assertEqual(None, cryptographic_parameters.cryptographic_algorithm)
         self.assertEqual(None, cryptographic_parameters.random_iv)
         self.assertEqual(None, cryptographic_parameters.iv_length)
         self.assertEqual(None, cryptographic_parameters.tag_length)
         self.assertEqual(None, cryptographic_parameters.fixed_field_length)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.invocation_field_length
-        )
+        self.assertEqual(None, cryptographic_parameters.invocation_field_length)
         self.assertEqual(None, cryptographic_parameters.counter_length)
         self.assertEqual(None, cryptographic_parameters.initial_counter_value)
 
         cryptographic_parameters.read(self.partial_encoding)
 
         self.assertEqual(
-            enums.BlockCipherMode.CBC,
-            cryptographic_parameters.block_cipher_mode
+            enums.BlockCipherMode.CBC, cryptographic_parameters.block_cipher_mode
         )
         self.assertEqual(
-            enums.PaddingMethod.PKCS5,
-            cryptographic_parameters.padding_method
+            enums.PaddingMethod.PKCS5, cryptographic_parameters.padding_method
         )
         self.assertEqual(
-            enums.HashingAlgorithm.SHA_1,
-            cryptographic_parameters.hashing_algorithm
+            enums.HashingAlgorithm.SHA_1, cryptographic_parameters.hashing_algorithm
         )
-        self.assertEqual(
-            enums.KeyRoleType.KEK,
-            cryptographic_parameters.key_role_type
-        )
+        self.assertEqual(enums.KeyRoleType.KEK, cryptographic_parameters.key_role_type)
         self.assertEqual(
             enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
-            cryptographic_parameters.digital_signature_algorithm
+            cryptographic_parameters.digital_signature_algorithm,
         )
         self.assertEqual(
             enums.CryptographicAlgorithm.AES,
-            cryptographic_parameters.cryptographic_algorithm
+            cryptographic_parameters.cryptographic_algorithm,
         )
         self.assertEqual(None, cryptographic_parameters.random_iv)
         self.assertEqual(None, cryptographic_parameters.iv_length)
         self.assertEqual(128, cryptographic_parameters.tag_length)
         self.assertEqual(None, cryptographic_parameters.fixed_field_length)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.invocation_field_length
-        )
+        self.assertEqual(None, cryptographic_parameters.invocation_field_length)
         self.assertEqual(None, cryptographic_parameters.counter_length)
         self.assertEqual(1, cryptographic_parameters.initial_counter_value)
 
@@ -865,22 +777,13 @@ class TestCryptographicParameters(TestCase):
         self.assertEqual(None, cryptographic_parameters.padding_method)
         self.assertEqual(None, cryptographic_parameters.hashing_algorithm)
         self.assertEqual(None, cryptographic_parameters.key_role_type)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.digital_signature_algorithm
-        )
-        self.assertEqual(
-            None,
-            cryptographic_parameters.cryptographic_algorithm
-        )
+        self.assertEqual(None, cryptographic_parameters.digital_signature_algorithm)
+        self.assertEqual(None, cryptographic_parameters.cryptographic_algorithm)
         self.assertEqual(None, cryptographic_parameters.random_iv)
         self.assertEqual(None, cryptographic_parameters.iv_length)
         self.assertEqual(None, cryptographic_parameters.tag_length)
         self.assertEqual(None, cryptographic_parameters.fixed_field_length)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.invocation_field_length
-        )
+        self.assertEqual(None, cryptographic_parameters.invocation_field_length)
         self.assertEqual(None, cryptographic_parameters.counter_length)
         self.assertEqual(None, cryptographic_parameters.initial_counter_value)
 
@@ -890,22 +793,13 @@ class TestCryptographicParameters(TestCase):
         self.assertEqual(None, cryptographic_parameters.padding_method)
         self.assertEqual(None, cryptographic_parameters.hashing_algorithm)
         self.assertEqual(None, cryptographic_parameters.key_role_type)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.digital_signature_algorithm
-        )
-        self.assertEqual(
-            None,
-            cryptographic_parameters.cryptographic_algorithm
-        )
+        self.assertEqual(None, cryptographic_parameters.digital_signature_algorithm)
+        self.assertEqual(None, cryptographic_parameters.cryptographic_algorithm)
         self.assertEqual(None, cryptographic_parameters.random_iv)
         self.assertEqual(None, cryptographic_parameters.iv_length)
         self.assertEqual(None, cryptographic_parameters.tag_length)
         self.assertEqual(None, cryptographic_parameters.fixed_field_length)
-        self.assertEqual(
-            None,
-            cryptographic_parameters.invocation_field_length
-        )
+        self.assertEqual(None, cryptographic_parameters.invocation_field_length)
         self.assertEqual(None, cryptographic_parameters.counter_length)
         self.assertEqual(None, cryptographic_parameters.initial_counter_value)
 
@@ -919,8 +813,7 @@ class TestCryptographicParameters(TestCase):
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             random_iv=True,
             iv_length=96,
@@ -928,7 +821,7 @@ class TestCryptographicParameters(TestCase):
             fixed_field_length=32,
             invocation_field_length=64,
             counter_length=0,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
         stream = BytearrayStream()
         cryptographic_parameters.write(stream)
@@ -946,11 +839,10 @@ class TestCryptographicParameters(TestCase):
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             tag_length=128,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
         stream = BytearrayStream()
         cryptographic_parameters.write(stream)
@@ -986,8 +878,7 @@ class TestCryptographicParameters(TestCase):
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             random_iv=True,
             iv_length=96,
@@ -995,15 +886,14 @@ class TestCryptographicParameters(TestCase):
             fixed_field_length=32,
             invocation_field_length=64,
             counter_length=0,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
         b = CryptographicParameters(
             block_cipher_mode=enums.BlockCipherMode.CBC,
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             random_iv=True,
             iv_length=96,
@@ -1011,7 +901,7 @@ class TestCryptographicParameters(TestCase):
             fixed_field_length=32,
             invocation_field_length=64,
             counter_length=0,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
 
         self.assertTrue(a == b)
@@ -1022,12 +912,8 @@ class TestCryptographicParameters(TestCase):
         Test that the equality operator returns False when comparing two
         CryptographicParameters structs with different block cipher modes.
         """
-        a = CryptographicParameters(
-            block_cipher_mode=enums.BlockCipherMode.CBC
-        )
-        b = CryptographicParameters(
-            block_cipher_mode=enums.BlockCipherMode.GCM
-        )
+        a = CryptographicParameters(block_cipher_mode=enums.BlockCipherMode.CBC)
+        b = CryptographicParameters(block_cipher_mode=enums.BlockCipherMode.GCM)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1048,12 +934,8 @@ class TestCryptographicParameters(TestCase):
         Test that the equality operator returns False when comparing two
         CryptographicParameters structs with different hashing algorithms.
         """
-        a = CryptographicParameters(
-            hashing_algorithm=enums.HashingAlgorithm.MD5
-        )
-        b = CryptographicParameters(
-            hashing_algorithm=enums.HashingAlgorithm.SHA_256
-        )
+        a = CryptographicParameters(hashing_algorithm=enums.HashingAlgorithm.MD5)
+        b = CryptographicParameters(hashing_algorithm=enums.HashingAlgorithm.SHA_256)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1076,12 +958,10 @@ class TestCryptographicParameters(TestCase):
         algorithms.
         """
         a = CryptographicParameters(
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            DSA_WITH_SHA1
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.DSA_WITH_SHA1
         )
         b = CryptographicParameters(
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            ECDSA_WITH_SHA1
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA1
         )
 
         self.assertFalse(a == b)
@@ -1187,7 +1067,7 @@ class TestCryptographicParameters(TestCase):
         CryptographicParameters structs with different types.
         """
         a = CryptographicParameters()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1208,8 +1088,7 @@ class TestCryptographicParameters(TestCase):
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             random_iv=True,
             iv_length=96,
@@ -1217,15 +1096,14 @@ class TestCryptographicParameters(TestCase):
             fixed_field_length=32,
             invocation_field_length=64,
             counter_length=0,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
         b = CryptographicParameters(
             block_cipher_mode=enums.BlockCipherMode.CBC,
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             random_iv=True,
             iv_length=96,
@@ -1233,7 +1111,7 @@ class TestCryptographicParameters(TestCase):
             fixed_field_length=32,
             invocation_field_length=64,
             counter_length=0,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
 
         self.assertFalse(a != b)
@@ -1244,12 +1122,8 @@ class TestCryptographicParameters(TestCase):
         Test that the inequality operator returns True when comparing two
         CryptographicParameters structs with different block cipher modes.
         """
-        a = CryptographicParameters(
-            block_cipher_mode=enums.BlockCipherMode.CBC
-        )
-        b = CryptographicParameters(
-            block_cipher_mode=enums.BlockCipherMode.GCM
-        )
+        a = CryptographicParameters(block_cipher_mode=enums.BlockCipherMode.CBC)
+        b = CryptographicParameters(block_cipher_mode=enums.BlockCipherMode.GCM)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1270,12 +1144,8 @@ class TestCryptographicParameters(TestCase):
         Test that the inequality operator returns True when comparing two
         CryptographicParameters structs with different hashing algorithms.
         """
-        a = CryptographicParameters(
-            hashing_algorithm=enums.HashingAlgorithm.MD5
-        )
-        b = CryptographicParameters(
-            hashing_algorithm=enums.HashingAlgorithm.SHA_256
-        )
+        a = CryptographicParameters(hashing_algorithm=enums.HashingAlgorithm.MD5)
+        b = CryptographicParameters(hashing_algorithm=enums.HashingAlgorithm.SHA_256)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1298,12 +1168,10 @@ class TestCryptographicParameters(TestCase):
         algorithms.
         """
         a = CryptographicParameters(
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            DSA_WITH_SHA1
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.DSA_WITH_SHA1
         )
         b = CryptographicParameters(
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            ECDSA_WITH_SHA1
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.ECDSA_WITH_SHA1
         )
 
         self.assertTrue(a != b)
@@ -1409,7 +1277,7 @@ class TestCryptographicParameters(TestCase):
         CryptographicParameters structs with different types.
         """
         a = CryptographicParameters()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1423,8 +1291,7 @@ class TestCryptographicParameters(TestCase):
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             random_iv=True,
             iv_length=96,
@@ -1432,7 +1299,7 @@ class TestCryptographicParameters(TestCase):
             fixed_field_length=32,
             invocation_field_length=64,
             counter_length=0,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
 
         expected = (
@@ -1465,8 +1332,7 @@ class TestCryptographicParameters(TestCase):
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             random_iv=True,
             iv_length=96,
@@ -1474,25 +1340,26 @@ class TestCryptographicParameters(TestCase):
             fixed_field_length=32,
             invocation_field_length=64,
             counter_length=0,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
 
-        expected = str({
-            'block_cipher_mode': enums.BlockCipherMode.CBC,
-            'padding_method': enums.PaddingMethod.PKCS5,
-            'hashing_algorithm': enums.HashingAlgorithm.SHA_1,
-            'key_role_type': enums.KeyRoleType.KEK,
-            'digital_signature_algorithm':
-                enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
-            'cryptographic_algorithm': enums.CryptographicAlgorithm.AES,
-            'random_iv': True,
-            'iv_length': 96,
-            'tag_length': 128,
-            'fixed_field_length': 32,
-            'invocation_field_length': 64,
-            'counter_length': 0,
-            'initial_counter_value': 1
-        })
+        expected = str(
+            {
+                "block_cipher_mode": enums.BlockCipherMode.CBC,
+                "padding_method": enums.PaddingMethod.PKCS5,
+                "hashing_algorithm": enums.HashingAlgorithm.SHA_1,
+                "key_role_type": enums.KeyRoleType.KEK,
+                "digital_signature_algorithm": enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+                "cryptographic_algorithm": enums.CryptographicAlgorithm.AES,
+                "random_iv": True,
+                "iv_length": 96,
+                "tag_length": 128,
+                "fixed_field_length": 32,
+                "invocation_field_length": 64,
+                "counter_length": 0,
+                "initial_counter_value": 1,
+            }
+        )
         observed = str(cryptographic_parameters)
 
         self.assertEqual(expected, observed)
@@ -1532,25 +1399,25 @@ class TestDerivationParameters(TestCase):
         # Iteration Count - 10000
 
         self.full_encoding = BytearrayStream(
-            b'\x42\x00\x32\x01\x00\x00\x01\x18'
-            b'\x42\x00\x2B\x01\x00\x00\x00\xD0'
-            b'\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x5F\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00'
-            b'\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xC5\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01'
-            b'\x42\x00\xCD\x02\x00\x00\x00\x04\x00\x00\x00\x60\x00\x00\x00\x00'
-            b'\x42\x00\xCE\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
-            b'\x42\x00\xCF\x02\x00\x00\x00\x04\x00\x00\x00\x20\x00\x00\x00\x00'
-            b'\x42\x00\xD2\x02\x00\x00\x00\x04\x00\x00\x00\x40\x00\x00\x00\x00'
-            b'\x42\x00\xD0\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xD1\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x3A\x08\x00\x00\x00\x08\x39\x48\x74\x32\x49\x28\x34\xA3'
-            b'\x42\x00\x30\x08\x00\x00\x00\x08\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
-            b'\x42\x00\x84\x08\x00\x00\x00\x08\x8F\x99\x21\x2A\xA1\x54\x35\xCD'
-            b'\x42\x00\x3C\x02\x00\x00\x00\x04\x00\x00\x27\x10\x00\x00\x00\x00'
+            b"\x42\x00\x32\x01\x00\x00\x01\x18"
+            b"\x42\x00\x2B\x01\x00\x00\x00\xD0"
+            b"\x42\x00\x11\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x5F\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x38\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x83\x05\x00\x00\x00\x04\x00\x00\x00\x0B\x00\x00\x00\x00"
+            b"\x42\x00\xAE\x05\x00\x00\x00\x04\x00\x00\x00\x05\x00\x00\x00\x00"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xC5\x06\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x01"
+            b"\x42\x00\xCD\x02\x00\x00\x00\x04\x00\x00\x00\x60\x00\x00\x00\x00"
+            b"\x42\x00\xCE\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
+            b"\x42\x00\xCF\x02\x00\x00\x00\x04\x00\x00\x00\x20\x00\x00\x00\x00"
+            b"\x42\x00\xD2\x02\x00\x00\x00\x04\x00\x00\x00\x40\x00\x00\x00\x00"
+            b"\x42\x00\xD0\x02\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xD1\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x3A\x08\x00\x00\x00\x08\x39\x48\x74\x32\x49\x28\x34\xA3"
+            b"\x42\x00\x30\x08\x00\x00\x00\x08\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD"
+            b"\x42\x00\x84\x08\x00\x00\x00\x08\x8F\x99\x21\x2A\xA1\x54\x35\xCD"
+            b"\x42\x00\x3C\x02\x00\x00\x00\x04\x00\x00\x27\x10\x00\x00\x00\x00"
         )
 
         # Adapted from the full encoding above. This encoding matches the
@@ -1559,14 +1426,12 @@ class TestDerivationParameters(TestCase):
         # Derivation Data - 0xFAD98B6ACA6D87DD
 
         self.partial_encoding = BytearrayStream(
-            b'\x42\x00\x32\x01\x00\x00\x00\x20'
-            b'\x42\x00\x3A\x08\x00\x00\x00\x08\x39\x48\x74\x32\x49\x28\x34\xA3'
-            b'\x42\x00\x30\x08\x00\x00\x00\x08\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
+            b"\x42\x00\x32\x01\x00\x00\x00\x20"
+            b"\x42\x00\x3A\x08\x00\x00\x00\x08\x39\x48\x74\x32\x49\x28\x34\xA3"
+            b"\x42\x00\x30\x08\x00\x00\x00\x08\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD"
         )
 
-        self.empty_encoding = BytearrayStream(
-            b'\x42\x00\x32\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = BytearrayStream(b"\x42\x00\x32\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestDerivationParameters, self).tearDown()
@@ -1594,8 +1459,7 @@ class TestDerivationParameters(TestCase):
             padding_method=enums.PaddingMethod.NONE,
             hashing_algorithm=enums.HashingAlgorithm.SHA_256,
             key_role_type=enums.KeyRoleType.BDK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA1_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.TRIPLE_DES,
             random_iv=False,
             iv_length=128,
@@ -1603,44 +1467,30 @@ class TestDerivationParameters(TestCase):
             fixed_field_length=48,
             invocation_field_length=60,
             counter_length=20,
-            initial_counter_value=2
+            initial_counter_value=2,
         )
         derivation_parameters = DerivationParameters(
             cryptographic_parameters=cryptographic_parameters,
-            initialization_vector=b'\x39\x48\x74\x32\x49\x28\x34\xA3',
-            derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD',
-            salt=b'\x8F\x99\x21\x2A\xA1\x54\x35\xCD',
-            iteration_count=10000
+            initialization_vector=b"\x39\x48\x74\x32\x49\x28\x34\xA3",
+            derivation_data=b"\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD",
+            salt=b"\x8F\x99\x21\x2A\xA1\x54\x35\xCD",
+            iteration_count=10000,
         )
 
         self.assertIsInstance(
-            derivation_parameters.cryptographic_parameters,
-            CryptographicParameters
+            derivation_parameters.cryptographic_parameters, CryptographicParameters
         )
         parameters = derivation_parameters.cryptographic_parameters
-        self.assertEqual(
-            enums.BlockCipherMode.CTR,
-            parameters.block_cipher_mode
-        )
-        self.assertEqual(
-            enums.PaddingMethod.NONE,
-            parameters.padding_method
-        )
-        self.assertEqual(
-            enums.HashingAlgorithm.SHA_256,
-            parameters.hashing_algorithm
-        )
-        self.assertEqual(
-            enums.KeyRoleType.BDK,
-            parameters.key_role_type
-        )
+        self.assertEqual(enums.BlockCipherMode.CTR, parameters.block_cipher_mode)
+        self.assertEqual(enums.PaddingMethod.NONE, parameters.padding_method)
+        self.assertEqual(enums.HashingAlgorithm.SHA_256, parameters.hashing_algorithm)
+        self.assertEqual(enums.KeyRoleType.BDK, parameters.key_role_type)
         self.assertEqual(
             enums.DigitalSignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION,
-            parameters.digital_signature_algorithm
+            parameters.digital_signature_algorithm,
         )
         self.assertEqual(
-            enums.CryptographicAlgorithm.TRIPLE_DES,
-            parameters.cryptographic_algorithm
+            enums.CryptographicAlgorithm.TRIPLE_DES, parameters.cryptographic_algorithm
         )
         self.assertEqual(False, parameters.random_iv)
         self.assertEqual(128, parameters.iv_length)
@@ -1651,22 +1501,14 @@ class TestDerivationParameters(TestCase):
         self.assertEqual(2, parameters.initial_counter_value)
 
         self.assertEqual(
-            (
-                b'\x39\x48\x74\x32\x49\x28\x34\xA3'
-            ),
-            derivation_parameters.initialization_vector
+            (b"\x39\x48\x74\x32\x49\x28\x34\xA3"),
+            derivation_parameters.initialization_vector,
         )
         self.assertEqual(
-            (
-                b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
-            ),
-            derivation_parameters.derivation_data
+            (b"\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD"), derivation_parameters.derivation_data
         )
         self.assertEqual(
-            (
-                b'\x8F\x99\x21\x2A\xA1\x54\x35\xCD'
-            ),
-            derivation_parameters.salt
+            (b"\x8F\x99\x21\x2A\xA1\x54\x35\xCD"), derivation_parameters.salt
         )
         self.assertEqual(10000, derivation_parameters.iteration_count)
 
@@ -1675,21 +1517,19 @@ class TestDerivationParameters(TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the cryptographic parameters of a DerivationParameters struct.
         """
-        kwargs = {'cryptographic_parameters': 'invalid'}
+        kwargs = {"cryptographic_parameters": "invalid"}
         self.assertRaisesRegex(
             TypeError,
-            "cryptographic parameters must be a CryptographicParameters "
-            "struct",
+            "cryptographic parameters must be a CryptographicParameters " "struct",
             DerivationParameters,
             **kwargs
         )
 
         derivation_parameters = DerivationParameters()
-        args = (derivation_parameters, 'cryptographic_parameters', 'invalid')
+        args = (derivation_parameters, "cryptographic_parameters", "invalid")
         self.assertRaisesRegex(
             TypeError,
-            "cryptographic parameters must be a CryptographicParameters "
-            "struct",
+            "cryptographic parameters must be a CryptographicParameters " "struct",
             setattr,
             *args
         )
@@ -1700,12 +1540,9 @@ class TestDerivationParameters(TestCase):
         the initialization vector of a DerivationParameters struct.
         """
         derivation_parameters = DerivationParameters()
-        args = (derivation_parameters, 'initialization_vector', 0)
+        args = (derivation_parameters, "initialization_vector", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "initialization vector must be bytes",
-            setattr,
-            *args
+            TypeError, "initialization vector must be bytes", setattr, *args
         )
 
     def test_invalid_derivation_data(self):
@@ -1714,12 +1551,9 @@ class TestDerivationParameters(TestCase):
         the derivation data of a DerivationParameters struct.
         """
         derivation_parameters = DerivationParameters()
-        args = (derivation_parameters, 'derivation_data', 0)
+        args = (derivation_parameters, "derivation_data", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "derivation data must be bytes",
-            setattr,
-            *args
+            TypeError, "derivation data must be bytes", setattr, *args
         )
 
     def test_invalid_salt(self):
@@ -1728,13 +1562,8 @@ class TestDerivationParameters(TestCase):
         the salt of a DerivationParameters struct.
         """
         derivation_parameters = DerivationParameters()
-        args = (derivation_parameters, 'salt', 0)
-        self.assertRaisesRegex(
-            TypeError,
-            "salt must be bytes",
-            setattr,
-            *args
-        )
+        args = (derivation_parameters, "salt", 0)
+        self.assertRaisesRegex(TypeError, "salt must be bytes", setattr, *args)
 
     def test_invalid_iteration_count(self):
         """
@@ -1742,12 +1571,9 @@ class TestDerivationParameters(TestCase):
         the iteration count of a DerivationParameters struct.
         """
         derivation_parameters = DerivationParameters()
-        args = (derivation_parameters, 'iteration_count', 'invalid')
+        args = (derivation_parameters, "iteration_count", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "iteration count must be an integer",
-            setattr,
-            *args
+            TypeError, "iteration count must be an integer", setattr, *args
         )
 
     def test_read(self):
@@ -1766,34 +1592,26 @@ class TestDerivationParameters(TestCase):
         derivation_parameters.read(self.full_encoding)
 
         self.assertIsInstance(
-            derivation_parameters.cryptographic_parameters,
-            CryptographicParameters
+            derivation_parameters.cryptographic_parameters, CryptographicParameters
         )
-        cryptographic_parameters = \
-            derivation_parameters.cryptographic_parameters
+        cryptographic_parameters = derivation_parameters.cryptographic_parameters
         self.assertEqual(
-            enums.BlockCipherMode.CBC,
-            cryptographic_parameters.block_cipher_mode
+            enums.BlockCipherMode.CBC, cryptographic_parameters.block_cipher_mode
         )
         self.assertEqual(
-            enums.PaddingMethod.PKCS5,
-            cryptographic_parameters.padding_method
+            enums.PaddingMethod.PKCS5, cryptographic_parameters.padding_method
         )
         self.assertEqual(
-            enums.HashingAlgorithm.SHA_1,
-            cryptographic_parameters.hashing_algorithm
+            enums.HashingAlgorithm.SHA_1, cryptographic_parameters.hashing_algorithm
         )
-        self.assertEqual(
-            enums.KeyRoleType.KEK,
-            cryptographic_parameters.key_role_type
-        )
+        self.assertEqual(enums.KeyRoleType.KEK, cryptographic_parameters.key_role_type)
         self.assertEqual(
             enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
-            cryptographic_parameters.digital_signature_algorithm
+            cryptographic_parameters.digital_signature_algorithm,
         )
         self.assertEqual(
             enums.CryptographicAlgorithm.AES,
-            cryptographic_parameters.cryptographic_algorithm
+            cryptographic_parameters.cryptographic_algorithm,
         )
         self.assertEqual(True, cryptographic_parameters.random_iv)
         self.assertEqual(96, cryptographic_parameters.iv_length)
@@ -1804,22 +1622,14 @@ class TestDerivationParameters(TestCase):
         self.assertEqual(1, cryptographic_parameters.initial_counter_value)
 
         self.assertEqual(
-            (
-                b'\x39\x48\x74\x32\x49\x28\x34\xA3'
-            ),
-            derivation_parameters.initialization_vector
+            (b"\x39\x48\x74\x32\x49\x28\x34\xA3"),
+            derivation_parameters.initialization_vector,
         )
         self.assertEqual(
-            (
-                b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
-            ),
-            derivation_parameters.derivation_data
+            (b"\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD"), derivation_parameters.derivation_data
         )
         self.assertEqual(
-            (
-                b'\x8F\x99\x21\x2A\xA1\x54\x35\xCD'
-            ),
-            derivation_parameters.salt
+            (b"\x8F\x99\x21\x2A\xA1\x54\x35\xCD"), derivation_parameters.salt
         )
         self.assertEqual(10000, derivation_parameters.iteration_count)
 
@@ -1840,16 +1650,11 @@ class TestDerivationParameters(TestCase):
 
         self.assertEqual(None, derivation_parameters.cryptographic_parameters)
         self.assertEqual(
-            (
-                b'\x39\x48\x74\x32\x49\x28\x34\xA3'
-            ),
-            derivation_parameters.initialization_vector
+            (b"\x39\x48\x74\x32\x49\x28\x34\xA3"),
+            derivation_parameters.initialization_vector,
         )
         self.assertEqual(
-            (
-                b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD'
-            ),
-            derivation_parameters.derivation_data
+            (b"\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD"), derivation_parameters.derivation_data
         )
         self.assertEqual(None, derivation_parameters.salt)
         self.assertEqual(None, derivation_parameters.iteration_count)
@@ -1885,8 +1690,7 @@ class TestDerivationParameters(TestCase):
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             random_iv=True,
             iv_length=96,
@@ -1894,14 +1698,14 @@ class TestDerivationParameters(TestCase):
             fixed_field_length=32,
             invocation_field_length=64,
             counter_length=0,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
         derivation_parameters = DerivationParameters(
             cryptographic_parameters=cryptographic_parameters,
-            initialization_vector=b'\x39\x48\x74\x32\x49\x28\x34\xA3',
-            derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD',
-            salt=b'\x8F\x99\x21\x2A\xA1\x54\x35\xCD',
-            iteration_count=10000
+            initialization_vector=b"\x39\x48\x74\x32\x49\x28\x34\xA3",
+            derivation_data=b"\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD",
+            salt=b"\x8F\x99\x21\x2A\xA1\x54\x35\xCD",
+            iteration_count=10000,
         )
         stream = BytearrayStream()
         derivation_parameters.write(stream)
@@ -1915,8 +1719,8 @@ class TestDerivationParameters(TestCase):
         written to a data stream.
         """
         derivation_parameters = DerivationParameters(
-            initialization_vector=b'\x39\x48\x74\x32\x49\x28\x34\xA3',
-            derivation_data=b'\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD',
+            initialization_vector=b"\x39\x48\x74\x32\x49\x28\x34\xA3",
+            derivation_data=b"\xFA\xD9\x8B\x6A\xCA\x6D\x87\xDD",
         )
         stream = BytearrayStream()
         derivation_parameters.write(stream)
@@ -1953,8 +1757,7 @@ class TestDerivationParameters(TestCase):
                 padding_method=enums.PaddingMethod.PKCS5,
                 hashing_algorithm=enums.HashingAlgorithm.SHA_1,
                 key_role_type=enums.KeyRoleType.KEK,
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
                 cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
                 random_iv=True,
                 iv_length=96,
@@ -1962,12 +1765,12 @@ class TestDerivationParameters(TestCase):
                 fixed_field_length=32,
                 invocation_field_length=64,
                 counter_length=0,
-                initial_counter_value=1
+                initial_counter_value=1,
             ),
-            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
-            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
-            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
-            iteration_count=1000
+            initialization_vector=b"\x01\x02\x03\x04\x05\x06\x07\x08",
+            derivation_data=b"\x11\x22\x33\x44\x55\x66\x77\x88",
+            salt=b"\x12\x34\x56\x78\x9A\xBC\xDE\xF0",
+            iteration_count=1000,
         )
         b = DerivationParameters(
             cryptographic_parameters=CryptographicParameters(
@@ -1975,8 +1778,7 @@ class TestDerivationParameters(TestCase):
                 padding_method=enums.PaddingMethod.PKCS5,
                 hashing_algorithm=enums.HashingAlgorithm.SHA_1,
                 key_role_type=enums.KeyRoleType.KEK,
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
                 cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
                 random_iv=True,
                 iv_length=96,
@@ -1984,12 +1786,12 @@ class TestDerivationParameters(TestCase):
                 fixed_field_length=32,
                 invocation_field_length=64,
                 counter_length=0,
-                initial_counter_value=1
+                initial_counter_value=1,
             ),
-            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
-            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
-            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
-            iteration_count=1000
+            initialization_vector=b"\x01\x02\x03\x04\x05\x06\x07\x08",
+            derivation_data=b"\x11\x22\x33\x44\x55\x66\x77\x88",
+            salt=b"\x12\x34\x56\x78\x9A\xBC\xDE\xF0",
+            iteration_count=1000,
         )
 
         self.assertTrue(a == b)
@@ -2019,8 +1821,8 @@ class TestDerivationParameters(TestCase):
         Test that the equality operator returns False when comparing two
         DerivationParameters structs with different initialization vectors.
         """
-        a = DerivationParameters(initialization_vector=b'\x01')
-        b = DerivationParameters(initialization_vector=b'\x02')
+        a = DerivationParameters(initialization_vector=b"\x01")
+        b = DerivationParameters(initialization_vector=b"\x02")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -2030,8 +1832,8 @@ class TestDerivationParameters(TestCase):
         Test that the equality operator returns False when comparing two
         DerivationParameters structs with different derivation data.
         """
-        a = DerivationParameters(derivation_data=b'\x01')
-        b = DerivationParameters(derivation_data=b'\x02')
+        a = DerivationParameters(derivation_data=b"\x01")
+        b = DerivationParameters(derivation_data=b"\x02")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -2041,8 +1843,8 @@ class TestDerivationParameters(TestCase):
         Test that the equality operator returns False when comparing two
         DerivationParameters structs with different salts.
         """
-        a = DerivationParameters(salt=b'\x01')
-        b = DerivationParameters(salt=b'\x02')
+        a = DerivationParameters(salt=b"\x01")
+        b = DerivationParameters(salt=b"\x02")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -2064,7 +1866,7 @@ class TestDerivationParameters(TestCase):
         DerivationParameters structs with different types.
         """
         a = DerivationParameters()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -2086,8 +1888,7 @@ class TestDerivationParameters(TestCase):
                 padding_method=enums.PaddingMethod.PKCS5,
                 hashing_algorithm=enums.HashingAlgorithm.SHA_1,
                 key_role_type=enums.KeyRoleType.KEK,
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
                 cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
                 random_iv=True,
                 iv_length=96,
@@ -2095,12 +1896,12 @@ class TestDerivationParameters(TestCase):
                 fixed_field_length=32,
                 invocation_field_length=64,
                 counter_length=0,
-                initial_counter_value=1
+                initial_counter_value=1,
             ),
-            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
-            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
-            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
-            iteration_count=1000
+            initialization_vector=b"\x01\x02\x03\x04\x05\x06\x07\x08",
+            derivation_data=b"\x11\x22\x33\x44\x55\x66\x77\x88",
+            salt=b"\x12\x34\x56\x78\x9A\xBC\xDE\xF0",
+            iteration_count=1000,
         )
         b = DerivationParameters(
             cryptographic_parameters=CryptographicParameters(
@@ -2108,8 +1909,7 @@ class TestDerivationParameters(TestCase):
                 padding_method=enums.PaddingMethod.PKCS5,
                 hashing_algorithm=enums.HashingAlgorithm.SHA_1,
                 key_role_type=enums.KeyRoleType.KEK,
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
                 cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
                 random_iv=True,
                 iv_length=96,
@@ -2117,12 +1917,12 @@ class TestDerivationParameters(TestCase):
                 fixed_field_length=32,
                 invocation_field_length=64,
                 counter_length=0,
-                initial_counter_value=1
+                initial_counter_value=1,
             ),
-            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
-            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
-            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
-            iteration_count=1000
+            initialization_vector=b"\x01\x02\x03\x04\x05\x06\x07\x08",
+            derivation_data=b"\x11\x22\x33\x44\x55\x66\x77\x88",
+            salt=b"\x12\x34\x56\x78\x9A\xBC\xDE\xF0",
+            iteration_count=1000,
         )
 
         self.assertFalse(a != b)
@@ -2152,8 +1952,8 @@ class TestDerivationParameters(TestCase):
         Test that the inequality operator returns True when comparing two
         DerivationParameters structs with different initialization vectors.
         """
-        a = DerivationParameters(initialization_vector=b'\x01')
-        b = DerivationParameters(initialization_vector=b'\x02')
+        a = DerivationParameters(initialization_vector=b"\x01")
+        b = DerivationParameters(initialization_vector=b"\x02")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -2163,8 +1963,8 @@ class TestDerivationParameters(TestCase):
         Test that the inequality operator returns True when comparing two
         DerivationParameters structs with different derivation data.
         """
-        a = DerivationParameters(derivation_data=b'\x01')
-        b = DerivationParameters(derivation_data=b'\x02')
+        a = DerivationParameters(derivation_data=b"\x01")
+        b = DerivationParameters(derivation_data=b"\x02")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -2174,8 +1974,8 @@ class TestDerivationParameters(TestCase):
         Test that the inequality operator returns True when comparing two
         DerivationParameters structs with different salts.
         """
-        a = DerivationParameters(salt=b'\x01')
-        b = DerivationParameters(salt=b'\x02')
+        a = DerivationParameters(salt=b"\x01")
+        b = DerivationParameters(salt=b"\x02")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -2197,7 +1997,7 @@ class TestDerivationParameters(TestCase):
         DerivationParameters structs with different types.
         """
         a = DerivationParameters()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -2212,8 +2012,7 @@ class TestDerivationParameters(TestCase):
                 padding_method=enums.PaddingMethod.PKCS5,
                 hashing_algorithm=enums.HashingAlgorithm.SHA_1,
                 key_role_type=enums.KeyRoleType.KEK,
-                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-                SHA256_WITH_RSA_ENCRYPTION,
+                digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
                 cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
                 random_iv=True,
                 iv_length=96,
@@ -2221,12 +2020,12 @@ class TestDerivationParameters(TestCase):
                 fixed_field_length=32,
                 invocation_field_length=64,
                 counter_length=0,
-                initial_counter_value=1
+                initial_counter_value=1,
             ),
-            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
-            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
-            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
-            iteration_count=10000
+            initialization_vector=b"\x01\x02\x03\x04\x05\x06\x07\x08",
+            derivation_data=b"\x11\x22\x33\x44\x55\x66\x77\x88",
+            salt=b"\x12\x34\x56\x78\x9A\xBC\xDE\xF0",
+            iteration_count=10000,
         )
 
         expected = (
@@ -2246,13 +2045,9 @@ class TestDerivationParameters(TestCase):
             "invocation_field_length=64, "
             "counter_length=0, "
             "initial_counter_value=1), "
-            "initialization_vector=" + str(
-                b'\x01\x02\x03\x04\x05\x06\x07\x08'
-            ) + ", "
-            "derivation_data=" + str(
-                b'\x11\x22\x33\x44\x55\x66\x77\x88'
-            ) + ", "
-            "salt=" + str(b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0') + ", "
+            "initialization_vector=" + str(b"\x01\x02\x03\x04\x05\x06\x07\x08") + ", "
+            "derivation_data=" + str(b"\x11\x22\x33\x44\x55\x66\x77\x88") + ", "
+            "salt=" + str(b"\x12\x34\x56\x78\x9A\xBC\xDE\xF0") + ", "
             "iteration_count=10000)"
         )
         observed = repr(derivation_parameters)
@@ -2268,8 +2063,7 @@ class TestDerivationParameters(TestCase):
             padding_method=enums.PaddingMethod.PKCS5,
             hashing_algorithm=enums.HashingAlgorithm.SHA_1,
             key_role_type=enums.KeyRoleType.KEK,
-            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.
-            SHA256_WITH_RSA_ENCRYPTION,
+            digital_signature_algorithm=enums.DigitalSignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             random_iv=True,
             iv_length=96,
@@ -2277,23 +2071,25 @@ class TestDerivationParameters(TestCase):
             fixed_field_length=32,
             invocation_field_length=64,
             counter_length=0,
-            initial_counter_value=1
+            initial_counter_value=1,
         )
         derivation_parameters = DerivationParameters(
             cryptographic_parameters=cryptographic_parameters,
-            initialization_vector=b'\x01\x02\x03\x04\x05\x06\x07\x08',
-            derivation_data=b'\x11\x22\x33\x44\x55\x66\x77\x88',
-            salt=b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
-            iteration_count=10000
+            initialization_vector=b"\x01\x02\x03\x04\x05\x06\x07\x08",
+            derivation_data=b"\x11\x22\x33\x44\x55\x66\x77\x88",
+            salt=b"\x12\x34\x56\x78\x9A\xBC\xDE\xF0",
+            iteration_count=10000,
         )
 
-        expected = str({
-            'cryptographic_parameters': cryptographic_parameters,
-            'initialization_vector': b'\x01\x02\x03\x04\x05\x06\x07\x08',
-            'derivation_data': b'\x11\x22\x33\x44\x55\x66\x77\x88',
-            'salt': b'\x12\x34\x56\x78\x9A\xBC\xDE\xF0',
-            'iteration_count': 10000
-        })
+        expected = str(
+            {
+                "cryptographic_parameters": cryptographic_parameters,
+                "initialization_vector": b"\x01\x02\x03\x04\x05\x06\x07\x08",
+                "derivation_data": b"\x11\x22\x33\x44\x55\x66\x77\x88",
+                "salt": b"\x12\x34\x56\x78\x9A\xBC\xDE\xF0",
+                "iteration_count": 10000,
+            }
+        )
         observed = str(derivation_parameters)
 
         self.assertEqual(expected, observed)

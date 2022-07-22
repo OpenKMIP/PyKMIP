@@ -49,19 +49,19 @@ class TestSplitKey(testtools.TestCase):
         #         Cryptographic Algorithm - AES
         #         Cryptographic Length - 128
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x89\x01\x00\x00\x00\xA8'
-            b'\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x8A\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x62\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x01\x99\x19'
-            b'\x42\x00\x40\x01\x00\x00\x00\x50'
-            b'\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x45\x01\x00\x00\x00\x18'
-            b'\x42\x00\x43\x08\x00\x00\x00\x10'
-            b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00'
+            b"\x42\x00\x89\x01\x00\x00\x00\xA8"
+            b"\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x8A\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x62\x04\x00\x00\x00\x08\x00\x00\x00\x00\x00\x01\x99\x19"
+            b"\x42\x00\x40\x01\x00\x00\x00\x50"
+            b"\x42\x00\x42\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x45\x01\x00\x00\x00\x18"
+            b"\x42\x00\x43\x08\x00\x00\x00\x10"
+            b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
+            b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x2A\x02\x00\x00\x00\x04\x00\x00\x00\x80\x00\x00\x00\x00"
         )
 
         # This encoding was adapted from test case TC-SJ-2-20 from the KMIP
@@ -71,8 +71,8 @@ class TestSplitKey(testtools.TestCase):
         # SplitKey
         #     Key Part Identifier - 1
         self.no_split_key_parts_encoding = utils.BytearrayStream(
-            b'\x42\x00\x89\x01\x00\x00\x00\x10'
-            b'\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x89\x01\x00\x00\x00\x10"
+            b"\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # This encoding was adapted from test case TC-SJ-2-20 from the KMIP
@@ -82,8 +82,8 @@ class TestSplitKey(testtools.TestCase):
         # SplitKey
         #     Split Key Parts - 4
         self.no_key_part_identifier_encoding = utils.BytearrayStream(
-            b'\x42\x00\x89\x01\x00\x00\x00\x10'
-            b'\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b"\x42\x00\x89\x01\x00\x00\x00\x10"
+            b"\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
         )
 
         # This encoding was adapted from test case TC-SJ-2-20 from the KMIP
@@ -94,9 +94,9 @@ class TestSplitKey(testtools.TestCase):
         #     Split Key Parts - 4
         #     Key Part Identifier - 1
         self.no_split_key_threshold_encoding = utils.BytearrayStream(
-            b'\x42\x00\x89\x01\x00\x00\x00\x20'
-            b'\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x89\x01\x00\x00\x00\x20"
+            b"\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # This encoding was adapted from test case TC-SJ-2-20 from the KMIP
@@ -108,10 +108,10 @@ class TestSplitKey(testtools.TestCase):
         #     Key Part Identifier - 1
         #     Split Key Threshold - 2
         self.no_split_key_method_encoding = utils.BytearrayStream(
-            b'\x42\x00\x89\x01\x00\x00\x00\x30'
-            b'\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\x89\x01\x00\x00\x00\x30"
+            b"\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
         # This encoding was adapted from test case TC-SJ-2-20 from the KMIP
@@ -124,11 +124,11 @@ class TestSplitKey(testtools.TestCase):
         #     Split Key Threshold - 2
         #     Split Key Method - Polynomial Sharing Prime Field
         self.no_prime_field_size_encoding = utils.BytearrayStream(
-            b'\x42\x00\x89\x01\x00\x00\x00\x40'
-            b'\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x8A\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x89\x01\x00\x00\x00\x40"
+            b"\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x8A\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # This encoding was adapted from test case TC-SJ-2-20 from the KMIP
@@ -141,11 +141,11 @@ class TestSplitKey(testtools.TestCase):
         #     Split Key Threshold - 2
         #     Split Key Method - Polynomial Sharing GF 2^8
         self.no_key_block_encoding = utils.BytearrayStream(
-            b'\x42\x00\x89\x01\x00\x00\x00\x40'
-            b'\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
-            b'\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x8A\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00'
+            b"\x42\x00\x89\x01\x00\x00\x00\x40"
+            b"\x42\x00\x8B\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
+            b"\x42\x00\x44\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8C\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x8A\x05\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -164,16 +164,9 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            secrets.SplitKey(),
-            "split_key_parts",
-            "invalid"
-        )
+        args = (secrets.SplitKey(), "split_key_parts", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The split key parts must be an integer.",
-            setattr,
-            *args
+            TypeError, "The split key parts must be an integer.", setattr, *args
         )
 
     def test_invalid_key_part_identifier(self):
@@ -189,16 +182,9 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            secrets.SplitKey(),
-            "key_part_identifier",
-            "invalid"
-        )
+        args = (secrets.SplitKey(), "key_part_identifier", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The key part identifier must be an integer.",
-            setattr,
-            *args
+            TypeError, "The key part identifier must be an integer.", setattr, *args
         )
 
     def test_invalid_split_key_threshold(self):
@@ -214,16 +200,9 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            secrets.SplitKey(),
-            "split_key_threshold",
-            "invalid"
-        )
+        args = (secrets.SplitKey(), "split_key_threshold", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The split key threshold must be an integer.",
-            setattr,
-            *args
+            TypeError, "The split key threshold must be an integer.", setattr, *args
         )
 
     def test_invalid_split_key_method(self):
@@ -239,11 +218,7 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            secrets.SplitKey(),
-            "split_key_method",
-            "invalid"
-        )
+        args = (secrets.SplitKey(), "split_key_method", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The split key method must be a SplitKeyMethod enumeration.",
@@ -264,16 +239,9 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            secrets.SplitKey(),
-            "prime_field_size",
-            "invalid"
-        )
+        args = (secrets.SplitKey(), "prime_field_size", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The prime field size must be an integer.",
-            setattr,
-            *args
+            TypeError, "The prime field size must be an integer.", setattr, *args
         )
 
     def test_invalid_key_block(self):
@@ -289,16 +257,9 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            secrets.SplitKey(),
-            "key_block",
-            "invalid"
-        )
+        args = (secrets.SplitKey(), "key_block", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The key block must be a KeyBlock structure.",
-            setattr,
-            *args
+            TypeError, "The key block must be a KeyBlock structure.", setattr, *args
         )
 
     def test_read(self):
@@ -320,30 +281,24 @@ class TestSplitKey(testtools.TestCase):
         self.assertEqual(1, split_key.key_part_identifier)
         self.assertEqual(2, split_key.split_key_threshold)
         self.assertEqual(
-            enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
-            split_key.split_key_method
+            enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8, split_key.split_key_method
         )
         self.assertEqual(104729, split_key.prime_field_size)
         self.assertIsInstance(split_key.key_block, objects.KeyBlock)
         self.assertEqual(
-            enums.KeyFormatType.RAW,
-            split_key.key_block.key_format_type.value
+            enums.KeyFormatType.RAW, split_key.key_block.key_format_type.value
         )
         self.assertIsInstance(split_key.key_block.key_value, objects.KeyValue)
         self.assertIsInstance(
-            split_key.key_block.key_value.key_material,
-            primitives.ByteString
+            split_key.key_block.key_value.key_material, primitives.ByteString
         )
         self.assertEqual(
-            (
-                b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
-            ),
-            split_key.key_block.key_value.key_material.value
+            (b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"),
+            split_key.key_block.key_value.key_material.value,
         )
         self.assertEqual(
             enums.CryptographicAlgorithm.AES,
-            split_key.key_block.cryptographic_algorithm.value
+            split_key.key_block.cryptographic_algorithm.value,
         )
         self.assertEqual(128, split_key.key_block.cryptographic_length.value)
 
@@ -357,7 +312,7 @@ class TestSplitKey(testtools.TestCase):
 
         self.assertIsNone(split_key.split_key_parts)
 
-        args = (self.no_split_key_parts_encoding, )
+        args = (self.no_split_key_parts_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The SplitKey encoding is missing the SplitKeyParts field.",
@@ -375,7 +330,7 @@ class TestSplitKey(testtools.TestCase):
 
         self.assertIsNone(split_key.key_part_identifier)
 
-        args = (self.no_key_part_identifier_encoding, )
+        args = (self.no_key_part_identifier_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The SplitKey encoding is missing the KeyPartIdentifier field.",
@@ -393,7 +348,7 @@ class TestSplitKey(testtools.TestCase):
 
         self.assertIsNone(split_key.split_key_threshold)
 
-        args = (self.no_split_key_threshold_encoding, )
+        args = (self.no_split_key_threshold_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The SplitKey encoding is missing the SplitKeyThreshold field.",
@@ -411,7 +366,7 @@ class TestSplitKey(testtools.TestCase):
 
         self.assertIsNone(split_key.split_key_method)
 
-        args = (self.no_split_key_method_encoding, )
+        args = (self.no_split_key_method_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The SplitKey encoding is missing the SplitKeyMethod field.",
@@ -429,7 +384,7 @@ class TestSplitKey(testtools.TestCase):
 
         self.assertIsNone(split_key.prime_field_size)
 
-        args = (self.no_prime_field_size_encoding, )
+        args = (self.no_prime_field_size_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The SplitKey encoding is missing the PrimeFieldSize "
@@ -448,7 +403,7 @@ class TestSplitKey(testtools.TestCase):
 
         self.assertIsNone(split_key.key_block)
 
-        args = (self.no_key_block_encoding, )
+        args = (self.no_key_block_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The SplitKey encoding is missing the KeyBlock field.",
@@ -467,20 +422,19 @@ class TestSplitKey(testtools.TestCase):
             key_value=objects.KeyValue(
                 key_material=objects.KeyMaterial(
                     value=(
-                        b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                        b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                        b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4"
+                        b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
                     )
                 )
             ),
             cryptographic_algorithm=primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 value=enums.CryptographicAlgorithm.AES,
-                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             ),
             cryptographic_length=primitives.Integer(
-                value=128,
-                tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
+                value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+            ),
         )
         split_key = secrets.SplitKey(
             split_key_parts=4,
@@ -488,7 +442,7 @@ class TestSplitKey(testtools.TestCase):
             split_key_threshold=2,
             split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
             prime_field_size=104729,
-            key_block=key_block
+            key_block=key_block,
         )
 
         stream = utils.BytearrayStream()
@@ -505,7 +459,7 @@ class TestSplitKey(testtools.TestCase):
         split_key = secrets.SplitKey(key_part_identifier=1)
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The SplitKey object is missing the SplitKeyParts field.",
@@ -522,7 +476,7 @@ class TestSplitKey(testtools.TestCase):
         split_key = secrets.SplitKey(split_key_parts=4)
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The SplitKey object is missing the KeyPartIdentifier field.",
@@ -536,13 +490,10 @@ class TestSplitKey(testtools.TestCase):
         SplitKey object when the object is missing the split key threshold
         field.
         """
-        split_key = secrets.SplitKey(
-            split_key_parts=4,
-            key_part_identifier=1
-        )
+        split_key = secrets.SplitKey(split_key_parts=4, key_part_identifier=1)
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The SplitKey object is missing the SplitKeyThreshold field.",
@@ -556,13 +507,11 @@ class TestSplitKey(testtools.TestCase):
         SplitKey object when the object is missing the split key method field.
         """
         split_key = secrets.SplitKey(
-            split_key_parts=4,
-            key_part_identifier=1,
-            split_key_threshold=2
+            split_key_parts=4, key_part_identifier=1, split_key_threshold=2
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The SplitKey object is missing the SplitKeyMethod field.",
@@ -580,11 +529,11 @@ class TestSplitKey(testtools.TestCase):
             split_key_parts=4,
             key_part_identifier=1,
             split_key_threshold=2,
-            split_key_method=split_key_method
+            split_key_method=split_key_method,
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The SplitKey object is missing the PrimeFieldSize field. "
@@ -603,11 +552,11 @@ class TestSplitKey(testtools.TestCase):
             split_key_parts=4,
             key_part_identifier=1,
             split_key_threshold=2,
-            split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8
+            split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The SplitKey object is missing the KeyBlock field.",
@@ -624,20 +573,19 @@ class TestSplitKey(testtools.TestCase):
             key_value=objects.KeyValue(
                 key_material=objects.KeyMaterial(
                     value=(
-                        b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                        b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                        b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4"
+                        b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
                     )
                 )
             ),
             cryptographic_algorithm=primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 value=enums.CryptographicAlgorithm.AES,
-                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             ),
             cryptographic_length=primitives.Integer(
-                value=128,
-                tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
+                value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+            ),
         )
         split_key = secrets.SplitKey(
             split_key_parts=4,
@@ -645,7 +593,7 @@ class TestSplitKey(testtools.TestCase):
             split_key_threshold=2,
             split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
             prime_field_size=104729,
-            key_block=key_block
+            key_block=key_block,
         )
 
         args = [
@@ -654,12 +602,9 @@ class TestSplitKey(testtools.TestCase):
             "split_key_threshold=2",
             "split_key_method=SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8",
             "prime_field_size=104729",
-            "key_block=Struct()"
+            "key_block=Struct()",
         ]
-        self.assertEqual(
-            "SplitKey({})".format(", ".join(args)),
-            repr(split_key)
-        )
+        self.assertEqual("SplitKey({})".format(", ".join(args)), repr(split_key))
 
     def test_str(self):
         """
@@ -670,20 +615,19 @@ class TestSplitKey(testtools.TestCase):
             key_value=objects.KeyValue(
                 key_material=objects.KeyMaterial(
                     value=(
-                        b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                        b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                        b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4"
+                        b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
                     )
                 )
             ),
             cryptographic_algorithm=primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 value=enums.CryptographicAlgorithm.AES,
-                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             ),
             cryptographic_length=primitives.Integer(
-                value=128,
-                tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-            )
+                value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+            ),
         )
         split_key = secrets.SplitKey(
             split_key_parts=4,
@@ -691,27 +635,21 @@ class TestSplitKey(testtools.TestCase):
             split_key_threshold=2,
             split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
             prime_field_size=104729,
-            key_block=key_block
+            key_block=key_block,
         )
 
         args = [
             ("split_key_parts", 4),
             ("key_part_identifier", 1),
             ("split_key_threshold", 2),
-            (
-                "split_key_method",
-                enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8
-            ),
+            ("split_key_method", enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8),
             ("prime_field_size", 104729),
-            ("key_block", str(key_block))
+            ("key_block", str(key_block)),
         ]
         value = "{}".format(
             ", ".join(['"{}": {}'.format(arg[0], arg[1]) for arg in args])
         )
-        self.assertEqual(
-            "{" + value + "}",
-            str(split_key)
-        )
+        self.assertEqual("{" + value + "}", str(split_key))
 
     def test_comparison(self):
         """
@@ -737,21 +675,20 @@ class TestSplitKey(testtools.TestCase):
                 key_value=objects.KeyValue(
                     key_material=objects.KeyMaterial(
                         value=(
-                            b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                            b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                            b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4"
+                            b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
                         )
                     )
                 ),
                 cryptographic_algorithm=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     value=enums.CryptographicAlgorithm.AES,
-                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 ),
                 cryptographic_length=primitives.Integer(
-                    value=128,
-                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                )
-            )
+                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                ),
+            ),
         )
         b = secrets.SplitKey(
             split_key_parts=4,
@@ -764,21 +701,20 @@ class TestSplitKey(testtools.TestCase):
                 key_value=objects.KeyValue(
                     key_material=objects.KeyMaterial(
                         value=(
-                            b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                            b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                            b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4"
+                            b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
                         )
                     )
                 ),
                 cryptographic_algorithm=primitives.Enumeration(
                     enums.CryptographicAlgorithm,
                     value=enums.CryptographicAlgorithm.AES,
-                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                    tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
                 ),
                 cryptographic_length=primitives.Integer(
-                    value=128,
-                    tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
-                )
-            )
+                    value=128, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                ),
+            ),
         )
 
         self.assertTrue(a == b)

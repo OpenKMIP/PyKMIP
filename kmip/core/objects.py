@@ -45,12 +45,9 @@ from kmip.core.utils import BytearrayStream
 # 2.1
 # 2.1.1
 class Attribute(Struct):
-
     class AttributeName(TextString):
-
         def __init__(self, value=None):
-            super(Attribute.AttributeName, self).__init__(
-                value, Tags.ATTRIBUTE_NAME)
+            super(Attribute.AttributeName, self).__init__(value, Tags.ATTRIBUTE_NAME)
 
         def __eq__(self, other):
             if isinstance(other, Attribute.AttributeName):
@@ -68,15 +65,10 @@ class Attribute(Struct):
                 return NotImplemented
 
     class AttributeIndex(Integer):
-
         def __init__(self, value=None):
-            super(Attribute.AttributeIndex, self).__init__(
-                value, Tags.ATTRIBUTE_INDEX)
+            super(Attribute.AttributeIndex, self).__init__(value, Tags.ATTRIBUTE_INDEX)
 
-    def __init__(self,
-                 attribute_name=None,
-                 attribute_index=None,
-                 attribute_value=None):
+    def __init__(self, attribute_name=None, attribute_index=None, attribute_value=None):
         super(Attribute, self).__init__(tag=Tags.ATTRIBUTE)
 
         self.value_factory = AttributeValueFactory()
@@ -103,7 +95,7 @@ class Attribute(Struct):
 
         # Lookup the attribute class that belongs to the attribute name
         name = self.attribute_name.value
-        enum_name = name.replace('.', '_').replace(' ', '_').upper()
+        enum_name = name.replace(".", "_").replace(" ", "_").upper()
         enum_type = None
 
         try:
@@ -136,24 +128,20 @@ class Attribute(Struct):
 
     def __repr__(self):
         attribute_name = "attribute_name={0}".format(repr(self.attribute_name))
-        attribute_index = "attribute_index={0}".format(
-            repr(self.attribute_index)
-        )
-        attribute_value = "attribute_value={0}".format(
-            repr(self.attribute_value)
-        )
+        attribute_index = "attribute_index={0}".format(repr(self.attribute_index))
+        attribute_value = "attribute_value={0}".format(repr(self.attribute_value))
         return "Attribute({0}, {1}, {2})".format(
-            attribute_name,
-            attribute_index,
-            attribute_value
+            attribute_name, attribute_index, attribute_value
         )
 
     def __str__(self):
-        return str({
-            'attribute_name': str(self.attribute_name),
-            'attribute_index': str(self.attribute_index),
-            'attribute_value': str(self.attribute_value)
-        })
+        return str(
+            {
+                "attribute_name": str(self.attribute_name),
+                "attribute_index": str(self.attribute_index),
+                "attribute_value": str(self.attribute_value),
+            }
+        )
 
     def __eq__(self, other):
         if isinstance(other, Attribute):
@@ -193,9 +181,7 @@ class CurrentAttribute(primitives.Struct):
             attribute (struct): An attribute structure of varying type.
                 Defaults to None. Required for read/write.
         """
-        super(CurrentAttribute, self).__init__(
-            tag=enums.Tags.CURRENT_ATTRIBUTE
-        )
+        super(CurrentAttribute, self).__init__(tag=enums.Tags.CURRENT_ATTRIBUTE)
 
         self._factory = AttributeValueFactory()
 
@@ -217,14 +203,10 @@ class CurrentAttribute(primitives.Struct):
             if enums.is_attribute(value.tag):
                 self._attribute = value
             else:
-                raise TypeError(
-                    "The attribute must be a supported attribute type."
-                )
+                raise TypeError("The attribute must be a supported attribute type.")
         else:
             raise TypeError(
-                "The attribute must be a Base object, not a {}.".format(
-                    type(value)
-                )
+                "The attribute must be a Base object, not a {}.".format(type(value))
             )
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
@@ -254,17 +236,14 @@ class CurrentAttribute(primitives.Struct):
                 )
             )
 
-        super(CurrentAttribute, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(CurrentAttribute, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = BytearrayStream(input_buffer.read(self.length))
 
         if len(local_buffer) < 3:
             raise exceptions.InvalidKmipEncoding(
                 "The CurrentAttribute encoding is missing the attribute field."
             )
-        tag = struct.unpack('!I', b'\x00' + local_buffer.peek(3))[0]
+        tag = struct.unpack("!I", b"\x00" + local_buffer.peek(3))[0]
         if enums.is_enum_value(enums.Tags, tag):
             tag = enums.Tags(tag)
             if enums.is_attribute(tag, kmip_version=kmip_version):
@@ -274,8 +253,7 @@ class CurrentAttribute(primitives.Struct):
             else:
                 raise exceptions.AttributeNotSupported(
                     "Attribute {} is not supported by KMIP {}.".format(
-                        tag.name,
-                        kmip_version.value
+                        tag.name, kmip_version.value
                     )
                 )
         else:
@@ -318,8 +296,7 @@ class CurrentAttribute(primitives.Struct):
             if not enums.is_attribute(tag, kmip_version=kmip_version):
                 raise exceptions.AttributeNotSupported(
                     "Attribute {} is not supported by KMIP {}.".format(
-                        tag.name,
-                        kmip_version.value
+                        tag.name, kmip_version.value
                     )
                 )
             self._attribute.write(local_buffer, kmip_version=kmip_version)
@@ -329,10 +306,7 @@ class CurrentAttribute(primitives.Struct):
             )
 
         self.length = local_buffer.length()
-        super(CurrentAttribute, self).write(
-            output_buffer,
-            kmip_version=kmip_version
-        )
+        super(CurrentAttribute, self).write(output_buffer, kmip_version=kmip_version)
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
@@ -340,7 +314,7 @@ class CurrentAttribute(primitives.Struct):
 
     def __str__(self):
         value = '"attribute": {}'.format(repr(self.attribute))
-        return '{' + value + '}'
+        return "{" + value + "}"
 
     def __eq__(self, other):
         if not isinstance(other, CurrentAttribute):
@@ -374,9 +348,7 @@ class NewAttribute(primitives.Struct):
             attribute (struct): An attribute structure of varying type.
                 Defaults to None. Required for read/write.
         """
-        super(NewAttribute, self).__init__(
-            tag=enums.Tags.NEW_ATTRIBUTE
-        )
+        super(NewAttribute, self).__init__(tag=enums.Tags.NEW_ATTRIBUTE)
 
         self._factory = AttributeValueFactory()
 
@@ -398,14 +370,10 @@ class NewAttribute(primitives.Struct):
             if enums.is_attribute(value.tag):
                 self._attribute = value
             else:
-                raise TypeError(
-                    "The attribute must be a supported attribute type."
-                )
+                raise TypeError("The attribute must be a supported attribute type.")
         else:
             raise TypeError(
-                "The attribute must be a Base object, not a {}.".format(
-                    type(value)
-                )
+                "The attribute must be a Base object, not a {}.".format(type(value))
             )
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_2_0):
@@ -435,17 +403,14 @@ class NewAttribute(primitives.Struct):
                 )
             )
 
-        super(NewAttribute, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(NewAttribute, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = BytearrayStream(input_buffer.read(self.length))
 
         if len(local_buffer) < 3:
             raise exceptions.InvalidKmipEncoding(
                 "The NewAttribute encoding is missing the attribute field."
             )
-        tag = struct.unpack('!I', b'\x00' + local_buffer.peek(3))[0]
+        tag = struct.unpack("!I", b"\x00" + local_buffer.peek(3))[0]
         if enums.is_enum_value(enums.Tags, tag):
             tag = enums.Tags(tag)
             if enums.is_attribute(tag, kmip_version=kmip_version):
@@ -455,8 +420,7 @@ class NewAttribute(primitives.Struct):
             else:
                 raise exceptions.AttributeNotSupported(
                     "Attribute {} is not supported by KMIP {}.".format(
-                        tag.name,
-                        kmip_version.value
+                        tag.name, kmip_version.value
                     )
                 )
         else:
@@ -499,8 +463,7 @@ class NewAttribute(primitives.Struct):
             if not enums.is_attribute(tag, kmip_version=kmip_version):
                 raise exceptions.AttributeNotSupported(
                     "Attribute {} is not supported by KMIP {}.".format(
-                        tag.name,
-                        kmip_version.value
+                        tag.name, kmip_version.value
                     )
                 )
             self._attribute.write(local_buffer, kmip_version=kmip_version)
@@ -510,10 +473,7 @@ class NewAttribute(primitives.Struct):
             )
 
         self.length = local_buffer.length()
-        super(NewAttribute, self).write(
-            output_buffer,
-            kmip_version=kmip_version
-        )
+        super(NewAttribute, self).write(output_buffer, kmip_version=kmip_version)
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
@@ -521,7 +481,7 @@ class NewAttribute(primitives.Struct):
 
     def __str__(self):
         value = '"attribute": {}'.format(repr(self.attribute))
-        return '{' + value + '}'
+        return "{" + value + "}"
 
     def __eq__(self, other):
         if not isinstance(other, NewAttribute):
@@ -560,9 +520,7 @@ class AttributeReference(primitives.Struct):
             attribute_name (string): A string containing the attribute name.
                 Optional, defaults to None. Required for read/write.
         """
-        super(AttributeReference, self).__init__(
-            tag=enums.Tags.ATTRIBUTE_REFERENCE
-        )
+        super(AttributeReference, self).__init__(tag=enums.Tags.ATTRIBUTE_REFERENCE)
 
         self._vendor_identification = None
         self._attribute_name = None
@@ -583,8 +541,7 @@ class AttributeReference(primitives.Struct):
             self._vendor_identification = None
         elif isinstance(value, six.string_types):
             self._vendor_identification = primitives.TextString(
-                value,
-                tag=enums.Tags.VENDOR_IDENTIFICATION
+                value, tag=enums.Tags.VENDOR_IDENTIFICATION
             )
         else:
             raise TypeError("Vendor identification must be a string.")
@@ -602,8 +559,7 @@ class AttributeReference(primitives.Struct):
             self._attribute_name = None
         elif isinstance(value, six.string_types):
             self._attribute_name = primitives.TextString(
-                value,
-                tag=enums.Tags.ATTRIBUTE_NAME
+                value, tag=enums.Tags.ATTRIBUTE_NAME
             )
         else:
             raise TypeError("Attribute name must be a string.")
@@ -629,25 +585,17 @@ class AttributeReference(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the AttributeReference "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
-        super(AttributeReference, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(AttributeReference, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.VENDOR_IDENTIFICATION, local_buffer):
             self._vendor_identification = primitives.TextString(
                 tag=enums.Tags.VENDOR_IDENTIFICATION
             )
-            self._vendor_identification.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._vendor_identification.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The AttributeReference encoding is missing the vendor "
@@ -655,13 +603,8 @@ class AttributeReference(primitives.Struct):
             )
 
         if self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, local_buffer):
-            self._attribute_name = primitives.TextString(
-                tag=enums.Tags.ATTRIBUTE_NAME
-            )
-            self._attribute_name.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._attribute_name = primitives.TextString(tag=enums.Tags.ATTRIBUTE_NAME)
+            self._attribute_name.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The AttributeReference encoding is missing the attribute "
@@ -690,46 +633,34 @@ class AttributeReference(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the AttributeReference "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
         local_buffer = BytearrayStream()
 
         if self._vendor_identification:
-            self._vendor_identification.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._vendor_identification.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
-                "The AttributeReference is missing the vendor identification "
-                "field."
+                "The AttributeReference is missing the vendor identification " "field."
             )
 
         if self._attribute_name:
-            self._attribute_name.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._attribute_name.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The AttributeReference is missing the attribute name field."
             )
 
         self.length = local_buffer.length()
-        super(AttributeReference, self).write(
-            output_buffer,
-            kmip_version=kmip_version
-        )
+        super(AttributeReference, self).write(output_buffer, kmip_version=kmip_version)
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         v = "vendor_identification={}".format(
-            '"{}"'.format(
-                self.vendor_identification
-            ) if self.vendor_identification else None
+            '"{}"'.format(self.vendor_identification)
+            if self.vendor_identification
+            else None
         )
         a = "attribute_name={}".format(
             '"{}"'.format(self.attribute_name) if self.attribute_name else None
@@ -739,15 +670,15 @@ class AttributeReference(primitives.Struct):
 
     def __str__(self):
         v = '"vendor_identification": "{}"'.format(
-            "{}".format(
-                self.vendor_identification
-            ) if self.vendor_identification else None
+            "{}".format(self.vendor_identification)
+            if self.vendor_identification
+            else None
         )
         a = '"attribute_name": "{}"'.format(
             "{}".format(self.attribute_name) if self.attribute_name else None
         )
         values = ", ".join([v, a])
-        return '{' + values + '}'
+        return "{" + values + "}"
 
     def __eq__(self, other):
         if isinstance(other, AttributeReference):
@@ -820,15 +751,12 @@ class Attributes(primitives.Struct):
                 if isinstance(attribute, primitives.Base):
                     if not enums.is_attribute(attribute.tag):
                         raise TypeError(
-                            "Item {} must be a supported attribute.".format(
-                                i + 1
-                            )
+                            "Item {} must be a supported attribute.".format(i + 1)
                         )
                 else:
                     raise TypeError(
                         "Item {} must be a Base object, not a {}.".format(
-                            i + 1,
-                            type(attribute)
+                            i + 1, type(attribute)
                         )
                     )
             self._attributes = value
@@ -866,14 +794,13 @@ class Attributes(primitives.Struct):
         while True:
             if len(local_stream) < 3:
                 break
-            tag = struct.unpack('!I', b'\x00' + local_stream.peek(3))[0]
+            tag = struct.unpack("!I", b"\x00" + local_stream.peek(3))[0]
             if enums.is_enum_value(enums.Tags, tag):
                 tag = enums.Tags(tag)
                 if not enums.is_attribute(tag, kmip_version=kmip_version):
                     raise exceptions.AttributeNotSupported(
                         "Attribute {} is not supported by KMIP {}.".format(
-                            tag.name,
-                            kmip_version.value
+                            tag.name, kmip_version.value
                         )
                     )
                 value = self._factory.create_attribute_value_by_enum(tag, None)
@@ -915,8 +842,7 @@ class Attributes(primitives.Struct):
             if not enums.is_attribute(tag, kmip_version=kmip_version):
                 raise exceptions.AttributeNotSupported(
                     "Attribute {} is not supported by KMIP {}.".format(
-                        tag.name,
-                        kmip_version.value
+                        tag.name, kmip_version.value
                     )
                 )
             attribute.write(local_stream, kmip_version=kmip_version)
@@ -927,15 +853,12 @@ class Attributes(primitives.Struct):
 
     def __repr__(self):
         values = ", ".join([repr(x) for x in self.attributes])
-        return "Attributes(attributes=[{}], tag={})".format(
-            values,
-            self.tag
-        )
+        return "Attributes(attributes=[{}], tag={})".format(values, self.tag)
 
     def __str__(self):
         values = ", ".join([str(x) for x in self.attributes])
         value = '"attributes": [{}]'.format(values)
-        return '{' + value + '}'
+        return "{" + value + "}"
 
     def __eq__(self, other):
         if not isinstance(other, Attributes):
@@ -1003,10 +926,7 @@ class Nonce(primitives.Struct):
         if value is None:
             self._nonce_id = None
         elif isinstance(value, six.binary_type):
-            self._nonce_id = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.NONCE_ID
-            )
+            self._nonce_id = primitives.ByteString(value=value, tag=enums.Tags.NONCE_ID)
         else:
             raise TypeError("Nonce ID must be bytes.")
 
@@ -1023,8 +943,7 @@ class Nonce(primitives.Struct):
             self._nonce_value = None
         elif isinstance(value, six.binary_type):
             self._nonce_value = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.NONCE_VALUE
+                value=value, tag=enums.Tags.NONCE_VALUE
             )
         else:
             raise TypeError("Nonce value must be bytes.")
@@ -1050,24 +969,16 @@ class Nonce(primitives.Struct):
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.NONCE_ID, local_stream):
-            self._nonce_id = primitives.ByteString(
-                tag=enums.Tags.NONCE_ID
-            )
+            self._nonce_id = primitives.ByteString(tag=enums.Tags.NONCE_ID)
             self._nonce_id.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Nonce encoding missing the nonce ID."
-            )
+            raise ValueError("Nonce encoding missing the nonce ID.")
 
         if self.is_tag_next(enums.Tags.NONCE_VALUE, local_stream):
-            self._nonce_value = primitives.ByteString(
-                tag=enums.Tags.NONCE_VALUE
-            )
+            self._nonce_value = primitives.ByteString(tag=enums.Tags.NONCE_VALUE)
             self._nonce_value.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Nonce encoding missing the nonce value."
-            )
+            raise ValueError("Nonce encoding missing the nonce value.")
 
         self.is_oversized(local_stream)
 
@@ -1120,17 +1031,21 @@ class Nonce(primitives.Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "nonce_id={}".format(self.nonce_id),
-            "nonce_value={}".format(self.nonce_value)
-        ])
+        args = ", ".join(
+            [
+                "nonce_id={}".format(self.nonce_id),
+                "nonce_value={}".format(self.nonce_value),
+            ]
+        )
         return "Nonce({})".format(args)
 
     def __str__(self):
-        body = ", ".join([
-            "'nonce_id': {}".format(self.nonce_id),
-            "'nonce_value': {}".format(self.nonce_value)
-        ])
+        body = ", ".join(
+            [
+                "'nonce_id': {}".format(self.nonce_id),
+                "'nonce_value': {}".format(self.nonce_value),
+            ]
+        )
         return "{" + body + "}"
 
 
@@ -1161,9 +1076,7 @@ class UsernamePasswordCredential(CredentialValue):
             password (string): The password associated with the username.
                 Optional, defaults to None.
         """
-        super(UsernamePasswordCredential, self).__init__(
-            tag=Tags.CREDENTIAL_VALUE
-        )
+        super(UsernamePasswordCredential, self).__init__(tag=Tags.CREDENTIAL_VALUE)
 
         self._username = None
         self._password = None
@@ -1183,10 +1096,7 @@ class UsernamePasswordCredential(CredentialValue):
         if value is None:
             self._username = None
         elif isinstance(value, six.string_types):
-            self._username = primitives.TextString(
-                value=value,
-                tag=enums.Tags.USERNAME
-            )
+            self._username = primitives.TextString(value=value, tag=enums.Tags.USERNAME)
         else:
             raise TypeError("Username must be a string.")
 
@@ -1202,10 +1112,7 @@ class UsernamePasswordCredential(CredentialValue):
         if value is None:
             self._password = None
         elif isinstance(value, six.string_types):
-            self._password = primitives.TextString(
-                value=value,
-                tag=enums.Tags.PASSWORD
-            )
+            self._password = primitives.TextString(value=value, tag=enums.Tags.PASSWORD)
         else:
             raise TypeError("Password must be a string.")
 
@@ -1226,15 +1133,12 @@ class UsernamePasswordCredential(CredentialValue):
             ValueError: Raised if the username is missing from the encoding.
         """
         super(UsernamePasswordCredential, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.USERNAME, local_stream):
-            self._username = primitives.TextString(
-                tag=enums.Tags.USERNAME
-            )
+            self._username = primitives.TextString(tag=enums.Tags.USERNAME)
             self._username.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
@@ -1242,9 +1146,7 @@ class UsernamePasswordCredential(CredentialValue):
             )
 
         if self.is_tag_next(enums.Tags.PASSWORD, local_stream):
-            self._password = primitives.TextString(
-                tag=enums.Tags.PASSWORD
-            )
+            self._password = primitives.TextString(tag=enums.Tags.PASSWORD)
             self._password.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
@@ -1279,8 +1181,7 @@ class UsernamePasswordCredential(CredentialValue):
 
         self.length = local_stream.length()
         super(UsernamePasswordCredential, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -1302,17 +1203,16 @@ class UsernamePasswordCredential(CredentialValue):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "username='{}'".format(self.username),
-            "password='{}'".format(self.password)
-        ])
+        args = ", ".join(
+            [
+                "username='{}'".format(self.username),
+                "password='{}'".format(self.password),
+            ]
+        )
         return "UsernamePasswordCredential({})".format(args)
 
     def __str__(self):
-        return str({
-            "username": self.username,
-            "password": self.password
-        })
+        return str({"username": self.username, "password": self.password})
 
 
 class DeviceCredential(CredentialValue):
@@ -1328,13 +1228,15 @@ class DeviceCredential(CredentialValue):
         media_identifier: The media identifier for the credential.
     """
 
-    def __init__(self,
-                 device_serial_number=None,
-                 password=None,
-                 device_identifier=None,
-                 network_identifier=None,
-                 machine_identifier=None,
-                 media_identifier=None):
+    def __init__(
+        self,
+        device_serial_number=None,
+        password=None,
+        device_identifier=None,
+        network_identifier=None,
+        machine_identifier=None,
+        media_identifier=None,
+    ):
         """
         Construct a DeviceCredential struct.
 
@@ -1381,8 +1283,7 @@ class DeviceCredential(CredentialValue):
             self._device_serial_number = None
         elif isinstance(value, six.string_types):
             self._device_serial_number = primitives.TextString(
-                value=value,
-                tag=enums.Tags.DEVICE_SERIAL_NUMBER
+                value=value, tag=enums.Tags.DEVICE_SERIAL_NUMBER
             )
         else:
             raise TypeError("Device serial number must be a string.")
@@ -1399,10 +1300,7 @@ class DeviceCredential(CredentialValue):
         if value is None:
             self._password = None
         elif isinstance(value, six.string_types):
-            self._password = primitives.TextString(
-                value=value,
-                tag=enums.Tags.PASSWORD
-            )
+            self._password = primitives.TextString(value=value, tag=enums.Tags.PASSWORD)
         else:
             raise TypeError("Password must be a string.")
 
@@ -1419,8 +1317,7 @@ class DeviceCredential(CredentialValue):
             self._device_identifier = None
         elif isinstance(value, six.string_types):
             self._device_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.DEVICE_IDENTIFIER
+                value=value, tag=enums.Tags.DEVICE_IDENTIFIER
             )
         else:
             raise TypeError("Device identifier must be a string.")
@@ -1438,8 +1335,7 @@ class DeviceCredential(CredentialValue):
             self._network_identifier = None
         elif isinstance(value, six.string_types):
             self._network_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.NETWORK_IDENTIFIER
+                value=value, tag=enums.Tags.NETWORK_IDENTIFIER
             )
         else:
             raise TypeError("Network identifier must be a string.")
@@ -1457,8 +1353,7 @@ class DeviceCredential(CredentialValue):
             self._machine_identifier = None
         elif isinstance(value, six.string_types):
             self._machine_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.MACHINE_IDENTIFIER
+                value=value, tag=enums.Tags.MACHINE_IDENTIFIER
             )
         else:
             raise TypeError("Machine identifier must be a string.")
@@ -1476,8 +1371,7 @@ class DeviceCredential(CredentialValue):
             self._media_identifier = None
         elif isinstance(value, six.string_types):
             self._media_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.MEDIA_IDENTIFIER
+                value=value, tag=enums.Tags.MEDIA_IDENTIFIER
             )
         else:
             raise TypeError("Media identifier must be a string.")
@@ -1495,62 +1389,42 @@ class DeviceCredential(CredentialValue):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(DeviceCredential, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(DeviceCredential, self).read(input_stream, kmip_version=kmip_version)
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.DEVICE_SERIAL_NUMBER, local_stream):
             self._device_serial_number = primitives.TextString(
                 tag=enums.Tags.DEVICE_SERIAL_NUMBER
             )
-            self._device_serial_number.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._device_serial_number.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.PASSWORD, local_stream):
-            self._password = primitives.TextString(
-                tag=enums.Tags.PASSWORD
-            )
+            self._password = primitives.TextString(tag=enums.Tags.PASSWORD)
             self._password.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.DEVICE_IDENTIFIER, local_stream):
             self._device_identifier = primitives.TextString(
                 tag=enums.Tags.DEVICE_IDENTIFIER
             )
-            self._device_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._device_identifier.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.NETWORK_IDENTIFIER, local_stream):
             self._network_identifier = primitives.TextString(
                 tag=enums.Tags.NETWORK_IDENTIFIER
             )
-            self._network_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._network_identifier.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.MACHINE_IDENTIFIER, local_stream):
             self._machine_identifier = primitives.TextString(
                 tag=enums.Tags.MACHINE_IDENTIFIER
             )
-            self._machine_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._machine_identifier.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.MEDIA_IDENTIFIER, local_stream):
             self._media_identifier = primitives.TextString(
                 tag=enums.Tags.MEDIA_IDENTIFIER
             )
-            self._media_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._media_identifier.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -1569,40 +1443,20 @@ class DeviceCredential(CredentialValue):
         local_stream = BytearrayStream()
 
         if self._device_serial_number is not None:
-            self._device_serial_number.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._device_serial_number.write(local_stream, kmip_version=kmip_version)
         if self._password is not None:
-            self._password.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._password.write(local_stream, kmip_version=kmip_version)
         if self._device_identifier is not None:
-            self._device_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._device_identifier.write(local_stream, kmip_version=kmip_version)
         if self._network_identifier is not None:
-            self._network_identifier.write(
-                local_stream,
-                kmip_version=kmip_version)
+            self._network_identifier.write(local_stream, kmip_version=kmip_version)
         if self._machine_identifier is not None:
-            self._machine_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._machine_identifier.write(local_stream, kmip_version=kmip_version)
         if self._media_identifier is not None:
-            self._media_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._media_identifier.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
-        super(DeviceCredential, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(DeviceCredential, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -1631,25 +1485,29 @@ class DeviceCredential(CredentialValue):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "device_serial_number='{}'".format(self.device_serial_number),
-            "password='{}'".format(self.password),
-            "device_identifier='{}'".format(self.device_identifier),
-            "network_identifier='{}'".format(self.network_identifier),
-            "machine_identifier='{}'".format(self.machine_identifier),
-            "media_identifier='{}'".format(self.media_identifier),
-        ])
+        args = ", ".join(
+            [
+                "device_serial_number='{}'".format(self.device_serial_number),
+                "password='{}'".format(self.password),
+                "device_identifier='{}'".format(self.device_identifier),
+                "network_identifier='{}'".format(self.network_identifier),
+                "machine_identifier='{}'".format(self.machine_identifier),
+                "media_identifier='{}'".format(self.media_identifier),
+            ]
+        )
         return "DeviceCredential({})".format(args)
 
     def __str__(self):
-        return str({
-            "device_serial_number": self.device_serial_number,
-            "password": self.password,
-            "device_identifier": self.device_identifier,
-            "network_identifier": self.network_identifier,
-            "machine_identifier": self.machine_identifier,
-            "media_identifier": self.media_identifier
-        })
+        return str(
+            {
+                "device_serial_number": self.device_serial_number,
+                "password": self.password,
+                "device_identifier": self.device_identifier,
+                "network_identifier": self.network_identifier,
+                "machine_identifier": self.machine_identifier,
+                "media_identifier": self.media_identifier,
+            }
+        )
 
 
 class AttestationCredential(CredentialValue):
@@ -1663,11 +1521,13 @@ class AttestationCredential(CredentialValue):
         attestation_assertion: The attestation assertion from a third party.
     """
 
-    def __init__(self,
-                 nonce=None,
-                 attestation_type=None,
-                 attestation_measurement=None,
-                 attestation_assertion=None):
+    def __init__(
+        self,
+        nonce=None,
+        attestation_type=None,
+        attestation_measurement=None,
+        attestation_assertion=None,
+    ):
         """
         Construct an AttestationCredential struct.
 
@@ -1723,14 +1583,10 @@ class AttestationCredential(CredentialValue):
             self._attestation_type = None
         elif isinstance(value, enums.AttestationType):
             self._attestation_type = Enumeration(
-                enums.AttestationType,
-                value=value,
-                tag=Tags.ATTESTATION_TYPE
+                enums.AttestationType, value=value, tag=Tags.ATTESTATION_TYPE
             )
         else:
-            raise TypeError(
-                "Attestation type must be an AttestationType enumeration."
-            )
+            raise TypeError("Attestation type must be an AttestationType enumeration.")
 
     @property
     def attestation_measurement(self):
@@ -1745,8 +1601,7 @@ class AttestationCredential(CredentialValue):
             self._attestation_measurement = None
         elif isinstance(value, six.binary_type):
             self._attestation_measurement = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.ATTESTATION_MEASUREMENT
+                value=value, tag=enums.Tags.ATTESTATION_MEASUREMENT
             )
         else:
             raise TypeError("Attestation measurement must be bytes.")
@@ -1764,8 +1619,7 @@ class AttestationCredential(CredentialValue):
             self._attestation_assertion = None
         elif isinstance(value, six.binary_type):
             self._attestation_assertion = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.ATTESTATION_ASSERTION
+                value=value, tag=enums.Tags.ATTESTATION_ASSERTION
             )
         else:
             raise TypeError("Attestation assertion must be bytes.")
@@ -1790,33 +1644,23 @@ class AttestationCredential(CredentialValue):
                 included in the encoding.
 
         """
-        super(AttestationCredential, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(AttestationCredential, self).read(input_stream, kmip_version=kmip_version)
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.NONCE, local_stream):
             self._nonce = Nonce()
             self._nonce.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Attestation credential encoding is missing the nonce."
-            )
+            raise ValueError("Attestation credential encoding is missing the nonce.")
 
         if self.is_tag_next(enums.Tags.ATTESTATION_TYPE, local_stream):
             self._attestation_type = primitives.Enumeration(
-                enums.AttestationType,
-                tag=enums.Tags.ATTESTATION_TYPE
+                enums.AttestationType, tag=enums.Tags.ATTESTATION_TYPE
             )
-            self._attestation_type.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._attestation_type.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
-                "Attestation credential encoding is missing the attestation "
-                "type."
+                "Attestation credential encoding is missing the attestation " "type."
             )
 
         self._attestation_measurement = None
@@ -1824,23 +1668,18 @@ class AttestationCredential(CredentialValue):
             self._attestation_measurement = primitives.ByteString(
                 tag=enums.Tags.ATTESTATION_MEASUREMENT
             )
-            self._attestation_measurement.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._attestation_measurement.read(local_stream, kmip_version=kmip_version)
 
         self._attestation_assertion = None
         if self.is_tag_next(enums.Tags.ATTESTATION_ASSERTION, local_stream):
             self._attestation_assertion = primitives.ByteString(
                 tag=enums.Tags.ATTESTATION_ASSERTION
             )
-            self._attestation_assertion.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._attestation_assertion.read(local_stream, kmip_version=kmip_version)
 
-        if ((self._attestation_measurement is None) and
-                (self._attestation_assertion is None)):
+        if (self._attestation_measurement is None) and (
+            self._attestation_assertion is None
+        ):
             raise ValueError(
                 "Attestation credential encoding is missing either the "
                 "attestation measurement or the attestation assertion."
@@ -1870,34 +1709,23 @@ class AttestationCredential(CredentialValue):
         if self._nonce:
             self._nonce.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Attestation credential struct is missing the nonce."
-            )
+            raise ValueError("Attestation credential struct is missing the nonce.")
 
         if self._attestation_type:
-            self._attestation_type.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._attestation_type.write(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
-                "Attestation credential struct is missing the attestation "
-                "type."
+                "Attestation credential struct is missing the attestation " "type."
             )
 
         if self._attestation_measurement:
-            self._attestation_measurement.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._attestation_measurement.write(local_stream, kmip_version=kmip_version)
         if self._attestation_assertion:
-            self._attestation_assertion.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._attestation_assertion.write(local_stream, kmip_version=kmip_version)
 
-        if ((self._attestation_measurement is None) and
-                (self._attestation_assertion is None)):
+        if (self._attestation_measurement is None) and (
+            self._attestation_assertion is None
+        ):
             raise ValueError(
                 "Attestation credential struct is missing either the "
                 "attestation measurement or the attestation assertion."
@@ -1905,8 +1733,7 @@ class AttestationCredential(CredentialValue):
 
         self.length = local_stream.length()
         super(AttestationCredential, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -1932,22 +1759,24 @@ class AttestationCredential(CredentialValue):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "nonce={}".format(repr(self.nonce)),
-            "attestation_type={}".format(self.attestation_type),
-            "attestation_measurement={}".format(self.attestation_measurement),
-            "attestation_assertion={}".format(self.attestation_assertion)
-        ])
+        args = ", ".join(
+            [
+                "nonce={}".format(repr(self.nonce)),
+                "attestation_type={}".format(self.attestation_type),
+                "attestation_measurement={}".format(self.attestation_measurement),
+                "attestation_assertion={}".format(self.attestation_assertion),
+            ]
+        )
         return "AttestationCredential({})".format(args)
 
     def __str__(self):
-        return "{" \
-               "'nonce': " + str(self.nonce) + ", " \
-               "'attestation_type': " + str(self.attestation_type) + ", " \
-               "'attestation_measurement': " + \
-               str(self.attestation_measurement) + ", " \
-               "'attestation_assertion': " + \
-               str(self.attestation_assertion) + "}"
+        return (
+            "{"
+            "'nonce': " + str(self.nonce) + ", "
+            "'attestation_type': " + str(self.attestation_type) + ", "
+            "'attestation_measurement': " + str(self.attestation_measurement) + ", "
+            "'attestation_assertion': " + str(self.attestation_assertion) + "}"
+        )
 
 
 class Credential(primitives.Struct):
@@ -1992,14 +1821,10 @@ class Credential(primitives.Struct):
             self._credential_type = None
         elif isinstance(value, enums.CredentialType):
             self._credential_type = Enumeration(
-                enums.CredentialType,
-                value=value,
-                tag=Tags.CREDENTIAL_TYPE
+                enums.CredentialType, value=value, tag=Tags.CREDENTIAL_TYPE
             )
         else:
-            raise TypeError(
-                "Credential type must be a CredentialType enumeration."
-            )
+            raise TypeError("Credential type must be a CredentialType enumeration.")
 
     @property
     def credential_value(self):
@@ -2012,9 +1837,7 @@ class Credential(primitives.Struct):
         elif isinstance(value, CredentialValue):
             self._credential_value = value
         else:
-            raise TypeError(
-                "Credential value must be a CredentialValue struct."
-            )
+            raise TypeError("Credential value must be a CredentialValue struct.")
 
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -2038,18 +1861,14 @@ class Credential(primitives.Struct):
 
         if self.is_tag_next(enums.Tags.CREDENTIAL_TYPE, local_stream):
             self._credential_type = primitives.Enumeration(
-                enum=enums.CredentialType,
-                tag=enums.Tags.CREDENTIAL_TYPE
+                enum=enums.CredentialType, tag=enums.Tags.CREDENTIAL_TYPE
             )
             self._credential_type.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Credential encoding missing the credential type."
-            )
+            raise ValueError("Credential encoding missing the credential type.")
 
         if self.is_tag_next(enums.Tags.CREDENTIAL_VALUE, local_stream):
-            if self.credential_type == \
-                    enums.CredentialType.USERNAME_AND_PASSWORD:
+            if self.credential_type == enums.CredentialType.USERNAME_AND_PASSWORD:
                 self._credential_value = UsernamePasswordCredential()
             elif self.credential_type == enums.CredentialType.DEVICE:
                 self._credential_value = DeviceCredential()
@@ -2057,17 +1876,11 @@ class Credential(primitives.Struct):
                 self._credential_value = AttestationCredential()
             else:
                 raise ValueError(
-                    "Credential encoding includes unrecognized credential "
-                    "type."
+                    "Credential encoding includes unrecognized credential " "type."
                 )
-            self._credential_value.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._credential_value.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Credential encoding missing the credential value."
-            )
+            raise ValueError("Credential encoding missing the credential value.")
 
         self.is_oversized(local_stream)
 
@@ -2090,30 +1903,17 @@ class Credential(primitives.Struct):
         local_stream = BytearrayStream()
 
         if self._credential_type:
-            self._credential_type.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._credential_type.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Credential struct missing the credential type."
-            )
+            raise ValueError("Credential struct missing the credential type.")
 
         if self._credential_value:
-            self._credential_value.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._credential_value.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Credential struct missing the credential value."
-            )
+            raise ValueError("Credential struct missing the credential value.")
 
         self.length = local_stream.length()
-        super(Credential, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(Credential, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -2134,34 +1934,39 @@ class Credential(primitives.Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "credential_type={}".format(self.credential_type),
-            "credential_value={}".format(repr(self.credential_value))
-        ])
+        args = ", ".join(
+            [
+                "credential_type={}".format(self.credential_type),
+                "credential_value={}".format(repr(self.credential_value)),
+            ]
+        )
         return "Credential({})".format(args)
 
     def __str__(self):
-        return str({
-            "credential_type": self.credential_type,
-            "credential_value": str(self.credential_value)
-        })
+        return str(
+            {
+                "credential_type": self.credential_type,
+                "credential_value": str(self.credential_value),
+            }
+        )
 
 
 class KeyBlock(Struct):
-
     class KeyCompressionType(Enumeration):
-
         def __init__(self, value=None):
             super(KeyBlock.KeyCompressionType, self).__init__(
-                enums.KeyCompressionType, value, Tags.KEY_COMPRESSION_TYPE)
+                enums.KeyCompressionType, value, Tags.KEY_COMPRESSION_TYPE
+            )
 
-    def __init__(self,
-                 key_format_type=None,
-                 key_compression_type=None,
-                 key_value=None,
-                 cryptographic_algorithm=None,
-                 cryptographic_length=None,
-                 key_wrapping_data=None):
+    def __init__(
+        self,
+        key_format_type=None,
+        key_compression_type=None,
+        key_value=None,
+        cryptographic_algorithm=None,
+        cryptographic_length=None,
+        key_wrapping_data=None,
+    ):
         super(KeyBlock, self).__init__(Tags.KEY_BLOCK)
         self.key_format_type = key_format_type
         self.key_compression_type = key_compression_type
@@ -2187,10 +1992,7 @@ class KeyBlock(Struct):
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_ALGORITHM, tstream):
             self.cryptographic_algorithm = attributes.CryptographicAlgorithm()
-            self.cryptographic_algorithm.read(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.cryptographic_algorithm.read(tstream, kmip_version=kmip_version)
 
         if self.is_tag_next(Tags.CRYPTOGRAPHIC_LENGTH, tstream):
             self.cryptographic_length = attributes.CryptographicLength()
@@ -2209,28 +2011,16 @@ class KeyBlock(Struct):
         self.key_format_type.write(tstream, kmip_version=kmip_version)
 
         if self.key_compression_type is not None:
-            self.key_compression_type.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.key_compression_type.write(tstream, kmip_version=kmip_version)
 
         self.key_value.write(tstream, kmip_version=kmip_version)
 
         if self.cryptographic_algorithm is not None:
-            self.cryptographic_algorithm.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.cryptographic_algorithm.write(tstream, kmip_version=kmip_version)
         if self.cryptographic_length is not None:
-            self.cryptographic_length.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.cryptographic_length.write(tstream, kmip_version=kmip_version)
         if self.key_wrapping_data is not None:
-            self.key_wrapping_data.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.key_wrapping_data.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the credential
         self.length = tstream.length()
@@ -2243,28 +2033,23 @@ class KeyBlock(Struct):
     def __validate(self):
         if self.key_format_type is not None:
             if type(self.key_format_type) is not KeyFormatType:
-                member = 'KeyBlock.key_format_type'
+                member = "KeyBlock.key_format_type"
                 exp_type = KeyFormatType
                 rcv_type = type(self.key_format_type)
                 msg = exceptions.ErrorStrings.BAD_EXP_RECV.format(
-                    member,
-                    'type',
-                    exp_type,
-                    rcv_type
+                    member, "type", exp_type, rcv_type
                 )
                 raise TypeError(msg)
 
 
 # 2.1.4
 class KeyMaterial(ByteString):
-
     def __init__(self, value=None):
         super(KeyMaterial, self).__init__(value, Tags.KEY_MATERIAL)
 
 
 # TODO (peter-hamilton) Get rid of this and replace with a KeyMaterial factory.
 class KeyMaterialStruct(Struct):
-
     def __init__(self):
         super(KeyMaterialStruct, self).__init__(Tags.KEY_MATERIAL)
 
@@ -2286,10 +2071,7 @@ class KeyMaterialStruct(Struct):
         tstream.write(self.data.buffer)
 
         self.length = tstream.length()
-        super(KeyMaterialStruct, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(KeyMaterialStruct, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -2301,10 +2083,7 @@ class KeyMaterialStruct(Struct):
 
 
 class KeyValue(Struct):
-
-    def __init__(self,
-                 key_material=None,
-                 attributes=None):
+    def __init__(self, key_material=None, attributes=None):
         super(KeyValue, self).__init__(Tags.KEY_VALUE)
 
         if key_material is None:
@@ -2358,8 +2137,7 @@ class KeyValue(Struct):
         # TODO (peter-hamilton) Replace with check against KeyMaterial factory.
         if not isinstance(self.key_material, KeyMaterial):
             msg = "invalid key material"
-            msg += "; expected {0}, received {1}".format(
-                KeyMaterial, self.key_material)
+            msg += "; expected {0}, received {1}".format(KeyMaterial, self.key_material)
             raise TypeError(msg)
 
         if isinstance(self.attributes, list):
@@ -2367,13 +2145,11 @@ class KeyValue(Struct):
                 attribute = self.attributes[i]
                 if not isinstance(attribute, Attribute):
                     msg = "invalid attribute ({0} in list)".format(i)
-                    msg += "; expected {0}, received {1}".format(
-                        Attribute, attribute)
+                    msg += "; expected {0}, received {1}".format(Attribute, attribute)
                     raise TypeError(msg)
         else:
             msg = "invalid attributes list"
-            msg += "; expected {0}, received {1}".format(
-                list, self.attributes)
+            msg += "; expected {0}, received {1}".format(list, self.attributes)
             raise TypeError(msg)
 
 
@@ -2382,9 +2158,7 @@ class EncryptionKeyInformation(Struct):
     A set of values detailing how an encrypted value was encrypted.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 cryptographic_parameters=None):
+    def __init__(self, unique_identifier=None, cryptographic_parameters=None):
         """
         Construct an EncryptionKeyInformation struct.
 
@@ -2421,8 +2195,7 @@ class EncryptionKeyInformation(Struct):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -2441,8 +2214,7 @@ class EncryptionKeyInformation(Struct):
             self._cryptographic_parameters = value
         else:
             raise TypeError(
-                "Cryptographic parameters must be a CryptographicParameters "
-                "struct."
+                "Cryptographic parameters must be a CryptographicParameters " "struct."
             )
 
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -2459,8 +2231,7 @@ class EncryptionKeyInformation(Struct):
                 defaults to KMIP 1.0.
         """
         super(EncryptionKeyInformation, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
@@ -2468,24 +2239,13 @@ class EncryptionKeyInformation(Struct):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Invalid struct missing the unique identifier attribute."
-            )
+            raise ValueError("Invalid struct missing the unique identifier attribute.")
 
-        if self.is_tag_next(
-                enums.Tags.CRYPTOGRAPHIC_PARAMETERS,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_PARAMETERS, local_stream):
             self._cryptographic_parameters = CryptographicParameters()
-            self._cryptographic_parameters.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_parameters.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -2505,25 +2265,18 @@ class EncryptionKeyInformation(Struct):
         local_stream = BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Invalid struct missing the unique identifier attribute."
-            )
+            raise ValueError("Invalid struct missing the unique identifier attribute.")
 
         if self._cryptographic_parameters:
             self._cryptographic_parameters.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         self.length = local_stream.length()
         super(EncryptionKeyInformation, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -2531,8 +2284,7 @@ class EncryptionKeyInformation(Struct):
         if isinstance(other, EncryptionKeyInformation):
             if self.unique_identifier != other.unique_identifier:
                 return False
-            elif self.cryptographic_parameters != \
-                    other.cryptographic_parameters:
+            elif self.cryptographic_parameters != other.cryptographic_parameters:
                 return False
             else:
                 return True
@@ -2544,19 +2296,23 @@ class EncryptionKeyInformation(Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "cryptographic_parameters={0}".format(
-                repr(self.cryptographic_parameters)
-            )
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "cryptographic_parameters={0}".format(
+                    repr(self.cryptographic_parameters)
+                ),
+            ]
+        )
         return "EncryptionKeyInformation({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'cryptographic_parameters': self.cryptographic_parameters
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "cryptographic_parameters": self.cryptographic_parameters,
+            }
+        )
 
 
 class MACSignatureKeyInformation(primitives.Struct):
@@ -2564,9 +2320,7 @@ class MACSignatureKeyInformation(primitives.Struct):
     A set of values detailing how an MAC/signed value was MAC/signed.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 cryptographic_parameters=None):
+    def __init__(self, unique_identifier=None, cryptographic_parameters=None):
         """
         Construct a MACSignatureKeyInformation struct.
 
@@ -2603,8 +2357,7 @@ class MACSignatureKeyInformation(primitives.Struct):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -2623,8 +2376,7 @@ class MACSignatureKeyInformation(primitives.Struct):
             self._cryptographic_parameters = value
         else:
             raise TypeError(
-                "Cryptographic parameters must be a CryptographicParameters "
-                "struct."
+                "Cryptographic parameters must be a CryptographicParameters " "struct."
             )
 
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -2641,8 +2393,7 @@ class MACSignatureKeyInformation(primitives.Struct):
                 defaults to KMIP 1.0.
         """
         super(MACSignatureKeyInformation, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
@@ -2650,24 +2401,13 @@ class MACSignatureKeyInformation(primitives.Struct):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Invalid struct missing the unique identifier attribute."
-            )
+            raise ValueError("Invalid struct missing the unique identifier attribute.")
 
-        if self.is_tag_next(
-                enums.Tags.CRYPTOGRAPHIC_PARAMETERS,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_PARAMETERS, local_stream):
             self._cryptographic_parameters = CryptographicParameters()
-            self._cryptographic_parameters.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_parameters.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -2687,25 +2427,18 @@ class MACSignatureKeyInformation(primitives.Struct):
         local_stream = BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Invalid struct missing the unique identifier attribute."
-            )
+            raise ValueError("Invalid struct missing the unique identifier attribute.")
 
         if self._cryptographic_parameters:
             self._cryptographic_parameters.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         self.length = local_stream.length()
         super(MACSignatureKeyInformation, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -2713,8 +2446,7 @@ class MACSignatureKeyInformation(primitives.Struct):
         if isinstance(other, MACSignatureKeyInformation):
             if self.unique_identifier != other.unique_identifier:
                 return False
-            elif self.cryptographic_parameters != \
-                    other.cryptographic_parameters:
+            elif self.cryptographic_parameters != other.cryptographic_parameters:
                 return False
             else:
                 return True
@@ -2726,19 +2458,23 @@ class MACSignatureKeyInformation(primitives.Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "cryptographic_parameters={0}".format(
-                repr(self.cryptographic_parameters)
-            )
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "cryptographic_parameters={0}".format(
+                    repr(self.cryptographic_parameters)
+                ),
+            ]
+        )
         return "MACSignatureKeyInformation({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'cryptographic_parameters': self.cryptographic_parameters
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "cryptographic_parameters": self.cryptographic_parameters,
+            }
+        )
 
 
 class KeyWrappingData(Struct):
@@ -2746,13 +2482,15 @@ class KeyWrappingData(Struct):
     A set of key block values needed for key wrapping functionality
     """
 
-    def __init__(self,
-                 wrapping_method=None,
-                 encryption_key_information=None,
-                 mac_signature_key_information=None,
-                 mac_signature=None,
-                 iv_counter_nonce=None,
-                 encoding_option=None):
+    def __init__(
+        self,
+        wrapping_method=None,
+        encryption_key_information=None,
+        mac_signature_key_information=None,
+        mac_signature=None,
+        iv_counter_nonce=None,
+        encoding_option=None,
+    ):
         """
         Construct a KeyWrappingData struct.
 
@@ -2806,14 +2544,10 @@ class KeyWrappingData(Struct):
             self._wrapping_method = None
         elif isinstance(value, enums.WrappingMethod):
             self._wrapping_method = Enumeration(
-                enums.WrappingMethod,
-                value=value,
-                tag=Tags.WRAPPING_METHOD
+                enums.WrappingMethod, value=value, tag=Tags.WRAPPING_METHOD
             )
         else:
-            raise TypeError(
-                "Wrapping method must be a WrappingMethod enumeration."
-            )
+            raise TypeError("Wrapping method must be a WrappingMethod enumeration.")
 
     @property
     def encryption_key_information(self):
@@ -2824,8 +2558,7 @@ class KeyWrappingData(Struct):
         if not value:
             self._encryption_key_information = None
         elif isinstance(value, dict):
-            self._encryption_key_information = \
-                EncryptionKeyInformation(**value)
+            self._encryption_key_information = EncryptionKeyInformation(**value)
         elif isinstance(value, EncryptionKeyInformation):
             self._encryption_key_information = value
         else:
@@ -2843,8 +2576,7 @@ class KeyWrappingData(Struct):
         if not value:
             self._mac_signature_key_information = None
         elif isinstance(value, dict):
-            self._mac_signature_key_information = \
-                MACSignatureKeyInformation(**value)
+            self._mac_signature_key_information = MACSignatureKeyInformation(**value)
         elif isinstance(value, MACSignatureKeyInformation):
             self._mac_signature_key_information = value
         else:
@@ -2866,8 +2598,7 @@ class KeyWrappingData(Struct):
             self._mac_signature = None
         elif isinstance(value, six.binary_type):
             self._mac_signature = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.MAC_SIGNATURE
+                value=value, tag=enums.Tags.MAC_SIGNATURE
             )
         else:
             raise TypeError("MAC/signature must be bytes.")
@@ -2885,8 +2616,7 @@ class KeyWrappingData(Struct):
             self._iv_counter_nonce = None
         elif isinstance(value, six.binary_type):
             self._iv_counter_nonce = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.IV_COUNTER_NONCE
+                value=value, tag=enums.Tags.IV_COUNTER_NONCE
             )
         else:
             raise TypeError("IV/counter/nonce must be bytes.")
@@ -2904,14 +2634,10 @@ class KeyWrappingData(Struct):
             self._encoding_option = None
         elif isinstance(value, enums.EncodingOption):
             self._encoding_option = Enumeration(
-                enums.EncodingOption,
-                value=value,
-                tag=Tags.ENCODING_OPTION
+                enums.EncodingOption, value=value, tag=Tags.ENCODING_OPTION
             )
         else:
-            raise TypeError(
-                "Encoding option must be an EncodingOption enumeration."
-            )
+            raise TypeError("Encoding option must be an EncodingOption enumeration.")
 
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -2926,72 +2652,43 @@ class KeyWrappingData(Struct):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(KeyWrappingData, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(KeyWrappingData, self).read(input_stream, kmip_version=kmip_version)
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.WRAPPING_METHOD, local_stream):
             self._wrapping_method = primitives.Enumeration(
-                enum=enums.WrappingMethod,
-                tag=enums.Tags.WRAPPING_METHOD
+                enum=enums.WrappingMethod, tag=enums.Tags.WRAPPING_METHOD
             )
-            self._wrapping_method.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._wrapping_method.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Invalid struct missing the wrapping method attribute."
-            )
+            raise ValueError("Invalid struct missing the wrapping method attribute.")
 
-        if self.is_tag_next(
-                enums.Tags.ENCRYPTION_KEY_INFORMATION,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.ENCRYPTION_KEY_INFORMATION, local_stream):
             self._encryption_key_information = EncryptionKeyInformation()
             self._encryption_key_information.read(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
-        if self.is_tag_next(
-                enums.Tags.MAC_SIGNATURE_KEY_INFORMATION,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.MAC_SIGNATURE_KEY_INFORMATION, local_stream):
             self._mac_signature_key_information = MACSignatureKeyInformation()
             self._mac_signature_key_information.read(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         if self.is_tag_next(enums.Tags.MAC_SIGNATURE, local_stream):
-            self._mac_signature = primitives.ByteString(
-                tag=enums.Tags.MAC_SIGNATURE
-            )
-            self._mac_signature.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._mac_signature = primitives.ByteString(tag=enums.Tags.MAC_SIGNATURE)
+            self._mac_signature.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.IV_COUNTER_NONCE, local_stream):
             self._iv_counter_nonce = primitives.ByteString(
                 tag=enums.Tags.IV_COUNTER_NONCE
             )
-            self._iv_counter_nonce.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._iv_counter_nonce.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.ENCODING_OPTION, local_stream):
             self._encoding_option = primitives.Enumeration(
-                enum=enums.EncodingOption,
-                tag=enums.Tags.ENCODING_OPTION
+                enum=enums.EncodingOption, tag=enums.Tags.ENCODING_OPTION
             )
-            self._encoding_option.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._encoding_option.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -3010,57 +2707,39 @@ class KeyWrappingData(Struct):
         local_stream = BytearrayStream()
 
         if self._wrapping_method:
-            self._wrapping_method.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._wrapping_method.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Invalid struct missing the wrapping method attribute."
-            )
+            raise ValueError("Invalid struct missing the wrapping method attribute.")
 
         if self._encryption_key_information:
             self._encryption_key_information.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self._mac_signature_key_information:
             self._mac_signature_key_information.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self._mac_signature:
-            self._mac_signature.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._mac_signature.write(local_stream, kmip_version=kmip_version)
         if self._iv_counter_nonce:
-            self._iv_counter_nonce.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._iv_counter_nonce.write(local_stream, kmip_version=kmip_version)
         if self._encoding_option:
-            self._encoding_option.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._encoding_option.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
-        super(KeyWrappingData, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(KeyWrappingData, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
         if isinstance(other, KeyWrappingData):
             if self.wrapping_method != other.wrapping_method:
                 return False
-            elif self.encryption_key_information != \
-                    other.encryption_key_information:
+            elif self.encryption_key_information != other.encryption_key_information:
                 return False
-            elif self.mac_signature_key_information != \
-                    other.mac_signature_key_information:
+            elif (
+                self.mac_signature_key_information
+                != other.mac_signature_key_information
+            ):
                 return False
             elif self.mac_signature != other.mac_signature:
                 return False
@@ -3078,30 +2757,33 @@ class KeyWrappingData(Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "wrapping_method={0}".format(self.wrapping_method),
-            "encryption_key_information={0}".format(
-                repr(self.encryption_key_information)
-            ),
-            "mac_signature_key_information={0}".format(
-                repr(self.mac_signature_key_information)
-            ),
-            "mac_signature={0}".format(self.mac_signature),
-            "iv_counter_nonce={0}".format(self.iv_counter_nonce),
-            "encoding_option={0}".format(self.encoding_option)
-        ])
+        args = ", ".join(
+            [
+                "wrapping_method={0}".format(self.wrapping_method),
+                "encryption_key_information={0}".format(
+                    repr(self.encryption_key_information)
+                ),
+                "mac_signature_key_information={0}".format(
+                    repr(self.mac_signature_key_information)
+                ),
+                "mac_signature={0}".format(self.mac_signature),
+                "iv_counter_nonce={0}".format(self.iv_counter_nonce),
+                "encoding_option={0}".format(self.encoding_option),
+            ]
+        )
         return "KeyWrappingData({0})".format(args)
 
     def __str__(self):
-        return str({
-            'wrapping_method': self.wrapping_method,
-            'encryption_key_information': self.encryption_key_information,
-            'mac_signature_key_information':
-                self.mac_signature_key_information,
-            'mac_signature': self.mac_signature,
-            'iv_counter_nonce': self.iv_counter_nonce,
-            'encoding_option': self.encoding_option
-        })
+        return str(
+            {
+                "wrapping_method": self.wrapping_method,
+                "encryption_key_information": self.encryption_key_information,
+                "mac_signature_key_information": self.mac_signature_key_information,
+                "mac_signature": self.mac_signature,
+                "iv_counter_nonce": self.iv_counter_nonce,
+                "encoding_option": self.encoding_option,
+            }
+        )
 
 
 class KeyWrappingSpecification(primitives.Struct):
@@ -3109,12 +2791,14 @@ class KeyWrappingSpecification(primitives.Struct):
     A set of values needed for key wrapping functionality.
     """
 
-    def __init__(self,
-                 wrapping_method=None,
-                 encryption_key_information=None,
-                 mac_signature_key_information=None,
-                 attribute_names=None,
-                 encoding_option=None):
+    def __init__(
+        self,
+        wrapping_method=None,
+        encryption_key_information=None,
+        mac_signature_key_information=None,
+        attribute_names=None,
+        encoding_option=None,
+    ):
         """
         Construct a KeyWrappingSpecification struct.
 
@@ -3166,14 +2850,10 @@ class KeyWrappingSpecification(primitives.Struct):
             self._wrapping_method = None
         elif isinstance(value, enums.WrappingMethod):
             self._wrapping_method = Enumeration(
-                enums.WrappingMethod,
-                value=value,
-                tag=Tags.WRAPPING_METHOD
+                enums.WrappingMethod, value=value, tag=Tags.WRAPPING_METHOD
             )
         else:
-            raise TypeError(
-                "Wrapping method must be a WrappingMethod enumeration."
-            )
+            raise TypeError("Wrapping method must be a WrappingMethod enumeration.")
 
     @property
     def encryption_key_information(self):
@@ -3226,15 +2906,10 @@ class KeyWrappingSpecification(primitives.Struct):
             for i in value:
                 if isinstance(i, six.string_types):
                     attribute_names.append(
-                        primitives.TextString(
-                            value=i,
-                            tag=enums.Tags.ATTRIBUTE_NAME
-                        )
+                        primitives.TextString(value=i, tag=enums.Tags.ATTRIBUTE_NAME)
                     )
                 else:
-                    raise TypeError(
-                        "Attribute names must be a list of strings."
-                    )
+                    raise TypeError("Attribute names must be a list of strings.")
             self._attribute_names = attribute_names
         else:
             raise TypeError("Attribute names must be a list of strings.")
@@ -3252,14 +2927,10 @@ class KeyWrappingSpecification(primitives.Struct):
             self._encoding_option = None
         elif isinstance(value, enums.EncodingOption):
             self._encoding_option = Enumeration(
-                enums.EncodingOption,
-                value=value,
-                tag=Tags.ENCODING_OPTION
+                enums.EncodingOption, value=value, tag=Tags.ENCODING_OPTION
             )
         else:
-            raise TypeError(
-                "Encoding option must be an EncodingOption enumeration."
-            )
+            raise TypeError("Encoding option must be an EncodingOption enumeration.")
 
     def read(self, input_stream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -3275,62 +2946,41 @@ class KeyWrappingSpecification(primitives.Struct):
                 defaults to KMIP 1.0.
         """
         super(KeyWrappingSpecification, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.WRAPPING_METHOD, local_stream):
             self._wrapping_method = primitives.Enumeration(
-                enum=enums.WrappingMethod,
-                tag=enums.Tags.WRAPPING_METHOD
+                enum=enums.WrappingMethod, tag=enums.Tags.WRAPPING_METHOD
             )
-            self._wrapping_method.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._wrapping_method.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Invalid struct missing the wrapping method attribute."
-            )
+            raise ValueError("Invalid struct missing the wrapping method attribute.")
 
-        if self.is_tag_next(
-                enums.Tags.ENCRYPTION_KEY_INFORMATION,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.ENCRYPTION_KEY_INFORMATION, local_stream):
             self._encryption_key_information = EncryptionKeyInformation()
             self._encryption_key_information.read(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
-        if self.is_tag_next(
-                enums.Tags.MAC_SIGNATURE_KEY_INFORMATION,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.MAC_SIGNATURE_KEY_INFORMATION, local_stream):
             self._mac_signature_key_information = MACSignatureKeyInformation()
             self._mac_signature_key_information.read(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         attribute_names = []
         while self.is_tag_next(enums.Tags.ATTRIBUTE_NAME, local_stream):
-            attribute_name = primitives.TextString(
-                tag=enums.Tags.ATTRIBUTE_NAME
-            )
+            attribute_name = primitives.TextString(tag=enums.Tags.ATTRIBUTE_NAME)
             attribute_name.read(local_stream, kmip_version=kmip_version)
             attribute_names.append(attribute_name)
         self._attribute_names = attribute_names
 
         if self.is_tag_next(enums.Tags.ENCODING_OPTION, local_stream):
             self._encoding_option = primitives.Enumeration(
-                enum=enums.EncodingOption,
-                tag=enums.Tags.ENCODING_OPTION
+                enum=enums.EncodingOption, tag=enums.Tags.ENCODING_OPTION
             )
-            self._encoding_option.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._encoding_option.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -3350,41 +3000,27 @@ class KeyWrappingSpecification(primitives.Struct):
         local_stream = BytearrayStream()
 
         if self._wrapping_method:
-            self._wrapping_method.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._wrapping_method.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Invalid struct missing the wrapping method attribute."
-            )
+            raise ValueError("Invalid struct missing the wrapping method attribute.")
 
         if self._encryption_key_information:
             self._encryption_key_information.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self._mac_signature_key_information:
             self._mac_signature_key_information.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self._attribute_names:
             for unique_identifier in self._attribute_names:
-                unique_identifier.write(
-                    local_stream,
-                    kmip_version=kmip_version
-                )
+                unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._encoding_option:
-            self._encoding_option.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._encoding_option.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(KeyWrappingSpecification, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -3392,11 +3028,12 @@ class KeyWrappingSpecification(primitives.Struct):
         if isinstance(other, KeyWrappingSpecification):
             if self.wrapping_method != other.wrapping_method:
                 return False
-            elif self.encryption_key_information != \
-                    other.encryption_key_information:
+            elif self.encryption_key_information != other.encryption_key_information:
                 return False
-            elif self.mac_signature_key_information != \
-                    other.mac_signature_key_information:
+            elif (
+                self.mac_signature_key_information
+                != other.mac_signature_key_information
+            ):
                 return False
             elif self.attribute_names != other.attribute_names:
                 return False
@@ -3412,36 +3049,35 @@ class KeyWrappingSpecification(primitives.Struct):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "wrapping_method={0}".format(self.wrapping_method),
-            "encryption_key_information={0}".format(
-                repr(self.encryption_key_information)
-            ),
-            "mac_signature_key_information={0}".format(
-                repr(self.mac_signature_key_information)
-            ),
-            "attribute_names={0}".format(self.attribute_names),
-            "encoding_option={0}".format(self.encoding_option)
-        ])
+        args = ", ".join(
+            [
+                "wrapping_method={0}".format(self.wrapping_method),
+                "encryption_key_information={0}".format(
+                    repr(self.encryption_key_information)
+                ),
+                "mac_signature_key_information={0}".format(
+                    repr(self.mac_signature_key_information)
+                ),
+                "attribute_names={0}".format(self.attribute_names),
+                "encoding_option={0}".format(self.encoding_option),
+            ]
+        )
         return "KeyWrappingSpecification({0})".format(args)
 
     def __str__(self):
-        return str({
-            'wrapping_method': self.wrapping_method,
-            'encryption_key_information': self.encryption_key_information,
-            'mac_signature_key_information':
-                self.mac_signature_key_information,
-            'attribute_names': self.attribute_names,
-            'encoding_option': self.encoding_option
-        })
+        return str(
+            {
+                "wrapping_method": self.wrapping_method,
+                "encryption_key_information": self.encryption_key_information,
+                "mac_signature_key_information": self.mac_signature_key_information,
+                "attribute_names": self.attribute_names,
+                "encoding_option": self.encoding_option,
+            }
+        )
 
 
 class TemplateAttribute(Struct):
-
-    def __init__(self,
-                 names=None,
-                 attributes=None,
-                 tag=Tags.TEMPLATE_ATTRIBUTE):
+    def __init__(self, names=None, attributes=None, tag=Tags.TEMPLATE_ATTRIBUTE):
         super(TemplateAttribute, self).__init__(tag)
 
         if names is None:
@@ -3457,10 +3093,7 @@ class TemplateAttribute(Struct):
         self.validate()
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(TemplateAttribute, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(TemplateAttribute, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.names = list()
@@ -3492,10 +3125,7 @@ class TemplateAttribute(Struct):
 
         # Write the length and value of the template attribute
         self.length = tstream.length()
-        super(TemplateAttribute, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(TemplateAttribute, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -3540,30 +3170,24 @@ class TemplateAttribute(Struct):
 
 
 class CommonTemplateAttribute(TemplateAttribute):
-
-    def __init__(self,
-                 names=None,
-                 attributes=None):
+    def __init__(self, names=None, attributes=None):
         super(CommonTemplateAttribute, self).__init__(
-            names, attributes, Tags.COMMON_TEMPLATE_ATTRIBUTE)
+            names, attributes, Tags.COMMON_TEMPLATE_ATTRIBUTE
+        )
 
 
 class PrivateKeyTemplateAttribute(TemplateAttribute):
-
-    def __init__(self,
-                 names=None,
-                 attributes=None):
+    def __init__(self, names=None, attributes=None):
         super(PrivateKeyTemplateAttribute, self).__init__(
-            names, attributes, Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE)
+            names, attributes, Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+        )
 
 
 class PublicKeyTemplateAttribute(TemplateAttribute):
-
-    def __init__(self,
-                 names=None,
-                 attributes=None):
+    def __init__(self, names=None, attributes=None):
         super(PublicKeyTemplateAttribute, self).__init__(
-            names, attributes, Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE)
+            names, attributes, Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+        )
 
 
 def convert_template_attribute_to_attributes(value):
@@ -3596,13 +3220,11 @@ def convert_attributes_to_template_attribute(value):
 
     attribute_structures = []
     for attribute_value in value.attributes:
-        attribute_name = enums.convert_attribute_tag_to_name(
-            attribute_value.tag
-        )
+        attribute_name = enums.convert_attribute_tag_to_name(attribute_value.tag)
         attribute_structures.append(
             Attribute(
                 attribute_name=Attribute.AttributeName(attribute_name),
-                attribute_value=attribute_value
+                attribute_value=attribute_value,
             )
         )
 
@@ -3614,10 +3236,7 @@ def convert_attributes_to_template_attribute(value):
     elif value.tag == enums.Tags.PUBLIC_KEY_ATTRIBUTES:
         template_tag = enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
 
-    return TemplateAttribute(
-        attributes=attribute_structures,
-        tag=template_tag
-    )
+    return TemplateAttribute(attributes=attribute_structures, tag=template_tag)
 
 
 # 2.1.9
@@ -3632,7 +3251,8 @@ class ExtensionName(TextString):
     Attributes:
         value: The string data representing the extension name.
     """
-    def __init__(self, value=''):
+
+    def __init__(self, value=""):
         """
         Construct an ExtensionName object.
 
@@ -3653,6 +3273,7 @@ class ExtensionTag(Integer):
     Attributes:
         value: The tag number identifying the extended object.
     """
+
     def __init__(self, value=0):
         """
         Construct an ExtensionTag object.
@@ -3675,6 +3296,7 @@ class ExtensionType(Integer):
     Attributes:
         value: The type enumeration for the extended object.
     """
+
     def __init__(self, value=None):
         """
         Construct an ExtensionType object.
@@ -3701,8 +3323,8 @@ class ExtensionInformation(Struct):
         extension_tag: The tag of the extended Object.
         extension_type: The type of the extended Object.
     """
-    def __init__(self, extension_name=None, extension_tag=None,
-                 extension_type=None):
+
+    def __init__(self, extension_name=None, extension_tag=None, extension_type=None):
         """
         Construct an ExtensionInformation object.
 
@@ -3735,10 +3357,7 @@ class ExtensionInformation(Struct):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(ExtensionInformation, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(ExtensionInformation, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.extension_name.read(tstream, kmip_version=kmip_version)
@@ -3774,10 +3393,7 @@ class ExtensionInformation(Struct):
             self.extension_type.write(tstream, kmip_version=kmip_version)
 
         self.length = tstream.length()
-        super(ExtensionInformation, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(ExtensionInformation, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -3790,21 +3406,24 @@ class ExtensionInformation(Struct):
         if not isinstance(self.extension_name, ExtensionName):
             msg = "invalid extension name"
             msg += "; expected {0}, received {1}".format(
-                ExtensionName, self.extension_name)
+                ExtensionName, self.extension_name
+            )
             raise TypeError(msg)
 
         if self.extension_tag is not None:
             if not isinstance(self.extension_tag, ExtensionTag):
                 msg = "invalid extension tag"
                 msg += "; expected {0}, received {1}".format(
-                    ExtensionTag, self.extension_tag)
+                    ExtensionTag, self.extension_tag
+                )
                 raise TypeError(msg)
 
         if self.extension_type is not None:
             if not isinstance(self.extension_type, ExtensionType):
                 msg = "invalid extension type"
                 msg += "; expected {0}, received {1}".format(
-                    ExtensionType, self.extension_type)
+                    ExtensionType, self.extension_type
+                )
                 raise TypeError(msg)
 
     def __eq__(self, other):
@@ -3836,8 +3455,7 @@ class ExtensionInformation(Struct):
         return repr(self)
 
     @classmethod
-    def create(cls, extension_name=None, extension_tag=None,
-               extension_type=None):
+    def create(cls, extension_name=None, extension_tag=None, extension_type=None):
         """
         Construct an ExtensionInformation object from provided extension
         values.
@@ -3870,30 +3488,28 @@ class ExtensionInformation(Struct):
         return ExtensionInformation(
             extension_name=extension_name,
             extension_tag=extension_tag,
-            extension_type=extension_type)
+            extension_type=extension_type,
+        )
 
 
 # 2.1.10
 class Data(ByteString):
-
     def __init__(self, value=None):
         super(Data, self).__init__(value, Tags.DATA)
 
 
 # 2.1.13
 class MACData(ByteString):
-
     def __init__(self, value=None):
         super(MACData, self).__init__(value, Tags.MAC_DATA)
 
 
 # 3.31, 9.1.3.2.19
 class RevocationReasonCode(Enumeration):
-
     def __init__(self, value=enums.RevocationReasonCode.UNSPECIFIED):
         super(RevocationReasonCode, self).__init__(
-            enums.RevocationReasonCode, value=value,
-            tag=Tags.REVOCATION_REASON_CODE)
+            enums.RevocationReasonCode, value=value, tag=Tags.REVOCATION_REASON_CODE
+        )
 
 
 # 3.31
@@ -3925,8 +3541,8 @@ class RevocationReason(Struct):
 
         if message is not None:
             self.revocation_message = TextString(
-                value=message,
-                tag=Tags.REVOCATION_MESSAGE)
+                value=message, tag=Tags.REVOCATION_MESSAGE
+            )
         else:
             self.revocation_message = None
 
@@ -4038,9 +3654,7 @@ class ObjectDefaults(primitives.Struct):
             self._object_type = None
         elif isinstance(value, enums.ObjectType):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                value=value,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, value=value, tag=enums.Tags.OBJECT_TYPE
             )
         else:
             raise TypeError("Object type must be an ObjectType enumeration.")
@@ -4084,22 +3698,17 @@ class ObjectDefaults(primitives.Struct):
                 )
             )
 
-        super(ObjectDefaults, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(ObjectDefaults, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, tag=enums.Tags.OBJECT_TYPE
             )
             self._object_type.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The ObjectDefaults encoding is missing the object type "
-                "enumeration."
+                "The ObjectDefaults encoding is missing the object type " "enumeration."
             )
 
         if self.is_tag_next(enums.Tags.ATTRIBUTES, local_buffer):
@@ -4107,8 +3716,7 @@ class ObjectDefaults(primitives.Struct):
             self._attributes.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The ObjectDefaults encoding is missing the attributes "
-                "structure."
+                "The ObjectDefaults encoding is missing the attributes " "structure."
             )
 
         self.is_oversized(local_buffer)
@@ -4143,8 +3751,7 @@ class ObjectDefaults(primitives.Struct):
             self._object_type.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
-                "The ObjectDefaults structure is missing the object type "
-                "field."
+                "The ObjectDefaults structure is missing the object type " "field."
             )
 
         if self._attributes:
@@ -4155,35 +3762,28 @@ class ObjectDefaults(primitives.Struct):
             )
 
         self.length = local_buffer.length()
-        super(ObjectDefaults, self).write(
-            output_buffer,
-            kmip_version=kmip_version
-        )
+        super(ObjectDefaults, self).write(output_buffer, kmip_version=kmip_version)
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         o = "object_type={}".format(
-            '{}'.format(
-                self.object_type
-            ) if self.object_type else None
+            "{}".format(self.object_type) if self.object_type else None
         )
         a = "attributes={}".format(
-            '{}'.format(repr(self.attributes)) if self.attributes else None
+            "{}".format(repr(self.attributes)) if self.attributes else None
         )
         values = ", ".join([o, a])
         return "ObjectDefaults({})".format(values)
 
     def __str__(self):
         o = '"object_type": {}'.format(
-            "{}".format(
-                self.object_type
-            ) if self.object_type else None
+            "{}".format(self.object_type) if self.object_type else None
         )
         a = '"attributes": {}'.format(
             "{}".format(str(self.attributes)) if self.attributes else None
         )
         values = ", ".join([o, a])
-        return '{' + values + '}'
+        return "{" + values + "}"
 
     def __eq__(self, other):
         if isinstance(other, ObjectDefaults):
@@ -4204,15 +3804,11 @@ class ObjectDefaults(primitives.Struct):
 
 
 class DefaultsInformation(primitives.Struct):
-    """
-    """
+    """ """
 
     def __init__(self, object_defaults=None):
-        """
-        """
-        super(DefaultsInformation, self).__init__(
-            tag=enums.Tags.DEFAULTS_INFORMATION
-        )
+        """ """
+        super(DefaultsInformation, self).__init__(tag=enums.Tags.DEFAULTS_INFORMATION)
 
         self._object_defaults = None
 
@@ -4264,15 +3860,10 @@ class DefaultsInformation(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the DefaultsInformation "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
-        super(DefaultsInformation, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(DefaultsInformation, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         object_defaults = []
@@ -4310,9 +3901,7 @@ class DefaultsInformation(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the DefaultsInformation "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
         local_buffer = BytearrayStream()
@@ -4327,27 +3916,22 @@ class DefaultsInformation(primitives.Struct):
             )
 
         self.length = local_buffer.length()
-        super(DefaultsInformation, self).write(
-            output_buffer,
-            kmip_version=kmip_version
-        )
+        super(DefaultsInformation, self).write(output_buffer, kmip_version=kmip_version)
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         d = "object_defaults={}".format(
-            '{}'.format(
-                repr(self.object_defaults)
-            ) if self.object_defaults else None
+            "{}".format(repr(self.object_defaults)) if self.object_defaults else None
         )
         return "DefaultsInformation({})".format(d)
 
     def __str__(self):
         d = '"object_defaults": {}'.format(
-            "[{}]".format(
-                ", ".join([str(x) for x in self.object_defaults])
-            ) if self.object_defaults else None
+            "[{}]".format(", ".join([str(x) for x in self.object_defaults]))
+            if self.object_defaults
+            else None
         )
-        return '{' + d + '}'
+        return "{" + d + "}"
 
     def __eq__(self, other):
         if isinstance(other, DefaultsInformation):
@@ -4390,15 +3974,17 @@ class RNGParameters(primitives.Struct):
             prediction resistance is leveraged by the RNG.
     """
 
-    def __init__(self,
-                 rng_algorithm=None,
-                 cryptographic_algorithm=None,
-                 cryptographic_length=None,
-                 hashing_algorithm=None,
-                 drbg_algorithm=None,
-                 recommended_curve=None,
-                 fips186_variation=None,
-                 prediction_resistance=None):
+    def __init__(
+        self,
+        rng_algorithm=None,
+        cryptographic_algorithm=None,
+        cryptographic_length=None,
+        hashing_algorithm=None,
+        drbg_algorithm=None,
+        recommended_curve=None,
+        fips186_variation=None,
+        prediction_resistance=None,
+    ):
         """
         Construct an RNGParameters structure.
 
@@ -4457,14 +4043,10 @@ class RNGParameters(primitives.Struct):
             self._rng_algorithm = None
         elif isinstance(value, enums.RNGAlgorithm):
             self._rng_algorithm = primitives.Enumeration(
-                enums.RNGAlgorithm,
-                value=value,
-                tag=enums.Tags.RNG_ALGORITHM
+                enums.RNGAlgorithm, value=value, tag=enums.Tags.RNG_ALGORITHM
             )
         else:
-            raise TypeError(
-                "The RNG algorithm must be an RNGAlgorithm enumeration."
-            )
+            raise TypeError("The RNG algorithm must be an RNGAlgorithm enumeration.")
 
     @property
     def cryptographic_algorithm(self):
@@ -4481,7 +4063,7 @@ class RNGParameters(primitives.Struct):
             self._cryptographic_algorithm = primitives.Enumeration(
                 enums.CryptographicAlgorithm,
                 value=value,
-                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
             )
         else:
             raise TypeError(
@@ -4502,8 +4084,7 @@ class RNGParameters(primitives.Struct):
             self._cryptographic_length = None
         elif isinstance(value, six.integer_types):
             self._cryptographic_length = primitives.Integer(
-                value=value,
-                tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                value=value, tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
             )
         else:
             raise TypeError("The cryptographic length must be an integer.")
@@ -4521,14 +4102,11 @@ class RNGParameters(primitives.Struct):
             self._hashing_algorithm = None
         elif isinstance(value, enums.HashingAlgorithm):
             self._hashing_algorithm = primitives.Enumeration(
-                enums.HashingAlgorithm,
-                value=value,
-                tag=enums.Tags.HASHING_ALGORITHM
+                enums.HashingAlgorithm, value=value, tag=enums.Tags.HASHING_ALGORITHM
             )
         else:
             raise TypeError(
-                "The hashing algorithm must be a HashingAlgorithm "
-                "enumeration."
+                "The hashing algorithm must be a HashingAlgorithm " "enumeration."
             )
 
     @property
@@ -4541,14 +4119,10 @@ class RNGParameters(primitives.Struct):
             self._drbg_algorithm = None
         elif isinstance(value, enums.DRBGAlgorithm):
             self._drbg_algorithm = primitives.Enumeration(
-                enums.DRBGAlgorithm,
-                value=value,
-                tag=enums.Tags.DRBG_ALGORITHM
+                enums.DRBGAlgorithm, value=value, tag=enums.Tags.DRBG_ALGORITHM
             )
         else:
-            raise TypeError(
-                "The DRBG algorithm must be a DRBGAlgorithm enumeration."
-            )
+            raise TypeError("The DRBG algorithm must be a DRBGAlgorithm enumeration.")
 
     @property
     def recommended_curve(self):
@@ -4563,14 +4137,11 @@ class RNGParameters(primitives.Struct):
             self._recommended_curve = None
         elif isinstance(value, enums.RecommendedCurve):
             self._recommended_curve = primitives.Enumeration(
-                enums.RecommendedCurve,
-                value=value,
-                tag=enums.Tags.RECOMMENDED_CURVE
+                enums.RecommendedCurve, value=value, tag=enums.Tags.RECOMMENDED_CURVE
             )
         else:
             raise TypeError(
-                "The recommended curve must be a RecommendedCurve "
-                "enumeration."
+                "The recommended curve must be a RecommendedCurve " "enumeration."
             )
 
     @property
@@ -4586,14 +4157,11 @@ class RNGParameters(primitives.Struct):
             self._fips186_variation = None
         elif isinstance(value, enums.FIPS186Variation):
             self._fips186_variation = primitives.Enumeration(
-                enums.FIPS186Variation,
-                value=value,
-                tag=enums.Tags.FIPS186_VARIATION
+                enums.FIPS186Variation, value=value, tag=enums.Tags.FIPS186_VARIATION
             )
         else:
             raise TypeError(
-                "The FIPS186 variation must be a FIPS186Variation "
-                "enumeration."
+                "The FIPS186 variation must be a FIPS186Variation " "enumeration."
             )
 
     @property
@@ -4609,8 +4177,7 @@ class RNGParameters(primitives.Struct):
             self._prediction_resistance = None
         elif isinstance(value, bool):
             self._prediction_resistance = primitives.Boolean(
-                value=value,
-                tag=enums.Tags.PREDICTION_RESISTANCE
+                value=value, tag=enums.Tags.PREDICTION_RESISTANCE
             )
         else:
             raise TypeError("The prediction resistance must be a boolean.")
@@ -4641,16 +4208,12 @@ class RNGParameters(primitives.Struct):
                 )
             )
 
-        super(RNGParameters, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(RNGParameters, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.RNG_ALGORITHM, local_buffer):
             rng_algorithm = primitives.Enumeration(
-                enums.RNGAlgorithm,
-                tag=enums.Tags.RNG_ALGORITHM
+                enums.RNGAlgorithm, tag=enums.Tags.RNG_ALGORITHM
             )
             rng_algorithm.read(local_buffer, kmip_version=kmip_version)
             self._rng_algorithm = rng_algorithm
@@ -4661,13 +4224,9 @@ class RNGParameters(primitives.Struct):
 
         if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_ALGORITHM, local_buffer):
             cryptographic_algorithm = primitives.Enumeration(
-                enums.CryptographicAlgorithm,
-                tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                enums.CryptographicAlgorithm, tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
             )
-            cryptographic_algorithm.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            cryptographic_algorithm.read(local_buffer, kmip_version=kmip_version)
             self._cryptographic_algorithm = cryptographic_algorithm
 
         if self.is_tag_next(enums.Tags.CRYPTOGRAPHIC_LENGTH, local_buffer):
@@ -4679,32 +4238,28 @@ class RNGParameters(primitives.Struct):
 
         if self.is_tag_next(enums.Tags.HASHING_ALGORITHM, local_buffer):
             hashing_algorithm = primitives.Enumeration(
-                enums.HashingAlgorithm,
-                tag=enums.Tags.HASHING_ALGORITHM
+                enums.HashingAlgorithm, tag=enums.Tags.HASHING_ALGORITHM
             )
             hashing_algorithm.read(local_buffer, kmip_version=kmip_version)
             self._hashing_algorithm = hashing_algorithm
 
         if self.is_tag_next(enums.Tags.DRBG_ALGORITHM, local_buffer):
             drbg_algorithm = primitives.Enumeration(
-                enums.DRBGAlgorithm,
-                tag=enums.Tags.DRBG_ALGORITHM
+                enums.DRBGAlgorithm, tag=enums.Tags.DRBG_ALGORITHM
             )
             drbg_algorithm.read(local_buffer, kmip_version=kmip_version)
             self._drbg_algorithm = drbg_algorithm
 
         if self.is_tag_next(enums.Tags.RECOMMENDED_CURVE, local_buffer):
             recommended_curve = primitives.Enumeration(
-                enums.RecommendedCurve,
-                tag=enums.Tags.RECOMMENDED_CURVE
+                enums.RecommendedCurve, tag=enums.Tags.RECOMMENDED_CURVE
             )
             recommended_curve.read(local_buffer, kmip_version=kmip_version)
             self._recommended_curve = recommended_curve
 
         if self.is_tag_next(enums.Tags.FIPS186_VARIATION, local_buffer):
             fips186_variation = primitives.Enumeration(
-                enums.FIPS186Variation,
-                tag=enums.Tags.FIPS186_VARIATION
+                enums.FIPS186Variation, tag=enums.Tags.FIPS186_VARIATION
             )
             fips186_variation.read(local_buffer, kmip_version=kmip_version)
             self._fips186_variation = fips186_variation
@@ -4713,10 +4268,7 @@ class RNGParameters(primitives.Struct):
             prediction_resistance = primitives.Boolean(
                 tag=enums.Tags.PREDICTION_RESISTANCE
             )
-            prediction_resistance.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            prediction_resistance.read(local_buffer, kmip_version=kmip_version)
             self._prediction_resistance = prediction_resistance
 
         self.is_oversized(local_buffer)
@@ -4750,57 +4302,32 @@ class RNGParameters(primitives.Struct):
             self._rng_algorithm.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
-                "The RNGParameters structure is missing the RNG algorithm "
-                "field."
+                "The RNGParameters structure is missing the RNG algorithm " "field."
             )
 
         if self._cryptographic_algorithm:
-            self._cryptographic_algorithm.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_algorithm.write(local_buffer, kmip_version=kmip_version)
 
         if self._cryptographic_length:
-            self._cryptographic_length.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._cryptographic_length.write(local_buffer, kmip_version=kmip_version)
 
         if self._hashing_algorithm:
-            self._hashing_algorithm.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._hashing_algorithm.write(local_buffer, kmip_version=kmip_version)
 
         if self._drbg_algorithm:
-            self._drbg_algorithm.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._drbg_algorithm.write(local_buffer, kmip_version=kmip_version)
 
         if self._recommended_curve:
-            self._recommended_curve.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._recommended_curve.write(local_buffer, kmip_version=kmip_version)
 
         if self._fips186_variation:
-            self._fips186_variation.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._fips186_variation.write(local_buffer, kmip_version=kmip_version)
 
         if self._prediction_resistance:
-            self._prediction_resistance.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._prediction_resistance.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
-        super(RNGParameters, self).write(
-            output_buffer,
-            kmip_version=kmip_version
-        )
+        super(RNGParameters, self).write(output_buffer, kmip_version=kmip_version)
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
@@ -4819,9 +4346,7 @@ class RNGParameters(primitives.Struct):
 
     def __str__(self):
         a = '"rng_algorithm": {}'.format(self.rng_algorithm)
-        c = '"cryptographic_algorithm": {}'.format(
-            self.cryptographic_algorithm
-        )
+        c = '"cryptographic_algorithm": {}'.format(self.cryptographic_algorithm)
         e = '"cryptographic_length": {}'.format(self.cryptographic_length)
         h = '"hashing_algorithm": {}'.format(self.hashing_algorithm)
         d = '"drbg_algorithm": {}'.format(self.drbg_algorithm)
@@ -4831,7 +4356,7 @@ class RNGParameters(primitives.Struct):
 
         v = ", ".join([a, c, e, h, d, r, f, p])
 
-        return '{' + v + '}'
+        return "{" + v + "}"
 
     def __eq__(self, other):
         if isinstance(other, RNGParameters):
@@ -4893,9 +4418,7 @@ class ProfileInformation(primitives.Struct):
                 when accessing the server supporting the profile. Optional,
                 defaults to None.
         """
-        super(ProfileInformation, self).__init__(
-            tag=enums.Tags.PROFILE_INFORMATION
-        )
+        super(ProfileInformation, self).__init__(tag=enums.Tags.PROFILE_INFORMATION)
 
         self._profile_name = None
         self._server_uri = None
@@ -4917,14 +4440,10 @@ class ProfileInformation(primitives.Struct):
             self._profile_name = None
         elif isinstance(value, enums.ProfileName):
             self._profile_name = primitives.Enumeration(
-                enums.ProfileName,
-                value=value,
-                tag=enums.Tags.PROFILE_NAME
+                enums.ProfileName, value=value, tag=enums.Tags.PROFILE_NAME
             )
         else:
-            raise TypeError(
-                "The profile name must be a ProfileName enumeration."
-            )
+            raise TypeError("The profile name must be a ProfileName enumeration.")
 
     @property
     def server_uri(self):
@@ -4938,8 +4457,7 @@ class ProfileInformation(primitives.Struct):
             self._server_uri = None
         elif isinstance(value, six.string_types):
             self._server_uri = primitives.TextString(
-                value=value,
-                tag=enums.Tags.SERVER_URI
+                value=value, tag=enums.Tags.SERVER_URI
             )
         else:
             raise TypeError("The server URI must be a string.")
@@ -4956,8 +4474,7 @@ class ProfileInformation(primitives.Struct):
             self._server_port = None
         elif isinstance(value, six.integer_types):
             self._server_port = primitives.Integer(
-                value=value,
-                tag=enums.Tags.SERVER_PORT
+                value=value, tag=enums.Tags.SERVER_PORT
             )
         else:
             raise TypeError("The server port must be an integer.")
@@ -4984,21 +4501,15 @@ class ProfileInformation(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_1_3:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the ProfileInformation "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
-        super(ProfileInformation, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(ProfileInformation, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.PROFILE_NAME, local_buffer):
             profile_name = primitives.Enumeration(
-                enums.ProfileName,
-                tag=enums.Tags.PROFILE_NAME
+                enums.ProfileName, tag=enums.Tags.PROFILE_NAME
             )
             profile_name.read(local_buffer, kmip_version=kmip_version)
             self._profile_name = profile_name
@@ -5038,9 +4549,7 @@ class ProfileInformation(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_1_3:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the ProfileInformation "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
         local_buffer = BytearrayStream()
@@ -5049,8 +4558,7 @@ class ProfileInformation(primitives.Struct):
             self._profile_name.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
-                "The ProfileInformation structure is missing the profile "
-                "name field."
+                "The ProfileInformation structure is missing the profile " "name field."
             )
 
         if self._server_uri:
@@ -5060,10 +4568,7 @@ class ProfileInformation(primitives.Struct):
             self._server_port.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
-        super(ProfileInformation, self).write(
-            output_buffer,
-            kmip_version=kmip_version
-        )
+        super(ProfileInformation, self).write(output_buffer, kmip_version=kmip_version)
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
@@ -5082,7 +4587,7 @@ class ProfileInformation(primitives.Struct):
 
         v = ", ".join([n, u, p])
 
-        return '{' + v + '}'
+        return "{" + v + "}"
 
     def __eq__(self, other):
         if isinstance(other, ProfileInformation):
@@ -5139,18 +4644,20 @@ class ValidationInformation(primitives.Struct):
             use or associated with the validation event.
     """
 
-    def __init__(self,
-                 validation_authority_type=None,
-                 validation_authority_country=None,
-                 validation_authority_uri=None,
-                 validation_version_major=None,
-                 validation_version_minor=None,
-                 validation_type=None,
-                 validation_level=None,
-                 validation_certificate_identifier=None,
-                 validation_certificate_uri=None,
-                 validation_vendor_uri=None,
-                 validation_profiles=None):
+    def __init__(
+        self,
+        validation_authority_type=None,
+        validation_authority_country=None,
+        validation_authority_uri=None,
+        validation_version_major=None,
+        validation_version_minor=None,
+        validation_type=None,
+        validation_level=None,
+        validation_certificate_identifier=None,
+        validation_certificate_uri=None,
+        validation_vendor_uri=None,
+        validation_profiles=None,
+    ):
         """
         Construct a ValidationInformation structure.
 
@@ -5213,8 +4720,7 @@ class ValidationInformation(primitives.Struct):
         self.validation_version_minor = validation_version_minor
         self.validation_type = validation_type
         self.validation_level = validation_level
-        self.validation_certificate_identifier = \
-            validation_certificate_identifier
+        self.validation_certificate_identifier = validation_certificate_identifier
         self.validation_certificate_uri = validation_certificate_uri
         self.validation_vendor_uri = validation_vendor_uri
         self.validation_profiles = validation_profiles
@@ -5233,7 +4739,7 @@ class ValidationInformation(primitives.Struct):
             self._validation_authority_type = primitives.Enumeration(
                 enums.ValidationAuthorityType,
                 value=value,
-                tag=enums.Tags.VALIDATION_AUTHORITY_TYPE
+                tag=enums.Tags.VALIDATION_AUTHORITY_TYPE,
             )
         else:
             raise TypeError(
@@ -5253,13 +4759,10 @@ class ValidationInformation(primitives.Struct):
             self._validation_authority_country = None
         elif isinstance(value, six.string_types):
             self._validation_authority_country = primitives.TextString(
-                value=value,
-                tag=enums.Tags.VALIDATION_AUTHORITY_COUNTRY
+                value=value, tag=enums.Tags.VALIDATION_AUTHORITY_COUNTRY
             )
         else:
-            raise TypeError(
-                "The validation authority country must be a string."
-            )
+            raise TypeError("The validation authority country must be a string.")
 
     @property
     def validation_authority_uri(self):
@@ -5273,8 +4776,7 @@ class ValidationInformation(primitives.Struct):
             self._validation_authority_uri = None
         elif isinstance(value, six.string_types):
             self._validation_authority_uri = primitives.TextString(
-                value=value,
-                tag=enums.Tags.VALIDATION_AUTHORITY_URI
+                value=value, tag=enums.Tags.VALIDATION_AUTHORITY_URI
             )
         else:
             raise TypeError("The validation authority URI must be a string.")
@@ -5291,8 +4793,7 @@ class ValidationInformation(primitives.Struct):
             self._validation_version_major = None
         elif isinstance(value, six.integer_types):
             self._validation_version_major = primitives.Integer(
-                value=value,
-                tag=enums.Tags.VALIDATION_VERSION_MAJOR
+                value=value, tag=enums.Tags.VALIDATION_VERSION_MAJOR
             )
         else:
             raise TypeError("The validation version major must be an integer.")
@@ -5309,8 +4810,7 @@ class ValidationInformation(primitives.Struct):
             self._validation_version_minor = None
         elif isinstance(value, six.integer_types):
             self._validation_version_minor = primitives.Integer(
-                value=value,
-                tag=enums.Tags.VALIDATION_VERSION_MINOR
+                value=value, tag=enums.Tags.VALIDATION_VERSION_MINOR
             )
         else:
             raise TypeError("The validation version minor must be an integer.")
@@ -5327,14 +4827,10 @@ class ValidationInformation(primitives.Struct):
             self._validation_type = None
         elif isinstance(value, enums.ValidationType):
             self._validation_type = primitives.Enumeration(
-                enums.ValidationType,
-                value=value,
-                tag=enums.Tags.VALIDATION_TYPE
+                enums.ValidationType, value=value, tag=enums.Tags.VALIDATION_TYPE
             )
         else:
-            raise TypeError(
-                "The validation type must be a ValidationType enumeration."
-            )
+            raise TypeError("The validation type must be a ValidationType enumeration.")
 
     @property
     def validation_level(self):
@@ -5348,8 +4844,7 @@ class ValidationInformation(primitives.Struct):
             self._validation_level = None
         elif isinstance(value, six.integer_types):
             self._validation_level = primitives.Integer(
-                value=value,
-                tag=enums.Tags.VALIDATION_LEVEL
+                value=value, tag=enums.Tags.VALIDATION_LEVEL
             )
         else:
             raise TypeError("The validation level must be an integer.")
@@ -5366,13 +4861,10 @@ class ValidationInformation(primitives.Struct):
             self._validation_certificate_identifier = None
         elif isinstance(value, six.string_types):
             self._validation_certificate_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER
+                value=value, tag=enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER
             )
         else:
-            raise TypeError(
-                "The validation certificate identifier must be a string."
-            )
+            raise TypeError("The validation certificate identifier must be a string.")
 
     @property
     def validation_certificate_uri(self):
@@ -5386,8 +4878,7 @@ class ValidationInformation(primitives.Struct):
             self._validation_certificate_uri = None
         elif isinstance(value, six.string_types):
             self._validation_certificate_uri = primitives.TextString(
-                value=value,
-                tag=enums.Tags.VALIDATION_CERTIFICATE_URI
+                value=value, tag=enums.Tags.VALIDATION_CERTIFICATE_URI
             )
         else:
             raise TypeError("The validation certificate URI must be a string.")
@@ -5404,8 +4895,7 @@ class ValidationInformation(primitives.Struct):
             self._validation_vendor_uri = None
         elif isinstance(value, six.string_types):
             self._validation_vendor_uri = primitives.TextString(
-                value=value,
-                tag=enums.Tags.VALIDATION_VENDOR_URI
+                value=value, tag=enums.Tags.VALIDATION_VENDOR_URI
             )
         else:
             raise TypeError("The validation vendor URI must be a string.")
@@ -5426,8 +4916,7 @@ class ValidationInformation(primitives.Struct):
                 if isinstance(v, six.string_types):
                     validation_profiles.append(
                         primitives.TextString(
-                            value=v,
-                            tag=enums.Tags.VALIDATION_PROFILE
+                            value=v, tag=enums.Tags.VALIDATION_PROFILE
                         )
                     )
                 else:
@@ -5436,9 +4925,7 @@ class ValidationInformation(primitives.Struct):
                     )
             self._validation_profiles = validation_profiles
         else:
-            raise TypeError(
-                "The validation profiles must be a list of strings."
-            )
+            raise TypeError("The validation profiles must be a list of strings.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_3):
         """
@@ -5463,29 +4950,17 @@ class ValidationInformation(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_1_3:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the ValidationInformation "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
-        super(ValidationInformation, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(ValidationInformation, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
-        if self.is_tag_next(
-            enums.Tags.VALIDATION_AUTHORITY_TYPE,
-            local_buffer
-        ):
+        if self.is_tag_next(enums.Tags.VALIDATION_AUTHORITY_TYPE, local_buffer):
             validation_authority_type = primitives.Enumeration(
-                enums.ValidationAuthorityType,
-                tag=enums.Tags.VALIDATION_AUTHORITY_TYPE
+                enums.ValidationAuthorityType, tag=enums.Tags.VALIDATION_AUTHORITY_TYPE
             )
-            validation_authority_type.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            validation_authority_type.read(local_buffer, kmip_version=kmip_version)
             self._validation_authority_type = validation_authority_type
         else:
             raise exceptions.InvalidKmipEncoding(
@@ -5493,40 +4968,25 @@ class ValidationInformation(primitives.Struct):
                 "validation authority type."
             )
 
-        if self.is_tag_next(
-            enums.Tags.VALIDATION_AUTHORITY_COUNTRY,
-            local_buffer
-        ):
+        if self.is_tag_next(enums.Tags.VALIDATION_AUTHORITY_COUNTRY, local_buffer):
             validation_authority_country = primitives.TextString(
                 tag=enums.Tags.VALIDATION_AUTHORITY_COUNTRY
             )
-            validation_authority_country.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            validation_authority_country.read(local_buffer, kmip_version=kmip_version)
             self._validation_authority_country = validation_authority_country
 
         if self.is_tag_next(enums.Tags.VALIDATION_AUTHORITY_URI, local_buffer):
             validation_authority_uri = primitives.TextString(
                 tag=enums.Tags.VALIDATION_AUTHORITY_URI
-                )
-            validation_authority_uri.read(
-                local_buffer,
-                kmip_version=kmip_version
             )
+            validation_authority_uri.read(local_buffer, kmip_version=kmip_version)
             self._validation_authority_uri = validation_authority_uri
 
-        if self.is_tag_next(
-            enums.Tags.VALIDATION_VERSION_MAJOR,
-            local_buffer
-        ):
+        if self.is_tag_next(enums.Tags.VALIDATION_VERSION_MAJOR, local_buffer):
             validation_version_major = primitives.Integer(
                 tag=enums.Tags.VALIDATION_VERSION_MAJOR
             )
-            validation_version_major.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            validation_version_major.read(local_buffer, kmip_version=kmip_version)
             self._validation_version_major = validation_version_major
         else:
             raise exceptions.InvalidKmipEncoding(
@@ -5534,72 +4994,47 @@ class ValidationInformation(primitives.Struct):
                 "validation version major."
             )
 
-        if self.is_tag_next(
-            enums.Tags.VALIDATION_VERSION_MINOR,
-            local_buffer
-        ):
+        if self.is_tag_next(enums.Tags.VALIDATION_VERSION_MINOR, local_buffer):
             validation_version_minor = primitives.Integer(
                 tag=enums.Tags.VALIDATION_VERSION_MINOR
             )
-            validation_version_minor.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            validation_version_minor.read(local_buffer, kmip_version=kmip_version)
             self._validation_version_minor = validation_version_minor
 
         if self.is_tag_next(enums.Tags.VALIDATION_TYPE, local_buffer):
             validation_type = primitives.Enumeration(
-                enums.ValidationType,
-                tag=enums.Tags.VALIDATION_TYPE
+                enums.ValidationType, tag=enums.Tags.VALIDATION_TYPE
             )
-            validation_type.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            validation_type.read(local_buffer, kmip_version=kmip_version)
             self._validation_type = validation_type
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The ValidationInformation encoding is missing the "
-                "validation type."
+                "The ValidationInformation encoding is missing the " "validation type."
             )
 
         if self.is_tag_next(enums.Tags.VALIDATION_LEVEL, local_buffer):
-            validation_level = primitives.Integer(
-                tag=enums.Tags.VALIDATION_LEVEL
-            )
+            validation_level = primitives.Integer(tag=enums.Tags.VALIDATION_LEVEL)
             validation_level.read(local_buffer, kmip_version=kmip_version)
             self._validation_level = validation_level
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The ValidationInformation encoding is missing the "
-                "validation level."
+                "The ValidationInformation encoding is missing the " "validation level."
             )
 
-        if self.is_tag_next(
-            enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER,
-            local_buffer
-        ):
+        if self.is_tag_next(enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER, local_buffer):
             validation_certificate_identifier = primitives.TextString(
                 tag=enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER
             )
             validation_certificate_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
-            self._validation_certificate_identifier = \
-                validation_certificate_identifier
+            self._validation_certificate_identifier = validation_certificate_identifier
 
-        if self.is_tag_next(
-            enums.Tags.VALIDATION_CERTIFICATE_URI,
-            local_buffer
-        ):
+        if self.is_tag_next(enums.Tags.VALIDATION_CERTIFICATE_URI, local_buffer):
             validation_certificate_uri = primitives.TextString(
                 tag=enums.Tags.VALIDATION_CERTIFICATE_URI
             )
-            validation_certificate_uri.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            validation_certificate_uri.read(local_buffer, kmip_version=kmip_version)
             self._validation_certificate_uri = validation_certificate_uri
 
         if self.is_tag_next(enums.Tags.VALIDATION_VENDOR_URI, local_buffer):
@@ -5642,17 +5077,14 @@ class ValidationInformation(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_1_3:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the ValidationInformation "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
         local_buffer = BytearrayStream()
 
         if self._validation_authority_type:
             self._validation_authority_type.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
         else:
             raise exceptions.InvalidField(
@@ -5662,20 +5094,17 @@ class ValidationInformation(primitives.Struct):
 
         if self._validation_authority_country:
             self._validation_authority_country.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
 
         if self._validation_authority_uri:
             self._validation_authority_uri.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
 
         if self._validation_version_major:
             self._validation_version_major.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
         else:
             raise exceptions.InvalidField(
@@ -5685,15 +5114,11 @@ class ValidationInformation(primitives.Struct):
 
         if self._validation_version_minor:
             self._validation_version_minor.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
 
         if self._validation_type:
-            self._validation_type.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._validation_type.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The ValidationInformation structure is missing the "
@@ -5701,10 +5126,7 @@ class ValidationInformation(primitives.Struct):
             )
 
         if self._validation_level:
-            self._validation_level.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._validation_level.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The ValidationInformation structure is missing the "
@@ -5713,67 +5135,48 @@ class ValidationInformation(primitives.Struct):
 
         if self._validation_certificate_identifier:
             self._validation_certificate_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
 
         if self._validation_certificate_uri:
             self._validation_certificate_uri.write(
-                local_buffer,
-                kmip_version=kmip_version
+                local_buffer, kmip_version=kmip_version
             )
 
         if self._validation_vendor_uri:
-            self._validation_vendor_uri.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._validation_vendor_uri.write(local_buffer, kmip_version=kmip_version)
 
         if self._validation_profiles:
             for validation_profile in self._validation_profiles:
-                validation_profile.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                validation_profile.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(ValidationInformation, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
-        vat = "validation_authority_type={}".format(
-            self.validation_authority_type
-        )
+        vat = "validation_authority_type={}".format(self.validation_authority_type)
         vac = 'validation_authority_country="{}"'.format(
             self.validation_authority_country
         )
-        vau = 'validation_authority_uri="{}"'.format(
-            self.validation_authority_uri
-        )
-        vvj = "validation_version_major={}".format(
-            self.validation_version_major
-        )
-        vvn = "validation_version_minor={}".format(
-            self.validation_version_minor
-        )
+        vau = 'validation_authority_uri="{}"'.format(self.validation_authority_uri)
+        vvj = "validation_version_major={}".format(self.validation_version_major)
+        vvn = "validation_version_minor={}".format(self.validation_version_minor)
         vt = "validation_type={}".format(self.validation_type)
         vl = "validation_level={}".format(self.validation_level)
         vci = 'validation_certificate_identifier="{}"'.format(
             self.validation_certificate_identifier
         )
-        vcu = 'validation_certificate_uri="{}"'.format(
-            self.validation_certificate_uri
-        )
-        vvu = 'validation_vendor_uri="{}"'.format(
-            self.validation_vendor_uri
-        )
-        vp = 'validation_profiles={}'.format(
-            '[{}]'.format(
+        vcu = 'validation_certificate_uri="{}"'.format(self.validation_certificate_uri)
+        vvu = 'validation_vendor_uri="{}"'.format(self.validation_vendor_uri)
+        vp = "validation_profiles={}".format(
+            "[{}]".format(
                 ", ".join(['"{}"'.format(x) for x in self.validation_profiles])
-            ) if self.validation_profiles else None
+            )
+            if self.validation_profiles
+            else None
         )
 
         v = ", ".join([vat, vac, vau, vvj, vvn, vt, vl, vci, vcu, vvu, vp])
@@ -5781,21 +5184,13 @@ class ValidationInformation(primitives.Struct):
         return "ValidationInformation({})".format(v)
 
     def __str__(self):
-        vat = '"validation_authority_type": {}'.format(
-            self.validation_authority_type
-        )
+        vat = '"validation_authority_type": {}'.format(self.validation_authority_type)
         vac = '"validation_authority_country": "{}"'.format(
             self.validation_authority_country
         )
-        vau = '"validation_authority_uri": "{}"'.format(
-            self.validation_authority_uri
-        )
-        vvj = '"validation_version_major": {}'.format(
-            self.validation_version_major
-        )
-        vvn = '"validation_version_minor": {}'.format(
-            self.validation_version_minor
-        )
+        vau = '"validation_authority_uri": "{}"'.format(self.validation_authority_uri)
+        vvj = '"validation_version_major": {}'.format(self.validation_version_major)
+        vvn = '"validation_version_minor": {}'.format(self.validation_version_minor)
         vt = '"validation_type": {}'.format(self.validation_type)
         vl = '"validation_level": {}'.format(self.validation_level)
         vci = '"validation_certificate_identifier": "{}"'.format(
@@ -5804,47 +5199,43 @@ class ValidationInformation(primitives.Struct):
         vcu = '"validation_certificate_uri": "{}"'.format(
             self.validation_certificate_uri
         )
-        vvu = '"validation_vendor_uri": "{}"'.format(
-            self.validation_vendor_uri
-        )
+        vvu = '"validation_vendor_uri": "{}"'.format(self.validation_vendor_uri)
         vp = '"validation_profiles": {}'.format(
-            '[{}]'.format(
-                ', '.join(
-                    ['"{}"'.format(x) for x in self.validation_profiles]
-                )
-            ) if self.validation_profiles else None
+            "[{}]".format(
+                ", ".join(['"{}"'.format(x) for x in self.validation_profiles])
+            )
+            if self.validation_profiles
+            else None
         )
 
         v = ", ".join([vat, vac, vau, vvj, vvn, vt, vl, vci, vcu, vvu, vp])
 
-        return '{' + v + '}'
+        return "{" + v + "}"
 
     def __eq__(self, other):
         if isinstance(other, ValidationInformation):
-            if self.validation_authority_type != \
-                    other.validation_authority_type:
+            if self.validation_authority_type != other.validation_authority_type:
                 return False
-            elif self.validation_authority_country != \
-                    other.validation_authority_country:
+            elif (
+                self.validation_authority_country != other.validation_authority_country
+            ):
                 return False
-            elif self.validation_authority_uri != \
-                    other.validation_authority_uri:
+            elif self.validation_authority_uri != other.validation_authority_uri:
                 return False
-            elif self.validation_version_major != \
-                    other.validation_version_major:
+            elif self.validation_version_major != other.validation_version_major:
                 return False
-            elif self.validation_version_minor != \
-                    other.validation_version_minor:
+            elif self.validation_version_minor != other.validation_version_minor:
                 return False
             elif self.validation_type != other.validation_type:
                 return False
             elif self.validation_level != other.validation_level:
                 return False
-            elif self.validation_certificate_identifier != \
-                    other.validation_certificate_identifier:
+            elif (
+                self.validation_certificate_identifier
+                != other.validation_certificate_identifier
+            ):
                 return False
-            elif self.validation_certificate_uri != \
-                    other.validation_certificate_uri:
+            elif self.validation_certificate_uri != other.validation_certificate_uri:
                 return False
             elif self.validation_vendor_uri != other.validation_vendor_uri:
                 return False
@@ -5889,16 +5280,18 @@ class CapabilityInformation(primitives.Struct):
             by the server.
     """
 
-    def __init__(self,
-                 streaming_capability=None,
-                 asynchronous_capability=None,
-                 attestation_capability=None,
-                 batch_undo_capability=None,
-                 batch_continue_capability=None,
-                 unwrap_mode=None,
-                 destroy_action=None,
-                 shredding_algorithm=None,
-                 rng_mode=None):
+    def __init__(
+        self,
+        streaming_capability=None,
+        asynchronous_capability=None,
+        attestation_capability=None,
+        batch_undo_capability=None,
+        batch_continue_capability=None,
+        unwrap_mode=None,
+        destroy_action=None,
+        shredding_algorithm=None,
+        rng_mode=None,
+    ):
         """
         Construct a CapabilityInformation structure.
 
@@ -5966,8 +5359,7 @@ class CapabilityInformation(primitives.Struct):
             self._streaming_capability = None
         elif isinstance(value, bool):
             self._streaming_capability = primitives.Boolean(
-                value=value,
-                tag=enums.Tags.STREAMING_CAPABILITY
+                value=value, tag=enums.Tags.STREAMING_CAPABILITY
             )
         else:
             raise TypeError("The streaming capability must be a boolean.")
@@ -5984,13 +5376,10 @@ class CapabilityInformation(primitives.Struct):
             self._asynchronous_capability = None
         elif isinstance(value, bool):
             self._asynchronous_capability = primitives.Boolean(
-                value=value,
-                tag=enums.Tags.ASYNCHRONOUS_CAPABILITY
+                value=value, tag=enums.Tags.ASYNCHRONOUS_CAPABILITY
             )
         else:
-            raise TypeError(
-                "The asynchronous capability must be a boolean."
-            )
+            raise TypeError("The asynchronous capability must be a boolean.")
 
     @property
     def attestation_capability(self):
@@ -6004,8 +5393,7 @@ class CapabilityInformation(primitives.Struct):
             self._attestation_capability = None
         elif isinstance(value, bool):
             self._attestation_capability = primitives.Boolean(
-                value=value,
-                tag=enums.Tags.ATTESTATION_CAPABILITY
+                value=value, tag=enums.Tags.ATTESTATION_CAPABILITY
             )
         else:
             raise TypeError("The attestation capability must be a boolean.")
@@ -6022,8 +5410,7 @@ class CapabilityInformation(primitives.Struct):
             self._batch_undo_capability = None
         elif isinstance(value, bool):
             self._batch_undo_capability = primitives.Boolean(
-                value=value,
-                tag=enums.Tags.BATCH_UNDO_CAPABILITY
+                value=value, tag=enums.Tags.BATCH_UNDO_CAPABILITY
             )
         else:
             raise TypeError("The batch undo capability must be a boolean.")
@@ -6040,13 +5427,10 @@ class CapabilityInformation(primitives.Struct):
             self._batch_continue_capability = None
         elif isinstance(value, bool):
             self._batch_continue_capability = primitives.Boolean(
-                value=value,
-                tag=enums.Tags.BATCH_CONTINUE_CAPABILITY
+                value=value, tag=enums.Tags.BATCH_CONTINUE_CAPABILITY
             )
         else:
-            raise TypeError(
-                "The batch continue capability must be a boolean."
-            )
+            raise TypeError("The batch continue capability must be a boolean.")
 
     @property
     def unwrap_mode(self):
@@ -6060,14 +5444,10 @@ class CapabilityInformation(primitives.Struct):
             self._unwrap_mode = None
         elif isinstance(value, enums.UnwrapMode):
             self._unwrap_mode = primitives.Enumeration(
-                enums.UnwrapMode,
-                value=value,
-                tag=enums.Tags.UNWRAP_MODE
+                enums.UnwrapMode, value=value, tag=enums.Tags.UNWRAP_MODE
             )
         else:
-            raise TypeError(
-                "The unwrap mode must be an UnwrapMode enumeration."
-            )
+            raise TypeError("The unwrap mode must be an UnwrapMode enumeration.")
 
     @property
     def destroy_action(self):
@@ -6081,14 +5461,10 @@ class CapabilityInformation(primitives.Struct):
             self._destroy_action = None
         elif isinstance(value, enums.DestroyAction):
             self._destroy_action = primitives.Enumeration(
-                enums.DestroyAction,
-                value=value,
-                tag=enums.Tags.DESTROY_ACTION
+                enums.DestroyAction, value=value, tag=enums.Tags.DESTROY_ACTION
             )
         else:
-            raise TypeError(
-                "The destroy action must be a DestroyAction enumeration."
-            )
+            raise TypeError("The destroy action must be a DestroyAction enumeration.")
 
     @property
     def shredding_algorithm(self):
@@ -6104,12 +5480,11 @@ class CapabilityInformation(primitives.Struct):
             self._shredding_algorithm = primitives.Enumeration(
                 enums.ShreddingAlgorithm,
                 value=value,
-                tag=enums.Tags.SHREDDING_ALGORITHM
+                tag=enums.Tags.SHREDDING_ALGORITHM,
             )
         else:
             raise TypeError(
-                "The shredding algorithm must be a ShreddingAlgorithm "
-                "enumeration."
+                "The shredding algorithm must be a ShreddingAlgorithm " "enumeration."
             )
 
     @property
@@ -6124,9 +5499,7 @@ class CapabilityInformation(primitives.Struct):
             self._rng_mode = None
         elif isinstance(value, enums.RNGMode):
             self._rng_mode = primitives.Enumeration(
-                enums.RNGMode,
-                value=value,
-                tag=enums.Tags.RNG_MODE
+                enums.RNGMode, value=value, tag=enums.Tags.RNG_MODE
             )
         else:
             raise TypeError("The RNG mode must be an RNGMode enumeration.")
@@ -6151,15 +5524,10 @@ class CapabilityInformation(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_1_3:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the CapabilityInformation "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
-        super(CapabilityInformation, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(CapabilityInformation, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.STREAMING_CAPABILITY, local_buffer):
@@ -6173,78 +5541,54 @@ class CapabilityInformation(primitives.Struct):
             asynchronous_capability = primitives.Boolean(
                 tag=enums.Tags.ASYNCHRONOUS_CAPABILITY
             )
-            asynchronous_capability.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            asynchronous_capability.read(local_buffer, kmip_version=kmip_version)
             self._asynchronous_capability = asynchronous_capability
 
         if self.is_tag_next(enums.Tags.ATTESTATION_CAPABILITY, local_buffer):
             attestation_capability = primitives.Boolean(
                 tag=enums.Tags.ATTESTATION_CAPABILITY
             )
-            attestation_capability.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            attestation_capability.read(local_buffer, kmip_version=kmip_version)
             self._attestation_capability = attestation_capability
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_4:
-            if self.is_tag_next(
-                enums.Tags.BATCH_UNDO_CAPABILITY,
-                local_buffer
-            ):
+            if self.is_tag_next(enums.Tags.BATCH_UNDO_CAPABILITY, local_buffer):
                 batch_undo_capability = primitives.Boolean(
                     tag=enums.Tags.BATCH_UNDO_CAPABILITY
                 )
-                batch_undo_capability.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                batch_undo_capability.read(local_buffer, kmip_version=kmip_version)
                 self._batch_continue_capability = batch_undo_capability
 
-            if self.is_tag_next(
-                enums.Tags.BATCH_CONTINUE_CAPABILITY,
-                local_buffer
-            ):
+            if self.is_tag_next(enums.Tags.BATCH_CONTINUE_CAPABILITY, local_buffer):
                 batch_continue_capability = primitives.Boolean(
                     tag=enums.Tags.BATCH_CONTINUE_CAPABILITY
                 )
-                batch_continue_capability.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                batch_continue_capability.read(local_buffer, kmip_version=kmip_version)
                 self._batch_continue_capability = batch_continue_capability
 
         if self.is_tag_next(enums.Tags.UNWRAP_MODE, local_buffer):
             unwrap_mode = primitives.Enumeration(
-                enums.UnwrapMode,
-                tag=enums.Tags.UNWRAP_MODE
+                enums.UnwrapMode, tag=enums.Tags.UNWRAP_MODE
             )
             unwrap_mode.read(local_buffer, kmip_version=kmip_version)
             self._unwrap_mode = unwrap_mode
 
         if self.is_tag_next(enums.Tags.DESTROY_ACTION, local_buffer):
             destroy_action = primitives.Enumeration(
-                enums.DestroyAction,
-                tag=enums.Tags.DESTROY_ACTION
+                enums.DestroyAction, tag=enums.Tags.DESTROY_ACTION
             )
             destroy_action.read(local_buffer, kmip_version=kmip_version)
             self._destroy_action = destroy_action
 
         if self.is_tag_next(enums.Tags.SHREDDING_ALGORITHM, local_buffer):
             shredding_algorithm = primitives.Enumeration(
-                enums.ShreddingAlgorithm,
-                tag=enums.Tags.SHREDDING_ALGORITHM
+                enums.ShreddingAlgorithm, tag=enums.Tags.SHREDDING_ALGORITHM
             )
             shredding_algorithm.read(local_buffer, kmip_version=kmip_version)
             self._shredding_algorithm = shredding_algorithm
 
         if self.is_tag_next(enums.Tags.RNG_MODE, local_buffer):
-            rng_mode = primitives.Enumeration(
-                enums.RNGMode,
-                tag=enums.Tags.RNG_MODE
-            )
+            rng_mode = primitives.Enumeration(enums.RNGMode, tag=enums.Tags.RNG_MODE)
             rng_mode.read(local_buffer, kmip_version=kmip_version)
             self._rng_mode = rng_mode
 
@@ -6269,72 +5613,46 @@ class CapabilityInformation(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_1_3:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the CapabilityInformation "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
         local_buffer = BytearrayStream()
 
         if self._streaming_capability:
-            self._streaming_capability.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._streaming_capability.write(local_buffer, kmip_version=kmip_version)
 
         if self._asynchronous_capability:
-            self._asynchronous_capability.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._asynchronous_capability.write(local_buffer, kmip_version=kmip_version)
 
         if self._attestation_capability:
-            self._attestation_capability.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._attestation_capability.write(local_buffer, kmip_version=kmip_version)
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_4:
             if self._batch_undo_capability:
                 self._batch_undo_capability.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
 
             if self._batch_continue_capability:
                 self._batch_continue_capability.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
 
         if self._unwrap_mode:
-            self._unwrap_mode.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unwrap_mode.write(local_buffer, kmip_version=kmip_version)
 
         if self._destroy_action:
-            self._destroy_action.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._destroy_action.write(local_buffer, kmip_version=kmip_version)
 
         if self._shredding_algorithm:
-            self._shredding_algorithm.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._shredding_algorithm.write(local_buffer, kmip_version=kmip_version)
 
         if self._rng_mode:
-            self._rng_mode.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._rng_mode.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(CapabilityInformation, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -6343,9 +5661,7 @@ class CapabilityInformation(primitives.Struct):
         rc = "asynchronous_capability={}".format(self.asynchronous_capability)
         tc = "attestation_capability={}".format(self.attestation_capability)
         buc = "batch_undo_capability={}".format(self.batch_undo_capability)
-        bcc = "batch_continue_capability={}".format(
-            self.batch_continue_capability
-        )
+        bcc = "batch_continue_capability={}".format(self.batch_continue_capability)
         um = "unwrap_mode={}".format(self.unwrap_mode)
         da = "destroy_action={}".format(self.destroy_action)
         sa = "shredding_algorithm={}".format(self.shredding_algorithm)
@@ -6357,16 +5673,10 @@ class CapabilityInformation(primitives.Struct):
 
     def __str__(self):
         sc = '"streaming_capability": {}'.format(self.streaming_capability)
-        rc = '"asynchronous_capability": {}'.format(
-            self.asynchronous_capability
-        )
-        tc = '"attestation_capability": {}'.format(
-            self.attestation_capability
-        )
+        rc = '"asynchronous_capability": {}'.format(self.asynchronous_capability)
+        tc = '"attestation_capability": {}'.format(self.attestation_capability)
         buc = '"batch_undo_capability": {}'.format(self.batch_undo_capability)
-        bcc = '"batch_continue_capability": {}'.format(
-            self.batch_continue_capability
-        )
+        bcc = '"batch_continue_capability": {}'.format(self.batch_continue_capability)
         um = '"unwrap_mode": {}'.format(self.unwrap_mode)
         da = '"destroy_action": {}'.format(self.destroy_action)
         sa = '"shredding_algorithm": {}'.format(self.shredding_algorithm)
@@ -6374,7 +5684,7 @@ class CapabilityInformation(primitives.Struct):
 
         v = ", ".join([sc, rc, tc, buc, bcc, um, da, sa, rm])
 
-        return '{' + v + '}'
+        return "{" + v + "}"
 
     def __eq__(self, other):
         if isinstance(other, CapabilityInformation):
@@ -6386,8 +5696,7 @@ class CapabilityInformation(primitives.Struct):
                 return False
             elif self.batch_undo_capability != other.batch_undo_capability:
                 return False
-            elif self.batch_continue_capability != \
-                    other.batch_continue_capability:
+            elif self.batch_continue_capability != other.batch_continue_capability:
                 return False
             elif self.unwrap_mode != other.unwrap_mode:
                 return False
@@ -6421,9 +5730,9 @@ class ProtectionStorageMasks(primitives.Struct):
             the storage protections supported by the server.
     """
 
-    def __init__(self,
-                 protection_storage_masks=None,
-                 tag=enums.Tags.PROTECTION_STORAGE_MASKS):
+    def __init__(
+        self, protection_storage_masks=None, tag=enums.Tags.PROTECTION_STORAGE_MASKS
+    ):
         """
         Construct a ProtectionStorageMasks structure.
 
@@ -6459,8 +5768,7 @@ class ProtectionStorageMasks(primitives.Struct):
                     if enums.is_bit_mask(enums.ProtectionStorageMask, x):
                         protection_storage_masks.append(
                             primitives.Integer(
-                                value=x,
-                                tag=enums.Tags.PROTECTION_STORAGE_MASK
+                                value=x, tag=enums.Tags.PROTECTION_STORAGE_MASK
                             )
                         )
                     else:
@@ -6503,29 +5811,20 @@ class ProtectionStorageMasks(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the ProtectionStorageMasks "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
         super(ProtectionStorageMasks, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         protection_storage_masks = []
-        while self.is_tag_next(
-            enums.Tags.PROTECTION_STORAGE_MASK,
-            local_buffer
-        ):
+        while self.is_tag_next(enums.Tags.PROTECTION_STORAGE_MASK, local_buffer):
             protection_storage_mask = primitives.Integer(
                 tag=enums.Tags.PROTECTION_STORAGE_MASK
             )
-            protection_storage_mask.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            protection_storage_mask.read(local_buffer, kmip_version=kmip_version)
             protection_storage_masks.append(protection_storage_mask)
         self._protection_storage_masks = protection_storage_masks
 
@@ -6550,44 +5849,38 @@ class ProtectionStorageMasks(primitives.Struct):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             raise exceptions.VersionNotSupported(
                 "KMIP {} does not support the ProtectionStorageMasks "
-                "object.".format(
-                    kmip_version.value
-                )
+                "object.".format(kmip_version.value)
             )
 
         local_buffer = BytearrayStream()
 
         if self._protection_storage_masks:
             for protection_storage_mask in self._protection_storage_masks:
-                protection_storage_mask.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                protection_storage_mask.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(ProtectionStorageMasks, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         v = "protection_storage_masks={}".format(
-            "[{}]".format(
-                ", ".join(str(x) for x in self.protection_storage_masks)
-            ) if self._protection_storage_masks else None
+            "[{}]".format(", ".join(str(x) for x in self.protection_storage_masks))
+            if self._protection_storage_masks
+            else None
         )
 
         return "ProtectionStorageMasks({})".format(v)
 
     def __str__(self):
         v = '"protection_storage_masks": {}'.format(
-            "[{}]".format(
-                ", ".join(str(x) for x in self.protection_storage_masks)
-            ) if self._protection_storage_masks else None
+            "[{}]".format(", ".join(str(x) for x in self.protection_storage_masks))
+            if self._protection_storage_masks
+            else None
         )
 
-        return '{' + v + '}'
+        return "{" + v + "}"
 
     def __eq__(self, other):
         if isinstance(other, ProtectionStorageMasks):

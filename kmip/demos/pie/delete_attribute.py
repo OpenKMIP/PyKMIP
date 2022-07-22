@@ -27,7 +27,7 @@ from kmip.pie import client
 # attribute for attribute deletion to work. Otherwise, the client
 # call to delete_attribute will fail.
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     parser = utils.build_cli_parser(enums.Operation.DELETE_ATTRIBUTE)
@@ -37,15 +37,10 @@ if __name__ == '__main__':
         logger.error("No UUID provided, existing early from demo.")
         sys.exit()
 
-    with client.ProxyKmipClient(
-        config=opts.config,
-        config_file=opts.config_file
-    ) as c:
+    with client.ProxyKmipClient(config=opts.config, config_file=opts.config_file) as c:
         try:
             object_id, modified_attribute = c.delete_attribute(
-                unique_identifier=opts.uuid,
-                attribute_name="Name",
-                attribute_index=0
+                unique_identifier=opts.uuid, attribute_name="Name", attribute_index=0
             )
             logger.info(
                 "Successfully deleted 'Name' attribute from object: {}".format(

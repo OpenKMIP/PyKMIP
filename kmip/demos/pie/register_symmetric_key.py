@@ -23,7 +23,7 @@ from kmip.pie import client
 from kmip.pie import objects
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     parser = utils.build_cli_parser(enums.Operation.REGISTER)
@@ -33,24 +33,22 @@ if __name__ == '__main__':
 
     algorithm = enums.CryptographicAlgorithm.AES
     length = 128
-    value = (
-        b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E'
-        b'\x0F')
-    usage_mask = [enums.CryptographicUsageMask.ENCRYPT,
-                  enums.CryptographicUsageMask.DECRYPT]
-    name = 'Demo Symmetric Key'
+    value = b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E" b"\x0F"
+    usage_mask = [
+        enums.CryptographicUsageMask.ENCRYPT,
+        enums.CryptographicUsageMask.DECRYPT,
+    ]
+    name = "Demo Symmetric Key"
 
     key = objects.SymmetricKey(algorithm, length, value, usage_mask, name)
     key.operation_policy_name = opts.operation_policy_name
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(
-            config=config,
-            config_file=opts.config_file
-    ) as client:
+    with client.ProxyKmipClient(config=config, config_file=opts.config_file) as client:
         try:
             uid = client.register(key)
-            logger.info("Successfully registered symmetric key with ID: "
-                        "{0}".format(uid))
+            logger.info(
+                "Successfully registered symmetric key with ID: " "{0}".format(uid)
+            )
         except Exception as e:
             logger.error(e)

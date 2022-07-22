@@ -63,42 +63,36 @@ class TestSplitKey(testtools.TestCase):
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             cryptographic_length=128,
             key_value=(
-                b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
             ),
             key_format_type=enums.KeyFormatType.RAW,
-            cryptographic_usage_masks=[
-                enums.CryptographicUsageMask.EXPORT
-            ],
+            cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
             name="Test Split Key",
             split_key_parts=4,
             key_part_identifier=1,
             split_key_threshold=2,
             split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
-            prime_field_size=104729
+            prime_field_size=104729,
         )
 
         self.assertEqual(
-            split_key.cryptographic_algorithm,
-            enums.CryptographicAlgorithm.AES
+            split_key.cryptographic_algorithm, enums.CryptographicAlgorithm.AES
         )
         self.assertEqual(split_key.cryptographic_length, 128)
         self.assertEqual(
             split_key.value,
-            b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+            b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56",
         )
         self.assertEqual(split_key.key_format_type, enums.KeyFormatType.RAW)
         self.assertEqual(
-            split_key.cryptographic_usage_masks,
-            [enums.CryptographicUsageMask.EXPORT]
+            split_key.cryptographic_usage_masks, [enums.CryptographicUsageMask.EXPORT]
         )
         self.assertEqual(split_key.names, ["Test Split Key"])
         self.assertEqual(split_key.split_key_parts, 4)
         self.assertEqual(split_key.key_part_identifier, 1)
         self.assertEqual(split_key.split_key_threshold, 2)
         self.assertEqual(
-            split_key.split_key_method,
-            enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8
+            split_key.split_key_method, enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8
         )
         self.assertEqual(split_key.prime_field_size, 104729)
 
@@ -116,16 +110,9 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.SplitKey(),
-            "split_key_parts",
-            "invalid"
-        )
+        args = (objects.SplitKey(), "split_key_parts", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The split key parts must be an integer.",
-            setattr,
-            *args
+            TypeError, "The split key parts must be an integer.", setattr, *args
         )
 
     def test_invalid_key_part_identifier(self):
@@ -142,16 +129,9 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.SplitKey(),
-            "key_part_identifier",
-            "invalid"
-        )
+        args = (objects.SplitKey(), "key_part_identifier", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The key part identifier must be an integer.",
-            setattr,
-            *args
+            TypeError, "The key part identifier must be an integer.", setattr, *args
         )
 
     def test_invalid_split_key_threshold(self):
@@ -168,16 +148,9 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.SplitKey(),
-            "split_key_threshold",
-            "invalid"
-        )
+        args = (objects.SplitKey(), "split_key_threshold", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The split key threshold must be an integer.",
-            setattr,
-            *args
+            TypeError, "The split key threshold must be an integer.", setattr, *args
         )
 
     def test_invalid_split_key_method(self):
@@ -194,11 +167,7 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.SplitKey(),
-            "split_key_method",
-            "invalid"
-        )
+        args = (objects.SplitKey(), "split_key_method", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "The split key method must be a SplitKeyMethod enumeration.",
@@ -220,16 +189,9 @@ class TestSplitKey(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            objects.SplitKey(),
-            "prime_field_size",
-            "invalid"
-        )
+        args = (objects.SplitKey(), "prime_field_size", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "The prime field size must be an integer.",
-            setattr,
-            *args
+            TypeError, "The prime field size must be an integer.", setattr, *args
         )
 
     def test_repr(self):
@@ -240,30 +202,25 @@ class TestSplitKey(testtools.TestCase):
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             cryptographic_length=128,
             key_value=(
-                b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
             ),
             key_format_type=enums.KeyFormatType.RAW,
-            cryptographic_usage_masks=[
-                enums.CryptographicUsageMask.EXPORT
-            ],
+            cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
             name="Test Split Key",
             split_key_parts=4,
             key_part_identifier=1,
             split_key_threshold=2,
             split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
-            prime_field_size=104729
+            prime_field_size=104729,
         )
 
         args = [
-            "cryptographic_algorithm={}".format(
-                enums.CryptographicAlgorithm.AES
-            ),
+            "cryptographic_algorithm={}".format(enums.CryptographicAlgorithm.AES),
             "cryptographic_length={}".format(128),
             "key_value={}".format(
                 binascii.hexlify(
-                    b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                    b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                    b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4"
+                    b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
                 )
             ),
             "key_format_type={}".format(enums.KeyFormatType.RAW),
@@ -278,7 +235,7 @@ class TestSplitKey(testtools.TestCase):
             "split_key_method={}".format(
                 enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8
             ),
-            "prime_field_size=104729"
+            "prime_field_size=104729",
         ]
 
         expected = "SplitKey({})".format(", ".join(args))
@@ -292,8 +249,7 @@ class TestSplitKey(testtools.TestCase):
         """
         split_key = objects.SplitKey(
             key_value=(
-                b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
             )
         )
 
@@ -319,37 +275,31 @@ class TestSplitKey(testtools.TestCase):
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             cryptographic_length=128,
             key_value=(
-                b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
             ),
             key_format_type=enums.KeyFormatType.RAW,
-            cryptographic_usage_masks=[
-                enums.CryptographicUsageMask.EXPORT
-            ],
+            cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
             name="Test Split Key",
             split_key_parts=4,
             key_part_identifier=1,
             split_key_threshold=2,
             split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
-            prime_field_size=104729
+            prime_field_size=104729,
         )
         b = objects.SplitKey(
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             cryptographic_length=128,
             key_value=(
-                b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
             ),
             key_format_type=enums.KeyFormatType.RAW,
-            cryptographic_usage_masks=[
-                enums.CryptographicUsageMask.EXPORT
-            ],
+            cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
             name="Test Split Key",
             split_key_parts=4,
             key_part_identifier=1,
             split_key_threshold=2,
             split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
-            prime_field_size=104729
+            prime_field_size=104729,
         )
 
         self.assertTrue(a == b)
@@ -362,12 +312,8 @@ class TestSplitKey(testtools.TestCase):
         Test that the equality/inequality operators return False/True when
         comparing two SplitKey objects with different cryptographic algorithms.
         """
-        a = objects.SplitKey(
-            cryptographic_algorithm=enums.CryptographicAlgorithm.AES
-        )
-        b = objects.SplitKey(
-            cryptographic_algorithm=enums.CryptographicAlgorithm.RSA
-        )
+        a = objects.SplitKey(cryptographic_algorithm=enums.CryptographicAlgorithm.AES)
+        b = objects.SplitKey(cryptographic_algorithm=enums.CryptographicAlgorithm.RSA)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -392,8 +338,8 @@ class TestSplitKey(testtools.TestCase):
         Test that the equality/inequality operators return False/True when
         comparing two SplitKey objects with different values.
         """
-        a = objects.SplitKey(key_value=b'\x00')
-        b = objects.SplitKey(key_value=b'\xFF')
+        a = objects.SplitKey(key_value=b"\x00")
+        b = objects.SplitKey(key_value=b"\xFF")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -549,19 +495,16 @@ class TestSplitKey(testtools.TestCase):
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             cryptographic_length=128,
             key_value=(
-                b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
             ),
             key_format_type=enums.KeyFormatType.RAW,
-            cryptographic_usage_masks=[
-                enums.CryptographicUsageMask.EXPORT
-            ],
+            cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
             name="Test Split Key",
             split_key_parts=4,
             key_part_identifier=1,
             split_key_threshold=2,
             split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
-            prime_field_size=104729
+            prime_field_size=104729,
         )
 
         session = sqlalchemy.orm.sessionmaker(bind=self.engine)()
@@ -580,59 +523,53 @@ class TestSplitKey(testtools.TestCase):
             cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
             cryptographic_length=128,
             key_value=(
-                b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+                b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
             ),
             key_format_type=enums.KeyFormatType.RAW,
-            cryptographic_usage_masks=[
-                enums.CryptographicUsageMask.EXPORT
-            ],
+            cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
             name="Test Split Key",
             split_key_parts=4,
             key_part_identifier=1,
             split_key_threshold=2,
             split_key_method=enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
-            prime_field_size=104729
+            prime_field_size=104729,
         )
 
         session = sqlalchemy.orm.sessionmaker(
-            bind=self.engine, expire_on_commit=False)()
+            bind=self.engine, expire_on_commit=False
+        )()
         session.add(split_key)
         session.commit()
 
         session = sqlalchemy.orm.sessionmaker(bind=self.engine)()
-        retrieved_key = session.query(objects.SplitKey).filter(
-            objects.ManagedObject.unique_identifier ==
-            split_key.unique_identifier
-        ).one()
+        retrieved_key = (
+            session.query(objects.SplitKey)
+            .filter(
+                objects.ManagedObject.unique_identifier == split_key.unique_identifier
+            )
+            .one()
+        )
         session.commit()
 
         self.assertEqual(retrieved_key.names, ["Test Split Key"])
         self.assertEqual(
-            retrieved_key.cryptographic_algorithm,
-            enums.CryptographicAlgorithm.AES
+            retrieved_key.cryptographic_algorithm, enums.CryptographicAlgorithm.AES
         )
         self.assertEqual(retrieved_key.cryptographic_length, 128)
         self.assertEqual(
             retrieved_key.value,
-            (
-                b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-                b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
-            )
+            (b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"),
         )
-        self.assertEqual(
-            retrieved_key.key_format_type,
-            enums.KeyFormatType.RAW
-        )
+        self.assertEqual(retrieved_key.key_format_type, enums.KeyFormatType.RAW)
         self.assertEqual(
             retrieved_key.cryptographic_usage_masks,
-            [enums.CryptographicUsageMask.EXPORT]
+            [enums.CryptographicUsageMask.EXPORT],
         )
         self.assertEqual(retrieved_key.split_key_parts, 4)
         self.assertEqual(retrieved_key.key_part_identifier, 1)
         self.assertEqual(retrieved_key.split_key_threshold, 2)
         self.assertEqual(
             retrieved_key.split_key_method,
-            enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8
+            enums.SplitKeyMethod.POLYNOMIAL_SHARING_GF_2_8,
         )
         self.assertEqual(retrieved_key.prime_field_size, 104729)

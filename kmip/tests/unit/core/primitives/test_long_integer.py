@@ -77,21 +77,23 @@ class TestLongInteger(testtools.TestCase):
         """
         Test that a TypeError is thrown on input of invalid type (e.g., str).
         """
-        self.assertRaises(TypeError, primitives.LongInteger, 'invalid')
+        self.assertRaises(TypeError, primitives.LongInteger, "invalid")
 
     def test_validate_on_invalid_value_too_big(self):
         """
         Test that a ValueError is thrown on input that is too large.
         """
         self.assertRaises(
-            ValueError, primitives.LongInteger, primitives.LongInteger.MAX + 1)
+            ValueError, primitives.LongInteger, primitives.LongInteger.MAX + 1
+        )
 
     def test_validate_on_invalid_value_too_small(self):
         """
         Test that a ValueError is thrown on input that is too small.
         """
         self.assertRaises(
-            ValueError, primitives.LongInteger, primitives.LongInteger.MIN - 1)
+            ValueError, primitives.LongInteger, primitives.LongInteger.MIN - 1
+        )
 
     def test_read_zero(self):
         """
@@ -99,8 +101,8 @@ class TestLongInteger(testtools.TestCase):
         byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
         stream = utils.BytearrayStream(encoding)
         long_int = primitives.LongInteger()
         long_int.read(stream)
@@ -112,8 +114,8 @@ class TestLongInteger(testtools.TestCase):
         read from a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\x7f\xff\xff\xff\xff\xff\xff'
-            b'\xff')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\x7f\xff\xff\xff\xff\xff\xff" b"\xff"
+        )
         stream = utils.BytearrayStream(encoding)
         long_int = primitives.LongInteger()
         long_int.read(stream)
@@ -125,8 +127,8 @@ class TestLongInteger(testtools.TestCase):
         read from a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
-            b'\x01')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00" b"\x01"
+        )
         stream = utils.BytearrayStream(encoding)
         long_int = primitives.LongInteger()
         long_int.read(stream)
@@ -138,8 +140,8 @@ class TestLongInteger(testtools.TestCase):
         read from a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\xff\xff\xff\xff\xff\xff\xff'
-            b'\xff')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\xff\xff\xff\xff\xff\xff\xff" b"\xff"
+        )
         stream = utils.BytearrayStream(encoding)
         long_int = primitives.LongInteger()
         long_int.read(stream)
@@ -151,8 +153,8 @@ class TestLongInteger(testtools.TestCase):
         read from a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\x80\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\x80\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
         stream = utils.BytearrayStream(encoding)
         long_int = primitives.LongInteger(primitives.LongInteger.MIN)
         long_int.read(stream)
@@ -164,13 +166,12 @@ class TestLongInteger(testtools.TestCase):
         to decode a LongInteger with an invalid length.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
         stream = utils.BytearrayStream(encoding)
         long_int = primitives.LongInteger()
 
-        self.assertRaises(
-            exceptions.InvalidPrimitiveLength, long_int.read, stream)
+        self.assertRaises(exceptions.InvalidPrimitiveLength, long_int.read, stream)
 
     def test_write_zero(self):
         """
@@ -178,8 +179,8 @@ class TestLongInteger(testtools.TestCase):
         byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
         stream = utils.BytearrayStream()
         long_int = primitives.LongInteger(0)
         long_int.write(stream)
@@ -194,8 +195,8 @@ class TestLongInteger(testtools.TestCase):
         written to a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\x7f\xff\xff\xff\xff\xff\xff'
-            b'\xff')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\x7f\xff\xff\xff\xff\xff\xff" b"\xff"
+        )
         stream = utils.BytearrayStream()
         long_int = primitives.LongInteger(primitives.LongInteger.MAX)
         long_int.write(stream)
@@ -210,8 +211,8 @@ class TestLongInteger(testtools.TestCase):
         written to a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00'
-            b'\x01')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00" b"\x01"
+        )
         stream = utils.BytearrayStream()
         long_int = primitives.LongInteger(1)
         long_int.write(stream)
@@ -226,8 +227,8 @@ class TestLongInteger(testtools.TestCase):
         written to a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\xff\xff\xff\xff\xff\xff\xff'
-            b'\xff')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\xff\xff\xff\xff\xff\xff\xff" b"\xff"
+        )
         stream = utils.BytearrayStream()
         long_int = primitives.LongInteger(-1)
         long_int.write(stream)
@@ -242,8 +243,8 @@ class TestLongInteger(testtools.TestCase):
         written to a byte stream.
         """
         encoding = (
-            b'\x42\x00\x00\x03\x00\x00\x00\x08\x80\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x03\x00\x00\x00\x08\x80\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
         stream = utils.BytearrayStream()
         long_int = primitives.LongInteger(primitives.LongInteger.MIN)
         long_int.write(stream)
@@ -259,8 +260,7 @@ class TestLongInteger(testtools.TestCase):
         long_int = primitives.LongInteger()
         value = "value={0}".format(long_int.value)
         tag = "tag={0}".format(long_int.tag)
-        self.assertEqual(
-            "LongInteger({0}, {1})".format(value, tag), repr(long_int))
+        self.assertEqual("LongInteger({0}, {1})".format(value, tag), repr(long_int))
 
     def test_str(self):
         """
@@ -308,7 +308,7 @@ class TestLongInteger(testtools.TestCase):
         LongInteger to a non-LongInteger object.
         """
         a = primitives.LongInteger()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -352,7 +352,7 @@ class TestLongInteger(testtools.TestCase):
         LongInteger to a non-LongInteger object.
         """
         a = primitives.LongInteger()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)

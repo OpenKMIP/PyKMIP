@@ -23,7 +23,7 @@ from kmip.pie import client
 from kmip.pie import objects
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     parser = utils.build_cli_parser(enums.Operation.REGISTER)
@@ -35,8 +35,7 @@ if __name__ == '__main__':
         cryptographic_algorithm=enums.CryptographicAlgorithm.AES,
         cryptographic_length=128,
         key_value=(
-            b'\x66\xC4\x6A\x77\x54\xF9\x4D\xE4'
-            b'\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56'
+            b"\x66\xC4\x6A\x77\x54\xF9\x4D\xE4" b"\x20\xC7\xB1\xA7\xFF\xF5\xEC\x56"
         ),
         name="Demo Split Key",
         cryptographic_usage_masks=[enums.CryptographicUsageMask.EXPORT],
@@ -46,19 +45,14 @@ if __name__ == '__main__':
         key_part_identifier=1,
         split_key_threshold=2,
         split_key_method=enums.SplitKeyMethod.XOR,
-        prime_field_size=None
+        prime_field_size=None,
     )
     split_key.operation_policy_name = opts.operation_policy_name
 
     # Build the client and connect to the server
-    with client.ProxyKmipClient(
-            config=config,
-            config_file=opts.config_file
-    ) as client:
+    with client.ProxyKmipClient(config=config, config_file=opts.config_file) as client:
         try:
             uid = client.register(split_key)
-            logger.info(
-                "Successfully registered split key with ID: {0}".format(uid)
-            )
+            logger.info("Successfully registered split key with ID: {0}".format(uid))
         except Exception as e:
             logger.error(e)

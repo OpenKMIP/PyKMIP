@@ -29,7 +29,7 @@ from kmip.pie import client
 # attribute is KMIP 1.4+ only. Otherwise, the client call to
 # set_attribute will fail.
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     parser = utils.build_cli_parser(enums.Operation.SET_ATTRIBUTE)
@@ -44,19 +44,17 @@ if __name__ == '__main__':
     with client.ProxyKmipClient(
         config=opts.config,
         config_file=opts.config_file,
-        kmip_version=enums.KMIPVersion.KMIP_2_0
+        kmip_version=enums.KMIPVersion.KMIP_2_0,
     ) as c:
         try:
             object_id = c.set_attribute(
                 unique_identifier=opts.uuid,
                 attribute_name="Sensitive",
-                attribute_value=True
+                attribute_value=True,
             )
             logger.info(
                 "Successfully set the 'Sensitive' attribute on object: "
-                "{}".format(
-                    object_id
-                )
+                "{}".format(object_id)
             )
         except Exception as e:
             logger.error(e)

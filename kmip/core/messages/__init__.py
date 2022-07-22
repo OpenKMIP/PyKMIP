@@ -13,4 +13,4 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-__all__ = ['contents', 'messages', 'payloads']
+__all__ = ["contents", "messages", "payloads"]

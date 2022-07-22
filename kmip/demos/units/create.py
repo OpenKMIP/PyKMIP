@@ -39,7 +39,7 @@ import logging
 import sys
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
     # Exit early if the arguments are not specified
     if algorithm is None:
-        logger.error('No algorithm provided, exiting early from demo')
+        logger.error("No algorithm provided, exiting early from demo")
         sys.exit()
     if length is None:
         logger.error("No key length provided, exiting early from demo")
@@ -69,10 +69,10 @@ if __name__ == '__main__':
         credential = None
     else:
         credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': username,
-                            'Password': password}
-        credential = credential_factory.create_credential(credential_type,
-                                                          credential_value)
+        credential_value = {"Username": username, "Password": password}
+        credential = credential_factory.create_credential(
+            credential_type, credential_value
+        )
     # Build the client and connect to the server
     client = KMIPProxy(config=config, config_file=opts.config_file)
     client.open()
@@ -90,20 +90,16 @@ if __name__ == '__main__':
         client.close()
         sys.exit()
 
-    algorithm_obj = attribute_factory.create_attribute(attribute_type,
-                                                       algorithm_enum)
+    algorithm_obj = attribute_factory.create_attribute(attribute_type, algorithm_enum)
 
-    mask_flags = [CryptographicUsageMask.ENCRYPT,
-                  CryptographicUsageMask.DECRYPT]
+    mask_flags = [CryptographicUsageMask.ENCRYPT, CryptographicUsageMask.DECRYPT]
     attribute_type = AttributeType.CRYPTOGRAPHIC_USAGE_MASK
-    usage_mask = attribute_factory.create_attribute(attribute_type,
-                                                    mask_flags)
+    usage_mask = attribute_factory.create_attribute(attribute_type, mask_flags)
 
     attribute_type = AttributeType.CRYPTOGRAPHIC_LENGTH
-    length_obj = attribute_factory.create_attribute(attribute_type,
-                                                    length)
-    name = Attribute.AttributeName('Name')
-    name_value = Name.NameValue('Test Key')
+    length_obj = attribute_factory.create_attribute(attribute_type, length)
+    name = Attribute.AttributeName("Name")
+    name_value = Name.NameValue("Test Key")
     name_type = Name.NameType(NameType.UNINTERPRETED_TEXT_STRING)
     value = Name(name_value=name_value, name_type=name_type)
     name = Attribute(attribute_name=name, attribute_value=value)
@@ -112,30 +108,23 @@ if __name__ == '__main__':
 
     if opts.operation_policy_name is not None:
         opn = attribute_factory.create_attribute(
-            enums.AttributeType.OPERATION_POLICY_NAME,
-            opts.operation_policy_name
+            enums.AttributeType.OPERATION_POLICY_NAME, opts.operation_policy_name
         )
         attributes.append(opn)
 
     template_attribute = TemplateAttribute(attributes=attributes)
 
     # Create the SYMMETRIC_KEY object
-    result = client.create(object_type, template_attribute,
-                           credential)
+    result = client.create(object_type, template_attribute, credential)
     client.close()
 
     # Display operation results
-    logger.info('create() result status: {0}'.format(
-        result.result_status.value))
+    logger.info("create() result status: {0}".format(result.result_status.value))
 
     if result.result_status.value == ResultStatus.SUCCESS:
-        logger.info('created object type: {0}'.format(
-            result.object_type))
-        logger.info('created UUID: {0}'.format(result.uuid))
-        logger.info('created template attribute: {0}'.
-                    format(result.template_attribute))
+        logger.info("created object type: {0}".format(result.object_type))
+        logger.info("created UUID: {0}".format(result.uuid))
+        logger.info("created template attribute: {0}".format(result.template_attribute))
     else:
-        logger.info('create() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('create() result message: {0}'.format(
-            result.result_message.value))
+        logger.info("create() result reason: {0}".format(result.result_reason.value))
+        logger.info("create() result message: {0}".format(result.result_message.value))

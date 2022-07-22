@@ -38,12 +38,14 @@ class LocateRequestPayload(base.RequestPayload):
             objects.
     """
 
-    def __init__(self,
-                 maximum_items=None,
-                 offset_items=None,
-                 storage_status_mask=None,
-                 object_group_member=None,
-                 attributes=None):
+    def __init__(
+        self,
+        maximum_items=None,
+        offset_items=None,
+        storage_status_mask=None,
+        object_group_member=None,
+        attributes=None,
+    ):
         """
         Construct a Locate request payload structure.
 
@@ -92,8 +94,7 @@ class LocateRequestPayload(base.RequestPayload):
             self._maximum_items = None
         elif isinstance(value, six.integer_types):
             self._maximum_items = primitives.Integer(
-                value=value,
-                tag=enums.Tags.MAXIMUM_ITEMS
+                value=value, tag=enums.Tags.MAXIMUM_ITEMS
             )
         else:
             raise TypeError("Maximum items must be an integer.")
@@ -111,8 +112,7 @@ class LocateRequestPayload(base.RequestPayload):
             self._offset_items = None
         elif isinstance(value, six.integer_types):
             self._offset_items = primitives.Integer(
-                value=value,
-                tag=enums.Tags.OFFSET_ITEMS
+                value=value, tag=enums.Tags.OFFSET_ITEMS
             )
         else:
             raise TypeError("Offset items must be an integer.")
@@ -131,8 +131,7 @@ class LocateRequestPayload(base.RequestPayload):
         elif isinstance(value, six.integer_types):
             if enums.is_bit_mask(enums.StorageStatusMask, value):
                 self._storage_status_mask = primitives.Integer(
-                    value=value,
-                    tag=enums.Tags.STORAGE_STATUS_MASK
+                    value=value, tag=enums.Tags.STORAGE_STATUS_MASK
                 )
             else:
                 raise TypeError(
@@ -158,9 +157,7 @@ class LocateRequestPayload(base.RequestPayload):
             self._object_group_member = None
         elif isinstance(value, enums.ObjectGroupMember):
             self._object_group_member = primitives.Enumeration(
-                enums.ObjectGroupMember,
-                value=value,
-                tag=enums.Tags.OBJECT_GROUP_MEMBER
+                enums.ObjectGroupMember, value=value, tag=enums.Tags.OBJECT_GROUP_MEMBER
             )
         else:
             raise TypeError(
@@ -185,9 +182,7 @@ class LocateRequestPayload(base.RequestPayload):
                     )
             self._attributes = value
         else:
-            raise TypeError(
-                "Attributes must be a list of Attribute structures."
-            )
+            raise TypeError("Attributes must be a list of Attribute structures.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -205,48 +200,28 @@ class LocateRequestPayload(base.RequestPayload):
             InvalidKmipEncoding: Raised if the attributes structure is missing
                 from the encoded payload for KMIP 2.0+ encodings.
         """
-        super(LocateRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(LocateRequestPayload, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.MAXIMUM_ITEMS, local_buffer):
-            self._maximum_items = primitives.Integer(
-                tag=enums.Tags.MAXIMUM_ITEMS
-            )
-            self._maximum_items.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._maximum_items = primitives.Integer(tag=enums.Tags.MAXIMUM_ITEMS)
+            self._maximum_items.read(local_buffer, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.OFFSET_ITEMS, local_buffer):
-            self._offset_items = primitives.Integer(
-                tag=enums.Tags.OFFSET_ITEMS
-            )
-            self._offset_items.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._offset_items = primitives.Integer(tag=enums.Tags.OFFSET_ITEMS)
+            self._offset_items.read(local_buffer, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.STORAGE_STATUS_MASK, local_buffer):
             self._storage_status_mask = primitives.Integer(
                 tag=enums.Tags.STORAGE_STATUS_MASK
             )
-            self._storage_status_mask.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._storage_status_mask.read(local_buffer, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.OBJECT_GROUP_MEMBER, local_buffer):
             self._object_group_member = primitives.Enumeration(
-                enums.ObjectGroupMember,
-                tag=enums.Tags.OBJECT_GROUP_MEMBER
+                enums.ObjectGroupMember, tag=enums.Tags.OBJECT_GROUP_MEMBER
             )
-            self._object_group_member.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._object_group_member.read(local_buffer, kmip_version=kmip_version)
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             while self.is_tag_next(enums.Tags.ATTRIBUTE, local_buffer):
@@ -258,9 +233,7 @@ class LocateRequestPayload(base.RequestPayload):
                 attributes = objects.Attributes()
                 attributes.read(local_buffer, kmip_version=kmip_version)
                 # TODO (ph) Add a new utility to avoid using TemplateAttributes
-                temp_attr = objects.convert_attributes_to_template_attribute(
-                    attributes
-                )
+                temp_attr = objects.convert_attributes_to_template_attribute(attributes)
                 self._attributes = temp_attr.attributes
 
     def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -283,24 +256,15 @@ class LocateRequestPayload(base.RequestPayload):
             self._offset_items.write(local_buffer, kmip_version=kmip_version)
 
         if self._storage_status_mask:
-            self._storage_status_mask.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._storage_status_mask.write(local_buffer, kmip_version=kmip_version)
 
         if self._object_group_member:
-            self._object_group_member.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._object_group_member.write(local_buffer, kmip_version=kmip_version)
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._attributes:
                 for attribute in self.attributes:
-                    attribute.write(
-                        local_buffer,
-                        kmip_version=kmip_version
-                    )
+                    attribute.write(local_buffer, kmip_version=kmip_version)
         else:
             if self._attributes:
                 # TODO (ph) Add a new utility to avoid using TemplateAttributes
@@ -314,8 +278,7 @@ class LocateRequestPayload(base.RequestPayload):
 
         self.length = local_buffer.length()
         super(LocateRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -343,15 +306,17 @@ class LocateRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "maximum_items={}".format(self.maximum_items),
-            "offset_items={}".format(self.offset_items),
-            "storage_status_mask={}".format(self.storage_status_mask),
-            "object_group_member={}".format(self.object_group_member),
-            "attributes={}".format(
-                [repr(attribute) for attribute in self.attributes]
-            )
-        ])
+        args = ", ".join(
+            [
+                "maximum_items={}".format(self.maximum_items),
+                "offset_items={}".format(self.offset_items),
+                "storage_status_mask={}".format(self.storage_status_mask),
+                "object_group_member={}".format(self.object_group_member),
+                "attributes={}".format(
+                    [repr(attribute) for attribute in self.attributes]
+                ),
+            ]
+        )
         return "LocateRequestPayload({})".format(args)
 
     def __str__(self):
@@ -363,10 +328,10 @@ class LocateRequestPayload(base.RequestPayload):
                 '"object_group_member": {}'.format(self.object_group_member),
                 '"attributes": {}'.format(
                     [str(attribute) for attribute in self.attributes]
-                )
+                ),
             ]
         )
-        return '{' + value + '}'
+        return "{" + value + "}"
 
 
 class LocateResponsePayload(base.ResponsePayload):
@@ -378,9 +343,7 @@ class LocateResponsePayload(base.ResponsePayload):
         unique_identifiers: The object identifiers for the matching objects.
     """
 
-    def __init__(self,
-                 located_items=None,
-                 unique_identifiers=None):
+    def __init__(self, located_items=None, unique_identifiers=None):
         """
         Construct a Locate response payload structure.
 
@@ -412,8 +375,7 @@ class LocateResponsePayload(base.ResponsePayload):
             self._located_items = None
         elif isinstance(value, six.integer_types):
             self._located_items = primitives.Integer(
-                value=value,
-                tag=enums.Tags.LOCATED_ITEMS
+                value=value, tag=enums.Tags.LOCATED_ITEMS
             )
         else:
             raise TypeError("Located items must be an integer.")
@@ -433,14 +395,9 @@ class LocateResponsePayload(base.ResponsePayload):
             for v in value:
                 if not isinstance(v, six.string_types):
                     self._unique_identifiers = []
-                    raise TypeError(
-                        "Unique identifiers must be a list of strings."
-                    )
+                    raise TypeError("Unique identifiers must be a list of strings.")
                 self._unique_identifiers.append(
-                    primitives.TextString(
-                        value=v,
-                        tag=enums.Tags.UNIQUE_IDENTIFIER
-                    )
+                    primitives.TextString(value=v, tag=enums.Tags.UNIQUE_IDENTIFIER)
                 )
         else:
             raise TypeError("Unique identifiers must be a list of strings.")
@@ -457,26 +414,16 @@ class LocateResponsePayload(base.ResponsePayload):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(LocateResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
-        )
+        super(LocateResponsePayload, self).read(input_buffer, kmip_version=kmip_version)
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.LOCATED_ITEMS, local_buffer):
-            self._located_items = primitives.Integer(
-                tag=enums.Tags.LOCATED_ITEMS
-            )
-            self._located_items.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._located_items = primitives.Integer(tag=enums.Tags.LOCATED_ITEMS)
+            self._located_items.read(local_buffer, kmip_version=kmip_version)
 
         self._unique_identifiers = []
         while self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_buffer):
-            unique_identifier = primitives.TextString(
-                tag=enums.Tags.UNIQUE_IDENTIFIER
-            )
+            unique_identifier = primitives.TextString(tag=enums.Tags.UNIQUE_IDENTIFIER)
             unique_identifier.read(local_buffer, kmip_version=kmip_version)
             self._unique_identifiers.append(unique_identifier)
 
@@ -500,15 +447,11 @@ class LocateResponsePayload(base.ResponsePayload):
 
         if self._unique_identifiers:
             for unique_identifier in self._unique_identifiers:
-                unique_identifier.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                unique_identifier.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(LocateResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -530,10 +473,12 @@ class LocateResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "located_items={}".format(self.located_items),
-            "unique_identifiers={}".format(self.unique_identifiers)
-        ])
+        args = ", ".join(
+            [
+                "located_items={}".format(self.located_items),
+                "unique_identifiers={}".format(self.unique_identifiers),
+            ]
+        )
         return "LocateResponsePayload({})".format(args)
 
     def __str__(self):
@@ -543,4 +488,4 @@ class LocateResponsePayload(base.ResponsePayload):
                 '"unique_identifiers": {}'.format(self.unique_identifiers),
             ]
         )
-        return '{' + value + '}'
+        return "{" + value + "}"

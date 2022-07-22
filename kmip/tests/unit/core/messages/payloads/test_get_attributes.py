@@ -42,21 +42,21 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         #     Attribute Name - Contact Information
         #     Attribute Name - x-Purpose
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\xA8'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
-            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
-            b'\x61\x65\x34\x30\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x20'
-            b'\x41\x70\x70\x6C\x69\x63\x61\x74\x69\x6F\x6E\x20\x53\x70\x65\x63'
-            b'\x69\x66\x69\x63\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x13'
-            b'\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74'
-            b'\x69\x6F\x6E\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x09'
-            b'\x78\x2D\x50\x75\x72\x70\x6F\x73\x65\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\xA8"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64"
+            b"\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34"
+            b"\x61\x65\x34\x30\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x20"
+            b"\x41\x70\x70\x6C\x69\x63\x61\x74\x69\x6F\x6E\x20\x53\x70\x65\x63"
+            b"\x69\x66\x69\x63\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x13"
+            b"\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74"
+            b"\x69\x6F\x6E\x00\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x09"
+            b"\x78\x2D\x50\x75\x72\x70\x6F\x73\x65\x00\x00\x00\x00\x00\x00\x00"
         )
 
         # Encodings adapted from Sections 3.1.2 of the KMIP 1.1 testing
@@ -69,14 +69,14 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         #     Attribute Reference - Application Specific Information
         #     Attribute Reference - Contact Information
         self.full_encoding_with_reference_enums = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x60'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
-            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
-            b'\x61\x65\x34\x30\x00\x00\x00\x00'
-            b'\x42\x01\x3B\x05\x00\x00\x00\x04\x00\x42\x00\x56\x00\x00\x00\x00'
-            b'\x42\x01\x3B\x05\x00\x00\x00\x04\x00\x42\x00\x04\x00\x00\x00\x00'
-            b'\x42\x01\x3B\x05\x00\x00\x00\x04\x00\x42\x00\x22\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x60"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64"
+            b"\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34"
+            b"\x61\x65\x34\x30\x00\x00\x00\x00"
+            b"\x42\x01\x3B\x05\x00\x00\x00\x04\x00\x42\x00\x56\x00\x00\x00\x00"
+            b"\x42\x01\x3B\x05\x00\x00\x00\x04\x00\x42\x00\x04\x00\x00\x00\x00"
+            b"\x42\x01\x3B\x05\x00\x00\x00\x04\x00\x42\x00\x22\x00\x00\x00\x00"
         )
 
         # Encodings adapted from Sections 3.1.2 of the KMIP 1.1 testing
@@ -95,25 +95,25 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         #         Vendor Identification -
         #         Attribute Name - Contact Information
         self.full_encoding_with_reference_structs = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\xD0'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
-            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
-            b'\x61\x65\x34\x30\x00\x00\x00\x00'
-            b'\x42\x01\x3B\x01\x00\x00\x00\x20'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00'
-            b'\x42\x01\x3B\x01\x00\x00\x00\x30'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x20'
-            b'\x41\x70\x70\x6C\x69\x63\x61\x74\x69\x6F\x6E\x20\x53\x70\x65\x63'
-            b'\x69\x66\x69\x63\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E'
-            b'\x42\x01\x3B\x01\x00\x00\x00\x28'
-            b'\x42\x00\x9D\x07\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x13'
-            b'\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74'
-            b'\x69\x6F\x6E\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\xD0"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64"
+            b"\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34"
+            b"\x61\x65\x34\x30\x00\x00\x00\x00"
+            b"\x42\x01\x3B\x01\x00\x00\x00\x20"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00"
+            b"\x42\x01\x3B\x01\x00\x00\x00\x30"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x20"
+            b"\x41\x70\x70\x6C\x69\x63\x61\x74\x69\x6F\x6E\x20\x53\x70\x65\x63"
+            b"\x69\x66\x69\x63\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E"
+            b"\x42\x01\x3B\x01\x00\x00\x00\x28"
+            b"\x42\x00\x9D\x07\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x13"
+            b"\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74"
+            b"\x69\x6F\x6E\x00\x00\x00\x00\x00"
         )
 
         # Encodings adapted from Sections 3.1.2 of the KMIP 1.1 testing
@@ -124,40 +124,38 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         #     Unique Identifier - 1703250b-4d40-4de2-93a0-c494a1d4ae40
         #     Attribute Reference - Object Group --> "encoded" as a ByteString
         self.invalid_attribute_reference_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x40'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
-            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
-            b'\x61\x65\x34\x30\x00\x00\x00\x00'
-            b'\x42\x01\x3B\x08\x00\x00\x00\x04\x00\x42\x00\x56\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x40"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64"
+            b"\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34"
+            b"\x61\x65\x34\x30\x00\x00\x00\x00"
+            b"\x42\x01\x3B\x08\x00\x00\x00\x04\x00\x42\x00\x56\x00\x00\x00\x00"
         )
 
         self.encoding_sans_unique_identifier = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x78\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x20\x41\x70\x70\x6C\x69\x63\x61\x74'
-            b'\x69\x6F\x6E\x20\x53\x70\x65\x63\x69\x66\x69\x63\x20\x49\x6E\x66'
-            b'\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x42\x00\x0A\x07\x00\x00\x00\x13'
-            b'\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74'
-            b'\x69\x6F\x6E\x00\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x09'
-            b'\x78\x2D\x50\x75\x72\x70\x6F\x73\x65\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x78\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x20\x41\x70\x70\x6C\x69\x63\x61\x74"
+            b"\x69\x6F\x6E\x20\x53\x70\x65\x63\x69\x66\x69\x63\x20\x49\x6E\x66"
+            b"\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x42\x00\x0A\x07\x00\x00\x00\x13"
+            b"\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74"
+            b"\x69\x6F\x6E\x00\x00\x00\x00\x00\x42\x00\x0A\x07\x00\x00\x00\x09"
+            b"\x78\x2D\x50\x75\x72\x70\x6F\x73\x65\x00\x00\x00\x00\x00\x00\x00"
         )
         self.encoding_sans_attribute_names = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
-            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
-            b'\x61\x65\x34\x30\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64"
+            b"\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34"
+            b"\x61\x65\x34\x30\x00\x00\x00\x00"
         )
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
-        self.unique_identifier = '1703250b-4d40-4de2-93a0-c494a1d4ae40'
+        self.unique_identifier = "1703250b-4d40-4de2-93a0-c494a1d4ae40"
         self.attribute_names = [
-            'Object Group',
-            'Application Specific Information',
-            'Contact Information',
-            'x-Purpose'
+            "Object Group",
+            "Application Specific Information",
+            "Contact Information",
+            "x-Purpose",
         ]
 
     def tearDown(self):
@@ -176,8 +174,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         valid value.
         """
         payloads.GetAttributesRequestPayload(
-            'test-unique-identifier',
-            ['test-attribute-name-1', 'test-attribute-name-2']
+            "test-unique-identifier", ["test-attribute-name-1", "test-attribute-name-2"]
         )
 
     def test_unique_identifier(self):
@@ -190,15 +187,14 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.unique_identifier)
         self.assertIsNone(payload._unique_identifier)
 
-        payload.unique_identifier = 'test-unique-identifier'
+        payload.unique_identifier = "test-unique-identifier"
 
-        self.assertEqual('test-unique-identifier', payload.unique_identifier)
+        self.assertEqual("test-unique-identifier", payload.unique_identifier)
         self.assertEqual(
             primitives.TextString(
-                value='test-unique-identifier',
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value="test-unique-identifier", tag=enums.Tags.UNIQUE_IDENTIFIER
             ),
-            payload._unique_identifier
+            payload._unique_identifier,
         )
 
     def test_unique_identifier_with_invalid_value(self):
@@ -207,12 +203,9 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         the unique_identifier attribute of a GetAttributes request payload.
         """
         payload = payloads.GetAttributesRequestPayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_attribute_names(self):
@@ -225,28 +218,23 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         self.assertEqual(list(), payload.attribute_names)
         self.assertEqual(list(), payload._attribute_names)
 
-        payload.attribute_names = [
-            'test-attribute-name-1',
-            'test-attribute-name-2'
-        ]
+        payload.attribute_names = ["test-attribute-name-1", "test-attribute-name-2"]
 
         self.assertEqual(2, len(payload.attribute_names))
         self.assertEqual(2, len(payload._attribute_names))
-        self.assertIn('test-attribute-name-1', payload.attribute_names)
-        self.assertIn('test-attribute-name-2', payload.attribute_names)
+        self.assertIn("test-attribute-name-1", payload.attribute_names)
+        self.assertIn("test-attribute-name-2", payload.attribute_names)
         self.assertIn(
             primitives.TextString(
-                value='test-attribute-name-1',
-                tag=enums.Tags.ATTRIBUTE_NAME
+                value="test-attribute-name-1", tag=enums.Tags.ATTRIBUTE_NAME
             ),
-            payload._attribute_names
+            payload._attribute_names,
         )
         self.assertIn(
             primitives.TextString(
-                value='test-attribute-name-2',
-                tag=enums.Tags.ATTRIBUTE_NAME
+                value="test-attribute-name-2", tag=enums.Tags.ATTRIBUTE_NAME
             ),
-            payload._attribute_names
+            payload._attribute_names,
         )
 
     def test_attribute_names_with_invalid_value(self):
@@ -255,12 +243,9 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         the attribute_names attribute of a GetAttributes request payload.
         """
         payload = payloads.GetAttributesRequestPayload()
-        args = (payload, 'attribute_names', 0)
+        args = (payload, "attribute_names", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Attribute names must be a list of strings.",
-            setattr,
-            *args
+            TypeError, "Attribute names must be a list of strings.", setattr, *args
         )
 
     def test_attribute_names_with_invalid_attribute_name(self):
@@ -270,11 +255,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         GetAttributes request payload.
         """
         payload = payloads.GetAttributesRequestPayload()
-        args = (
-            payload,
-            'attribute_names',
-            ['test-attribute-name-1', 0]
-        )
+        args = (payload, "attribute_names", ["test-attribute-name-1", 0])
         self.assertRaisesRegex(
             TypeError,
             "Attribute names must be a list of strings; "
@@ -294,28 +275,26 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         self.assertEqual(list(), payload._attribute_names)
 
         payload.attribute_names = [
-            'test-attribute-name-1',
-            'test-attribute-name-1',
-            'test-attribute-name-2'
+            "test-attribute-name-1",
+            "test-attribute-name-1",
+            "test-attribute-name-2",
         ]
 
         self.assertEqual(2, len(payload.attribute_names))
         self.assertEqual(2, len(payload._attribute_names))
-        self.assertIn('test-attribute-name-1', payload.attribute_names)
-        self.assertIn('test-attribute-name-2', payload.attribute_names)
+        self.assertIn("test-attribute-name-1", payload.attribute_names)
+        self.assertIn("test-attribute-name-2", payload.attribute_names)
         self.assertIn(
             primitives.TextString(
-                value='test-attribute-name-1',
-                tag=enums.Tags.ATTRIBUTE_NAME
+                value="test-attribute-name-1", tag=enums.Tags.ATTRIBUTE_NAME
             ),
-            payload._attribute_names
+            payload._attribute_names,
         )
         self.assertIn(
             primitives.TextString(
-                value='test-attribute-name-2',
-                tag=enums.Tags.ATTRIBUTE_NAME
+                value="test-attribute-name-2", tag=enums.Tags.ATTRIBUTE_NAME
             ),
-            payload._attribute_names
+            payload._attribute_names,
         )
 
     def test_read(self):
@@ -331,17 +310,13 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
-        self.assertEqual(
-            set(self.attribute_names),
-            set(payload.attribute_names)
-        )
+        self.assertEqual(set(self.attribute_names), set(payload.attribute_names))
         for attribute_name in self.attribute_names:
             self.assertIn(
                 primitives.TextString(
-                    value=attribute_name,
-                    tag=enums.Tags.ATTRIBUTE_NAME
+                    value=attribute_name, tag=enums.Tags.ATTRIBUTE_NAME
                 ),
-                payload._attribute_names
+                payload._attribute_names,
             )
 
     def test_read_kmip_2_0_enums(self):
@@ -357,18 +332,14 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
 
         payload.read(
             self.full_encoding_with_reference_enums,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            kmip_version=enums.KMIPVersion.KMIP_2_0,
         )
 
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
         self.assertEqual(3, len(payload.attribute_names))
         self.assertEqual(
-            [
-                "Object Group",
-                "Application Specific Information",
-                "Contact Information"
-            ],
-            payload.attribute_names
+            ["Object Group", "Application Specific Information", "Contact Information"],
+            payload.attribute_names,
         )
 
     def test_read_kmip_2_0_structs(self):
@@ -384,18 +355,14 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
 
         payload.read(
             self.full_encoding_with_reference_structs,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            kmip_version=enums.KMIPVersion.KMIP_2_0,
         )
 
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
         self.assertEqual(3, len(payload.attribute_names))
         self.assertEqual(
-            [
-                "Object Group",
-                "Application Specific Information",
-                "Contact Information"
-            ],
-            payload.attribute_names
+            ["Object Group", "Application Specific Information", "Contact Information"],
+            payload.attribute_names,
         )
 
     def test_read_kmip_2_0_invalid_attribute_reference(self):
@@ -406,7 +373,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         """
         payload = payloads.GetAttributesRequestPayload()
 
-        args = (self.invalid_attribute_reference_encoding, )
+        args = (self.invalid_attribute_reference_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
@@ -431,17 +398,13 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
 
         self.assertEqual(None, payload.unique_identifier)
         self.assertEqual(None, payload._unique_identifier)
-        self.assertEqual(
-            set(self.attribute_names),
-            set(payload.attribute_names)
-        )
+        self.assertEqual(set(self.attribute_names), set(payload.attribute_names))
         for attribute_name in self.attribute_names:
             self.assertIn(
                 primitives.TextString(
-                    value=attribute_name,
-                    tag=enums.Tags.ATTRIBUTE_NAME
+                    value=attribute_name, tag=enums.Tags.ATTRIBUTE_NAME
                 ),
-                payload._attribute_names
+                payload._attribute_names,
             )
 
     def test_read_with_no_attribute_names(self):
@@ -459,10 +422,9 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
         self.assertEqual(
             primitives.TextString(
-                value=self.unique_identifier,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=self.unique_identifier, tag=enums.Tags.UNIQUE_IDENTIFIER
             ),
-            payload._unique_identifier
+            payload._unique_identifier,
         )
         self.assertEqual(list(), payload.attribute_names)
         self.assertEqual(list(), payload._attribute_names)
@@ -490,8 +452,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         stream.
         """
         payload = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -507,54 +468,32 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         """
         payload = payloads.GetAttributesRequestPayload(
             self.unique_identifier,
-            [
-                "Object Group",
-                "Application Specific Information",
-                "Contact Information"
-            ]
+            ["Object Group", "Application Specific Information", "Contact Information"],
         )
         stream = utils.BytearrayStream()
         payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
 
-        self.assertEqual(
-            len(self.full_encoding_with_reference_enums),
-            len(stream)
-        )
-        self.assertEqual(
-            str(self.full_encoding_with_reference_enums),
-            str(stream)
-        )
+        self.assertEqual(len(self.full_encoding_with_reference_enums), len(stream))
+        self.assertEqual(str(self.full_encoding_with_reference_enums), str(stream))
 
     def test_write_with_no_unique_identifier(self):
         """
         Test that a GetAttributes request payload with no ID can be written
         to a data stream.
         """
-        payload = payloads.GetAttributesRequestPayload(
-            None,
-            self.attribute_names
-        )
+        payload = payloads.GetAttributesRequestPayload(None, self.attribute_names)
         stream = utils.BytearrayStream()
         payload.write(stream)
 
-        self.assertEqual(
-            len(self.encoding_sans_unique_identifier),
-            len(stream)
-        )
-        self.assertEqual(
-            str(self.encoding_sans_unique_identifier),
-            str(stream)
-        )
+        self.assertEqual(len(self.encoding_sans_unique_identifier), len(stream))
+        self.assertEqual(str(self.encoding_sans_unique_identifier), str(stream))
 
     def test_write_with_no_attribute_names(self):
         """
         Test that a GetAttributes request payload with no attribute names
         can be written to a data stream.
         """
-        payload = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            None
-        )
+        payload = payloads.GetAttributesRequestPayload(self.unique_identifier, None)
         stream = utils.BytearrayStream()
         payload.write(stream)
 
@@ -578,18 +517,12 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         Test that repr can be applied to a GetAttributes request payload.
         """
         payload = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
-        unique_identifier = "unique_identifier={0}".format(
-            payload.unique_identifier
-        )
-        attribute_names = "attribute_names={0}".format(
-            payload.attribute_names
-        )
+        unique_identifier = "unique_identifier={0}".format(payload.unique_identifier)
+        attribute_names = "attribute_names={0}".format(payload.attribute_names)
         expected = "GetAttributesRequestPayload({0}, {1})".format(
-            unique_identifier,
-            attribute_names
+            unique_identifier, attribute_names
         )
         observed = repr(payload)
         self.assertEqual(expected, observed)
@@ -599,19 +532,11 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         Test that repr can be applied to a GetAttributes request payload with
         no ID.
         """
-        payload = payloads.GetAttributesRequestPayload(
-            None,
-            self.attribute_names
-        )
-        unique_identifier = "unique_identifier={0}".format(
-            payload.unique_identifier
-        )
-        attribute_names = "attribute_names={0}".format(
-            payload.attribute_names
-        )
+        payload = payloads.GetAttributesRequestPayload(None, self.attribute_names)
+        unique_identifier = "unique_identifier={0}".format(payload.unique_identifier)
+        attribute_names = "attribute_names={0}".format(payload.attribute_names)
         expected = "GetAttributesRequestPayload({0}, {1})".format(
-            unique_identifier,
-            attribute_names
+            unique_identifier, attribute_names
         )
         observed = repr(payload)
         self.assertEqual(expected, observed)
@@ -621,19 +546,11 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         Test that repr can be applied to a GetAttributes request payload with
         no attribute names.
         """
-        payload = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            None
-        )
-        unique_identifier = "unique_identifier={0}".format(
-            payload.unique_identifier
-        )
-        attribute_names = "attribute_names={0}".format(
-            payload.attribute_names
-        )
+        payload = payloads.GetAttributesRequestPayload(self.unique_identifier, None)
+        unique_identifier = "unique_identifier={0}".format(payload.unique_identifier)
+        attribute_names = "attribute_names={0}".format(payload.attribute_names)
         expected = "GetAttributesRequestPayload({0}, {1})".format(
-            unique_identifier,
-            attribute_names
+            unique_identifier, attribute_names
         )
         observed = repr(payload)
         self.assertEqual(expected, observed)
@@ -643,19 +560,11 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         Test that repr can be applied to a GetAttributes request payload with
         no ID or attribute names.
         """
-        payload = payloads.GetAttributesRequestPayload(
-            None,
-            None
-        )
-        unique_identifier = "unique_identifier={0}".format(
-            payload.unique_identifier
-        )
-        attribute_names = "attribute_names={0}".format(
-            payload.attribute_names
-        )
+        payload = payloads.GetAttributesRequestPayload(None, None)
+        unique_identifier = "unique_identifier={0}".format(payload.unique_identifier)
+        attribute_names = "attribute_names={0}".format(payload.attribute_names)
         expected = "GetAttributesRequestPayload({0}, {1})".format(
-            unique_identifier,
-            attribute_names
+            unique_identifier, attribute_names
         )
         observed = repr(payload)
         self.assertEqual(expected, observed)
@@ -665,13 +574,14 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         Test that str can be applied to a GetAttributes request payload.
         """
         payload = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
-        expected = str({
-            'unique_identifier': self.unique_identifier,
-            'attribute_names': self.attribute_names
-        })
+        expected = str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "attribute_names": self.attribute_names,
+            }
+        )
         observed = str(payload)
         self.assertEqual(expected, observed)
 
@@ -680,14 +590,10 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         Test that str can be applied to a GetAttributes request payload with
         no ID.
         """
-        payload = payloads.GetAttributesRequestPayload(
-            None,
-            self.attribute_names
+        payload = payloads.GetAttributesRequestPayload(None, self.attribute_names)
+        expected = str(
+            {"unique_identifier": None, "attribute_names": self.attribute_names}
         )
-        expected = str({
-            'unique_identifier': None,
-            'attribute_names': self.attribute_names
-        })
         observed = str(payload)
         self.assertEqual(expected, observed)
 
@@ -696,14 +602,10 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         Test that str can be applied to a GetAttributes request payload with
         no attribute names.
         """
-        payload = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            None
+        payload = payloads.GetAttributesRequestPayload(self.unique_identifier, None)
+        expected = str(
+            {"unique_identifier": self.unique_identifier, "attribute_names": list()}
         )
-        expected = str({
-            'unique_identifier': self.unique_identifier,
-            'attribute_names': list()
-        })
         observed = str(payload)
         self.assertEqual(expected, observed)
 
@@ -712,14 +614,8 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         Test that str can be applied to a GetAttributes request payload with
         no ID or attribute names.
         """
-        payload = payloads.GetAttributesRequestPayload(
-            None,
-            None
-        )
-        expected = str({
-            'unique_identifier': None,
-            'attribute_names': list()
-        })
+        payload = payloads.GetAttributesRequestPayload(None, None)
+        expected = str({"unique_identifier": None, "attribute_names": list()})
         observed = str(payload)
         self.assertEqual(expected, observed)
 
@@ -729,12 +625,10 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         GetAttributes request payloads with the same data.
         """
         a = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
         b = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
 
         self.assertTrue(a == b)
@@ -747,13 +641,11 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         but with different attribute name orderings.
         """
         a = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
         self.attribute_names.reverse()
         b = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
 
         self.assertTrue(a == b)
@@ -765,13 +657,9 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         GetAttributes request payloads with different IDs.
         """
         a = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
-        b = payloads.GetAttributesRequestPayload(
-            'invalid',
-            self.attribute_names
-        )
+        b = payloads.GetAttributesRequestPayload("invalid", self.attribute_names)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -782,13 +670,9 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         GetAttributes request payloads with different attribute names.
         """
         a = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
-        b = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            None
-        )
+        b = payloads.GetAttributesRequestPayload(self.unique_identifier, None)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -800,8 +684,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         payload.
         """
         a = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
         b = "invalid"
 
@@ -814,12 +697,10 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         two GetAttributes request payloads with the same internal data.
         """
         a = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
         b = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
 
         self.assertFalse(a != b)
@@ -831,13 +712,9 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         GetAttributes request payloads with different IDs.
         """
         a = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
-        b = payloads.GetAttributesRequestPayload(
-            'invalid',
-            self.attribute_names
-        )
+        b = payloads.GetAttributesRequestPayload("invalid", self.attribute_names)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -848,13 +725,9 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         GetAttributes request payloads with different attribute names.
         """
         a = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
-        b = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            None
-        )
+        b = payloads.GetAttributesRequestPayload(self.unique_identifier, None)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -866,8 +739,7 @@ class TestGetAttributesRequestPayload(testtools.TestCase):
         payload.
         """
         a = payloads.GetAttributesRequestPayload(
-            self.unique_identifier,
-            self.attribute_names
+            self.unique_identifier, self.attribute_names
         )
         b = "invalid"
 
@@ -903,33 +775,33 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         #         Attribute Name - x-Purpose
         #         Attribute Value - demonstration
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x01\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
-            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
-            b'\x61\x65\x34\x30\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x28'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C\x4F\x62\x6A\x65\x63\x74\x20\x47'
-            b'\x72\x6F\x75\x70\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x06\x47\x72\x6F\x75\x70\x31\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x58'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x20'
-            b'\x41\x70\x70\x6C\x69\x63\x61\x74\x69\x6F\x6E\x20\x53\x70\x65\x63'
-            b'\x69\x66\x69\x63\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E'
-            b'\x42\x00\x0B\x01\x00\x00\x00\x28'
-            b'\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00'
-            b'\x42\x00\x02\x07\x00\x00\x00\x0F\x77\x77\x77\x2E\x65\x78\x61\x6D'
-            b'\x70\x6C\x65\x2E\x63\x6F\x6D\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x13'
-            b'\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74'
-            b'\x69\x6F\x6E\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x03\x4A\x6F\x65\x00\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x09'
-            b'\x78\x2D\x50\x75\x72\x70\x6F\x73\x65\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x0D'
-            b'\x64\x65\x6D\x6F\x6E\x73\x74\x72\x61\x74\x69\x6F\x6E\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x01\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64"
+            b"\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34"
+            b"\x61\x65\x34\x30\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x28"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C\x4F\x62\x6A\x65\x63\x74\x20\x47"
+            b"\x72\x6F\x75\x70\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x06\x47\x72\x6F\x75\x70\x31\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x58"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x20"
+            b"\x41\x70\x70\x6C\x69\x63\x61\x74\x69\x6F\x6E\x20\x53\x70\x65\x63"
+            b"\x69\x66\x69\x63\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E"
+            b"\x42\x00\x0B\x01\x00\x00\x00\x28"
+            b"\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00"
+            b"\x42\x00\x02\x07\x00\x00\x00\x0F\x77\x77\x77\x2E\x65\x78\x61\x6D"
+            b"\x70\x6C\x65\x2E\x63\x6F\x6D\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x13"
+            b"\x43\x6F\x6E\x74\x61\x63\x74\x20\x49\x6E\x66\x6F\x72\x6D\x61\x74"
+            b"\x69\x6F\x6E\x00\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x03\x4A\x6F\x65\x00\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x09"
+            b"\x78\x2D\x50\x75\x72\x70\x6F\x73\x65\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x0D"
+            b"\x64\x65\x6D\x6F\x6E\x73\x74\x72\x61\x74\x69\x6F\x6E\x00\x00\x00"
         )
 
         # Encodings taken from Sections 3.1.2 of the KMIP 1.1 testing
@@ -944,75 +816,69 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         #             Application Data - www.example.com
         #         Contact Information - Joe
         self.full_encoding_with_attributes = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x78'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
-            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
-            b'\x61\x65\x34\x30\x00\x00\x00\x00'
-            b'\x42\x01\x25\x01\x00\x00\x00\x40'
-            b'\x42\x00\x04\x01\x00\x00\x00\x28'
-            b'\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00'
-            b'\x42\x00\x02\x07\x00\x00\x00\x0F\x77\x77\x77\x2E\x65\x78\x61\x6D'
-            b'\x70\x6C\x65\x2E\x63\x6F\x6D\x00'
-            b'\x42\x00\x22\x07\x00\x00\x00\x03\x4A\x6F\x65\x00\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x78"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64"
+            b"\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34"
+            b"\x61\x65\x34\x30\x00\x00\x00\x00"
+            b"\x42\x01\x25\x01\x00\x00\x00\x40"
+            b"\x42\x00\x04\x01\x00\x00\x00\x28"
+            b"\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00"
+            b"\x42\x00\x02\x07\x00\x00\x00\x0F\x77\x77\x77\x2E\x65\x78\x61\x6D"
+            b"\x70\x6C\x65\x2E\x63\x6F\x6D\x00"
+            b"\x42\x00\x22\x07\x00\x00\x00\x03\x4A\x6F\x65\x00\x00\x00\x00\x00"
         )
 
         self.encoding_sans_unique_identifier = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x01\x00\x42\x00\x08\x01\x00\x00\x00\x28'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C\x4F\x62\x6A\x65\x63\x74\x20\x47'
-            b'\x72\x6F\x75\x70\x00\x00\x00\x00\x42\x00\x0B\x07\x00\x00\x00\x06'
-            b'\x47\x72\x6F\x75\x70\x31\x00\x00\x42\x00\x08\x01\x00\x00\x00\x58'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x20\x41\x70\x70\x6C\x69\x63\x61\x74'
-            b'\x69\x6F\x6E\x20\x53\x70\x65\x63\x69\x66\x69\x63\x20\x49\x6E\x66'
-            b'\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x42\x00\x0B\x01\x00\x00\x00\x28'
-            b'\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00'
-            b'\x42\x00\x02\x07\x00\x00\x00\x0F\x77\x77\x77\x2E\x65\x78\x61\x6D'
-            b'\x70\x6C\x65\x2E\x63\x6F\x6D\x00\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x13\x43\x6F\x6E\x74\x61\x63\x74\x20'
-            b'\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x03\x4A\x6F\x65\x00\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30\x42\x00\x0A\x07\x00\x00\x00\x09'
-            b'\x78\x2D\x50\x75\x72\x70\x6F\x73\x65\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x0D\x64\x65\x6D\x6F\x6E\x73\x74\x72'
-            b'\x61\x74\x69\x6F\x6E\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x01\x00\x42\x00\x08\x01\x00\x00\x00\x28"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C\x4F\x62\x6A\x65\x63\x74\x20\x47"
+            b"\x72\x6F\x75\x70\x00\x00\x00\x00\x42\x00\x0B\x07\x00\x00\x00\x06"
+            b"\x47\x72\x6F\x75\x70\x31\x00\x00\x42\x00\x08\x01\x00\x00\x00\x58"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x20\x41\x70\x70\x6C\x69\x63\x61\x74"
+            b"\x69\x6F\x6E\x20\x53\x70\x65\x63\x69\x66\x69\x63\x20\x49\x6E\x66"
+            b"\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x42\x00\x0B\x01\x00\x00\x00\x28"
+            b"\x42\x00\x03\x07\x00\x00\x00\x03\x73\x73\x6C\x00\x00\x00\x00\x00"
+            b"\x42\x00\x02\x07\x00\x00\x00\x0F\x77\x77\x77\x2E\x65\x78\x61\x6D"
+            b"\x70\x6C\x65\x2E\x63\x6F\x6D\x00\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x13\x43\x6F\x6E\x74\x61\x63\x74\x20"
+            b"\x49\x6E\x66\x6F\x72\x6D\x61\x74\x69\x6F\x6E\x00\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x03\x4A\x6F\x65\x00\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30\x42\x00\x0A\x07\x00\x00\x00\x09"
+            b"\x78\x2D\x50\x75\x72\x70\x6F\x73\x65\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x0D\x64\x65\x6D\x6F\x6E\x73\x74\x72"
+            b"\x61\x74\x69\x6F\x6E\x00\x00\x00"
         )
         self.encoding_sans_attributes = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64'
-            b'\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34'
-            b'\x61\x65\x34\x30\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x31\x37\x30\x33\x32\x35\x30\x62\x2D\x34\x64\x34\x30\x2D\x34\x64"
+            b"\x65\x32\x2D\x39\x33\x61\x30\x2D\x63\x34\x39\x34\x61\x31\x64\x34"
+            b"\x61\x65\x34\x30\x00\x00\x00\x00"
         )
 
-        self.unique_identifier = '1703250b-4d40-4de2-93a0-c494a1d4ae40'
+        self.unique_identifier = "1703250b-4d40-4de2-93a0-c494a1d4ae40"
         self.attributes = [
             objects.Attribute(
-                attribute_name=objects.Attribute.AttributeName(
-                    'Object Group'
-                ),
+                attribute_name=objects.Attribute.AttributeName("Object Group"),
                 attribute_value=primitives.TextString(
-                    "Group1",
-                    enums.Tags.OBJECT_GROUP
-                )
+                    "Group1", enums.Tags.OBJECT_GROUP
+                ),
             ),
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName(
-                    'Application Specific Information'
+                    "Application Specific Information"
                 ),
                 attribute_value=attributes.ApplicationSpecificInformation(
-                    application_namespace="ssl",
-                    application_data="www.example.com"
-                )
-            ),
-            objects.Attribute(
-                attribute_name=objects.Attribute.AttributeName(
-                    'Contact Information'
+                    application_namespace="ssl", application_data="www.example.com"
                 ),
-                attribute_value=attributes.ContactInformation('Joe')
             ),
             objects.Attribute(
-                attribute_name=objects.Attribute.AttributeName('x-Purpose'),
-                attribute_value=primitives.TextString('demonstration')
-            )
+                attribute_name=objects.Attribute.AttributeName("Contact Information"),
+                attribute_value=attributes.ContactInformation("Joe"),
+            ),
+            objects.Attribute(
+                attribute_name=objects.Attribute.AttributeName("x-Purpose"),
+                attribute_value=primitives.TextString("demonstration"),
+            ),
         ]
 
     def tearDown(self):
@@ -1030,8 +896,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         valid value.
         """
         payloads.GetAttributesResponsePayload(
-            'test-unique-identifier',
-            [objects.Attribute(), objects.Attribute()]
+            "test-unique-identifier", [objects.Attribute(), objects.Attribute()]
         )
 
     def test_unique_identifier(self):
@@ -1044,15 +909,14 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.unique_identifier)
         self.assertIsNone(payload._unique_identifier)
 
-        payload.unique_identifier = 'test-unique-identifier'
+        payload.unique_identifier = "test-unique-identifier"
 
-        self.assertEqual('test-unique-identifier', payload.unique_identifier)
+        self.assertEqual("test-unique-identifier", payload.unique_identifier)
         self.assertEqual(
             primitives.TextString(
-                value='test-unique-identifier',
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value="test-unique-identifier", tag=enums.Tags.UNIQUE_IDENTIFIER
             ),
-            payload._unique_identifier
+            payload._unique_identifier,
         )
 
     def test_unique_identifier_with_invalid_value(self):
@@ -1061,12 +925,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         the unique_identifier attribute of a GetAttributes response payload.
         """
         payload = payloads.GetAttributesResponsePayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_attributes(self):
@@ -1079,10 +940,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         self.assertEqual(list(), payload.attributes)
         self.assertEqual(list(), payload._attributes)
 
-        payload.attributes = [
-            objects.Attribute(),
-            objects.Attribute()
-        ]
+        payload.attributes = [objects.Attribute(), objects.Attribute()]
 
         self.assertEqual(2, len(payload.attributes))
         self.assertEqual(2, len(payload._attributes))
@@ -1095,12 +953,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         the attributes attribute of a GetAttributes response payload.
         """
         payload = payloads.GetAttributesResponsePayload()
-        args = (payload, 'attributes', 0)
+        args = (payload, "attributes", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Attributes must be a list of attribute objects.",
-            setattr,
-            *args
+            TypeError, "Attributes must be a list of attribute objects.", setattr, *args
         )
 
     def test_attributes_with_invalid_attribute(self):
@@ -1110,11 +965,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         response payload.
         """
         payload = payloads.GetAttributesResponsePayload()
-        args = (
-            payload,
-            'attributes',
-            [objects.Attribute(), 0]
-        )
+        args = (payload, "attributes", [objects.Attribute(), 0])
         self.assertRaisesRegex(
             TypeError,
             "Attributes must be a list of attribute objects; "
@@ -1136,15 +987,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
-        self.assertEqual(
-            len(self.attributes),
-            len(payload.attributes)
-        )
+        self.assertEqual(len(self.attributes), len(payload.attributes))
         for attribute in self.attributes:
-            self.assertIn(
-                attribute,
-                payload._attributes
-            )
+            self.assertIn(attribute, payload._attributes)
 
     def test_read_kmip_2_0(self):
         """
@@ -1157,8 +1002,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         self.assertEqual(list(), payload.attributes)
 
         payload.read(
-            self.full_encoding_with_attributes,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding_with_attributes, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
@@ -1166,23 +1010,20 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         self.assertIn(
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName(
-                    'Application Specific Information'
+                    "Application Specific Information"
                 ),
                 attribute_value=attributes.ApplicationSpecificInformation(
-                    application_namespace="ssl",
-                    application_data="www.example.com"
-                )
+                    application_namespace="ssl", application_data="www.example.com"
+                ),
             ),
-            payload.attributes
+            payload.attributes,
         )
         self.assertIn(
             objects.Attribute(
-                attribute_name=objects.Attribute.AttributeName(
-                    'Contact Information'
-                ),
-                attribute_value=attributes.ContactInformation('Joe')
+                attribute_name=objects.Attribute.AttributeName("Contact Information"),
+                attribute_value=attributes.ContactInformation("Joe"),
             ),
-            payload.attributes
+            payload.attributes,
         )
 
     def test_read_with_no_unique_identifier(self):
@@ -1195,7 +1036,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         self.assertEqual(None, payload._unique_identifier)
         self.assertEqual(list(), payload._attributes)
 
-        args = (self.encoding_sans_unique_identifier, )
+        args = (self.encoding_sans_unique_identifier,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The GetAttributes response payload encoding is missing the "
@@ -1219,10 +1060,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
         self.assertEqual(
             primitives.TextString(
-                value=self.unique_identifier,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=self.unique_identifier, tag=enums.Tags.UNIQUE_IDENTIFIER
             ),
-            payload._unique_identifier
+            payload._unique_identifier,
         )
         self.assertEqual(list(), payload.attributes)
         self.assertEqual(list(), payload._attributes)
@@ -1235,7 +1075,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetAttributesResponsePayload()
 
-        args = (self.encoding_sans_attributes, )
+        args = (self.encoding_sans_attributes,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
@@ -1252,8 +1092,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         stream.
         """
         payload = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -1271,20 +1110,19 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
             [
                 objects.Attribute(
                     attribute_name=objects.Attribute.AttributeName(
-                        'Application Specific Information'
+                        "Application Specific Information"
                     ),
                     attribute_value=attributes.ApplicationSpecificInformation(
-                        application_namespace="ssl",
-                        application_data="www.example.com"
-                    )
+                        application_namespace="ssl", application_data="www.example.com"
+                    ),
                 ),
                 objects.Attribute(
                     attribute_name=objects.Attribute.AttributeName(
-                        'Contact Information'
+                        "Contact Information"
                     ),
-                    attribute_value=attributes.ContactInformation('Joe')
-                )
-            ]
+                    attribute_value=attributes.ContactInformation("Joe"),
+                ),
+            ],
         )
         stream = utils.BytearrayStream()
         payload.write(stream, kmip_version=enums.KMIPVersion.KMIP_2_0)
@@ -1297,13 +1135,10 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         Test that a GetAttributes request payload with no ID can be written
         to a data stream.
         """
-        payload = payloads.GetAttributesResponsePayload(
-            None,
-            self.attributes
-        )
+        payload = payloads.GetAttributesResponsePayload(None, self.attributes)
         stream = utils.BytearrayStream()
 
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The GetAttributes response payload is missing the unique "
@@ -1317,10 +1152,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         Test that a GetAttributes response payload with no attribute name
         data can be written to a data stream.
         """
-        payload = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            None
-        )
+        payload = payloads.GetAttributesResponsePayload(self.unique_identifier, None)
         stream = utils.BytearrayStream()
         payload.write(stream)
 
@@ -1335,12 +1167,11 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         """
         payload = payloads.GetAttributesResponsePayload(self.unique_identifier)
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The GetAttributes response payload is missing the attributes "
-            "list.",
+            "The GetAttributes response payload is missing the attributes " "list.",
             payload.write,
             *args,
             **kwargs
@@ -1351,18 +1182,12 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         Test that repr can be applied to a GetAttributes response payload.
         """
         payload = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
-        unique_identifier = "unique_identifier={0}".format(
-            payload.unique_identifier
-        )
-        payload_attributes = "attributes={0}".format(
-            payload.attributes
-        )
+        unique_identifier = "unique_identifier={0}".format(payload.unique_identifier)
+        payload_attributes = "attributes={0}".format(payload.attributes)
         expected = "GetAttributesResponsePayload({0}, {1})".format(
-            unique_identifier,
-            payload_attributes
+            unique_identifier, payload_attributes
         )
         observed = repr(payload)
         self.assertEqual(expected, observed)
@@ -1372,13 +1197,11 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         Test that str can be applied to a GetAttributes response payload.
         """
         payload = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
-        expected = str({
-            'unique_identifier': self.unique_identifier,
-            'attributes': self.attributes
-        })
+        expected = str(
+            {"unique_identifier": self.unique_identifier, "attributes": self.attributes}
+        )
         observed = str(payload)
         self.assertEqual(expected, observed)
 
@@ -1388,12 +1211,10 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         GetAttributes response payloads with the same data.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
         b = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
 
         self.assertTrue(a == b)
@@ -1405,13 +1226,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         GetAttributes response payloads with different data.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
-        b = payloads.GetAttributesResponsePayload(
-            'invalid',
-            self.attributes
-        )
+        b = payloads.GetAttributesResponsePayload("invalid", self.attributes)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1422,14 +1239,12 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         GetAttributes response payloads with different data.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
         reversed_attributes = copy.deepcopy(self.attributes)
         reversed_attributes.reverse()
         b = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            reversed_attributes
+            self.unique_identifier, reversed_attributes
         )
 
         self.assertFalse(a == b)
@@ -1441,13 +1256,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         GetAttributes response payloads with different data.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
-        b = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            list()
-        )
+        b = payloads.GetAttributesResponsePayload(self.unique_identifier, list())
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1457,13 +1268,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         GetAttributes response payloads with different data.
         """
-        a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            None
-        )
+        a = payloads.GetAttributesResponsePayload(self.unique_identifier, None)
         b = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
 
         self.assertFalse(a == b)
@@ -1476,10 +1283,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         payload.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1490,12 +1296,10 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         two GetAttributes response payloads with the same internal data.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
         b = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
 
         self.assertFalse(a != b)
@@ -1507,13 +1311,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         GetAttributes request payloads with different data.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
-        b = payloads.GetAttributesResponsePayload(
-            'invalid',
-            self.attributes
-        )
+        b = payloads.GetAttributesResponsePayload("invalid", self.attributes)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1524,14 +1324,12 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         GetAttributes response payloads with different data.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
         reversed_attributes = copy.deepcopy(self.attributes)
         reversed_attributes.reverse()
         b = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            reversed_attributes
+            self.unique_identifier, reversed_attributes
         )
 
         self.assertTrue(a != b)
@@ -1543,13 +1341,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         GetAttributes response payloads with different data.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
-        b = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            list()
-        )
+        b = payloads.GetAttributesResponsePayload(self.unique_identifier, list())
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1559,13 +1353,9 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         Test that the inequality operator returns False when comparing two
         GetAttributes response payloads with different data.
         """
-        a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            None
-        )
+        a = payloads.GetAttributesResponsePayload(self.unique_identifier, None)
         b = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
 
         self.assertTrue(a != b)
@@ -1578,8 +1368,7 @@ class TestGetAttributesResponsePayload(testtools.TestCase):
         payload.
         """
         a = payloads.GetAttributesResponsePayload(
-            self.unique_identifier,
-            self.attributes
+            self.unique_identifier, self.attributes
         )
         b = "invalid"
 

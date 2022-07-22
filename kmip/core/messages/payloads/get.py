@@ -39,11 +39,13 @@ class GetRequestPayload(base.RequestPayload):
             a key.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 key_format_type=None,
-                 key_compression_type=None,
-                 key_wrapping_specification=None):
+    def __init__(
+        self,
+        unique_identifier=None,
+        key_format_type=None,
+        key_compression_type=None,
+        key_wrapping_specification=None,
+    ):
         """
         Construct a Get request payload struct.
 
@@ -87,8 +89,7 @@ class GetRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -106,14 +107,10 @@ class GetRequestPayload(base.RequestPayload):
             self._key_format_type = None
         elif isinstance(value, enums.KeyFormatType):
             self._key_format_type = primitives.Enumeration(
-                enums.KeyFormatType,
-                value=value,
-                tag=enums.Tags.KEY_FORMAT_TYPE
+                enums.KeyFormatType, value=value, tag=enums.Tags.KEY_FORMAT_TYPE
             )
         else:
-            raise TypeError(
-                "Key format type must be a KeyFormatType enumeration."
-            )
+            raise TypeError("Key format type must be a KeyFormatType enumeration.")
 
     @property
     def key_compression_type(self):
@@ -130,12 +127,11 @@ class GetRequestPayload(base.RequestPayload):
             self._key_compression_type = primitives.Enumeration(
                 enums.KeyCompressionType,
                 value=value,
-                tag=enums.Tags.KEY_COMPRESSION_TYPE
+                tag=enums.Tags.KEY_COMPRESSION_TYPE,
             )
         else:
             raise TypeError(
-                "Key compression type must be a KeyCompressionType "
-                "enumeration."
+                "Key compression type must be a KeyCompressionType " "enumeration."
             )
 
     @property
@@ -167,50 +163,31 @@ class GetRequestPayload(base.RequestPayload):
                 version with which the object will be decoded. Optional,
                 defaults to KMIP 1.0.
         """
-        super(GetRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(GetRequestPayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.KEY_FORMAT_TYPE, local_stream):
             self._key_format_type = primitives.Enumeration(
-                enum=enums.KeyFormatType,
-                tag=enums.Tags.KEY_FORMAT_TYPE
+                enum=enums.KeyFormatType, tag=enums.Tags.KEY_FORMAT_TYPE
             )
-            self._key_format_type.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._key_format_type.read(local_stream, kmip_version=kmip_version)
 
         if self.is_tag_next(enums.Tags.KEY_COMPRESSION_TYPE, local_stream):
             self._key_compression_type = primitives.Enumeration(
-                enum=enums.KeyCompressionType,
-                tag=enums.Tags.KEY_COMPRESSION_TYPE
+                enum=enums.KeyCompressionType, tag=enums.Tags.KEY_COMPRESSION_TYPE
             )
-            self._key_compression_type.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._key_compression_type.read(local_stream, kmip_version=kmip_version)
 
-        if self.is_tag_next(
-                enums.Tags.KEY_WRAPPING_SPECIFICATION,
-                local_stream
-        ):
-            self._key_wrapping_specification = \
-                objects.KeyWrappingSpecification()
+        if self.is_tag_next(enums.Tags.KEY_WRAPPING_SPECIFICATION, local_stream):
+            self._key_wrapping_specification = objects.KeyWrappingSpecification()
             self._key_wrapping_specification.read(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         self.is_oversized(local_stream)
@@ -230,31 +207,18 @@ class GetRequestPayload(base.RequestPayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier is not None:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._key_format_type is not None:
-            self._key_format_type.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._key_format_type.write(local_stream, kmip_version=kmip_version)
         if self._key_compression_type is not None:
-            self._key_compression_type.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._key_compression_type.write(local_stream, kmip_version=kmip_version)
         if self._key_wrapping_specification is not None:
             self._key_wrapping_specification.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         self.length = local_stream.length()
-        super(GetRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(GetRequestPayload, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -265,8 +229,7 @@ class GetRequestPayload(base.RequestPayload):
                 return False
             elif self.key_compression_type != other.key_compression_type:
                 return False
-            elif self.key_wrapping_specification != \
-                    other.key_wrapping_specification:
+            elif self.key_wrapping_specification != other.key_wrapping_specification:
                 return False
             else:
                 return True
@@ -280,23 +243,27 @@ class GetRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "key_format_type={0}".format(self.key_format_type),
-            "key_compression_type={0}".format(self.key_compression_type),
-            "key_wrapping_specification={0}".format(
-                repr(self.key_wrapping_specification)
-            )
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "key_format_type={0}".format(self.key_format_type),
+                "key_compression_type={0}".format(self.key_compression_type),
+                "key_wrapping_specification={0}".format(
+                    repr(self.key_wrapping_specification)
+                ),
+            ]
+        )
         return "GetRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'key_format_type': self.key_format_type,
-            'key_compression_type': self.key_compression_type,
-            'key_wrapping_specification': self.key_wrapping_specification
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "key_format_type": self.key_format_type,
+                "key_compression_type": self.key_compression_type,
+                "key_wrapping_specification": self.key_wrapping_specification,
+            }
+        )
 
 
 class GetResponsePayload(base.ResponsePayload):
@@ -309,10 +276,7 @@ class GetResponsePayload(base.ResponsePayload):
         secret: The managed object being returned.
     """
 
-    def __init__(self,
-                 object_type=None,
-                 unique_identifier=None,
-                 secret=None):
+    def __init__(self, object_type=None, unique_identifier=None, secret=None):
         """
         Construct a Get response payload struct.
 
@@ -353,9 +317,7 @@ class GetResponsePayload(base.ResponsePayload):
             self._object_type = None
         elif isinstance(value, enums.ObjectType):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                value=value,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, value=value, tag=enums.Tags.OBJECT_TYPE
             )
         else:
             raise TypeError("Object type must be an ObjectType enumeration.")
@@ -373,8 +335,7 @@ class GetResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -388,17 +349,17 @@ class GetResponsePayload(base.ResponsePayload):
         if value is None:
             self._secret = None
         elif isinstance(
-                value,
-                (
-                    secrets.Certificate,
-                    secrets.OpaqueObject,
-                    secrets.PrivateKey,
-                    secrets.PublicKey,
-                    secrets.SecretData,
-                    secrets.SplitKey,
-                    secrets.SymmetricKey,
-                    secrets.Template
-                )
+            value,
+            (
+                secrets.Certificate,
+                secrets.OpaqueObject,
+                secrets.PrivateKey,
+                secrets.PublicKey,
+                secrets.SecretData,
+                secrets.SplitKey,
+                secrets.SymmetricKey,
+                secrets.Template,
+            ),
         ):
             self._secret = value
         else:
@@ -425,16 +386,12 @@ class GetResponsePayload(base.ResponsePayload):
             ValueError: Raised if the object type, unique identifier, or
                 secret attributes are missing from the encoded payload.
         """
-        super(GetResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(GetResponsePayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_stream):
             self._object_type = primitives.Enumeration(
-                enum=enums.ObjectType,
-                tag=enums.Tags.OBJECT_TYPE
+                enum=enums.ObjectType, tag=enums.Tags.OBJECT_TYPE
             )
             self._object_type.read(local_stream, kmip_version=kmip_version)
         else:
@@ -446,23 +403,17 @@ class GetResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         else:
             raise ValueError(
-                "Parsed payload encoding is missing the unique identifier "
-                "field."
+                "Parsed payload encoding is missing the unique identifier " "field."
             )
 
         self.secret = self.secret_factory.create(self.object_type)
         if self.is_tag_next(self._secret.tag, local_stream):
             self._secret.read(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Parsed payload encoding is missing the secret field."
-            )
+            raise ValueError("Parsed payload encoding is missing the secret field.")
 
         self.is_oversized(local_stream)
 
@@ -490,14 +441,9 @@ class GetResponsePayload(base.ResponsePayload):
             raise ValueError("Payload is missing the object type field.")
 
         if self.unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         else:
-            raise ValueError(
-                "Payload is missing the unique identifier field."
-            )
+            raise ValueError("Payload is missing the unique identifier field.")
 
         if self.secret:
             self._secret.write(local_stream, kmip_version=kmip_version)
@@ -505,10 +451,7 @@ class GetResponsePayload(base.ResponsePayload):
             raise ValueError("Payload is missing the secret field.")
 
         self.length = local_stream.length()
-        super(GetResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(GetResponsePayload, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
@@ -531,16 +474,20 @@ class GetResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "object_type={0}".format(self.object_type),
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "secret={0}".format(repr(self.secret))
-        ])
+        args = ", ".join(
+            [
+                "object_type={0}".format(self.object_type),
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "secret={0}".format(repr(self.secret)),
+            ]
+        )
         return "GetResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'object_type': self.object_type,
-            'unique_identifier': self.unique_identifier,
-            'secret': self.secret
-        })
+        return str(
+            {
+                "object_type": self.object_type,
+                "unique_identifier": self.unique_identifier,
+                "secret": self.secret,
+            }
+        )

@@ -47,21 +47,21 @@ class KmipServer(object):
 
     # TODO (peter-hamilton) Move to using **kwargs for all server parameters.
     def __init__(
-            self,
-            hostname=None,
-            port=None,
-            certificate_path=None,
-            key_path=None,
-            ca_path=None,
-            auth_suite=None,
-            config_path='/etc/pykmip/server.conf',
-            log_path='/var/log/pykmip/server.log',
-            policy_path=None,
-            enable_tls_client_auth=None,
-            tls_cipher_suites=None,
-            logging_level=None,
-            live_policies=False,
-            database_path=None
+        self,
+        hostname=None,
+        port=None,
+        certificate_path=None,
+        key_path=None,
+        ca_path=None,
+        auth_suite=None,
+        config_path="/etc/pykmip/server.conf",
+        log_path="/var/log/pykmip/server.log",
+        policy_path=None,
+        enable_tls_client_auth=None,
+        tls_cipher_suites=None,
+        logging_level=None,
+        live_policies=False,
+        database_path=None,
     ):
         """
         Create a KmipServer.
@@ -128,7 +128,7 @@ class KmipServer(object):
             database_path (string): The path to the server's SQLite database
                 file. Optional, defaults to None.
         """
-        self._logger = logging.getLogger('kmip.server')
+        self._logger = logging.getLogger("kmip.server")
         self._setup_logging(log_path)
 
         self.config = config.KmipServerConfig()
@@ -144,15 +144,15 @@ class KmipServer(object):
             enable_tls_client_auth,
             tls_cipher_suites,
             logging_level,
-            database_path
+            database_path,
         )
         self.live_policies = live_policies
         self.policies = {}
 
-        self._logger.setLevel(self.config.settings.get('logging_level'))
+        self._logger.setLevel(self.config.settings.get("logging_level"))
 
-        cipher_suites = self.config.settings.get('tls_cipher_suites')
-        if self.config.settings.get('auth_suite') == 'TLS1.2':
+        cipher_suites = self.config.settings.get("tls_cipher_suites")
+        if self.config.settings.get("auth_suite") == "TLS1.2":
             self.auth_suite = auth.TLS12AuthenticationSuite(cipher_suites)
         else:
             self.auth_suite = auth.BasicAuthenticationSuite(cipher_suites)
@@ -165,68 +165,57 @@ class KmipServer(object):
         if not os.path.exists(path):
             if not os.path.isdir(os.path.dirname(path)):
                 os.makedirs(os.path.dirname(path))
-            open(path, 'w').close()
+            open(path, "w").close()
 
         handler = handlers.RotatingFileHandler(
-            path,
-            mode='a',
-            maxBytes=1000000,
-            backupCount=5
+            path, mode="a", maxBytes=1000000, backupCount=5
         )
         handler.setFormatter(
-            logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         )
         self._logger.addHandler(handler)
         self._logger.setLevel(logging.DEBUG)
 
     def _setup_configuration(
-            self,
-            path=None,
-            hostname=None,
-            port=None,
-            certificate_path=None,
-            key_path=None,
-            ca_path=None,
-            auth_suite=None,
-            policy_path=None,
-            enable_tls_client_auth=None,
-            tls_cipher_suites=None,
-            logging_level=None,
-            database_path=None
+        self,
+        path=None,
+        hostname=None,
+        port=None,
+        certificate_path=None,
+        key_path=None,
+        ca_path=None,
+        auth_suite=None,
+        policy_path=None,
+        enable_tls_client_auth=None,
+        tls_cipher_suites=None,
+        logging_level=None,
+        database_path=None,
     ):
         if path:
             self.config.load_settings(path)
 
         if hostname:
-            self.config.set_setting('hostname', hostname)
+            self.config.set_setting("hostname", hostname)
         if port:
-            self.config.set_setting('port', port)
+            self.config.set_setting("port", port)
         if certificate_path:
-            self.config.set_setting('certificate_path', certificate_path)
+            self.config.set_setting("certificate_path", certificate_path)
         if key_path:
-            self.config.set_setting('key_path', key_path)
+            self.config.set_setting("key_path", key_path)
         if ca_path:
-            self.config.set_setting('ca_path', ca_path)
+            self.config.set_setting("ca_path", ca_path)
         if auth_suite:
-            self.config.set_setting('auth_suite', auth_suite)
+            self.config.set_setting("auth_suite", auth_suite)
         if policy_path:
-            self.config.set_setting('policy_path', policy_path)
+            self.config.set_setting("policy_path", policy_path)
         if enable_tls_client_auth is not None:
-            self.config.set_setting(
-                'enable_tls_client_auth',
-                enable_tls_client_auth
-            )
+            self.config.set_setting("enable_tls_client_auth", enable_tls_client_auth)
         if tls_cipher_suites:
-            self.config.set_setting(
-                'tls_cipher_suites',
-                tls_cipher_suites.split(',')
-            )
+            self.config.set_setting("tls_cipher_suites", tls_cipher_suites.split(","))
         if logging_level:
-            self.config.set_setting('logging_level', logging_level)
+            self.config.set_setting("logging_level", logging_level)
         if database_path:
-            self.config.set_setting('database_path', database_path)
+            self.config.set_setting("database_path", database_path)
 
     def start(self):
         """
@@ -247,13 +236,12 @@ class KmipServer(object):
             self.policies[policy_name] = policy_set
 
         self.policy_monitor = monitor.PolicyDirectoryMonitor(
-            self.config.settings.get('policy_path'),
-            self.policies,
-            self.live_policies
+            self.config.settings.get("policy_path"), self.policies, self.live_policies
         )
 
         def interrupt_handler(trigger, frame):
             self.policy_monitor.stop()
+
         signal.signal(signal.SIGINT, interrupt_handler)
         signal.signal(signal.SIGTERM, interrupt_handler)
 
@@ -261,7 +249,7 @@ class KmipServer(object):
 
         self._engine = engine.KmipEngine(
             policies=self.policies,
-            database_path=self.config.settings.get('database_path')
+            database_path=self.config.settings.get("database_path"),
         )
 
         self._logger.info("Starting server socket handler.")
@@ -273,53 +261,51 @@ class KmipServer(object):
 
         self._logger.debug(
             "Configured cipher suites: {0}".format(
-                len(self.config.settings.get('tls_cipher_suites'))
+                len(self.config.settings.get("tls_cipher_suites"))
             )
         )
-        for cipher in self.config.settings.get('tls_cipher_suites'):
+        for cipher in self.config.settings.get("tls_cipher_suites"):
             self._logger.debug(cipher)
-        auth_suite_ciphers = self.auth_suite.ciphers.split(':')
+        auth_suite_ciphers = self.auth_suite.ciphers.split(":")
         self._logger.debug(
-            "Authentication suite ciphers to use: {0}".format(
-                len(auth_suite_ciphers)
-            )
+            "Authentication suite ciphers to use: {0}".format(len(auth_suite_ciphers))
         )
         for cipher in auth_suite_ciphers:
             self._logger.debug(cipher)
 
         self._socket = ssl.wrap_socket(
             self._socket,
-            keyfile=self.config.settings.get('key_path'),
-            certfile=self.config.settings.get('certificate_path'),
+            keyfile=self.config.settings.get("key_path"),
+            certfile=self.config.settings.get("certificate_path"),
             server_side=True,
             cert_reqs=ssl.CERT_REQUIRED,
             ssl_version=self.auth_suite.protocol,
-            ca_certs=self.config.settings.get('ca_path'),
+            ca_certs=self.config.settings.get("ca_path"),
             do_handshake_on_connect=False,
             suppress_ragged_eofs=True,
-            ciphers=self.auth_suite.ciphers
+            ciphers=self.auth_suite.ciphers,
         )
 
         try:
             self._socket.bind(
                 (
-                    self.config.settings.get('hostname'),
-                    int(self.config.settings.get('port'))
+                    self.config.settings.get("hostname"),
+                    int(self.config.settings.get("port")),
                 )
             )
         except Exception as e:
             self._logger.exception(e)
             raise exceptions.NetworkingError(
                 "Server failed to bind socket handler to {0}:{1}".format(
-                    self.config.settings.get('hostname'),
-                    self.config.settings.get('port')
+                    self.config.settings.get("hostname"),
+                    self.config.settings.get("port"),
                 )
             )
         else:
             self._logger.info(
                 "Server successfully bound socket handler to {0}:{1}".format(
-                    self.config.settings.get('hostname'),
-                    self.config.settings.get('port')
+                    self.config.settings.get("hostname"),
+                    self.config.settings.get("port"),
                 )
             )
             self._is_serving = True
@@ -355,9 +341,7 @@ class KmipServer(object):
                         )
                     else:
                         self._logger.info(
-                            "Cleanup succeeded for thread: {0}".format(
-                                thread.name
-                            )
+                            "Cleanup succeeded for thread: {0}".format(thread.name)
                         )
 
         self._logger.info("Shutting down server socket handler.")
@@ -434,10 +418,7 @@ class KmipServer(object):
 
     def _setup_connection_handler(self, connection, address):
         self._logger.info(
-            "Receiving incoming connection from: {0}:{1}".format(
-                address[0],
-                address[1]
-            )
+            "Receiving incoming connection from: {0}:{1}".format(address[0], address[1])
         )
 
         session_name = "{0:08}".format(self._session_id)
@@ -445,9 +426,7 @@ class KmipServer(object):
 
         self._logger.info(
             "Dedicating session {0} to {1}:{2}".format(
-                session_name,
-                address[0],
-                address[1]
+                session_name, address[0], address[1]
             )
         )
 
@@ -458,17 +437,15 @@ class KmipServer(object):
                 address,
                 name=session_name,
                 enable_tls_client_auth=self.config.settings.get(
-                    'enable_tls_client_auth'
+                    "enable_tls_client_auth"
                 ),
-                auth_settings=self.config.settings.get('auth_plugins')
+                auth_settings=self.config.settings.get("auth_plugins"),
             )
             s.daemon = True
             s.start()
         except Exception as e:
             self._logger.warning(
-                "Failure occurred while starting session: {0}".format(
-                    session_name
-                )
+                "Failure occurred while starting session: {0}".format(session_name)
             )
             self._logger.exception(e)
 
@@ -482,8 +459,8 @@ class KmipServer(object):
 
 def build_argument_parser():
     parser = optparse.OptionParser(
-        usage="%prog [options]",
-        description="Run the PyKMIP software server.")
+        usage="%prog [options]", description="Run the PyKMIP software server."
+    )
 
     parser.add_option(
         "-n",
@@ -579,9 +556,7 @@ def build_argument_parser():
         type="str",
         default=None,
         dest="log_path",
-        help=(
-            "A string representing a path to a log file. Defaults to None."
-        ),
+        help=("A string representing a path to a log file. Defaults to None."),
     )
     parser.add_option(
         "-o",
@@ -605,7 +580,7 @@ def build_argument_parser():
             "A boolean indicating whether or not the TLS certificate client "
             "auth flag should be ignored when establishing client sessions. "
             "Optional, defaults to None."
-        )
+        ),
     )
     parser.add_option(
         "-v",
@@ -617,7 +592,7 @@ def build_argument_parser():
         help=(
             "A string representing the logging level for the server (e.g., "
             "DEBUG, INFO). Optional, defaults to None."
-        )
+        ),
     )
     parser.add_option(
         "-d",
@@ -642,31 +617,31 @@ def main(args=None):
 
     kwargs = {}
     if opts.hostname:
-        kwargs['hostname'] = opts.hostname
+        kwargs["hostname"] = opts.hostname
     if opts.port:
-        kwargs['port'] = opts.port
+        kwargs["port"] = opts.port
     if opts.certificate_path:
-        kwargs['certificate_path'] = opts.certificate_path
+        kwargs["certificate_path"] = opts.certificate_path
     if opts.key_path:
-        kwargs['key_path'] = opts.key_path
+        kwargs["key_path"] = opts.key_path
     if opts.ca_path:
-        kwargs['ca_path'] = opts.ca_path
+        kwargs["ca_path"] = opts.ca_path
     if opts.auth_suite:
-        kwargs['auth_suite'] = opts.auth_suite
+        kwargs["auth_suite"] = opts.auth_suite
     if opts.config_path:
-        kwargs['config_path'] = opts.config_path
+        kwargs["config_path"] = opts.config_path
     if opts.log_path:
-        kwargs['log_path'] = opts.log_path
+        kwargs["log_path"] = opts.log_path
     if opts.policy_path:
-        kwargs['policy_path'] = opts.policy_path
+        kwargs["policy_path"] = opts.policy_path
     if opts.ignore_tls_client_auth:
-        kwargs['enable_tls_client_auth'] = False
+        kwargs["enable_tls_client_auth"] = False
     if opts.logging_level:
-        kwargs['logging_level'] = opts.logging_level
+        kwargs["logging_level"] = opts.logging_level
     if opts.database_path:
-        kwargs['database_path'] = opts.database_path
+        kwargs["database_path"] = opts.database_path
 
-    kwargs['live_policies'] = True
+    kwargs["live_policies"] = True
 
     # Create and start the server.
     s = KmipServer(**kwargs)
@@ -674,5 +649,5 @@ def main(args=None):
         s.serve()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -30,7 +30,7 @@ import logging
 import sys
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     parser = utils.build_cli_parser(Operation.REGISTER)
@@ -50,8 +50,7 @@ if __name__ == '__main__':
 
     key_format_type = getattr(KeyFormatType, format_type, None)
     if key_format_type is None:
-        logger.error(
-            "Invalid key format type specified; exiting early from demo")
+        logger.error("Invalid key format type specified; exiting early from demo")
 
     attribute_factory = AttributeFactory()
 
@@ -61,8 +60,7 @@ if __name__ == '__main__':
 
     if opts.operation_policy_name is not None:
         opn = attribute_factory.create_attribute(
-            enums.AttributeType.OPERATION_POLICY_NAME,
-            opts.operation_policy_name
+            enums.AttributeType.OPERATION_POLICY_NAME, opts.operation_policy_name
         )
         attributes.append(opn)
 
@@ -79,15 +77,15 @@ if __name__ == '__main__':
     client.close()
 
     # Display operation results
-    logger.info('register() result status: {0}'.format(
-        result.result_status.value))
+    logger.info("register() result status: {0}".format(result.result_status.value))
 
     if result.result_status.value == ResultStatus.SUCCESS:
-        logger.info('registered UUID: {0}'.format(result.uuid))
-        logger.info('registered template attribute: {0}'.
-                    format(result.template_attribute))
+        logger.info("registered UUID: {0}".format(result.uuid))
+        logger.info(
+            "registered template attribute: {0}".format(result.template_attribute)
+        )
     else:
-        logger.info('register() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('register() result message: {0}'.format(
-            result.result_message.value))
+        logger.info("register() result reason: {0}".format(result.result_reason.value))
+        logger.info(
+            "register() result message: {0}".format(result.result_message.value)
+        )

@@ -23,7 +23,6 @@ from kmip.core import utils
 
 
 class AttributeFactory(object):
-
     def __init__(self):
         self.value_factory = AttributeValueFactory()
 
@@ -31,13 +30,14 @@ class AttributeFactory(object):
         attribute_name = Attribute.AttributeName(name)
 
         if index is None:
-            return Attribute(attribute_name=attribute_name,
-                             attribute_value=value)
+            return Attribute(attribute_name=attribute_name, attribute_value=value)
         else:
             attribute_index = Attribute.AttributeIndex(index)
-            return Attribute(attribute_name=attribute_name,
-                             attribute_index=attribute_index,
-                             attribute_value=value)
+            return Attribute(
+                attribute_name=attribute_name,
+                attribute_index=attribute_index,
+                attribute_value=value,
+            )
 
     def create_attribute(self, name, value, index=None):
         value = self.value_factory.create_attribute_value(name, value)
@@ -48,9 +48,9 @@ class AttributeFactory(object):
             # Name is already a string, pass
             pass
         else:
-            msg = utils.build_er_error(Attribute, 'name',
-                                       '{0} or {1}'.format('Enum', 'str'),
-                                       type(name))
+            msg = utils.build_er_error(
+                Attribute, "name", "{0} or {1}".format("Enum", "str"), type(name)
+            )
             raise TypeError(msg)
 
         return self._create_attribute(name, value, index)

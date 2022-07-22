@@ -56,8 +56,7 @@ class ObtainLeaseRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -80,8 +79,7 @@ class ObtainLeaseRequestPayload(base.RequestPayload):
                 encoded payload.
         """
         super(ObtainLeaseRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
@@ -89,10 +87,7 @@ class ObtainLeaseRequestPayload(base.RequestPayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -114,15 +109,11 @@ class ObtainLeaseRequestPayload(base.RequestPayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(ObtainLeaseRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -146,9 +137,7 @@ class ObtainLeaseRequestPayload(base.RequestPayload):
         return "ObtainLeaseRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier
-        })
+        return str({"unique_identifier": self.unique_identifier})
 
 
 class ObtainLeaseResponsePayload(base.ResponsePayload):
@@ -164,10 +153,7 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
             attributes.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 lease_time=None,
-                 last_change_date=None):
+    def __init__(self, unique_identifier=None, lease_time=None, last_change_date=None):
         """
         Construct an ObtainLease response payload struct.
 
@@ -204,8 +190,7 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -223,8 +208,7 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
             self._lease_time = None
         elif isinstance(value, six.integer_types):
             self._lease_time = primitives.Interval(
-                value=value,
-                tag=enums.Tags.LEASE_TIME
+                value=value, tag=enums.Tags.LEASE_TIME
             )
         else:
             raise TypeError("Lease time must be an integer.")
@@ -242,8 +226,7 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
             self._last_change_date = None
         elif isinstance(value, six.integer_types):
             self._last_change_date = primitives.DateTime(
-                value=value,
-                tag=enums.Tags.LAST_CHANGE_DATE
+                value=value, tag=enums.Tags.LAST_CHANGE_DATE
             )
         else:
             raise TypeError("Last change date must be an integer.")
@@ -266,8 +249,7 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
                 encoded payload.
         """
         super(ObtainLeaseResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
@@ -275,23 +257,15 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.LEASE_TIME, local_stream):
-            self._lease_time = primitives.Interval(
-                tag=enums.Tags.LEASE_TIME
-            )
+            self._lease_time = primitives.Interval(tag=enums.Tags.LEASE_TIME)
             self._lease_time.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.LAST_CHANGE_DATE, local_stream):
             self._last_change_date = primitives.DateTime(
                 tag=enums.Tags.LAST_CHANGE_DATE
             )
-            self._last_change_date.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._last_change_date.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -313,25 +287,15 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._lease_time:
-            self._lease_time.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._lease_time.write(local_stream, kmip_version=kmip_version)
         if self._last_change_date:
-            self._last_change_date.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._last_change_date.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(ObtainLeaseResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -355,16 +319,20 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "lease_time={0}".format(self.lease_time),
-            "last_change_date={0}".format(self.last_change_date)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "lease_time={0}".format(self.lease_time),
+                "last_change_date={0}".format(self.last_change_date),
+            ]
+        )
         return "ObtainLeaseResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'lease_time': self.lease_time,
-            'last_change_date': self.last_change_date
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "lease_time": self.lease_time,
+                "last_change_date": self.last_change_date,
+            }
+        )

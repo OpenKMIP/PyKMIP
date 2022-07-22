@@ -38,11 +38,13 @@ class RegisterRequestPayload(base.RequestPayload):
             Added in KMIP 2.0.
     """
 
-    def __init__(self,
-                 object_type=None,
-                 template_attribute=None,
-                 managed_object=None,
-                 protection_storage_masks=None):
+    def __init__(
+        self,
+        object_type=None,
+        template_attribute=None,
+        managed_object=None,
+        protection_storage_masks=None,
+    ):
         """
         Construct a Register request payload structure.
 
@@ -96,14 +98,10 @@ class RegisterRequestPayload(base.RequestPayload):
             self._object_type = None
         elif isinstance(value, enums.ObjectType):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                value=value,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, value=value, tag=enums.Tags.OBJECT_TYPE
             )
         else:
-            raise TypeError(
-                "Object type must be an ObjectType enumeration."
-            )
+            raise TypeError("Object type must be an ObjectType enumeration.")
 
     @property
     def template_attribute(self):
@@ -116,9 +114,7 @@ class RegisterRequestPayload(base.RequestPayload):
         elif isinstance(value, objects.TemplateAttribute):
             self._template_attribute = value
         else:
-            raise TypeError(
-                "Template attribute must be a TemplateAttribute structure."
-            )
+            raise TypeError("Template attribute must be a TemplateAttribute structure.")
 
     @property
     def managed_object(self):
@@ -129,17 +125,17 @@ class RegisterRequestPayload(base.RequestPayload):
         if value is None:
             self._managed_object = None
         elif isinstance(
-                value,
-                (
-                    secrets.Certificate,
-                    secrets.OpaqueObject,
-                    secrets.PrivateKey,
-                    secrets.PublicKey,
-                    secrets.SecretData,
-                    secrets.SplitKey,
-                    secrets.SymmetricKey,
-                    secrets.Template
-                )
+            value,
+            (
+                secrets.Certificate,
+                secrets.OpaqueObject,
+                secrets.PrivateKey,
+                secrets.PublicKey,
+                secrets.SecretData,
+                secrets.SplitKey,
+                secrets.SymmetricKey,
+                secrets.Template,
+            ),
         ):
             self._managed_object = value
         else:
@@ -187,30 +183,24 @@ class RegisterRequestPayload(base.RequestPayload):
                 or managed object is missing from the encoded payload.
         """
         super(RegisterRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         if self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer):
             self._object_type = primitives.Enumeration(
-                enums.ObjectType,
-                tag=enums.Tags.OBJECT_TYPE
+                enums.ObjectType, tag=enums.Tags.OBJECT_TYPE
             )
             self._object_type.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
-                "The Register request payload encoding is missing the object "
-                "type."
+                "The Register request payload encoding is missing the object " "type."
             )
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
                 self._template_attribute = objects.TemplateAttribute()
-                self._template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.read(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidKmipEncoding(
                     "The Register request payload encoding is missing the "
@@ -226,9 +216,7 @@ class RegisterRequestPayload(base.RequestPayload):
             if self.is_tag_next(enums.Tags.ATTRIBUTES, local_buffer):
                 attributes = objects.Attributes()
                 attributes.read(local_buffer, kmip_version=kmip_version)
-                value = objects.convert_attributes_to_template_attribute(
-                    attributes
-                )
+                value = objects.convert_attributes_to_template_attribute(attributes)
                 self._template_attribute = value
             else:
                 raise exceptions.InvalidKmipEncoding(
@@ -248,17 +236,11 @@ class RegisterRequestPayload(base.RequestPayload):
             )
 
         if kmip_version >= enums.KMIPVersion.KMIP_2_0:
-            if self.is_tag_next(
-                enums.Tags.PROTECTION_STORAGE_MASKS,
-                local_buffer
-            ):
+            if self.is_tag_next(enums.Tags.PROTECTION_STORAGE_MASKS, local_buffer):
                 protection_storage_masks = objects.ProtectionStorageMasks(
                     tag=enums.Tags.PROTECTION_STORAGE_MASKS
                 )
-                protection_storage_masks.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                protection_storage_masks.read(local_buffer, kmip_version=kmip_version)
                 self._protection_storage_masks = protection_storage_masks
 
         self.is_oversized(local_buffer)
@@ -284,16 +266,12 @@ class RegisterRequestPayload(base.RequestPayload):
             self._object_type.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
-                "The Register request payload is missing the object type "
-                "field."
+                "The Register request payload is missing the object type " "field."
             )
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._template_attribute:
-                self._template_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.write(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidField(
                     "The Register request payload is missing the template "
@@ -321,21 +299,18 @@ class RegisterRequestPayload(base.RequestPayload):
             self._managed_object.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
-                "The Register request payload is missing the managed object "
-                "field."
+                "The Register request payload is missing the managed object " "field."
             )
 
         if kmip_version >= enums.KMIPVersion.KMIP_2_0:
             if self._protection_storage_masks:
                 self._protection_storage_masks.write(
-                    local_buffer,
-                    kmip_version=kmip_version
+                    local_buffer, kmip_version=kmip_version
                 )
 
         self.length = local_buffer.length()
         super(RegisterRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -347,8 +322,7 @@ class RegisterRequestPayload(base.RequestPayload):
                 return False
             elif self.managed_object != other.managed_object:
                 return False
-            elif self.protection_storage_masks != \
-                    other.protection_storage_masks:
+            elif self.protection_storage_masks != other.protection_storage_masks:
                 return False
             else:
                 return True
@@ -362,14 +336,16 @@ class RegisterRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "object_type={}".format(self.object_type),
-            "template_attribute={}".format(repr(self.template_attribute)),
-            "managed_object={}".format(repr(self.managed_object)),
-            "protection_storage_masks={}".format(
-                repr(self.protection_storage_masks)
-            )
-        ])
+        args = ", ".join(
+            [
+                "object_type={}".format(self.object_type),
+                "template_attribute={}".format(repr(self.template_attribute)),
+                "managed_object={}".format(repr(self.managed_object)),
+                "protection_storage_masks={}".format(
+                    repr(self.protection_storage_masks)
+                ),
+            ]
+        )
         return "RegisterRequestPayload({})".format(args)
 
     def __str__(self):
@@ -380,10 +356,10 @@ class RegisterRequestPayload(base.RequestPayload):
                 '"managed_object": {}'.format(self.managed_object),
                 '"protection_storage_masks": {}'.format(
                     str(self.protection_storage_masks)
-                )
+                ),
             ]
         )
-        return '{' + value + '}'
+        return "{" + value + "}"
 
 
 class RegisterResponsePayload(base.ResponsePayload):
@@ -396,9 +372,7 @@ class RegisterResponsePayload(base.ResponsePayload):
             object.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 template_attribute=None):
+    def __init__(self, unique_identifier=None, template_attribute=None):
         """
         Construct a Register response payload structure.
 
@@ -430,8 +404,7 @@ class RegisterResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -447,9 +420,7 @@ class RegisterResponsePayload(base.ResponsePayload):
         elif isinstance(value, objects.TemplateAttribute):
             self._template_attribute = value
         else:
-            raise TypeError(
-                "Template attribute must be a TemplateAttribute structure."
-            )
+            raise TypeError("Template attribute must be a TemplateAttribute structure.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -468,8 +439,7 @@ class RegisterResponsePayload(base.ResponsePayload):
                 from the encoded payload.
         """
         super(RegisterResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -477,10 +447,7 @@ class RegisterResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The Register response payload encoding is missing the unique "
@@ -490,10 +457,7 @@ class RegisterResponsePayload(base.ResponsePayload):
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self.is_tag_next(enums.Tags.TEMPLATE_ATTRIBUTE, local_buffer):
                 self._template_attribute = objects.TemplateAttribute()
-                self._template_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.read(local_buffer, kmip_version=kmip_version)
 
         self.is_oversized(local_buffer)
 
@@ -514,10 +478,7 @@ class RegisterResponsePayload(base.ResponsePayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The Register response payload is missing the unique "
@@ -526,15 +487,11 @@ class RegisterResponsePayload(base.ResponsePayload):
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._template_attribute:
-                self._template_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._template_attribute.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(RegisterResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -556,17 +513,19 @@ class RegisterResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{}'".format(self.unique_identifier),
-            "template_attribute={}".format(repr(self.template_attribute))
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{}'".format(self.unique_identifier),
+                "template_attribute={}".format(repr(self.template_attribute)),
+            ]
+        )
         return "RegisterResponsePayload({})".format(args)
 
     def __str__(self):
         value = ", ".join(
             [
                 '"unique_identifier": "{}"'.format(self.unique_identifier),
-                '"template_attribute": {}'.format(self.template_attribute)
+                '"template_attribute": {}'.format(self.template_attribute),
             ]
         )
-        return '{' + value + '}'
+        return "{" + value + "}"

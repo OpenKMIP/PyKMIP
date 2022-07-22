@@ -34,13 +34,11 @@ class TestPollRequestPayload(testtools.TestCase):
         #     Asynchronous Correlation Value - 0xE7125DE85B3C90A6
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x10'
-            b'\x42\x00\x06\x08\x00\x00\x00\x08\xE7\x12\x5D\xE8\x5B\x3C\x90\xA6'
+            b"\x42\x00\x79\x01\x00\x00\x00\x10"
+            b"\x42\x00\x06\x08\x00\x00\x00\x08\xE7\x12\x5D\xE8\x5B\x3C\x90\xA6"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestPollRequestPayload, self).tearDown()
@@ -58,18 +56,16 @@ class TestPollRequestPayload(testtools.TestCase):
         Test that an Poll request payload can be constructed with valid
         values.
         """
-        payload = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\x01'
-        )
+        payload = payloads.PollRequestPayload(asynchronous_correlation_value=b"\x01")
 
-        self.assertEqual(b'\x01', payload.asynchronous_correlation_value)
+        self.assertEqual(b"\x01", payload.asynchronous_correlation_value)
 
     def test_invalid_asynchronous_correlation_value(self):
         """
         Test that a TypeError is raised when an invalid value is used to set
         the asynchronous correlation value of an Poll request payload.
         """
-        kwargs = {'asynchronous_correlation_value': 0}
+        kwargs = {"asynchronous_correlation_value": 0}
         self.assertRaisesRegex(
             TypeError,
             "Asynchronous correlation value must be bytes.",
@@ -78,12 +74,9 @@ class TestPollRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.PollRequestPayload()
-        args = (payload, 'asynchronous_correlation_value', 0)
+        args = (payload, "asynchronous_correlation_value", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Asynchronous correlation value must be bytes.",
-            setattr,
-            *args
+            TypeError, "Asynchronous correlation value must be bytes.", setattr, *args
         )
 
     def test_read(self):
@@ -97,8 +90,7 @@ class TestPollRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            b'\xE7\x12\x5D\xE8\x5B\x3C\x90\xA6',
-            payload.asynchronous_correlation_value
+            b"\xE7\x12\x5D\xE8\x5B\x3C\x90\xA6", payload.asynchronous_correlation_value
         )
 
     def test_read_empty(self):
@@ -119,7 +111,7 @@ class TestPollRequestPayload(testtools.TestCase):
         Test that a Poll request payload can be written to a data stream.
         """
         payload = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\xE7\x12\x5D\xE8\x5B\x3C\x90\xA6'
+            asynchronous_correlation_value=b"\xE7\x12\x5D\xE8\x5B\x3C\x90\xA6"
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -151,10 +143,10 @@ class TestPollRequestPayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88'
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88"
         )
         b = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88'
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88"
         )
 
         self.assertTrue(a == b)
@@ -165,12 +157,8 @@ class TestPollRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two Poll
         request payloads with different asynchronous correlation values.
         """
-        a = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
-        b = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\xbb'
-        )
+        a = payloads.PollRequestPayload(asynchronous_correlation_value=b"\xaa")
+        b = payloads.PollRequestPayload(asynchronous_correlation_value=b"\xbb")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -181,7 +169,7 @@ class TestPollRequestPayload(testtools.TestCase):
         request payloads with different types.
         """
         a = payloads.PollRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -198,10 +186,10 @@ class TestPollRequestPayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88'
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88"
         )
         b = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\x49\xa1\xca\x88'
+            asynchronous_correlation_value=b"\x49\xa1\xca\x88"
         )
 
         self.assertFalse(a != b)
@@ -212,12 +200,8 @@ class TestPollRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two Poll
         request payloads with different asynchronous correlation values.
         """
-        a = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
-        b = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\xbb'
-        )
+        a = payloads.PollRequestPayload(asynchronous_correlation_value=b"\xaa")
+        b = payloads.PollRequestPayload(asynchronous_correlation_value=b"\xbb")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -228,7 +212,7 @@ class TestPollRequestPayload(testtools.TestCase):
         request payloads with different types.
         """
         a = payloads.PollRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -237,12 +221,9 @@ class TestPollRequestPayload(testtools.TestCase):
         """
         Test that repr can be applied to a Poll request payload.
         """
-        payload = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
+        payload = payloads.PollRequestPayload(asynchronous_correlation_value=b"\xaa")
         expected = (
-            "PollRequestPayload("
-            "asynchronous_correlation_value=" + str(b'\xaa') + ")"
+            "PollRequestPayload(" "asynchronous_correlation_value=" + str(b"\xaa") + ")"
         )
         observed = repr(payload)
 
@@ -252,13 +233,9 @@ class TestPollRequestPayload(testtools.TestCase):
         """
         Test that str can be applied to a Poll request payload.
         """
-        payload = payloads.PollRequestPayload(
-            asynchronous_correlation_value=b'\xaa'
-        )
+        payload = payloads.PollRequestPayload(asynchronous_correlation_value=b"\xaa")
 
-        expected = str({
-            'asynchronous_correlation_value': b'\xaa'
-        })
+        expected = str({"asynchronous_correlation_value": b"\xaa"})
         observed = str(payload)
 
         self.assertEqual(expected, observed)

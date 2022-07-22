@@ -27,16 +27,15 @@ class TestOpaqueObject(testtools.TestCase):
     """
     Test suite for OpaqueObject.
     """
+
     def setUp(self):
         super(TestOpaqueObject, self).setUp()
 
         # Encoding taken from Sections 3.1.5 of the KMIP 1.1 testing
         # documentation.
-        self.bytes_a = (
-            b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64')
-        self.bytes_b = (
-            b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x65')
-        self.engine = create_engine('sqlite:///:memory:', echo=True)
+        self.bytes_a = b"\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64"
+        self.bytes_b = b"\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x65"
+        self.engine = create_engine("sqlite:///:memory:", echo=True)
         sqltypes.Base.metadata.create_all(self.engine)
 
     def tearDown(self):
@@ -46,25 +45,23 @@ class TestOpaqueObject(testtools.TestCase):
         """
         Test that a OpaqueObject object can be instantiated.
         """
-        obj = OpaqueObject(
-            self.bytes_a, enums.OpaqueDataType.NONE)
+        obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE)
 
         self.assertEqual(obj.value, self.bytes_a)
         self.assertEqual(obj.opaque_type, enums.OpaqueDataType.NONE)
-        self.assertEqual(obj.names, ['Opaque Object'])
+        self.assertEqual(obj.names, ["Opaque Object"])
 
     def test_init_with_args(self):
         """
         Test that a OpaqueObject object can be instantiated with all arguments.
         """
         obj = OpaqueObject(
-            self.bytes_a,
-            enums.OpaqueDataType.NONE,
-            name='Test Opaque Object')
+            self.bytes_a, enums.OpaqueDataType.NONE, name="Test Opaque Object"
+        )
 
         self.assertEqual(obj.value, self.bytes_a)
         self.assertEqual(obj.opaque_type, enums.OpaqueDataType.NONE)
-        self.assertEqual(obj.names, ['Test Opaque Object'])
+        self.assertEqual(obj.names, ["Test Opaque Object"])
 
     def test_get_object_type(self):
         """
@@ -88,7 +85,7 @@ class TestOpaqueObject(testtools.TestCase):
         Test that a TypeError is raised when an invalid data type is used to
         construct a OpaqueObject.
         """
-        args = (self.bytes_a, 'invalid')
+        args = (self.bytes_a, "invalid")
         self.assertRaises(TypeError, OpaqueObject, *args)
 
     def test_validate_on_invalid_name(self):
@@ -97,7 +94,7 @@ class TestOpaqueObject(testtools.TestCase):
         construct a OpaqueObject.
         """
         args = (self.bytes_a, enums.OpaqueDataType.NONE)
-        kwargs = {'name': 0}
+        kwargs = {"name": 0}
         self.assertRaises(TypeError, OpaqueObject, *args, **kwargs)
 
     def test_repr(self):
@@ -106,7 +103,8 @@ class TestOpaqueObject(testtools.TestCase):
         """
         obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE)
         args = "value={0}, opaque_type={1}".format(
-            binascii.hexlify(self.bytes_a), enums.OpaqueDataType.NONE)
+            binascii.hexlify(self.bytes_a), enums.OpaqueDataType.NONE
+        )
         expected = "OpaqueObject({0})".format(args)
         observed = repr(obj)
         self.assertEqual(expected, observed)
@@ -208,8 +206,7 @@ class TestOpaqueObject(testtools.TestCase):
         the database, verify that no exceptions are thrown, and check that its
         unique identifier was set.
         """
-        obj = OpaqueObject(
-            self.bytes_a, enums.OpaqueDataType.NONE)
+        obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE)
         Session = sessionmaker(bind=self.engine)
         session = Session()
         session.add(obj)
@@ -221,18 +218,19 @@ class TestOpaqueObject(testtools.TestCase):
         This adds is to the database and then retrieves it by ID and verifies
         some of the attributes.
         """
-        test_name = 'bowser'
-        obj = OpaqueObject(
-            self.bytes_a, enums.OpaqueDataType.NONE, name=test_name)
+        test_name = "bowser"
+        obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE, name=test_name)
         Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
 
         session = Session()
-        get_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        get_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         session.commit()
         self.assertEqual(1, len(get_obj.names))
         self.assertEqual([test_name], get_obj.names)
@@ -248,9 +246,10 @@ class TestOpaqueObject(testtools.TestCase):
         subsequent string is set accordingly. Finally this tests that the names
         can be saved and retrieved from the database.
         """
-        expected_names = ['bowser', 'frumpy', 'big fat cat']
+        expected_names = ["bowser", "frumpy", "big fat cat"]
         obj = OpaqueObject(
-            self.bytes_a, enums.OpaqueDataType.NONE, name=expected_names[0])
+            self.bytes_a, enums.OpaqueDataType.NONE, name=expected_names[0]
+        )
         obj.names.append(expected_names[1])
         obj.names.append(expected_names[2])
         self.assertEqual(3, obj.name_index)
@@ -265,9 +264,11 @@ class TestOpaqueObject(testtools.TestCase):
         session.commit()
 
         session = Session()
-        get_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        get_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         session.commit()
         self.assertEqual(expected_mo_names, get_obj._names)
 
@@ -277,10 +278,9 @@ class TestOpaqueObject(testtools.TestCase):
         verify that the list of names is correct. It will verify that updating
         this object removes the name from the database.
         """
-        names = ['bowser', 'frumpy', 'big fat cat']
+        names = ["bowser", "frumpy", "big fat cat"]
         remove_index = 1
-        obj = OpaqueObject(
-            self.bytes_a, enums.OpaqueDataType.NONE, name=names[0])
+        obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE, name=names[0])
         obj.names.append(names[1])
         obj.names.append(names[2])
         obj.names.pop(remove_index)
@@ -301,9 +301,11 @@ class TestOpaqueObject(testtools.TestCase):
         session.commit()
 
         session = Session()
-        get_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        get_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         session.commit()
         self.assertEqual(expected_names, get_obj.names)
         self.assertEqual(expected_mo_names, get_obj._names)
@@ -315,22 +317,19 @@ class TestOpaqueObject(testtools.TestCase):
         updating this object removes the name from the database. It will verify
         that the indices for the removed names are not reused.
         """
-        names = ['bowser', 'frumpy', 'big fat cat']
-        obj = OpaqueObject(
-            self.bytes_a, enums.OpaqueDataType.NONE, name=names[0])
+        names = ["bowser", "frumpy", "big fat cat"]
+        obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE, name=names[0])
         obj.names.append(names[1])
         obj.names.append(names[2])
         obj.names.pop()
         obj.names.pop()
-        obj.names.append('dog')
+        obj.names.append("dog")
         self.assertEqual(4, obj.name_index)
 
-        expected_names = ['bowser', 'dog']
+        expected_names = ["bowser", "dog"]
         expected_mo_names = list()
-        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[0],
-                                                            0))
-        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[1],
-                                                            3))
+        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[0], 0))
+        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[1], 3))
         self.assertEqual(expected_names, obj.names)
         self.assertEqual(expected_mo_names, obj._names)
 
@@ -340,9 +339,11 @@ class TestOpaqueObject(testtools.TestCase):
         session.commit()
 
         session = Session()
-        get_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        get_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         session.commit()
         self.assertEqual(expected_names, get_obj.names)
         self.assertEqual(expected_mo_names, get_obj._names)
@@ -359,31 +360,34 @@ class TestOpaqueObject(testtools.TestCase):
         in the database. This tests will simulate what happens when the KMIP
         client calls an add attribute method.
         """
-        first_name = 'bowser'
-        obj = OpaqueObject(
-            self.bytes_a, enums.OpaqueDataType.NONE, name=first_name)
+        first_name = "bowser"
+        obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE, name=first_name)
         Session = sessionmaker(bind=self.engine, expire_on_commit=False)
         session = Session()
         session.add(obj)
         session.commit()
 
-        added_name = 'frumpy'
+        added_name = "frumpy"
         expected_names = [first_name, added_name]
         expected_mo_names = list()
         for i, name in enumerate(expected_names):
             expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
 
         session = Session()
-        update_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        update_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         update_obj.names.append(added_name)
         session.commit()
 
         session = Session()
-        get_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        get_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         session.commit()
         self.assertEqual(expected_names, get_obj.names)
         self.assertEqual(expected_mo_names, get_obj._names)
@@ -395,10 +399,9 @@ class TestOpaqueObject(testtools.TestCase):
         remove a name from it in one session, and then retrieve it in another
         session to verify that it has all of the correct names.
         """
-        names = ['bowser', 'frumpy', 'big fat cat']
+        names = ["bowser", "frumpy", "big fat cat"]
         remove_index = 1
-        obj = OpaqueObject(
-            self.bytes_a, enums.OpaqueDataType.NONE, name=names[0])
+        obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE, name=names[0])
         obj.names.append(names[1])
         obj.names.append(names[2])
 
@@ -415,16 +418,20 @@ class TestOpaqueObject(testtools.TestCase):
                 expected_mo_names.append(sqltypes.ManagedObjectName(name, i))
 
         session = Session()
-        update_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        update_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         update_obj.names.pop(remove_index)
         session.commit()
 
         session = Session()
-        get_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        get_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         session.commit()
         self.assertEqual(expected_names, get_obj.names)
         self.assertEqual(expected_mo_names, get_obj._names)
@@ -438,9 +445,8 @@ class TestOpaqueObject(testtools.TestCase):
         names. This simulates multiple operation being sent for the same
         object.
         """
-        names = ['bowser', 'frumpy', 'big fat cat']
-        obj = OpaqueObject(
-            self.bytes_a, enums.OpaqueDataType.NONE, name=names[0])
+        names = ["bowser", "frumpy", "big fat cat"]
+        obj = OpaqueObject(self.bytes_a, enums.OpaqueDataType.NONE, name=names[0])
         obj.names.append(names[1])
         obj.names.append(names[2])
 
@@ -450,25 +456,27 @@ class TestOpaqueObject(testtools.TestCase):
         session.commit()
 
         session = Session()
-        update_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        update_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         update_obj.names.pop()
         update_obj.names.pop()
-        update_obj.names.append('dog')
+        update_obj.names.append("dog")
         session.commit()
 
-        expected_names = ['bowser', 'dog']
+        expected_names = ["bowser", "dog"]
         expected_mo_names = list()
-        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[0],
-                                                            0))
-        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[1],
-                                                            3))
+        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[0], 0))
+        expected_mo_names.append(sqltypes.ManagedObjectName(expected_names[1], 3))
 
         session = Session()
-        get_obj = session.query(OpaqueObject).filter(
-            ManagedObject.unique_identifier == obj.unique_identifier
-            ).one()
+        get_obj = (
+            session.query(OpaqueObject)
+            .filter(ManagedObject.unique_identifier == obj.unique_identifier)
+            .one()
+        )
         session.commit()
         self.assertEqual(expected_names, get_obj.names)
         self.assertEqual(expected_mo_names, get_obj._names)

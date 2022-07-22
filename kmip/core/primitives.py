@@ -47,17 +47,14 @@ class Base(object):
     def read_tag(self, istream):
         # Read in the bytes for the tag
         tts = istream.read(self.TAG_SIZE)
-        tag = unpack('!I', b'\x00' + tts[0:self.TAG_SIZE])[0]
+        tag = unpack("!I", b"\x00" + tts[0 : self.TAG_SIZE])[0]
 
         enum_tag = enums.Tags(tag)
 
         # Verify that the tag matches for the current object
         if enum_tag is not self.tag:
             raise exceptions.ReadValueError(
-                Base.__name__,
-                'tag',
-                hex(self.tag.value),
-                hex(tag)
+                Base.__name__, "tag", hex(self.tag.value), hex(tag)
             )
 
     def read_type(self, istream):
@@ -65,38 +62,27 @@ class Base(object):
         tts = istream.read(self.TYPE_SIZE)
         num_bytes = len(tts)
         if num_bytes != self.TYPE_SIZE:
-            min_bytes = 'a minimum of {0} bytes'.format(self.TYPE_SIZE)
+            min_bytes = "a minimum of {0} bytes".format(self.TYPE_SIZE)
             raise exceptions.ReadValueError(
-                Base.__name__,
-                'type',
-                min_bytes,
-                '{0} bytes'.format(num_bytes)
+                Base.__name__, "type", min_bytes, "{0} bytes".format(num_bytes)
             )
-        typ = unpack('!B', tts)[0]
+        typ = unpack("!B", tts)[0]
 
         enum_typ = enums.Types(typ)
 
         if enum_typ is not self.type:
-            raise exceptions.ReadValueError(
-                Base.__name__,
-                'type',
-                self.type.value,
-                typ
-            )
+            raise exceptions.ReadValueError(Base.__name__, "type", self.type.value, typ)
 
     def read_length(self, istream):
         # Read in the bytes for the length
         lst = istream.read(self.LENGTH_SIZE)
         num_bytes = len(lst)
         if num_bytes != self.LENGTH_SIZE:
-            min_bytes = 'a minimum of {0} bytes'.format(self.LENGTH_SIZE)
+            min_bytes = "a minimum of {0} bytes".format(self.LENGTH_SIZE)
             raise exceptions.ReadValueError(
-                Base.__name__,
-                'length',
-                min_bytes,
-                '{0} bytes'.format(num_bytes)
+                Base.__name__, "length", min_bytes, "{0} bytes".format(num_bytes)
             )
-        self.length = unpack('!I', lst)[0]
+        self.length = unpack("!I", lst)[0]
 
     def read_value(self, istream):
         raise NotImplementedError()
@@ -108,29 +94,26 @@ class Base(object):
 
     def write_tag(self, ostream):
         # Write the tag to the output stream
-        ostream.write(pack('!I', self.tag.value)[1:])
+        ostream.write(pack("!I", self.tag.value)[1:])
 
     def write_type(self, ostream):
         if type(self.type) is not enums.Types:
             msg = exceptions.ErrorStrings.BAD_EXP_RECV
-            raise TypeError(msg.format(Base.__name__, 'type',
-                                       enums.Types, type(self.type)))
-        ostream.write(pack('!B', self.type.value))
+            raise TypeError(
+                msg.format(Base.__name__, "type", enums.Types, type(self.type))
+            )
+        ostream.write(pack("!B", self.type.value))
 
     def write_length(self, ostream):
         if type(self.length) is not int:
             msg = exceptions.ErrorStrings.BAD_EXP_RECV
-            raise TypeError(msg.format(Base.__name__, 'length',
-                                       int, type(self.length)))
+            raise TypeError(msg.format(Base.__name__, "length", int, type(self.length)))
         num_bytes = utils.count_bytes(self.length)
         if num_bytes > self.LENGTH_SIZE:
             raise exceptions.WriteOverflowError(
-                Base.__name__,
-                'length',
-                self.LENGTH_SIZE,
-                num_bytes
+                Base.__name__, "length", self.LENGTH_SIZE, num_bytes
             )
-        ostream.write(pack('!I', self.length))
+        ostream.write(pack("!I", self.length))
 
     def write_value(self, ostream):
         raise NotImplementedError()
@@ -148,7 +131,7 @@ class Base(object):
         next_tag = stream.peek(Base.TAG_SIZE)
         if len(next_tag) != Base.TAG_SIZE:
             return False
-        next_tag = unpack('!I', b'\x00' + next_tag)[0]
+        next_tag = unpack("!I", b"\x00" + next_tag)[0]
         if next_tag == tag.value:
             return True
         else:
@@ -162,7 +145,7 @@ class Base(object):
         if len(tt) != tag_type_size:
             return False
 
-        typ = unpack('!B', tt[Base.TAG_SIZE:])[0]
+        typ = unpack("!B", tt[Base.TAG_SIZE :])[0]
 
         if typ == kmip_type.value:
             return True
@@ -171,7 +154,6 @@ class Base(object):
 
 
 class Struct(Base):
-
     def __init__(self, tag=enums.Tags.DEFAULT):
         super(Struct, self).__init__(tag, type=enums.Types.STRUCTURE)
 
@@ -197,31 +179,23 @@ class Integer(Base):
         self.length = self.LENGTH
         self.padding_length = self.LENGTH
         if signed:
-            self.pack_string = '!i'
+            self.pack_string = "!i"
         else:
-            self.pack_string = '!I'
+            self.pack_string = "!I"
 
         self.validate()
 
     def read_value(self, istream):
         if self.length is not self.LENGTH:
             raise exceptions.ReadValueError(
-                Integer.__name__,
-                'length',
-                self.LENGTH,
-                self.length
+                Integer.__name__, "length", self.LENGTH, self.length
             )
 
         self.value = unpack(self.pack_string, istream.read(self.length))[0]
         pad = unpack(self.pack_string, istream.read(self.padding_length))[0]
 
         if pad != 0:
-            raise exceptions.ReadValueError(
-                Integer.__name__,
-                'pad',
-                0,
-                pad
-            )
+            raise exceptions.ReadValueError(Integer.__name__, "pad", 0, pad)
         self.validate()
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -247,13 +221,16 @@ class Integer(Base):
         """
         if self.value is not None:
             if type(self.value) not in six.integer_types:
-                raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                raise TypeError(
+                    "expected (one of): {0}, observed: {1}".format(
+                        six.integer_types, type(self.value)
+                    )
+                )
             else:
                 if self.value > Integer.MAX:
-                    raise ValueError('integer value greater than accepted max')
+                    raise ValueError("integer value greater than accepted max")
                 elif self.value < Integer.MIN:
-                    raise ValueError('integer value less than accepted min')
+                    raise ValueError("integer value less than accepted min")
 
     def __repr__(self):
         return "{0}(value={1})".format(type(self).__name__, self.value)
@@ -348,10 +325,10 @@ class LongInteger(Base):
         if self.length is not LongInteger.LENGTH:
             raise exceptions.InvalidPrimitiveLength(
                 "invalid long integer length read; "
-                "expected: {0}, observed: {1}".format(
-                    LongInteger.LENGTH, self.length))
+                "expected: {0}, observed: {1}".format(LongInteger.LENGTH, self.length)
+            )
 
-        self.value = unpack('!q', istream.read(self.length))[0]
+        self.value = unpack("!q", istream.read(self.length))[0]
         self.validate()
 
     def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
@@ -366,7 +343,7 @@ class LongInteger(Base):
                 defaults to KMIP 1.0.
         """
         super(LongInteger, self).write(ostream, kmip_version=kmip_version)
-        ostream.write(pack('!q', self.value))
+        ostream.write(pack("!q", self.value))
 
     def validate(self):
         """
@@ -379,15 +356,16 @@ class LongInteger(Base):
         """
         if self.value is not None:
             if not isinstance(self.value, six.integer_types):
-                raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                raise TypeError(
+                    "expected (one of): {0}, observed: {1}".format(
+                        six.integer_types, type(self.value)
+                    )
+                )
             else:
                 if self.value > LongInteger.MAX:
-                    raise ValueError(
-                        'long integer value greater than accepted max')
+                    raise ValueError("long integer value greater than accepted max")
                 elif self.value < LongInteger.MIN:
-                    raise ValueError(
-                        'long integer value less than accepted min')
+                    raise ValueError("long integer value less than accepted min")
 
     def __repr__(self):
         return "LongInteger(value={0}, tag={1})".format(self.value, self.tag)
@@ -448,30 +426,31 @@ class BigInteger(Base):
         if self.length % 8:
             raise exceptions.InvalidPrimitiveLength(
                 "invalid big integer length read; "
-                "expected: multiple of 8, observed: {0}".format(self.length))
+                "expected: multiple of 8, observed: {0}".format(self.length)
+            )
 
         sign = 1
-        binary = ''
+        binary = ""
 
         # Read the value byte by byte and convert it into binary, padding each
         # byte as needed.
         for _ in range(self.length):
-            byte = struct.unpack('!B', istream.read(1))[0]
+            byte = struct.unpack("!B", istream.read(1))[0]
             bits = "{0:b}".format(byte)
             pad = len(bits) % 8
             if pad:
-                bits = ('0' * (8 - pad)) + bits
+                bits = ("0" * (8 - pad)) + bits
             binary += bits
 
         # If the value is negative, convert via two's complement.
-        if binary[0] == '1':
+        if binary[0] == "1":
             sign = -1
-            binary = binary.replace('1', 'i')
-            binary = binary.replace('0', '1')
-            binary = binary.replace('i', '0')
+            binary = binary.replace("1", "i")
+            binary = binary.replace("0", "1")
+            binary = binary.replace("i", "0")
 
-            pivot = binary.rfind('0')
-            binary = binary[0:pivot] + '1' + ('0' * len(binary[pivot + 1:]))
+            pivot = binary.rfind("0")
+            binary = binary[0:pivot] + "1" + ("0" * len(binary[pivot + 1 :]))
 
         # Convert the value back to an integer and reapply the sign.
         self.value = int(binary, 2) * sign
@@ -494,19 +473,19 @@ class BigInteger(Base):
 
         # If the value is negative, convert via two's complement.
         if self.value < 0:
-            binary = binary.replace('1', 'i')
-            binary = binary.replace('0', '1')
-            binary = binary.replace('i', '0')
+            binary = binary.replace("1", "i")
+            binary = binary.replace("0", "1")
+            binary = binary.replace("i", "0")
 
-            pivot = binary.rfind('0')
-            binary = binary[0:pivot] + '1' + ('0' * len(binary[pivot + 1:]))
+            pivot = binary.rfind("0")
+            binary = binary[0:pivot] + "1" + ("0" * len(binary[pivot + 1 :]))
 
         # Convert each byte to hex and build the hex string for the value.
-        hexadecimal = b''
+        hexadecimal = b""
         for i in range(0, len(binary), 8):
-            byte = binary[i:i + 8]
+            byte = binary[i : i + 8]
             byte = int(byte, 2)
-            hexadecimal += struct.pack('!B', byte)
+            hexadecimal += struct.pack("!B", byte)
 
         self.length = len(hexadecimal)
         super(BigInteger, self).write(ostream, kmip_version=kmip_version)
@@ -521,8 +500,11 @@ class BigInteger(Base):
         """
         if self.value is not None:
             if not isinstance(self.value, six.integer_types):
-                raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                raise TypeError(
+                    "expected (one of): {0}, observed: {1}".format(
+                        six.integer_types, type(self.value)
+                    )
+                )
 
     def __repr__(self):
         return "BigInteger(value={0}, tag={1})".format(self.value, self.tag)
@@ -554,6 +536,7 @@ class Enumeration(Base):
     an unsigned, big-endian, 32-bit integer. For more information, see Section
     9.1 of the KMIP 1.1 specification.
     """
+
     LENGTH = 4
 
     # Bounds for unsigned 32-bit integers
@@ -602,12 +585,13 @@ class Enumeration(Base):
         # Check for a valid length before even trying to parse the value.
         if self.length != Enumeration.LENGTH:
             raise exceptions.InvalidPrimitiveLength(
-                "enumeration length must be {0}".format(Enumeration.LENGTH))
+                "enumeration length must be {0}".format(Enumeration.LENGTH)
+            )
 
         # Decode the Enumeration value and the padding bytes.
-        value = unpack('!I', istream.read(Enumeration.LENGTH))[0]
+        value = unpack("!I", istream.read(Enumeration.LENGTH))[0]
         self.value = self.enum(value)
-        pad = unpack('!I', istream.read(Enumeration.LENGTH))[0]
+        pad = unpack("!I", istream.read(Enumeration.LENGTH))[0]
 
         # Verify that the padding bytes are zero bytes.
         if pad != 0:
@@ -627,8 +611,8 @@ class Enumeration(Base):
                 defaults to KMIP 1.0.
         """
         super(Enumeration, self).write(ostream, kmip_version=kmip_version)
-        ostream.write(pack('!I', self.value.value))
-        ostream.write(pack('!I', 0))
+        ostream.write(pack("!I", self.value.value))
+        ostream.write(pack("!I", 0))
 
     def validate(self):
         """
@@ -641,22 +625,20 @@ class Enumeration(Base):
         """
         if not isinstance(self.enum, enumeration.EnumMeta):
             raise TypeError(
-                'enumeration type {0} must be of type EnumMeta'.format(
-                    self.enum))
+                "enumeration type {0} must be of type EnumMeta".format(self.enum)
+            )
         if self.value is not None:
             if not isinstance(self.value, self.enum):
                 raise TypeError(
-                    'enumeration {0} must be of type {1}'.format(
-                        self.value, self.enum))
+                    "enumeration {0} must be of type {1}".format(self.value, self.enum)
+                )
             if type(self.value.value) not in six.integer_types:
-                raise TypeError('enumeration value must be an int')
+                raise TypeError("enumeration value must be an int")
             else:
                 if self.value.value > Enumeration.MAX:
-                    raise ValueError(
-                        'enumeration value greater than accepted max')
+                    raise ValueError("enumeration value greater than accepted max")
                 elif self.value.value < Enumeration.MIN:
-                    raise ValueError(
-                        'enumeration value less than accepted min')
+                    raise ValueError("enumeration value less than accepted min")
 
     def __repr__(self):
         enum = "enum={0}".format(self.enum.__name__)
@@ -669,7 +651,7 @@ class Enumeration(Base):
 
     def __eq__(self, other):
         if isinstance(other, Enumeration):
-            return ((self.enum == other.enum) and (self.value == other.value))
+            return (self.enum == other.enum) and (self.value == other.value)
         else:
             return NotImplemented
 
@@ -689,6 +671,7 @@ class Boolean(Base):
     or False (0). For more information, see Section 9.1 of the KMIP 1.1
     specification.
     """
+
     LENGTH = 8
 
     def __init__(self, value=True, tag=enums.Tags.DEFAULT):
@@ -723,7 +706,7 @@ class Boolean(Base):
             ValueError: if the read boolean value is not a 0 or 1.
         """
         try:
-            value = unpack('!Q', istream.read(self.LENGTH))[0]
+            value = unpack("!Q", istream.read(self.LENGTH))[0]
         except Exception:
             self.logger.error("Error reading boolean value from buffer")
             raise
@@ -764,7 +747,7 @@ class Boolean(Base):
                 defaults to KMIP 1.0.
         """
         try:
-            ostream.write(pack('!Q', self.value))
+            ostream.write(pack("!Q", self.value))
         except Exception:
             self.logger.error("Error writing boolean value to buffer")
             raise
@@ -792,8 +775,9 @@ class Boolean(Base):
         """
         if self.value:
             if not isinstance(self.value, bool):
-                raise TypeError("expected: {0}, observed: {1}".format(
-                    bool, type(self.value)))
+                raise TypeError(
+                    "expected: {0}, observed: {1}".format(bool, type(self.value))
+                )
 
     def __repr__(self):
         return "{0}(value={1})".format(type(self).__name__, repr(self.value))
@@ -816,13 +800,13 @@ class Boolean(Base):
 
 class TextString(Base):
     PADDING_SIZE = 8
-    BYTE_FORMAT = '!c'
+    BYTE_FORMAT = "!c"
 
     def __init__(self, value=None, tag=enums.Tags.DEFAULT):
         super(TextString, self).__init__(tag, type=enums.Types.TEXT_STRING)
 
         if value is None:
-            self.value = ''
+            self.value = ""
         else:
             self.value = value
 
@@ -830,8 +814,7 @@ class TextString(Base):
 
         if self.value is not None:
             self.length = len(self.value)
-            self.padding_length = self.PADDING_SIZE - (self.length %
-                                                       self.PADDING_SIZE)
+            self.padding_length = self.PADDING_SIZE - (self.length % self.PADDING_SIZE)
             if self.padding_length == self.PADDING_SIZE:
                 self.padding_length = 0
         else:
@@ -840,26 +823,20 @@ class TextString(Base):
 
     def read_value(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         # Read string text
-        self.value = ''
+        self.value = ""
         for _ in range(self.length):
             c = unpack(self.BYTE_FORMAT, istream.read(1))[0]
-            if sys.version >= '3':
+            if sys.version >= "3":
                 c = c.decode()
             self.value += c
 
         # Read padding and check content
-        self.padding_length = self.PADDING_SIZE - (self.length %
-                                                   self.PADDING_SIZE)
+        self.padding_length = self.PADDING_SIZE - (self.length % self.PADDING_SIZE)
         if self.padding_length < self.PADDING_SIZE:
             for _ in range(self.padding_length):
-                pad = unpack('!B', istream.read(1))[0]
+                pad = unpack("!B", istream.read(1))[0]
                 if pad != 0:
-                    raise exceptions.ReadValueError(
-                        TextString.__name__,
-                        'pad',
-                        0,
-                        pad
-                    )
+                    raise exceptions.ReadValueError(TextString.__name__, "pad", 0, pad)
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(TextString, self).read(istream, kmip_version=kmip_version)
@@ -873,7 +850,7 @@ class TextString(Base):
 
         # Write padding to stream
         for _ in range(self.padding_length):
-            ostream.write(pack('!B', 0))
+            ostream.write(pack("!B", 0))
 
     def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(TextString, self).write(ostream, kmip_version=kmip_version)
@@ -886,8 +863,9 @@ class TextString(Base):
         if self.value is not None:
             if not isinstance(self.value, six.string_types):
                 msg = exceptions.ErrorStrings.BAD_EXP_RECV
-                raise TypeError(msg.format('TextString', 'value', str,
-                                           type(self.value)))
+                raise TypeError(
+                    msg.format("TextString", "value", str, type(self.value))
+                )
 
     def __repr__(self):
         return "{0}(value={1})".format(type(self).__name__, repr(self.value))
@@ -910,7 +888,7 @@ class TextString(Base):
 
 class ByteString(Base):
     PADDING_SIZE = 8
-    BYTE_FORMAT = '!B'
+    BYTE_FORMAT = "!B"
 
     def __init__(self, value=None, tag=enums.Tags.DEFAULT):
         super(ByteString, self).__init__(tag, type=enums.Types.BYTE_STRING)
@@ -924,8 +902,7 @@ class ByteString(Base):
 
         if self.value is not None:
             self.length = len(self.value)
-            self.padding_length = self.PADDING_SIZE - (self.length %
-                                                       self.PADDING_SIZE)
+            self.padding_length = self.PADDING_SIZE - (self.length % self.PADDING_SIZE)
             if self.padding_length == self.PADDING_SIZE:
                 self.padding_length = 0
         else:
@@ -940,21 +917,15 @@ class ByteString(Base):
         self.value = bytes(data)
 
         # Read padding and check content
-        self.padding_length = self.PADDING_SIZE - (self.length %
-                                                   self.PADDING_SIZE)
+        self.padding_length = self.PADDING_SIZE - (self.length % self.PADDING_SIZE)
         if self.padding_length == self.PADDING_SIZE:
             self.padding_length = 0
 
         if self.padding_length < self.PADDING_SIZE:
             for _ in range(self.padding_length):
-                pad = unpack('!B', istream.read(1))[0]
+                pad = unpack("!B", istream.read(1))[0]
                 if pad != 0:
-                    raise exceptions.ReadValueError(
-                        TextString.__name__,
-                        'pad',
-                        0,
-                        pad
-                    )
+                    raise exceptions.ReadValueError(TextString.__name__, "pad", 0, pad)
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(ByteString, self).read(istream, kmip_version=kmip_version)
@@ -968,7 +939,7 @@ class ByteString(Base):
 
         # Write padding to stream
         for _ in range(self.padding_length):
-            ostream.write(pack('!B', 0))
+            ostream.write(pack("!B", 0))
 
     def write(self, ostream, kmip_version=enums.KMIPVersion.KMIP_1_0):
         super(ByteString, self).write(ostream, kmip_version=kmip_version)
@@ -983,8 +954,7 @@ class ByteString(Base):
             data_type = type(self.value)
             if data_type is not bytes:
                 msg = exceptions.ErrorStrings.BAD_EXP_RECV
-                raise TypeError(msg.format('ByteString', 'value', bytes,
-                                           data_type))
+                raise TypeError(msg.format("ByteString", "value", bytes, data_type))
 
     def __repr__(self):
         return "{0}(value={1})".format(type(self).__name__, repr(self.value))
@@ -1047,6 +1017,7 @@ class Interval(Base):
     of one second. For more information, see Section 9.1 of the KMIP 1.1
     specification.
     """
+
     LENGTH = 4
 
     # Bounds for unsigned 32-bit integers
@@ -1084,11 +1055,12 @@ class Interval(Base):
         # Check for a valid length before even trying to parse the value.
         if self.length != Interval.LENGTH:
             raise exceptions.InvalidPrimitiveLength(
-                "interval length must be {0}".format(Interval.LENGTH))
+                "interval length must be {0}".format(Interval.LENGTH)
+            )
 
         # Decode the Interval value and the padding bytes.
-        self.value = unpack('!I', istream.read(Interval.LENGTH))[0]
-        pad = unpack('!I', istream.read(Interval.LENGTH))[0]
+        self.value = unpack("!I", istream.read(Interval.LENGTH))[0]
+        pad = unpack("!I", istream.read(Interval.LENGTH))[0]
 
         # Verify that the padding bytes are zero bytes.
         if pad != 0:
@@ -1108,8 +1080,8 @@ class Interval(Base):
                 defaults to KMIP 1.0.
         """
         super(Interval, self).write(ostream, kmip_version=kmip_version)
-        ostream.write(pack('!I', self.value))
-        ostream.write(pack('!I', 0))
+        ostream.write(pack("!I", self.value))
+        ostream.write(pack("!I", 0))
 
     def validate(self):
         """
@@ -1122,14 +1094,16 @@ class Interval(Base):
         """
         if self.value is not None:
             if type(self.value) not in six.integer_types:
-                raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                raise TypeError(
+                    "expected (one of): {0}, observed: {1}".format(
+                        six.integer_types, type(self.value)
+                    )
+                )
             else:
                 if self.value > Interval.MAX:
-                    raise ValueError(
-                        'interval value greater than accepted max')
+                    raise ValueError("interval value greater than accepted max")
                 elif self.value < Interval.MIN:
-                    raise ValueError('interval value less than accepted min')
+                    raise ValueError("interval value less than accepted min")
 
     def __repr__(self):
         value = "value={0}".format(self.value)

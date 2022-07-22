@@ -64,8 +64,7 @@ class GetUsageAllocationRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -83,8 +82,7 @@ class GetUsageAllocationRequestPayload(base.RequestPayload):
             self._usage_limits_count = None
         elif isinstance(value, six.integer_types):
             self._usage_limits_count = primitives.LongInteger(
-                value=value,
-                tag=enums.Tags.USAGE_LIMITS_COUNT
+                value=value, tag=enums.Tags.USAGE_LIMITS_COUNT
             )
         else:
             raise TypeError("Usage limits count must be an integer.")
@@ -107,8 +105,7 @@ class GetUsageAllocationRequestPayload(base.RequestPayload):
                 encoded payload.
         """
         super(GetUsageAllocationRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
@@ -116,18 +113,12 @@ class GetUsageAllocationRequestPayload(base.RequestPayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
         if self.is_tag_next(enums.Tags.USAGE_LIMITS_COUNT, local_stream):
             self._usage_limits_count = primitives.LongInteger(
                 tag=enums.Tags.USAGE_LIMITS_COUNT
             )
-            self._usage_limits_count.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._usage_limits_count.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -150,20 +141,13 @@ class GetUsageAllocationRequestPayload(base.RequestPayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
         if self._usage_limits_count:
-            self._usage_limits_count.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._usage_limits_count.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(GetUsageAllocationRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -185,17 +169,21 @@ class GetUsageAllocationRequestPayload(base.RequestPayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "unique_identifier='{0}'".format(self.unique_identifier),
-            "usage_limits_count={0}".format(self.usage_limits_count)
-        ])
+        args = ", ".join(
+            [
+                "unique_identifier='{0}'".format(self.unique_identifier),
+                "usage_limits_count={0}".format(self.usage_limits_count),
+            ]
+        )
         return "GetUsageAllocationRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-            'usage_limits_count': self.usage_limits_count
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+                "usage_limits_count": self.usage_limits_count,
+            }
+        )
 
 
 class GetUsageAllocationResponsePayload(base.ResponsePayload):
@@ -232,8 +220,7 @@ class GetUsageAllocationResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -256,8 +243,7 @@ class GetUsageAllocationResponsePayload(base.ResponsePayload):
                 encoded payload.
         """
         super(GetUsageAllocationResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
@@ -265,10 +251,7 @@ class GetUsageAllocationResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -291,15 +274,11 @@ class GetUsageAllocationResponsePayload(base.ResponsePayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(GetUsageAllocationResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -323,6 +302,8 @@ class GetUsageAllocationResponsePayload(base.ResponsePayload):
         return "GetUsageAllocationResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+            }
+        )

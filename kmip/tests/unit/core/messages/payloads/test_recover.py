@@ -34,16 +34,14 @@ class TestRecoverRequestPayload(testtools.TestCase):
         #     Unique Identifier - f613dba1-b557-489a-87c5-3c0ecd4294e3
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x66\x36\x31\x33\x64\x62\x61\x31\x2D\x62\x35\x35\x37\x2D\x34\x38'
-            b'\x39\x61\x2D\x38\x37\x63\x35\x2D\x33\x63\x30\x65\x63\x64\x34\x32'
-            b'\x39\x34\x65\x33\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x66\x36\x31\x33\x64\x62\x61\x31\x2D\x62\x35\x35\x37\x2D\x34\x38"
+            b"\x39\x61\x2D\x38\x37\x63\x35\x2D\x33\x63\x30\x65\x63\x64\x34\x32"
+            b"\x39\x34\x65\x33\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestRecoverRequestPayload, self).tearDown()
@@ -63,12 +61,11 @@ class TestRecoverRequestPayload(testtools.TestCase):
         values.
         """
         payload = payloads.RecoverRequestPayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444'
+            unique_identifier="00000000-1111-2222-3333-444444444444"
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
 
     def test_invalid_unique_identifier(self):
@@ -76,7 +73,7 @@ class TestRecoverRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a Recover request payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -85,12 +82,9 @@ class TestRecoverRequestPayload(testtools.TestCase):
         )
 
         payload = payloads.RecoverRequestPayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_read(self):
@@ -104,8 +98,7 @@ class TestRecoverRequestPayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            'f613dba1-b557-489a-87c5-3c0ecd4294e3',
-            payload.unique_identifier
+            "f613dba1-b557-489a-87c5-3c0ecd4294e3", payload.unique_identifier
         )
 
     def test_read_empty(self):
@@ -126,7 +119,7 @@ class TestRecoverRequestPayload(testtools.TestCase):
         Test that a Recover request payload can be written to a data stream.
         """
         payload = payloads.RecoverRequestPayload(
-            unique_identifier='f613dba1-b557-489a-87c5-3c0ecd4294e3'
+            unique_identifier="f613dba1-b557-489a-87c5-3c0ecd4294e3"
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -158,10 +151,10 @@ class TestRecoverRequestPayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.RecoverRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.RecoverRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
         self.assertTrue(a == b)
@@ -172,12 +165,8 @@ class TestRecoverRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Recover request payloads with different unique identifiers.
         """
-        a = payloads.RecoverRequestPayload(
-            unique_identifier='a'
-        )
-        b = payloads.RecoverRequestPayload(
-            unique_identifier='b'
-        )
+        a = payloads.RecoverRequestPayload(unique_identifier="a")
+        b = payloads.RecoverRequestPayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -188,7 +177,7 @@ class TestRecoverRequestPayload(testtools.TestCase):
         Recover request payloads with different types.
         """
         a = payloads.RecoverRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -205,10 +194,10 @@ class TestRecoverRequestPayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.RecoverRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.RecoverRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
         self.assertFalse(a != b)
@@ -219,12 +208,8 @@ class TestRecoverRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Recover request payloads with different unique identifiers.
         """
-        a = payloads.RecoverRequestPayload(
-            unique_identifier='a'
-        )
-        b = payloads.RecoverRequestPayload(
-            unique_identifier='b'
-        )
+        a = payloads.RecoverRequestPayload(unique_identifier="a")
+        b = payloads.RecoverRequestPayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -235,7 +220,7 @@ class TestRecoverRequestPayload(testtools.TestCase):
         Recover request payloads with different types.
         """
         a = payloads.RecoverRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -245,7 +230,7 @@ class TestRecoverRequestPayload(testtools.TestCase):
         Test that repr can be applied to a Recover request payload.
         """
         payload = payloads.RecoverRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         expected = (
             "RecoverRequestPayload("
@@ -260,12 +245,10 @@ class TestRecoverRequestPayload(testtools.TestCase):
         Test that str can be applied to a Recover request payload.
         """
         payload = payloads.RecoverRequestPayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038'
-        })
+        expected = str({"unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038"})
         observed = str(payload)
 
         self.assertEqual(expected, observed)
@@ -286,16 +269,14 @@ class TestRecoverResponsePayload(testtools.TestCase):
         #     Unique Identifier - f613dba1-b557-489a-87c5-3c0ecd4294e3
 
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x66\x36\x31\x33\x64\x62\x61\x31\x2D\x62\x35\x35\x37\x2D\x34\x38'
-            b'\x39\x61\x2D\x38\x37\x63\x35\x2D\x33\x63\x30\x65\x63\x64\x34\x32'
-            b'\x39\x34\x65\x33\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x66\x36\x31\x33\x64\x62\x61\x31\x2D\x62\x35\x35\x37\x2D\x34\x38"
+            b"\x39\x61\x2D\x38\x37\x63\x35\x2D\x33\x63\x30\x65\x63\x64\x34\x32"
+            b"\x39\x34\x65\x33\x00\x00\x00\x00"
         )
 
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestRecoverResponsePayload, self).tearDown()
@@ -315,12 +296,11 @@ class TestRecoverResponsePayload(testtools.TestCase):
         values.
         """
         payload = payloads.RecoverResponsePayload(
-            unique_identifier='00000000-1111-2222-3333-444444444444'
+            unique_identifier="00000000-1111-2222-3333-444444444444"
         )
 
         self.assertEqual(
-            '00000000-1111-2222-3333-444444444444',
-            payload.unique_identifier
+            "00000000-1111-2222-3333-444444444444", payload.unique_identifier
         )
 
     def test_invalid_unique_identifier(self):
@@ -328,7 +308,7 @@ class TestRecoverResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a Recover response payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -337,12 +317,9 @@ class TestRecoverResponsePayload(testtools.TestCase):
         )
 
         payload = payloads.RecoverResponsePayload()
-        args = (payload, 'unique_identifier', 0)
+        args = (payload, "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_read(self):
@@ -356,8 +333,7 @@ class TestRecoverResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            'f613dba1-b557-489a-87c5-3c0ecd4294e3',
-            payload.unique_identifier
+            "f613dba1-b557-489a-87c5-3c0ecd4294e3", payload.unique_identifier
         )
 
     def test_read_empty(self):
@@ -378,7 +354,7 @@ class TestRecoverResponsePayload(testtools.TestCase):
         Test that a Recover response payload can be written to a data stream.
         """
         payload = payloads.RecoverResponsePayload(
-            unique_identifier='f613dba1-b557-489a-87c5-3c0ecd4294e3'
+            unique_identifier="f613dba1-b557-489a-87c5-3c0ecd4294e3"
         )
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -410,10 +386,10 @@ class TestRecoverResponsePayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.RecoverResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.RecoverResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
         self.assertTrue(a == b)
@@ -424,12 +400,8 @@ class TestRecoverResponsePayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Recover response payloads with different unique identifiers.
         """
-        a = payloads.RecoverResponsePayload(
-            unique_identifier='a'
-        )
-        b = payloads.RecoverResponsePayload(
-            unique_identifier='b'
-        )
+        a = payloads.RecoverResponsePayload(unique_identifier="a")
+        b = payloads.RecoverResponsePayload(unique_identifier="b")
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -440,7 +412,7 @@ class TestRecoverResponsePayload(testtools.TestCase):
         Recover response payloads with different types.
         """
         a = payloads.RecoverResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -457,10 +429,10 @@ class TestRecoverResponsePayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.RecoverResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         b = payloads.RecoverResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
         self.assertFalse(a != b)
@@ -471,12 +443,8 @@ class TestRecoverResponsePayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Recover response payloads with different unique identifiers.
         """
-        a = payloads.RecoverResponsePayload(
-            unique_identifier='a'
-        )
-        b = payloads.RecoverResponsePayload(
-            unique_identifier='b'
-        )
+        a = payloads.RecoverResponsePayload(unique_identifier="a")
+        b = payloads.RecoverResponsePayload(unique_identifier="b")
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -487,7 +455,7 @@ class TestRecoverResponsePayload(testtools.TestCase):
         Recover response payloads with different types.
         """
         a = payloads.RecoverResponsePayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -497,7 +465,7 @@ class TestRecoverResponsePayload(testtools.TestCase):
         Test that repr can be applied to a Recover response payload.
         """
         payload = payloads.RecoverResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
         expected = (
             "RecoverResponsePayload("
@@ -512,12 +480,10 @@ class TestRecoverResponsePayload(testtools.TestCase):
         Test that str can be applied to a Recover response payload
         """
         payload = payloads.RecoverResponsePayload(
-            unique_identifier='49a1ca88-6bea-4fb2-b450-7e58802c3038'
+            unique_identifier="49a1ca88-6bea-4fb2-b450-7e58802c3038"
         )
 
-        expected = str({
-            'unique_identifier': '49a1ca88-6bea-4fb2-b450-7e58802c3038'
-        })
+        expected = str({"unique_identifier": "49a1ca88-6bea-4fb2-b450-7e58802c3038"})
         observed = str(payload)
 
         self.assertEqual(expected, observed)

@@ -55,8 +55,7 @@ class RecoverRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -78,20 +77,14 @@ class RecoverRequestPayload(base.RequestPayload):
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(RecoverRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(RecoverRequestPayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
         if self.is_tag_next(enums.Tags.UNIQUE_IDENTIFIER, local_stream):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -113,15 +106,11 @@ class RecoverRequestPayload(base.RequestPayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(RecoverRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -145,9 +134,7 @@ class RecoverRequestPayload(base.RequestPayload):
         return "RecoverRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier
-        })
+        return str({"unique_identifier": self.unique_identifier})
 
 
 class RecoverResponsePayload(base.ResponsePayload):
@@ -184,8 +171,7 @@ class RecoverResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("Unique identifier must be a string.")
@@ -208,8 +194,7 @@ class RecoverResponsePayload(base.ResponsePayload):
                 encoded payload.
         """
         super(RecoverResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
+            input_stream, kmip_version=kmip_version
         )
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
@@ -217,10 +202,7 @@ class RecoverResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -242,15 +224,11 @@ class RecoverResponsePayload(base.ResponsePayload):
         local_stream = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(RecoverResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
@@ -274,6 +252,8 @@ class RecoverResponsePayload(base.ResponsePayload):
         return "RecoverResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'unique_identifier': self.unique_identifier,
-        })
+        return str(
+            {
+                "unique_identifier": self.unique_identifier,
+            }
+        )

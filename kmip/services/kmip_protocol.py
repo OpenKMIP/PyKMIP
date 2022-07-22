@@ -35,8 +35,9 @@ class KMIPProtocol(object):
     def write(self, data):
         if len(data) > 0:
             sbuffer = bytes(data)
-            self.logger.debug('KMIPProtocol.write: {0}'.format(
-                binascii.hexlify(sbuffer)))
+            self.logger.debug(
+                "KMIPProtocol.write: {0}".format(binascii.hexlify(sbuffer))
+            )
             self.socket.sendall(sbuffer)
 
     def read(self):
@@ -47,17 +48,18 @@ class KMIPProtocol(object):
                 raise EOFError("No data read from socket")
             else:
                 raise
-        msg_size = unpack('!I', header[4:])[0]
+        msg_size = unpack("!I", header[4:])[0]
 
         payload = self._recv_all(msg_size)
         data = BytearrayStream(header + payload)
-        self.logger.debug('KMIPProtocol.read: {0}'.format(
-            binascii.hexlify(bytes(data.buffer))))
+        self.logger.debug(
+            "KMIPProtocol.read: {0}".format(binascii.hexlify(bytes(data.buffer)))
+        )
         return data
 
     def _recv_all(self, total_bytes_to_be_read):
         bytes_read = 0
-        total_msg = b''
+        total_msg = b""
         while bytes_read < total_bytes_to_be_read:
             msg = self.socket.recv(total_bytes_to_be_read - bytes_read)
             if not msg:
@@ -66,14 +68,14 @@ class KMIPProtocol(object):
             total_msg += msg
         if bytes_read != total_bytes_to_be_read:
             msg = "expected {0}, received {1} bytes".format(
-                total_bytes_to_be_read, bytes_read)
+                total_bytes_to_be_read, bytes_read
+            )
             raise RequestLengthMismatch(total_bytes_to_be_read, bytes_read)
 
         return total_msg
 
 
 class KMIPProtocolFactory(object):
-
     def getProtocol(self, socket):
         return KMIPProtocol(socket)
 
@@ -83,6 +85,7 @@ class RequestLengthMismatch(Exception):
     This exception raised when the request read from stream has unexpected
     length.
     """
+
     def __init__(self, expected, received, message="KMIPProtocol read error"):
         super(RequestLengthMismatch, self).__init__(message)
         self.message = message
@@ -91,7 +94,8 @@ class RequestLengthMismatch(Exception):
 
     def __str__(self):
         return "{0}: expected {1}, received {2}".format(
-                self.message, self.expected, self.received)
+            self.message, self.expected, self.received
+        )
 
     def __repr__(self):
         return self.__str__()

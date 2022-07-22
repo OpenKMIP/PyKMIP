@@ -18,7 +18,6 @@ from kmip.core import objects
 
 
 class CredentialFactory(object):
-
     def create_credential(self, credential_type, credential_value):
         # Switch on the type of the credential
         if credential_type is enums.CredentialType.USERNAME_AND_PASSWORD:
@@ -28,32 +27,28 @@ class CredentialFactory(object):
         elif credential_type is enums.CredentialType.DEVICE:
             credential_value = self.create_device_credential(credential_value)
         else:
-            msg = 'Unrecognized credential type: {0}'
+            msg = "Unrecognized credential type: {0}"
             raise ValueError(msg.format(credential_type))
 
         return objects.Credential(
-            credential_type=credential_type,
-            credential_value=credential_value
+            credential_type=credential_type, credential_value=credential_value
         )
 
     @staticmethod
     def create_username_password_credential(value):
-        username = value.get('Username')
-        password = value.get('Password')
+        username = value.get("Username")
+        password = value.get("Password")
 
-        return objects.UsernamePasswordCredential(
-            username=username,
-            password=password
-        )
+        return objects.UsernamePasswordCredential(username=username, password=password)
 
     @staticmethod
     def create_device_credential(value):
-        dsn = value.get('Device Serial Number')
-        password = value.get('Password')
-        dev_id = value.get('Device Identifier')
-        net_id = value.get('Network Identifier')
-        mach_id = value.get('Machine Identifier')
-        med_id = value.get('Media Identifier')
+        dsn = value.get("Device Serial Number")
+        password = value.get("Password")
+        dev_id = value.get("Device Identifier")
+        net_id = value.get("Network Identifier")
+        mach_id = value.get("Machine Identifier")
+        med_id = value.get("Media Identifier")
 
         return objects.DeviceCredential(
             device_serial_number=dsn,
@@ -61,5 +56,5 @@ class CredentialFactory(object):
             device_identifier=dev_id,
             network_identifier=net_id,
             machine_identifier=mach_id,
-            media_identifier=med_id
+            media_identifier=med_id,
         )

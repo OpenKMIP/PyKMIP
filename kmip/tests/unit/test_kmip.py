@@ -32,12 +32,12 @@ class TestKMIP(TestCase):
         Verify that the kmip module has a __version__ attribute and that it's
         value is correct.
         """
-        kmip = __import__('kmip')
-        self.assertTrue(hasattr(kmip, '__version__'))
+        kmip = __import__("kmip")
+        self.assertTrue(hasattr(kmip, "__version__"))
 
-        version = __import__('kmip.version')
-        self.assertTrue(hasattr(version, '__version__'))
+        version = __import__("kmip.version")
+        self.assertTrue(hasattr(version, "__version__"))
 
-        observed = getattr(kmip, '__version__')
-        expected = getattr(version, '__version__')
+        observed = getattr(kmip, "__version__")
+        expected = getattr(version, "__version__")
         self.assertEqual(expected, observed)

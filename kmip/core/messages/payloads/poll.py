@@ -57,8 +57,7 @@ class PollRequestPayload(base.RequestPayload):
             self._asynchronous_correlation_value = None
         elif isinstance(value, six.binary_type):
             self._asynchronous_correlation_value = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
+                value=value, tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
             )
         else:
             raise TypeError("Asynchronous correlation value must be bytes.")
@@ -80,22 +79,15 @@ class PollRequestPayload(base.RequestPayload):
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(PollRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(PollRequestPayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
-        if self.is_tag_next(
-                enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE, local_stream):
             self._asynchronous_correlation_value = primitives.ByteString(
                 tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
             )
             self._asynchronous_correlation_value.read(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         self.is_oversized(local_stream)
@@ -119,21 +111,19 @@ class PollRequestPayload(base.RequestPayload):
 
         if self._asynchronous_correlation_value:
             self._asynchronous_correlation_value.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         self.length = local_stream.length()
-        super(PollRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
-        )
+        super(PollRequestPayload, self).write(output_stream, kmip_version=kmip_version)
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
         if isinstance(other, PollRequestPayload):
-            if self.asynchronous_correlation_value != \
-                    other.asynchronous_correlation_value:
+            if (
+                self.asynchronous_correlation_value
+                != other.asynchronous_correlation_value
+            ):
                 return False
             else:
                 return True
@@ -153,7 +143,6 @@ class PollRequestPayload(base.RequestPayload):
         return "PollRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'asynchronous_correlation_value':
-                self.asynchronous_correlation_value
-        })
+        return str(
+            {"asynchronous_correlation_value": self.asynchronous_correlation_value}
+        )

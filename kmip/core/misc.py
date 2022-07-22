@@ -36,7 +36,7 @@ class CertificateValue(ByteString):
     information.
     """
 
-    def __init__(self, value=b''):
+    def __init__(self, value=b""):
         """
         Construct a CertificateValue byte string.
 
@@ -88,7 +88,8 @@ class QueryFunction(Enumeration):
                 None.
         """
         super(QueryFunction, self).__init__(
-            QueryFunctionEnum, value, Tags.QUERY_FUNCTION)
+            QueryFunctionEnum, value, Tags.QUERY_FUNCTION
+        )
 
 
 class VendorIdentification(TextString):
@@ -108,8 +109,7 @@ class VendorIdentification(TextString):
             value (str): A string describing a KMIP vendor. Optional, defaults
                 to None.
         """
-        super(VendorIdentification, self).__init__(
-            value, Tags.VENDOR_IDENTIFICATION)
+        super(VendorIdentification, self).__init__(value, Tags.VENDOR_IDENTIFICATION)
 
 
 class ServerInformation(Struct):
@@ -176,10 +176,7 @@ class ServerInformation(Struct):
         tstream.write(self.data.buffer)
 
         self.length = tstream.length()
-        super(ServerInformation, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(ServerInformation, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -237,4 +234,5 @@ class KeyFormatType(Enumeration):
                 KeyFormatType.RAW.
         """
         super(KeyFormatType, self).__init__(
-            KeyFormatTypeEnum, value, Tags.KEY_FORMAT_TYPE)
+            KeyFormatTypeEnum, value, Tags.KEY_FORMAT_TYPE
+        )

@@ -84,18 +84,16 @@ class KmipEngine(object):
                 used to store all server data. Optional, defaults to None.
                 If none, database path defaults to '/tmp/pykmip.database'.
         """
-        self._logger = logging.getLogger('kmip.server.engine')
+        self._logger = logging.getLogger("kmip.server.engine")
 
         self._cryptography_engine = engine.CryptographyEngine()
 
-        self.database_path = 'sqlite:///{}'.format(database_path)
+        self.database_path = "sqlite:///{}".format(database_path)
         if not database_path:
-            self.database_path = 'sqlite:////tmp/pykmip.database'
+            self.database_path = "sqlite:////tmp/pykmip.database"
 
         self._data_store = sqlalchemy.create_engine(
-            self.database_path,
-            echo=False,
-            connect_args={'check_same_thread': False}
+            self.database_path, echo=False, connect_args={"check_same_thread": False}
         )
         sqltypes.Base.metadata.create_all(self._data_store)
         self._data_store_session_factory = sqlalchemy.orm.sessionmaker(
@@ -112,7 +110,7 @@ class KmipEngine(object):
             contents.ProtocolVersion(1, 3),
             contents.ProtocolVersion(1, 2),
             contents.ProtocolVersion(1, 1),
-            contents.ProtocolVersion(1, 0)
+            contents.ProtocolVersion(1, 0),
         ]
 
         self.default_protocol_version = self._protocol_versions[3]
@@ -126,7 +124,7 @@ class KmipEngine(object):
             enums.ObjectType.SPLIT_KEY: objects.SplitKey,
             enums.ObjectType.TEMPLATE: None,
             enums.ObjectType.SECRET_DATA: objects.SecretData,
-            enums.ObjectType.OPAQUE_DATA: objects.OpaqueObject
+            enums.ObjectType.OPAQUE_DATA: objects.OpaqueObject,
         }
 
         self._attribute_policy = policy.AttributePolicy(self._protocol_version)
@@ -134,44 +132,40 @@ class KmipEngine(object):
         self._client_identity = [None, None]
 
     def _get_enum_string(self, e):
-        return ''.join([x.capitalize() for x in e.name.split('_')])
+        return "".join([x.capitalize() for x in e.name.split("_")])
 
     def _kmip_version_supported(supported):
         def decorator(function):
             def wrapper(self, *args, **kwargs):
                 if float(str(self._protocol_version)) < float(supported):
                     name = function.__name__
-                    operation = ''.join(
-                        [x.capitalize() for x in name[9:].split('_')]
-                    )
+                    operation = "".join([x.capitalize() for x in name[9:].split("_")])
                     raise exceptions.OperationNotSupported(
                         "{0} is not supported by KMIP {1}".format(
-                            operation,
-                            self._protocol_version
+                            operation, self._protocol_version
                         )
                     )
                 else:
                     return function(self, *args, **kwargs)
+
             return wrapper
+
         return decorator
 
     def _synchronize(function):
         def decorator(self, *args, **kwargs):
             with self._lock:
                 return function(self, *args, **kwargs)
+
         return decorator
 
     def _set_protocol_version(self, protocol_version):
         if protocol_version in self._protocol_versions:
             self._protocol_version = protocol_version
-            self._attribute_policy = policy.AttributePolicy(
-                self._protocol_version
-            )
+            self._attribute_policy = policy.AttributePolicy(self._protocol_version)
         else:
             raise exceptions.InvalidMessage(
-                "KMIP {0} is not supported by the server.".format(
-                    protocol_version
-                )
+                "KMIP {0} is not supported by the server.".format(protocol_version)
             )
 
     def _verify_credential(self, request_credential, connection_credential):
@@ -214,9 +208,7 @@ class KmipEngine(object):
         # Process the protocol version
         self._set_protocol_version(header.protocol_version)
         self._logger.debug(
-            "Request specified KMIP version: {0}".format(
-                header.protocol_version
-            )
+            "Request specified KMIP version: {0}".format(header.protocol_version)
         )
 
         # Process the maximum response size
@@ -230,20 +222,16 @@ class KmipEngine(object):
             then = header.time_stamp.value
 
             if (now >= then) and ((now - then) < 60):
-                self._logger.info("Received request at time: {0}".format(
-                    time.strftime(
-                        "%Y-%m-%d %H:%M:%S",
-                        time.gmtime(then)
+                self._logger.info(
+                    "Received request at time: {0}".format(
+                        time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(then))
                     )
-                ))
+                )
             else:
                 if now < then:
                     self._logger.warning(
                         "Received request with future timestamp. Received "
-                        "timestamp: {0}, Current timestamp: {1}".format(
-                            then,
-                            now
-                        )
+                        "timestamp: {0}, Current timestamp: {1}".format(then, now)
                     )
 
                     raise exceptions.InvalidMessage(
@@ -256,16 +244,13 @@ class KmipEngine(object):
                         "timestamp: {1}".format(then, now)
                     )
 
-                    raise exceptions.InvalidMessage(
-                        "Stale request rejected by server."
-                    )
+                    raise exceptions.InvalidMessage("Stale request rejected by server.")
         else:
-            self._logger.info("Received request at time: {0}".format(
-                time.strftime(
-                    "%Y-%m-%d %H:%M:%S",
-                    time.gmtime(now)
+            self._logger.info(
+                "Received request at time: {0}".format(
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(now))
                 )
-            ))
+            )
 
         # Process the asynchronous indicator
         self.is_asynchronous = False
@@ -304,14 +289,9 @@ class KmipEngine(object):
             batch_order_option = header.batch_order_option.value
 
         response_batch = self._process_batch(
-            request.batch_items,
-            batch_error_option,
-            batch_order_option
+            request.batch_items, batch_error_option, batch_order_option
         )
-        response = self._build_response(
-            header.protocol_version,
-            response_batch
-        )
+        response = self._build_response(header.protocol_version, response_batch)
 
         return response, max_response_size, header.protocol_version
 
@@ -319,11 +299,10 @@ class KmipEngine(object):
         header = messages.ResponseHeader(
             protocol_version=version,
             time_stamp=contents.TimeStamp(int(time.time())),
-            batch_count=contents.BatchCount(len(batch_items))
+            batch_count=contents.BatchCount(len(batch_items)),
         )
         message = messages.ResponseMessage(
-            response_header=header,
-            batch_items=batch_items
+            response_header=header, batch_items=batch_items
         )
         return message
 
@@ -344,11 +323,9 @@ class KmipEngine(object):
                 single error result.
         """
         batch_item = messages.ResponseBatchItem(
-            result_status=contents.ResultStatus(
-                enums.ResultStatus.OPERATION_FAILED
-            ),
+            result_status=contents.ResultStatus(enums.ResultStatus.OPERATION_FAILED),
             result_reason=contents.ResultReason(reason),
-            result_message=contents.ResultMessage(message)
+            result_message=contents.ResultMessage(message),
         )
         return self._build_response(version, [batch_item])
 
@@ -371,9 +348,7 @@ class KmipEngine(object):
             # Process batch item ID.
             if len(request_batch) > 1:
                 if not batch_item.unique_batch_item_id:
-                    raise exceptions.InvalidMessage(
-                        "Batch item ID is undefined."
-                    )
+                    raise exceptions.InvalidMessage("Batch item ID is undefined.")
 
             # Process batch message extension.
             # TODO (peterhamilton) Add support for message extension handling.
@@ -384,8 +359,7 @@ class KmipEngine(object):
             # Process batch payload.
             try:
                 response_payload = self._process_operation(
-                    operation.value,
-                    request_payload
+                    operation.value, request_payload
                 )
 
                 result_status = enums.ResultStatus.SUCCESS
@@ -395,17 +369,14 @@ class KmipEngine(object):
                 result_reason = e.reason
                 result_message = str(e)
             except Exception as e:
-                self._logger.warning(
-                    "Error occurred while processing operation."
-                )
+                self._logger.warning("Error occurred while processing operation.")
                 self._logger.exception(e)
 
                 error_occurred = True
                 result_status = enums.ResultStatus.OPERATION_FAILED
                 result_reason = enums.ResultReason.GENERAL_FAILURE
                 result_message = (
-                    "Operation failed. See the server logs for more "
-                    "information."
+                    "Operation failed. See the server logs for more " "information."
                 )
 
             # Compose operation result.
@@ -421,7 +392,7 @@ class KmipEngine(object):
                 result_status=result_status,
                 result_reason=result_reason,
                 result_message=result_message,
-                response_payload=response_payload
+                response_payload=response_payload,
             )
             response_batch.append(batch_item)
 
@@ -434,11 +405,11 @@ class KmipEngine(object):
 
     def _get_object_type(self, unique_identifier):
         try:
-            object_type = self._data_session.query(
-                objects.ManagedObject._object_type
-            ).filter(
-                objects.ManagedObject.unique_identifier == unique_identifier
-            ).one()[0]
+            object_type = (
+                self._data_session.query(objects.ManagedObject._object_type)
+                .filter(objects.ManagedObject.unique_identifier == unique_identifier)
+                .one()[0]
+            )
         except exc.NoResultFound as e:
             self._logger.warning(
                 "Could not identify object type for object: {0}".format(
@@ -450,9 +421,7 @@ class KmipEngine(object):
             )
         except exc.MultipleResultsFound as e:
             self._logger.warning(
-                "Multiple objects found for ID: {0}".format(
-                    unique_identifier
-                )
+                "Multiple objects found for ID: {0}".format(unique_identifier)
             )
             raise e
 
@@ -461,9 +430,7 @@ class KmipEngine(object):
             name = object_type.name
             raise exceptions.InvalidField(
                 "The {0} object type is not supported.".format(
-                    ''.join(
-                        [x.capitalize() for x in name.split('_')]
-                    )
+                    "".join([x.capitalize() for x in name.split("_")])
                 )
             )
 
@@ -473,51 +440,49 @@ class KmipEngine(object):
         try:
             object_type = obj._object_type
         except Exception:
-            raise exceptions.InvalidField(
-                "Cannot build an unsupported object type."
-            )
+            raise exceptions.InvalidField("Cannot build an unsupported object type.")
 
         value = {}
 
         if object_type == enums.ObjectType.CERTIFICATE:
             value = {
-                'certificate_type': obj.certificate_type,
-                'certificate_value': obj.value
+                "certificate_type": obj.certificate_type,
+                "certificate_value": obj.value,
             }
         elif object_type == enums.ObjectType.SYMMETRIC_KEY:
             value = {
-                'cryptographic_algorithm': obj.cryptographic_algorithm,
-                'cryptographic_length': obj.cryptographic_length,
-                'key_format_type': obj.key_format_type,
-                'key_value': obj.value,
-                'key_wrapping_data': obj.key_wrapping_data
+                "cryptographic_algorithm": obj.cryptographic_algorithm,
+                "cryptographic_length": obj.cryptographic_length,
+                "key_format_type": obj.key_format_type,
+                "key_value": obj.value,
+                "key_wrapping_data": obj.key_wrapping_data,
             }
         elif object_type == enums.ObjectType.PUBLIC_KEY:
             value = {
-                'cryptographic_algorithm': obj.cryptographic_algorithm,
-                'cryptographic_length': obj.cryptographic_length,
-                'key_format_type': obj.key_format_type,
-                'key_value': obj.value,
-                'key_wrapping_data': obj.key_wrapping_data
+                "cryptographic_algorithm": obj.cryptographic_algorithm,
+                "cryptographic_length": obj.cryptographic_length,
+                "key_format_type": obj.key_format_type,
+                "key_value": obj.value,
+                "key_wrapping_data": obj.key_wrapping_data,
             }
         elif object_type == enums.ObjectType.PRIVATE_KEY:
             value = {
-                'cryptographic_algorithm': obj.cryptographic_algorithm,
-                'cryptographic_length': obj.cryptographic_length,
-                'key_format_type': obj.key_format_type,
-                'key_value': obj.value,
-                'key_wrapping_data': obj.key_wrapping_data
+                "cryptographic_algorithm": obj.cryptographic_algorithm,
+                "cryptographic_length": obj.cryptographic_length,
+                "key_format_type": obj.key_format_type,
+                "key_value": obj.value,
+                "key_wrapping_data": obj.key_wrapping_data,
             }
         elif object_type == enums.ObjectType.SECRET_DATA:
             value = {
-                'key_format_type': enums.KeyFormatType.OPAQUE,
-                'key_value': obj.value,
-                'secret_data_type': obj.data_type
+                "key_format_type": enums.KeyFormatType.OPAQUE,
+                "key_value": obj.value,
+                "secret_data_type": obj.data_type,
             }
         elif object_type == enums.ObjectType.OPAQUE_DATA:
             value = {
-                'opaque_data_type': obj.opaque_type,
-                'opaque_data_value': obj.value
+                "opaque_data_type": obj.opaque_type,
+                "opaque_data_value": obj.value,
             }
         elif object_type == enums.ObjectType.SPLIT_KEY:
             value = {
@@ -530,15 +495,13 @@ class KmipEngine(object):
                 "key_part_identifier": obj.key_part_identifier,
                 "split_key_threshold": obj.split_key_threshold,
                 "split_key_method": obj.split_key_method,
-                "prime_field_size": obj.prime_field_size
+                "prime_field_size": obj.prime_field_size,
             }
         else:
             name = object_type.name
             raise exceptions.InvalidField(
                 "The {0} object type is not supported.".format(
-                    ''.join(
-                        [x.capitalize() for x in name.split('_')]
-                    )
+                    "".join([x.capitalize() for x in name.split("_")])
                 )
             )
 
@@ -553,9 +516,7 @@ class KmipEngine(object):
         attributes = {}
 
         if len(template_attribute.names) > 0:
-            raise exceptions.ItemNotFound(
-                "Attribute templates are not supported."
-            )
+            raise exceptions.ItemNotFound("Attribute templates are not supported.")
 
         for attribute in template_attribute.attributes:
             name = attribute.attribute_name.value
@@ -608,40 +569,31 @@ class KmipEngine(object):
 
             # TODO (ph) Create the policy once and just pass these calls the
             #           KMIP version for the current request.
-            if not self._attribute_policy.is_attribute_supported(
-                    attribute_name
-            ):
+            if not self._attribute_policy.is_attribute_supported(attribute_name):
                 continue
             if self._attribute_policy.is_attribute_deprecated(attribute_name):
                 continue
 
             if self._attribute_policy.is_attribute_applicable_to_object_type(
-                attribute_name,
-                object_type
+                attribute_name, object_type
             ):
                 try:
                     attribute_value = self._get_attribute_from_managed_object(
-                        managed_object,
-                        attribute_name
+                        managed_object, attribute_name
                     )
                 except Exception:
                     attribute_value = None
 
                 if attribute_value is not None:
-                    if self._attribute_policy.is_attribute_multivalued(
-                            attribute_name
-                    ):
+                    if self._attribute_policy.is_attribute_multivalued(attribute_name):
                         for count, value in enumerate(attribute_value):
                             attribute = attr_factory.create_attribute(
-                                enums.AttributeType(attribute_name),
-                                value,
-                                count
+                                enums.AttributeType(attribute_name), value, count
                             )
                             retrieved_attributes.append(attribute)
                     else:
                         attribute = attr_factory.create_attribute(
-                            enums.AttributeType(attribute_name),
-                            attribute_value
+                            enums.AttributeType(attribute_name), attribute_value
                         )
                         retrieved_attributes.append(attribute)
 
@@ -651,84 +603,82 @@ class KmipEngine(object):
         """
         Get the attribute value from the kmip.pie managed object.
         """
-        if attr_name == 'Unique Identifier':
+        if attr_name == "Unique Identifier":
             return str(managed_object.unique_identifier)
-        elif attr_name == 'Name':
+        elif attr_name == "Name":
             names = list()
             for name in managed_object.names:
                 name = attributes.Name(
                     attributes.Name.NameValue(name),
-                    attributes.Name.NameType(
-                        enums.NameType.UNINTERPRETED_TEXT_STRING
-                    )
+                    attributes.Name.NameType(enums.NameType.UNINTERPRETED_TEXT_STRING),
                 )
                 names.append(name)
             return names
-        elif attr_name == 'Object Type':
+        elif attr_name == "Object Type":
             return managed_object.object_type
-        elif attr_name == 'Cryptographic Algorithm':
+        elif attr_name == "Cryptographic Algorithm":
             return managed_object.cryptographic_algorithm
-        elif attr_name == 'Cryptographic Length':
+        elif attr_name == "Cryptographic Length":
             return managed_object.cryptographic_length
-        elif attr_name == 'Cryptographic Parameters':
+        elif attr_name == "Cryptographic Parameters":
             return None
-        elif attr_name == 'Cryptographic Domain Parameters':
+        elif attr_name == "Cryptographic Domain Parameters":
             return None
-        elif attr_name == 'Certificate Type':
+        elif attr_name == "Certificate Type":
             return managed_object.certificate_type
-        elif attr_name == 'Certificate Length':
+        elif attr_name == "Certificate Length":
             return None
-        elif attr_name == 'X.509 Certificate Identifier':
+        elif attr_name == "X.509 Certificate Identifier":
             return None
-        elif attr_name == 'X.509 Certificate Subject':
+        elif attr_name == "X.509 Certificate Subject":
             return None
-        elif attr_name == 'X.509 Certificate Issuer':
+        elif attr_name == "X.509 Certificate Issuer":
             return None
-        elif attr_name == 'Certificate Identifier':
+        elif attr_name == "Certificate Identifier":
             return None
-        elif attr_name == 'Certificate Subject':
+        elif attr_name == "Certificate Subject":
             return None
-        elif attr_name == 'Certificate Issuer':
+        elif attr_name == "Certificate Issuer":
             return None
-        elif attr_name == 'Digital Signature Algorithm':
+        elif attr_name == "Digital Signature Algorithm":
             return None
-        elif attr_name == 'Digest':
+        elif attr_name == "Digest":
             return None
-        elif attr_name == 'Operation Policy Name':
+        elif attr_name == "Operation Policy Name":
             return managed_object.operation_policy_name
-        elif attr_name == 'Cryptographic Usage Mask':
+        elif attr_name == "Cryptographic Usage Mask":
             return managed_object.cryptographic_usage_masks
-        elif attr_name == 'Lease Time':
+        elif attr_name == "Lease Time":
             return None
-        elif attr_name == 'Usage Limits':
+        elif attr_name == "Usage Limits":
             return None
-        elif attr_name == 'State':
+        elif attr_name == "State":
             return managed_object.state
-        elif attr_name == 'Initial Date':
+        elif attr_name == "Initial Date":
             return managed_object.initial_date
-        elif attr_name == 'Activation Date':
+        elif attr_name == "Activation Date":
             return None
-        elif attr_name == 'Process Start Date':
+        elif attr_name == "Process Start Date":
             return None
-        elif attr_name == 'Protect Stop Date':
+        elif attr_name == "Protect Stop Date":
             return None
-        elif attr_name == 'Deactivation Date':
+        elif attr_name == "Deactivation Date":
             return None
-        elif attr_name == 'Destroy Date':
+        elif attr_name == "Destroy Date":
             return None
-        elif attr_name == 'Compromise Occurrence Date':
+        elif attr_name == "Compromise Occurrence Date":
             return None
-        elif attr_name == 'Compromise Date':
+        elif attr_name == "Compromise Date":
             return None
-        elif attr_name == 'Revocation Reason':
+        elif attr_name == "Revocation Reason":
             return None
-        elif attr_name == 'Archive Date':
+        elif attr_name == "Archive Date":
             return None
-        elif attr_name == 'Object Group':
+        elif attr_name == "Object Group":
             return [x.object_group for x in managed_object.object_groups]
-        elif attr_name == 'Fresh':
+        elif attr_name == "Fresh":
             return None
-        elif attr_name == 'Link':
+        elif attr_name == "Link":
             return None
         elif attr_name == "Application Specific Information":
             values = []
@@ -736,13 +686,13 @@ class KmipEngine(object):
                 values.append(
                     {
                         "application_namespace": info.application_namespace,
-                        "application_data": info.application_data
+                        "application_data": info.application_data,
                     }
                 )
             return values
-        elif attr_name == 'Contact Information':
+        elif attr_name == "Contact Information":
             return None
-        elif attr_name == 'Last Change Date':
+        elif attr_name == "Last Change Date":
             return None
         elif attr_name == "Sensitive":
             return managed_object.sensitive
@@ -752,10 +702,7 @@ class KmipEngine(object):
             return None
 
     def _get_attribute_index_from_managed_object(
-        self,
-        managed_object,
-        attribute_name,
-        attribute_value
+        self, managed_object, attribute_name, attribute_value
     ):
         """
         Find the attribute index for the specified attribute value.
@@ -780,8 +727,9 @@ class KmipEngine(object):
         if attribute_name == "Application Specific Information":
             a = attribute_value
             for count, v in enumerate(managed_object.app_specific_info):
-                if ((a.application_namespace == v.application_namespace) and
-                        (a.application_data == v.application_data)):
+                if (a.application_namespace == v.application_namespace) and (
+                    a.application_data == v.application_data
+                ):
                     return count
             return None
         elif attribute_name == "Certificate Type":
@@ -849,18 +797,17 @@ class KmipEngine(object):
         for attribute_name, attribute_value in six.iteritems(attributes):
             object_type = managed_object._object_type
             if self._attribute_policy.is_attribute_applicable_to_object_type(
-                    attribute_name,
-                    object_type):
+                attribute_name, object_type
+            ):
                 self._set_attribute_on_managed_object(
-                    managed_object,
-                    (attribute_name, attribute_value)
+                    managed_object, (attribute_name, attribute_value)
                 )
             else:
                 name = object_type.name
                 raise exceptions.InvalidField(
                     "Cannot set {0} attribute on {1} object.".format(
                         attribute_name,
-                        ''.join([x.capitalize() for x in name.split('_')])
+                        "".join([x.capitalize() for x in name.split("_")]),
                     )
                 )
 
@@ -872,7 +819,7 @@ class KmipEngine(object):
         attribute_value = attribute[1]
 
         if self._attribute_policy.is_attribute_multivalued(attribute_name):
-            if attribute_name == 'Name':
+            if attribute_name == "Name":
                 managed_object.names.extend(
                     [x.name_value.value for x in attribute_value]
                 )
@@ -886,7 +833,7 @@ class KmipEngine(object):
                     managed_object.app_specific_info.append(
                         objects.ApplicationSpecificInformation(
                             application_namespace=value.application_namespace,
-                            application_data=value.application_data
+                            application_data=value.application_data,
                         )
                     )
             elif attribute_name == "Object Group":
@@ -905,18 +852,18 @@ class KmipEngine(object):
             field = None
             value = attribute_value.value
 
-            if attribute_name == 'Cryptographic Algorithm':
-                field = 'cryptographic_algorithm'
-            elif attribute_name == 'Cryptographic Length':
-                field = 'cryptographic_length'
-            elif attribute_name == 'Cryptographic Usage Mask':
-                field = 'cryptographic_usage_masks'
+            if attribute_name == "Cryptographic Algorithm":
+                field = "cryptographic_algorithm"
+            elif attribute_name == "Cryptographic Length":
+                field = "cryptographic_length"
+            elif attribute_name == "Cryptographic Usage Mask":
+                field = "cryptographic_usage_masks"
                 value = list()
                 for e in enums.CryptographicUsageMask:
                     if e.value & attribute_value.value:
                         value.append(e)
-            elif attribute_name == 'Operation Policy Name':
-                field = 'operation_policy_name'
+            elif attribute_name == "Operation Policy Name":
+                field = "operation_policy_name"
             elif attribute_name == "Sensitive":
                 field = "sensitive"
 
@@ -925,9 +872,7 @@ class KmipEngine(object):
                 if existing_value:
                     if existing_value != value:
                         raise exceptions.InvalidField(
-                            "Cannot overwrite the {0} attribute.".format(
-                                attribute_name
-                            )
+                            "Cannot overwrite the {0} attribute.".format(attribute_name)
                         )
                 else:
                     setattr(managed_object, field, value)
@@ -938,11 +883,7 @@ class KmipEngine(object):
                 )
 
     def _set_attribute_on_managed_object_by_index(
-        self,
-        managed_object,
-        attribute_name,
-        attribute_value,
-        attribute_index
+        self, managed_object, attribute_name, attribute_value, attribute_index
     ):
         """
         Set the attribute value for the specified attribute index.
@@ -973,23 +914,16 @@ class KmipEngine(object):
         attribute_name, attribute_index, attribute_value = attribute
         object_type = managed_object._object_type
         if not self._attribute_policy.is_attribute_applicable_to_object_type(
-            attribute_name,
-            object_type
+            attribute_name, object_type
         ):
             raise exceptions.ItemNotFound(
                 "The '{}' attribute is not applicable to '{}' objects.".format(
                     attribute_name,
-                    ''.join(
-                        [x.capitalize() for x in object_type.name.split('_')]
-                    )
+                    "".join([x.capitalize() for x in object_type.name.split("_")]),
                 )
             )
-        if not self._attribute_policy.is_attribute_deletable_by_client(
-                attribute_name
-        ):
-            raise exceptions.PermissionDenied(
-                "Cannot delete a required attribute."
-            )
+        if not self._attribute_policy.is_attribute_deletable_by_client(attribute_name):
+            raise exceptions.PermissionDenied("Cannot delete a required attribute.")
 
         if self._attribute_policy.is_attribute_multivalued(attribute_name):
             # Get the specific attribute collection and attribute objects.
@@ -1004,7 +938,7 @@ class KmipEngine(object):
                     namespace = attribute_value.application_namespace
                     attribute_value = objects.ApplicationSpecificInformation(
                         application_namespace=namespace,
-                        application_data=attribute_value.application_data
+                        application_data=attribute_value.application_data,
                     )
             elif attribute_name == "Object Group":
                 attribute_list = managed_object.object_groups
@@ -1014,9 +948,7 @@ class KmipEngine(object):
                     )
             else:
                 raise exceptions.InvalidField(
-                    "The '{}' attribute is not supported.".format(
-                        attribute_name
-                    )
+                    "The '{}' attribute is not supported.".format(attribute_name)
                 )
 
             # Generically handle attribute deletion.
@@ -1050,12 +982,7 @@ class KmipEngine(object):
             )
 
     def _is_allowed_by_operation_policy(
-            self,
-            policy_name,
-            session_identity,
-            object_owner,
-            object_type,
-            operation
+        self, policy_name, session_identity, object_owner, object_type, operation
     ):
         session_user = session_identity[0]
         session_groups = session_identity[1]
@@ -1070,7 +997,7 @@ class KmipEngine(object):
                 session_group,
                 object_owner,
                 object_type,
-                operation
+                operation,
             )
             if allowed:
                 return True
@@ -1085,18 +1012,14 @@ class KmipEngine(object):
         policy_bundle = self._operation_policies.get(policy_name)
 
         if not policy_bundle:
-            self._logger.warning(
-                "The '{}' policy does not exist.".format(policy_name)
-            )
+            self._logger.warning("The '{}' policy does not exist.".format(policy_name))
             return None
 
         if group:
-            groups_policy_bundle = policy_bundle.get('groups')
+            groups_policy_bundle = policy_bundle.get("groups")
             if not groups_policy_bundle:
                 self._logger.debug(
-                    "The '{}' policy does not support groups.".format(
-                        policy_name
-                    )
+                    "The '{}' policy does not support groups.".format(policy_name)
                 )
                 return None
             else:
@@ -1104,33 +1027,29 @@ class KmipEngine(object):
                 if not group_policy:
                     self._logger.debug(
                         "The '{}' policy does not support group '{}'.".format(
-                            policy_name,
-                            group
+                            policy_name, group
                         )
                     )
                     return None
                 else:
                     return group_policy
         else:
-            return policy_bundle.get('preset')
+            return policy_bundle.get("preset")
 
     def is_allowed(
-            self,
-            policy_name,
-            session_user,
-            session_group,
-            object_owner,
-            object_type,
-            operation
+        self,
+        policy_name,
+        session_user,
+        session_group,
+        object_owner,
+        object_type,
+        operation,
     ):
         """
         Determine if object access is allowed for the provided policy and
         session settings.
         """
-        policy_section = self.get_relevant_policy_section(
-            policy_name,
-            session_group
-        )
+        policy_section = self.get_relevant_policy_section(policy_name, session_group)
         if policy_section is None:
             return False
 
@@ -1138,8 +1057,7 @@ class KmipEngine(object):
         if not object_policy:
             self._logger.warning(
                 "The '{0}' policy does not apply to {1} objects.".format(
-                    policy_name,
-                    self._get_enum_string(object_type)
+                    policy_name, self._get_enum_string(object_type)
                 )
             )
             return False
@@ -1151,7 +1069,7 @@ class KmipEngine(object):
                 "objects.".format(
                     policy_name,
                     self._get_enum_string(operation),
-                    self._get_enum_string(object_type)
+                    self._get_enum_string(object_type),
                 )
             )
             return False
@@ -1180,7 +1098,7 @@ class KmipEngine(object):
                             date_type,
                             time.asctime(time.gmtime(value)),
                             date_type,
-                            time.asctime(time.gmtime(start))
+                            time.asctime(time.gmtime(start)),
                         )
                     )
                     return False
@@ -1191,7 +1109,7 @@ class KmipEngine(object):
                             date_type,
                             time.asctime(time.gmtime(value)),
                             date_type,
-                            time.asctime(time.gmtime(end))
+                            time.asctime(time.gmtime(end)),
                         )
                     )
                     return False
@@ -1203,7 +1121,7 @@ class KmipEngine(object):
                             date_type,
                             time.asctime(time.gmtime(value)),
                             date_type,
-                            time.asctime(time.gmtime(start))
+                            time.asctime(time.gmtime(start)),
                         )
                     )
                     return False
@@ -1225,16 +1143,14 @@ class KmipEngine(object):
                 "Include two for a ranged match.".format(date_type.value)
             )
 
-    def _get_object_with_access_controls(
-            self,
-            uid,
-            operation
-    ):
+    def _get_object_with_access_controls(self, uid, operation):
         object_type = self._get_object_type(uid)
 
-        managed_object = self._data_session.query(object_type).filter(
-            object_type.unique_identifier == uid
-        ).one()
+        managed_object = (
+            self._data_session.query(object_type)
+            .filter(object_type.unique_identifier == uid)
+            .one()
+        )
 
         # TODO (peter-hamilton) Add debug log with policy contents?
 
@@ -1245,7 +1161,7 @@ class KmipEngine(object):
             self._client_identity,
             managed_object._owner,
             managed_object.object_type,
-            operation
+            operation,
         )
         if not is_allowed:
             raise exceptions.PermissionDenied(
@@ -1254,10 +1170,7 @@ class KmipEngine(object):
 
         return managed_object
 
-    def _list_objects_with_access_controls(
-            self,
-            operation
-    ):
+    def _list_objects_with_access_controls(self, operation):
         managed_objects = None
         managed_objects_allowed = list()
 
@@ -1269,7 +1182,7 @@ class KmipEngine(object):
                 self._client_identity,
                 managed_object._owner,
                 managed_object.object_type,
-                operation
+                operation,
             )
             if is_allowed is True:
                 managed_objects_allowed.append(managed_object)
@@ -1327,7 +1240,7 @@ class KmipEngine(object):
                 )
             )
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_create(self, payload):
         self._logger.info("Processing operation: Create")
 
@@ -1338,26 +1251,23 @@ class KmipEngine(object):
             name = object_type.name
             raise exceptions.InvalidField(
                 "Cannot create a {0} object with the Create operation.".format(
-                    ''.join([x.capitalize() for x in name.split('_')])
+                    "".join([x.capitalize() for x in name.split("_")])
                 )
             )
 
         object_attributes = {}
         if template_attribute:
-            object_attributes = self._process_template_attribute(
-                template_attribute
-            )
+            object_attributes = self._process_template_attribute(template_attribute)
 
-        algorithm = object_attributes.get('Cryptographic Algorithm')
+        algorithm = object_attributes.get("Cryptographic Algorithm")
         if algorithm:
             algorithm = algorithm.value
         else:
             raise exceptions.InvalidField(
-                "The cryptographic algorithm must be specified as an "
-                "attribute."
+                "The cryptographic algorithm must be specified as an " "attribute."
             )
 
-        length = object_attributes.get('Cryptographic Length')
+        length = object_attributes.get("Cryptographic Length")
         if length:
             length = length.value
         else:
@@ -1369,29 +1279,18 @@ class KmipEngine(object):
                 "The cryptographic length must be specified as an attribute."
             )
 
-        usage_mask = object_attributes.get('Cryptographic Usage Mask')
+        usage_mask = object_attributes.get("Cryptographic Usage Mask")
         if usage_mask is None:
             raise exceptions.InvalidField(
-                "The cryptographic usage mask must be specified as an "
-                "attribute."
+                "The cryptographic usage mask must be specified as an " "attribute."
             )
 
-        result = self._cryptography_engine.create_symmetric_key(
-            algorithm,
-            length
-        )
+        result = self._cryptography_engine.create_symmetric_key(algorithm, length)
 
-        managed_object = objects.SymmetricKey(
-            algorithm,
-            length,
-            result.get('value')
-        )
+        managed_object = objects.SymmetricKey(algorithm, length, result.get("value"))
         managed_object.names = []
 
-        self._set_attributes_on_managed_object(
-            managed_object,
-            object_attributes
-        )
+        self._set_attributes_on_managed_object(managed_object, object_attributes)
 
         # TODO (peterhamilton) Set additional server-only attributes.
         managed_object._owner = self._client_identity[0]
@@ -1412,14 +1311,14 @@ class KmipEngine(object):
         response_payload = payloads.CreateResponsePayload(
             object_type=payload.object_type,
             unique_identifier=str(managed_object.unique_identifier),
-            template_attribute=None
+            template_attribute=None,
         )
 
         self._id_placeholder = str(managed_object.unique_identifier)
 
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_create_key_pair(self, payload):
         self._logger.info("Processing operation: CreateKeyPair")
 
@@ -1452,7 +1351,7 @@ class KmipEngine(object):
                 private_key_attributes.update([(key, value)])
 
         # Error check for required attributes.
-        public_algorithm = public_key_attributes.get('Cryptographic Algorithm')
+        public_algorithm = public_key_attributes.get("Cryptographic Algorithm")
         if public_algorithm:
             public_algorithm = public_algorithm.value
         else:
@@ -1461,7 +1360,7 @@ class KmipEngine(object):
                 "attribute for the public key."
             )
 
-        public_length = public_key_attributes.get('Cryptographic Length')
+        public_length = public_key_attributes.get("Cryptographic Length")
         if public_length:
             public_length = public_length.value
         else:
@@ -1474,18 +1373,14 @@ class KmipEngine(object):
                 "for the public key."
             )
 
-        public_usage_mask = public_key_attributes.get(
-            'Cryptographic Usage Mask'
-        )
+        public_usage_mask = public_key_attributes.get("Cryptographic Usage Mask")
         if public_usage_mask is None:
             raise exceptions.InvalidField(
                 "The cryptographic usage mask must be specified as an "
                 "attribute for the public key."
             )
 
-        private_algorithm = private_key_attributes.get(
-            'Cryptographic Algorithm'
-        )
+        private_algorithm = private_key_attributes.get("Cryptographic Algorithm")
         if private_algorithm:
             private_algorithm = private_algorithm.value
         else:
@@ -1494,7 +1389,7 @@ class KmipEngine(object):
                 "attribute for the private key."
             )
 
-        private_length = private_key_attributes.get('Cryptographic Length')
+        private_length = private_key_attributes.get("Cryptographic Length")
         if private_length:
             private_length = private_length.value
         else:
@@ -1507,9 +1402,7 @@ class KmipEngine(object):
                 "for the private key."
             )
 
-        private_usage_mask = private_key_attributes.get(
-            'Cryptographic Usage Mask'
-        )
+        private_usage_mask = private_key_attributes.get("Cryptographic Usage Mask")
         if private_usage_mask is None:
             raise exceptions.InvalidField(
                 "The cryptographic usage mask must be specified as an "
@@ -1531,33 +1424,20 @@ class KmipEngine(object):
             )
 
         public, private = self._cryptography_engine.create_asymmetric_key_pair(
-            algorithm,
-            length
+            algorithm, length
         )
 
         public_key = objects.PublicKey(
-            algorithm,
-            length,
-            public.get('value'),
-            public.get('format')
+            algorithm, length, public.get("value"), public.get("format")
         )
         private_key = objects.PrivateKey(
-            algorithm,
-            length,
-            private.get('value'),
-            private.get('format')
+            algorithm, length, private.get("value"), private.get("format")
         )
         public_key.names = []
         private_key.names = []
 
-        self._set_attributes_on_managed_object(
-            public_key,
-            public_key_attributes
-        )
-        self._set_attributes_on_managed_object(
-            private_key,
-            private_key_attributes
-        )
+        self._set_attributes_on_managed_object(public_key, public_key_attributes)
+        self._set_attributes_on_managed_object(private_key, private_key_attributes)
 
         # TODO (peterhamilton) Set additional server-only attributes.
         public_key._owner = self._client_identity[0]
@@ -1573,25 +1453,21 @@ class KmipEngine(object):
         self._data_session.commit()
 
         self._logger.info(
-            "Created a PublicKey with ID: {0}".format(
-                public_key.unique_identifier
-            )
+            "Created a PublicKey with ID: {0}".format(public_key.unique_identifier)
         )
         self._logger.info(
-            "Created a PrivateKey with ID: {0}".format(
-                private_key.unique_identifier
-            )
+            "Created a PrivateKey with ID: {0}".format(private_key.unique_identifier)
         )
 
         response_payload = payloads.CreateKeyPairResponsePayload(
             private_key_unique_identifier=str(private_key.unique_identifier),
-            public_key_unique_identifier=str(public_key.unique_identifier)
+            public_key_unique_identifier=str(public_key.unique_identifier),
         )
 
         self._id_placeholder = str(private_key.unique_identifier)
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_delete_attribute(self, payload):
         self._logger.info("Processing operation: DeleteAttribute")
 
@@ -1600,8 +1476,7 @@ class KmipEngine(object):
             unique_identifier = payload.unique_identifier
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.DELETE_ATTRIBUTE
+            unique_identifier, enums.Operation.DELETE_ATTRIBUTE
         )
         deleted_attribute = None
 
@@ -1636,8 +1511,7 @@ class KmipEngine(object):
                 attribute_name = payload.attribute_name
             else:
                 raise exceptions.InvalidMessage(
-                    "The DeleteAttribute request must specify the attribute "
-                    "name."
+                    "The DeleteAttribute request must specify the attribute " "name."
                 )
             if payload.attribute_index:
                 attribute_index = payload.attribute_index
@@ -1646,17 +1520,14 @@ class KmipEngine(object):
 
             # Grab a copy of the attribute before deleting it.
             existing_attributes = self._get_attributes_from_managed_object(
-                managed_object,
-                [payload.attribute_name]
+                managed_object, [payload.attribute_name]
             )
             if len(existing_attributes) > 0:
                 if not attribute_index:
                     deleted_attribute = existing_attributes[0]
                 else:
                     if attribute_index < len(existing_attributes):
-                        deleted_attribute = existing_attributes[
-                            attribute_index
-                        ]
+                        deleted_attribute = existing_attributes[attribute_index]
                     else:
                         raise exceptions.ItemNotFound(
                             "Could not locate the attribute instance with the "
@@ -1664,19 +1535,17 @@ class KmipEngine(object):
                         )
 
         self._delete_attribute_from_managed_object(
-            managed_object,
-            (attribute_name, attribute_index, attribute_value)
+            managed_object, (attribute_name, attribute_index, attribute_value)
         )
         self._data_session.commit()
 
         response_payload = payloads.DeleteAttributeResponsePayload(
-            unique_identifier=unique_identifier,
-            attribute=deleted_attribute
+            unique_identifier=unique_identifier, attribute=deleted_attribute
         )
 
         return response_payload
 
-    @_kmip_version_supported('2.0')
+    @_kmip_version_supported("2.0")
     def _process_set_attribute(self, payload):
         self._logger.info("Processing operation: SetAttribute")
 
@@ -1685,8 +1554,7 @@ class KmipEngine(object):
             unique_identifier = payload.unique_identifier
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.SET_ATTRIBUTE
+            unique_identifier, enums.Operation.SET_ATTRIBUTE
         )
 
         attribute_name = enums.convert_attribute_tag_to_name(
@@ -1700,31 +1568,26 @@ class KmipEngine(object):
                     "The '{}' attribute is multi-valued. Multi-valued "
                     "attributes cannot be set with the SetAttribute "
                     "operation.".format(attribute_name)
-                )
+                ),
             )
-        if not self._attribute_policy.is_attribute_modifiable_by_client(
-            attribute_name
-        ):
+        if not self._attribute_policy.is_attribute_modifiable_by_client(attribute_name):
             raise exceptions.KmipError(
                 status=enums.ResultStatus.OPERATION_FAILED,
                 reason=enums.ResultReason.READ_ONLY_ATTRIBUTE,
                 message=(
                     "The '{}' attribute is read-only and cannot be modified "
                     "by the client.".format(attribute_name)
-                )
+                ),
             )
 
         self._set_attributes_on_managed_object(
-            managed_object,
-            {attribute_name: payload.new_attribute.attribute}
+            managed_object, {attribute_name: payload.new_attribute.attribute}
         )
         self._data_session.commit()
 
-        return payloads.SetAttributeResponsePayload(
-            unique_identifier=unique_identifier
-        )
+        return payloads.SetAttributeResponsePayload(unique_identifier=unique_identifier)
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_modify_attribute(self, payload):
         self._logger.info("Processing operation: ModifyAttribute")
 
@@ -1733,8 +1596,7 @@ class KmipEngine(object):
             unique_identifier = payload.unique_identifier
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.MODIFY_ATTRIBUTE
+            unique_identifier, enums.Operation.MODIFY_ATTRIBUTE
         )
 
         if self._protocol_version >= contents.ProtocolVersion(2, 0):
@@ -1743,9 +1605,7 @@ class KmipEngine(object):
                 current_attribute = current_attribute.attribute
             new_attribute = payload.new_attribute.attribute
 
-            attribute_name = enums.convert_attribute_tag_to_name(
-                new_attribute.tag
-            )
+            attribute_name = enums.convert_attribute_tag_to_name(new_attribute.tag)
 
             if not self._attribute_policy.is_attribute_modifiable_by_client(
                 attribute_name
@@ -1756,7 +1616,7 @@ class KmipEngine(object):
                     message=(
                         "The '{}' attribute is read-only and cannot be "
                         "modified.".format(attribute_name)
-                    )
+                    ),
                 )
 
             is_multivalued = self._attribute_policy.is_attribute_multivalued(
@@ -1770,16 +1630,12 @@ class KmipEngine(object):
                         reason=enums.ResultReason.ATTRIBUTE_INSTANCE_NOT_FOUND,
                         message=(
                             "The '{}' attribute is multivalued so the current "
-                            "attribute must be specified.".format(
-                                attribute_name
-                            )
-                        )
+                            "attribute must be specified.".format(attribute_name)
+                        ),
                     )
                 else:
                     index = self._get_attribute_index_from_managed_object(
-                        managed_object,
-                        attribute_name,
-                        current_attribute
+                        managed_object, attribute_name, current_attribute
                     )
                     if index is None:
                         raise exceptions.KmipError(
@@ -1788,22 +1644,18 @@ class KmipEngine(object):
                             message=(
                                 "The specified current attribute could not be "
                                 "found on the managed object."
-                            )
+                            ),
                         )
                     else:
                         self._set_attribute_on_managed_object_by_index(
-                            managed_object,
-                            attribute_name,
-                            new_attribute,
-                            index
+                            managed_object, attribute_name, new_attribute, index
                         )
                         self._data_session.commit()
             else:
                 if current_attribute is None:
                     # Verify the attribute is set.
                     existing_attr = self._get_attribute_from_managed_object(
-                        managed_object,
-                        attribute_name
+                        managed_object, attribute_name
                     )
                     if existing_attr is None:
                         raise exceptions.KmipError(
@@ -1813,14 +1665,12 @@ class KmipEngine(object):
                                 "The '{}' attribute is not set on the managed "
                                 "object. It must be set before it can be "
                                 "modified.".format(attribute_name)
-                            )
+                            ),
                         )
                 else:
                     # Verify the attribute matches the current attribute.
                     index = self._get_attribute_index_from_managed_object(
-                        managed_object,
-                        attribute_name,
-                        current_attribute
+                        managed_object, attribute_name, current_attribute
                     )
                     if index is None:
                         raise exceptions.KmipError(
@@ -1829,13 +1679,12 @@ class KmipEngine(object):
                             message=(
                                 "The specified current attribute could not be "
                                 "found on the managed object."
-                            )
+                            ),
                         )
 
                 # Set the attribute value.
                 self._set_attribute_on_managed_object(
-                    managed_object,
-                    (attribute_name, new_attribute)
+                    managed_object, (attribute_name, new_attribute)
                 )
                 self._data_session.commit()
 
@@ -1859,7 +1708,7 @@ class KmipEngine(object):
                     message=(
                         "The '{}' attribute is read-only and cannot be "
                         "modified.".format(attribute_name)
-                    )
+                    ),
                 )
 
             is_multivalued = self._attribute_policy.is_attribute_multivalued(
@@ -1873,15 +1722,11 @@ class KmipEngine(object):
                     attribute_index = 0
 
                 existing_attributes = self._get_attribute_from_managed_object(
-                    managed_object,
-                    attribute_name
+                    managed_object, attribute_name
                 )
                 if 0 <= attribute_index < len(existing_attributes):
                     self._set_attribute_on_managed_object_by_index(
-                        managed_object,
-                        attribute_name,
-                        attribute_value,
-                        attribute_index
+                        managed_object, attribute_name, attribute_value, attribute_index
                     )
                     self._data_session.commit()
                 else:
@@ -1891,12 +1736,11 @@ class KmipEngine(object):
                         message=(
                             "No matching attribute instance could be found "
                             "for the specified attribute index."
-                        )
+                        ),
                     )
 
                 existing_attributes = self._get_attributes_from_managed_object(
-                    managed_object,
-                    [attribute_name]
+                    managed_object, [attribute_name]
                 )
                 modified_attribute = existing_attributes[attribute_index]
             else:
@@ -1907,11 +1751,10 @@ class KmipEngine(object):
                         message=(
                             "The attribute index cannot be specified for a "
                             "single-valued attribute."
-                        )
+                        ),
                     )
                 existing_attribute = self._get_attributes_from_managed_object(
-                    managed_object,
-                    [attribute_name]
+                    managed_object, [attribute_name]
                 )
                 if len(existing_attribute) == 0:
                     raise exceptions.KmipError(
@@ -1921,27 +1764,24 @@ class KmipEngine(object):
                             "The '{}' attribute is not set on the managed "
                             "object. It must be set before it can be "
                             "modified.".format(attribute_name)
-                        )
+                        ),
                     )
                 else:
                     self._set_attribute_on_managed_object(
-                        managed_object,
-                        (attribute_name, attribute_value)
+                        managed_object, (attribute_name, attribute_value)
                     )
                     self._data_session.commit()
 
                 existing_attributes = self._get_attributes_from_managed_object(
-                    managed_object,
-                    [attribute_name]
+                    managed_object, [attribute_name]
                 )
                 modified_attribute = existing_attributes[0]
 
             return payloads.ModifyAttributeResponsePayload(
-                unique_identifier=unique_identifier,
-                attribute=modified_attribute
+                unique_identifier=unique_identifier, attribute=modified_attribute
             )
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_register(self, payload):
         self._logger.info("Processing operation: Register")
 
@@ -1952,9 +1792,7 @@ class KmipEngine(object):
             name = object_type.name
             raise exceptions.InvalidField(
                 "The {0} object type is not supported.".format(
-                    ''.join(
-                        [x.capitalize() for x in name.split('_')]
-                    )
+                    "".join([x.capitalize() for x in name.split("_")])
                 )
             )
 
@@ -1963,24 +1801,17 @@ class KmipEngine(object):
         else:
             # TODO (peterhamilton) It is possible to register 'empty' secrets
             # like Private Keys. For now, that feature is not supported.
-            raise exceptions.InvalidField(
-                "Cannot register a secret in absentia."
-            )
+            raise exceptions.InvalidField("Cannot register a secret in absentia.")
 
         object_attributes = {}
         if template_attribute:
-            object_attributes = self._process_template_attribute(
-                template_attribute
-            )
+            object_attributes = self._process_template_attribute(template_attribute)
 
         managed_object_factory = factory.ObjectFactory()
         managed_object = managed_object_factory.convert(secret)
         managed_object.names = []
 
-        self._set_attributes_on_managed_object(
-            managed_object,
-            object_attributes
-        )
+        self._set_attributes_on_managed_object(managed_object, object_attributes)
 
         # TODO (peterhamilton) Set additional server-only attributes.
         managed_object._owner = self._client_identity[0]
@@ -1994,8 +1825,8 @@ class KmipEngine(object):
 
         self._logger.info(
             "Registered a {0} with ID: {1}".format(
-                ''.join([x.capitalize() for x in object_type.name.split('_')]),
-                managed_object.unique_identifier
+                "".join([x.capitalize() for x in object_type.name.split("_")]),
+                managed_object.unique_identifier,
             )
         )
 
@@ -2007,7 +1838,7 @@ class KmipEngine(object):
 
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_derive_key(self, payload):
         self._logger.info("Processing operation: DeriveKey")
 
@@ -2019,7 +1850,7 @@ class KmipEngine(object):
 
         if payload.object_type not in [
             enums.ObjectType.SYMMETRIC_KEY,
-            enums.ObjectType.SECRET_DATA
+            enums.ObjectType.SECRET_DATA,
         ]:
             raise exceptions.InvalidField(
                 "Key derivation can only generate a SymmetricKey or "
@@ -2032,14 +1863,13 @@ class KmipEngine(object):
         existing_objects = []
         for unique_identifier in payload.unique_identifiers:
             managed_object = self._get_object_with_access_controls(
-                unique_identifier,
-                enums.Operation.GET
+                unique_identifier, enums.Operation.GET
             )
             if managed_object._object_type not in [
                 enums.ObjectType.SECRET_DATA,
                 enums.ObjectType.SYMMETRIC_KEY,
                 enums.ObjectType.PUBLIC_KEY,
-                enums.ObjectType.PRIVATE_KEY
+                enums.ObjectType.PRIVATE_KEY,
             ]:
                 raise exceptions.InvalidField(
                     "Object {0} is not a suitable type for key "
@@ -2047,8 +1877,10 @@ class KmipEngine(object):
                         unique_identifier
                     )
                 )
-            elif enums.CryptographicUsageMask.DERIVE_KEY not in \
-                    managed_object.cryptographic_usage_masks:
+            elif (
+                enums.CryptographicUsageMask.DERIVE_KEY
+                not in managed_object.cryptographic_usage_masks
+            ):
                 raise exceptions.InvalidField(
                     "The DeriveKey bit must be set in the cryptographic usage "
                     "mask for object {0} for it to be used in key "
@@ -2088,14 +1920,14 @@ class KmipEngine(object):
         else:
             derivation_data = derivation_parameters.derivation_data
 
-        iv = b''
+        iv = b""
         if derivation_parameters.initialization_vector is not None:
             iv = derivation_parameters.initialization_vector
 
         # Get the derivation length from the template attribute. It is
         # required so if it cannot be found, raise an error.
         derivation_length = None
-        attribute = object_attributes.get('Cryptographic Length')
+        attribute = object_attributes.get("Cryptographic Length")
         if attribute:
             derivation_length = attribute.value
             if (derivation_length % 8) == 0:
@@ -2113,7 +1945,7 @@ class KmipEngine(object):
 
         cryptographic_algorithm = None
         if payload.object_type == enums.ObjectType.SYMMETRIC_KEY:
-            attribute = object_attributes.get('Cryptographic Algorithm')
+            attribute = object_attributes.get("Cryptographic Algorithm")
             if attribute:
                 cryptographic_algorithm = attribute.value
             else:
@@ -2136,13 +1968,12 @@ class KmipEngine(object):
             encryption_algorithm=crypto_parameters.cryptographic_algorithm,
             cipher_mode=crypto_parameters.block_cipher_mode,
             padding_method=crypto_parameters.padding_method,
-            iv_nonce=iv
+            iv_nonce=iv,
         )
 
         if derivation_length > len(derived_data):
             raise exceptions.CryptographicFailure(
-                "The specified length exceeds the output of the derivation "
-                "method."
+                "The specified length exceeds the output of the derivation " "method."
             )
         if len(derived_data) > derivation_length:
             derived_data = derived_data[:derivation_length]
@@ -2162,11 +1993,8 @@ class KmipEngine(object):
         managed_object.names = []
 
         if payload.object_type == enums.ObjectType.SECRET_DATA:
-            del object_attributes['Cryptographic Length']
-        self._set_attributes_on_managed_object(
-            managed_object,
-            object_attributes
-        )
+            del object_attributes["Cryptographic Length"]
+        self._set_attributes_on_managed_object(managed_object, object_attributes)
 
         # TODO (peterhamilton) Set additional server-only attributes.
         managed_object._owner = self._client_identity[0]
@@ -2177,11 +2005,8 @@ class KmipEngine(object):
 
         self._logger.info(
             "Created a {0} with ID: {1}".format(
-                ''.join(
-                    [x.capitalize() for x in
-                     payload.object_type.name.split('_')]
-                ),
-                managed_object.unique_identifier
+                "".join([x.capitalize() for x in payload.object_type.name.split("_")]),
+                managed_object.unique_identifier,
             )
         )
         self._id_placeholder = str(managed_object.unique_identifier)
@@ -2191,14 +2016,15 @@ class KmipEngine(object):
         )
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_locate(self, payload):
         # TODO: Need to complete the filtering logic based on all given
         # objects in payload.
         self._logger.info("Processing operation: Locate")
 
         managed_objects = self._list_objects_with_access_controls(
-                                enums.Operation.LOCATE)
+            enums.Operation.LOCATE
+        )
 
         # TODO (ph) Do a single pass on the provided attributes and preprocess
         # them as needed (e.g., tracking multiple 'Initial Date' values, etc).
@@ -2211,9 +2037,7 @@ class KmipEngine(object):
             # Filter the objects based on given attributes.
             for managed_object in managed_objects:
                 self._logger.debug(
-                    "Evaluating object: {}".format(
-                        managed_object.unique_identifier
-                    )
+                    "Evaluating object: {}".format(managed_object.unique_identifier)
                 )
 
                 add_object = True
@@ -2227,15 +2051,14 @@ class KmipEngine(object):
                     # object. If not, the object doesn't match, so skip it.
                     policy = self._attribute_policy
                     if not policy.is_attribute_applicable_to_object_type(
-                        name,
-                        managed_object.object_type
+                        name, managed_object.object_type
                     ):
                         self._logger.debug(
                             "Failed match: "
                             "the specified attribute ({}) is not applicable "
                             "for the object's object type ({}).".format(
-                                name,
-                                managed_object.object_type.name)
+                                name, managed_object.object_type.name
+                            )
                         )
                         add_object = False
                         break
@@ -2243,8 +2066,7 @@ class KmipEngine(object):
                     # Fetch the attribute from the object and check if it
                     # matches. If not, the object doesn't match, so skip it.
                     attribute = self._get_attribute_from_managed_object(
-                        managed_object,
-                        name
+                        managed_object, name
                     )
                     if attribute is None:
                         continue
@@ -2253,7 +2075,7 @@ class KmipEngine(object):
                         application_data = value.application_data
                         v = {
                             "application_namespace": application_namespace,
-                            "application_data": application_data
+                            "application_data": application_data,
                         }
                         if v not in attribute:
                             self._logger.debug(
@@ -2263,7 +2085,7 @@ class KmipEngine(object):
                                 "of the object's associated application "
                                 "specific information attributes.".format(
                                     v.get("application_namespace"),
-                                    v.get("application_data")
+                                    v.get("application_data"),
                                 )
                             )
                             add_object = False
@@ -2284,8 +2106,7 @@ class KmipEngine(object):
                                 "Failed match: "
                                 "the specified name ({}) does not match "
                                 "any of the object's names ({}).".format(
-                                    value,
-                                    attribute
+                                    value, attribute
                                 )
                             )
                             add_object = False
@@ -2297,8 +2118,7 @@ class KmipEngine(object):
                                 "Failed match: "
                                 "the specified state ({}) does not match "
                                 "the object's state ({}).".format(
-                                    value.name,
-                                    attribute.name
+                                    value.name, attribute.name
                                 )
                             )
                             add_object = False
@@ -2310,8 +2130,7 @@ class KmipEngine(object):
                                 "Failed match: "
                                 "the specified object type ({}) does not "
                                 "match the object's object type ({}).".format(
-                                    value.name,
-                                    attribute.name
+                                    value.name, attribute.name
                                 )
                             )
                             add_object = False
@@ -2323,10 +2142,7 @@ class KmipEngine(object):
                                 "Failed match: "
                                 "the specified cryptographic algorithm ({}) "
                                 "does not match the object's cryptographic "
-                                "algorithm ({}).".format(
-                                    value.name,
-                                    attribute.name
-                                )
+                                "algorithm ({}).".format(value.name, attribute.name)
                             )
                             add_object = False
                             break
@@ -2337,10 +2153,7 @@ class KmipEngine(object):
                                 "Failed match: "
                                 "the specified cryptographic length ({}) "
                                 "does not match the object's cryptographic "
-                                "length ({}).".format(
-                                    value,
-                                    attribute
-                                )
+                                "length ({}).".format(value, attribute)
                             )
                             add_object = False
                             break
@@ -2351,10 +2164,7 @@ class KmipEngine(object):
                                 "Failed match: "
                                 "the specified unique identifier ({}) "
                                 "does not match the object's unique "
-                                "identifier ({}).".format(
-                                    value,
-                                    attribute
-                                )
+                                "identifier ({}).".format(value, attribute)
                             )
                             add_object = False
                             break
@@ -2365,18 +2175,14 @@ class KmipEngine(object):
                                 "Failed match: "
                                 "the specified operation policy name ({}) "
                                 "does not match the object's operation policy "
-                                "name ({}).".format(
-                                    value,
-                                    attribute
-                                )
+                                "name ({}).".format(value, attribute)
                             )
                             add_object = False
                             break
                     elif name == "Cryptographic Usage Mask":
                         value = value.value
                         mask_values = enums.get_enumerations_from_bit_mask(
-                            enums.CryptographicUsageMask,
-                            value
+                            enums.CryptographicUsageMask, value
                         )
                         for mask_value in mask_values:
                             if mask_value not in attribute:
@@ -2398,19 +2204,14 @@ class KmipEngine(object):
                                 "Failed match: "
                                 "the specified certificate type ({}) "
                                 "does not match the object's certificate "
-                                "type ({}).".format(
-                                    value.name,
-                                    attribute.name
-                                )
+                                "type ({}).".format(value.name, attribute.name)
                             )
                             add_object = False
                             break
                     elif name == enums.AttributeType.INITIAL_DATE.value:
                         initial_date["value"] = attribute
                         self._track_date_attributes(
-                            enums.AttributeType.INITIAL_DATE,
-                            initial_date,
-                            value.value
+                            enums.AttributeType.INITIAL_DATE, initial_date, value.value
                         )
                     else:
                         if value != attribute:
@@ -2422,7 +2223,7 @@ class KmipEngine(object):
                         enums.AttributeType.INITIAL_DATE,
                         initial_date.get("value"),
                         initial_date.get("start"),
-                        initial_date.get("end")
+                        initial_date.get("end"),
                     )
 
                 if add_object:
@@ -2437,30 +2238,26 @@ class KmipEngine(object):
 
         # Sort the matching results by their creation date.
         managed_objects = sorted(
-            managed_objects,
-            key=lambda x: x.initial_date,
-            reverse=True
+            managed_objects, key=lambda x: x.initial_date, reverse=True
         )
 
         # Skip the requested offset items and keep the requested maximum items
         if payload.offset_items is not None:
             if payload.maximum_items is not None:
                 managed_objects = managed_objects[
-                    payload.offset_items:(
+                    payload.offset_items : (
                         payload.offset_items + payload.maximum_items
                     )
                 ]
             else:
-                managed_objects = managed_objects[payload.offset_items:]
+                managed_objects = managed_objects[payload.offset_items :]
         else:
             if payload.maximum_items is not None:
-                managed_objects = managed_objects[:payload.maximum_items]
+                managed_objects = managed_objects[: payload.maximum_items]
             else:
                 pass
 
-        unique_identifiers = [
-            str(x.unique_identifier) for x in managed_objects
-        ]
+        unique_identifiers = [str(x.unique_identifier) for x in managed_objects]
 
         response_payload = payloads.LocateResponsePayload(
             unique_identifiers=unique_identifiers
@@ -2468,7 +2265,7 @@ class KmipEngine(object):
 
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_get(self, payload):
         self._logger.info("Processing operation: Get")
 
@@ -2486,12 +2283,11 @@ class KmipEngine(object):
             )
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.GET
+            unique_identifier, enums.Operation.GET
         )
 
         if key_format_type:
-            if not hasattr(managed_object, 'key_format_type'):
+            if not hasattr(managed_object, "key_format_type"):
                 raise exceptions.KeyFormatTypeNotSupported(
                     "Key format is not applicable to the specified object."
                 )
@@ -2501,16 +2297,15 @@ class KmipEngine(object):
                 raise exceptions.KeyFormatTypeNotSupported(
                     "Key format conversion from {0} to {1} is "
                     "unsupported.".format(
-                        managed_object.key_format_type.name,
-                        key_format_type.name
+                        managed_object.key_format_type.name, key_format_type.name
                     )
                 )
 
         object_type = managed_object.object_type.name
         self._logger.info(
             "Getting a {0} with ID: {1}".format(
-                ''.join([x.capitalize() for x in object_type.split('_')]),
-                managed_object.unique_identifier
+                "".join([x.capitalize() for x in object_type.split("_")]),
+                managed_object.unique_identifier,
             )
         )
 
@@ -2520,9 +2315,7 @@ class KmipEngine(object):
 
             if wrapping_method != enums.WrappingMethod.ENCRYPT:
                 raise exceptions.OperationNotSupported(
-                    "Wrapping method '{0}' is not supported.".format(
-                        wrapping_method
-                    )
+                    "Wrapping method '{0}' is not supported.".format(wrapping_method)
                 )
 
             if key_wrapping_spec.encryption_key_information:
@@ -2532,13 +2325,10 @@ class KmipEngine(object):
 
                 try:
                     key = self._get_object_with_access_controls(
-                        encryption_key_uuid,
-                        enums.Operation.GET
+                        encryption_key_uuid, enums.Operation.GET
                     )
                 except Exception:
-                    raise exceptions.ItemNotFound(
-                        "Wrapping key does not exist."
-                    )
+                    raise exceptions.ItemNotFound("Wrapping key does not exist.")
 
                 if key._object_type != enums.ObjectType.SYMMETRIC_KEY:
                     raise exceptions.IllegalOperation(
@@ -2573,22 +2363,22 @@ class KmipEngine(object):
                         )
                     )
 
-                self._logger.info("Wrapping {0} {1} with {2} {3}.".format(
-                    ''.join([x.capitalize() for x in object_type.split('_')]),
-                    managed_object.unique_identifier,
-                    ''.join(
-                        [x.capitalize() for x in key._object_type.name.split(
-                            '_'
-                        )]
-                    ),
-                    encryption_key_uuid
-                ))
+                self._logger.info(
+                    "Wrapping {0} {1} with {2} {3}.".format(
+                        "".join([x.capitalize() for x in object_type.split("_")]),
+                        managed_object.unique_identifier,
+                        "".join(
+                            [x.capitalize() for x in key._object_type.name.split("_")]
+                        ),
+                        encryption_key_uuid,
+                    )
+                )
 
                 result = self._cryptography_engine.wrap_key(
                     key_material=managed_object.value,
                     wrapping_method=key_wrapping_spec.wrapping_method,
                     key_wrap_algorithm=encryption_key_params.block_cipher_mode,
-                    encryption_key=key.value
+                    encryption_key=key.value,
                 )
 
                 wrapped_object = copy.deepcopy(managed_object)
@@ -2598,14 +2388,13 @@ class KmipEngine(object):
                 key_wrapping_data = KeyWrappingData(
                     wrapping_method=wrapping_method,
                     encryption_key_information=key_info,
-                    encoding_option=encoding_option
+                    encoding_option=encoding_option,
                 )
                 core_secret.key_block.key_wrapping_data = key_wrapping_data
 
             elif key_wrapping_spec.mac_signature_key_information:
                 raise exceptions.PermissionDenied(
-                    "Key wrapping with MAC/signing key information is not "
-                    "supported."
+                    "Key wrapping with MAC/signing key information is not " "supported."
                 )
             else:
                 raise exceptions.PermissionDenied(
@@ -2619,12 +2408,12 @@ class KmipEngine(object):
         response_payload = payloads.GetResponsePayload(
             object_type=managed_object._object_type,
             unique_identifier=unique_identifier,
-            secret=core_secret
+            secret=core_secret,
         )
 
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_get_attributes(self, payload):
         self._logger.info("Processing operation: GetAttributes")
 
@@ -2634,22 +2423,19 @@ class KmipEngine(object):
             unique_identifier = self._id_placeholder
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.GET_ATTRIBUTES
+            unique_identifier, enums.Operation.GET_ATTRIBUTES
         )
         attrs = self._get_attributes_from_managed_object(
-            managed_object,
-            payload.attribute_names
+            managed_object, payload.attribute_names
         )
 
         response_payload = payloads.GetAttributesResponsePayload(
-            unique_identifier=unique_identifier,
-            attributes=attrs
+            unique_identifier=unique_identifier, attributes=attrs
         )
 
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_get_attribute_list(self, payload):
         self._logger.info("Processing operation: GetAttributeList")
 
@@ -2659,12 +2445,10 @@ class KmipEngine(object):
             unique_identifier = self._id_placeholder
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.GET_ATTRIBUTE_LIST
+            unique_identifier, enums.Operation.GET_ATTRIBUTE_LIST
         )
         object_attributes = self._get_attributes_from_managed_object(
-            managed_object,
-            list()
+            managed_object, list()
         )
         attribute_names = list()
 
@@ -2672,13 +2456,12 @@ class KmipEngine(object):
             attribute_names.append(object_attribute.attribute_name.value)
 
         response_payload = payloads.GetAttributeListResponsePayload(
-            unique_identifier=unique_identifier,
-            attribute_names=attribute_names
+            unique_identifier=unique_identifier, attribute_names=attribute_names
         )
 
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_activate(self, payload):
         self._logger.info("Processing operation: Activate")
 
@@ -2688,16 +2471,13 @@ class KmipEngine(object):
             unique_identifier = self._id_placeholder
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.ACTIVATE
+            unique_identifier, enums.Operation.ACTIVATE
         )
         object_type = managed_object._object_type
-        if not hasattr(managed_object, 'state'):
+        if not hasattr(managed_object, "state"):
             raise exceptions.IllegalOperation(
                 "An {0} object has no state and cannot be activated.".format(
-                    ''.join(
-                        [x.capitalize() for x in object_type.name.split('_')]
-                    )
+                    "".join([x.capitalize() for x in object_type.name.split("_")])
                 )
             )
 
@@ -2715,18 +2495,15 @@ class KmipEngine(object):
 
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_revoke(self, payload):
         self._logger.info("Processing operation: Revoke")
 
         revocation_code = None
-        if payload.revocation_reason and \
-           payload.revocation_reason.revocation_code:
+        if payload.revocation_reason and payload.revocation_reason.revocation_code:
             revocation_code = payload.revocation_reason.revocation_code
         else:
-            raise exceptions.InvalidField(
-                "revocation reason code must be specified"
-            )
+            raise exceptions.InvalidField("revocation reason code must be specified")
 
         if payload.unique_identifier:
             unique_identifier = payload.unique_identifier.value
@@ -2734,16 +2511,13 @@ class KmipEngine(object):
             unique_identifier = self._id_placeholder
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.REVOKE
+            unique_identifier, enums.Operation.REVOKE
         )
         object_type = managed_object._object_type
-        if not hasattr(managed_object, 'state'):
+        if not hasattr(managed_object, "state"):
             raise exceptions.IllegalOperation(
                 "An {0} object has no state and cannot be revoked.".format(
-                    ''.join(
-                        [x.capitalize() for x in object_type.name.split('_')]
-                    )
+                    "".join([x.capitalize() for x in object_type.name.split("_")])
                 )
             )
 
@@ -2770,7 +2544,7 @@ class KmipEngine(object):
 
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_destroy(self, payload):
         self._logger.info("Processing operation: Destroy")
 
@@ -2780,26 +2554,25 @@ class KmipEngine(object):
             unique_identifier = self._id_placeholder
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.DESTROY
+            unique_identifier, enums.Operation.DESTROY
         )
 
         # TODO If in "ACTIVE" state, we need to check its "Deactivation date"
         # to see whether it can be destroyed or not
-        if hasattr(managed_object, 'state'):
+        if hasattr(managed_object, "state"):
             if managed_object.state == enums.State.ACTIVE:
                 raise exceptions.PermissionDenied(
                     "Object is active and cannot be destroyed."
                 )
 
         # 'OpaqueObject' object has no attribute 'state'
-        if hasattr(managed_object, 'state') and \
-           managed_object.state == enums.State.COMPROMISED:
+        if (
+            hasattr(managed_object, "state")
+            and managed_object.state == enums.State.COMPROMISED
+        ):
             managed_object.state = enums.State.DESTROYED_COMPROMISED
 
-        self._logger.info(
-            "Destroying an object with ID: {0}".format(unique_identifier)
-        )
+        self._logger.info("Destroying an object with ID: {0}".format(unique_identifier))
         self._data_session.query(objects.ManagedObject).filter(
             objects.ManagedObject.unique_identifier == unique_identifier
         ).delete()
@@ -2812,7 +2585,7 @@ class KmipEngine(object):
 
         return response_payload
 
-    @_kmip_version_supported('1.0')
+    @_kmip_version_supported("1.0")
     def _process_query(self, payload):
         self._logger.info("Processing operation: Query")
 
@@ -2826,33 +2599,35 @@ class KmipEngine(object):
         extensions = list()
 
         if enums.QueryFunction.QUERY_OPERATIONS in queries:
-            operations = list([
-                enums.Operation.CREATE,
-                enums.Operation.CREATE_KEY_PAIR,
-                enums.Operation.REGISTER,
-                enums.Operation.DERIVE_KEY,
-                enums.Operation.LOCATE,
-                enums.Operation.GET,
-                enums.Operation.GET_ATTRIBUTES,
-                enums.Operation.GET_ATTRIBUTE_LIST,
-                enums.Operation.ACTIVATE,
-                enums.Operation.REVOKE,
-                enums.Operation.DESTROY,
-                enums.Operation.QUERY
-            ])
+            operations = list(
+                [
+                    enums.Operation.CREATE,
+                    enums.Operation.CREATE_KEY_PAIR,
+                    enums.Operation.REGISTER,
+                    enums.Operation.DERIVE_KEY,
+                    enums.Operation.LOCATE,
+                    enums.Operation.GET,
+                    enums.Operation.GET_ATTRIBUTES,
+                    enums.Operation.GET_ATTRIBUTE_LIST,
+                    enums.Operation.ACTIVATE,
+                    enums.Operation.REVOKE,
+                    enums.Operation.DESTROY,
+                    enums.Operation.QUERY,
+                ]
+            )
 
             if self._protocol_version >= contents.ProtocolVersion(1, 1):
-                operations.extend([
-                    enums.Operation.DISCOVER_VERSIONS
-                ])
+                operations.extend([enums.Operation.DISCOVER_VERSIONS])
             if self._protocol_version >= contents.ProtocolVersion(1, 2):
-                operations.extend([
-                    enums.Operation.ENCRYPT,
-                    enums.Operation.DECRYPT,
-                    enums.Operation.SIGN,
-                    enums.Operation.SIGNATURE_VERIFY,
-                    enums.Operation.MAC
-                ])
+                operations.extend(
+                    [
+                        enums.Operation.ENCRYPT,
+                        enums.Operation.DECRYPT,
+                        enums.Operation.SIGN,
+                        enums.Operation.SIGNATURE_VERIFY,
+                        enums.Operation.MAC,
+                    ]
+                )
 
         if enums.QueryFunction.QUERY_OBJECTS in queries:
             objects = list()
@@ -2874,12 +2649,12 @@ class KmipEngine(object):
             vendor_identification=vendor_identification,
             server_information=server_information,
             application_namespaces=namespaces,
-            extension_information=extensions
+            extension_information=extensions,
         )
 
         return response_payload
 
-    @_kmip_version_supported('1.1')
+    @_kmip_version_supported("1.1")
     def _process_discover_versions(self, payload):
         self._logger.info("Processing operation: DiscoverVersions")
         supported_versions = list()
@@ -2897,7 +2672,7 @@ class KmipEngine(object):
 
         return response_payload
 
-    @_kmip_version_supported('1.2')
+    @_kmip_version_supported("1.2")
     def _process_encrypt(self, payload):
         self._logger.info("Processing operation: Encrypt")
 
@@ -2910,8 +2685,7 @@ class KmipEngine(object):
         # usage mask should be used to determine if the object can be used
         # to encrypt data (see below).
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.GET
+            unique_identifier, enums.Operation.GET
         )
 
         cryptographic_parameters = payload.cryptographic_parameters
@@ -2952,18 +2726,18 @@ class KmipEngine(object):
             padding_method=cryptographic_parameters.padding_method,
             iv_nonce=payload.iv_counter_nonce,
             auth_additional_data=payload.auth_additional_data,
-            auth_tag_length=cryptographic_parameters.tag_length
+            auth_tag_length=cryptographic_parameters.tag_length,
         )
 
         response_payload = payloads.EncryptResponsePayload(
             unique_identifier,
-            result.get('cipher_text'),
-            result.get('iv_nonce'),
-            result.get('auth_tag')
+            result.get("cipher_text"),
+            result.get("iv_nonce"),
+            result.get("auth_tag"),
         )
         return response_payload
 
-    @_kmip_version_supported('1.2')
+    @_kmip_version_supported("1.2")
     def _process_decrypt(self, payload):
         self._logger.info("Processing operation: Decrypt")
 
@@ -2976,8 +2750,7 @@ class KmipEngine(object):
         # usage mask should be used to determine if the object can be used
         # to decrypt data (see below).
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.GET
+            unique_identifier, enums.Operation.GET
         )
 
         cryptographic_parameters = payload.cryptographic_parameters
@@ -3018,16 +2791,13 @@ class KmipEngine(object):
             padding_method=cryptographic_parameters.padding_method,
             iv_nonce=payload.iv_counter_nonce,
             auth_additional_data=payload.auth_additional_data,
-            auth_tag=payload.auth_tag
+            auth_tag=payload.auth_tag,
         )
 
-        response_payload = payloads.DecryptResponsePayload(
-            unique_identifier,
-            result
-        )
+        response_payload = payloads.DecryptResponsePayload(unique_identifier, result)
         return response_payload
 
-    @_kmip_version_supported('1.2')
+    @_kmip_version_supported("1.2")
     def _process_signature_verify(self, payload):
         self._logger.info("Processing operation: Signature Verify")
 
@@ -3040,8 +2810,7 @@ class KmipEngine(object):
         # cryptographic usage mask should be used to determine if the object
         # can be used to verify signatures (see below).
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.GET
+            unique_identifier, enums.Operation.GET
         )
 
         parameters = payload.cryptographic_parameters
@@ -3081,7 +2850,7 @@ class KmipEngine(object):
             padding_method=parameters.padding_method,
             signing_algorithm=parameters.cryptographic_algorithm,
             hashing_algorithm=parameters.hashing_algorithm,
-            digital_signature_algorithm=parameters.digital_signature_algorithm
+            digital_signature_algorithm=parameters.digital_signature_algorithm,
         )
 
         if result:
@@ -3090,12 +2859,11 @@ class KmipEngine(object):
             validity = enums.ValidityIndicator.INVALID
 
         response_payload = payloads.SignatureVerifyResponsePayload(
-            unique_identifier=unique_identifier,
-            validity_indicator=validity
+            unique_identifier=unique_identifier, validity_indicator=validity
         )
         return response_payload
 
-    @_kmip_version_supported('1.2')
+    @_kmip_version_supported("1.2")
     def _process_mac(self, payload):
         self._logger.info("Processing operation: MAC")
 
@@ -3108,22 +2876,23 @@ class KmipEngine(object):
         # value. However, the MAC operation's access should be controlled by
         # cryptographic usage mask instead of operation policy.
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.GET
+            unique_identifier, enums.Operation.GET
         )
 
         algorithm = None
-        if (payload.cryptographic_parameters and
-                payload.cryptographic_parameters.cryptographic_algorithm):
-            algorithm = \
-                payload.cryptographic_parameters.cryptographic_algorithm
-        elif (isinstance(managed_object, objects.Key) and
-              managed_object.cryptographic_algorithm):
+        if (
+            payload.cryptographic_parameters
+            and payload.cryptographic_parameters.cryptographic_algorithm
+        ):
+            algorithm = payload.cryptographic_parameters.cryptographic_algorithm
+        elif (
+            isinstance(managed_object, objects.Key)
+            and managed_object.cryptographic_algorithm
+        ):
             algorithm = managed_object.cryptographic_algorithm
         else:
             raise exceptions.PermissionDenied(
-                "The cryptographic algorithm must be specified "
-                "for the MAC operation"
+                "The cryptographic algorithm must be specified " "for the MAC operation"
             )
 
         key = None
@@ -3131,17 +2900,14 @@ class KmipEngine(object):
             key = managed_object.value
         else:
             raise exceptions.PermissionDenied(
-                "A secret key value must be specified "
-                "for the MAC operation"
+                "A secret key value must be specified " "for the MAC operation"
             )
 
         data = None
         if payload.data:
             data = payload.data.value
         else:
-            raise exceptions.PermissionDenied(
-                "No data to be MACed"
-            )
+            raise exceptions.PermissionDenied("No data to be MACed")
 
         if managed_object.state != enums.State.ACTIVE:
             raise exceptions.PermissionDenied(
@@ -3151,24 +2917,19 @@ class KmipEngine(object):
         masks = managed_object.cryptographic_usage_masks
         if enums.CryptographicUsageMask.MAC_GENERATE not in masks:
             raise exceptions.PermissionDenied(
-                "MAC Generate must be set in the object's cryptographic "
-                "usage mask"
+                "MAC Generate must be set in the object's cryptographic " "usage mask"
             )
 
-        result = self._cryptography_engine.mac(
-            algorithm,
-            key,
-            data
-        )
+        result = self._cryptography_engine.mac(algorithm, key, data)
 
         response_payload = payloads.MACResponsePayload(
             unique_identifier=attributes.UniqueIdentifier(unique_identifier),
-            mac_data=MACData(result)
+            mac_data=MACData(result),
         )
 
         return response_payload
 
-    @_kmip_version_supported('1.2')
+    @_kmip_version_supported("1.2")
     def _process_sign(self, payload):
         self._logger.info("Processing operation: Sign")
 
@@ -3177,8 +2938,7 @@ class KmipEngine(object):
             unique_identifier = payload.unique_identifier
 
         managed_object = self._get_object_with_access_controls(
-            unique_identifier,
-            enums.Operation.GET
+            unique_identifier, enums.Operation.GET
         )
 
         parameters = payload.cryptographic_parameters
@@ -3197,8 +2957,7 @@ class KmipEngine(object):
 
         if managed_object.state != enums.State.ACTIVE:
             raise exceptions.PermissionDenied(
-                "The signing key must be in the Active state to be used for "
-                "signing."
+                "The signing key must be in the Active state to be used for " "signing."
             )
 
         masks = managed_object.cryptographic_usage_masks
@@ -3214,12 +2973,11 @@ class KmipEngine(object):
             hash_algorithm=parameters.hashing_algorithm,
             padding=parameters.padding_method,
             signing_key=managed_object.value,
-            data=payload.data
+            data=payload.data,
         )
 
         response_payload = payloads.SignResponsePayload(
-            unique_identifier=unique_identifier,
-            signature_data=result
+            unique_identifier=unique_identifier, signature_data=result
         )
 
         return response_payload

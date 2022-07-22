@@ -88,7 +88,8 @@ class TestKmipOperationFailure(TestCase):
         exc = KmipOperationFailure(
             ResultStatus.OPERATION_FAILED,
             ResultReason.GENERAL_FAILURE,
-            "Test error message.")
+            "Test error message.",
+        )
         self.assertIsInstance(exc, Exception)
 
     def test_message(self):
@@ -100,8 +101,7 @@ class TestKmipOperationFailure(TestCase):
         reason = ResultReason.GENERAL_FAILURE
         exc = KmipOperationFailure(status, reason, "Test error message.")
 
-        msg = "{0}: {1} - {2}".format(
-            status.name, reason.name, "Test error message.")
+        msg = "{0}: {1} - {2}".format(status.name, reason.name, "Test error message.")
 
         self.assertEqual(msg, str(exc))
         self.assertEqual(status, exc.status)

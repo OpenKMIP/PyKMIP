@@ -34,9 +34,9 @@ class TestExtensionInformation(TestCase):
     def setUp(self):
         super(TestExtensionInformation, self).setUp()
 
-        self.extension_name_b = ExtensionName('ACME LOCATION')
-        self.extension_name_c = ExtensionName('ACME LOCATION')
-        self.extension_name_d = ExtensionName('ACME ZIP CODE')
+        self.extension_name_b = ExtensionName("ACME LOCATION")
+        self.extension_name_c = ExtensionName("ACME LOCATION")
+        self.extension_name_d = ExtensionName("ACME ZIP CODE")
 
         self.extension_tag_c = ExtensionTag(5548545)
         self.extension_tag_d = ExtensionTag(5548546)
@@ -45,24 +45,27 @@ class TestExtensionInformation(TestCase):
         self.extension_type_d = ExtensionType(2)
 
         self.encoding_a = BytearrayStream(
-            b'\x42\x00\xA4\x01\x00\x00\x00\x08\x42\x00\xA5\x07\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\xA4\x01\x00\x00\x00\x08\x42\x00\xA5\x07\x00\x00\x00" b"\x00"
+        )
         self.encoding_b = BytearrayStream(
-            b'\x42\x00\xA4\x01\x00\x00\x00\x18\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00'
-            b'\x00')
+            b"\x42\x00\xA4\x01\x00\x00\x00\x18\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00"
+            b"\x00"
+        )
         self.encoding_c = BytearrayStream(
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x4C\x4F\x43\x41\x54\x49\x4F\x4E\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x01\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x07\x00\x00\x00"
+            b"\x00"
+        )
         self.encoding_d = BytearrayStream(
-            b'\x42\x00\xA4\x01\x00\x00\x00\x38\x42\x00\xA5\x07\x00\x00\x00\x0D'
-            b'\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00'
-            b'\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00'
-            b'\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\xA4\x01\x00\x00\x00\x38\x42\x00\xA5\x07\x00\x00\x00\x0D"
+            b"\x41\x43\x4D\x45\x20\x5A\x49\x50\x20\x43\x4F\x44\x45\x00\x00\x00"
+            b"\x42\x00\xA6\x02\x00\x00\x00\x04\x00\x54\xAA\x02\x00\x00\x00\x00"
+            b"\x42\x00\xA7\x02\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00"
+            b"\x00"
+        )
 
     def tearDown(self):
         super(TestExtensionInformation, self).tearDown()
@@ -77,40 +80,40 @@ class TestExtensionInformation(TestCase):
         ExtensionInformation(
             extension_name=ExtensionName(),
             extension_tag=ExtensionTag(),
-            extension_type=ExtensionType())
+            extension_type=ExtensionType(),
+        )
 
     def test_validate_with_invalid_extension_name(self):
         """
         Test that a TypeError exception is raised when an invalid
         ExtensionName is used to construct an ExtensionInformation object.
         """
-        kwargs = {'extension_name': 'invalid'}
+        kwargs = {"extension_name": "invalid"}
         self.assertRaisesRegex(
-            TypeError, "invalid extension name",
-            ExtensionInformation, **kwargs)
+            TypeError, "invalid extension name", ExtensionInformation, **kwargs
+        )
 
     def test_validate_with_invalid_extension_tag(self):
         """
         Test that a TypeError exception is raised when an invalid
         ExtensionTag is used to construct an ExtensionInformation object.
         """
-        kwargs = {'extension_tag': 'invalid'}
+        kwargs = {"extension_tag": "invalid"}
         self.assertRaisesRegex(
-            TypeError, "invalid extension tag",
-            ExtensionInformation, **kwargs)
+            TypeError, "invalid extension tag", ExtensionInformation, **kwargs
+        )
 
     def test_validate_with_invalid_extension_type(self):
         """
         Test that a TypeError exception is raised when an invalid
         ExtensionType is used to construct an ExtensionInformation object.
         """
-        kwargs = {'extension_type': 'invalid'}
+        kwargs = {"extension_type": "invalid"}
         self.assertRaisesRegex(
-            TypeError, "invalid extension type",
-            ExtensionInformation, **kwargs)
+            TypeError, "invalid extension type", ExtensionInformation, **kwargs
+        )
 
-    def _test_read(self, stream, extension_name, extension_tag,
-                   extension_type):
+    def _test_read(self, stream, extension_name, extension_tag, extension_type):
         extension_information = ExtensionInformation()
         extension_information.read(stream)
 
@@ -119,27 +122,21 @@ class TestExtensionInformation(TestCase):
 
         msg = "extension name encoding mismatch"
         msg += "; expected {0}, observed {1}".format(
-            extension_name,
-            extension_information.extension_name)
-        self.assertEqual(
-            extension_name,
-            extension_information.extension_name, msg)
+            extension_name, extension_information.extension_name
+        )
+        self.assertEqual(extension_name, extension_information.extension_name, msg)
 
         msg = "extension tag encoding mismatch"
         msg += "; expected {0}, observed {1}".format(
-            extension_tag,
-            extension_information.extension_tag)
-        self.assertEqual(
-            extension_tag,
-            extension_information.extension_tag, msg)
+            extension_tag, extension_information.extension_tag
+        )
+        self.assertEqual(extension_tag, extension_information.extension_tag, msg)
 
         msg = "extension type encoding mismatch"
         msg += "; expected {0}, observed {1}".format(
-            extension_type,
-            extension_information.extension_type)
-        self.assertEqual(
-            extension_type,
-            extension_information.extension_type, msg)
+            extension_type, extension_information.extension_type
+        )
+        self.assertEqual(extension_type, extension_information.extension_type, msg)
 
     def test_read_with_none(self):
         """
@@ -160,29 +157,35 @@ class TestExtensionInformation(TestCase):
         Test that an ExtensionInformation object with data can be read from a
         data stream.
         """
-        self._test_read(self.encoding_c, self.extension_name_c,
-                        self.extension_tag_c, self.extension_type_c)
+        self._test_read(
+            self.encoding_c,
+            self.extension_name_c,
+            self.extension_tag_c,
+            self.extension_type_c,
+        )
 
-    def _test_write(self, stream_expected, extension_name, extension_tag,
-                    extension_type):
+    def _test_write(
+        self, stream_expected, extension_name, extension_tag, extension_type
+    ):
         stream_observed = BytearrayStream()
         extension_information = ExtensionInformation(
             extension_name=extension_name,
             extension_tag=extension_tag,
-            extension_type=extension_type)
+            extension_type=extension_type,
+        )
         extension_information.write(stream_observed)
 
         length_expected = len(stream_expected)
         length_observed = len(stream_observed)
 
         msg = "encoding lengths not equal"
-        msg += "; expected {0}, observed {1}".format(
-            length_expected, length_observed)
+        msg += "; expected {0}, observed {1}".format(length_expected, length_observed)
         self.assertEqual(length_expected, length_observed, msg)
 
         msg = "encoding mismatch"
         msg += ";\nexpected:\n{0}\nobserved:\n{1}".format(
-            stream_expected, stream_observed)
+            stream_expected, stream_observed
+        )
         self.assertEqual(stream_expected, stream_observed, msg)
 
     def test_write_with_none(self):
@@ -204,14 +207,19 @@ class TestExtensionInformation(TestCase):
         Test that an ExtensionInformation object with data can be written to
         a data stream.
         """
-        self._test_write(self.encoding_c, self.extension_name_c,
-                         self.extension_tag_c, self.extension_type_c)
+        self._test_write(
+            self.encoding_c,
+            self.extension_name_c,
+            self.extension_tag_c,
+            self.extension_type_c,
+        )
 
     def _test_create(self, extension_name, extension_tag, extension_type):
         extension_information = ExtensionInformation.create(
             extension_name=extension_name,
             extension_tag=extension_tag,
-            extension_type=extension_type)
+            extension_type=extension_type,
+        )
 
         self.assertIsInstance(extension_information, ExtensionInformation)
 
@@ -245,7 +253,7 @@ class TestExtensionInformation(TestCase):
         Test that an ExtensionInformation object with data can be created
         using the create class method.
         """
-        self._test_create('ACME LOCATION', 5548545, 7)
+        self._test_create("ACME LOCATION", 5548545, 7)
 
     def test_equal_on_equal(self):
         """
@@ -255,11 +263,13 @@ class TestExtensionInformation(TestCase):
         a = ExtensionInformation(
             extension_name=self.extension_name_c,
             extension_tag=self.extension_tag_c,
-            extension_type=self.extension_type_c)
+            extension_type=self.extension_type_c,
+        )
         b = ExtensionInformation(
             extension_name=self.extension_name_c,
             extension_tag=self.extension_tag_c,
-            extension_type=self.extension_type_c)
+            extension_type=self.extension_type_c,
+        )
 
         self.assertTrue(a == b)
         self.assertTrue(b == a)
@@ -283,7 +293,8 @@ class TestExtensionInformation(TestCase):
         a = ExtensionInformation(
             extension_name=self.extension_name_c,
             extension_tag=self.extension_tag_c,
-            extension_type=self.extension_type_c)
+            extension_type=self.extension_type_c,
+        )
         b = ExtensionInformation()
 
         self.assertFalse(a == b)
@@ -297,7 +308,8 @@ class TestExtensionInformation(TestCase):
         a = ExtensionInformation(
             extension_name=self.extension_name_c,
             extension_tag=self.extension_tag_c,
-            extension_type=self.extension_type_c)
+            extension_type=self.extension_type_c,
+        )
         b = "invalid"
 
         self.assertFalse(a == b)
@@ -311,11 +323,13 @@ class TestExtensionInformation(TestCase):
         a = ExtensionInformation(
             extension_name=self.extension_name_c,
             extension_tag=self.extension_tag_c,
-            extension_type=self.extension_type_c)
+            extension_type=self.extension_type_c,
+        )
         b = ExtensionInformation(
             extension_name=self.extension_name_c,
             extension_tag=self.extension_tag_c,
-            extension_type=self.extension_type_c)
+            extension_type=self.extension_type_c,
+        )
 
         self.assertFalse(a != b)
         self.assertFalse(b != a)
@@ -339,7 +353,8 @@ class TestExtensionInformation(TestCase):
         a = ExtensionInformation(
             extension_name=self.extension_name_c,
             extension_tag=self.extension_tag_c,
-            extension_type=self.extension_type_c)
+            extension_type=self.extension_type_c,
+        )
         b = ExtensionInformation()
 
         self.assertTrue(a != b)
@@ -353,7 +368,8 @@ class TestExtensionInformation(TestCase):
         a = ExtensionInformation(
             extension_name=self.extension_name_c,
             extension_tag=self.extension_tag_c,
-            extension_type=self.extension_type_c)
+            extension_type=self.extension_type_c,
+        )
         b = "invalid"
 
         self.assertTrue(a != b)
@@ -389,9 +405,10 @@ class TestExtensionInformation(TestCase):
         ExtensionInformation object identical to the original.
         """
         extension_information = ExtensionInformation(
-            extension_name=ExtensionName('ACME LOCATION'),
+            extension_name=ExtensionName("ACME LOCATION"),
             extension_tag=ExtensionTag(5548545),
-            extension_type=ExtensionType(7))
+            extension_type=ExtensionType(7),
+        )
 
         expected = "ExtensionInformation("
         expected += "extension_name=ExtensionName(value='ACME LOCATION'), "
@@ -430,9 +447,10 @@ class TestExtensionInformation(TestCase):
         is formatted properly when there is internal data.
         """
         extension_information = ExtensionInformation(
-            extension_name=ExtensionName('ACME LOCATION'),
+            extension_name=ExtensionName("ACME LOCATION"),
             extension_tag=ExtensionTag(5548545),
-            extension_type=ExtensionType(7))
+            extension_type=ExtensionType(7),
+        )
 
         expected = "ExtensionInformation("
         expected += "extension_name=ExtensionName(value='ACME LOCATION'), "

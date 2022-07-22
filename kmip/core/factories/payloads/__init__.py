@@ -16,8 +16,7 @@
 from kmip.core import enums
 
 
-class PayloadFactory():
-
+class PayloadFactory:
     def create(self, operation):
         # Switch on operation enum
         if operation is enums.Operation.CREATE:
@@ -105,7 +104,7 @@ class PayloadFactory():
         elif operation is enums.Operation.JOIN_SPLIT_KEY:
             return self._create_join_split_key_payload()
         else:
-            raise ValueError('unsupported operation: {0}'.format(operation))
+            raise ValueError("unsupported operation: {0}".format(operation))
 
     def _create_create_payload(self):
         raise NotImplementedError()

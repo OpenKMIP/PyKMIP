@@ -32,14 +32,16 @@ class TestActivateRequestPayload(TestCase):
     def setUp(self):
         super(TestActivateRequestPayload, self).setUp()
 
-        self.uuid = attributes.UniqueIdentifier(
-            '668eff89-3010-4258-bc0e-8c402309c746')
+        self.uuid = attributes.UniqueIdentifier("668eff89-3010-4258-bc0e-8c402309c746")
 
-        self.encoding_a = utils.BytearrayStream((
-            b'\x42\x00\x79\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x36\x36\x38\x65\x66\x66\x38\x39\x2D\x33\x30\x31\x30\x2D\x34\x32'
-            b'\x35\x38\x2D\x62\x63\x30\x65\x2D\x38\x63\x34\x30\x32\x33\x30\x39'
-            b'\x63\x37\x34\x36\x00\x00\x00\x00'))
+        self.encoding_a = utils.BytearrayStream(
+            (
+                b"\x42\x00\x79\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24"
+                b"\x36\x36\x38\x65\x66\x66\x38\x39\x2D\x33\x30\x31\x30\x2D\x34\x32"
+                b"\x35\x38\x2D\x62\x63\x30\x65\x2D\x38\x63\x34\x30\x32\x33\x30\x39"
+                b"\x63\x37\x34\x36\x00\x00\x00\x00"
+            )
+        )
 
     def tearDown(self):
         super(TestActivateRequestPayload, self).tearDown()
@@ -64,8 +66,11 @@ class TestActivateRequestPayload(TestCase):
         is used to construct a ActivateRequestPayload object.
         """
         self.assertRaisesRegex(
-            TypeError, "invalid unique identifier",
-            payloads.ActivateRequestPayload, "not-a-uuid")
+            TypeError,
+            "invalid unique identifier",
+            payloads.ActivateRequestPayload,
+            "not-a-uuid",
+        )
 
     def test_read_with_known_uuid(self):
         """
@@ -74,12 +79,11 @@ class TestActivateRequestPayload(TestCase):
         """
         payload = payloads.ActivateRequestPayload()
         payload.read(self.encoding_a)
-        expected = '668eff89-3010-4258-bc0e-8c402309c746'
+        expected = "668eff89-3010-4258-bc0e-8c402309c746"
         observed = payload.unique_identifier.value
 
         msg = "activate UUID value mismatch"
-        msg += "; expected {0}, received {1}".format(
-            expected, observed)
+        msg += "; expected {0}, received {1}".format(expected, observed)
         self.assertEqual(expected, observed, msg)
 
     def test_write_with_known_uuid(self):
@@ -95,13 +99,11 @@ class TestActivateRequestPayload(TestCase):
         length_received = len(stream)
 
         msg = "encoding lengths not equal"
-        msg += "; expected {0}, received {1}".format(
-            length_expected, length_received)
+        msg += "; expected {0}, received {1}".format(length_expected, length_received)
         self.assertEqual(length_expected, length_received, msg)
 
         msg = "encoding mismatch"
-        msg += ";\nexpected:\n{0}\nreceived:\n{1}".format(self.encoding_a,
-                                                          stream)
+        msg += ";\nexpected:\n{0}\nreceived:\n{1}".format(self.encoding_a, stream)
 
         self.assertEqual(self.encoding_a, stream, msg)
 
@@ -115,14 +117,16 @@ class TestActivateResponsePayload(TestCase):
     def setUp(self):
         super(TestActivateResponsePayload, self).setUp()
 
-        self.uuid = attributes.UniqueIdentifier(
-            '668eff89-3010-4258-bc0e-8c402309c746')
+        self.uuid = attributes.UniqueIdentifier("668eff89-3010-4258-bc0e-8c402309c746")
 
-        self.encoding_a = utils.BytearrayStream((
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x36\x36\x38\x65\x66\x66\x38\x39\x2D\x33\x30\x31\x30\x2D\x34\x32'
-            b'\x35\x38\x2D\x62\x63\x30\x65\x2D\x38\x63\x34\x30\x32\x33\x30\x39'
-            b'\x63\x37\x34\x36\x00\x00\x00\x00'))
+        self.encoding_a = utils.BytearrayStream(
+            (
+                b"\x42\x00\x7C\x01\x00\x00\x00\x30\x42\x00\x94\x07\x00\x00\x00\x24"
+                b"\x36\x36\x38\x65\x66\x66\x38\x39\x2D\x33\x30\x31\x30\x2D\x34\x32"
+                b"\x35\x38\x2D\x62\x63\x30\x65\x2D\x38\x63\x34\x30\x32\x33\x30\x39"
+                b"\x63\x37\x34\x36\x00\x00\x00\x00"
+            )
+        )
 
     def tearDown(self):
         super(TestActivateResponsePayload, self).tearDown()
@@ -147,8 +151,11 @@ class TestActivateResponsePayload(TestCase):
         list is used to construct a ActivateResponsePayload object.
         """
         self.assertRaisesRegex(
-            TypeError, "invalid unique identifier",
-            payloads.ActivateResponsePayload, "not-a-uuid")
+            TypeError,
+            "invalid unique identifier",
+            payloads.ActivateResponsePayload,
+            "not-a-uuid",
+        )
 
     def test_read_with_known_uuid(self):
         """
@@ -157,12 +164,11 @@ class TestActivateResponsePayload(TestCase):
         """
         payload = payloads.ActivateResponsePayload()
         payload.read(self.encoding_a)
-        expected = '668eff89-3010-4258-bc0e-8c402309c746'
+        expected = "668eff89-3010-4258-bc0e-8c402309c746"
         observed = payload.unique_identifier.value
 
         msg = "activate UUID value mismatch"
-        msg += "; expected {0}, received {1}".format(
-            expected, observed)
+        msg += "; expected {0}, received {1}".format(expected, observed)
         self.assertEqual(expected, observed, msg)
 
     def test_write_with_known_uuid(self):
@@ -178,12 +184,10 @@ class TestActivateResponsePayload(TestCase):
         length_received = len(stream)
 
         msg = "encoding lengths not equal"
-        msg += "; expected {0}, received {1}".format(
-            length_expected, length_received)
+        msg += "; expected {0}, received {1}".format(length_expected, length_received)
         self.assertEqual(length_expected, length_received, msg)
 
         msg = "encoding mismatch"
-        msg += ";\nexpected:\n{0}\nreceived:\n{1}".format(self.encoding_a,
-                                                          stream)
+        msg += ";\nexpected:\n{0}\nreceived:\n{1}".format(self.encoding_a, stream)
 
         self.assertEqual(self.encoding_a, stream, msg)

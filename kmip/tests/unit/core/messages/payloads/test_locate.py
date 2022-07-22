@@ -24,7 +24,6 @@ from kmip.core.messages import payloads
 
 
 class TestLocateRequestPayload(testtools.TestCase):
-
     def setUp(self):
         super(TestLocateRequestPayload, self).setUp()
 
@@ -41,17 +40,17 @@ class TestLocateRequestPayload(testtools.TestCase):
         #         Attribute Name - Object Group
         #         Attribute Value - RoundRobinTestGroup
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x80'
-            b'\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x38'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x13'
-            b'\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72'
-            b'\x6F\x75\x70\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x80"
+            b"\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x38"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x13"
+            b"\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72"
+            b"\x6F\x75\x70\x00\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.3.5.
@@ -67,13 +66,13 @@ class TestLocateRequestPayload(testtools.TestCase):
         #     Attributes
         #         Object Type - Public Key
         self.full_encoding_with_attributes = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x58'
-            b'\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x01\x25\x01\x00\x00\x00\x10'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x58"
+            b"\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x01\x25\x01\x00\x00\x00\x10"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 15.3.4.
@@ -88,16 +87,16 @@ class TestLocateRequestPayload(testtools.TestCase):
         #         Attribute Name - Object Group
         #         Attribute Value - RoundRobinTestGroup
         self.no_maximum_items_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x70'
-            b'\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x38'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x13'
-            b'\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72'
-            b'\x6F\x75\x70\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x70"
+            b"\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x38"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x13"
+            b"\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72"
+            b"\x6F\x75\x70\x00\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 15.3.4.
@@ -112,16 +111,16 @@ class TestLocateRequestPayload(testtools.TestCase):
         #         Attribute Name - Object Group
         #         Attribute Value - RoundRobinTestGroup
         self.no_offset_items_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x70'
-            b'\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x38'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x13'
-            b'\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72'
-            b'\x6F\x75\x70\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x70"
+            b"\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x38"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x13"
+            b"\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72"
+            b"\x6F\x75\x70\x00\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 15.3.4.
@@ -136,16 +135,16 @@ class TestLocateRequestPayload(testtools.TestCase):
         #         Attribute Name - Object Group
         #         Attribute Value - RoundRobinTestGroup
         self.no_storage_status_mask_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x70'
-            b'\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x38'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x13'
-            b'\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72'
-            b'\x6F\x75\x70\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x70"
+            b"\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x38"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x13"
+            b"\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72"
+            b"\x6F\x75\x70\x00\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 15.3.4.
@@ -160,16 +159,16 @@ class TestLocateRequestPayload(testtools.TestCase):
         #         Attribute Name - Object Group
         #         Attribute Value - RoundRobinTestGroup
         self.no_object_group_member_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x70'
-            b'\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x08\x01\x00\x00\x00\x38'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x0C'
-            b'\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00'
-            b'\x42\x00\x0B\x07\x00\x00\x00\x13'
-            b'\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72'
-            b'\x6F\x75\x70\x00\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x70"
+            b"\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x08\x01\x00\x00\x00\x38"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x0C"
+            b"\x4F\x62\x6A\x65\x63\x74\x20\x47\x72\x6F\x75\x70\x00\x00\x00\x00"
+            b"\x42\x00\x0B\x07\x00\x00\x00\x13"
+            b"\x52\x6F\x75\x6E\x64\x52\x6F\x62\x69\x6E\x54\x65\x73\x74\x47\x72"
+            b"\x6F\x75\x70\x00\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 15.3.4.
@@ -182,18 +181,16 @@ class TestLocateRequestPayload(testtools.TestCase):
         #     Storage Status Mask - Online Storage | Archival Storage
         #     Object Group Member - Group Member Default
         self.no_attributes_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x40'
-            b'\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x40"
+            b"\x42\x00\x4F\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\xD4\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x8E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\xAC\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         # Request Payload
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x79\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestLocateRequestPayload, self).tearDown()
@@ -211,16 +208,9 @@ class TestLocateRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.LocateRequestPayload(),
-            "maximum_items",
-            "invalid"
-        )
+        args = (payloads.LocateRequestPayload(), "maximum_items", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Maximum items must be an integer.",
-            setattr,
-            *args
+            TypeError, "Maximum items must be an integer.", setattr, *args
         )
 
     def test_invalid_offset_items(self):
@@ -236,16 +226,9 @@ class TestLocateRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.LocateRequestPayload(),
-            "offset_items",
-            "invalid"
-        )
+        args = (payloads.LocateRequestPayload(), "offset_items", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Offset items must be an integer.",
-            setattr,
-            *args
+            TypeError, "Offset items must be an integer.", setattr, *args
         )
 
     def test_invalid_storage_status_mask(self):
@@ -271,11 +254,7 @@ class TestLocateRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.LocateRequestPayload(),
-            "storage_status_mask",
-            "invalid"
-        )
+        args = (payloads.LocateRequestPayload(), "storage_status_mask", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Storage status mask must be an integer representing a valid "
@@ -297,11 +276,7 @@ class TestLocateRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.LocateRequestPayload(),
-            "object_group_member",
-            "invalid"
-        )
+        args = (payloads.LocateRequestPayload(), "object_group_member", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Object group member must be an ObjectGroupMember enumeration.",
@@ -330,11 +305,7 @@ class TestLocateRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.LocateRequestPayload(),
-            "attributes",
-            "invalid"
-        )
+        args = (payloads.LocateRequestPayload(), "attributes", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Attributes must be a list of Attribute structures.",
@@ -342,11 +313,7 @@ class TestLocateRequestPayload(testtools.TestCase):
             *args
         )
 
-        args = (
-            payloads.LocateRequestPayload(),
-            "attributes",
-            ["invalid"]
-        )
+        args = (payloads.LocateRequestPayload(), "attributes", ["invalid"])
         self.assertRaisesRegex(
             TypeError,
             "Attributes must be a list of Attribute structures.",
@@ -374,14 +341,13 @@ class TestLocateRequestPayload(testtools.TestCase):
             enums.get_bit_mask_from_enumerations(
                 [
                     enums.StorageStatusMask.ONLINE_STORAGE,
-                    enums.StorageStatusMask.ARCHIVAL_STORAGE
+                    enums.StorageStatusMask.ARCHIVAL_STORAGE,
                 ]
             ),
-            payload.storage_status_mask
+            payload.storage_status_mask,
         )
         self.assertEqual(
-            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
-            payload.object_group_member
+            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT, payload.object_group_member
         )
         self.assertIsInstance(payload.attributes, list)
         self.assertEqual(1, len(payload.attributes))
@@ -389,11 +355,10 @@ class TestLocateRequestPayload(testtools.TestCase):
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("Object Group"),
                 attribute_value=primitives.TextString(
-                    value="RoundRobinTestGroup",
-                    tag=enums.Tags.OBJECT_GROUP
-                )
+                    value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                ),
             ),
-            payload.attributes[0]
+            payload.attributes[0],
         )
 
     def test_read_kmip_2_0(self):
@@ -410,8 +375,7 @@ class TestLocateRequestPayload(testtools.TestCase):
         self.assertEqual([], payload.attributes)
 
         payload.read(
-            self.full_encoding_with_attributes,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding_with_attributes, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(1, payload.maximum_items)
@@ -420,14 +384,13 @@ class TestLocateRequestPayload(testtools.TestCase):
             enums.get_bit_mask_from_enumerations(
                 [
                     enums.StorageStatusMask.ONLINE_STORAGE,
-                    enums.StorageStatusMask.ARCHIVAL_STORAGE
+                    enums.StorageStatusMask.ARCHIVAL_STORAGE,
                 ]
             ),
-            payload.storage_status_mask
+            payload.storage_status_mask,
         )
         self.assertEqual(
-            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
-            payload.object_group_member
+            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT, payload.object_group_member
         )
         self.assertIsInstance(payload.attributes, list)
         self.assertEqual(1, len(payload.attributes))
@@ -437,10 +400,10 @@ class TestLocateRequestPayload(testtools.TestCase):
                 attribute_value=primitives.Enumeration(
                     enums.ObjectType,
                     value=enums.ObjectType.PUBLIC_KEY,
-                    tag=enums.Tags.OBJECT_TYPE
-                )
+                    tag=enums.Tags.OBJECT_TYPE,
+                ),
             ),
-            payload.attributes[0]
+            payload.attributes[0],
         )
 
     def test_read_missing_maximum_items(self):
@@ -464,14 +427,13 @@ class TestLocateRequestPayload(testtools.TestCase):
             enums.get_bit_mask_from_enumerations(
                 [
                     enums.StorageStatusMask.ONLINE_STORAGE,
-                    enums.StorageStatusMask.ARCHIVAL_STORAGE
+                    enums.StorageStatusMask.ARCHIVAL_STORAGE,
                 ]
             ),
-            payload.storage_status_mask
+            payload.storage_status_mask,
         )
         self.assertEqual(
-            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
-            payload.object_group_member
+            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT, payload.object_group_member
         )
         self.assertIsInstance(payload.attributes, list)
         self.assertEqual(1, len(payload.attributes))
@@ -479,11 +441,10 @@ class TestLocateRequestPayload(testtools.TestCase):
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("Object Group"),
                 attribute_value=primitives.TextString(
-                    value="RoundRobinTestGroup",
-                    tag=enums.Tags.OBJECT_GROUP
-                )
+                    value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                ),
             ),
-            payload.attributes[0]
+            payload.attributes[0],
         )
 
     def test_read_missing_offset_items(self):
@@ -507,14 +468,13 @@ class TestLocateRequestPayload(testtools.TestCase):
             enums.get_bit_mask_from_enumerations(
                 [
                     enums.StorageStatusMask.ONLINE_STORAGE,
-                    enums.StorageStatusMask.ARCHIVAL_STORAGE
+                    enums.StorageStatusMask.ARCHIVAL_STORAGE,
                 ]
             ),
-            payload.storage_status_mask
+            payload.storage_status_mask,
         )
         self.assertEqual(
-            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
-            payload.object_group_member
+            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT, payload.object_group_member
         )
         self.assertIsInstance(payload.attributes, list)
         self.assertEqual(1, len(payload.attributes))
@@ -522,11 +482,10 @@ class TestLocateRequestPayload(testtools.TestCase):
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("Object Group"),
                 attribute_value=primitives.TextString(
-                    value="RoundRobinTestGroup",
-                    tag=enums.Tags.OBJECT_GROUP
-                )
+                    value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                ),
             ),
-            payload.attributes[0]
+            payload.attributes[0],
         )
 
     def test_read_missing_storage_status_mask(self):
@@ -548,8 +507,7 @@ class TestLocateRequestPayload(testtools.TestCase):
         self.assertEqual(1, payload.offset_items)
         self.assertIsNone(payload.storage_status_mask)
         self.assertEqual(
-            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
-            payload.object_group_member
+            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT, payload.object_group_member
         )
         self.assertIsInstance(payload.attributes, list)
         self.assertEqual(1, len(payload.attributes))
@@ -557,11 +515,10 @@ class TestLocateRequestPayload(testtools.TestCase):
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("Object Group"),
                 attribute_value=primitives.TextString(
-                    value="RoundRobinTestGroup",
-                    tag=enums.Tags.OBJECT_GROUP
-                )
+                    value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                ),
             ),
-            payload.attributes[0]
+            payload.attributes[0],
         )
 
     def test_read_missing_object_group_member(self):
@@ -585,10 +542,10 @@ class TestLocateRequestPayload(testtools.TestCase):
             enums.get_bit_mask_from_enumerations(
                 [
                     enums.StorageStatusMask.ONLINE_STORAGE,
-                    enums.StorageStatusMask.ARCHIVAL_STORAGE
+                    enums.StorageStatusMask.ARCHIVAL_STORAGE,
                 ]
             ),
-            payload.storage_status_mask
+            payload.storage_status_mask,
         )
         self.assertIsNone(payload.object_group_member)
         self.assertIsInstance(payload.attributes, list)
@@ -597,11 +554,10 @@ class TestLocateRequestPayload(testtools.TestCase):
             objects.Attribute(
                 attribute_name=objects.Attribute.AttributeName("Object Group"),
                 attribute_value=primitives.TextString(
-                    value="RoundRobinTestGroup",
-                    tag=enums.Tags.OBJECT_GROUP
-                )
+                    value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                ),
             ),
-            payload.attributes[0]
+            payload.attributes[0],
         )
 
     def test_read_missing_attributes(self):
@@ -625,14 +581,13 @@ class TestLocateRequestPayload(testtools.TestCase):
             enums.get_bit_mask_from_enumerations(
                 [
                     enums.StorageStatusMask.ONLINE_STORAGE,
-                    enums.StorageStatusMask.ARCHIVAL_STORAGE
+                    enums.StorageStatusMask.ARCHIVAL_STORAGE,
                 ]
             ),
-            payload.storage_status_mask
+            payload.storage_status_mask,
         )
         self.assertEqual(
-            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
-            payload.object_group_member
+            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT, payload.object_group_member
         )
         self.assertEqual([], payload.attributes)
 
@@ -668,15 +623,12 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
 
         stream = utils.BytearrayStream()
@@ -697,16 +649,14 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Type"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Type"),
                     attribute_value=primitives.Enumeration(
                         enums.ObjectType,
                         value=enums.ObjectType.PUBLIC_KEY,
-                        tag=enums.Tags.OBJECT_TYPE
-                    )
+                        tag=enums.Tags.OBJECT_TYPE,
+                    ),
                 )
-            ]
+            ],
         )
 
         stream = utils.BytearrayStream()
@@ -726,15 +676,12 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
 
         stream = utils.BytearrayStream()
@@ -754,15 +701,12 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
 
         stream = utils.BytearrayStream()
@@ -782,28 +726,19 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
 
         stream = utils.BytearrayStream()
         payload.write(stream)
 
-        self.assertEqual(
-            len(self.no_storage_status_mask_encoding),
-            len(stream)
-        )
-        self.assertEqual(
-            str(self.no_storage_status_mask_encoding),
-            str(stream)
-        )
+        self.assertEqual(len(self.no_storage_status_mask_encoding), len(stream))
+        self.assertEqual(str(self.no_storage_status_mask_encoding), str(stream))
 
     def test_write_missing_object_group_member(self):
         """
@@ -816,28 +751,19 @@ class TestLocateRequestPayload(testtools.TestCase):
             storage_status_mask=3,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
 
         stream = utils.BytearrayStream()
         payload.write(stream)
 
-        self.assertEqual(
-            len(self.no_object_group_member_encoding),
-            len(stream)
-        )
-        self.assertEqual(
-            str(self.no_object_group_member_encoding),
-            str(stream)
-        )
+        self.assertEqual(len(self.no_object_group_member_encoding), len(stream))
+        self.assertEqual(str(self.no_object_group_member_encoding), str(stream))
 
     def test_write_missing_attributes(self):
         """
@@ -881,28 +807,27 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
 
-        s = "LocateRequestPayload(" \
-            "maximum_items=1, " \
-            "offset_items=1, " \
-            "storage_status_mask=3, " \
-            "object_group_member=ObjectGroupMember.GROUP_MEMBER_DEFAULT, " \
+        s = (
+            "LocateRequestPayload("
+            "maximum_items=1, "
+            "offset_items=1, "
+            "storage_status_mask=3, "
+            "object_group_member=ObjectGroupMember.GROUP_MEMBER_DEFAULT, "
             "attributes=["
-#            "Attribute(" \
-#            "attribute_name=AttributeName(value='Object Group'), " \
-#            "attribute_index=None, " \
-#            "attribute_value=TextString(value='RoundRobinTestGroup'))" \
-#            "])"
+        )
+        #            "Attribute(" \
+        #            "attribute_name=AttributeName(value='Object Group'), " \
+        #            "attribute_index=None, " \
+        #            "attribute_value=TextString(value='RoundRobinTestGroup'))" \
+        #            "])"
 
         # TODO (ph) Uncomment above when Attribute repr fixed. Fix below too.
 
@@ -919,29 +844,28 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
 
-        s = '{' \
-            '"maximum_items": 1, ' \
-            '"offset_items": 1, ' \
-            '"storage_status_mask": 3, ' \
-            '"object_group_member": ObjectGroupMember.GROUP_MEMBER_DEFAULT, ' \
-            '"attributes=[' \
-            '{' \
-            '"attribute_name": "Object Group", ' \
-            '"attribute_index": None, ' \
-            '"attribute_value": "RoundRobinTestGroup"' \
-            '}]' \
-            '}'
+        s = (
+            "{"
+            '"maximum_items": 1, '
+            '"offset_items": 1, '
+            '"storage_status_mask": 3, '
+            '"object_group_member": ObjectGroupMember.GROUP_MEMBER_DEFAULT, '
+            '"attributes=['
+            "{"
+            '"attribute_name": "Object Group", '
+            '"attribute_index": None, '
+            '"attribute_value": "RoundRobinTestGroup"'
+            "}]"
+            "}"
+        )
 
         self.assertEqual(s, str(payload))
 
@@ -963,15 +887,12 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
         b = payloads.LocateRequestPayload(
             maximum_items=1,
@@ -980,15 +901,12 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
 
         self.assertTrue(a == b)
@@ -1050,13 +968,10 @@ class TestLocateRequestPayload(testtools.TestCase):
         a = payloads.LocateRequestPayload(
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
             ]
         )
@@ -1069,8 +984,8 @@ class TestLocateRequestPayload(testtools.TestCase):
                     attribute_value=primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                    ),
                 )
             ]
         )
@@ -1107,15 +1022,12 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
         b = payloads.LocateRequestPayload(
             maximum_items=1,
@@ -1124,15 +1036,12 @@ class TestLocateRequestPayload(testtools.TestCase):
             object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
-            ]
+            ],
         )
 
         self.assertFalse(a != b)
@@ -1194,13 +1103,10 @@ class TestLocateRequestPayload(testtools.TestCase):
         a = payloads.LocateRequestPayload(
             attributes=[
                 objects.Attribute(
-                    attribute_name=objects.Attribute.AttributeName(
-                        "Object Group"
-                    ),
+                    attribute_name=objects.Attribute.AttributeName("Object Group"),
                     attribute_value=primitives.TextString(
-                        value="RoundRobinTestGroup",
-                        tag=enums.Tags.OBJECT_GROUP
-                    )
+                        value="RoundRobinTestGroup", tag=enums.Tags.OBJECT_GROUP
+                    ),
                 )
             ]
         )
@@ -1213,8 +1119,8 @@ class TestLocateRequestPayload(testtools.TestCase):
                     attribute_value=primitives.Enumeration(
                         enums.CryptographicAlgorithm,
                         value=enums.CryptographicAlgorithm.AES,
-                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
-                    )
+                        tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM,
+                    ),
                 )
             ]
         )
@@ -1235,7 +1141,6 @@ class TestLocateRequestPayload(testtools.TestCase):
 
 
 class TestLocateResponsePayload(testtools.TestCase):
-
     def setUp(self):
         super(TestLocateResponsePayload, self).setUp()
 
@@ -1247,12 +1152,12 @@ class TestLocateResponsePayload(testtools.TestCase):
         #     Located Items - 1
         #     Unique Identifier - 8d945322-fd70-495d-bf7f-71481d1401f6
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x40'
-            b'\x42\x00\xD5\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x38\x64\x39\x34\x35\x33\x32\x32\x2D\x66\x64\x37\x30\x2D\x34\x39'
-            b'\x35\x64\x2D\x62\x66\x37\x66\x2D\x37\x31\x34\x38\x31\x64\x31\x34'
-            b'\x30\x31\x66\x36\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x40"
+            b"\x42\x00\xD5\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x38\x64\x39\x34\x35\x33\x32\x32\x2D\x66\x64\x37\x30\x2D\x34\x39"
+            b"\x35\x64\x2D\x62\x66\x37\x66\x2D\x37\x31\x34\x38\x31\x64\x31\x34"
+            b"\x30\x31\x66\x36\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 15.3.4.
@@ -1261,11 +1166,11 @@ class TestLocateResponsePayload(testtools.TestCase):
         # Request Payload
         #     Unique Identifier - 8d945322-fd70-495d-bf7f-71481d1401f6
         self.no_located_items_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x38\x64\x39\x34\x35\x33\x32\x32\x2D\x66\x64\x37\x30\x2D\x34\x39'
-            b'\x35\x64\x2D\x62\x66\x37\x66\x2D\x37\x31\x34\x38\x31\x64\x31\x34'
-            b'\x30\x31\x66\x36\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x38\x64\x39\x34\x35\x33\x32\x32\x2D\x66\x64\x37\x30\x2D\x34\x39"
+            b"\x35\x64\x2D\x62\x66\x37\x66\x2D\x37\x31\x34\x38\x31\x64\x31\x34"
+            b"\x30\x31\x66\x36\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 15.3.4.
@@ -1275,15 +1180,13 @@ class TestLocateResponsePayload(testtools.TestCase):
         # Request Payload
         #     Located Items - 1
         self.no_unique_identifiers_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x10'
-            b'\x42\x00\xD5\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x10"
+            b"\x42\x00\xD5\x02\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # This encoding matches the following set of values:
         # Request Payload
-        self.empty_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
-        )
+        self.empty_encoding = utils.BytearrayStream(b"\x42\x00\x7C\x01\x00\x00\x00\x00")
 
     def tearDown(self):
         super(TestLocateResponsePayload, self).tearDown()
@@ -1301,16 +1204,9 @@ class TestLocateResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.LocateResponsePayload(),
-            "located_items",
-            "invalid"
-        )
+        args = (payloads.LocateResponsePayload(), "located_items", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Located items must be an integer.",
-            setattr,
-            *args
+            TypeError, "Located items must be an integer.", setattr, *args
         )
 
     def test_invalid_unique_identifiers(self):
@@ -1334,28 +1230,14 @@ class TestLocateResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.LocateResponsePayload(),
-            "unique_identifiers",
-            "invalid"
-        )
+        args = (payloads.LocateResponsePayload(), "unique_identifiers", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifiers must be a list of strings.",
-            setattr,
-            *args
+            TypeError, "Unique identifiers must be a list of strings.", setattr, *args
         )
 
-        args = (
-            payloads.LocateResponsePayload(),
-            "unique_identifiers",
-            [0]
-        )
+        args = (payloads.LocateResponsePayload(), "unique_identifiers", [0])
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifiers must be a list of strings.",
-            setattr,
-            *args
+            TypeError, "Unique identifiers must be a list of strings.", setattr, *args
         )
 
     def test_read(self):
@@ -1373,8 +1255,7 @@ class TestLocateResponsePayload(testtools.TestCase):
         self.assertIsInstance(payload.unique_identifiers, list)
         self.assertEqual(1, len(payload.unique_identifiers))
         self.assertEqual(
-            ["8d945322-fd70-495d-bf7f-71481d1401f6"],
-            payload.unique_identifiers
+            ["8d945322-fd70-495d-bf7f-71481d1401f6"], payload.unique_identifiers
         )
 
     def test_read_missing_located_items(self):
@@ -1393,8 +1274,7 @@ class TestLocateResponsePayload(testtools.TestCase):
         self.assertIsInstance(payload.unique_identifiers, list)
         self.assertEqual(1, len(payload.unique_identifiers))
         self.assertEqual(
-            ["8d945322-fd70-495d-bf7f-71481d1401f6"],
-            payload.unique_identifiers
+            ["8d945322-fd70-495d-bf7f-71481d1401f6"], payload.unique_identifiers
         )
 
     def test_read_missing_unique_identifiers(self):
@@ -1432,8 +1312,7 @@ class TestLocateResponsePayload(testtools.TestCase):
         Test that a Locate response payload can be written to a data stream.
         """
         payload = payloads.LocateResponsePayload(
-            located_items=1,
-            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+            located_items=1, unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
         )
 
         stream = utils.BytearrayStream()
@@ -1447,9 +1326,7 @@ class TestLocateResponsePayload(testtools.TestCase):
         Test that a Locate response payload can be written to a data stream
         even when missing the located items.
         """
-        payload = payloads.LocateResponsePayload(
-            located_items=1
-        )
+        payload = payloads.LocateResponsePayload(located_items=1)
 
         stream = utils.BytearrayStream()
         payload.write(stream)
@@ -1463,8 +1340,7 @@ class TestLocateResponsePayload(testtools.TestCase):
         even when missing the unique identifiers.
         """
         payload = payloads.LocateResponsePayload(
-            located_items=1,
-            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+            located_items=1, unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
         )
 
         stream = utils.BytearrayStream()
@@ -1491,13 +1367,14 @@ class TestLocateResponsePayload(testtools.TestCase):
         Test that repr can be applied to a Locate response payload structure.
         """
         payload = payloads.LocateResponsePayload(
-            located_items=1,
-            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+            located_items=1, unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
         )
 
-        s = "LocateResponsePayload(" \
-            "located_items=1, " \
+        s = (
+            "LocateResponsePayload("
+            "located_items=1, "
             "unique_identifiers=['8d945322-fd70-495d-bf7f-71481d1401f6'])"
+        )
 
         self.assertEqual(s, repr(payload))
 
@@ -1506,22 +1383,25 @@ class TestLocateResponsePayload(testtools.TestCase):
         Test that str can be applied to a Locate response payload structure.
         """
         payload = payloads.LocateResponsePayload(
-            located_items=1,
-            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+            located_items=1, unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
         )
 
-        s = "LocateResponsePayload(" \
-            "located_items=1, " \
+        s = (
+            "LocateResponsePayload("
+            "located_items=1, "
             "unique_identifiers=['8d945322-fd70-495d-bf7f-71481d1401f6'])"
+        )
 
         self.assertEqual(s, repr(payload))
 
-        s = '{' \
-            '"located_items": 1, ' \
-            '"unique_identifiers": [' \
-            '"8d945322-fd70-495d-bf7f-71481d1401f6"]' \
-            ']' \
-            '}'
+        s = (
+            "{"
+            '"located_items": 1, '
+            '"unique_identifiers": ['
+            '"8d945322-fd70-495d-bf7f-71481d1401f6"]'
+            "]"
+            "}"
+        )
 
         self.assertEqual(s, str(payload))
 
@@ -1537,12 +1417,10 @@ class TestLocateResponsePayload(testtools.TestCase):
         self.assertTrue(b == a)
 
         a = payloads.LocateResponsePayload(
-            located_items=1,
-            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+            located_items=1, unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
         )
         b = payloads.LocateResponsePayload(
-            located_items=1,
-            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+            located_items=1, unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
         )
 
         self.assertTrue(a == b)
@@ -1597,12 +1475,10 @@ class TestLocateResponsePayload(testtools.TestCase):
         self.assertFalse(b != a)
 
         a = payloads.LocateResponsePayload(
-            located_items=1,
-            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+            located_items=1, unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
         )
         b = payloads.LocateResponsePayload(
-            located_items=1,
-            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+            located_items=1, unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
         )
 
         self.assertFalse(a != b)

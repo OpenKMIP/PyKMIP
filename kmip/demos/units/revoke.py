@@ -25,7 +25,7 @@ import logging
 import sys
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     # Build and parse arguments
@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     # Exit early if the UUID is not specified
     if uuid is None:
-        logger.error('No UUID provided, exiting early from demo')
+        logger.error("No UUID provided, exiting early from demo")
         sys.exit()
 
     # Build the client and connect to the server
@@ -46,19 +46,15 @@ if __name__ == '__main__':
 
     # Activate the object
     result = client.revoke(
-        enums.RevocationReasonCode.KEY_COMPROMISE,
-        uuid,
-        'Demo revocation message')
+        enums.RevocationReasonCode.KEY_COMPROMISE, uuid, "Demo revocation message"
+    )
     client.close()
 
     # Display operation results
-    logger.info('revoke() result status: {0}'.format(
-        result.result_status.value))
+    logger.info("revoke() result status: {0}".format(result.result_status.value))
 
     if result.result_status.value == ResultStatus.SUCCESS:
-        logger.info('revoked UUID: {0}'.format(result.unique_identifier.value))
+        logger.info("revoked UUID: {0}".format(result.unique_identifier.value))
     else:
-        logger.info('revoke() result reason: {0}'.format(
-            result.result_reason.value))
-        logger.info('revoke() result message: {0}'.format(
-            result.result_message.value))
+        logger.info("revoke() result reason: {0}".format(result.result_reason.value))
+        logger.info("revoke() result message: {0}".format(result.result_message.value))

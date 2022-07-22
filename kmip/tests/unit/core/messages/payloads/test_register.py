@@ -26,61 +26,60 @@ from kmip.core.messages import payloads
 
 
 class TestRegisterRequestPayload(testtools.TestCase):
-
     def setUp(self):
         super(TestRegisterRequestPayload, self).setUp()
 
         self.certificate_value = (
-            b'\x30\x82\x03\x12\x30\x82\x01\xFA\xA0\x03\x02\x01\x02\x02\x01\x01'
-            b'\x30\x0D\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x05\x05\x00\x30'
-            b'\x3B\x31\x0B\x30\x09\x06\x03\x55\x04\x06\x13\x02\x55\x53\x31\x0D'
-            b'\x30\x0B\x06\x03\x55\x04\x0A\x13\x04\x54\x45\x53\x54\x31\x0E\x30'
-            b'\x0C\x06\x03\x55\x04\x0B\x13\x05\x4F\x41\x53\x49\x53\x31\x0D\x30'
-            b'\x0B\x06\x03\x55\x04\x03\x13\x04\x4B\x4D\x49\x50\x30\x1E\x17\x0D'
-            b'\x31\x30\x31\x31\x30\x31\x32\x33\x35\x39\x35\x39\x5A\x17\x0D\x32'
-            b'\x30\x31\x31\x30\x31\x32\x33\x35\x39\x35\x39\x5A\x30\x3B\x31\x0B'
-            b'\x30\x09\x06\x03\x55\x04\x06\x13\x02\x55\x53\x31\x0D\x30\x0B\x06'
-            b'\x03\x55\x04\x0A\x13\x04\x54\x45\x53\x54\x31\x0E\x30\x0C\x06\x03'
-            b'\x55\x04\x0B\x13\x05\x4F\x41\x53\x49\x53\x31\x0D\x30\x0B\x06\x03'
-            b'\x55\x04\x03\x13\x04\x4B\x4D\x49\x50\x30\x82\x01\x22\x30\x0D\x06'
-            b'\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x01\x05\x00\x03\x82\x01\x0F'
-            b'\x00\x30\x82\x01\x0A\x02\x82\x01\x01\x00\xAB\x7F\x16\x1C\x00\x42'
-            b'\x49\x6C\xCD\x6C\x6D\x4D\xAD\xB9\x19\x97\x34\x35\x35\x77\x76\x00'
-            b'\x3A\xCF\x54\xB7\xAF\x1E\x44\x0A\xFB\x80\xB6\x4A\x87\x55\xF8\x00'
-            b'\x2C\xFE\xBA\x6B\x18\x45\x40\xA2\xD6\x60\x86\xD7\x46\x48\x34\x6D'
-            b'\x75\xB8\xD7\x18\x12\xB2\x05\x38\x7C\x0F\x65\x83\xBC\x4D\x7D\xC7'
-            b'\xEC\x11\x4F\x3B\x17\x6B\x79\x57\xC4\x22\xE7\xD0\x3F\xC6\x26\x7F'
-            b'\xA2\xA6\xF8\x9B\x9B\xEE\x9E\x60\xA1\xD7\xC2\xD8\x33\xE5\xA5\xF4'
-            b'\xBB\x0B\x14\x34\xF4\xE7\x95\xA4\x11\x00\xF8\xAA\x21\x49\x00\xDF'
-            b'\x8B\x65\x08\x9F\x98\x13\x5B\x1C\x67\xB7\x01\x67\x5A\xBD\xBC\x7D'
-            b'\x57\x21\xAA\xC9\xD1\x4A\x7F\x08\x1F\xCE\xC8\x0B\x64\xE8\xA0\xEC'
-            b'\xC8\x29\x53\x53\xC7\x95\x32\x8A\xBF\x70\xE1\xB4\x2E\x7B\xB8\xB7'
-            b'\xF4\xE8\xAC\x8C\x81\x0C\xDB\x66\xE3\xD2\x11\x26\xEB\xA8\xDA\x7D'
-            b'\x0C\xA3\x41\x42\xCB\x76\xF9\x1F\x01\x3D\xA8\x09\xE9\xC1\xB7\xAE'
-            b'\x64\xC5\x41\x30\xFB\xC2\x1D\x80\xE9\xC2\xCB\x06\xC5\xC8\xD7\xCC'
-            b'\xE8\x94\x6A\x9A\xC9\x9B\x1C\x28\x15\xC3\x61\x2A\x29\xA8\x2D\x73'
-            b'\xA1\xF9\x93\x74\xFE\x30\xE5\x49\x51\x66\x2A\x6E\xDA\x29\xC6\xFC'
-            b'\x41\x13\x35\xD5\xDC\x74\x26\xB0\xF6\x05\x02\x03\x01\x00\x01\xA3'
-            b'\x21\x30\x1F\x30\x1D\x06\x03\x55\x1D\x0E\x04\x16\x04\x14\x04\xE5'
-            b'\x7B\xD2\xC4\x31\xB2\xE8\x16\xE1\x80\xA1\x98\x23\xFA\xC8\x58\x27'
-            b'\x3F\x6B\x30\x0D\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x05\x05'
-            b'\x00\x03\x82\x01\x01\x00\xA8\x76\xAD\xBC\x6C\x8E\x0F\xF0\x17\x21'
-            b'\x6E\x19\x5F\xEA\x76\xBF\xF6\x1A\x56\x7C\x9A\x13\xDC\x50\xD1\x3F'
-            b'\xEC\x12\xA4\x27\x3C\x44\x15\x47\xCF\xAB\xCB\x5D\x61\xD9\x91\xE9'
-            b'\x66\x31\x9D\xF7\x2C\x0D\x41\xBA\x82\x6A\x45\x11\x2F\xF2\x60\x89'
-            b'\xA2\x34\x4F\x4D\x71\xCF\x7C\x92\x1B\x4B\xDF\xAE\xF1\x60\x0D\x1B'
-            b'\xAA\xA1\x53\x36\x05\x7E\x01\x4B\x8B\x49\x6D\x4F\xAE\x9E\x8A\x6C'
-            b'\x1D\xA9\xAE\xB6\xCB\xC9\x60\xCB\xF2\xFA\xE7\x7F\x58\x7E\xC4\xBB'
-            b'\x28\x20\x45\x33\x88\x45\xB8\x8D\xD9\xAE\xEA\x53\xE4\x82\xA3\x6E'
-            b'\x73\x4E\x4F\x5F\x03\xB9\xD0\xDF\xC4\xCA\xFC\x6B\xB3\x4E\xA9\x05'
-            b'\x3E\x52\xBD\x60\x9E\xE0\x1E\x86\xD9\xB0\x9F\xB5\x11\x20\xC1\x98'
-            b'\x34\xA9\x97\xB0\x9C\xE0\x8D\x79\xE8\x13\x11\x76\x2F\x97\x4B\xB1'
-            b'\xC8\xC0\x91\x86\xC4\xD7\x89\x33\xE0\xDB\x38\xE9\x05\x08\x48\x77'
-            b'\xE1\x47\xC7\x8A\xF5\x2F\xAE\x07\x19\x2F\xF1\x66\xD1\x9F\xA9\x4A'
-            b'\x11\xCC\x11\xB2\x7E\xD0\x50\xF7\xA2\x7F\xAE\x13\xB2\x05\xA5\x74'
-            b'\xC4\xEE\x00\xAA\x8B\xD6\x5D\x0D\x70\x57\xC9\x85\xC8\x39\xEF\x33'
-            b'\x6A\x44\x1E\xD5\x3A\x53\xC6\xB6\xB6\x96\xF1\xBD\xEB\x5F\x7E\xA8'
-            b'\x11\xEB\xB2\x5A\x7F\x86'
+            b"\x30\x82\x03\x12\x30\x82\x01\xFA\xA0\x03\x02\x01\x02\x02\x01\x01"
+            b"\x30\x0D\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x05\x05\x00\x30"
+            b"\x3B\x31\x0B\x30\x09\x06\x03\x55\x04\x06\x13\x02\x55\x53\x31\x0D"
+            b"\x30\x0B\x06\x03\x55\x04\x0A\x13\x04\x54\x45\x53\x54\x31\x0E\x30"
+            b"\x0C\x06\x03\x55\x04\x0B\x13\x05\x4F\x41\x53\x49\x53\x31\x0D\x30"
+            b"\x0B\x06\x03\x55\x04\x03\x13\x04\x4B\x4D\x49\x50\x30\x1E\x17\x0D"
+            b"\x31\x30\x31\x31\x30\x31\x32\x33\x35\x39\x35\x39\x5A\x17\x0D\x32"
+            b"\x30\x31\x31\x30\x31\x32\x33\x35\x39\x35\x39\x5A\x30\x3B\x31\x0B"
+            b"\x30\x09\x06\x03\x55\x04\x06\x13\x02\x55\x53\x31\x0D\x30\x0B\x06"
+            b"\x03\x55\x04\x0A\x13\x04\x54\x45\x53\x54\x31\x0E\x30\x0C\x06\x03"
+            b"\x55\x04\x0B\x13\x05\x4F\x41\x53\x49\x53\x31\x0D\x30\x0B\x06\x03"
+            b"\x55\x04\x03\x13\x04\x4B\x4D\x49\x50\x30\x82\x01\x22\x30\x0D\x06"
+            b"\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x01\x05\x00\x03\x82\x01\x0F"
+            b"\x00\x30\x82\x01\x0A\x02\x82\x01\x01\x00\xAB\x7F\x16\x1C\x00\x42"
+            b"\x49\x6C\xCD\x6C\x6D\x4D\xAD\xB9\x19\x97\x34\x35\x35\x77\x76\x00"
+            b"\x3A\xCF\x54\xB7\xAF\x1E\x44\x0A\xFB\x80\xB6\x4A\x87\x55\xF8\x00"
+            b"\x2C\xFE\xBA\x6B\x18\x45\x40\xA2\xD6\x60\x86\xD7\x46\x48\x34\x6D"
+            b"\x75\xB8\xD7\x18\x12\xB2\x05\x38\x7C\x0F\x65\x83\xBC\x4D\x7D\xC7"
+            b"\xEC\x11\x4F\x3B\x17\x6B\x79\x57\xC4\x22\xE7\xD0\x3F\xC6\x26\x7F"
+            b"\xA2\xA6\xF8\x9B\x9B\xEE\x9E\x60\xA1\xD7\xC2\xD8\x33\xE5\xA5\xF4"
+            b"\xBB\x0B\x14\x34\xF4\xE7\x95\xA4\x11\x00\xF8\xAA\x21\x49\x00\xDF"
+            b"\x8B\x65\x08\x9F\x98\x13\x5B\x1C\x67\xB7\x01\x67\x5A\xBD\xBC\x7D"
+            b"\x57\x21\xAA\xC9\xD1\x4A\x7F\x08\x1F\xCE\xC8\x0B\x64\xE8\xA0\xEC"
+            b"\xC8\x29\x53\x53\xC7\x95\x32\x8A\xBF\x70\xE1\xB4\x2E\x7B\xB8\xB7"
+            b"\xF4\xE8\xAC\x8C\x81\x0C\xDB\x66\xE3\xD2\x11\x26\xEB\xA8\xDA\x7D"
+            b"\x0C\xA3\x41\x42\xCB\x76\xF9\x1F\x01\x3D\xA8\x09\xE9\xC1\xB7\xAE"
+            b"\x64\xC5\x41\x30\xFB\xC2\x1D\x80\xE9\xC2\xCB\x06\xC5\xC8\xD7\xCC"
+            b"\xE8\x94\x6A\x9A\xC9\x9B\x1C\x28\x15\xC3\x61\x2A\x29\xA8\x2D\x73"
+            b"\xA1\xF9\x93\x74\xFE\x30\xE5\x49\x51\x66\x2A\x6E\xDA\x29\xC6\xFC"
+            b"\x41\x13\x35\xD5\xDC\x74\x26\xB0\xF6\x05\x02\x03\x01\x00\x01\xA3"
+            b"\x21\x30\x1F\x30\x1D\x06\x03\x55\x1D\x0E\x04\x16\x04\x14\x04\xE5"
+            b"\x7B\xD2\xC4\x31\xB2\xE8\x16\xE1\x80\xA1\x98\x23\xFA\xC8\x58\x27"
+            b"\x3F\x6B\x30\x0D\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x05\x05"
+            b"\x00\x03\x82\x01\x01\x00\xA8\x76\xAD\xBC\x6C\x8E\x0F\xF0\x17\x21"
+            b"\x6E\x19\x5F\xEA\x76\xBF\xF6\x1A\x56\x7C\x9A\x13\xDC\x50\xD1\x3F"
+            b"\xEC\x12\xA4\x27\x3C\x44\x15\x47\xCF\xAB\xCB\x5D\x61\xD9\x91\xE9"
+            b"\x66\x31\x9D\xF7\x2C\x0D\x41\xBA\x82\x6A\x45\x11\x2F\xF2\x60\x89"
+            b"\xA2\x34\x4F\x4D\x71\xCF\x7C\x92\x1B\x4B\xDF\xAE\xF1\x60\x0D\x1B"
+            b"\xAA\xA1\x53\x36\x05\x7E\x01\x4B\x8B\x49\x6D\x4F\xAE\x9E\x8A\x6C"
+            b"\x1D\xA9\xAE\xB6\xCB\xC9\x60\xCB\xF2\xFA\xE7\x7F\x58\x7E\xC4\xBB"
+            b"\x28\x20\x45\x33\x88\x45\xB8\x8D\xD9\xAE\xEA\x53\xE4\x82\xA3\x6E"
+            b"\x73\x4E\x4F\x5F\x03\xB9\xD0\xDF\xC4\xCA\xFC\x6B\xB3\x4E\xA9\x05"
+            b"\x3E\x52\xBD\x60\x9E\xE0\x1E\x86\xD9\xB0\x9F\xB5\x11\x20\xC1\x98"
+            b"\x34\xA9\x97\xB0\x9C\xE0\x8D\x79\xE8\x13\x11\x76\x2F\x97\x4B\xB1"
+            b"\xC8\xC0\x91\x86\xC4\xD7\x89\x33\xE0\xDB\x38\xE9\x05\x08\x48\x77"
+            b"\xE1\x47\xC7\x8A\xF5\x2F\xAE\x07\x19\x2F\xF1\x66\xD1\x9F\xA9\x4A"
+            b"\x11\xCC\x11\xB2\x7E\xD0\x50\xF7\xA2\x7F\xAE\x13\xB2\x05\xA5\x74"
+            b"\xC4\xEE\x00\xAA\x8B\xD6\x5D\x0D\x70\x57\xC9\x85\xC8\x39\xEF\x33"
+            b"\x6A\x44\x1E\xD5\x3A\x53\xC6\xB6\xB6\x96\xF1\xBD\xEB\x5F\x7E\xA8"
+            b"\x11\xEB\xB2\x5A\x7F\x86"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.2.2.
@@ -128,18 +127,17 @@ class TestRegisterRequestPayload(testtools.TestCase):
         #             AA8BD65D0D7057C985C839EF336A441ED53A53C6B6B696F1BDEB5F7E
         #             A811EBB25A7F86
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x03\x88'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x91\x01\x00\x00\x00\x38'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x13\x01\x00\x00\x03\x30'
-            b'\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x1E\x08\x00\x00\x03\x16' + self.certificate_value +
-            b'\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x03\x88"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x91\x01\x00\x00\x00\x38"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x13\x01\x00\x00\x03\x30"
+            b"\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x1E\x08\x00\x00\x03\x16" + self.certificate_value + b"\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.2.2.
@@ -159,16 +157,15 @@ class TestRegisterRequestPayload(testtools.TestCase):
         #     Protection Storage Masks
         #         Protection Storage Mask - Software | Hardware
         self.full_encoding_with_attributes = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x03\x78'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x01\x25\x01\x00\x00\x00\x10'
-            b'\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x13\x01\x00\x00\x03\x30'
-            b'\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x1E\x08\x00\x00\x03\x16' + self.certificate_value +
-            b'\x00\x00'
-            b'\x42\x01\x5F\x01\x00\x00\x00\x10'
-            b'\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x03\x78"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x01\x25\x01\x00\x00\x00\x10"
+            b"\x42\x00\x2C\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x13\x01\x00\x00\x03\x30"
+            b"\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x1E\x08\x00\x00\x03\x16" + self.certificate_value + b"\x00\x00"
+            b"\x42\x01\x5F\x01\x00\x00\x00\x10"
+            b"\x42\x01\x5E\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.2.2.
@@ -186,17 +183,16 @@ class TestRegisterRequestPayload(testtools.TestCase):
         #         Certificate Type - X.509
         #         Certificate Value - See comment for the full encoding.
         self.no_object_type_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x03\x78'
-            b'\x42\x00\x91\x01\x00\x00\x00\x38'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
-            b'\x42\x00\x13\x01\x00\x00\x03\x30'
-            b'\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x1E\x08\x00\x00\x03\x16' + self.certificate_value +
-            b'\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x03\x78"
+            b"\x42\x00\x91\x01\x00\x00\x00\x38"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
+            b"\x42\x00\x13\x01\x00\x00\x03\x30"
+            b"\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x1E\x08\x00\x00\x03\x16" + self.certificate_value + b"\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.2.2.
@@ -208,12 +204,11 @@ class TestRegisterRequestPayload(testtools.TestCase):
         #         Certificate Type - X.509
         #         Certificate Value - See comment for the full encoding.
         self.no_template_attribute_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x03\x48'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x13\x01\x00\x00\x03\x30'
-            b'\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x1E\x08\x00\x00\x03\x16' + self.certificate_value +
-            b'\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x03\x48"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x13\x01\x00\x00\x03\x30"
+            b"\x42\x00\x1D\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x1E\x08\x00\x00\x03\x16" + self.certificate_value + b"\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.2.2.
@@ -229,14 +224,14 @@ class TestRegisterRequestPayload(testtools.TestCase):
         #             Attribute Name - Cryptographic Usage Mask
         #             Attribute Value - Sign | Verify
         self.no_managed_object_encoding = utils.BytearrayStream(
-            b'\x42\x00\x79\x01\x00\x00\x00\x50'
-            b'\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x91\x01\x00\x00\x00\x38'
-            b'\x42\x00\x08\x01\x00\x00\x00\x30'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x18'
-            b'\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73'
-            b'\x61\x67\x65\x20\x4D\x61\x73\x6B'
-            b'\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00'
+            b"\x42\x00\x79\x01\x00\x00\x00\x50"
+            b"\x42\x00\x57\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x91\x01\x00\x00\x00\x38"
+            b"\x42\x00\x08\x01\x00\x00\x00\x30"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x18"
+            b"\x43\x72\x79\x70\x74\x6F\x67\x72\x61\x70\x68\x69\x63\x20\x55\x73"
+            b"\x61\x67\x65\x20\x4D\x61\x73\x6B"
+            b"\x42\x00\x0B\x02\x00\x00\x00\x04\x00\x00\x00\x03\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -247,7 +242,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the object type of a Register request payload.
         """
-        kwargs = {'object_type': 'invalid'}
+        kwargs = {"object_type": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Object type must be an ObjectType enumeration.",
@@ -255,16 +250,9 @@ class TestRegisterRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.RegisterRequestPayload(),
-            'object_type',
-            'invalid'
-        )
+        args = (payloads.RegisterRequestPayload(), "object_type", "invalid")
         self.assertRaisesRegex(
-            TypeError,
-            "Object type must be an ObjectType enumeration.",
-            setattr,
-            *args
+            TypeError, "Object type must be an ObjectType enumeration.", setattr, *args
         )
 
     def test_invalid_template_attribute(self):
@@ -272,7 +260,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the template attribute of a Register request payload.
         """
-        kwargs = {'template_attribute': 'invalid'}
+        kwargs = {"template_attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute structure.",
@@ -280,11 +268,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.RegisterRequestPayload(),
-            'template_attribute',
-            'invalid'
-        )
+        args = (payloads.RegisterRequestPayload(), "template_attribute", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute structure.",
@@ -297,7 +281,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the managed object of a Register request payload.
         """
-        kwargs = {'managed_object': 'invalid'}
+        kwargs = {"managed_object": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Managed object must be a supported managed object structure.",
@@ -305,11 +289,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.RegisterRequestPayload(),
-            'managed_object',
-            'invalid'
-        )
+        args = (payloads.RegisterRequestPayload(), "managed_object", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Managed object must be a supported managed object structure.",
@@ -346,7 +326,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         args = (
             payloads.RegisterRequestPayload(),
             "protection_storage_masks",
-            "invalid"
+            "invalid",
         )
         self.assertRaisesRegex(
             TypeError,
@@ -360,7 +340,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
             "protection_storage_masks",
             objects.ProtectionStorageMasks(
                 tag=enums.Tags.COMMON_PROTECTION_STORAGE_MASKS
-            )
+            ),
         )
         self.assertRaisesRegex(
             TypeError,
@@ -392,21 +372,21 @@ class TestRegisterRequestPayload(testtools.TestCase):
                             "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
-                            enums.CryptographicUsageMask.SIGN.value |
-                            enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            enums.CryptographicUsageMask.SIGN.value
+                            | enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
-            payload.template_attribute
+            payload.template_attribute,
         )
         self.assertEqual(
             secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             ),
-            payload.managed_object
+            payload.managed_object,
         )
         self.assertIsNone(payload.protection_storage_masks)
 
@@ -423,8 +403,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         self.assertIsNone(payload.protection_storage_masks)
 
         payload.read(
-            self.full_encoding_with_attributes,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.full_encoding_with_attributes, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(enums.ObjectType.CERTIFICATE, payload.object_type)
@@ -436,25 +415,25 @@ class TestRegisterRequestPayload(testtools.TestCase):
                             "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
-                            enums.CryptographicUsageMask.SIGN.value |
-                            enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            enums.CryptographicUsageMask.SIGN.value
+                            | enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
-            payload.template_attribute
+            payload.template_attribute,
         )
         self.assertEqual(
             secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             ),
-            payload.managed_object
+            payload.managed_object,
         )
         self.assertEqual(
             objects.ProtectionStorageMasks(protection_storage_masks=[3]),
-            payload.protection_storage_masks
+            payload.protection_storage_masks,
         )
 
     def test_read_missing_object_type(self):
@@ -465,11 +444,10 @@ class TestRegisterRequestPayload(testtools.TestCase):
         """
         payload = payloads.RegisterRequestPayload()
 
-        args = (self.no_object_type_encoding, )
+        args = (self.no_object_type_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "The Register request payload encoding is missing the object "
-            "type.",
+            "The Register request payload encoding is missing the object " "type.",
             payload.read,
             *args
         )
@@ -482,7 +460,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         """
         payload = payloads.RegisterRequestPayload()
 
-        args = (self.no_template_attribute_encoding, )
+        args = (self.no_template_attribute_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The Register request payload encoding is missing the template "
@@ -499,7 +477,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         """
         payload = payloads.RegisterRequestPayload()
 
-        args = (self.no_template_attribute_encoding, )
+        args = (self.no_template_attribute_encoding,)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
@@ -518,11 +496,10 @@ class TestRegisterRequestPayload(testtools.TestCase):
         """
         payload = payloads.RegisterRequestPayload()
 
-        args = (self.no_managed_object_encoding, )
+        args = (self.no_managed_object_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
-            "The Register request payload encoding is missing the managed "
-            "object.",
+            "The Register request payload encoding is missing the managed " "object.",
             payload.read,
             *args
         )
@@ -540,17 +517,17 @@ class TestRegisterRequestPayload(testtools.TestCase):
                             "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
-                            enums.CryptographicUsageMask.SIGN.value |
-                            enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            enums.CryptographicUsageMask.SIGN.value
+                            | enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
-            )
+                certificate_value=self.certificate_value,
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -573,25 +550,25 @@ class TestRegisterRequestPayload(testtools.TestCase):
                             "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
-                            enums.CryptographicUsageMask.SIGN.value |
-                            enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            enums.CryptographicUsageMask.SIGN.value
+                            | enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -613,20 +590,20 @@ class TestRegisterRequestPayload(testtools.TestCase):
                             "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
-                            enums.CryptographicUsageMask.SIGN.value |
-                            enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            enums.CryptographicUsageMask.SIGN.value
+                            | enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
-            )
+                certificate_value=self.certificate_value,
+            ),
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
             "The Register request payload is missing the object type field.",
@@ -644,15 +621,14 @@ class TestRegisterRequestPayload(testtools.TestCase):
             object_type=enums.ObjectType.CERTIFICATE,
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
-            )
+                certificate_value=self.certificate_value,
+            ),
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The Register request payload is missing the template attribute "
-            "field.",
+            "The Register request payload is missing the template attribute " "field.",
             payload.write,
             *args
         )
@@ -667,16 +643,15 @@ class TestRegisterRequestPayload(testtools.TestCase):
             object_type=enums.ObjectType.CERTIFICATE,
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
-            )
+                certificate_value=self.certificate_value,
+            ),
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         kwargs = {"kmip_version": enums.KMIPVersion.KMIP_2_0}
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The Register request payload is missing the template attribute "
-            "field.",
+            "The Register request payload is missing the template attribute " "field.",
             payload.write,
             *args,
             **kwargs
@@ -698,18 +673,17 @@ class TestRegisterRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
-        args = (utils.BytearrayStream(), )
+        args = (utils.BytearrayStream(),)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The Register request payload is missing the managed object "
-            "field.",
+            "The Register request payload is missing the managed object " "field.",
             payload.write,
             *args
         )
@@ -728,8 +702,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
@@ -737,30 +711,28 @@ class TestRegisterRequestPayload(testtools.TestCase):
                 secret_data_type=primitives.Enumeration(
                     enums.SecretDataType,
                     value=enums.SecretDataType.PASSWORD,
-                    tag=enums.Tags.SECRET_DATA_TYPE
+                    tag=enums.Tags.SECRET_DATA_TYPE,
                 ),
                 key_block=objects.KeyBlock(
-                    key_format_type=objects.KeyFormatType(
-                        enums.KeyFormatType.OPAQUE
-                    ),
+                    key_format_type=objects.KeyFormatType(enums.KeyFormatType.OPAQUE),
                     key_value=objects.KeyValue(
                         key_material=objects.KeyMaterial(
                             (
-                                b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77'
-                                b'\x6F\x72\x64'
+                                b"\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77"
+                                b"\x6F\x72\x64"
                             )
                         )
-                    )
-                )
+                    ),
+                ),
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
         self.assertEqual(
             "RegisterRequestPayload("
@@ -769,7 +741,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
             "managed_object=Struct(), "
             "protection_storage_masks=ProtectionStorageMasks("
             "protection_storage_masks=[3]))",
-            repr(payload)
+            repr(payload),
         )
 
     def test_str(self):
@@ -786,8 +758,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
@@ -795,39 +767,37 @@ class TestRegisterRequestPayload(testtools.TestCase):
                 secret_data_type=primitives.Enumeration(
                     enums.SecretDataType,
                     value=enums.SecretDataType.PASSWORD,
-                    tag=enums.Tags.SECRET_DATA_TYPE
+                    tag=enums.Tags.SECRET_DATA_TYPE,
                 ),
                 key_block=objects.KeyBlock(
-                    key_format_type=objects.KeyFormatType(
-                        enums.KeyFormatType.OPAQUE
-                    ),
+                    key_format_type=objects.KeyFormatType(enums.KeyFormatType.OPAQUE),
                     key_value=objects.KeyValue(
                         key_material=objects.KeyMaterial(
                             (
-                                b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77'
-                                b'\x6F\x72\x64'
+                                b"\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77"
+                                b"\x6F\x72\x64"
                             )
                         )
-                    )
-                )
+                    ),
+                ),
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
         self.assertEqual(
-            '{'
+            "{"
             '"object_type": ObjectType.SECRET_DATA, '
             '"template_attribute": Struct(), '
             '"managed_object": Struct(), '
             '"protection_storage_masks": {"protection_storage_masks": [3]}'
-            '}',
-            str(payload)
+            "}",
+            str(payload),
         )
 
     def test_equal_on_equal(self):
@@ -850,25 +820,25 @@ class TestRegisterRequestPayload(testtools.TestCase):
                             "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
-                            enums.CryptographicUsageMask.SIGN.value |
-                            enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            enums.CryptographicUsageMask.SIGN.value
+                            | enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
         b = payloads.RegisterRequestPayload(
             object_type=enums.ObjectType.CERTIFICATE,
@@ -879,25 +849,25 @@ class TestRegisterRequestPayload(testtools.TestCase):
                             "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
-                            enums.CryptographicUsageMask.SIGN.value |
-                            enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            enums.CryptographicUsageMask.SIGN.value
+                            | enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
 
         self.assertTrue(a == b)
@@ -908,12 +878,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
         Test that the equality operator returns False when comparing two
         Register request payloads with different object types.
         """
-        a = payloads.RegisterRequestPayload(
-            object_type=enums.ObjectType.SYMMETRIC_KEY
-        )
-        b = payloads.RegisterRequestPayload(
-            object_type=enums.ObjectType.SECRET_DATA
-        )
+        a = payloads.RegisterRequestPayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
+        b = payloads.RegisterRequestPayload(object_type=enums.ObjectType.SECRET_DATA)
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -932,8 +898,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             )
@@ -947,8 +913,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             )
@@ -965,13 +931,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
         a = payloads.RegisterRequestPayload(
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             )
         )
         b = payloads.RegisterRequestPayload(
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.PGP,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             )
         )
 
@@ -987,8 +953,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
             )
@@ -997,8 +963,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.ON_SYSTEM.value |
-                        enums.ProtectionStorageMask.OFF_SYSTEM.value
+                        enums.ProtectionStorageMask.ON_SYSTEM.value
+                        | enums.ProtectionStorageMask.OFF_SYSTEM.value
                     )
                 ]
             )
@@ -1013,7 +979,7 @@ class TestRegisterRequestPayload(testtools.TestCase):
         Register request payloads with different types.
         """
         a = payloads.RegisterRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -1038,25 +1004,25 @@ class TestRegisterRequestPayload(testtools.TestCase):
                             "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
-                            enums.CryptographicUsageMask.SIGN.value |
-                            enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            enums.CryptographicUsageMask.SIGN.value
+                            | enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
         b = payloads.RegisterRequestPayload(
             object_type=enums.ObjectType.CERTIFICATE,
@@ -1067,25 +1033,25 @@ class TestRegisterRequestPayload(testtools.TestCase):
                             "Cryptographic Usage Mask"
                         ),
                         attribute_value=primitives.Integer(
-                            enums.CryptographicUsageMask.SIGN.value |
-                            enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            enums.CryptographicUsageMask.SIGN.value
+                            | enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             ),
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             ),
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
-            )
+            ),
         )
 
         self.assertFalse(a != b)
@@ -1096,12 +1062,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
         Test that the inequality operator returns True when comparing two
         Register request payloads with different object types.
         """
-        a = payloads.RegisterRequestPayload(
-            object_type=enums.ObjectType.SYMMETRIC_KEY
-        )
-        b = payloads.RegisterRequestPayload(
-            object_type=enums.ObjectType.SECRET_DATA
-        )
+        a = payloads.RegisterRequestPayload(object_type=enums.ObjectType.SYMMETRIC_KEY)
+        b = payloads.RegisterRequestPayload(object_type=enums.ObjectType.SECRET_DATA)
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -1120,8 +1082,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.VERIFY.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             )
@@ -1135,8 +1097,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
                         ),
                         attribute_value=primitives.Integer(
                             value=enums.CryptographicUsageMask.SIGN.value,
-                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
-                        )
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK,
+                        ),
                     )
                 ]
             )
@@ -1153,13 +1115,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
         a = payloads.RegisterRequestPayload(
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.X_509,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             )
         )
         b = payloads.RegisterRequestPayload(
             managed_object=secrets.Certificate(
                 certificate_type=enums.CertificateType.PGP,
-                certificate_value=self.certificate_value
+                certificate_value=self.certificate_value,
             )
         )
 
@@ -1175,8 +1137,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.SOFTWARE.value |
-                        enums.ProtectionStorageMask.HARDWARE.value
+                        enums.ProtectionStorageMask.SOFTWARE.value
+                        | enums.ProtectionStorageMask.HARDWARE.value
                     )
                 ]
             )
@@ -1185,8 +1147,8 @@ class TestRegisterRequestPayload(testtools.TestCase):
             protection_storage_masks=objects.ProtectionStorageMasks(
                 protection_storage_masks=[
                     (
-                        enums.ProtectionStorageMask.ON_SYSTEM.value |
-                        enums.ProtectionStorageMask.OFF_SYSTEM.value
+                        enums.ProtectionStorageMask.ON_SYSTEM.value
+                        | enums.ProtectionStorageMask.OFF_SYSTEM.value
                     )
                 ]
             )
@@ -1201,14 +1163,13 @@ class TestRegisterRequestPayload(testtools.TestCase):
         Register request payloads with different types.
         """
         a = payloads.RegisterRequestPayload()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
 
 class TestRegisterResponsePayload(testtools.TestCase):
-
     def setUp(self):
         super(TestRegisterResponsePayload, self).setUp()
 
@@ -1223,16 +1184,16 @@ class TestRegisterResponsePayload(testtools.TestCase):
         #             Attribute Name - State
         #             Attribute Value - Pre-active
         self.full_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x60'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x37\x30\x39\x31\x64\x30\x62\x66\x2D\x35\x34\x38\x61\x2D\x34\x64'
-            b'\x34\x61\x2D\x39\x33\x61\x36\x2D\x36\x64\x64\x37\x31\x63\x66\x37'
-            b'\x35\x32\x32\x31\x00\x00\x00\x00'
-            b'\x42\x00\x91\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x60"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x37\x30\x39\x31\x64\x30\x62\x66\x2D\x35\x34\x38\x61\x2D\x34\x64"
+            b"\x34\x61\x2D\x39\x33\x61\x36\x2D\x36\x64\x64\x37\x31\x63\x66\x37"
+            b"\x35\x32\x32\x31\x00\x00\x00\x00"
+            b"\x42\x00\x91\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.2.2.
@@ -1245,12 +1206,12 @@ class TestRegisterResponsePayload(testtools.TestCase):
         #             Attribute Name - State
         #             Attribute Value - Pre-active
         self.no_unique_identifier_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x91\x01\x00\x00\x00\x28'
-            b'\x42\x00\x08\x01\x00\x00\x00\x20'
-            b'\x42\x00\x0A\x07\x00\x00\x00\x05'
-            b'\x53\x74\x61\x74\x65\x00\x00\x00'
-            b'\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x91\x01\x00\x00\x00\x28"
+            b"\x42\x00\x08\x01\x00\x00\x00\x20"
+            b"\x42\x00\x0A\x07\x00\x00\x00\x05"
+            b"\x53\x74\x61\x74\x65\x00\x00\x00"
+            b"\x42\x00\x0B\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 13.2.2.
@@ -1259,11 +1220,11 @@ class TestRegisterResponsePayload(testtools.TestCase):
         # Response Payload
         #     Unique Identifier - 7091d0bf-548a-4d4a-93a6-6dd71cf75221
         self.no_template_attribute_encoding = utils.BytearrayStream(
-            b'\x42\x00\x7C\x01\x00\x00\x00\x30'
-            b'\x42\x00\x94\x07\x00\x00\x00\x24'
-            b'\x37\x30\x39\x31\x64\x30\x62\x66\x2D\x35\x34\x38\x61\x2D\x34\x64'
-            b'\x34\x61\x2D\x39\x33\x61\x36\x2D\x36\x64\x64\x37\x31\x63\x66\x37'
-            b'\x35\x32\x32\x31\x00\x00\x00\x00'
+            b"\x42\x00\x7C\x01\x00\x00\x00\x30"
+            b"\x42\x00\x94\x07\x00\x00\x00\x24"
+            b"\x37\x30\x39\x31\x64\x30\x62\x66\x2D\x35\x34\x38\x61\x2D\x34\x64"
+            b"\x34\x61\x2D\x39\x33\x61\x36\x2D\x36\x64\x64\x37\x31\x63\x66\x37"
+            b"\x35\x32\x32\x31\x00\x00\x00\x00"
         )
 
     def test_invalid_unique_identifier(self):
@@ -1271,7 +1232,7 @@ class TestRegisterResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the unique identifier of a Register response payload.
         """
-        kwargs = {'unique_identifier': 0}
+        kwargs = {"unique_identifier": 0}
         self.assertRaisesRegex(
             TypeError,
             "Unique identifier must be a string.",
@@ -1279,12 +1240,9 @@ class TestRegisterResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (payloads.RegisterResponsePayload(), 'unique_identifier', 0)
+        args = (payloads.RegisterResponsePayload(), "unique_identifier", 0)
         self.assertRaisesRegex(
-            TypeError,
-            "Unique identifier must be a string.",
-            setattr,
-            *args
+            TypeError, "Unique identifier must be a string.", setattr, *args
         )
 
     def test_invalid_template_attribute(self):
@@ -1292,7 +1250,7 @@ class TestRegisterResponsePayload(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the template attribute of a Register response payload.
         """
-        kwargs = {'template_attribute': 'invalid'}
+        kwargs = {"template_attribute": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute structure.",
@@ -1300,11 +1258,7 @@ class TestRegisterResponsePayload(testtools.TestCase):
             **kwargs
         )
 
-        args = (
-            payloads.RegisterResponsePayload(),
-            'template_attribute',
-            'invalid'
-        )
+        args = (payloads.RegisterResponsePayload(), "template_attribute", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Template attribute must be a TemplateAttribute structure.",
@@ -1324,25 +1278,20 @@ class TestRegisterResponsePayload(testtools.TestCase):
         payload.read(self.full_encoding)
 
         self.assertEqual(
-            "7091d0bf-548a-4d4a-93a6-6dd71cf75221",
-            payload.unique_identifier
+            "7091d0bf-548a-4d4a-93a6-6dd71cf75221", payload.unique_identifier
         )
         self.assertEqual(
             objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
-                            enums.State,
-                            enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            enums.State, enums.State.PRE_ACTIVE, tag=enums.Tags.STATE
+                        ),
                     )
                 ]
             ),
-            payload.template_attribute
+            payload.template_attribute,
         )
 
     def test_read_kmip_2_0(self):
@@ -1356,13 +1305,11 @@ class TestRegisterResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.template_attribute)
 
         payload.read(
-            self.no_template_attribute_encoding,
-            kmip_version=enums.KMIPVersion.KMIP_2_0
+            self.no_template_attribute_encoding, kmip_version=enums.KMIPVersion.KMIP_2_0
         )
 
         self.assertEqual(
-            "7091d0bf-548a-4d4a-93a6-6dd71cf75221",
-            payload.unique_identifier
+            "7091d0bf-548a-4d4a-93a6-6dd71cf75221", payload.unique_identifier
         )
         self.assertIsNone(payload.template_attribute)
 
@@ -1377,7 +1324,7 @@ class TestRegisterResponsePayload(testtools.TestCase):
         self.assertIsNone(payload.unique_identifier)
         self.assertIsNone(payload.template_attribute)
 
-        args = (self.no_unique_identifier_encoding, )
+        args = (self.no_unique_identifier_encoding,)
         self.assertRaisesRegex(
             exceptions.InvalidKmipEncoding,
             "The Register response payload encoding is missing the unique "
@@ -1399,8 +1346,7 @@ class TestRegisterResponsePayload(testtools.TestCase):
         payload.read(self.no_template_attribute_encoding)
 
         self.assertEqual(
-            "7091d0bf-548a-4d4a-93a6-6dd71cf75221",
-            payload.unique_identifier
+            "7091d0bf-548a-4d4a-93a6-6dd71cf75221", payload.unique_identifier
         )
         self.assertIsNone(payload.template_attribute)
 
@@ -1413,17 +1359,15 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -1442,17 +1386,15 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         stream = utils.BytearrayStream()
@@ -1471,25 +1413,22 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
             )
         )
 
         stream = utils.BytearrayStream()
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
-            "The Register response payload is missing the unique identifier "
-            "field.",
+            "The Register response payload is missing the unique identifier " "field.",
             payload.write,
             *args
         )
@@ -1518,23 +1457,21 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
         self.assertEqual(
             "RegisterResponsePayload("
             "unique_identifier='7091d0bf-548a-4d4a-93a6-6dd71cf75221', "
             "template_attribute=Struct())",
-            repr(payload)
+            repr(payload),
         )
 
     def test_str(self):
@@ -1546,24 +1483,22 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
         self.assertEqual(
-            '{'
+            "{"
             '"unique_identifier": "7091d0bf-548a-4d4a-93a6-6dd71cf75221", '
             '"template_attribute": Struct()'
-            '}',
-            str(payload)
+            "}",
+            str(payload),
         )
 
     def test_equal_on_equal(self):
@@ -1582,34 +1517,30 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
         b = payloads.RegisterResponsePayload(
             unique_identifier="7091d0bf-548a-4d4a-93a6-6dd71cf75221",
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         self.assertTrue(a == b)
@@ -1635,14 +1566,12 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
             )
@@ -1651,14 +1580,10 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
-                            enums.State,
-                            value=enums.State.ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            enums.State, value=enums.State.ACTIVE, tag=enums.Tags.STATE
+                        ),
                     )
                 ]
             )
@@ -1694,34 +1619,30 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
         b = payloads.RegisterResponsePayload(
             unique_identifier="7091d0bf-548a-4d4a-93a6-6dd71cf75221",
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
-            )
+            ),
         )
 
         self.assertFalse(a != b)
@@ -1747,14 +1668,12 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
                             enums.State,
                             value=enums.State.PRE_ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            tag=enums.Tags.STATE,
+                        ),
                     )
                 ]
             )
@@ -1763,14 +1682,10 @@ class TestRegisterResponsePayload(testtools.TestCase):
             template_attribute=objects.TemplateAttribute(
                 attributes=[
                     objects.Attribute(
-                        attribute_name=objects.Attribute.AttributeName(
-                            "State"
-                        ),
+                        attribute_name=objects.Attribute.AttributeName("State"),
                         attribute_value=primitives.Enumeration(
-                            enums.State,
-                            value=enums.State.ACTIVE,
-                            tag=enums.Tags.STATE
-                        )
+                            enums.State, value=enums.State.ACTIVE, tag=enums.Tags.STATE
+                        ),
                     )
                 ]
             )

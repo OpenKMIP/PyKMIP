@@ -28,7 +28,7 @@ from kmip.pie import client
 # attribute for attribute modification to work. Otherwise, the client
 # call to modify_attribute will fail.
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger = utils.build_console_logger(logging.INFO)
 
     parser = utils.build_cli_parser(enums.Operation.MODIFY_ATTRIBUTE)
@@ -40,23 +40,16 @@ if __name__ == '__main__':
 
     factory = attributes.AttributeFactory()
 
-    with client.ProxyKmipClient(
-        config=opts.config,
-        config_file=opts.config_file
-    ) as c:
+    with client.ProxyKmipClient(config=opts.config, config_file=opts.config_file) as c:
         try:
             object_id, modified_attribute = c.modify_attribute(
                 unique_identifier=opts.uuid,
                 attribute=factory.create_attribute(
-                    enums.AttributeType.NAME,
-                    "Modified Name",
-                    index=0
-                )
+                    enums.AttributeType.NAME, "Modified Name", index=0
+                ),
             )
             logger.info(
-                "Successfully modified 'Name' attribute on object: {}".format(
-                    object_id
-                )
+                "Successfully modified 'Name' attribute on object: {}".format(object_id)
             )
             logger.info("Modified attribute: {}".format(modified_attribute))
         except Exception as e:

@@ -70,19 +70,28 @@ import ssl
 import sys
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
-CONFIG_FILE = os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))
+CONFIG_FILE = os.path.normpath(os.path.join(FILE_PATH, "../kmipconfig.ini"))
 
 
 class KMIPProxy(object):
-
-    def __init__(self, host=None, port=None, keyfile=None,
-                 certfile=None,
-                 cert_reqs=None, ssl_version=None, ca_certs=None,
-                 do_handshake_on_connect=None,
-                 suppress_ragged_eofs=None,
-                 username=None, password=None, timeout=30, config='client',
-                 config_file=None,
-                 kmip_version=None):
+    def __init__(
+        self,
+        host=None,
+        port=None,
+        keyfile=None,
+        certfile=None,
+        cert_reqs=None,
+        ssl_version=None,
+        ca_certs=None,
+        do_handshake_on_connect=None,
+        suppress_ragged_eofs=None,
+        username=None,
+        password=None,
+        timeout=30,
+        config="client",
+        config_file=None,
+        kmip_version=None,
+    ):
         self.logger = logging.getLogger(__name__)
         self.credential_factory = CredentialFactory()
         self.config = config
@@ -108,18 +117,29 @@ class KMIPProxy(object):
                     "exist.".format(config_file)
                 )
 
-        self._set_variables(host, port, keyfile, certfile,
-                            cert_reqs, ssl_version, ca_certs,
-                            do_handshake_on_connect, suppress_ragged_eofs,
-                            username, password, timeout, config_file)
+        self._set_variables(
+            host,
+            port,
+            keyfile,
+            certfile,
+            cert_reqs,
+            ssl_version,
+            ca_certs,
+            do_handshake_on_connect,
+            suppress_ragged_eofs,
+            username,
+            password,
+            timeout,
+            config_file,
+        )
         self.batch_items = []
 
-        self.conformance_clauses = [
-            ConformanceClause.DISCOVER_VERSIONS]
+        self.conformance_clauses = [ConformanceClause.DISCOVER_VERSIONS]
 
         self.authentication_suites = [
             AuthenticationSuite.BASIC,
-            AuthenticationSuite.TLS12]
+            AuthenticationSuite.TLS12,
+        ]
 
     @property
     def kmip_version(self):
@@ -244,8 +264,9 @@ class KMIPProxy(object):
             ... AuthenticationSuite.BASIC)
             True
         """
-        return (self.is_conformance_clause_supported(conformance_clause) and
-                self.is_authentication_suite_supported(authentication_suite))
+        return self.is_conformance_clause_supported(
+            conformance_clause
+        ) and self.is_authentication_suite_supported(authentication_suite)
 
     def open(self):
 
@@ -253,15 +274,23 @@ class KMIPProxy(object):
         self.logger.debug("KMIPProxy certfile: {0}".format(self.certfile))
         self.logger.debug(
             "KMIPProxy cert_reqs: {0} (CERT_REQUIRED: {1})".format(
-                self.cert_reqs, ssl.CERT_REQUIRED))
+                self.cert_reqs, ssl.CERT_REQUIRED
+            )
+        )
         self.logger.debug(
             "KMIPProxy ssl_version: {0} (PROTOCOL_SSLv23: {1})".format(
-                self.ssl_version, ssl.PROTOCOL_SSLv23))
+                self.ssl_version, ssl.PROTOCOL_SSLv23
+            )
+        )
         self.logger.debug("KMIPProxy ca_certs: {0}".format(self.ca_certs))
-        self.logger.debug("KMIPProxy do_handshake_on_connect: {0}".format(
-            self.do_handshake_on_connect))
-        self.logger.debug("KMIPProxy suppress_ragged_eofs: {0}".format(
-            self.suppress_ragged_eofs))
+        self.logger.debug(
+            "KMIPProxy do_handshake_on_connect: {0}".format(
+                self.do_handshake_on_connect
+            )
+        )
+        self.logger.debug(
+            "KMIPProxy suppress_ragged_eofs: {0}".format(self.suppress_ragged_eofs)
+        )
 
         last_error = None
 
@@ -273,8 +302,11 @@ class KMIPProxy(object):
             try:
                 self.socket.connect((self.host, self.port))
             except Exception as e:
-                self.logger.error("An error occurred while connecting to "
-                                  "appliance %s: %s", self.host, e)
+                self.logger.error(
+                    "An error occurred while connecting to " "appliance %s: %s",
+                    self.host,
+                    e,
+                )
                 self.socket.close()
                 last_error = sys.exc_info()
             else:
@@ -293,7 +325,8 @@ class KMIPProxy(object):
             ssl_version=self.ssl_version,
             ca_certs=self.ca_certs,
             do_handshake_on_connect=self.do_handshake_on_connect,
-            suppress_ragged_eofs=self.suppress_ragged_eofs)
+            suppress_ragged_eofs=self.suppress_ragged_eofs,
+        )
         self.socket.settimeout(self.timeout)
 
     def __del__(self):
@@ -337,9 +370,7 @@ class KMIPProxy(object):
                 operation
         """
         if not isinstance(payload, payloads.RequestPayload):
-            raise TypeError(
-                "The request payload must be a RequestPayload object."
-            )
+            raise TypeError("The request payload must be a RequestPayload object.")
 
         # TODO (peterhamilton) For now limit this to the new Delete/Set/Modify
         # Attribute operations. Migrate over existing operations to use
@@ -365,11 +396,9 @@ class KMIPProxy(object):
 
         batch_item = messages.RequestBatchItem(
             operation=primitives.Enumeration(
-                enums.Operation,
-                operation,
-                tag=enums.Tags.OPERATION
+                enums.Operation, operation, tag=enums.Tags.OPERATION
             ),
-            request_payload=payload
+            request_payload=payload,
         )
 
         request_message = self._build_request_message(credential, [batch_item])
@@ -387,7 +416,7 @@ class KMIPProxy(object):
             raise exceptions.OperationFailure(
                 batch_item.result_status.value,
                 batch_item.result_reason.value,
-                batch_item.result_message.value
+                batch_item.result_message.value,
             )
 
         if batch_item.operation.value != operation:
@@ -398,8 +427,7 @@ class KMIPProxy(object):
         # TODO (peterhamilton) Same as above for now.
         if batch_item.operation.value == enums.Operation.DELETE_ATTRIBUTE:
             if not isinstance(
-                batch_item.response_payload,
-                payloads.DeleteAttributeResponsePayload
+                batch_item.response_payload, payloads.DeleteAttributeResponsePayload
             ):
                 raise exceptions.InvalidMessage(
                     "Invalid response payload received for the "
@@ -407,8 +435,7 @@ class KMIPProxy(object):
                 )
         elif batch_item.operation.value == enums.Operation.SET_ATTRIBUTE:
             if not isinstance(
-                batch_item.response_payload,
-                payloads.SetAttributeResponsePayload
+                batch_item.response_payload, payloads.SetAttributeResponsePayload
             ):
                 raise exceptions.InvalidMessage(
                     "Invalid response payload received for the SetAttribute "
@@ -416,8 +443,7 @@ class KMIPProxy(object):
                 )
         elif batch_item.operation.value == enums.Operation.MODIFY_ATTRIBUTE:
             if not isinstance(
-                batch_item.response_payload,
-                payloads.ModifyAttributeResponsePayload
+                batch_item.response_payload, payloads.ModifyAttributeResponsePayload
             ):
                 raise exceptions.InvalidMessage(
                     "Invalid response payload received for the "
@@ -427,16 +453,25 @@ class KMIPProxy(object):
         return batch_item.response_payload
 
     def create(self, object_type, template_attribute, credential=None):
-        return self._create(object_type=object_type,
-                            template_attribute=template_attribute,
-                            credential=credential)
+        return self._create(
+            object_type=object_type,
+            template_attribute=template_attribute,
+            credential=credential,
+        )
 
-    def create_key_pair(self, batch=False, common_template_attribute=None,
-                        private_key_template_attribute=None,
-                        public_key_template_attribute=None, credential=None):
+    def create_key_pair(
+        self,
+        batch=False,
+        common_template_attribute=None,
+        private_key_template_attribute=None,
+        public_key_template_attribute=None,
+        credential=None,
+    ):
         batch_item = self._build_create_key_pair_batch_item(
-            common_template_attribute, private_key_template_attribute,
-            public_key_template_attribute)
+            common_template_attribute,
+            private_key_template_attribute,
+            public_key_template_attribute,
+        )
 
         if batch:
             self.batch_items.append(batch_item)
@@ -459,11 +494,7 @@ class KMIPProxy(object):
         """
         return self._activate(uuid, credential=credential)
 
-    def rekey(self,
-              uuid=None,
-              offset=None,
-              template_attribute=None,
-              credential=None):
+    def rekey(self, uuid=None, offset=None, template_attribute=None, credential=None):
         """
         Check object usage according to specific constraints.
 
@@ -503,13 +534,10 @@ class KMIPProxy(object):
         """
         operation = Operation(OperationEnum.REKEY)
         request_payload = payloads.RekeyRequestPayload(
-            unique_identifier=uuid,
-            offset=offset,
-            template_attribute=template_attribute
+            unique_identifier=uuid, offset=offset, template_attribute=template_attribute
         )
         batch_item = messages.RequestBatchItem(
-            operation=operation,
-            request_payload=request_payload
+            operation=operation, request_payload=request_payload
         )
 
         request = self._build_request_message(credential, [batch_item])
@@ -520,30 +548,32 @@ class KMIPProxy(object):
         result = {}
 
         if payload:
-            result['unique_identifier'] = payload.unique_identifier
+            result["unique_identifier"] = payload.unique_identifier
 
             if payload.template_attribute is not None:
-                result['template_attribute'] = payload.template_attribute
+                result["template_attribute"] = payload.template_attribute
 
-        result['result_status'] = batch_item.result_status.value
+        result["result_status"] = batch_item.result_status.value
         try:
-            result['result_reason'] = batch_item.result_reason.value
+            result["result_reason"] = batch_item.result_reason.value
         except Exception:
-            result['result_reason'] = batch_item.result_reason
+            result["result_reason"] = batch_item.result_reason
         try:
-            result['result_message'] = batch_item.result_message.value
+            result["result_message"] = batch_item.result_message.value
         except Exception:
-            result['result_message'] = batch_item.result_message
+            result["result_message"] = batch_item.result_message
 
         return result
 
-    def derive_key(self,
-                   object_type,
-                   unique_identifiers,
-                   derivation_method,
-                   derivation_parameters,
-                   template_attribute,
-                   credential=None):
+    def derive_key(
+        self,
+        object_type,
+        unique_identifiers,
+        derivation_method,
+        derivation_parameters,
+        template_attribute,
+        credential=None,
+    ):
         """
         Derive a new key or secret data from an existing managed object.
 
@@ -589,11 +619,10 @@ class KMIPProxy(object):
             unique_identifiers=unique_identifiers,
             derivation_method=derivation_method,
             derivation_parameters=derivation_parameters,
-            template_attribute=template_attribute
+            template_attribute=template_attribute,
         )
         batch_item = messages.RequestBatchItem(
-            operation=operation,
-            request_payload=request_payload
+            operation=operation, request_payload=request_payload
         )
 
         request = self._build_request_message(credential, [batch_item])
@@ -604,27 +633,29 @@ class KMIPProxy(object):
         result = {}
 
         if payload:
-            result['unique_identifier'] = payload.unique_identifier
-            result['template_attribute'] = payload.template_attribute
+            result["unique_identifier"] = payload.unique_identifier
+            result["template_attribute"] = payload.template_attribute
 
-        result['result_status'] = batch_item.result_status.value
+        result["result_status"] = batch_item.result_status.value
         try:
-            result['result_reason'] = batch_item.result_reason.value
+            result["result_reason"] = batch_item.result_reason.value
         except Exception:
-            result['result_reason'] = batch_item.result_reason
+            result["result_reason"] = batch_item.result_reason
         try:
-            result['result_message'] = batch_item.result_message.value
+            result["result_message"] = batch_item.result_message.value
         except Exception:
-            result['result_message'] = batch_item.result_message
+            result["result_message"] = batch_item.result_message
 
         return result
 
-    def check(self,
-              uuid=None,
-              usage_limits_count=None,
-              cryptographic_usage_mask=None,
-              lease_time=None,
-              credential=None):
+    def check(
+        self,
+        uuid=None,
+        usage_limits_count=None,
+        cryptographic_usage_mask=None,
+        lease_time=None,
+        credential=None,
+    ):
         """
         Check object usage according to specific constraints.
 
@@ -680,11 +711,10 @@ class KMIPProxy(object):
             unique_identifier=uuid,
             usage_limits_count=usage_limits_count,
             cryptographic_usage_mask=mask,
-            lease_time=lease_time
+            lease_time=lease_time,
         )
         batch_item = messages.RequestBatchItem(
-            operation=operation,
-            request_payload=request_payload
+            operation=operation, request_payload=request_payload
         )
 
         request = self._build_request_message(credential, [batch_item])
@@ -695,39 +725,46 @@ class KMIPProxy(object):
         result = {}
 
         if payload:
-            result['unique_identifier'] = payload.unique_identifier
+            result["unique_identifier"] = payload.unique_identifier
         if payload.usage_limits_count is not None:
-            result['usage_limits_count'] = payload.usage_limits_count
+            result["usage_limits_count"] = payload.usage_limits_count
         if payload.cryptographic_usage_mask is not None:
             # TODO (peter-hamilton) Push this into the Check response.
             masks = []
             for enumeration in enums.CryptographicUsageMask:
                 if payload.cryptographic_usage_mask & enumeration.value:
                     masks.append(enumeration)
-            result['cryptographic_usage_mask'] = masks
+            result["cryptographic_usage_mask"] = masks
         if payload.lease_time is not None:
-            result['lease_time'] = payload.lease_time
+            result["lease_time"] = payload.lease_time
 
-        result['result_status'] = batch_item.result_status.value
+        result["result_status"] = batch_item.result_status.value
         try:
-            result['result_reason'] = batch_item.result_reason.value
+            result["result_reason"] = batch_item.result_reason.value
         except Exception:
-            result['result_reason'] = batch_item.result_reason
+            result["result_reason"] = batch_item.result_reason
         try:
-            result['result_message'] = batch_item.result_message.value
+            result["result_message"] = batch_item.result_message.value
         except Exception:
-            result['result_message'] = batch_item.result_message
+            result["result_message"] = batch_item.result_message
 
         return result
 
-    def get(self, uuid=None, key_format_type=None, key_compression_type=None,
-            key_wrapping_specification=None, credential=None):
+    def get(
+        self,
+        uuid=None,
+        key_format_type=None,
+        key_compression_type=None,
+        key_wrapping_specification=None,
+        credential=None,
+    ):
         return self._get(
             unique_identifier=uuid,
             key_format_type=key_format_type,
             key_compression_type=key_compression_type,
             key_wrapping_specification=key_wrapping_specification,
-            credential=credential)
+            credential=credential,
+        )
 
     def get_attributes(self, uuid=None, attribute_names=None):
         """
@@ -745,10 +782,7 @@ class KMIPProxy(object):
             result (GetAttributesResult): A structure containing the results
                 of the operation.
         """
-        batch_item = self._build_get_attributes_batch_item(
-            uuid,
-            attribute_names
-        )
+        batch_item = self._build_get_attributes_batch_item(uuid, attribute_names)
 
         request = self._build_request_message(None, [batch_item])
         response = self._send_and_receive_message(request)
@@ -774,33 +808,50 @@ class KMIPProxy(object):
         results = self._process_batch_items(response)
         return results[0]
 
-    def revoke(self, revocation_reason, uuid=None, revocation_message=None,
-               compromise_occurrence_date=None, credential=None):
+    def revoke(
+        self,
+        revocation_reason,
+        uuid=None,
+        revocation_message=None,
+        compromise_occurrence_date=None,
+        credential=None,
+    ):
         return self._revoke(
             unique_identifier=uuid,
             revocation_reason=revocation_reason,
             revocation_message=revocation_message,
             compromise_occurrence_date=compromise_occurrence_date,
-            credential=credential)
+            credential=credential,
+        )
 
     def destroy(self, uuid=None, credential=None):
-        return self._destroy(unique_identifier=uuid,
-                             credential=credential)
+        return self._destroy(unique_identifier=uuid, credential=credential)
 
-    def register(self, object_type, template_attribute, secret,
-                 credential=None):
-        return self._register(object_type=object_type,
-                              template_attribute=template_attribute,
-                              secret=secret,
-                              credential=credential)
+    def register(self, object_type, template_attribute, secret, credential=None):
+        return self._register(
+            object_type=object_type,
+            template_attribute=template_attribute,
+            secret=secret,
+            credential=credential,
+        )
 
-    def rekey_key_pair(self, batch=False, private_key_uuid=None, offset=None,
-                       common_template_attribute=None,
-                       private_key_template_attribute=None,
-                       public_key_template_attribute=None, credential=None):
+    def rekey_key_pair(
+        self,
+        batch=False,
+        private_key_uuid=None,
+        offset=None,
+        common_template_attribute=None,
+        private_key_template_attribute=None,
+        public_key_template_attribute=None,
+        credential=None,
+    ):
         batch_item = self._build_rekey_key_pair_batch_item(
-            private_key_uuid, offset, common_template_attribute,
-            private_key_template_attribute, public_key_template_attribute)
+            private_key_uuid,
+            offset,
+            common_template_attribute,
+            private_key_template_attribute,
+            public_key_template_attribute,
+        )
 
         if batch:
             self.batch_items.append(batch_item)
@@ -810,14 +861,23 @@ class KMIPProxy(object):
             results = self._process_batch_items(response)
             return results[0]
 
-    def locate(self, maximum_items=None, storage_status_mask=None,
-               object_group_member=None, attributes=None, credential=None,
-               offset_items=None):
-        return self._locate(maximum_items=maximum_items,
-                            storage_status_mask=storage_status_mask,
-                            object_group_member=object_group_member,
-                            attributes=attributes, credential=credential,
-                            offset_items=offset_items)
+    def locate(
+        self,
+        maximum_items=None,
+        storage_status_mask=None,
+        object_group_member=None,
+        attributes=None,
+        credential=None,
+        offset_items=None,
+    ):
+        return self._locate(
+            maximum_items=maximum_items,
+            storage_status_mask=storage_status_mask,
+            object_group_member=object_group_member,
+            attributes=attributes,
+            credential=credential,
+            offset_items=offset_items,
+        )
 
     def query(self, batch=False, query_functions=None, credential=None):
         """
@@ -844,10 +904,8 @@ class KMIPProxy(object):
             results = self._process_batch_items(response)
             return results[0]
 
-    def discover_versions(self, batch=False, protocol_versions=None,
-                          credential=None):
-        batch_item = self._build_discover_versions_batch_item(
-            protocol_versions)
+    def discover_versions(self, batch=False, protocol_versions=None, credential=None):
+        batch_item = self._build_discover_versions_batch_item(protocol_versions)
 
         if batch:
             self.batch_items.append(batch_item)
@@ -857,12 +915,14 @@ class KMIPProxy(object):
             results = self._process_batch_items(response)
             return results[0]
 
-    def encrypt(self,
-                data,
-                unique_identifier=None,
-                cryptographic_parameters=None,
-                iv_counter_nonce=None,
-                credential=None):
+    def encrypt(
+        self,
+        data,
+        unique_identifier=None,
+        cryptographic_parameters=None,
+        iv_counter_nonce=None,
+        credential=None,
+    ):
         """
         Encrypt data using the specified encryption key and parameters.
 
@@ -904,11 +964,10 @@ class KMIPProxy(object):
             unique_identifier=unique_identifier,
             data=data,
             cryptographic_parameters=cryptographic_parameters,
-            iv_counter_nonce=iv_counter_nonce
+            iv_counter_nonce=iv_counter_nonce,
         )
         batch_item = messages.RequestBatchItem(
-            operation=operation,
-            request_payload=request_payload
+            operation=operation, request_payload=request_payload
         )
 
         request = self._build_request_message(credential, [batch_item])
@@ -919,28 +978,30 @@ class KMIPProxy(object):
         result = {}
 
         if payload:
-            result['unique_identifier'] = payload.unique_identifier
-            result['data'] = payload.data
-            result['iv_counter_nonce'] = payload.iv_counter_nonce
+            result["unique_identifier"] = payload.unique_identifier
+            result["data"] = payload.data
+            result["iv_counter_nonce"] = payload.iv_counter_nonce
 
-        result['result_status'] = batch_item.result_status.value
+        result["result_status"] = batch_item.result_status.value
         try:
-            result['result_reason'] = batch_item.result_reason.value
+            result["result_reason"] = batch_item.result_reason.value
         except Exception:
-            result['result_reason'] = batch_item.result_reason
+            result["result_reason"] = batch_item.result_reason
         try:
-            result['result_message'] = batch_item.result_message.value
+            result["result_message"] = batch_item.result_message.value
         except Exception:
-            result['result_message'] = batch_item.result_message
+            result["result_message"] = batch_item.result_message
 
         return result
 
-    def decrypt(self,
-                data,
-                unique_identifier=None,
-                cryptographic_parameters=None,
-                iv_counter_nonce=None,
-                credential=None):
+    def decrypt(
+        self,
+        data,
+        unique_identifier=None,
+        cryptographic_parameters=None,
+        iv_counter_nonce=None,
+        credential=None,
+    ):
         """
         Decrypt data using the specified decryption key and parameters.
 
@@ -980,11 +1041,10 @@ class KMIPProxy(object):
             unique_identifier=unique_identifier,
             data=data,
             cryptographic_parameters=cryptographic_parameters,
-            iv_counter_nonce=iv_counter_nonce
+            iv_counter_nonce=iv_counter_nonce,
         )
         batch_item = messages.RequestBatchItem(
-            operation=operation,
-            request_payload=request_payload
+            operation=operation, request_payload=request_payload
         )
 
         request = self._build_request_message(credential, [batch_item])
@@ -995,27 +1055,29 @@ class KMIPProxy(object):
         result = {}
 
         if payload:
-            result['unique_identifier'] = payload.unique_identifier
-            result['data'] = payload.data
+            result["unique_identifier"] = payload.unique_identifier
+            result["data"] = payload.data
 
-        result['result_status'] = batch_item.result_status.value
+        result["result_status"] = batch_item.result_status.value
         try:
-            result['result_reason'] = batch_item.result_reason.value
+            result["result_reason"] = batch_item.result_reason.value
         except Exception:
-            result['result_reason'] = batch_item.result_reason
+            result["result_reason"] = batch_item.result_reason
         try:
-            result['result_message'] = batch_item.result_message.value
+            result["result_message"] = batch_item.result_message.value
         except Exception:
-            result['result_message'] = batch_item.result_message
+            result["result_message"] = batch_item.result_message
 
         return result
 
-    def signature_verify(self,
-                         message,
-                         signature,
-                         unique_identifier=None,
-                         cryptographic_parameters=None,
-                         credential=None):
+    def signature_verify(
+        self,
+        message,
+        signature,
+        unique_identifier=None,
+        cryptographic_parameters=None,
+        credential=None,
+    ):
         """
         Verify a message signature using the specified signing key.
 
@@ -1055,11 +1117,10 @@ class KMIPProxy(object):
             unique_identifier=unique_identifier,
             cryptographic_parameters=cryptographic_parameters,
             data=message,
-            signature_data=signature
+            signature_data=signature,
         )
         batch_item = messages.RequestBatchItem(
-            operation=operation,
-            request_payload=request_payload
+            operation=operation, request_payload=request_payload
         )
 
         request = self._build_request_message(credential, [batch_item])
@@ -1070,23 +1131,28 @@ class KMIPProxy(object):
         result = {}
 
         if payload:
-            result['unique_identifier'] = payload.unique_identifier
-            result['validity_indicator'] = payload.validity_indicator
+            result["unique_identifier"] = payload.unique_identifier
+            result["validity_indicator"] = payload.validity_indicator
 
-        result['result_status'] = batch_item.result_status.value
+        result["result_status"] = batch_item.result_status.value
         try:
-            result['result_reason'] = batch_item.result_reason.value
+            result["result_reason"] = batch_item.result_reason.value
         except Exception:
-            result['result_reason'] = batch_item.result_reason
+            result["result_reason"] = batch_item.result_reason
         try:
-            result['result_message'] = batch_item.result_message.value
+            result["result_message"] = batch_item.result_message.value
         except Exception:
-            result['result_message'] = batch_item.result_message
+            result["result_message"] = batch_item.result_message
 
         return result
 
-    def sign(self, data, unique_identifier=None,
-             cryptographic_parameters=None, credential=None):
+    def sign(
+        self,
+        data,
+        unique_identifier=None,
+        cryptographic_parameters=None,
+        credential=None,
+    ):
         """
         Sign specified data using a specified signing key.
 
@@ -1121,12 +1187,11 @@ class KMIPProxy(object):
         request_payload = payloads.SignRequestPayload(
             unique_identifier=unique_identifier,
             cryptographic_parameters=cryptographic_parameters,
-            data=data
+            data=data,
         )
 
         batch_item = messages.RequestBatchItem(
-            operation=operation,
-            request_payload=request_payload
+            operation=operation, request_payload=request_payload
         )
 
         request = self._build_request_message(credential, [batch_item])
@@ -1137,42 +1202,46 @@ class KMIPProxy(object):
         result = {}
 
         if payload:
-            result['unique_identifier'] = payload.unique_identifier
-            result['signature'] = payload.signature_data
-        result['result_status'] = batch_item.result_status.value
+            result["unique_identifier"] = payload.unique_identifier
+            result["signature"] = payload.signature_data
+        result["result_status"] = batch_item.result_status.value
         try:
-            result['result_reason'] = batch_item.result_reason.value
+            result["result_reason"] = batch_item.result_reason.value
         except Exception:
-            result['result_reason'] = batch_item.result_reason
+            result["result_reason"] = batch_item.result_reason
         try:
-            result['result_message'] = batch_item.result_message.value
+            result["result_message"] = batch_item.result_message.value
         except Exception:
-            result['result_message'] = batch_item.result_message
+            result["result_message"] = batch_item.result_message
 
         return result
 
-    def mac(self, data, unique_identifier=None,
-            cryptographic_parameters=None, credential=None):
+    def mac(
+        self,
+        data,
+        unique_identifier=None,
+        cryptographic_parameters=None,
+        credential=None,
+    ):
         return self._mac(
             data=data,
             unique_identifier=unique_identifier,
             cryptographic_parameters=cryptographic_parameters,
-            credential=credential)
+            credential=credential,
+        )
 
-    def _create(self,
-                object_type=None,
-                template_attribute=None,
-                credential=None):
+    def _create(self, object_type=None, template_attribute=None, credential=None):
         operation = Operation(OperationEnum.CREATE)
 
         if object_type is None:
-            raise ValueError('object_type cannot be None')
+            raise ValueError("object_type cannot be None")
 
         req_pl = payloads.CreateRequestPayload(
-            object_type=object_type,
-            template_attribute=template_attribute)
-        batch_item = messages.RequestBatchItem(operation=operation,
-                                               request_payload=req_pl)
+            object_type=object_type, template_attribute=template_attribute
+        )
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=req_pl
+        )
 
         message = self._build_request_message(credential, [batch_item])
         self._send_message(message)
@@ -1192,61 +1261,67 @@ class KMIPProxy(object):
             payload_template_attribute = payload.template_attribute
             payload_object_type = payload.object_type
 
-        result = CreateResult(batch_item.result_status,
-                              batch_item.result_reason,
-                              batch_item.result_message,
-                              payload_object_type,
-                              payload_unique_identifier,
-                              payload_template_attribute)
+        result = CreateResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            payload_object_type,
+            payload_unique_identifier,
+            payload_template_attribute,
+        )
         return result
 
-    def _build_create_key_pair_batch_item(self, common_template_attribute=None,
-                                          private_key_template_attribute=None,
-                                          public_key_template_attribute=None):
+    def _build_create_key_pair_batch_item(
+        self,
+        common_template_attribute=None,
+        private_key_template_attribute=None,
+        public_key_template_attribute=None,
+    ):
         operation = Operation(OperationEnum.CREATE_KEY_PAIR)
         payload = payloads.CreateKeyPairRequestPayload(
             common_template_attribute=common_template_attribute,
             private_key_template_attribute=private_key_template_attribute,
-            public_key_template_attribute=public_key_template_attribute)
+            public_key_template_attribute=public_key_template_attribute,
+        )
         batch_item = messages.RequestBatchItem(
-            operation=operation, request_payload=payload)
+            operation=operation, request_payload=payload
+        )
         return batch_item
 
-    def _build_rekey_key_pair_batch_item(self,
-                                         private_key_uuid=None, offset=None,
-                                         common_template_attribute=None,
-                                         private_key_template_attribute=None,
-                                         public_key_template_attribute=None):
+    def _build_rekey_key_pair_batch_item(
+        self,
+        private_key_uuid=None,
+        offset=None,
+        common_template_attribute=None,
+        private_key_template_attribute=None,
+        public_key_template_attribute=None,
+    ):
         operation = Operation(OperationEnum.REKEY_KEY_PAIR)
         payload = payloads.RekeyKeyPairRequestPayload(
-            private_key_uuid, offset,
+            private_key_uuid,
+            offset,
             common_template_attribute=common_template_attribute,
             private_key_template_attribute=private_key_template_attribute,
-            public_key_template_attribute=public_key_template_attribute)
+            public_key_template_attribute=public_key_template_attribute,
+        )
         batch_item = messages.RequestBatchItem(
-            operation=operation, request_payload=payload)
+            operation=operation, request_payload=payload
+        )
         return batch_item
 
     def _build_query_batch_item(self, query_functions=None):
         operation = Operation(OperationEnum.QUERY)
         payload = payloads.QueryRequestPayload(query_functions)
         batch_item = messages.RequestBatchItem(
-            operation=operation, request_payload=payload)
+            operation=operation, request_payload=payload
+        )
         return batch_item
 
-    def _build_get_attributes_batch_item(
-            self,
-            uuid=None,
-            attribute_names=None
-    ):
+    def _build_get_attributes_batch_item(self, uuid=None, attribute_names=None):
         operation = Operation(OperationEnum.GET_ATTRIBUTES)
-        payload = payloads.GetAttributesRequestPayload(
-            uuid,
-            attribute_names
-        )
+        payload = payloads.GetAttributesRequestPayload(uuid, attribute_names)
         batch_item = messages.RequestBatchItem(
-            operation=operation,
-            request_payload=payload
+            operation=operation, request_payload=payload
         )
         return batch_item
 
@@ -1254,17 +1329,18 @@ class KMIPProxy(object):
         operation = Operation(OperationEnum.GET_ATTRIBUTE_LIST)
         payload = payloads.GetAttributeListRequestPayload(uid)
         batch_item = messages.RequestBatchItem(
-            operation=operation, request_payload=payload)
+            operation=operation, request_payload=payload
+        )
         return batch_item
 
     def _build_discover_versions_batch_item(self, protocol_versions=None):
         operation = Operation(OperationEnum.DISCOVER_VERSIONS)
 
-        payload = payloads.DiscoverVersionsRequestPayload(
-            protocol_versions)
+        payload = payloads.DiscoverVersionsRequestPayload(protocol_versions)
 
         batch_item = messages.RequestBatchItem(
-            operation=operation, request_payload=payload)
+            operation=operation, request_payload=payload
+        )
         return batch_item
 
     def _process_batch_items(self, response):
@@ -1294,8 +1370,7 @@ class KMIPProxy(object):
         elif operation == OperationEnum.DISCOVER_VERSIONS:
             return self._process_discover_versions_batch_item
         else:
-            raise ValueError("no processor for operation: {0}".format(
-                operation))
+            raise ValueError("no processor for operation: {0}".format(operation))
 
     def _process_get_attributes_batch_item(self, batch_item):
         payload = batch_item.response_payload
@@ -1312,7 +1387,7 @@ class KMIPProxy(object):
             batch_item.result_reason,
             batch_item.result_message,
             uuid,
-            attributes
+            attributes,
         )
 
     def _process_get_attribute_list_batch_item(self, batch_item):
@@ -1330,7 +1405,8 @@ class KMIPProxy(object):
             batch_item.result_reason,
             batch_item.result_message,
             uid,
-            names)
+            names,
+        )
 
     def _process_key_pair_batch_item(self, batch_item, result):
         payload = batch_item.response_payload
@@ -1343,24 +1419,28 @@ class KMIPProxy(object):
         if payload is not None:
             payload_private_key_uuid = payload.private_key_unique_identifier
             payload_public_key_uuid = payload.public_key_unique_identifier
-            payload_private_key_template_attribute = \
+            payload_private_key_template_attribute = (
                 payload.private_key_template_attribute
-            payload_public_key_template_attribute = \
+            )
+            payload_public_key_template_attribute = (
                 payload.public_key_template_attribute
+            )
 
-        return result(batch_item.result_status, batch_item.result_reason,
-                      batch_item.result_message, payload_private_key_uuid,
-                      payload_public_key_uuid,
-                      payload_private_key_template_attribute,
-                      payload_public_key_template_attribute)
+        return result(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            payload_private_key_uuid,
+            payload_public_key_uuid,
+            payload_private_key_template_attribute,
+            payload_public_key_template_attribute,
+        )
 
     def _process_create_key_pair_batch_item(self, batch_item):
-        return self._process_key_pair_batch_item(
-            batch_item, CreateKeyPairResult)
+        return self._process_key_pair_batch_item(batch_item, CreateKeyPairResult)
 
     def _process_rekey_key_pair_batch_item(self, batch_item):
-        return self._process_key_pair_batch_item(
-            batch_item, RekeyKeyPairResult)
+        return self._process_key_pair_batch_item(batch_item, RekeyKeyPairResult)
 
     def _process_query_batch_item(self, batch_item):
         payload = batch_item.response_payload
@@ -1389,29 +1469,37 @@ class KMIPProxy(object):
             vendor_identification,
             server_information,
             application_namespaces,
-            extension_information)
+            extension_information,
+        )
 
     def _process_discover_versions_batch_item(self, batch_item):
         payload = batch_item.response_payload
 
         result = DiscoverVersionsResult(
-            batch_item.result_status, batch_item.result_reason,
-            batch_item.result_message, payload.protocol_versions)
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            payload.protocol_versions,
+        )
 
         return result
 
     def _process_response_error(self, batch_item):
         result = OperationResult(
-            batch_item.result_status, batch_item.result_reason,
-            batch_item.result_message)
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+        )
         return result
 
-    def _get(self,
-             unique_identifier=None,
-             key_format_type=None,
-             key_compression_type=None,
-             key_wrapping_specification=None,
-             credential=None):
+    def _get(
+        self,
+        unique_identifier=None,
+        key_format_type=None,
+        key_compression_type=None,
+        key_wrapping_specification=None,
+        credential=None,
+    ):
         operation = Operation(OperationEnum.GET)
 
         if key_format_type is not None:
@@ -1421,11 +1509,12 @@ class KMIPProxy(object):
             unique_identifier=unique_identifier,
             key_format_type=key_format_type,
             key_compression_type=key_compression_type,
-            key_wrapping_specification=key_wrapping_specification
+            key_wrapping_specification=key_wrapping_specification,
         )
 
-        batch_item = messages.RequestBatchItem(operation=operation,
-                                               request_payload=req_pl)
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=req_pl
+        )
         message = self._build_request_message(credential, [batch_item])
         self._send_message(message)
         message = messages.ResponseMessage()
@@ -1444,12 +1533,14 @@ class KMIPProxy(object):
             payload_object_type = payload.object_type
             payload_secret = payload.secret
 
-        result = GetResult(batch_item.result_status,
-                           batch_item.result_reason,
-                           batch_item.result_message,
-                           payload_object_type,
-                           payload_unique_identifier,
-                           payload_secret)
+        result = GetResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            payload_object_type,
+            payload_unique_identifier,
+            payload_secret,
+        )
         return result
 
     def _activate(self, unique_identifier=None, credential=None):
@@ -1461,8 +1552,9 @@ class KMIPProxy(object):
 
         payload = payloads.ActivateRequestPayload(unique_identifier=uuid)
 
-        batch_item = messages.RequestBatchItem(operation=operation,
-                                               request_payload=payload)
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=payload
+        )
         message = self._build_request_message(credential, [batch_item])
         self._send_message(message)
         message = messages.ResponseMessage()
@@ -1477,15 +1569,15 @@ class KMIPProxy(object):
         else:
             payload_unique_identifier = payload.unique_identifier
 
-        result = ActivateResult(batch_item.result_status,
-                                batch_item.result_reason,
-                                batch_item.result_message,
-                                payload_unique_identifier)
+        result = ActivateResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            payload_unique_identifier,
+        )
         return result
 
-    def _destroy(self,
-                 unique_identifier=None,
-                 credential=None):
+    def _destroy(self, unique_identifier=None, credential=None):
         operation = Operation(OperationEnum.DESTROY)
 
         uuid = None
@@ -1494,8 +1586,9 @@ class KMIPProxy(object):
 
         payload = payloads.DestroyRequestPayload(unique_identifier=uuid)
 
-        batch_item = messages.RequestBatchItem(operation=operation,
-                                               request_payload=payload)
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=payload
+        )
         message = self._build_request_message(credential, [batch_item])
         self._send_message(message)
         message = messages.ResponseMessage()
@@ -1510,19 +1603,27 @@ class KMIPProxy(object):
         else:
             payload_unique_identifier = payload.unique_identifier
 
-        result = DestroyResult(batch_item.result_status,
-                               batch_item.result_reason,
-                               batch_item.result_message,
-                               payload_unique_identifier)
+        result = DestroyResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            payload_unique_identifier,
+        )
         return result
 
-    def _revoke(self, unique_identifier=None, revocation_reason=None,
-                revocation_message=None, compromise_occurrence_date=None,
-                credential=None):
+    def _revoke(
+        self,
+        unique_identifier=None,
+        revocation_reason=None,
+        revocation_message=None,
+        compromise_occurrence_date=None,
+        credential=None,
+    ):
         operation = Operation(OperationEnum.REVOKE)
 
-        reason = objects.RevocationReason(code=revocation_reason,
-                                          message=revocation_message)
+        reason = objects.RevocationReason(
+            code=revocation_reason, message=revocation_message
+        )
         uuid = None
         if unique_identifier is not None:
             uuid = attr.UniqueIdentifier(unique_identifier)
@@ -1530,10 +1631,12 @@ class KMIPProxy(object):
         payload = payloads.RevokeRequestPayload(
             unique_identifier=uuid,
             revocation_reason=reason,
-            compromise_occurrence_date=compromise_occurrence_date)
+            compromise_occurrence_date=compromise_occurrence_date,
+        )
 
-        batch_item = messages.RequestBatchItem(operation=operation,
-                                               request_payload=payload)
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=payload
+        )
         message = self._build_request_message(credential, [batch_item])
         self._send_message(message)
         message = messages.ResponseMessage()
@@ -1548,28 +1651,30 @@ class KMIPProxy(object):
         else:
             payload_unique_identifier = payload.unique_identifier
 
-        result = RevokeResult(batch_item.result_status,
-                              batch_item.result_reason,
-                              batch_item.result_message,
-                              payload_unique_identifier)
+        result = RevokeResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            payload_unique_identifier,
+        )
         return result
 
-    def _register(self,
-                  object_type=None,
-                  template_attribute=None,
-                  secret=None,
-                  credential=None):
+    def _register(
+        self, object_type=None, template_attribute=None, secret=None, credential=None
+    ):
         operation = Operation(OperationEnum.REGISTER)
 
         if object_type is None:
-            raise ValueError('object_type cannot be None')
+            raise ValueError("object_type cannot be None")
 
         req_pl = payloads.RegisterRequestPayload(
             object_type=object_type,
             template_attribute=template_attribute,
-            managed_object=secret)
-        batch_item = messages.RequestBatchItem(operation=operation,
-                                               request_payload=req_pl)
+            managed_object=secret,
+        )
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=req_pl
+        )
 
         message = self._build_request_message(credential, [batch_item])
         self._send_message(message)
@@ -1587,16 +1692,24 @@ class KMIPProxy(object):
             payload_unique_identifier = payload.unique_identifier
             payload_template_attribute = payload.template_attribute
 
-        result = RegisterResult(batch_item.result_status,
-                                batch_item.result_reason,
-                                batch_item.result_message,
-                                payload_unique_identifier,
-                                payload_template_attribute)
+        result = RegisterResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            payload_unique_identifier,
+            payload_template_attribute,
+        )
         return result
 
-    def _locate(self, maximum_items=None, storage_status_mask=None,
-                object_group_member=None, attributes=None, credential=None,
-                offset_items=None):
+    def _locate(
+        self,
+        maximum_items=None,
+        storage_status_mask=None,
+        object_group_member=None,
+        attributes=None,
+        credential=None,
+        offset_items=None,
+    ):
 
         operation = Operation(OperationEnum.LOCATE)
 
@@ -1605,12 +1718,11 @@ class KMIPProxy(object):
             offset_items=offset_items,
             storage_status_mask=storage_status_mask,
             object_group_member=object_group_member,
-            attributes=attributes
+            attributes=attributes,
         )
 
         batch_item = messages.RequestBatchItem(
-            operation=operation,
-            request_payload=payload
+            operation=operation, request_payload=payload
         )
 
         message = self._build_request_message(credential, [batch_item])
@@ -1628,25 +1740,31 @@ class KMIPProxy(object):
         else:
             uuids = payload.unique_identifiers
 
-        result = LocateResult(batch_item.result_status,
-                              batch_item.result_reason,
-                              batch_item.result_message,
-                              uuids)
+        result = LocateResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            uuids,
+        )
         return result
 
-    def _mac(self,
-             data,
-             unique_identifier=None,
-             cryptographic_parameters=None,
-             credential=None):
+    def _mac(
+        self,
+        data,
+        unique_identifier=None,
+        cryptographic_parameters=None,
+        credential=None,
+    ):
         operation = Operation(OperationEnum.MAC)
 
         req_pl = payloads.MACRequestPayload(
             unique_identifier=attr.UniqueIdentifier(unique_identifier),
             cryptographic_parameters=cryptographic_parameters,
-            data=objects.Data(data))
-        batch_item = messages.RequestBatchItem(operation=operation,
-                                               request_payload=req_pl)
+            data=objects.Data(data),
+        )
+        batch_item = messages.RequestBatchItem(
+            operation=operation, request_payload=req_pl
+        )
 
         message = self._build_request_message(credential, [batch_item])
         self._send_message(message)
@@ -1664,11 +1782,13 @@ class KMIPProxy(object):
             payload_unique_identifier = payload.unique_identifier
             payload_mac_data = payload.mac_data
 
-        result = MACResult(batch_item.result_status,
-                           batch_item.result_reason,
-                           batch_item.result_message,
-                           payload_unique_identifier,
-                           payload_mac_data)
+        result = MACResult(
+            batch_item.result_status,
+            batch_item.result_reason,
+            batch_item.result_message,
+            payload_unique_identifier,
+            payload_mac_data,
+        )
         return result
 
     # TODO (peter-hamilton) Augment to handle device credentials
@@ -1676,16 +1796,15 @@ class KMIPProxy(object):
         if (self.username is None) and (self.password is None):
             return None
         if self.username is None:
-            raise ValueError('cannot build credential, username is None')
+            raise ValueError("cannot build credential, username is None")
         if self.password is None:
-            raise ValueError('cannot build credential, password is None')
+            raise ValueError("cannot build credential, password is None")
 
         credential_type = CredentialType.USERNAME_AND_PASSWORD
-        credential_value = {'Username': self.username,
-                            'Password': self.password}
+        credential_value = {"Username": self.username, "Password": self.password}
         credential = self.credential_factory.create_credential(
-            credential_type,
-            credential_value)
+            credential_type, credential_value
+        )
         return credential
 
     def _build_protocol_version(self):
@@ -1713,12 +1832,15 @@ class KMIPProxy(object):
             authentication = Authentication([credential])
 
         batch_count = BatchCount(len(batch_items))
-        req_header = messages.RequestHeader(protocol_version=protocol_version,
-                                            authentication=authentication,
-                                            batch_count=batch_count)
+        req_header = messages.RequestHeader(
+            protocol_version=protocol_version,
+            authentication=authentication,
+            batch_count=batch_count,
+        )
 
-        return messages.RequestMessage(request_header=req_header,
-                                       batch_items=batch_items)
+        return messages.RequestMessage(
+            request_header=req_header, batch_items=batch_items
+        )
 
     def _send_message(self, message):
         stream = BytearrayStream()
@@ -1735,79 +1857,110 @@ class KMIPProxy(object):
         response.read(data, self.kmip_version)
         return response
 
-    def _set_variables(self, host, port, keyfile, certfile,
-                       cert_reqs, ssl_version, ca_certs,
-                       do_handshake_on_connect, suppress_ragged_eofs,
-                       username, password, timeout, config_file):
+    def _set_variables(
+        self,
+        host,
+        port,
+        keyfile,
+        certfile,
+        cert_reqs,
+        ssl_version,
+        ca_certs,
+        do_handshake_on_connect,
+        suppress_ragged_eofs,
+        username,
+        password,
+        timeout,
+        config_file,
+    ):
         conf = ConfigHelper(config_file)
 
         # TODO: set this to a host list
         self.host_list_str = conf.get_valid_value(
-            host, self.config, 'host', conf.DEFAULT_HOST)
+            host, self.config, "host", conf.DEFAULT_HOST
+        )
 
         self.host_list = self._build_host_list(self.host_list_str)
 
         self.host = self.host_list[0]
 
-        self.port = int(conf.get_valid_value(
-            port, self.config, 'port', conf.DEFAULT_PORT))
+        self.port = int(
+            conf.get_valid_value(port, self.config, "port", conf.DEFAULT_PORT)
+        )
 
-        self.keyfile = conf.get_valid_value(
-            keyfile, self.config, 'keyfile', None)
+        self.keyfile = conf.get_valid_value(keyfile, self.config, "keyfile", None)
 
-        self.certfile = conf.get_valid_value(
-            certfile, self.config, 'certfile', None)
+        self.certfile = conf.get_valid_value(certfile, self.config, "certfile", None)
 
-        self.cert_reqs = getattr(ssl, conf.get_valid_value(
-            cert_reqs, self.config, 'cert_reqs', 'CERT_REQUIRED'))
+        self.cert_reqs = getattr(
+            ssl,
+            conf.get_valid_value(cert_reqs, self.config, "cert_reqs", "CERT_REQUIRED"),
+        )
 
-        self.ssl_version = getattr(ssl, conf.get_valid_value(
-            ssl_version, self.config, 'ssl_version', conf.DEFAULT_SSL_VERSION))
+        self.ssl_version = getattr(
+            ssl,
+            conf.get_valid_value(
+                ssl_version, self.config, "ssl_version", conf.DEFAULT_SSL_VERSION
+            ),
+        )
 
         self.ca_certs = conf.get_valid_value(
-            ca_certs, self.config, 'ca_certs', conf.DEFAULT_CA_CERTS)
+            ca_certs, self.config, "ca_certs", conf.DEFAULT_CA_CERTS
+        )
 
-        if conf.get_valid_value(
-                do_handshake_on_connect, self.config,
-                'do_handshake_on_connect', 'True') == 'True':
+        if (
+            conf.get_valid_value(
+                do_handshake_on_connect, self.config, "do_handshake_on_connect", "True"
+            )
+            == "True"
+        ):
             self.do_handshake_on_connect = True
         else:
             self.do_handshake_on_connect = False
 
-        if conf.get_valid_value(
-                suppress_ragged_eofs, self.config,
-                'suppress_ragged_eofs', 'True') == 'True':
+        if (
+            conf.get_valid_value(
+                suppress_ragged_eofs, self.config, "suppress_ragged_eofs", "True"
+            )
+            == "True"
+        ):
             self.suppress_ragged_eofs = True
         else:
             self.suppress_ragged_eofs = False
 
         self.username = conf.get_valid_value(
-            username, self.config, 'username', conf.DEFAULT_USERNAME)
+            username, self.config, "username", conf.DEFAULT_USERNAME
+        )
 
         self.password = conf.get_valid_value(
-            password, self.config, 'password', conf.DEFAULT_PASSWORD)
+            password, self.config, "password", conf.DEFAULT_PASSWORD
+        )
 
-        self.timeout = int(conf.get_valid_value(
-            timeout, self.config, 'timeout', conf.DEFAULT_TIMEOUT))
+        self.timeout = int(
+            conf.get_valid_value(timeout, self.config, "timeout", conf.DEFAULT_TIMEOUT)
+        )
         if self.timeout < 0:
             self.logger.warning(
                 "Negative timeout value specified, "
-                "resetting to safe default of {0} seconds".format(
-                    conf.DEFAULT_TIMEOUT))
+                "resetting to safe default of {0} seconds".format(conf.DEFAULT_TIMEOUT)
+            )
             self.timeout = conf.DEFAULT_TIMEOUT
 
     def _build_host_list(self, host_list_str):
-        '''
+        """
         This internal function takes the host string from the config file
         and turns it into a list
         :return: LIST host list
-        '''
+        """
 
         host_list = []
         if isinstance(host_list_str, str):
-            host_list = host_list_str.replace(' ', '').split(',')
+            host_list = host_list_str.replace(" ", "").split(",")
         else:
-            raise TypeError("Unrecognized variable type provided for host "
-                            "list string. 'String' type expected but '" +
-                            str(type(host_list_str)) + "' received")
+            raise TypeError(
+                "Unrecognized variable type provided for host "
+                "list string. 'String' type expected but '"
+                + str(type(host_list_str))
+                + "' received"
+            )
         return host_list

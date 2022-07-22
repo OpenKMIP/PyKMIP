@@ -39,12 +39,14 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
             Used in KMIP 2.0+.
     """
 
-    def __init__(self,
-                 unique_identifier=None,
-                 attribute_name=None,
-                 attribute_index=None,
-                 current_attribute=None,
-                 attribute_reference=None):
+    def __init__(
+        self,
+        unique_identifier=None,
+        attribute_name=None,
+        attribute_index=None,
+        current_attribute=None,
+        attribute_reference=None,
+    ):
         """
         Construct a DeleteAttribute request payload.
 
@@ -92,8 +94,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("The unique identifier must be a string.")
@@ -110,8 +111,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
             self._attribute_name = None
         elif isinstance(value, six.string_types):
             self._attribute_name = primitives.TextString(
-                value=value,
-                tag=enums.Tags.ATTRIBUTE_NAME
+                value=value, tag=enums.Tags.ATTRIBUTE_NAME
             )
         else:
             raise TypeError("The attribute name must be a string.")
@@ -128,8 +128,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
             self._attribute_index = None
         elif isinstance(value, six.integer_types):
             self._attribute_index = primitives.Integer(
-                value=value,
-                tag=enums.Tags.ATTRIBUTE_INDEX
+                value=value, tag=enums.Tags.ATTRIBUTE_INDEX
             )
         else:
             raise TypeError("The attribute index must be an integer.")
@@ -147,9 +146,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
         elif isinstance(value, objects.CurrentAttribute):
             self._current_attribute = value
         else:
-            raise TypeError(
-                "The current attribute must be a CurrentAttribute object."
-            )
+            raise TypeError("The current attribute must be a CurrentAttribute object.")
 
     @property
     def attribute_reference(self):
@@ -186,8 +183,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
                 encoding.
         """
         super(DeleteAttributeRequestPayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -195,10 +191,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             self._unique_identifier = None
 
@@ -207,10 +200,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
                 self._attribute_name = primitives.TextString(
                     tag=enums.Tags.ATTRIBUTE_NAME
                 )
-                self._attribute_name.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._attribute_name.read(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidKmipEncoding(
                     "The DeleteAttribute request payload encoding is missing "
@@ -221,28 +211,19 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
                 self._attribute_index = primitives.Integer(
                     tag=enums.Tags.ATTRIBUTE_INDEX
                 )
-                self._attribute_index.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._attribute_index.read(local_buffer, kmip_version=kmip_version)
             else:
                 self._attribute_index = None
         else:
             if self.is_tag_next(enums.Tags.CURRENT_ATTRIBUTE, local_buffer):
                 self._current_attribute = objects.CurrentAttribute()
-                self._current_attribute.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._current_attribute.read(local_buffer, kmip_version=kmip_version)
             else:
                 self._current_attribute = None
 
             if self.is_tag_next(enums.Tags.ATTRIBUTE_REFERENCE, local_buffer):
                 self._attribute_reference = objects.AttributeReference()
-                self._attribute_reference.read(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._attribute_reference.read(local_buffer, kmip_version=kmip_version)
             else:
                 self._attribute_reference = None
 
@@ -273,17 +254,11 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._attribute_name:
-                self._attribute_name.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._attribute_name.write(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidField(
                     "The DeleteAttribute request payload is missing the "
@@ -291,10 +266,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
                 )
 
             if self._attribute_index:
-                self._attribute_index.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._attribute_index.write(local_buffer, kmip_version=kmip_version)
         else:
             if self._current_attribute == self._attribute_reference:
                 raise exceptions.InvalidField(
@@ -303,20 +275,13 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
                 )
 
             if self._current_attribute:
-                self._current_attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._current_attribute.write(local_buffer, kmip_version=kmip_version)
             if self._attribute_reference:
-                self._attribute_reference.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._attribute_reference.write(local_buffer, kmip_version=kmip_version)
 
         self.length = local_buffer.length()
         super(DeleteAttributeRequestPayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
@@ -325,12 +290,12 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
             "unique_identifier='{}'".format(self.unique_identifier),
             "attribute_name='{}'".format(self.attribute_name),
             "attribute_index={}".format(self.attribute_index),
-            "current_attribute={}".format(repr(
-                self.current_attribute
-            ) if self.current_attribute else None),
-            "attribute_reference={}".format(repr(
-                self.attribute_reference
-            ) if self.attribute_reference else None)
+            "current_attribute={}".format(
+                repr(self.current_attribute) if self.current_attribute else None
+            ),
+            "attribute_reference={}".format(
+                repr(self.attribute_reference) if self.attribute_reference else None
+            ),
         ]
         return "DeleteAttributeRequestPayload({})".format(", ".join(args))
 
@@ -340,12 +305,12 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
                 "unique_identifier": self.unique_identifier,
                 "attribute_name": self.attribute_name,
                 "attribute_index": self.attribute_index,
-                "current_attribute": str(
-                    self.current_attribute
-                ) if self.current_attribute else None,
-                "attribute_reference": str(
-                    self.attribute_reference
-                ) if self.attribute_reference else None
+                "current_attribute": str(self.current_attribute)
+                if self.current_attribute
+                else None,
+                "attribute_reference": str(self.attribute_reference)
+                if self.attribute_reference
+                else None,
             }
         )
 
@@ -416,8 +381,7 @@ class DeleteAttributeResponsePayload(base.ResponsePayload):
             self._unique_identifier = None
         elif isinstance(value, six.string_types):
             self._unique_identifier = primitives.TextString(
-                value=value,
-                tag=enums.Tags.UNIQUE_IDENTIFIER
+                value=value, tag=enums.Tags.UNIQUE_IDENTIFIER
             )
         else:
             raise TypeError("The unique identifier must be a string.")
@@ -435,9 +399,7 @@ class DeleteAttributeResponsePayload(base.ResponsePayload):
         elif isinstance(value, objects.Attribute):
             self._attribute = value
         else:
-            raise TypeError(
-                "The attribute must be an Attribute object."
-            )
+            raise TypeError("The attribute must be an Attribute object.")
 
     def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
         """
@@ -457,8 +419,7 @@ class DeleteAttributeResponsePayload(base.ResponsePayload):
                 from the encoding.
         """
         super(DeleteAttributeResponsePayload, self).read(
-            input_buffer,
-            kmip_version=kmip_version
+            input_buffer, kmip_version=kmip_version
         )
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
@@ -466,10 +427,7 @@ class DeleteAttributeResponsePayload(base.ResponsePayload):
             self._unique_identifier = primitives.TextString(
                 tag=enums.Tags.UNIQUE_IDENTIFIER
             )
-            self._unique_identifier.read(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.read(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidKmipEncoding(
                 "The DeleteAttribute response payload encoding is missing the "
@@ -508,10 +466,7 @@ class DeleteAttributeResponsePayload(base.ResponsePayload):
         local_buffer = utils.BytearrayStream()
 
         if self._unique_identifier:
-            self._unique_identifier.write(
-                local_buffer,
-                kmip_version=kmip_version
-            )
+            self._unique_identifier.write(local_buffer, kmip_version=kmip_version)
         else:
             raise exceptions.InvalidField(
                 "The DeleteAttribute response payload is missing the unique "
@@ -520,10 +475,7 @@ class DeleteAttributeResponsePayload(base.ResponsePayload):
 
         if kmip_version < enums.KMIPVersion.KMIP_2_0:
             if self._attribute:
-                self._attribute.write(
-                    local_buffer,
-                    kmip_version=kmip_version
-                )
+                self._attribute.write(local_buffer, kmip_version=kmip_version)
             else:
                 raise exceptions.InvalidField(
                     "The DeleteAttribute response payload is missing the "
@@ -532,15 +484,14 @@ class DeleteAttributeResponsePayload(base.ResponsePayload):
 
         self.length = local_buffer.length()
         super(DeleteAttributeResponsePayload, self).write(
-            output_buffer,
-            kmip_version=kmip_version
+            output_buffer, kmip_version=kmip_version
         )
         output_buffer.write(local_buffer.buffer)
 
     def __repr__(self):
         args = [
             "unique_identifier='{}'".format(self.unique_identifier),
-            "attribute={}".format(repr(self.attribute))
+            "attribute={}".format(repr(self.attribute)),
         ]
         return "DeleteAttributeResponsePayload({})".format(", ".join(args))
 
@@ -548,7 +499,7 @@ class DeleteAttributeResponsePayload(base.ResponsePayload):
         return str(
             {
                 "unique_identifier": self.unique_identifier,
-                "attribute": str(self.attribute)
+                "attribute": str(self.attribute),
             }
         )
 

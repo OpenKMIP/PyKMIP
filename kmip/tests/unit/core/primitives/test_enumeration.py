@@ -24,27 +24,26 @@ from kmip.core import utils
 
 # flake8: noqa
 class DummyEnumeration(enumeration.Enum):
-    SMALL     = primitives.Enumeration.MIN
+    SMALL = primitives.Enumeration.MIN
     TOO_SMALL = primitives.Enumeration.MIN - 1
-    LARGE     = primitives.Enumeration.MAX
+    LARGE = primitives.Enumeration.MAX
     TOO_LARGE = primitives.Enumeration.MAX + 1
-    INVALID   = 'invalid'
+    INVALID = "invalid"
 
 
 class TestEnumeration(testtools.TestCase):
-
     def setUp(self):
         super(TestEnumeration, self).setUp()
 
         self.encoding = (
-            b'\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
         self.encoding_bad_length = (
-            b'\x42\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-            b'\x00')
+            b"\x42\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" b"\x00"
+        )
         self.encoding_bad_padding = (
-            b'\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00'
-            b'\xFF')
+            b"\x42\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00" b"\xFF"
+        )
 
     def tearDown(self):
         super(TestEnumeration, self).tearDown()
@@ -54,8 +53,8 @@ class TestEnumeration(testtools.TestCase):
         Test that an Enumeration can be instantiated.
         """
         enum = primitives.Enumeration(
-            DummyEnumeration, DummyEnumeration.SMALL,
-            enums.Tags.ACTIVATION_DATE)
+            DummyEnumeration, DummyEnumeration.SMALL, enums.Tags.ACTIVATION_DATE
+        )
         self.assertEqual(DummyEnumeration, enum.enum)
         self.assertEqual(DummyEnumeration.SMALL, enum.value)
         self.assertEqual(enums.Tags.ACTIVATION_DATE, enum.tag)
@@ -74,8 +73,8 @@ class TestEnumeration(testtools.TestCase):
         Test that a TypeError is thrown on input of invalid enum type
         (e.g., str).
         """
-        args = ['invalid']
-        kwargs = {'value': enums.Tags.DEFAULT}
+        args = ["invalid"]
+        kwargs = {"value": enums.Tags.DEFAULT}
         self.assertRaises(TypeError, primitives.Enumeration, *args, **kwargs)
 
     def test_validate_on_invalid_enum_value_type(self):
@@ -83,7 +82,7 @@ class TestEnumeration(testtools.TestCase):
         Test that a TypeError is thrown on input of invalid enum value type.
         """
         args = [DummyEnumeration]
-        kwargs = {'value': enums.Tags.DEFAULT}
+        kwargs = {"value": enums.Tags.DEFAULT}
         self.assertRaises(TypeError, primitives.Enumeration, *args, **kwargs)
 
     def test_validate_on_invalid_value_type(self):
@@ -92,7 +91,7 @@ class TestEnumeration(testtools.TestCase):
         (e.g., str).
         """
         args = [DummyEnumeration]
-        kwargs = {'value': DummyEnumeration.INVALID}
+        kwargs = {"value": DummyEnumeration.INVALID}
         self.assertRaises(TypeError, primitives.Enumeration, *args, **kwargs)
 
     def test_validate_on_invalid_value_too_big(self):
@@ -100,7 +99,7 @@ class TestEnumeration(testtools.TestCase):
         Test that a ValueError is thrown on input that is too large.
         """
         args = [DummyEnumeration]
-        kwargs = {'value': DummyEnumeration.TOO_LARGE}
+        kwargs = {"value": DummyEnumeration.TOO_LARGE}
         self.assertRaises(ValueError, primitives.Enumeration, *args, **kwargs)
 
     def test_validate_on_invalid_value_too_small(self):
@@ -108,7 +107,7 @@ class TestEnumeration(testtools.TestCase):
         Test that a ValueError is thrown on input that is too small.
         """
         args = [DummyEnumeration]
-        kwargs = {'value': DummyEnumeration.TOO_SMALL}
+        kwargs = {"value": DummyEnumeration.TOO_SMALL}
         self.assertRaises(ValueError, primitives.Enumeration, *args, **kwargs)
 
     def test_read(self):
@@ -222,7 +221,7 @@ class TestEnumeration(testtools.TestCase):
         Enumeration to a non-Enumeration object.
         """
         a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -277,7 +276,7 @@ class TestEnumeration(testtools.TestCase):
         Enumeration to a non-Enumeration object.
         """
         a = primitives.Enumeration(DummyEnumeration, DummyEnumeration.SMALL)
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)

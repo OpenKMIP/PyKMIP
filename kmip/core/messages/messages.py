@@ -32,16 +32,17 @@ from kmip.core.utils import BytearrayStream
 
 
 class RequestHeader(Struct):
-
-    def __init__(self,
-                 protocol_version=None,
-                 maximum_response_size=None,
-                 asynchronous_indicator=None,
-                 authentication=None,
-                 batch_error_cont_option=None,
-                 batch_order_option=None,
-                 time_stamp=None,
-                 batch_count=None):
+    def __init__(
+        self,
+        protocol_version=None,
+        maximum_response_size=None,
+        asynchronous_indicator=None,
+        authentication=None,
+        batch_error_cont_option=None,
+        batch_order_option=None,
+        time_stamp=None,
+        batch_count=None,
+    ):
         super(RequestHeader, self).__init__(tag=Tags.REQUEST_HEADER)
         self.protocol_version = protocol_version
         self.maximum_response_size = maximum_response_size
@@ -53,18 +54,13 @@ class RequestHeader(Struct):
         self.batch_count = batch_count
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(RequestHeader, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(RequestHeader, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.protocol_version = contents.ProtocolVersion()
         self.protocol_version.read(tstream, kmip_version=kmip_version)
 
-        kmip_version = contents.protocol_version_to_kmip_version(
-            self.protocol_version
-        )
+        kmip_version = contents.protocol_version_to_kmip_version(self.protocol_version)
 
         # Read the maximum response size if it is present
         if self.is_tag_next(Tags.MAXIMUM_RESPONSE_SIZE, tstream):
@@ -74,10 +70,7 @@ class RequestHeader(Struct):
         # Read the asynchronous indicator if it is present
         if self.is_tag_next(Tags.ASYNCHRONOUS_INDICATOR, tstream):
             self.asynchronous_indicator = contents.AsynchronousIndicator()
-            self.asynchronous_indicator.read(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.asynchronous_indicator.read(tstream, kmip_version=kmip_version)
 
         # Read the authentication if it is present
         if self.is_tag_next(Tags.AUTHENTICATION, tstream):
@@ -87,10 +80,7 @@ class RequestHeader(Struct):
         # Read the batch error continuation option if it is present
         if self.is_tag_next(Tags.BATCH_ERROR_CONTINUATION_OPTION, tstream):
             self.batch_error_cont_option = BatchErrorContinuationOption()
-            self.batch_error_cont_option.read(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.batch_error_cont_option.read(tstream, kmip_version=kmip_version)
 
         # Read the batch order option if it is present
         if self.is_tag_next(Tags.BATCH_ORDER_OPTION, tstream):
@@ -113,22 +103,13 @@ class RequestHeader(Struct):
         # Write the contents of a request header to the stream
         self.protocol_version.write(tstream, kmip_version=kmip_version)
         if self.maximum_response_size is not None:
-            self.maximum_response_size.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.maximum_response_size.write(tstream, kmip_version=kmip_version)
         if self.asynchronous_indicator is not None:
-            self.asynchronous_indicator.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.asynchronous_indicator.write(tstream, kmip_version=kmip_version)
         if self.authentication is not None:
             self.authentication.write(tstream, kmip_version=kmip_version)
         if self.batch_error_cont_option is not None:
-            self.batch_error_cont_option.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.batch_error_cont_option.write(tstream, kmip_version=kmip_version)
         if self.batch_order_option is not None:
             self.batch_order_option.write(tstream, kmip_version=kmip_version)
         if self.time_stamp is not None:
@@ -137,20 +118,18 @@ class RequestHeader(Struct):
 
         # Write the length and value of the request header
         self.length = tstream.length()
-        super(RequestHeader, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(RequestHeader, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
 
 class ResponseHeader(Struct):
-
-    def __init__(self,
-                 protocol_version=None,
-                 time_stamp=None,
-                 batch_count=None,
-                 server_hashed_password=None):
+    def __init__(
+        self,
+        protocol_version=None,
+        time_stamp=None,
+        batch_count=None,
+        server_hashed_password=None,
+    ):
         super(ResponseHeader, self).__init__(tag=Tags.RESPONSE_HEADER)
         self.protocol_version = protocol_version
         self.time_stamp = time_stamp
@@ -171,27 +150,19 @@ class ResponseHeader(Struct):
             self._server_hashed_password = None
         elif isinstance(value, six.binary_type):
             self._server_hashed_password = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.SERVER_HASHED_PASSWORD
+                value=value, tag=enums.Tags.SERVER_HASHED_PASSWORD
             )
         else:
-            raise TypeError(
-                "The server hashed password must be a binary string."
-            )
+            raise TypeError("The server hashed password must be a binary string.")
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(ResponseHeader, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(ResponseHeader, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         self.protocol_version = contents.ProtocolVersion()
         self.protocol_version.read(tstream, kmip_version=kmip_version)
 
-        kmip_version = contents.protocol_version_to_kmip_version(
-            self.protocol_version
-        )
+        kmip_version = contents.protocol_version_to_kmip_version(self.protocol_version)
 
         self.time_stamp = contents.TimeStamp()
         self.time_stamp.read(tstream, kmip_version=kmip_version)
@@ -219,19 +190,13 @@ class ResponseHeader(Struct):
 
         if kmip_version >= enums.KMIPVersion.KMIP_2_0:
             if self._server_hashed_password:
-                self._server_hashed_password.write(
-                    tstream,
-                    kmip_version=kmip_version
-                )
+                self._server_hashed_password.write(tstream, kmip_version=kmip_version)
 
         self.batch_count.write(tstream, kmip_version=kmip_version)
 
         # Write the length and value of the request header
         self.length = tstream.length()
-        super(ResponseHeader, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(ResponseHeader, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -244,13 +209,14 @@ class ResponseHeader(Struct):
 
 
 class RequestBatchItem(Struct):
-
-    def __init__(self,
-                 operation=None,
-                 unique_batch_item_id=None,
-                 request_payload=None,
-                 message_extension=None,
-                 ephemeral=None):
+    def __init__(
+        self,
+        operation=None,
+        unique_batch_item_id=None,
+        request_payload=None,
+        message_extension=None,
+        ephemeral=None,
+    ):
         super(RequestBatchItem, self).__init__(tag=Tags.REQUEST_BATCH_ITEM)
 
         self.payload_factory = RequestPayloadFactory()
@@ -272,19 +238,13 @@ class RequestBatchItem(Struct):
         if value is None:
             self._ephemeral = None
         elif isinstance(value, bool):
-            ephemeral = primitives.Boolean(
-                value=value,
-                tag=enums.Tags.EPHEMERAL
-            )
+            ephemeral = primitives.Boolean(value=value, tag=enums.Tags.EPHEMERAL)
             self._ephemeral = ephemeral
         else:
             raise TypeError("The ephemeral value must be a boolean.")
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(RequestBatchItem, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(RequestBatchItem, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         # Read the batch item operation
@@ -304,8 +264,7 @@ class RequestBatchItem(Struct):
 
         # Dynamically create the response payload class that belongs to the
         # operation
-        self.request_payload = self.payload_factory.create(
-            self.operation.value)
+        self.request_payload = self.payload_factory.create(self.operation.value)
         self.request_payload.read(tstream, kmip_version=kmip_version)
 
         # Read the message extension if it is present
@@ -335,24 +294,22 @@ class RequestBatchItem(Struct):
 
         # Write the length and value of the batch item
         self.length = tstream.length()
-        super(RequestBatchItem, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(RequestBatchItem, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
 
 class ResponseBatchItem(Struct):
-
-    def __init__(self,
-                 operation=None,
-                 unique_batch_item_id=None,
-                 result_status=None,
-                 result_reason=None,
-                 result_message=None,
-                 async_correlation_value=None,
-                 response_payload=None,
-                 message_extension=None):
+    def __init__(
+        self,
+        operation=None,
+        unique_batch_item_id=None,
+        result_status=None,
+        result_reason=None,
+        result_message=None,
+        async_correlation_value=None,
+        response_payload=None,
+        message_extension=None,
+    ):
         super(ResponseBatchItem, self).__init__(tag=Tags.RESPONSE_BATCH_ITEM)
 
         self.payload_factory = ResponsePayloadFactory()
@@ -368,10 +325,7 @@ class ResponseBatchItem(Struct):
         self.validate()
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(ResponseBatchItem, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(ResponseBatchItem, self).read(istream, kmip_version=kmip_version)
         tstream = BytearrayStream(istream.read(self.length))
 
         # Read the batch item operation if it is present
@@ -401,12 +355,9 @@ class ResponseBatchItem(Struct):
         # Read the batch item asynchronous correlation value if it is present
         if self.is_tag_next(Tags.ASYNCHRONOUS_CORRELATION_VALUE, tstream):
             self.async_correlation_value = AsynchronousCorrelationValue()
-            self.async_correlation_value.read(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.async_correlation_value.read(tstream, kmip_version=kmip_version)
 
-        if (self.operation is not None):
+        if self.operation is not None:
             # Dynamically create the response payload class that belongs to the
             # operation
             expected = self.payload_factory.create(self.operation.value)
@@ -438,10 +389,7 @@ class ResponseBatchItem(Struct):
         if self.result_message is not None:
             self.result_message.write(tstream, kmip_version=kmip_version)
         if self.async_correlation_value is not None:
-            self.async_correlation_value.write(
-                tstream,
-                kmip_version=kmip_version
-            )
+            self.async_correlation_value.write(tstream, kmip_version=kmip_version)
         if self.response_payload is not None:
             self.response_payload.write(tstream, kmip_version=kmip_version)
         if self.message_extension is not None:
@@ -449,10 +397,7 @@ class ResponseBatchItem(Struct):
 
         # Write the length and value of the batch item
         self.length = tstream.length()
-        super(ResponseBatchItem, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(ResponseBatchItem, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):
@@ -460,17 +405,17 @@ class ResponseBatchItem(Struct):
 
 
 class RequestMessage(Struct):
-
-    def __init__(self, request_header=None, batch_items=None,):
+    def __init__(
+        self,
+        request_header=None,
+        batch_items=None,
+    ):
         super(RequestMessage, self).__init__(tag=Tags.REQUEST_MESSAGE)
         self.request_header = request_header
         self.batch_items = batch_items
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(RequestMessage, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(RequestMessage, self).read(istream, kmip_version=kmip_version)
 
         self.request_header = RequestHeader()
         self.request_header.read(istream, kmip_version=kmip_version)
@@ -495,26 +440,23 @@ class RequestMessage(Struct):
 
         # Write the TTLV encoding of the request message
         self.length = tstream.length()
-        super(RequestMessage, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(RequestMessage, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
 
 class ResponseMessage(Struct):
-
-    def __init__(self, response_header=None, batch_items=None,):
+    def __init__(
+        self,
+        response_header=None,
+        batch_items=None,
+    ):
         super(ResponseMessage, self).__init__(tag=Tags.RESPONSE_MESSAGE)
         self.response_header = response_header
         self.batch_items = batch_items
         self.validate()
 
     def read(self, istream, kmip_version=enums.KMIPVersion.KMIP_1_0):
-        super(ResponseMessage, self).read(
-            istream,
-            kmip_version=kmip_version
-        )
+        super(ResponseMessage, self).read(istream, kmip_version=kmip_version)
 
         self.response_header = ResponseHeader()
         self.response_header.read(istream, kmip_version=kmip_version)
@@ -540,10 +482,7 @@ class ResponseMessage(Struct):
 
         # Write the TTLV encoding of the request message
         self.length = tstream.length()
-        super(ResponseMessage, self).write(
-            ostream,
-            kmip_version=kmip_version
-        )
+        super(ResponseMessage, self).write(ostream, kmip_version=kmip_version)
         ostream.write(tstream.buffer)
 
     def validate(self):

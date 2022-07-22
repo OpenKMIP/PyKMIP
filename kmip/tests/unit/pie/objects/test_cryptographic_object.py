@@ -34,10 +34,10 @@ class DummyCryptographicObject(CryptographicObject):
         return
 
     def __repr__(self):
-        return ''
+        return ""
 
     def __str__(self):
-        return ''
+        return ""
 
     def __eq__(self, other):
         return True

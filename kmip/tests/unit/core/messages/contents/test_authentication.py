@@ -39,17 +39,17 @@ class TestAuthentication(testtools.TestCase):
         #             Username - Fred
         #             Password - password1
         self.username_password_encoding = utils.BytearrayStream(
-            b'\x42\x00\x0C\x01\x00\x00\x00\x48'
-            b'\x42\x00\x23\x01\x00\x00\x00\x40'
-            b'\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x25\x01\x00\x00\x00\x28'
-            b'\x42\x00\x99\x07\x00\x00\x00\x04'
-            b'\x46\x72\x65\x64\x00\x00\x00\x00'
-            b'\x42\x00\xA1\x07\x00\x00\x00\x09'
-            b'\x70\x61\x73\x73\x77\x6F\x72\x64\x31\x00\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x0C\x01\x00\x00\x00\x48"
+            b"\x42\x00\x23\x01\x00\x00\x00\x40"
+            b"\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x25\x01\x00\x00\x00\x28"
+            b"\x42\x00\x99\x07\x00\x00\x00\x04"
+            b"\x46\x72\x65\x64\x00\x00\x00\x00"
+            b"\x42\x00\xA1\x07\x00\x00\x00\x09"
+            b"\x70\x61\x73\x73\x77\x6F\x72\x64\x31\x00\x00\x00\x00\x00\x00\x00"
         )
         self.encoding_missing_credentials = utils.BytearrayStream(
-            b'\x42\x00\x0C\x01\x00\x00\x00\x00'
+            b"\x42\x00\x0C\x01\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, Section 11.2.
@@ -66,22 +66,22 @@ class TestAuthentication(testtools.TestCase):
         #             Machine Identifier - machineID1
         #             Media Identifier - mediaID313
         self.device_encoding = utils.BytearrayStream(
-            b'\x42\x00\x0C\x01\x00\x00\x00\xA8'
-            b'\x42\x00\x23\x01\x00\x00\x00\xA0'
-            b'\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x25\x01\x00\x00\x00\x88'
-            b'\x42\x00\xB0\x07\x00\x00\x00\x0C'
-            b'\x73\x65\x72\x4E\x75\x6D\x31\x32\x33\x34\x35\x36\x00\x00\x00\x00'
-            b'\x42\x00\xA1\x07\x00\x00\x00\x06'
-            b'\x73\x65\x63\x72\x65\x74\x00\x00'
-            b'\x42\x00\xA2\x07\x00\x00\x00\x09'
-            b'\x64\x65\x76\x49\x44\x32\x32\x33\x33\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xAB\x07\x00\x00\x00\x09'
-            b'\x6E\x65\x74\x49\x44\x39\x30\x30\x30\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xA9\x07\x00\x00\x00\x0A'
-            b'\x6D\x61\x63\x68\x69\x6E\x65\x49\x44\x31\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xAA\x07\x00\x00\x00\x0A'
-            b'\x6D\x65\x64\x69\x61\x49\x44\x33\x31\x33\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x0C\x01\x00\x00\x00\xA8"
+            b"\x42\x00\x23\x01\x00\x00\x00\xA0"
+            b"\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x25\x01\x00\x00\x00\x88"
+            b"\x42\x00\xB0\x07\x00\x00\x00\x0C"
+            b"\x73\x65\x72\x4E\x75\x6D\x31\x32\x33\x34\x35\x36\x00\x00\x00\x00"
+            b"\x42\x00\xA1\x07\x00\x00\x00\x06"
+            b"\x73\x65\x63\x72\x65\x74\x00\x00"
+            b"\x42\x00\xA2\x07\x00\x00\x00\x09"
+            b"\x64\x65\x76\x49\x44\x32\x32\x33\x33\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xAB\x07\x00\x00\x00\x09"
+            b"\x6E\x65\x74\x49\x44\x39\x30\x30\x30\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xA9\x07\x00\x00\x00\x0A"
+            b"\x6D\x61\x63\x68\x69\x6E\x65\x49\x44\x31\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xAA\x07\x00\x00\x00\x0A"
+            b"\x6D\x65\x64\x69\x61\x49\x44\x33\x31\x33\x00\x00\x00\x00\x00\x00"
         )
 
         # Encoding obtained from the KMIP 1.1 testing document, combining
@@ -104,29 +104,29 @@ class TestAuthentication(testtools.TestCase):
         #             Machine Identifier - machineID1
         #             Media Identifier - mediaID313
         self.multiple_credentials_encoding = utils.BytearrayStream(
-            b'\x42\x00\x0C\x01\x00\x00\x00\xF0'
-            b'\x42\x00\x23\x01\x00\x00\x00\x40'
-            b'\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00'
-            b'\x42\x00\x25\x01\x00\x00\x00\x28'
-            b'\x42\x00\x99\x07\x00\x00\x00\x04'
-            b'\x46\x72\x65\x64\x00\x00\x00\x00'
-            b'\x42\x00\xA1\x07\x00\x00\x00\x09'
-            b'\x70\x61\x73\x73\x77\x6F\x72\x64\x31\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\x23\x01\x00\x00\x00\xA0'
-            b'\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00'
-            b'\x42\x00\x25\x01\x00\x00\x00\x88'
-            b'\x42\x00\xB0\x07\x00\x00\x00\x0C'
-            b'\x73\x65\x72\x4E\x75\x6D\x31\x32\x33\x34\x35\x36\x00\x00\x00\x00'
-            b'\x42\x00\xA1\x07\x00\x00\x00\x06'
-            b'\x73\x65\x63\x72\x65\x74\x00\x00'
-            b'\x42\x00\xA2\x07\x00\x00\x00\x09'
-            b'\x64\x65\x76\x49\x44\x32\x32\x33\x33\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xAB\x07\x00\x00\x00\x09'
-            b'\x6E\x65\x74\x49\x44\x39\x30\x30\x30\x00\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xA9\x07\x00\x00\x00\x0A'
-            b'\x6D\x61\x63\x68\x69\x6E\x65\x49\x44\x31\x00\x00\x00\x00\x00\x00'
-            b'\x42\x00\xAA\x07\x00\x00\x00\x0A'
-            b'\x6D\x65\x64\x69\x61\x49\x44\x33\x31\x33\x00\x00\x00\x00\x00\x00'
+            b"\x42\x00\x0C\x01\x00\x00\x00\xF0"
+            b"\x42\x00\x23\x01\x00\x00\x00\x40"
+            b"\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\x00"
+            b"\x42\x00\x25\x01\x00\x00\x00\x28"
+            b"\x42\x00\x99\x07\x00\x00\x00\x04"
+            b"\x46\x72\x65\x64\x00\x00\x00\x00"
+            b"\x42\x00\xA1\x07\x00\x00\x00\x09"
+            b"\x70\x61\x73\x73\x77\x6F\x72\x64\x31\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\x23\x01\x00\x00\x00\xA0"
+            b"\x42\x00\x24\x05\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00"
+            b"\x42\x00\x25\x01\x00\x00\x00\x88"
+            b"\x42\x00\xB0\x07\x00\x00\x00\x0C"
+            b"\x73\x65\x72\x4E\x75\x6D\x31\x32\x33\x34\x35\x36\x00\x00\x00\x00"
+            b"\x42\x00\xA1\x07\x00\x00\x00\x06"
+            b"\x73\x65\x63\x72\x65\x74\x00\x00"
+            b"\x42\x00\xA2\x07\x00\x00\x00\x09"
+            b"\x64\x65\x76\x49\x44\x32\x32\x33\x33\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xAB\x07\x00\x00\x00\x09"
+            b"\x6E\x65\x74\x49\x44\x39\x30\x30\x30\x00\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xA9\x07\x00\x00\x00\x0A"
+            b"\x6D\x61\x63\x68\x69\x6E\x65\x49\x44\x31\x00\x00\x00\x00\x00\x00"
+            b"\x42\x00\xAA\x07\x00\x00\x00\x0A"
+            b"\x6D\x65\x64\x69\x61\x49\x44\x33\x31\x33\x00\x00\x00\x00\x00\x00"
         )
 
     def tearDown(self):
@@ -150,9 +150,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="John",
-                        password="abc123"
-                    )
+                        username="John", password="abc123"
+                    ),
                 )
             ]
         )
@@ -162,11 +161,10 @@ class TestAuthentication(testtools.TestCase):
             objects.Credential(
                 credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                 credential_value=objects.UsernamePasswordCredential(
-                    username="John",
-                    password="abc123"
-                )
+                    username="John", password="abc123"
+                ),
             ),
-            authentication.credentials[0]
+            authentication.credentials[0],
         )
 
     def test_invalid_credentials(self):
@@ -174,7 +172,7 @@ class TestAuthentication(testtools.TestCase):
         Test that a TypeError is raised when an invalid value is used to set
         the credentials of an Authentication struct.
         """
-        kwargs = {'credentials': 'invalid'}
+        kwargs = {"credentials": "invalid"}
         self.assertRaisesRegex(
             TypeError,
             "Credentials must be a list of Credential structs.",
@@ -183,7 +181,7 @@ class TestAuthentication(testtools.TestCase):
         )
 
         authentication = contents.Authentication()
-        args = (authentication, "credentials", 'invalid')
+        args = (authentication, "credentials", "invalid")
         self.assertRaisesRegex(
             TypeError,
             "Credentials must be a list of Credential structs.",
@@ -197,21 +195,20 @@ class TestAuthentication(testtools.TestCase):
         the credentials of an Authentication struct.
         """
         kwargs = {
-            'credentials': [
+            "credentials": [
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="John",
-                        password="abc123"
-                    )
+                        username="John", password="abc123"
+                    ),
                 ),
-                'invalid'
+                "invalid",
             ]
         }
         self.assertRaisesRegex(
             TypeError,
             "Credentials must be a list of Credential structs. Item 2 has "
-            "type: {}".format(type('invalid')),
+            "type: {}".format(type("invalid")),
             contents.Authentication,
             **kwargs
         )
@@ -224,17 +221,16 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="John",
-                        password="abc123"
-                    )
+                        username="John", password="abc123"
+                    ),
                 ),
-                'invalid'
-            ]
+                "invalid",
+            ],
         )
         self.assertRaisesRegex(
             TypeError,
             "Credentials must be a list of Credential structs. Item 2 has "
-            "type: {}".format(type('invalid')),
+            "type: {}".format(type("invalid")),
             setattr,
             *args
         )
@@ -255,11 +251,10 @@ class TestAuthentication(testtools.TestCase):
             objects.Credential(
                 credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                 credential_value=objects.UsernamePasswordCredential(
-                    username="Fred",
-                    password="password1"
-                )
+                    username="Fred", password="password1"
+                ),
             ),
-            authentication.credentials[0]
+            authentication.credentials[0],
         )
 
         # Test with a single DeviceCredential.
@@ -279,10 +274,10 @@ class TestAuthentication(testtools.TestCase):
                     device_identifier="devID2233",
                     network_identifier="netID9000",
                     machine_identifier="machineID1",
-                    media_identifier="mediaID313"
-                )
+                    media_identifier="mediaID313",
+                ),
             ),
-            authentication.credentials[0]
+            authentication.credentials[0],
         )
 
         # Test with multiple Credentials.
@@ -297,11 +292,10 @@ class TestAuthentication(testtools.TestCase):
             objects.Credential(
                 credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                 credential_value=objects.UsernamePasswordCredential(
-                    username="Fred",
-                    password="password1"
-                )
+                    username="Fred", password="password1"
+                ),
             ),
-            authentication.credentials[0]
+            authentication.credentials[0],
         )
         self.assertEqual(
             objects.Credential(
@@ -312,10 +306,10 @@ class TestAuthentication(testtools.TestCase):
                     device_identifier="devID2233",
                     network_identifier="netID9000",
                     machine_identifier="machineID1",
-                    media_identifier="mediaID313"
-                )
+                    media_identifier="mediaID313",
+                ),
             ),
-            authentication.credentials[1]
+            authentication.credentials[1],
         )
 
     def test_read_missing_credentials(self):
@@ -327,7 +321,7 @@ class TestAuthentication(testtools.TestCase):
 
         self.assertEqual([], authentication.credentials)
 
-        args = (self.encoding_missing_credentials, )
+        args = (self.encoding_missing_credentials,)
         self.assertRaisesRegex(
             ValueError,
             "Authentication encoding missing credentials.",
@@ -345,9 +339,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 )
             ]
         )
@@ -369,8 +362,8 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
+                        media_identifier="mediaID313",
+                    ),
                 )
             ]
         )
@@ -387,9 +380,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 ),
                 objects.Credential(
                     credential_type=enums.CredentialType.DEVICE,
@@ -399,9 +391,9 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
-                )
+                        media_identifier="mediaID313",
+                    ),
+                ),
             ]
         )
         stream = utils.BytearrayStream()
@@ -419,7 +411,7 @@ class TestAuthentication(testtools.TestCase):
         authentication = contents.Authentication()
         stream = utils.BytearrayStream()
 
-        args = (stream, )
+        args = (stream,)
         self.assertRaisesRegex(
             ValueError,
             "Authentication struct missing credentials.",
@@ -444,9 +436,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 )
             ]
         )
@@ -455,9 +446,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 )
             ]
         )
@@ -476,8 +466,8 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
+                        media_identifier="mediaID313",
+                    ),
                 )
             ]
         )
@@ -491,8 +481,8 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
+                        media_identifier="mediaID313",
+                    ),
                 )
             ]
         )
@@ -506,9 +496,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 ),
                 objects.Credential(
                     credential_type=enums.CredentialType.DEVICE,
@@ -518,9 +507,9 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
-                )
+                        media_identifier="mediaID313",
+                    ),
+                ),
             ]
         )
         b = contents.Authentication(
@@ -528,9 +517,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 ),
                 objects.Credential(
                     credential_type=enums.CredentialType.DEVICE,
@@ -540,9 +528,9 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
-                )
+                        media_identifier="mediaID313",
+                    ),
+                ),
             ]
         )
 
@@ -559,9 +547,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 )
             ]
         )
@@ -575,8 +562,8 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
+                        media_identifier="mediaID313",
+                    ),
                 )
             ]
         )
@@ -590,7 +577,7 @@ class TestAuthentication(testtools.TestCase):
         Authentication structs with different types.
         """
         a = contents.Authentication()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertFalse(a == b)
         self.assertFalse(b == a)
@@ -612,9 +599,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 )
             ]
         )
@@ -623,9 +609,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 )
             ]
         )
@@ -644,8 +629,8 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
+                        media_identifier="mediaID313",
+                    ),
                 )
             ]
         )
@@ -659,8 +644,8 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
+                        media_identifier="mediaID313",
+                    ),
                 )
             ]
         )
@@ -674,9 +659,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 ),
                 objects.Credential(
                     credential_type=enums.CredentialType.DEVICE,
@@ -686,9 +670,9 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
-                )
+                        media_identifier="mediaID313",
+                    ),
+                ),
             ]
         )
         b = contents.Authentication(
@@ -696,9 +680,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 ),
                 objects.Credential(
                     credential_type=enums.CredentialType.DEVICE,
@@ -708,9 +691,9 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
-                )
+                        media_identifier="mediaID313",
+                    ),
+                ),
             ]
         )
 
@@ -727,9 +710,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 )
             ]
         )
@@ -743,8 +725,8 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
+                        media_identifier="mediaID313",
+                    ),
                 )
             ]
         )
@@ -758,7 +740,7 @@ class TestAuthentication(testtools.TestCase):
         Authentication structs with different types.
         """
         a = contents.Authentication()
-        b = 'invalid'
+        b = "invalid"
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
@@ -773,9 +755,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 )
             ]
         )
@@ -803,8 +784,8 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
+                        media_identifier="mediaID313",
+                    ),
                 )
             ]
         )
@@ -831,9 +812,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 ),
                 objects.Credential(
                     credential_type=enums.CredentialType.DEVICE,
@@ -843,9 +823,9 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
-                )
+                        media_identifier="mediaID313",
+                    ),
+                ),
             ]
         )
         expected = (
@@ -880,24 +860,23 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 )
             ]
         )
-        expected = str({
-            "credentials": [
-                {
-                    "credential_type":
-                        enums.CredentialType.USERNAME_AND_PASSWORD,
-                    "credential_value": str({
-                        "username": "Fred",
-                        "password": "password1"
-                    })
-                }
-            ]
-        })
+        expected = str(
+            {
+                "credentials": [
+                    {
+                        "credential_type": enums.CredentialType.USERNAME_AND_PASSWORD,
+                        "credential_value": str(
+                            {"username": "Fred", "password": "password1"}
+                        ),
+                    }
+                ]
+            }
+        )
         observed = str(authentication)
 
         self.assertEqual(expected, observed)
@@ -913,26 +892,30 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
+                        media_identifier="mediaID313",
+                    ),
                 )
             ]
         )
-        expected = str({
-            "credentials": [
-                {
-                    "credential_type": enums.CredentialType.DEVICE,
-                    "credential_value": str({
-                        "device_serial_number": "serNum123456",
-                        "password": "secret",
-                        "device_identifier": "devID2233",
-                        "network_identifier": "netID9000",
-                        "machine_identifier": "machineID1",
-                        "media_identifier": "mediaID313"
-                    })
-                }
-            ]
-        })
+        expected = str(
+            {
+                "credentials": [
+                    {
+                        "credential_type": enums.CredentialType.DEVICE,
+                        "credential_value": str(
+                            {
+                                "device_serial_number": "serNum123456",
+                                "password": "secret",
+                                "device_identifier": "devID2233",
+                                "network_identifier": "netID9000",
+                                "machine_identifier": "machineID1",
+                                "media_identifier": "mediaID313",
+                            }
+                        ),
+                    }
+                ]
+            }
+        )
         observed = str(authentication)
 
         self.assertEqual(expected, observed)
@@ -943,9 +926,8 @@ class TestAuthentication(testtools.TestCase):
                 objects.Credential(
                     credential_type=enums.CredentialType.USERNAME_AND_PASSWORD,
                     credential_value=objects.UsernamePasswordCredential(
-                        username="Fred",
-                        password="password1"
-                    )
+                        username="Fred", password="password1"
+                    ),
                 ),
                 objects.Credential(
                     credential_type=enums.CredentialType.DEVICE,
@@ -955,34 +937,36 @@ class TestAuthentication(testtools.TestCase):
                         device_identifier="devID2233",
                         network_identifier="netID9000",
                         machine_identifier="machineID1",
-                        media_identifier="mediaID313"
-                    )
-                )
+                        media_identifier="mediaID313",
+                    ),
+                ),
             ]
         )
-        expected = str({
-            "credentials": [
-                {
-                    "credential_type":
-                        enums.CredentialType.USERNAME_AND_PASSWORD,
-                    "credential_value": str({
-                        "username": "Fred",
-                        "password": "password1"
-                    })
-                },
-                {
-                    "credential_type": enums.CredentialType.DEVICE,
-                    "credential_value": str({
-                        "device_serial_number": "serNum123456",
-                        "password": "secret",
-                        "device_identifier": "devID2233",
-                        "network_identifier": "netID9000",
-                        "machine_identifier": "machineID1",
-                        "media_identifier": "mediaID313"
-                    })
-                }
-            ]
-        })
+        expected = str(
+            {
+                "credentials": [
+                    {
+                        "credential_type": enums.CredentialType.USERNAME_AND_PASSWORD,
+                        "credential_value": str(
+                            {"username": "Fred", "password": "password1"}
+                        ),
+                    },
+                    {
+                        "credential_type": enums.CredentialType.DEVICE,
+                        "credential_value": str(
+                            {
+                                "device_serial_number": "serNum123456",
+                                "password": "secret",
+                                "device_identifier": "devID2233",
+                                "network_identifier": "netID9000",
+                                "machine_identifier": "machineID1",
+                                "media_identifier": "mediaID313",
+                            }
+                        ),
+                    },
+                ]
+            }
+        )
         observed = str(authentication)
 
         self.assertEqual(expected, observed)

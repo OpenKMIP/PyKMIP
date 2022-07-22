@@ -47,10 +47,9 @@ class TestCertificateValue(TestCase):
             certificate_value = CertificateValue(value)
 
             if value is None:
-                value = b''
+                value = b""
 
-            msg = "expected {0}, observed {1}".format(
-                value, certificate_value.value)
+            msg = "expected {0}, observed {1}".format(value, certificate_value.value)
             self.assertEqual(value, certificate_value.value, msg)
         else:
             self.assertRaises(TypeError, CertificateValue, value)
@@ -67,7 +66,7 @@ class TestCertificateValue(TestCase):
         Test that a CertificateValue object can be constructed with a valid,
         byte-string value.
         """
-        self._test_init(b'\x00\x01\x02')
+        self._test_init(b"\x00\x01\x02")
 
 
 class TestQueryFunction(TestCase):
@@ -88,8 +87,7 @@ class TestQueryFunction(TestCase):
         if (isinstance(value, QueryFunctionEnum)) or (value is None):
             query_function = QueryFunction(value)
 
-            msg = "expected {0}, observed {1}".format(
-                value, query_function.value)
+            msg = "expected {0}, observed {1}".format(value, query_function.value)
             self.assertEqual(value, query_function.value, msg)
         else:
             self.assertRaises(TypeError, QueryFunction, value)
@@ -135,10 +133,11 @@ class TestVendorIdentification(TestCase):
             vendor_identification = VendorIdentification(value)
 
             if value is None:
-                value = ''
+                value = ""
 
             msg = "expected {0}, observed {1}".format(
-                value, vendor_identification.value)
+                value, vendor_identification.value
+            )
             self.assertEqual(value, vendor_identification.value, msg)
         else:
             self.assertRaises(TypeError, VendorIdentification, value)
@@ -183,8 +182,7 @@ class TestKeyFormatType(TestCase):
         if (isinstance(value, KeyFormatTypeEnum)) or (value is None):
             key_format_type = KeyFormatType(value)
 
-            msg = "expected {0}, observed {1}".format(
-                value, key_format_type.value)
+            msg = "expected {0}, observed {1}".format(value, key_format_type.value)
             self.assertEqual(value, key_format_type.value, msg)
         else:
             self.assertRaises(TypeError, KeyFormatType, value)

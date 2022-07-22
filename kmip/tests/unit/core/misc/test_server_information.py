@@ -28,12 +28,12 @@ class TestServerInformation(TestCase):
     def setUp(self):
         super(TestServerInformation, self).setUp()
 
-        self.data = BytearrayStream(b'\x00\x01\x02\x03')
+        self.data = BytearrayStream(b"\x00\x01\x02\x03")
 
-        self.encoding_a = BytearrayStream(
-            b'\x42\x00\x88\x01\x00\x00\x00\x00')
+        self.encoding_a = BytearrayStream(b"\x42\x00\x88\x01\x00\x00\x00\x00")
         self.encoding_b = BytearrayStream(
-            b'\x42\x00\x88\x01\x00\x00\x00\x04\x00\x01\x02\x03')
+            b"\x42\x00\x88\x01\x00\x00\x00\x04\x00\x01\x02\x03"
+        )
 
     def tearDown(self):
         super(TestServerInformation, self).tearDown()
@@ -79,13 +79,13 @@ class TestServerInformation(TestCase):
         length_observed = len(stream_observed)
 
         msg = "encoding lengths not equal"
-        msg += "; expected {0}, observed {1}".format(
-            length_expected, length_observed)
+        msg += "; expected {0}, observed {1}".format(length_expected, length_observed)
         self.assertEqual(length_expected, length_observed, msg)
 
         msg = "encoding mismatch"
         msg += ";\nexpected:\n{0}\nobserved:\n{1}".format(
-            stream_expected, stream_observed)
+            stream_expected, stream_observed
+        )
         self.assertEqual(stream_expected, stream_observed, msg)
 
     def test_write_with_none(self):

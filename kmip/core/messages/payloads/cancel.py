@@ -56,8 +56,7 @@ class CancelRequestPayload(base.RequestPayload):
             self._asynchronous_correlation_value = None
         elif isinstance(value, six.binary_type):
             self._asynchronous_correlation_value = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
+                value=value, tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
             )
         else:
             raise TypeError("Asynchronous correlation value must be bytes.")
@@ -79,22 +78,15 @@ class CancelRequestPayload(base.RequestPayload):
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(CancelRequestPayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(CancelRequestPayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
-        if self.is_tag_next(
-                enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE, local_stream):
             self._asynchronous_correlation_value = primitives.ByteString(
                 tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
             )
             self._asynchronous_correlation_value.read(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         self.is_oversized(local_stream)
@@ -118,21 +110,21 @@ class CancelRequestPayload(base.RequestPayload):
 
         if self._asynchronous_correlation_value:
             self._asynchronous_correlation_value.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
 
         self.length = local_stream.length()
         super(CancelRequestPayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
         if isinstance(other, CancelRequestPayload):
-            if self.asynchronous_correlation_value != \
-                    other.asynchronous_correlation_value:
+            if (
+                self.asynchronous_correlation_value
+                != other.asynchronous_correlation_value
+            ):
                 return False
             else:
                 return True
@@ -152,10 +144,9 @@ class CancelRequestPayload(base.RequestPayload):
         return "CancelRequestPayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'asynchronous_correlation_value':
-                self.asynchronous_correlation_value
-        })
+        return str(
+            {"asynchronous_correlation_value": self.asynchronous_correlation_value}
+        )
 
 
 class CancelResponsePayload(base.ResponsePayload):
@@ -168,9 +159,7 @@ class CancelResponsePayload(base.ResponsePayload):
         cancellation_result: The result of canceling the operation.
     """
 
-    def __init__(self,
-                 asynchronous_correlation_value=None,
-                 cancellation_result=None):
+    def __init__(self, asynchronous_correlation_value=None, cancellation_result=None):
         """
         Construct a Cancel response payload struct.
 
@@ -203,8 +192,7 @@ class CancelResponsePayload(base.ResponsePayload):
             self._asynchronous_correlation_value = None
         elif isinstance(value, six.binary_type):
             self._asynchronous_correlation_value = primitives.ByteString(
-                value=value,
-                tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
+                value=value, tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
             )
         else:
             raise TypeError("Asynchronous correlation value must be bytes.")
@@ -224,7 +212,7 @@ class CancelResponsePayload(base.ResponsePayload):
             self._cancellation_result = primitives.Enumeration(
                 enums.CancellationResult,
                 value=value,
-                tag=enums.Tags.CANCELLATION_RESULT
+                tag=enums.Tags.CANCELLATION_RESULT,
             )
         else:
             raise TypeError(
@@ -248,32 +236,21 @@ class CancelResponsePayload(base.ResponsePayload):
             ValueError: Raised if the data attribute is missing from the
                 encoded payload.
         """
-        super(CancelResponsePayload, self).read(
-            input_stream,
-            kmip_version=kmip_version
-        )
+        super(CancelResponsePayload, self).read(input_stream, kmip_version=kmip_version)
         local_stream = utils.BytearrayStream(input_stream.read(self.length))
 
-        if self.is_tag_next(
-                enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE,
-                local_stream
-        ):
+        if self.is_tag_next(enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE, local_stream):
             self._asynchronous_correlation_value = primitives.ByteString(
                 tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
             )
             self._asynchronous_correlation_value.read(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self.is_tag_next(enums.Tags.CANCELLATION_RESULT, local_stream):
             self._cancellation_result = primitives.Enumeration(
-                enums.CancellationResult,
-                tag=enums.Tags.CANCELLATION_RESULT
+                enums.CancellationResult, tag=enums.Tags.CANCELLATION_RESULT
             )
-            self._cancellation_result.read(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._cancellation_result.read(local_stream, kmip_version=kmip_version)
 
         self.is_oversized(local_stream)
 
@@ -296,26 +273,23 @@ class CancelResponsePayload(base.ResponsePayload):
 
         if self._asynchronous_correlation_value:
             self._asynchronous_correlation_value.write(
-                local_stream,
-                kmip_version=kmip_version
+                local_stream, kmip_version=kmip_version
             )
         if self._cancellation_result:
-            self._cancellation_result.write(
-                local_stream,
-                kmip_version=kmip_version
-            )
+            self._cancellation_result.write(local_stream, kmip_version=kmip_version)
 
         self.length = local_stream.length()
         super(CancelResponsePayload, self).write(
-            output_stream,
-            kmip_version=kmip_version
+            output_stream, kmip_version=kmip_version
         )
         output_stream.write(local_stream.buffer)
 
     def __eq__(self, other):
         if isinstance(other, CancelResponsePayload):
-            if self.asynchronous_correlation_value != \
-                    other.asynchronous_correlation_value:
+            if (
+                self.asynchronous_correlation_value
+                != other.asynchronous_correlation_value
+            ):
                 return False
             elif self.cancellation_result != other.cancellation_result:
                 return False
@@ -331,17 +305,20 @@ class CancelResponsePayload(base.ResponsePayload):
             return NotImplemented
 
     def __repr__(self):
-        args = ", ".join([
-            "asynchronous_correlation_value={0}".format(
-                self.asynchronous_correlation_value
-            ),
-            "cancellation_result={0}".format(self.cancellation_result)
-        ])
+        args = ", ".join(
+            [
+                "asynchronous_correlation_value={0}".format(
+                    self.asynchronous_correlation_value
+                ),
+                "cancellation_result={0}".format(self.cancellation_result),
+            ]
+        )
         return "CancelResponsePayload({0})".format(args)
 
     def __str__(self):
-        return str({
-            'asynchronous_correlation_value':
-                self.asynchronous_correlation_value,
-            'cancellation_result': self.cancellation_result
-        })
+        return str(
+            {
+                "asynchronous_correlation_value": self.asynchronous_correlation_value,
+                "cancellation_result": self.cancellation_result,
+            }
+        )

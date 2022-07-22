@@ -24,32 +24,35 @@ from kmip.core.messages import payloads
 
 
 class TestMACRequestPayload(TestCase):
-
     def setUp(self):
         super(TestMACRequestPayload, self).setUp()
 
-        self.unique_identifier = attributes.UniqueIdentifier(value='1')
-        self.cryptographic_parameters = \
-            attributes.CryptographicParameters(
-                cryptographic_algorithm=enums.CryptographicAlgorithm.
-                HMAC_SHA512
-            )
+        self.unique_identifier = attributes.UniqueIdentifier(value="1")
+        self.cryptographic_parameters = attributes.CryptographicParameters(
+            cryptographic_algorithm=enums.CryptographicAlgorithm.HMAC_SHA512
+        )
         self.data = objects.Data(
-            value=(b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B'
-                   b'\x0C\x0D\x0E\x0F')
+            value=(
+                b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B" b"\x0C\x0D\x0E\x0F"
+            )
         )
 
-        self.encoding_full = utils.BytearrayStream((
-            b'\x42\x00\x79\x01\x00\x00\x00\x40\x42\x00\x94\x07\x00\x00\x00\x01'
-            b'\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\x2b\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x0b\x00\x00\x00\x00'
-            b'\x42\x00\xc2\x08\x00\x00\x00\x10\x00\x01\x02\x03\x04\x05\x06\x07'
-            b'\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f'))
-        self.encoding_no_data = utils.BytearrayStream((
-            b'\x42\x00\x79\x01\x00\x00\x00\x28\x42\x00\x94\x07\x00\x00\x00\x01'
-            b'\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\x2b\x01\x00\x00\x00\x10'
-            b'\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x0b\x00\x00\x00\x00'
-        ))
+        self.encoding_full = utils.BytearrayStream(
+            (
+                b"\x42\x00\x79\x01\x00\x00\x00\x40\x42\x00\x94\x07\x00\x00\x00\x01"
+                b"\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\x2b\x01\x00\x00\x00\x10"
+                b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x0b\x00\x00\x00\x00"
+                b"\x42\x00\xc2\x08\x00\x00\x00\x10\x00\x01\x02\x03\x04\x05\x06\x07"
+                b"\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
+            )
+        )
+        self.encoding_no_data = utils.BytearrayStream(
+            (
+                b"\x42\x00\x79\x01\x00\x00\x00\x28\x42\x00\x94\x07\x00\x00\x00\x01"
+                b"\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\x2b\x01\x00\x00\x00\x10"
+                b"\x42\x00\x28\x05\x00\x00\x00\x04\x00\x00\x00\x0b\x00\x00\x00\x00"
+            )
+        )
 
     def tearDown(self):
         super(TestMACRequestPayload, self).tearDown()
@@ -63,38 +66,49 @@ class TestMACRequestPayload(TestCase):
         cab be properly set and retrieved.
         """
         payload = payloads.MACRequestPayload(
-            self.unique_identifier,
-            self.cryptographic_parameters,
-            self.data)
+            self.unique_identifier, self.cryptographic_parameters, self.data
+        )
         self.assertEqual(payload.unique_identifier, self.unique_identifier)
-        self.assertEqual(payload.cryptographic_parameters,
-                         self.cryptographic_parameters)
+        self.assertEqual(
+            payload.cryptographic_parameters, self.cryptographic_parameters
+        )
         self.assertEqual(payload.data, self.data)
 
     def test_init_with_invalid_unique_identifier(self):
-        kwargs = {'unique_identifier': 'invalid',
-                  'cryptographic_parameters': None,
-                  'data': None}
+        kwargs = {
+            "unique_identifier": "invalid",
+            "cryptographic_parameters": None,
+            "data": None,
+        }
         self.assertRaisesRegex(
-            TypeError, "unique identifier must be UniqueIdentifier type",
-            payloads.MACRequestPayload, **kwargs)
+            TypeError,
+            "unique identifier must be UniqueIdentifier type",
+            payloads.MACRequestPayload,
+            **kwargs
+        )
 
     def test_init_with_invalid_cryptographic_parameters(self):
-        kwargs = {'unique_identifier': None,
-                  'cryptographic_parameters': 'invalid',
-                  'data': None}
+        kwargs = {
+            "unique_identifier": None,
+            "cryptographic_parameters": "invalid",
+            "data": None,
+        }
         self.assertRaisesRegex(
             TypeError,
             "cryptographic parameters must be CryptographicParameters type",
-            payloads.MACRequestPayload, **kwargs)
+            payloads.MACRequestPayload,
+            **kwargs
+        )
 
     def test_init_with_invalid_data(self):
-        kwargs = {'unique_identifier': None,
-                  'cryptographic_parameters': None,
-                  'data': 'invalid'}
+        kwargs = {
+            "unique_identifier": None,
+            "cryptographic_parameters": None,
+            "data": "invalid",
+        }
         self.assertRaises(
-            TypeError, "data must be Data type",
-            payloads.MACRequestPayload, **kwargs)
+            TypeError, "data must be Data type", payloads.MACRequestPayload, **kwargs
+        )
 
     def test_read_valid(self):
         stream = self.encoding_full
@@ -102,8 +116,9 @@ class TestMACRequestPayload(TestCase):
         payload.read(stream)
 
         self.assertEqual(self.unique_identifier, payload.unique_identifier)
-        self.assertEqual(self.cryptographic_parameters,
-                         payload.cryptographic_parameters)
+        self.assertEqual(
+            self.cryptographic_parameters, payload.cryptographic_parameters
+        )
         self.assertEqual(self.data, payload.data)
 
     def test_read_no_data(self):
@@ -125,9 +140,8 @@ class TestMACRequestPayload(TestCase):
 
         stream = utils.BytearrayStream()
         payload = payloads.MACRequestPayload(
-            self.unique_identifier,
-            self.cryptographic_parameters,
-            self.data)
+            self.unique_identifier, self.cryptographic_parameters, self.data
+        )
         payload.write(stream)
 
         self.assertEqual(expected, stream)
@@ -139,9 +153,8 @@ class TestMACRequestPayload(TestCase):
         """
         stream = utils.BytearrayStream()
         payload = payloads.MACRequestPayload(
-            self.unique_identifier,
-            self.cryptographic_parameters,
-            None)
+            self.unique_identifier, self.cryptographic_parameters, None
+        )
         args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
@@ -152,38 +165,44 @@ class TestMACRequestPayload(TestCase):
 
 
 class TestMACResponsePayload(TestCase):
-
     def setUp(self):
         super(TestMACResponsePayload, self).setUp()
 
-        self.unique_identifier = attributes.UniqueIdentifier(value='1')
-        self.mac_data = objects.MACData(value=(
-            b'\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb\x32\x9f'
-            b'\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2\x2a\x5b'
-            b'\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe\xc8\x23'
-            b'\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51\xff\x7c'
+        self.unique_identifier = attributes.UniqueIdentifier(value="1")
+        self.mac_data = objects.MACData(
+            value=(
+                b"\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb\x32\x9f"
+                b"\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2\x2a\x5b"
+                b"\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe\xc8\x23"
+                b"\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51\xff\x7c"
             )
         )
 
-        self.encoding_full = utils.BytearrayStream((
-            b'\x42\x00\x7c\x01\x00\x00\x00\x58\x42\x00\x94\x07\x00\x00\x00\x01'
-            b'\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\xc6\x08\x00\x00\x00\x40'
-            b'\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb\x32\x9f'
-            b'\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2\x2a\x5b'
-            b'\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe\xc8\x23'
-            b'\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51\xff\x7c'
-        ))
-        self.encoding_no_unique_identifier = utils.BytearrayStream((
-            b'\x42\x00\x7c\x01\x00\x00\x00\x48\x42\x00\xc6\x08\x00\x00\x00\x40'
-            b'\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb\x32\x9f'
-            b'\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2\x2a\x5b'
-            b'\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe\xc8\x23'
-            b'\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51\xff\x7c'
-        ))
-        self.encoding_no_mac_data = utils.BytearrayStream((
-            b'\x42\x00\x7c\x01\x00\x00\x00\x10\x42\x00\x94\x07\x00\x00\x00\x01'
-            b'\x31\x00\x00\x00\x00\x00\x00\x00'
-        ))
+        self.encoding_full = utils.BytearrayStream(
+            (
+                b"\x42\x00\x7c\x01\x00\x00\x00\x58\x42\x00\x94\x07\x00\x00\x00\x01"
+                b"\x31\x00\x00\x00\x00\x00\x00\x00\x42\x00\xc6\x08\x00\x00\x00\x40"
+                b"\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb\x32\x9f"
+                b"\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2\x2a\x5b"
+                b"\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe\xc8\x23"
+                b"\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51\xff\x7c"
+            )
+        )
+        self.encoding_no_unique_identifier = utils.BytearrayStream(
+            (
+                b"\x42\x00\x7c\x01\x00\x00\x00\x48\x42\x00\xc6\x08\x00\x00\x00\x40"
+                b"\x99\x8b\x55\x59\x90\x9b\x85\x87\x5b\x90\x63\x13\x12\xbb\x32\x9f"
+                b"\x6a\xc4\xed\x97\x6e\xac\x99\xe5\x21\x53\xc4\x19\x28\xf2\x2a\x5b"
+                b"\xef\x79\xa4\xbe\x05\x3b\x31\x49\x19\xe0\x75\x23\xb9\xbe\xc8\x23"
+                b"\x35\x60\x7e\x49\xba\xa9\x7e\xe0\x9e\x6b\x3d\x55\xf4\x51\xff\x7c"
+            )
+        )
+        self.encoding_no_mac_data = utils.BytearrayStream(
+            (
+                b"\x42\x00\x7c\x01\x00\x00\x00\x10\x42\x00\x94\x07\x00\x00\x00\x01"
+                b"\x31\x00\x00\x00\x00\x00\x00\x00"
+            )
+        )
 
     def tearDown(self):
         super(TestMACResponsePayload, self).tearDown()
@@ -196,25 +215,27 @@ class TestMACResponsePayload(TestCase):
         Test that the payload can be properly constructed and the attributes
         can be properly set and retrieved.
         """
-        payload = payloads.MACResponsePayload(
-            self.unique_identifier,
-            self.mac_data)
+        payload = payloads.MACResponsePayload(self.unique_identifier, self.mac_data)
         self.assertEqual(payload.unique_identifier, self.unique_identifier)
         self.assertEqual(payload.mac_data, self.mac_data)
 
     def test_init_with_invalid_unique_identifier(self):
-        kwargs = {'unique_identifier': 'invalid',
-                  'mac_data': None}
+        kwargs = {"unique_identifier": "invalid", "mac_data": None}
         self.assertRaisesRegex(
-            TypeError, "unique identifier must be UniqueIdentifier type",
-            payloads.MACResponsePayload, **kwargs)
+            TypeError,
+            "unique identifier must be UniqueIdentifier type",
+            payloads.MACResponsePayload,
+            **kwargs
+        )
 
     def test_init_with_invalid_mac_data(self):
-        kwargs = {'unique_identifier': None,
-                  'mac_data': 'invalid'}
+        kwargs = {"unique_identifier": None, "mac_data": "invalid"}
         self.assertRaises(
-            TypeError, "data must be MACData type",
-            payloads.MACResponsePayload, **kwargs)
+            TypeError,
+            "data must be MACData type",
+            payloads.MACResponsePayload,
+            **kwargs
+        )
 
     def test_read_valid(self):
         stream = self.encoding_full
@@ -256,9 +277,7 @@ class TestMACResponsePayload(TestCase):
         expected = self.encoding_full
 
         stream = utils.BytearrayStream()
-        payload = payloads.MACResponsePayload(
-            self.unique_identifier,
-            self.mac_data)
+        payload = payloads.MACResponsePayload(self.unique_identifier, self.mac_data)
         payload.write(stream)
 
         self.assertEqual(expected, stream)
@@ -269,9 +288,7 @@ class TestMACResponsePayload(TestCase):
         write a mac response with no unique identifier.
         """
         stream = utils.BytearrayStream()
-        payload = payloads.MACResponsePayload(
-            None,
-            self.mac_data)
+        payload = payloads.MACResponsePayload(None, self.mac_data)
         args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
@@ -286,9 +303,7 @@ class TestMACResponsePayload(TestCase):
         write a mac response with no mac data.
         """
         stream = utils.BytearrayStream()
-        payload = payloads.MACResponsePayload(
-            self.unique_identifier,
-            None)
+        payload = payloads.MACResponsePayload(self.unique_identifier, None)
         args = (stream,)
         self.assertRaisesRegex(
             exceptions.InvalidField,
