@@ -106,6 +106,12 @@ class AttributeValueFactory(object):
             return primitives.DateTime(value, enums.Tags.LAST_CHANGE_DATE)
         elif name is enums.AttributeType.SENSITIVE:
             return primitives.Boolean(value, enums.Tags.SENSITIVE)
+        elif name is enums.AttributeType.ALWAYS_SENSITIVE:
+            return primitives.Boolean(value, enums.Tags.ALWAYS_SENSITIVE)
+        elif name is enums.AttributeType.EXTRACTABLE:
+            return primitives.Boolean(value, enums.Tags.EXTRACTABLE)
+        elif name is enums.AttributeType.NEVER_EXTRACTABLE:
+            return primitives.Boolean(value, enums.Tags.NEVER_EXTRACTABLE)
         elif name is enums.AttributeType.CUSTOM_ATTRIBUTE:
             return attributes.CustomAttribute(value)
         else:
