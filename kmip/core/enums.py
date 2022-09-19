@@ -127,6 +127,9 @@ class AttributeType(enum.Enum):
     KEY_VALUE_LOCATION               = 'Key Value Location'
     ORIGINAL_CREATION_DATE           = 'Original Creation Date'
     SENSITIVE                        = "Sensitive"
+    ALWAYS_SENSITIVE                 = 'Always Sensitive'
+    EXTRACTABLE                      = 'Extractable'
+    NEVER_EXTRACTABLE                = 'Never Extractable'
 
 
 class AuthenticationSuite(enum.Enum):
