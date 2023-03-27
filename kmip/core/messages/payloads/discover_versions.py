@@ -40,7 +40,7 @@ class DiscoverVersionsRequestPayload(base.RequestPayload):
         )
         tstream = BytearrayStream(istream.read(self.length))
 
-        while(self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream)):
+        while (self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream)):
             protocol_version = ProtocolVersion()
             protocol_version.read(tstream, kmip_version=kmip_version)
             self.protocol_versions.append(protocol_version)
@@ -99,7 +99,7 @@ class DiscoverVersionsResponsePayload(base.ResponsePayload):
         )
         tstream = BytearrayStream(istream.read(self.length))
 
-        while(self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream)):
+        while (self.is_tag_next(enums.Tags.PROTOCOL_VERSION, tstream)):
             protocol_version = ProtocolVersion()
             protocol_version.read(tstream, kmip_version=kmip_version)
             self.protocol_versions.append(protocol_version)

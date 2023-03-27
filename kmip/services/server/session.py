@@ -107,7 +107,7 @@ class KmipSession(threading.Thread):
             while True:
                 try:
                     self._handle_message_loop()
-                except exceptions.ConnectionClosed as e:
+                except exceptions.ConnectionClosed:
                     break
                 except Exception as e:
                     self._logger.info("Failure handling message loop")

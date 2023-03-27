@@ -105,7 +105,7 @@ class QueryRequestPayload(base.RequestPayload):
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         query_functions = []
-        while(self.is_tag_next(enums.Tags.QUERY_FUNCTION, local_buffer)):
+        while (self.is_tag_next(enums.Tags.QUERY_FUNCTION, local_buffer)):
             query_function = primitives.Enumeration(
                 enums.QueryFunction,
                 tag=enums.Tags.QUERY_FUNCTION
@@ -709,7 +709,7 @@ class QueryResponsePayload(base.ResponsePayload):
         local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
 
         operations = []
-        while(self.is_tag_next(enums.Tags.OPERATION, local_buffer)):
+        while (self.is_tag_next(enums.Tags.OPERATION, local_buffer)):
             operation = primitives.Enumeration(
                 enums.Operation,
                 tag=enums.Tags.OPERATION
@@ -719,7 +719,7 @@ class QueryResponsePayload(base.ResponsePayload):
         self._operations = operations
 
         object_types = []
-        while(self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer)):
+        while (self.is_tag_next(enums.Tags.OBJECT_TYPE, local_buffer)):
             object_type = primitives.Enumeration(
                 enums.ObjectType,
                 tag=enums.Tags.OBJECT_TYPE
@@ -747,7 +747,7 @@ class QueryResponsePayload(base.ResponsePayload):
             self._server_information = server_information
 
         application_namespaces = []
-        while(self.is_tag_next(
+        while (self.is_tag_next(
                 enums.Tags.APPLICATION_NAMESPACE,
                 local_buffer
             )
@@ -761,7 +761,7 @@ class QueryResponsePayload(base.ResponsePayload):
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_1:
             extensions_information = []
-            while(self.is_tag_next(
+            while (self.is_tag_next(
                     enums.Tags.EXTENSION_INFORMATION,
                     local_buffer
                 )
@@ -776,7 +776,11 @@ class QueryResponsePayload(base.ResponsePayload):
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_2:
             attestation_types = []
-            while(self.is_tag_next(enums.Tags.ATTESTATION_TYPE, local_buffer)):
+            while (self.is_tag_next(
+                    enums.Tags.ATTESTATION_TYPE,
+                    local_buffer
+                )
+            ):
                 attestation_type = primitives.Enumeration(
                     enums.AttestationType,
                     tag=enums.Tags.ATTESTATION_TYPE
@@ -787,14 +791,14 @@ class QueryResponsePayload(base.ResponsePayload):
 
         if kmip_version >= enums.KMIPVersion.KMIP_1_3:
             rngs_parameters = []
-            while(self.is_tag_next(enums.Tags.RNG_PARAMETERS, local_buffer)):
+            while (self.is_tag_next(enums.Tags.RNG_PARAMETERS, local_buffer)):
                 rng_parameters = objects.RNGParameters()
                 rng_parameters.read(local_buffer, kmip_version=kmip_version)
                 rngs_parameters.append(rng_parameters)
             self._rng_parameters = rngs_parameters
 
             profiles_information = []
-            while(self.is_tag_next(
+            while (self.is_tag_next(
                     enums.Tags.PROFILE_INFORMATION,
                     local_buffer
                 )
@@ -808,7 +812,7 @@ class QueryResponsePayload(base.ResponsePayload):
             self._profile_information = profiles_information
 
             validations_information = []
-            while(self.is_tag_next(
+            while (self.is_tag_next(
                     enums.Tags.VALIDATION_INFORMATION,
                     local_buffer
                 )
@@ -822,7 +826,7 @@ class QueryResponsePayload(base.ResponsePayload):
             self._validation_information = validations_information
 
             capabilities_information = []
-            while(self.is_tag_next(
+            while (self.is_tag_next(
                     enums.Tags.CAPABILITY_INFORMATION,
                     local_buffer
                 )
@@ -836,7 +840,7 @@ class QueryResponsePayload(base.ResponsePayload):
             self._capability_information = capabilities_information
 
             client_registration_methods = []
-            while(self.is_tag_next(
+            while (self.is_tag_next(
                     enums.Tags.CLIENT_REGISTRATION_METHOD,
                     local_buffer
                 )
@@ -862,7 +866,7 @@ class QueryResponsePayload(base.ResponsePayload):
                 self._defaults_information = defaults_information
 
             protection_storage_masks = []
-            while(self.is_tag_next(
+            while (self.is_tag_next(
                     enums.Tags.PROTECTION_STORAGE_MASK,
                     local_buffer
                 )

@@ -274,7 +274,7 @@ class CryptographyEngine(api.CryptographicEngine):
                 c = cmac.CMAC(cipher_algorithm(key), backend=default_backend())
                 c.update(data)
                 mac_data = c.finalize()
-            except Exception as e:
+            except Exception:
                 raise exceptions.CryptographicFailure(
                     "An error occurred while computing a CMAC. "
                     "See the server log for more information."

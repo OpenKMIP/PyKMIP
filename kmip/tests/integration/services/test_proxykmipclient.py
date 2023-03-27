@@ -103,7 +103,8 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         self.assertNotEqual(unwrapped_key.value, wrapped_key.value)
 
         self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, key_id)
-        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, wrapping_id)
+        self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE,
+                           wrapping_id)
         self.client.destroy(key_id)
         self.client.destroy(wrapping_id)
 
@@ -184,11 +185,11 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         )
         self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, key_id)
         self.client.destroy(key_id)
-    
+
     def test_register_app_specific_get(self):
         """
-        Test that a key with app specifc info can be registered with the server and that its
-        metadata is retrieved with the get operation.
+        Test that a key with app specifc info can be registered with the
+        server and that its metadata is retrieved with the get operation.
         """
         key = objects.SymmetricKey(
             enums.CryptographicAlgorithm.AES,
@@ -275,7 +276,8 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 enums.CryptographicAlgorithm.RSA)
             self.assertEqual(private_key.cryptographic_length, 2048)
         finally:
-            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, public_uid)
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE,
+                               public_uid)
             self.client.destroy(public_uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, public_uid)
@@ -283,7 +285,8 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 exceptions.KmipOperationFailure, self.client.destroy,
                 public_uid)
 
-            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE, private_uid)
+            self.client.revoke(enums.RevocationReasonCode.KEY_COMPROMISE,
+                               private_uid)
             self.client.destroy(private_uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.get, private_uid)
@@ -551,7 +554,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
                 exceptions.KmipOperationFailure, self.client.get, uid)
             self.assertRaises(
                 exceptions.KmipOperationFailure, self.client.destroy, uid)
-                
+
     def test_secret_data_register_get_destroy_app_specific(self):
         """
         Test that the ProxyKmipClient can register, retrieve, and destroy a
