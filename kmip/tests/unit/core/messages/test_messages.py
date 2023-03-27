@@ -1166,8 +1166,7 @@ class TestRequestMessage(TestCase):
                                               type(attribute_name)))
         self.assertEqual('Object Type', attribute_name.value,
                          self.msg.format('attribute name', 'value',
-                                         'Object Type',
-                                          attribute_name.value))
+                                         'Object Type', attribute_name.value))
 
         attribute_value = attribute_a.attribute_value
         exp_type = attr.Enumeration

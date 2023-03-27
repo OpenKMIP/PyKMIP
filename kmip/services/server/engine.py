@@ -439,7 +439,7 @@ class KmipEngine(object):
             ).filter(
                 objects.ManagedObject.unique_identifier == unique_identifier
             ).one()[0]
-        except exc.NoResultFound as e:
+        except exc.NoResultFound:
             self._logger.warning(
                 "Could not identify object type for object: {0}".format(
                     unique_identifier

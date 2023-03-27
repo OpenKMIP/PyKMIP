@@ -174,7 +174,7 @@ class TestEnumUtilityFunctions(testtools.TestCase):
         args = ("invalid", )
         self.assertRaisesRegex(
             ValueError,
-            "Unrecognized attribute name: 'invalid'".format(args[0]),
+            "Unrecognized attribute name: 'invalid'",
             enums.convert_attribute_name_to_tag,
             *args
         )
