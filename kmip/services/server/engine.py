@@ -355,80 +355,81 @@ class KmipEngine(object):
     def _process_batch(self, request_batch, batch_handling, batch_order):
         response_batch = list()
 
-        self._data_session = self._data_store_session_factory()
+        with self._data_store_session_factory() as session:
+            self._data_session = session
 
-        for batch_item in request_batch:
-            error_occurred = False
+            for batch_item in request_batch:
+                error_occurred = False
 
-            response_payload = None
-            result_status = None
-            result_reason = None
-            result_message = None
+                response_payload = None
+                result_status = None
+                result_reason = None
+                result_message = None
 
-            operation = batch_item.operation
-            request_payload = batch_item.request_payload
+                operation = batch_item.operation
+                request_payload = batch_item.request_payload
 
-            # Process batch item ID.
-            if len(request_batch) > 1:
-                if not batch_item.unique_batch_item_id:
-                    raise exceptions.InvalidMessage(
-                        "Batch item ID is undefined."
+                # Process batch item ID.
+                if len(request_batch) > 1:
+                    if not batch_item.unique_batch_item_id:
+                        raise exceptions.InvalidMessage(
+                            "Batch item ID is undefined."
+                        )
+
+                # Process batch message extension.
+                # TODO (peterhamilton) Add support for message extension handling.
+                # 1. Extract the vendor identification and criticality indicator.
+                # 2. If the indicator is True, raise an error.
+                # 3. If the indicator is False, ignore the extension.
+
+                # Process batch payload.
+                try:
+                    response_payload = self._process_operation(
+                        operation.value,
+                        request_payload
                     )
 
-            # Process batch message extension.
-            # TODO (peterhamilton) Add support for message extension handling.
-            # 1. Extract the vendor identification and criticality indicator.
-            # 2. If the indicator is True, raise an error.
-            # 3. If the indicator is False, ignore the extension.
+                    result_status = enums.ResultStatus.SUCCESS
+                except exceptions.KmipError as e:
+                    error_occurred = True
+                    result_status = e.status
+                    result_reason = e.reason
+                    result_message = str(e)
+                except Exception as e:
+                    self._logger.warning(
+                        "Error occurred while processing operation."
+                    )
+                    self._logger.exception(e)
 
-            # Process batch payload.
-            try:
-                response_payload = self._process_operation(
-                    operation.value,
-                    request_payload
+                    error_occurred = True
+                    result_status = enums.ResultStatus.OPERATION_FAILED
+                    result_reason = enums.ResultReason.GENERAL_FAILURE
+                    result_message = (
+                        "Operation failed. See the server logs for more "
+                        "information."
+                    )
+
+                # Compose operation result.
+                result_status = contents.ResultStatus(result_status)
+                if result_reason:
+                    result_reason = contents.ResultReason(result_reason)
+                if result_message:
+                    result_message = contents.ResultMessage(result_message)
+
+                batch_item = messages.ResponseBatchItem(
+                    operation=batch_item.operation,
+                    unique_batch_item_id=batch_item.unique_batch_item_id,
+                    result_status=result_status,
+                    result_reason=result_reason,
+                    result_message=result_message,
+                    response_payload=response_payload
                 )
+                response_batch.append(batch_item)
 
-                result_status = enums.ResultStatus.SUCCESS
-            except exceptions.KmipError as e:
-                error_occurred = True
-                result_status = e.status
-                result_reason = e.reason
-                result_message = str(e)
-            except Exception as e:
-                self._logger.warning(
-                    "Error occurred while processing operation."
-                )
-                self._logger.exception(e)
-
-                error_occurred = True
-                result_status = enums.ResultStatus.OPERATION_FAILED
-                result_reason = enums.ResultReason.GENERAL_FAILURE
-                result_message = (
-                    "Operation failed. See the server logs for more "
-                    "information."
-                )
-
-            # Compose operation result.
-            result_status = contents.ResultStatus(result_status)
-            if result_reason:
-                result_reason = contents.ResultReason(result_reason)
-            if result_message:
-                result_message = contents.ResultMessage(result_message)
-
-            batch_item = messages.ResponseBatchItem(
-                operation=batch_item.operation,
-                unique_batch_item_id=batch_item.unique_batch_item_id,
-                result_status=result_status,
-                result_reason=result_reason,
-                result_message=result_message,
-                response_payload=response_payload
-            )
-            response_batch.append(batch_item)
-
-            # Handle batch error if necessary.
-            if error_occurred:
-                if batch_handling == enums.BatchErrorContinuationOption.STOP:
-                    break
+                # Handle batch error if necessary.
+                if error_occurred:
+                    if batch_handling == enums.BatchErrorContinuationOption.STOP:
+                        break
 
         return response_batch
 
