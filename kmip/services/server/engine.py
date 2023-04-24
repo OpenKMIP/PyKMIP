@@ -746,6 +746,22 @@ class KmipEngine(object):
             return None
         elif attr_name == "Sensitive":
             return managed_object.sensitive
+        elif attr_name == 'Alternative Name':
+            values = []
+            for aname in managed_object.alternative_names:
+                values.append(
+                  {
+                      "alternative_name_value": aname.alternative_name_value,
+                      "alternative_name_type": aname.alternative_name_type
+                  }
+                )
+            return values
+        elif attr_name.startswith('x-'):
+            values = []
+            for attr in managed_object.custom_attributes:
+                if attr.attribute_name == attr_name:
+                    values.append(attr.attribute_text)
+            return values
         else:
             # Since custom attribute names are possible, just return None
             # for unrecognized attributes. This satisfies the spec.
@@ -895,6 +911,21 @@ class KmipEngine(object):
                     # to avoid wasted space.
                     managed_object.object_groups.append(
                         objects.ObjectGroup(object_group=value.value)
+                    )
+            elif attribute_name.startswith("x-"):
+                for value in attribute_value:
+                    managed_object.custom_attributes.append(
+                      sqltypes.ManagedObjectCustomAttribute(
+                        attribute_name,
+                        value.value)
+                    )
+            elif attribute_name == "Alternative Name":
+                for value in attribute_value:
+                    managed_object.alternative_names.append(
+                      sqltypes.ManagedObjectAlternativeName(
+                        value.alternative_name_value,
+                        value.alternative_name_type
+                      )
                     )
             else:
                 # TODO (peterhamilton) Remove when all attributes are supported
@@ -2412,6 +2443,18 @@ class KmipEngine(object):
                             initial_date,
                             value.value
                         )
+                    elif name == "Alternative Name":
+                        dval = {
+                          "alternative_name_value": value.alternative_name_value,
+                          "alternative_name_type": value.alternative_name_type
+                        }
+                        if dval not in attribute:
+                            add_object = False
+                            break
+                    elif name.startswith('x-'):
+                        if value.value not in attribute:
+                            add_object = False
+                            break
                     else:
                         if value != attribute:
                             add_object = False
