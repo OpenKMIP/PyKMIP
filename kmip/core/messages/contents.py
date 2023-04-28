@@ -506,6 +506,13 @@ class MessageExtension(Struct):
         super(MessageExtension, self).__init__(enums.Tags.MESSAGE_EXTENSION)
 
 
+# 6.19
+class ServerCorrelationValue(TextString):
+    def __init__(self, value=None):
+        super(ServerCorrelationValue, self).__init__(
+            value, enums.Tags.SERVER_CORRELATION_VALUE)
+
+
 # 9.1.3.2.2
 class KeyCompressionType(Enumeration):
 
