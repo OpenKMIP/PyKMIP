@@ -114,6 +114,8 @@ class AttributeValueFactory(object):
             return primitives.Boolean(value, enums.Tags.NEVER_EXTRACTABLE)
         elif name is enums.AttributeType.CUSTOM_ATTRIBUTE:
             return attributes.CustomAttribute(value)
+        elif name is enums.AttributeType.ORIGINAL_CREATION_DATE:
+            return primitives.DateTime(value, enums.Tags.ORIGINAL_CREATION_DATE)
         else:
             if not isinstance(name, str):
                 raise ValueError('Unrecognized attribute type: '
