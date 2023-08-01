@@ -20,6 +20,7 @@ jobs:
             - run: pip install codecov
             - run: pip install slugs
             - run: sudo python setup.py install
+            - run: sudo chmod +x ./.travis/run.sh
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
