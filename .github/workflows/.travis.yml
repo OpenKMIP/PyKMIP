@@ -19,8 +19,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
-            - run: sudo chmod +rwx ./
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -45,7 +44,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -70,7 +69,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -95,7 +94,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -120,7 +119,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -145,7 +144,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -170,7 +169,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -195,7 +194,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -220,7 +219,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -245,7 +244,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -270,7 +269,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -295,7 +294,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -320,7 +319,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -345,7 +344,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -370,7 +369,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -395,7 +394,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -420,7 +419,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -445,7 +444,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -470,7 +469,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -495,7 +494,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -520,7 +519,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -545,7 +544,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -570,7 +569,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -595,7 +594,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -620,7 +619,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -645,7 +644,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -670,7 +669,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -695,7 +694,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -720,7 +719,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -745,7 +744,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -770,7 +769,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -795,7 +794,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -820,7 +819,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -845,7 +844,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -870,7 +869,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -895,7 +894,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -930,7 +929,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -964,7 +963,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -997,7 +996,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -1022,7 +1021,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -1047,7 +1046,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -1072,7 +1071,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -1097,7 +1096,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -1122,7 +1121,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -1147,7 +1146,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -1172,7 +1171,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -1197,7 +1196,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
@@ -1222,7 +1221,7 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo python setup.py install
+            
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
