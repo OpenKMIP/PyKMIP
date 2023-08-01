@@ -11,6 +11,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -36,6 +38,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -61,6 +65,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -86,6 +92,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -111,6 +119,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -136,6 +146,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -161,6 +173,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -186,6 +200,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -211,6 +227,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -236,6 +254,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -261,6 +281,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -286,6 +308,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -311,6 +335,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -336,6 +362,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -361,6 +389,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -386,6 +416,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -411,6 +443,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -436,6 +470,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -461,6 +497,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -486,6 +524,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -511,6 +551,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -536,6 +578,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -561,6 +605,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -586,6 +632,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -611,6 +659,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -636,6 +686,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -661,6 +713,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -686,6 +740,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -711,6 +767,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -736,6 +794,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -761,6 +821,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -786,6 +848,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -811,6 +875,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -836,6 +902,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -861,6 +929,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -886,6 +956,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -921,6 +993,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -955,6 +1029,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -988,6 +1064,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1013,6 +1091,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1038,6 +1118,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1063,6 +1145,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1088,6 +1172,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1113,6 +1199,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1138,6 +1226,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1163,6 +1253,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1188,6 +1280,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1213,6 +1307,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - run: virtualenv .venv
+            - run: source .venv/bin/activate
             - run: pip uninstall -y six
             - run: pip install six>=1.11.0
             - run: pip install "more_itertools<=7.2.0"
@@ -1221,7 +1317,8 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: python setup.py install --user
+            - run: pip install virtualenv
+            - run: python setup.py install
             - run: ./.travis/run.sh
             - run: codecov
         strategy:
