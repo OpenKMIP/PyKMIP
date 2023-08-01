@@ -26,16 +26,6 @@ jobs:
             - run: codecov
         strategy:
             matrix:
-                test: ["py27", "py34", "py35", "py36", "py37"]
-                test_number: ["0", "1" , "2"]
-                os: [ubuntu-20.04, ubuntu-22.04]
-                include:
-                    - test_number: "0"
-                      test: "pep8"
-                    - test_number: "0"
-                      test: "bandit"
-                    - test_number: "0"
-                      test: "docs"
-
-                
-  
+                test: ["py310", "pep8", "bandit", "docs"]
+                test_number: ["0"]
+                os: [ubuntu-22.04]
