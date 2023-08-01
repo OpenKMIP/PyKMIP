@@ -10,8 +10,8 @@ jobs:
     build:
         runs-on: ${{ matrix.os }}
         env: 
-            TOXENV: ${{ matrix.python-version }}
-            RUN_INTEGRATION_TESTS: ${{ matrix.test_number }}
+            TOXENV: ${{ matrix.test }}
+            RUN_INTEGRATION_TESTS: ${{ (matrix.test == 'bandit' || matrix.test == 'pep8' || matrix.test == 'docs') && '0' || matrix.test_number}}
         steps:
             - uses: actions/checkout@v2
             - run: pip uninstall -y six
@@ -27,7 +27,7 @@ jobs:
             - run: codecov
         strategy:
             matrix:
-                python-version: ['py27', 'py34', 'py35', 'py36', 'py37', 'pep8', 'bandit']
+                test: ['py27', 'py34', 'py35', 'py36', 'py37', 'pep8', 'bandit', 'docs']
                 test_number: ['0', '1' , '2']
                 os: [ubuntu-20.04, ubuntu-22.04]
                 
