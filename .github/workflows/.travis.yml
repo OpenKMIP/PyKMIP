@@ -27,8 +27,8 @@ jobs:
             - run: codecov
         strategy:
             matrix:
-                python-version: ['27', '34', '35', '36', '37']
+                python-version: ['27', '34', '35', '36', '37', '38' ,'39' ,'310', '311']
                 test_number: ['0', '1' , '2']
-                os: [ubuntu-12.04, ubuntu-14.04, ubuntu-16.04]
+                os: [ubuntu-20.04, ubuntu-22.04]
                 
   
