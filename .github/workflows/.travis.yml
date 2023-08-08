@@ -14,11 +14,7 @@ jobs:
             RUN_INTEGRATION_TESTS: ${{ matrix.test_number}}
         steps:
             - uses: actions/checkout@v2
-            - run: pip uninstall -y six
-            - run: pip install six>=1.11.0
-            - run: pip install "more_itertools<=7.2.0"
-            - run: pip install "tox<=3.14.1"
-            - run: pip install "PyYAML<=5.2"
+            - run: pip install "tox"
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
