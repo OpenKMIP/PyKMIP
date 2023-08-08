@@ -127,7 +127,9 @@ class KmipSession(threading.Thread):
         )
 
         try:
-            if hasattr(self._connection, 'shared_ciphers') and self._connection.shared_ciphers() is not None:
+            if hasattr(self._connection, 'shared_ciphers') \
+                and self._connection.shared_ciphers() is not None:
+                
                 shared_ciphers = self._connection.shared_ciphers()
                 self._logger.debug(
                     "Possible session ciphers: {0}".format(len(shared_ciphers))
