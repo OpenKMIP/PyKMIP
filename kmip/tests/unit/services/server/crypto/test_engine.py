@@ -247,8 +247,8 @@ class TestCryptographyEngine(testtools.TestCase):
 
         engine = crypto.CryptographyEngine()
 
-        # IDEA is not block cipher so cmac should raise exception
-        args = [enums.CryptographicAlgorithm.IDEA, key, data]
+        # RC4 is not block cipher so cmac should raise exception
+        args = [enums.CryptographicAlgorithm.RC4, key, data]
         self.assertRaises(
             exceptions.CryptographicFailure,
             engine.mac,
