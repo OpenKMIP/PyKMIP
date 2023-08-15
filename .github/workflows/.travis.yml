@@ -10,6 +10,7 @@ jobs:
     build:
         runs-on: ${{ matrix.os }}
         env: 
+            UNITTEST: ${{ true }}
             TOXENV: ${{ matrix.test }}
             RUN_INTEGRATION_TESTS: ${{ matrix.test_number}}
         steps:

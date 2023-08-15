@@ -27,6 +27,8 @@ CONFIG_FILE = [
     os.path.normpath(os.path.join(FILE_PATH, '../pykmip.conf')),
     os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))]
 
+if os.environ.get("UNITTEST"):
+    CONFIG_FILE = []
 
 class ConfigHelper(object):
     NONE_VALUE = 'None'
