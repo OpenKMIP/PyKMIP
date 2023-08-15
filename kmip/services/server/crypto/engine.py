@@ -269,7 +269,8 @@ class CryptographyEngine(api.CryptographicEngine):
             )
             cipher_algorithm = self._symmetric_key_algorithms.get(algorithm)
             try:
-                # ARC4 and other non-block cipher algorithms will raise TypeError exceptions
+                # ARC4 and other non-block cipher algorithms will
+                # raise TypeError exceptions
                 c = cmac.CMAC(cipher_algorithm(key), backend=default_backend())
                 c.update(data)
                 mac_data = c.finalize()
