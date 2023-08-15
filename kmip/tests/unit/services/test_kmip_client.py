@@ -81,7 +81,7 @@ class TestKMIPClient(TestCase):
         self.cred_factory = CredentialFactory()
         self.secret_factory = SecretFactory()
 
-        self.client = KMIPProxy()
+        self.client = KMIPProxy(config_file="/dev/null")
 
         KMIP_PORT = 9090
         CA_CERTS_PATH = os.path.normpath(os.path.join(os.path.dirname(
