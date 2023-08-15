@@ -30,6 +30,7 @@ CONFIG_FILE = [
 if os.environ.get("UNITTEST"):
     CONFIG_FILE = []
 
+
 class ConfigHelper(object):
     NONE_VALUE = 'None'
     DEFAULT_HOST = "127.0.0.1"
