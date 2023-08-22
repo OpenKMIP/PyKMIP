@@ -18,10 +18,11 @@ jobs:
             - run: pip install bandit
             - run: pip install codecov
             - run: pip install slugs
-            - run: ./.travis/run.sh
+            - run: python3 setup.py install
+            - run: RUN_INTEGRATION_TESTS=${{ matrix.test_number }} ./.travis/run.sh
             - run: codecov
         strategy:
             matrix:
                 test: ["py310", "pep8", "bandit", "docs"]
-                test_number: ["0"]
+                test_number: ["0","1"]
                 os: [ubuntu-22.04]
