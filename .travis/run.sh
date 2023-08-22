@@ -3,6 +3,9 @@
 set -e
 set -x
 
+pkill -f run_server.py || true
+sleep 1
+
 if [[ "${RUN_INTEGRATION_TESTS}" == "1" ]]; then
     sudo mkdir -p /etc/pykmip/certs
     sudo mkdir -p /etc/pykmip/policies
@@ -14,6 +17,7 @@ if [[ "${RUN_INTEGRATION_TESTS}" == "1" ]]; then
     sudo cp ./.travis/policy.json /etc/pykmip/policies/policy.json
     sudo mkdir -p /var/log/pykmip
     sudo chmod 777 /var/log/pykmip
+    sudo chmod -R 777 /etc/pykmip/
     python3 ./bin/run_server.py &
     tox -e integration -- --config client
 elif [[ "${RUN_INTEGRATION_TESTS}" == "2" ]]; then
