@@ -29,6 +29,14 @@ jobs:
                 os: [ubuntu-22.04,ubuntu-20.04]
                 include:
                     - test: "py38"
+                      test_number: "0"
+                      os: ubuntu-20.04
+                    - test: "py38"
+                      test_number: "1"
                       os: ubuntu-20.04
                     - test: "py310"
+                      test_number: "0"
+                      os: ubuntu-22.04
+                    - test: "py310"
+                      test_number: "1"
                       os: ubuntu-22.04
