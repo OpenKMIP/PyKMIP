@@ -137,10 +137,10 @@ class TestSLUGSConnector(testtools.TestCase):
 
         mock_get_client_identity.assert_called_once_with("test")
         mock_request_get.assert_any_call(
-            "http://127.0.0.1:8080/test/slugs/users/John Doe"
+            "http://127.0.0.1:8080/test/slugs/users/John Doe", timeout=10
         )
         mock_request_get.assert_any_call(
-            "http://127.0.0.1:8080/test/slugs/users/John Doe/groups"
+            "http://127.0.0.1:8080/test/slugs/users/John Doe/groups", timeout=10
         )
         self.assertEqual(('John Doe', ['Group A', 'Group B']), result)
 
