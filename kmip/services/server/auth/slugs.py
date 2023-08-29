@@ -88,7 +88,7 @@ class SLUGSConnector(api.AuthAPI):
         )
 
         try:
-            response = requests.get(self.users_url.format(user_id))
+            response = requests.get(self.users_url.format(user_id), timeout=10)
         except Exception:
             raise exceptions.ConfigurationError(
                 "A connection could not be established using the SLUGS URL."
@@ -98,7 +98,7 @@ class SLUGSConnector(api.AuthAPI):
                 "Unrecognized user ID: {}".format(user_id)
             )
 
-        response = requests.get(self.groups_url.format(user_id))
+        response = requests.get(self.groups_url.format(user_id), timeout=10)
         if response.status_code == 404:
             raise exceptions.PermissionDenied(
                 "Group information could not be retrieved for user ID: "
