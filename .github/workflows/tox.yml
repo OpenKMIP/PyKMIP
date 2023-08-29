@@ -1,4 +1,4 @@
-name: ".travis.yml"
+name: "tox.yml"
 
 on:
     push:
@@ -20,12 +20,11 @@ jobs:
             - run: pip install slugs
             - run: sudo chmod -R 777 /usr/local/lib/
             - run: python3 setup.py install
-            - run: RUN_INTEGRATION_TESTS=${{ matrix.test_number }} ./.travis/run.sh
+            - run: ./.travis/run.sh
             - run: codecov
         strategy:
             matrix:
                 test: ["pep8", "bandit", "docs"]
-                test_number: ["0","1"]
                 os: [ubuntu-22.04,ubuntu-20.04]
                 include:
                     - test: "py38"
