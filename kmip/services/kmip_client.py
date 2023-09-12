@@ -301,10 +301,9 @@ class KMIPProxy(object):
         self.close()
 
     def close(self):
-        # Shutdown and close the socket.
+        # Close the socket.
         if self.socket:
             try:
-                self.socket.shutdown(socket.SHUT_RDWR)
                 self.socket.close()
             except (OSError, socket.error):
                 # Can be thrown if the socket is not actually connected to

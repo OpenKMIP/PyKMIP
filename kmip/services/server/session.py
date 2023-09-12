@@ -113,7 +113,6 @@ class KmipSession(threading.Thread):
                     self._logger.info("Failure handling message loop")
                     self._logger.exception(e)
 
-        self._connection.shutdown(socket.SHUT_RDWR)
         self._connection.close()
         self._logger.info("Stopping session: {0}".format(self.name))
 
