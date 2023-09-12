@@ -1,41 +1,51 @@
-name: "tox.yml"
+name: tox
 
 on:
     push:
         branches: [ master ]
     pull_request:
-        branches: [ master ]
 
 jobs:
-    build:
+    tox-test:
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+                python:
+                    - {version: '3.8', env: py38}
+                    - {version: '3.9', env: py39}
+                    - {version: '3.10', env: py310}
+                    - {version: '3.11', env: py311}
+                test_mode: [0, 1]
         runs-on: ${{ matrix.os }}
-        env: 
-            TOXENV: ${{ matrix.test }}
-            RUN_INTEGRATION_TESTS: ${{ matrix.test_number}}
+        env:
+            TOXENV: ${{ matrix.python.env }}
+            RUN_INTEGRATION_TESTS: ${{ matrix.test_mode }}
         steps:
             - uses: actions/checkout@v3
-            - run: pip install "tox"
-            - run: pip install bandit
+            - uses: actions/setup-python@v4
+              with:
+                python-version: ${{ matrix.python.version }}
+            - run: pip install tox
             - run: pip install codecov
             - run: pip install slugs
-            - run: sudo chmod -R 777 /usr/local/lib/
             - run: python3 setup.py install
             - run: ./.travis/run.sh
             - run: codecov
+    tox-other:
         strategy:
             matrix:
-                test: ["pep8", "bandit", "docs"]
-                os: [ubuntu-22.04,ubuntu-20.04]
-                include:
-                    - test: "py38"
-                      test_number: "0"
-                      os: ubuntu-20.04
-                    - test: "py38"
-                      test_number: "1"
-                      os: ubuntu-20.04
-                    - test: "py310"
-                      test_number: "0"
-                      os: ubuntu-22.04
-                    - test: "py310"
-                      test_number: "1"
-                      os: ubuntu-22.04
+                os: [ubuntu-latest]
+                python: ['3.8', '3.9', '3.10', '3.11']
+                test: [pep8, bandit, docs]
+        runs-on: ${{ matrix.os }}
+        env:
+            TOXENV: ${{ matrix.test }}
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-python@v4
+              with:
+                python-version: ${{ matrix.python }}
+            - run: pip install tox
+            - run: pip install bandit
+              if: ${{ matrix.test == 'bandit' }}
+            - run: tox
