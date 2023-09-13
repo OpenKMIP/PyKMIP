@@ -754,14 +754,18 @@ class SymmetricKey(Key):
         algorithm = "algorithm={0}".format(self.cryptographic_algorithm)
         length = "length={0}".format(self.cryptographic_length)
         value = "value={0}".format(binascii.hexlify(self.value))
+        masks = "masks={0}".format(self.cryptographic_usage_masks)
+        names = "names={0}".format(self.names)
         key_wrapping_data = "key_wrapping_data={0}".format(
             self.key_wrapping_data
         )
 
-        return "SymmetricKey({0}, {1}, {2}, {3})".format(
+        return "SymmetricKey({0}, {1}, {2}, {3}, {4}, {5})".format(
             algorithm,
             length,
             value,
+            masks,
+            names,
             key_wrapping_data
         )
 
