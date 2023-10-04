@@ -296,11 +296,12 @@ class KmipServer(object):
             keyfile = self.config.settings.get('key_path')
             context.load_cert_chain(certfile, keyfile=keyfile)
 
-        context.load_default_certs(ssl.Purpose.SERVER_AUTH)
-        self._socket = context.wrap_socket(self._socket,
-                server_side=True,
-                do_handshake_on_connect=False,
-                suppress_ragged_eofs=True)
+        self._socket = context.wrap_socket(
+            self._socket,
+            server_side=True,
+            do_handshake_on_connect=False,
+            suppress_ragged_eofs=True
+        )
 
         try:
             self._socket.bind(
