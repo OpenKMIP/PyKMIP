@@ -287,18 +287,19 @@ class KmipServer(object):
         for cipher in auth_suite_ciphers:
             self._logger.debug(cipher)
 
-        self._socket = ssl.wrap_socket(
-            self._socket,
-            keyfile=self.config.settings.get('key_path'),
-            certfile=self.config.settings.get('certificate_path'),
-            server_side=True,
-            cert_reqs=ssl.CERT_REQUIRED,
-            ssl_version=self.auth_suite.protocol,
-            ca_certs=self.config.settings.get('ca_path'),
-            do_handshake_on_connect=False,
-            suppress_ragged_eofs=True,
-            ciphers=self.auth_suite.ciphers
-        )
+        with ssl.SSLContext() as ctx:
+            self._socket = ctx.wrap_socket(
+                self._socket,
+                keyfile=self.config.settings.get('key_path'),
+                certfile=self.config.settings.get('certificate_path'),
+                server_side=True,
+                cert_reqs=ssl.CERT_REQUIRED,
+                ssl_version=self.auth_suite.protocol,
+                ca_certs=self.config.settings.get('ca_path'),
+                do_handshake_on_connect=False,
+                suppress_ragged_eofs=True,
+                ciphers=self.auth_suite.ciphers
+            )
 
         try:
             self._socket.bind(
