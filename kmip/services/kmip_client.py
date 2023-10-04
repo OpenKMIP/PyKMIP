@@ -287,6 +287,7 @@ class KMIPProxy(object):
     def _create_socket(self, sock):
         context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH, cafile=self.certfile)
         context.check_hostname = False
+        context.load_cert_chain(self.certfile, self.keyfile)
         self.socket = context.wrap_socket(
             sock,
             server_side=False,
