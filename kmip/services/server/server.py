@@ -287,7 +287,7 @@ class KmipServer(object):
         for cipher in auth_suite_ciphers:
             self._logger.debug(cipher)
 
-        context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH, cafile=self.config.settings.get('certificate_path'))
+        context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH, cafile=self.config.settings.get('certificate_path'))
         self._socket = context.wrap_socket(self._socket,
                     server_side=True,
                     do_handshake_on_connect=False,
