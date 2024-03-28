@@ -587,10 +587,16 @@ class CryptographyEngine(api.CryptographicEngine):
             backend = default_backend()
 
             try:
-                public_key = backend.load_der_public_key(encryption_key)
+                public_key = serialization.load_der_public_key(
+                    encryption_key,
+                    backend=default_backend()
+                )
             except Exception:
                 try:
-                    public_key = backend.load_pem_public_key(encryption_key)
+                    public_key = serialization.load_pem_public_key(
+                        encryption_key,
+                        backend=default_backend()
+                    )
                 except Exception:
                     raise exceptions.CryptographicFailure(
                         "The public key bytes could not be loaded."
@@ -1488,10 +1494,16 @@ class CryptographyEngine(api.CryptographicEngine):
                 )
 
             try:
-                public_key = backend.load_der_public_key(signing_key)
+                public_key = serialization.load_der_public_key(
+                    signing_key,
+                    backend=default_backend()
+                )
             except Exception:
                 try:
-                    public_key = backend.load_pem_public_key(signing_key)
+                    public_key = serialization.load_pem_public_key(
+                        signing_key,
+                        backend=default_backend()
+                    )
                 except Exception:
                     raise exceptions.CryptographicFailure(
                         "The signing key bytes could not be loaded."

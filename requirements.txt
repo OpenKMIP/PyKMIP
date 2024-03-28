@@ -1,4 +1,4 @@
-cryptography>=1.4
+cryptography>=2.5
 enum-compat
 requests
 six>=1.11.0
