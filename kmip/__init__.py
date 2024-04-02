@@ -15,8 +15,6 @@
 
 import os
 import re
-import sys
-import warnings
 
 from kmip.core import enums
 from kmip.pie import client
@@ -46,22 +44,3 @@ __all__ = [
     'objects',
     'services'
 ]
-
-
-if sys.version_info[:2] == (2, 7):
-    warnings.warn(
-        (
-            "PyKMIP will drop support for Python 2.7 in a future release. "
-            "Please upgrade to a newer version of Python (3.5+ preferred)."
-        ),
-        PendingDeprecationWarning
-    )
-
-if sys.version_info[:2] == (3, 4):
-    warnings.warn(
-        (
-            "PyKMIP will drop support for Python 3.4 in a future release. "
-            "Please upgrade to a newer version of Python (3.5+ preferred)."
-        ),
-        PendingDeprecationWarning
-    )
