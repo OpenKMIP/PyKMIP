@@ -14,6 +14,7 @@
 # under the License.
 
 import binascii
+import errno
 import logging
 import socket
 import struct
@@ -113,8 +114,13 @@ class KmipSession(threading.Thread):
                     self._logger.info("Failure handling message loop")
                     self._logger.exception(e)
 
-        self._connection.shutdown(socket.SHUT_RDWR)
-        self._connection.close()
+        try:
+            self._connection.shutdown(socket.SHUT_RDWR)
+        except OSError as e:
+            if e.errno != errno.ENOTCONN:
+                raise
+        finally:
+            self._connection.close()
         self._logger.info("Stopping session: {0}".format(self.name))
 
     def _handle_message_loop(self):
