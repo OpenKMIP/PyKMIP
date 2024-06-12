@@ -118,7 +118,11 @@ class KmipSession(threading.Thread):
         self._logger.info("Stopping session: {0}".format(self.name))
 
     def _handle_message_loop(self):
-        request_data = self._receive_request()
+        try:
+            request_data = self._receive_request()
+        except socket.timeout:
+            return
+
         request = messages.RequestMessage()
 
         max_size = self._max_response_size
