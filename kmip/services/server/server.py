@@ -287,9 +287,13 @@ class KmipServer(object):
         for cipher in auth_suite_ciphers:
             self._logger.debug(cipher)
 
-        purpose = ssl.Purpose.CLIENT_AUTH
-        capath = self.config.settings.get('ca_path')
-        context = ssl.create_default_context(purpose=purpose, capath=capath)
+        cafile = self.config.settings.get('ca_path')
+        context = ssl.SSLContext(self.ssl_version)
+        context.verify_mode = ssl.CERT_REQUIRED
+        if auth_suite_ciphers:
+            context.set_ciphers(auth_suite_ciphers)
+        if cafile:
+            context.load_verify_locations(cafile)
         certfile = self.config.settings.get('certificate_path')
 
         if certfile:
