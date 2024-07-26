@@ -300,8 +300,7 @@ class KmipServer(object):
             keyfile = self.config.settings.get('key_path')
             context.load_cert_chain(certfile, keyfile=keyfile)
         else:
-            raise ValueError("certfile must be specified for server-side "
-                         "operations")
+            raise ValueError("certfile must be specified for server-side operations")
 
         self._socket = context.wrap_socket(
             self._socket,
