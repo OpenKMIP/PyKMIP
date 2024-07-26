@@ -362,11 +362,12 @@ class KmipServer(object):
 
         self._logger.info("Shutting down server socket handler.")
         try:
+            self._socket.shutdown(socket.SHUT_RDWR)
             self._socket.close()
         except Exception as e:
             self._logger.exception(e)
             raise exceptions.NetworkingError(
-                "Server failed to close socket handler."
+                "Server failed to shutdown socket handler."
             )
 
         if hasattr(self, "policy_monitor"):
