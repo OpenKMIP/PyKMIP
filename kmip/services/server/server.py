@@ -288,10 +288,10 @@ class KmipServer(object):
             self._logger.debug(cipher)
 
         cafile = self.config.settings.get('ca_path')
-        context = ssl.SSLContext(self.ssl_version)
+        context = ssl.SSLContext(self.auth_suite.protocol)
         context.verify_mode = ssl.CERT_REQUIRED
-        if auth_suite_ciphers:
-            context.set_ciphers(auth_suite_ciphers)
+        if self.auth_suite.ciphers:
+            context.set_ciphers(self.auth_suite.ciphers)
         if cafile:
             context.load_verify_locations(cafile)
         certfile = self.config.settings.get('certificate_path')
@@ -299,6 +299,9 @@ class KmipServer(object):
         if certfile:
             keyfile = self.config.settings.get('key_path')
             context.load_cert_chain(certfile, keyfile=keyfile)
+        else:
+            raise ValueError("certfile must be specified for server-side "
+                         "operations")
 
         self._socket = context.wrap_socket(
             self._socket,

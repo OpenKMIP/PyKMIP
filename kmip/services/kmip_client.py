@@ -285,11 +285,12 @@ class KMIPProxy(object):
             six.reraise(*last_error)
 
     def _create_socket(self, sock):
-        context = ssl.SSLContext(self.ssl_version)
+        context = ssl.SSLContext(self.auth_suite.protocol)
         context.verify_mode = self.cert_reqs
         if self.ca_certs:
             context.load_verify_locations(self.ca_certs)
-        context.check_hostname = False
+        if self.keyfile and not self.certfile:
+            raise ValueError("certfile must be specified")
         if self.certfile:
             context.load_cert_chain(self.certfile, self.keyfile)
         self.socket = context.wrap_socket(
