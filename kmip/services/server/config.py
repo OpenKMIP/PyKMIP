@@ -38,21 +38,22 @@ class KmipServerConfig(object):
         self.settings['tls_cipher_suites'] = []
         self.settings['logging_level'] = logging.INFO
         self.settings['auth_plugins'] = []
+        self.settings['auth_suite'] = 'TLS_SERVER'
 
         self._expected_settings = [
             'hostname',
             'port',
             'certificate_path',
             'key_path',
-            'ca_path',
-            'auth_suite'
+            'ca_path'
         ]
         self._optional_settings = [
             'policy_path',
             'enable_tls_client_auth',
             'tls_cipher_suites',
             'logging_level',
-            'database_path'
+            'database_path',
+            'auth_suite'
         ]
 
     def set_setting(self, setting, value):
