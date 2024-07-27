@@ -311,6 +311,7 @@ class TestClientAuthenticationSuite(testtools.TestCase):
         suites = ciphers.split(':')
         self.assertEqual(5, len(suites))
         self.assertIn('TLS_AES_128_GCM_SHA256', suites)
+        self.assertIn('TLS_CHACHA20_POLY1305_SHA256', suites)
 
 
 class TestServerAuthenticationSuite(testtools.TestCase):
@@ -385,3 +386,4 @@ class TestServerAuthenticationSuite(testtools.TestCase):
         suites = ciphers.split(':')
         self.assertEqual(5, len(suites))
         self.assertIn('TLS_AES_128_GCM_SHA256', suites)
+        self.assertIn('TLS_CHACHA20_POLY1305_SHA256', suites)
