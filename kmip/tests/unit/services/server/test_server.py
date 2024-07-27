@@ -50,7 +50,7 @@ class TestKmipServer(testtools.TestCase):
         self.assertTrue(config_mock.called)
         self.assertTrue(logging_mock.called)
 
-        self.assertIsInstance(s.auth_suite, auth.BasicAuthenticationSuite)
+        self.assertIsInstance(s.auth_suite, auth.ServerAuthenticationSuite)
         self.assertEqual(1, s._session_id)
         self.assertFalse(s._is_serving)
 

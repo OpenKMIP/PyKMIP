@@ -276,24 +276,6 @@ class TestClientAuthenticationSuite(testtools.TestCase):
 
         self.assertEqual(cipher_string, ciphers)
 
-    def test_custom_ciphers(self):
-        """
-        Test that providing a custom list of cipher suites yields the right
-        cipher string.
-        """
-        suite = auth.ClientAuthenticationSuite(
-            [
-                'TLS_AES_128_GCM_SHA256',
-                'TLS_CHACHA20_POLY1305_SHA256'
-            ]
-        )
-        ciphers = suite.ciphers
-
-        self.assertIsInstance(ciphers, str)
-        suites = ciphers.split(':')
-        self.assertEqual(2, len(suites))
-        self.assertIn('TLS_CHACHA20_POLY1305_SHA256', suites)
-
     def test_custom_ciphers_empty(self):
         """
         Test that providing a custom list of cipher suites that ultimately
@@ -350,24 +332,6 @@ class TestServerAuthenticationSuite(testtools.TestCase):
         ))
 
         self.assertEqual(cipher_string, ciphers)
-
-    def test_custom_ciphers(self):
-        """
-        Test that providing a custom list of cipher suites yields the right
-        cipher string.
-        """
-        suite = auth.ServerAuthenticationSuite(
-            [
-                'TLS_AES_128_GCM_SHA256',
-                'TLS_CHACHA20_POLY1305_SHA256'
-            ]
-        )
-        ciphers = suite.ciphers
-
-        self.assertIsInstance(ciphers, str)
-        suites = ciphers.split(':')
-        self.assertEqual(2, len(suites))
-        self.assertIn('TLS_CHACHA20_POLY1305_SHA256', suites)
 
     def test_custom_ciphers_empty(self):
         """
