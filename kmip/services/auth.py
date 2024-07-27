@@ -232,3 +232,61 @@ class TLS12AuthenticationSuite(AuthenticationSuite):
         """
         super(TLS12AuthenticationSuite, self).__init__(cipher_suites)
         self._protocol = ssl.PROTOCOL_TLSv1_2
+
+
+class ClientAuthenticationSuite(AuthenticationSuite):
+    """
+    An authentication suite used to establish secure network connections.
+
+    Supports TLS 1.3.
+    https://docs.openssl.org/3.3/man1/openssl-ciphers/#tls-v13-cipher-suites.
+    """
+
+    _default_cipher_suites = [
+        'TLS_AES_128_GCM_SHA256',
+        'TLS_AES_256_GCM_SHA384',
+        'TLS_CHACHA20_POLY1305_SHA256',
+        'TLS_AES_128_CCM_SHA256',
+        'TLS_AES_128_CCM_8_SHA256'
+    ]
+
+    def __init__(self, cipher_suites=None):
+        """
+        Create a ClientAuthenticationSuite object.
+
+        Args:
+            cipher_suites (list): A list of strings representing the names of
+                cipher suites to use. Overrides the default set of cipher
+                suites. Optional, defaults to None.
+        """
+        super(ClientAuthenticationSuite, self).__init__(cipher_suites)
+        self._protocol = ssl.PROTOCOL_TLS_CLIENT
+
+
+class ServerAuthenticationSuite(AuthenticationSuite):
+    """
+    An authentication suite used to establish secure network connections.
+
+    Supports TLS 1.3.
+    https://docs.openssl.org/3.3/man1/openssl-ciphers/#tls-v13-cipher-suites.
+    """
+
+    _default_cipher_suites = [
+        'TLS_AES_128_GCM_SHA256',
+        'TLS_AES_256_GCM_SHA384',
+        'TLS_CHACHA20_POLY1305_SHA256',
+        'TLS_AES_128_CCM_SHA256',
+        'TLS_AES_128_CCM_8_SHA256'
+    ]
+
+    def __init__(self, cipher_suites=None):
+        """
+        Create a ServerAuthenticationSuite object.
+
+        Args:
+            cipher_suites (list): A list of strings representing the names of
+                cipher suites to use. Overrides the default set of cipher
+                suites. Optional, defaults to None.
+        """
+        super(ServerAuthenticationSuite, self).__init__(cipher_suites)
+        self._protocol = ssl.PROTOCOL_TLS_SERVER
