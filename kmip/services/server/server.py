@@ -293,7 +293,7 @@ class KmipServer(object):
         context = ssl.SSLContext(self.auth_suite.protocol)
         context.verify_mode = ssl.CERT_REQUIRED
         if (self.auth_suite.ciphers and
-            self.auth_suite.protocol != ssl.PROTOCOL_TLS_SERVER):
+                self.auth_suite.protocol != ssl.PROTOCOL_TLS_SERVER):
             context.set_ciphers(self.auth_suite.ciphers)
         if cafile:
             context.load_verify_locations(cafile)
