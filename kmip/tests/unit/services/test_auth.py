@@ -237,3 +237,151 @@ class TestTLS12AuthenticationSuite(testtools.TestCase):
         self.assertIn('ECDHE-ECDSA-AES256-GCM-SHA384', suites)
         self.assertIn('ECDHE-ECDSA-AES128-SHA256', suites)
         self.assertIn('ECDHE-ECDSA-AES256-SHA384', suites)
+
+
+class TestClientAuthenticationSuite(testtools.TestCase):
+    """
+    A test suite for the ClientAuthenticationSuite.
+    """
+
+    def setUp(self):
+        super(TestClientAuthenticationSuite, self).setUp()
+
+    def tearDown(self):
+        super(TestClientAuthenticationSuite, self).tearDown()
+
+    def test_init(self):
+        auth.ClientAuthenticationSuite()
+
+    def test_protocol(self):
+        suite = auth.ClientAuthenticationSuite()
+        protocol = suite.protocol
+
+        self.assertIsInstance(protocol, int)
+        self.assertEqual(ssl.PROTOCOL_TLS_CLIENT, suite.protocol)
+
+    def test_ciphers(self):
+        suite = auth.ClientAuthenticationSuite()
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+
+        cipher_string = ':'.join((
+            'TLS_AES_128_GCM_SHA256',
+            'TLS_AES_256_GCM_SHA384',
+            'TLS_CHACHA20_POLY1305_SHA256',
+            'TLS_AES_128_CCM_SHA256',
+            'TLS_AES_128_CCM_8_SHA256',
+        ))
+
+        self.assertEqual(cipher_string, ciphers)
+
+    def test_custom_ciphers(self):
+        """
+        Test that providing a custom list of cipher suites yields the right
+        cipher string.
+        """
+        suite = auth.ClientAuthenticationSuite(
+            [
+                'TLS_AES_128_GCM_SHA256',
+                'TLS_CHACHA20_POLY1305_SHA256'
+            ]
+        )
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+        suites = ciphers.split(':')
+        self.assertEqual(2, len(suites))
+        self.assertIn('TLS_CHACHA20_POLY1305_SHA256', suites)
+
+    def test_custom_ciphers_empty(self):
+        """
+        Test that providing a custom list of cipher suites that ultimately
+        yields an empty suite list causes the default cipher suite list to
+        be provided instead.
+        """
+        suite = auth.ClientAuthenticationSuite(
+            [
+                'TLS_RSA_WITH_AES_256_CBC_SHA'
+            ]
+        )
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+        suites = ciphers.split(':')
+        self.assertEqual(5, len(suites))
+        self.assertIn('TLS_AES_128_GCM_SHA256', suites)
+
+
+class TestServerAuthenticationSuite(testtools.TestCase):
+    """
+    A test suite for the ServerAuthenticationSuite.
+    """
+
+    def setUp(self):
+        super(TestServerAuthenticationSuite, self).setUp()
+
+    def tearDown(self):
+        super(TestServerAuthenticationSuite, self).tearDown()
+
+    def test_init(self):
+        auth.ServerAuthenticationSuite()
+
+    def test_protocol(self):
+        suite = auth.ServerAuthenticationSuite()
+        protocol = suite.protocol
+
+        self.assertIsInstance(protocol, int)
+        self.assertEqual(ssl.PROTOCOL_TLS_SERVER, suite.protocol)
+
+    def test_ciphers(self):
+        suite = auth.ServerAuthenticationSuite()
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+
+        cipher_string = ':'.join((
+            'TLS_AES_128_GCM_SHA256',
+            'TLS_AES_256_GCM_SHA384',
+            'TLS_CHACHA20_POLY1305_SHA256',
+            'TLS_AES_128_CCM_SHA256',
+            'TLS_AES_128_CCM_8_SHA256',
+        ))
+
+        self.assertEqual(cipher_string, ciphers)
+
+    def test_custom_ciphers(self):
+        """
+        Test that providing a custom list of cipher suites yields the right
+        cipher string.
+        """
+        suite = auth.ServerAuthenticationSuite(
+            [
+                'TLS_AES_128_GCM_SHA256',
+                'TLS_CHACHA20_POLY1305_SHA256'
+            ]
+        )
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+        suites = ciphers.split(':')
+        self.assertEqual(2, len(suites))
+        self.assertIn('TLS_CHACHA20_POLY1305_SHA256', suites)
+
+    def test_custom_ciphers_empty(self):
+        """
+        Test that providing a custom list of cipher suites that ultimately
+        yields an empty suite list causes the default cipher suite list to
+        be provided instead.
+        """
+        suite = auth.ServerAuthenticationSuite(
+            [
+                'TLS_RSA_WITH_AES_256_CBC_SHA'
+            ]
+        )
+        ciphers = suite.ciphers
+
+        self.assertIsInstance(ciphers, str)
+        suites = ciphers.split(':')
+        self.assertEqual(5, len(suites))
+        self.assertIn('TLS_AES_128_GCM_SHA256', suites)

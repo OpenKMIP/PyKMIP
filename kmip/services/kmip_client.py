@@ -1762,7 +1762,7 @@ class KMIPProxy(object):
             cert_reqs, self.config, 'cert_reqs', 'CERT_REQUIRED'))
 
         self.ssl_version = getattr(ssl, conf.get_valid_value(
-            ssl_version, self.config, 'ssl_version', conf.DEFAULT_SSL_VERSION))
+            ssl_version, self.config, 'ssl_version', conf.DEFAULT_TLS_CLIENT))
 
         self.ca_certs = conf.get_valid_value(
             ca_certs, self.config, 'ca_certs', conf.DEFAULT_CA_CERTS)

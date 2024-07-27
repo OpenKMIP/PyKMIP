@@ -154,8 +154,10 @@ class KmipServer(object):
         cipher_suites = self.config.settings.get('tls_cipher_suites')
         if self.config.settings.get('auth_suite') == 'TLS1.2':
             self.auth_suite = auth.TLS12AuthenticationSuite(cipher_suites)
-        else:
+        elif self.config.settings.get('auth_suite') == 'Basic':
             self.auth_suite = auth.BasicAuthenticationSuite(cipher_suites)
+        else:
+            self.auth_suite = auth.ServerAuthenticationSuite(cipher_suites)
 
         self._session_id = 1
         self._is_serving = False
