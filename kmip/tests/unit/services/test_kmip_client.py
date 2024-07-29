@@ -715,6 +715,7 @@ class TestKMIPClient(TestCase):
             suppress_ragged_eofs=None,
             username=None,
             password=None,
+            key_password=None,
             timeout=None,
             config_file=None
         )

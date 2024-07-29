@@ -63,6 +63,7 @@ class ProxyKmipClient(object):
                  ssl_version=None,
                  username=None,
                  password=None,
+                 key_password=None,
                  config='client',
                  config_file=None,
                  kmip_version=None):
@@ -88,6 +89,8 @@ class ProxyKmipClient(object):
                 use for operations. Optional, defaults to None.
             password (string): The password of the KMIP appliance account to
                 use for operations. Optional, defaults to None.
+            key_password (XXX): The password for the 'key', passed to
+                'SSLContext.load_cert_chain()'.
             config (string): The name of a section in the PyKMIP configuration
                 file. Use to load a specific set of configuration settings from
                 the configuration file, instead of specifying them manually.
@@ -115,6 +118,7 @@ class ProxyKmipClient(object):
             ssl_version=ssl_version,
             username=username,
             password=password,
+            key_password=key_password,
             config=config,
             config_file=config_file,
             kmip_version=kmip_version

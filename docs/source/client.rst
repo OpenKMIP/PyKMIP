@@ -85,6 +85,9 @@ The different configuration options are defined below:
 * ``password``
     A string representing the password to use for KMIP requests. Optional
     depending on server access policies. Leave blank if not needed.
+* ``key_password``
+    A string representing the password to unlock the specified SSL
+    key, if needed. Leave blank if not needed.
 
 The client can also be configured manually via Python. The following example
 shows how to create the ``ProxyKmipClient`` in Python code, directly
@@ -122,7 +125,7 @@ Class Documentation
 -------------------
 .. py:module:: kmip.pie.client
 
-.. py:class:: ProxyKmipClient(hostname=None, port=None, cert=None, key=None, ca=None, ssl_version=None, username=None, password=None, config='client', config_file=None, kmip_version=None)
+.. py:class:: ProxyKmipClient(hostname=None, port=None, cert=None, key=None, ca=None, ssl_version=None, username=None, password=None, key_password=None, config='client', config_file=None, kmip_version=None)
 
     A simplified KMIP client for conducting KMIP operations.
 
@@ -151,6 +154,10 @@ Class Documentation
         use for operations. Optional, defaults to None.
     :param string password: The password of the KMIP appliance account to
         use for operations. Optional, defaults to None.
+    :param XXX key_password: The password to unlock the specified SSL
+        key, if needed.  This is passed to
+        `SSLContext.load_cert_chain()` and can use any of the formats
+        accepted by that method.
     :param string config: The name of a section in the PyKMIP configuration
         file. Use to load a specific set of configuration settings from the
         configuration file, instead of specifying them manually. Optional,
