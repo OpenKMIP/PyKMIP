@@ -80,7 +80,9 @@ class KMIPProxy(object):
                  cert_reqs=None, ssl_version=None, ca_certs=None,
                  do_handshake_on_connect=None,
                  suppress_ragged_eofs=None,
-                 username=None, password=None, timeout=30, config='client',
+                 username=None, password=None,
+                 key_password=None,
+                 timeout=30, config='client',
                  config_file=None,
                  kmip_version=None):
         self.logger = logging.getLogger(__name__)
@@ -111,7 +113,8 @@ class KMIPProxy(object):
         self._set_variables(host, port, keyfile, certfile,
                             cert_reqs, ssl_version, ca_certs,
                             do_handshake_on_connect, suppress_ragged_eofs,
-                            username, password, timeout, config_file)
+                            username, password, key_password,
+                            timeout, config_file)
         self.batch_items = []
 
         self.conformance_clauses = [
@@ -292,7 +295,8 @@ class KMIPProxy(object):
         if self.keyfile and not self.certfile:
             raise ValueError("certfile must be specified")
         if self.certfile:
-            context.load_cert_chain(self.certfile, self.keyfile)
+            context.load_cert_chain(self.certfile, self.keyfile,
+                                    password=self.key_password)
         self.socket = context.wrap_socket(
             sock,
             server_side=False,
@@ -1742,7 +1746,8 @@ class KMIPProxy(object):
     def _set_variables(self, host, port, keyfile, certfile,
                        cert_reqs, ssl_version, ca_certs,
                        do_handshake_on_connect, suppress_ragged_eofs,
-                       username, password, timeout, config_file):
+                       username, password, key_password,
+                       timeout, config_file):
         conf = ConfigHelper(config_file)
 
         # TODO: set this to a host list
@@ -1790,6 +1795,9 @@ class KMIPProxy(object):
 
         self.password = conf.get_valid_value(
             password, self.config, 'password', conf.DEFAULT_PASSWORD)
+
+        self.key_password = conf.get_valid_value(
+            key_password, self.config, 'key_password', None)
 
         self.timeout = int(conf.get_valid_value(
             timeout, self.config, 'timeout', conf.DEFAULT_TIMEOUT))
