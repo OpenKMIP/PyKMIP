@@ -174,7 +174,7 @@ class ProxyKmipClient(object):
                 self._is_open = True
             except Exception as e:
                 self.logger.error("could not open client connection: %s", e)
-                raise
+                raise exceptions.ClientConnectionFailure
 
     def close(self):
         """
@@ -191,7 +191,7 @@ class ProxyKmipClient(object):
                 self._is_open = False
             except Exception as e:
                 self.logger.error("could not close client connection: %s", e)
-                raise
+                raise exceptions.ClientConnectionFailure
 
     @is_connected
     def create(self, algorithm, length, operation_policy_name=None, name=None,
