@@ -28,6 +28,7 @@ import threading
 
 from kmip.core import exceptions
 from kmip.core import policy as operation_policy
+from kmip.core.exceptions import InvalidField
 from kmip.services import auth
 from kmip.services.server import config
 from kmip.services.server import engine
@@ -228,6 +229,19 @@ class KmipServer(object):
         if database_path:
             self.config.set_setting('database_path', database_path)
 
+    def __get_address_family(self, hostname):
+        """
+        Determine whether the given hostname is an IPv4 or IPv6 address.
+        Return socket.AF_INET for IPv4 and socket.AF_INET6 for IPv6.
+        """
+        try:
+            return socket.getaddrinfo(hostname, None)[0][0]
+        except Exception:
+            self._logger.exception(
+                "Failed to get address family of hostname {}.".format(hostname)
+            )
+            raise InvalidField("Invalid hostname: {}".format(hostname))
+
     def start(self):
         """
         Prepare the server to start serving connections.
@@ -268,7 +282,10 @@ class KmipServer(object):
 
         # Create a TCP stream socket and configure it for immediate reuse.
         socket.setdefaulttimeout(10)
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket = socket.socket(
+            self.__get_address_family(self.config.settings.get('hostname')),
+            socket.SOCK_STREAM
+        )
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         self._logger.debug(

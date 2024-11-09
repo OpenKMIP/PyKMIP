@@ -633,3 +633,59 @@ class TestKmipServer(testtools.TestCase):
 
         self.assertTrue(s.start.called)
         self.assertTrue(s.stop.called)
+
+    @mock.patch('multiprocessing.Manager')
+    @mock.patch('kmip.services.server.monitor.PolicyDirectoryMonitor')
+    @mock.patch('kmip.services.server.engine.KmipEngine')
+    @mock.patch('kmip.services.server.server.KmipServer._setup_logging')
+    def test_ipv6_support(self, manager_mock, monitor_mock, engine_mock, logging_mock):
+        """
+        Test that the right calls and log messages are triggered when stopping
+        the server results in an error while shutting down the policy monitor.
+        """
+        a_mock = mock.MagicMock()
+        b_mock = mock.MagicMock()
+        ip_and_expected_address_family = [
+            ('::1', socket.AF_INET6),
+            ('127.0.0.1', socket.AF_INET),
+        ]
+
+        for (ip, expected_address_family) in ip_and_expected_address_family:
+            s = server.KmipServer(
+                hostname=ip,
+                port=5696,
+                auth_suite='Basic',
+                config_path=None,
+                policy_path=None,
+                tls_cipher_suites='TLS_RSA_WITH_AES_128_CBC_SHA'
+            )
+            s._logger = mock.MagicMock()
+
+            with mock.patch('socket.socket') as socket_mock:
+                with mock.patch('ssl.wrap_socket') as ssl_mock:
+                    ssl_mock.return_value = b_mock
+                    socket_mock.return_value = a_mock
+                    s.start()
+                    socket_mock.assert_called_once_with(
+                        expected_address_family,
+                        socket.SOCK_STREAM
+                    )
+
+        s = server.KmipServer(
+            hostname='invalid_ip',
+            port=5696,
+            auth_suite='Basic',
+            config_path=None,
+            policy_path=None,
+            tls_cipher_suites='TLS_RSA_WITH_AES_128_CBC_SHA'
+        )
+
+        with mock.patch('socket.socket') as socket_mock:
+            with mock.patch('ssl.wrap_socket') as ssl_mock:
+                ssl_mock.return_value = b_mock
+                socket_mock.return_value = a_mock
+                self.assertRaisesRegex(
+                    exceptions.InvalidField,
+                    "Invalid hostname: invalid_ip",
+                    s.start
+                )
