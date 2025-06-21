@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
 import testtools
 
 from kmip.core import exceptions
@@ -55,7 +54,7 @@ class TestTextString(testtools.TestCase):
     def test_init_unset(self):
         text_string = primitives.TextString()
 
-        expected = six.string_types
+        expected = str
         observed = text_string.value
 
         msg = "expected {0}, observed {1}".format(expected, observed)

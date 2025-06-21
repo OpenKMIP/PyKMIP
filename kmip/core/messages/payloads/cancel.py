@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
@@ -54,7 +52,7 @@ class CancelRequestPayload(base.RequestPayload):
     def asynchronous_correlation_value(self, value):
         if value is None:
             self._asynchronous_correlation_value = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._asynchronous_correlation_value = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE
@@ -201,7 +199,7 @@ class CancelResponsePayload(base.ResponsePayload):
     def asynchronous_correlation_value(self, value):
         if value is None:
             self._asynchronous_correlation_value = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._asynchronous_correlation_value = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.ASYNCHRONOUS_CORRELATION_VALUE

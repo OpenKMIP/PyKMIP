@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import primitives
@@ -73,7 +71,7 @@ class SignRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -108,7 +106,7 @@ class SignRequestPayload(base.RequestPayload):
     def data(self, value):
         if value is None:
             self._data is None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.DATA
@@ -278,7 +276,7 @@ class SignResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -297,7 +295,7 @@ class SignResponsePayload(base.ResponsePayload):
     def signature_data(self, value):
         if value is None:
             self._signature_data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._signature_data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.SIGNATURE_DATA

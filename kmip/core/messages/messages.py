@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core.enums import Tags
 
@@ -171,7 +169,7 @@ class ResponseHeader(Struct):
     def server_hashed_password(self, value):
         if value is None:
             self._server_hashed_password = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._server_hashed_password = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.SERVER_HASHED_PASSWORD

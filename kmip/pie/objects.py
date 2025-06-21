@@ -20,7 +20,6 @@ from sqlalchemy import Boolean
 from sqlalchemy.ext.associationproxy import association_proxy
 
 import binascii
-import six
 
 from kmip.core import enums
 from kmip.pie import sqltypes as sql
@@ -721,7 +720,7 @@ class SymmetricKey(Key):
                             enums.CryptographicAlgorithm):
             raise TypeError("key algorithm must be a CryptographicAlgorithm "
                             "enumeration")
-        elif not isinstance(self.cryptographic_length, six.integer_types):
+        elif not isinstance(self.cryptographic_length, int):
             raise TypeError("key length must be an integer")
 
         mask_count = len(self.cryptographic_usage_masks)
@@ -736,7 +735,7 @@ class SymmetricKey(Key):
         name_count = len(self.names)
         for i in range(name_count):
             name = self.names[i]
-            if not isinstance(name, six.string_types):
+            if not isinstance(name, str):
                 position = "({0} in list)".format(i)
                 raise TypeError("key name {0} must be a string".format(
                     position))
@@ -895,7 +894,7 @@ class PublicKey(Key):
                             enums.CryptographicAlgorithm):
             raise TypeError("key algorithm must be a CryptographicAlgorithm "
                             "enumeration")
-        elif not isinstance(self.cryptographic_length, six.integer_types):
+        elif not isinstance(self.cryptographic_length, int):
             raise TypeError("key length must be an integer")
         elif not isinstance(self.key_format_type, enums.KeyFormatType):
             raise TypeError("key format type must be a KeyFormatType "
@@ -918,7 +917,7 @@ class PublicKey(Key):
         name_count = len(self.names)
         for i in range(name_count):
             name = self.names[i]
-            if not isinstance(name, six.string_types):
+            if not isinstance(name, str):
                 position = "({0} in list)".format(i)
                 raise TypeError("key name {0} must be a string".format(
                     position))
@@ -1066,7 +1065,7 @@ class PrivateKey(Key):
                             enums.CryptographicAlgorithm):
             raise TypeError("key algorithm must be a CryptographicAlgorithm "
                             "enumeration")
-        elif not isinstance(self.cryptographic_length, six.integer_types):
+        elif not isinstance(self.cryptographic_length, int):
             raise TypeError("key length must be an integer")
         elif not isinstance(self.key_format_type, enums.KeyFormatType):
             raise TypeError("key format type must be a KeyFormatType "
@@ -1089,7 +1088,7 @@ class PrivateKey(Key):
         name_count = len(self.names)
         for i in range(name_count):
             name = self.names[i]
-            if not isinstance(name, six.string_types):
+            if not isinstance(name, str):
                 position = "({0} in list)".format(i)
                 raise TypeError("key name {0} must be a string".format(
                     position))
@@ -1249,7 +1248,7 @@ class SplitKey(Key):
 
     @split_key_parts.setter
     def split_key_parts(self, value):
-        if (value is None) or (isinstance(value, six.integer_types)):
+        if (value is None) or (isinstance(value, int)):
             self._split_key_parts = value
         else:
             raise TypeError("The split key parts must be an integer.")
@@ -1260,7 +1259,7 @@ class SplitKey(Key):
 
     @key_part_identifier.setter
     def key_part_identifier(self, value):
-        if (value is None) or (isinstance(value, six.integer_types)):
+        if (value is None) or (isinstance(value, int)):
             self._key_part_identifier = value
         else:
             raise TypeError("The key part identifier must be an integer.")
@@ -1271,7 +1270,7 @@ class SplitKey(Key):
 
     @split_key_threshold.setter
     def split_key_threshold(self, value):
-        if (value is None) or (isinstance(value, six.integer_types)):
+        if (value is None) or (isinstance(value, int)):
             self._split_key_threshold = value
         else:
             raise TypeError("The split key threshold must be an integer.")
@@ -1295,7 +1294,7 @@ class SplitKey(Key):
 
     @prime_field_size.setter
     def prime_field_size(self, value):
-        if (value is None) or (isinstance(value, six.integer_types)):
+        if (value is None) or (isinstance(value, int)):
             self._prime_field_size = value
         else:
             raise TypeError("The prime field size must be an integer.")
@@ -1489,7 +1488,7 @@ class Certificate(CryptographicObject):
         name_count = len(self.names)
         for i in range(name_count):
             name = self.names[i]
-            if not isinstance(name, six.string_types):
+            if not isinstance(name, str):
                 position = "({0} in list)".format(i)
                 raise TypeError("certificate name {0} must be a string".format(
                     position))
@@ -1664,7 +1663,7 @@ class SecretData(CryptographicObject):
         name_count = len(self.names)
         for i in range(name_count):
             name = self.names[i]
-            if not isinstance(name, six.string_types):
+            if not isinstance(name, str):
                 position = "({0} in list)".format(i)
                 raise TypeError("secret data name {0} must be a string".format(
                     position))
@@ -1771,7 +1770,7 @@ class OpaqueObject(ManagedObject):
         name_count = len(self.names)
         for i in range(name_count):
             name = self.names[i]
-            if not isinstance(name, six.string_types):
+            if not isinstance(name, str):
                 position = "({0} in list)".format(i)
                 raise TypeError("opaque data name {0} must be a string".format(
                     position))
@@ -1847,7 +1846,7 @@ class ApplicationSpecificInformation(sql.Base):
 
     @application_namespace.setter
     def application_namespace(self, value):
-        if (value is None) or (isinstance(value, six.string_types)):
+        if (value is None) or (isinstance(value, str)):
             self._application_namespace = value
         else:
             raise TypeError("The application namespace must be a string.")
@@ -1858,7 +1857,7 @@ class ApplicationSpecificInformation(sql.Base):
 
     @application_data.setter
     def application_data(self, value):
-        if (value is None) or (isinstance(value, six.string_types)):
+        if (value is None) or (isinstance(value, str)):
             self._application_data = value
         else:
             raise TypeError("The application data must be a string.")
@@ -1937,7 +1936,7 @@ class ObjectGroup(sql.Base):
 
     @object_group.setter
     def object_group(self, value):
-        if (value is None) or (isinstance(value, six.string_types)):
+        if (value is None) or (isinstance(value, str)):
             self._object_group = value
         else:
             raise TypeError("The object group must be a string.")

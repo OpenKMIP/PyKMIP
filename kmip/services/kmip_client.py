@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import print_function
-
 from kmip.services.results import ActivateResult
 from kmip.services.results import CreateResult
 from kmip.services.results import CreateKeyPairResult
@@ -98,7 +96,7 @@ class KMIPProxy(object):
             self.kmip_version = enums.KMIPVersion.KMIP_1_2
 
         if config_file:
-            if not isinstance(config_file, six.string_types):
+            if not isinstance(config_file, str):
                 raise ValueError(
                     "The client configuration file argument must be a string."
                 )

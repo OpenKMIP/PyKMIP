@@ -16,7 +16,6 @@
 import testtools
 from testtools import TestCase
 import binascii
-import six
 
 from kmip.core.factories.secrets import SecretFactory
 from kmip.core.factories.attributes import AttributeFactory
@@ -1588,9 +1587,9 @@ class TestResponseMessage(TestCase):
 
             unique_identifier = response_payload.unique_identifier
             value = 'fb4b5b9c-6188-4c63-8142-fe9c328129fc'
-            self.assertIsInstance(unique_identifier, six.string_types,
+            self.assertIsInstance(unique_identifier, str,
                                   self.msg.format('unique identifier', 'type',
-                                                  six.string_types,
+                                                  str,
                                                   type(unique_identifier)))
             self.assertEqual(value, unique_identifier,
                              self.msg.format('unique identifier', 'value',
@@ -2104,8 +2103,8 @@ class TestResponseMessage(TestCase):
 
             unique_identifier = response_payload.unique_identifier
             msg = "Bad unique identifier type: expected {0}, received {1}"
-            self.assertIsInstance(unique_identifier, six.string_types,
-                                  msg.format(six.string_types,
+            self.assertIsInstance(unique_identifier, str,
+                                  msg.format(str,
                                              type(unique_identifier)))
             msg = "Bad unique identifier value: expected {0}, received {1}"
             exp_value = '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3'

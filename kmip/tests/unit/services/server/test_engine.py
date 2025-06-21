@@ -1538,7 +1538,7 @@ class TestKmipEngine(testtools.TestCase):
             'Initial Date'
         )
         self.assertIsNotNone(result)
-        self.assertIsInstance(result, six.integer_types)
+        self.assertIsInstance(result, int)
 
         result = e._get_attribute_from_managed_object(
             symmetric_key,

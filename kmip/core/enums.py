@@ -19,7 +19,6 @@
 import copy
 import enum
 import functools
-import six
 
 
 class OrderedEnum(enum.Enum):
@@ -1784,7 +1783,7 @@ def convert_attribute_name_to_tag(value):
         ValueError: if the attribute name string is not a string or if it is
             an unrecognized attribute name
     """
-    if not isinstance(value, six.string_types):
+    if not isinstance(value, str):
         raise ValueError("The attribute name must be a string.")
 
     for entry in attribute_name_tag_table:
@@ -1873,7 +1872,7 @@ def is_bit_mask(enumeration, potential_mask):
         True: if the potential mask is a valid bit mask of the mask enumeration
         False: otherwise
     """
-    if not isinstance(potential_mask, six.integer_types):
+    if not isinstance(potential_mask, int):
         return False
 
     mask_enumerations = (

@@ -15,7 +15,6 @@
 
 import enum as enumeration
 import logging
-import six
 import struct
 import sys
 import time
@@ -246,9 +245,9 @@ class Integer(Base):
                 integer
         """
         if self.value is not None:
-            if type(self.value) not in six.integer_types:
+            if type(self.value) not in int:
                 raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                    int, type(self.value)))
             else:
                 if self.value > Integer.MAX:
                     raise ValueError('integer value greater than accepted max')
@@ -378,9 +377,9 @@ class LongInteger(Base):
                 integer
         """
         if self.value is not None:
-            if not isinstance(self.value, six.integer_types):
+            if not isinstance(self.value, int):
                 raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                    int, type(self.value)))
             else:
                 if self.value > LongInteger.MAX:
                     raise ValueError(
@@ -520,9 +519,9 @@ class BigInteger(Base):
             TypeError: if the value is not of type int or long
         """
         if self.value is not None:
-            if not isinstance(self.value, six.integer_types):
+            if not isinstance(self.value, int):
                 raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                    int, type(self.value)))
 
     def __repr__(self):
         return "BigInteger(value={0}, tag={1})".format(self.value, self.tag)
@@ -648,7 +647,7 @@ class Enumeration(Base):
                 raise TypeError(
                     'enumeration {0} must be of type {1}'.format(
                         self.value, self.enum))
-            if type(self.value.value) not in six.integer_types:
+            if type(self.value.value) not in int:
                 raise TypeError('enumeration value must be an int')
             else:
                 if self.value.value > Enumeration.MAX:
@@ -884,7 +883,7 @@ class TextString(Base):
 
     def __validate(self):
         if self.value is not None:
-            if not isinstance(self.value, six.string_types):
+            if not isinstance(self.value, str):
                 msg = exceptions.ErrorStrings.BAD_EXP_RECV
                 raise TypeError(msg.format('TextString', 'value', str,
                                            type(self.value)))
@@ -1121,9 +1120,9 @@ class Interval(Base):
                 32-bit integer
         """
         if self.value is not None:
-            if type(self.value) not in six.integer_types:
+            if type(self.value) not in int:
                 raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                    int, type(self.value)))
             else:
                 if self.value > Interval.MAX:
                     raise ValueError(
