@@ -285,13 +285,16 @@ class KMIPProxy(object):
             six.reraise(*last_error)
 
     def _create_socket(self, sock):
-        self.socket = ssl.wrap_socket(
-            sock,
+        context = ssl.create_default_context()
+        context.verify_mode = self.cert_reqs
+        context.check_hostname = False
+        context.load_cert_chain(
             keyfile=self.keyfile,
-            certfile=self.certfile,
-            cert_reqs=self.cert_reqs,
-            ssl_version=self.ssl_version,
-            ca_certs=self.ca_certs,
+            certfile=self.certfile
+        )
+        context.load_verify_locations(cafile=self.ca_certs)
+        self.socket = context.wrap_socket(
+            sock,
             do_handshake_on_connect=self.do_handshake_on_connect,
             suppress_ragged_eofs=self.suppress_ragged_eofs)
         self.socket.settimeout(self.timeout)
