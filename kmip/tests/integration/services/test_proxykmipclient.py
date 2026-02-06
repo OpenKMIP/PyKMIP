@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
 import testtools
 import time
 import pytest
@@ -24,7 +23,6 @@ from kmip.core.factories import attributes as attribute_factory
 from kmip.pie import exceptions
 from kmip.pie import factory
 from kmip.pie import objects
-
 
 @pytest.mark.usefixtures("simple")
 class TestProxyKmipClientIntegration(testtools.TestCase):
@@ -48,7 +46,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         symmetric key.
         """
         uid = self.client.create(enums.CryptographicAlgorithm.AES, 256)
-        self.assertIsInstance(uid, six.string_types)
+        self.assertIsInstance(uid, str)
 
         try:
             key = self.client.get(uid)
@@ -124,7 +122,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         )
 
         uid = self.client.register(key)
-        self.assertIsInstance(uid, six.string_types)
+        self.assertIsInstance(uid, str)
 
         try:
             result = self.client.get(uid)
@@ -258,8 +256,8 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             public_usage_mask=[enums.CryptographicUsageMask.ENCRYPT],
             private_usage_mask=[enums.CryptographicUsageMask.DECRYPT]
         )
-        self.assertIsInstance(public_uid, six.string_types)
-        self.assertIsInstance(private_uid, six.string_types)
+        self.assertIsInstance(public_uid, str)
+        self.assertIsInstance(private_uid, str)
 
         try:
             public_key = self.client.get(public_uid)
@@ -325,7 +323,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             enums.KeyFormatType.PKCS_1)
 
         uid = self.client.register(key)
-        self.assertIsInstance(uid, six.string_types)
+        self.assertIsInstance(uid, str)
 
         try:
             result = self.client.get(uid)
@@ -433,7 +431,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             enums.KeyFormatType.PKCS_8)
 
         uid = self.client.register(key)
-        self.assertIsInstance(uid, six.string_types)
+        self.assertIsInstance(uid, str)
 
         try:
             result = self.client.get(uid)
@@ -511,7 +509,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
              b'\xEB\x5F\x7E\xA8\x11\xEB\xB2\x5A\x7F\x86'))
 
         uid = self.client.register(cert)
-        self.assertIsInstance(uid, six.string_types)
+        self.assertIsInstance(uid, str)
 
         try:
             result = self.client.get(uid)
@@ -539,7 +537,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             enums.SecretDataType.PASSWORD)
 
         uid = self.client.register(secret)
-        self.assertIsInstance(uid, six.string_types)
+        self.assertIsInstance(uid, str)
 
         try:
             result = self.client.get(uid)
@@ -578,7 +576,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             )
 
         uid = self.client.register(secret)
-        self.assertIsInstance(uid, six.string_types)
+        self.assertIsInstance(uid, str)
 
         try:
             result = self.client.get(uid)
@@ -641,7 +639,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             b'\x53\x65\x63\x72\x65\x74\x50\x61\x73\x73\x77\x6F\x72\x64',
             enums.OpaqueDataType.NONE)
         uid = self.client.register(obj)
-        self.assertIsInstance(uid, six.string_types)
+        self.assertIsInstance(uid, str)
 
         try:
             result = self.client.get(uid)
@@ -987,7 +985,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
             }
         )
 
-        self.assertIsInstance(signature, six.binary_type)
+        self.assertIsInstance(signature, bytes)
 
         # Verify the message signature.
         result = self.client.signature_verify(
@@ -1469,7 +1467,7 @@ class TestProxyKmipClientIntegration(testtools.TestCase):
         )
 
         uid = self.client.register(key)
-        self.assertIsInstance(uid, six.string_types)
+        self.assertIsInstance(uid, str)
 
         try:
             result = self.client.get(uid)

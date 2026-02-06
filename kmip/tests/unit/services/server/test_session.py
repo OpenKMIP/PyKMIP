@@ -18,7 +18,6 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 
-
 import datetime
 import mock
 import socket
@@ -35,7 +34,6 @@ from kmip.core.messages import messages
 
 from kmip.services.server import engine
 from kmip.services.server import session
-
 
 def build_certificate(
         common_names,
@@ -105,7 +103,6 @@ def build_certificate(
         )
 
     return builder.sign(private_key, hashes.SHA256(), default_backend())
-
 
 class TestKmipSession(testtools.TestCase):
     """
@@ -355,6 +352,72 @@ class TestKmipSession(testtools.TestCase):
         kmip_session._receive_request.assert_called_once_with()
         self.assertTrue(kmip_session._logger.warning.called)
         kmip_session._logger.exception.assert_not_called()
+        self.assertTrue(kmip_session._send_response.called)
+
+    @mock.patch('kmip.services.server.auth.get_certificate_from_connection')
+    @mock.patch('kmip.core.messages.messages.RequestMessage')
+    def test_handle_message_loop_with_response_size_equal_limit(
+            self,
+            request_mock,
+            cert_mock):
+        """
+        Test that a response exactly at the max size is allowed.
+        """
+        data = utils.BytearrayStream(())
+
+        cert_mock.return_value = 'test_certificate'
+        kmip_engine = engine.KmipEngine(database_path=':memory:')
+        kmip_session = session.KmipSession(
+            kmip_engine,
+            None,
+            None,
+            name='name',
+            enable_tls_client_auth=False
+        )
+        kmip_session.authenticate = mock.MagicMock(
+            return_value=("John Doe", ["Group A"])
+        )
+        kmip_session._logger = mock.MagicMock()
+        kmip_session._connection = mock.MagicMock()
+        kmip_session._connection.shared_ciphers = mock.MagicMock(
+            return_value=None
+        )
+        kmip_session._connection.cipher = mock.MagicMock(
+            return_value=('AES128-SHA256', 'TLSv1/SSLv3', 128)
+        )
+        kmip_session._receive_request = mock.MagicMock(return_value=data)
+        kmip_session._send_response = mock.MagicMock()
+
+        batch_item = messages.ResponseBatchItem(
+            result_status=contents.ResultStatus(
+                enums.ResultStatus.SUCCESS
+            )
+        )
+        batch_items = [batch_item]
+        header = messages.ResponseHeader(
+            protocol_version=contents.ProtocolVersion(1, 2),
+            time_stamp=contents.TimeStamp(int(time.time())),
+            batch_count=contents.BatchCount(len(batch_items))
+        )
+        response = messages.ResponseMessage(
+            response_header=header,
+            batch_items=batch_items
+        )
+
+        response_data = utils.BytearrayStream()
+        kmip_version = contents.protocol_version_to_kmip_version(
+            header.protocol_version
+        )
+        response.write(response_data, kmip_version=kmip_version)
+        max_size = len(response_data)
+
+        kmip_engine.process_request = mock.MagicMock(
+            return_value=(response, max_size, header.protocol_version)
+        )
+
+        kmip_session._handle_message_loop()
+
+        kmip_session._logger.warning.assert_not_called()
         self.assertTrue(kmip_session._send_response.called)
 
     @mock.patch('kmip.services.server.auth.get_certificate_from_connection')

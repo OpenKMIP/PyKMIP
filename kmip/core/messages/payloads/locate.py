@@ -13,14 +13,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
 from kmip.core.messages.payloads import base
-
 
 class LocateRequestPayload(base.RequestPayload):
     """
@@ -90,7 +87,7 @@ class LocateRequestPayload(base.RequestPayload):
     def maximum_items(self, value):
         if value is None:
             self._maximum_items = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._maximum_items = primitives.Integer(
                 value=value,
                 tag=enums.Tags.MAXIMUM_ITEMS
@@ -109,7 +106,7 @@ class LocateRequestPayload(base.RequestPayload):
     def offset_items(self, value):
         if value is None:
             self._offset_items = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._offset_items = primitives.Integer(
                 value=value,
                 tag=enums.Tags.OFFSET_ITEMS
@@ -128,7 +125,7 @@ class LocateRequestPayload(base.RequestPayload):
     def storage_status_mask(self, value):
         if value is None:
             self._storage_status_mask = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             if enums.is_bit_mask(enums.StorageStatusMask, value):
                 self._storage_status_mask = primitives.Integer(
                     value=value,
@@ -368,7 +365,6 @@ class LocateRequestPayload(base.RequestPayload):
         )
         return '{' + value + '}'
 
-
 class LocateResponsePayload(base.ResponsePayload):
     """
     A response payload for the Locate operation.
@@ -410,7 +406,7 @@ class LocateResponsePayload(base.ResponsePayload):
     def located_items(self, value):
         if value is None:
             self._located_items = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._located_items = primitives.Integer(
                 value=value,
                 tag=enums.Tags.LOCATED_ITEMS
@@ -431,7 +427,7 @@ class LocateResponsePayload(base.ResponsePayload):
         elif isinstance(value, list):
             self._unique_identifiers = []
             for v in value:
-                if not isinstance(v, six.string_types):
+                if not isinstance(v, str):
                     self._unique_identifiers = []
                     raise TypeError(
                         "Unique identifiers must be a list of strings."

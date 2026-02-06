@@ -37,7 +37,6 @@ from kmip.pie import client
 # INFO - Successfully decrypted the message.
 # INFO - Plain text: 'My test message.'
 
-
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 

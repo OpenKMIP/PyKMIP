@@ -1,0 +1,1260 @@
+[
+  {
+    "source": "kmip/__init__.py",
+    "test": "kmip/tests/unit/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/__init__.py",
+    "test": "kmip/tests/unit/core/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/attributes.py",
+    "test": "kmip/tests/unit/core/test_attributes.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py"
+    ],
+    "missing": {
+      "classes": [
+        "PublicKeyUniqueIdentifier",
+        "State",
+        "CustomAttribute"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/config_helper.py",
+    "test": "kmip/tests/unit/core/test_config_helper.py",
+    "status": "EXISTS",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/core/test_config_helper.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/enums.py",
+    "test": "kmip/tests/unit/core/test_enums.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/pie/test_exceptions.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_misc.py",
+      "kmip/tests/unit/core/objects/test_objects.py"
+    ],
+    "missing": {
+      "classes": [
+        "OrderedEnum",
+        "AdjustmentType",
+        "AlternativeNameType",
+        "AsynchronousIndicator",
+        "AttestationType",
+        "BatchErrorContinuationOption",
+        "CancellationResult",
+        "CertificateRequestType",
+        "ClientRegistrationMethod",
+        "EndpointRole",
+        "InteropFunction",
+        "ItemType",
+        "KeyCompressionType",
+        "KeyValueLocationType",
+        "KeyWrapType",
+        "LinkType",
+        "MaskGenerator",
+        "NISTKeyType",
+        "ObjectGroupMember",
+        "OpaqueDataType",
+        "PKCS11Function",
+        "PKCS11ReturnCode",
+        "ProtectionLevel",
+        "PutFunction",
+        "RevocationReasonCode",
+        "SecretDataType",
+        "SplitKeyMethod",
+        "StorageStatusMask",
+        "TicketType",
+        "Types",
+        "UsageLimitsUnit"
+      ],
+      "functions": [
+        "convert_attribute_name_to_tag",
+        "convert_attribute_tag_to_name",
+        "get_bit_mask_from_enumerations",
+        "get_enumerations_from_bit_mask",
+        "is_bit_mask",
+        "is_enum_value",
+        "is_attribute"
+      ]
+    }
+  },
+  {
+    "source": "kmip/core/exceptions.py",
+    "test": "kmip/tests/unit/core/test_exceptions.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "KmipError",
+        "CryptographicFailure",
+        "EncodingOptionError",
+        "IllegalOperation",
+        "IndexOutOfBounds",
+        "InvalidField",
+        "InvalidMessage",
+        "ItemNotFound",
+        "KeyCompressionTypeNotSupported",
+        "KeyFormatTypeNotSupported",
+        "OperationFailure",
+        "OperationNotSupported",
+        "PermissionDenied",
+        "AttributeNotSupported",
+        "ConfigurationError",
+        "ConnectionClosed",
+        "NetworkingError",
+        "InvalidKmipEncoding",
+        "InvalidPaddingBytes",
+        "InvalidPrimitiveLength",
+        "ShutdownError",
+        "VersionNotSupported",
+        "StreamNotEmptyError",
+        "ReadValueError",
+        "WriteOverflowError",
+        "KMIPServerZombieError",
+        "KMIPServerSuicideError",
+        "ErrorStrings"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/factories/__init__.py",
+    "test": "kmip/tests/unit/core/factories/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/factories/attribute_values.py",
+    "test": "kmip/tests/unit/core/factories/test_attribute_values.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "AttributeValueFactory"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/factories/attributes.py",
+    "test": "kmip/tests/unit/core/factories/test_attributes.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_objects.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/factories/credentials.py",
+    "test": "kmip/tests/unit/core/factories/test_credentials.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/factories/payloads/__init__.py",
+    "test": "kmip/tests/unit/core/factories/payloads/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "PayloadFactory"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/factories/payloads/request.py",
+    "test": "kmip/tests/unit/core/factories/payloads/test_request.py",
+    "status": "EXISTS",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/core/factories/payloads/test_request.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/factories/payloads/response.py",
+    "test": "kmip/tests/unit/core/factories/payloads/test_response.py",
+    "status": "EXISTS",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/core/factories/payloads/test_response.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/factories/secrets.py",
+    "test": "kmip/tests/unit/core/factories/test_secrets.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/__init__.py",
+    "test": "kmip/tests/unit/core/messages/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/contents.py",
+    "test": "kmip/tests/unit/core/messages/test_contents.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/payloads/test_discover_versions.py"
+    ],
+    "missing": {
+      "classes": [
+        "MaximumResponseSize",
+        "UniqueBatchItemID",
+        "TimeStamp",
+        "Authentication",
+        "AsynchronousIndicator",
+        "AsynchronousCorrelationValue",
+        "BatchOrderOption",
+        "BatchErrorContinuationOption",
+        "BatchCount",
+        "MessageExtension",
+        "ServerCorrelationValue",
+        "KeyCompressionType"
+      ],
+      "functions": [
+        "protocol_version_to_kmip_version"
+      ]
+    }
+  },
+  {
+    "source": "kmip/core/messages/messages.py",
+    "test": "kmip/tests/unit/core/messages/test_messages.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "missing": {
+      "classes": [
+        "RequestHeader",
+        "ResponseHeader",
+        "RequestMessage"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/__init__.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/activate.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_activate.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "ActivateRequestPayload",
+        "ActivateResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/archive.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_archive.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "ArchiveRequestPayload",
+        "ArchiveResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/base.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_base.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "RequestPayload",
+        "ResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/cancel.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_cancel.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "CancelRequestPayload",
+        "CancelResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/check.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_check.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "CheckRequestPayload",
+        "CheckResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/create.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_create.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "CreateRequestPayload",
+        "CreateResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/create_key_pair.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "CreateKeyPairRequestPayload",
+        "CreateKeyPairResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/decrypt.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "DecryptRequestPayload",
+        "DecryptResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/delete_attribute.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "DeleteAttributeRequestPayload",
+        "DeleteAttributeResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/derive_key.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "DeriveKeyRequestPayload",
+        "DeriveKeyResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/destroy.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_destroy.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "DestroyRequestPayload",
+        "DestroyResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/discover_versions.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_discover_versions.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "DiscoverVersionsRequestPayload",
+        "DiscoverVersionsResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/encrypt.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "EncryptRequestPayload",
+        "EncryptResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/get.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_get.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "GetRequestPayload",
+        "GetResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/get_attribute_list.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "GetAttributeListRequestPayload",
+        "GetAttributeListResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/get_attributes.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "GetAttributesRequestPayload",
+        "GetAttributesResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/get_usage_allocation.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_get_usage_allocation.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "GetUsageAllocationRequestPayload",
+        "GetUsageAllocationResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/locate.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_locate.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "LocateRequestPayload",
+        "LocateResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/mac.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_mac.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "MACRequestPayload",
+        "MACResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/modify_attribute.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "ModifyAttributeRequestPayload",
+        "ModifyAttributeResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/obtain_lease.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_obtain_lease.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "ObtainLeaseRequestPayload",
+        "ObtainLeaseResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/poll.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_poll.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "PollRequestPayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/query.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_query.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "QueryRequestPayload",
+        "QueryResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/recover.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_recover.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "RecoverRequestPayload",
+        "RecoverResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/register.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_register.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "RegisterRequestPayload",
+        "RegisterResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/rekey.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "RekeyRequestPayload",
+        "RekeyResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/rekey_key_pair.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "RekeyKeyPairRequestPayload",
+        "RekeyKeyPairResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/revoke.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "RevokeRequestPayload",
+        "RevokeResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/set_attribute.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "SetAttributeRequestPayload",
+        "SetAttributeResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/sign.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_sign.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "SignRequestPayload",
+        "SignResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/messages/payloads/signature_verify.py",
+    "test": "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "SignatureVerifyRequestPayload",
+        "SignatureVerifyResponsePayload"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/misc.py",
+    "test": "kmip/tests/unit/core/test_misc.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_misc.py",
+      "kmip/tests/unit/core/misc/test_server_information.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/objects.py",
+    "test": "kmip/tests/unit/core/test_objects.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/objects/test_extension_information.py",
+      "kmip/tests/unit/core/objects/test_objects.py"
+    ],
+    "missing": {
+      "classes": [
+        "CurrentAttribute",
+        "CredentialValue",
+        "UsernamePasswordCredential",
+        "DeviceCredential",
+        "AttestationCredential",
+        "Credential",
+        "KeyBlock",
+        "KeyMaterial",
+        "KeyValue",
+        "Data",
+        "MACData",
+        "RevocationReasonCode",
+        "RevocationReason"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/policy.py",
+    "test": "kmip/tests/unit/core/test_policy.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": [
+        "parse_policy",
+        "read_policy_from_file"
+      ]
+    }
+  },
+  {
+    "source": "kmip/core/primitives.py",
+    "test": "kmip/tests/unit/core/test_primitives.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py"
+    ],
+    "missing": {
+      "classes": [
+        "Base",
+        "Struct",
+        "Integer",
+        "LongInteger",
+        "BigInteger",
+        "ByteString",
+        "Interval"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/secrets.py",
+    "test": "kmip/tests/unit/core/test_secrets.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py"
+    ],
+    "missing": {
+      "classes": [
+        "KeyBlockKey",
+        "PublicKey",
+        "PrivateKey",
+        "SplitKey",
+        "SecretData",
+        "OpaqueObject"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/core/utils.py",
+    "test": "kmip/tests/unit/core/test_utils.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_server_information.py",
+      "kmip/tests/unit/core/objects/test_extension_information.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": [
+        "bit_length",
+        "count_bytes",
+        "print_bytearray",
+        "is_stream_empty",
+        "build_er_error"
+      ]
+    }
+  },
+  {
+    "source": "kmip/pie/__init__.py",
+    "test": "kmip/tests/unit/pie/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/pie/client.py",
+    "test": "kmip/tests/unit/pie/test_client.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/pie/test_client.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": [
+        "is_connected"
+      ]
+    }
+  },
+  {
+    "source": "kmip/pie/exceptions.py",
+    "test": "kmip/tests/unit/pie/test_exceptions.py",
+    "status": "EXISTS",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_exceptions.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/pie/factory.py",
+    "test": "kmip/tests/unit/pie/test_factory.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "ObjectFactory"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/pie/objects.py",
+    "test": "kmip/tests/unit/pie/test_objects.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/pie/objects/test_cryptographic_object.py",
+      "kmip/tests/unit/pie/objects/test_key.py",
+      "kmip/tests/unit/pie/objects/test_managed_object.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py"
+    ],
+    "missing": {
+      "classes": [
+        "SplitKey",
+        "ApplicationSpecificInformation",
+        "ObjectGroup"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/pie/sqltypes.py",
+    "test": "kmip/tests/unit/pie/test_sqltypes.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/pie/objects/test_sqltypes.py"
+    ],
+    "missing": {
+      "classes": [
+        "UsageMaskType",
+        "EnumType"
+      ],
+      "functions": [
+        "attribute_append_factory"
+      ]
+    }
+  },
+  {
+    "source": "kmip/services/__init__.py",
+    "test": "kmip/tests/unit/services/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/auth.py",
+    "test": "kmip/tests/unit/services/test_auth.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "AuthenticationSuite",
+        "BasicAuthenticationSuite",
+        "TLS12AuthenticationSuite"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/kmip_client.py",
+    "test": "kmip/tests/unit/services/test_kmip_client.py",
+    "status": "EXISTS",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/kmip_protocol.py",
+    "test": "kmip/tests/unit/services/test_kmip_protocol.py",
+    "status": "EXISTS",
+    "has_expected_test": true,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_protocol.py"
+    ],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/results.py",
+    "test": "kmip/tests/unit/services/test_results.py",
+    "status": "PARTIAL",
+    "has_expected_test": false,
+    "import_tests": [
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "missing": {
+      "classes": [
+        "CreateResult",
+        "ActivateResult",
+        "RegisterResult",
+        "GetResult",
+        "DestroyResult",
+        "LocateResult",
+        "RevokeResult",
+        "MACResult"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/__init__.py",
+    "test": "kmip/tests/unit/services/server/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/auth/__init__.py",
+    "test": "kmip/tests/unit/services/server/auth/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/auth/api.py",
+    "test": "kmip/tests/unit/services/server/auth/test_api.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "AuthAPI"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/auth/slugs.py",
+    "test": "kmip/tests/unit/services/server/auth/test_slugs.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "SLUGSConnector"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/auth/utils.py",
+    "test": "kmip/tests/unit/services/server/auth/test_utils.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": [
+        "get_certificate_from_connection",
+        "get_extended_key_usage_from_certificate",
+        "get_common_names_from_certificate",
+        "get_client_identity_from_certificate"
+      ]
+    }
+  },
+  {
+    "source": "kmip/services/server/config.py",
+    "test": "kmip/tests/unit/services/server/test_config.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "KmipServerConfig"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/crypto/__init__.py",
+    "test": "kmip/tests/unit/services/server/crypto/test___init__.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/crypto/api.py",
+    "test": "kmip/tests/unit/services/server/crypto/test_api.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "CryptographicEngine"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/crypto/engine.py",
+    "test": "kmip/tests/unit/services/server/crypto/test_engine.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "CryptographyEngine"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/engine.py",
+    "test": "kmip/tests/unit/services/server/test_engine.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "KmipEngine"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/monitor.py",
+    "test": "kmip/tests/unit/services/server/test_monitor.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "PolicyDirectoryMonitor"
+      ],
+      "functions": [
+        "get_json_files"
+      ]
+    }
+  },
+  {
+    "source": "kmip/services/server/policy.py",
+    "test": "kmip/tests/unit/services/server/test_policy.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "AttributeRuleSet",
+        "AttributePolicy"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/services/server/server.py",
+    "test": "kmip/tests/unit/services/server/test_server.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "KmipServer"
+      ],
+      "functions": [
+        "build_argument_parser",
+        "main"
+      ]
+    }
+  },
+  {
+    "source": "kmip/services/server/session.py",
+    "test": "kmip/tests/unit/services/server/test_session.py",
+    "status": "PARTIAL",
+    "has_expected_test": true,
+    "import_tests": [],
+    "missing": {
+      "classes": [
+        "KmipSession"
+      ],
+      "functions": []
+    }
+  },
+  {
+    "source": "kmip/version.py",
+    "test": "kmip/tests/unit/test_version.py",
+    "status": "MISSING",
+    "has_expected_test": false,
+    "import_tests": [],
+    "missing": {
+      "classes": [],
+      "functions": []
+    }
+  }
+]

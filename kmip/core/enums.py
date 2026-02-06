@@ -19,8 +19,6 @@
 import copy
 import enum
 import functools
-import six
-
 
 class OrderedEnum(enum.Enum):
     """
@@ -49,13 +47,11 @@ class OrderedEnum(enum.Enum):
             return self.value < other.value
         return NotImplemented
 
-
 class AdjustmentType(enum.Enum):
     # KMIP 2.0
     INCREMENT = 0x00000001
     DECREMENT = 0x00000002
     NEGATE    = 0x00000003
-
 
 class AlternativeNameType(enum.Enum):
     # KMIP 1.2
@@ -67,20 +63,17 @@ class AlternativeNameType(enum.Enum):
     X500_DISTINGUISHED_NAME   = 0x00000006
     IP_ADDRESS                = 0x00000007
 
-
 class AsynchronousIndicator(enum.Enum):
     # KMIP 2.0
     MANDATORY  = 0x00000001
     OPTIONAL   = 0x00000002
     PROHIBITED = 0x00000003
 
-
 class AttestationType(enum.Enum):
     # KMIP 1.2
     TPM_QUOTE            = 0x00000001
     TCG_INTEGRITY_REPORT = 0x00000002
     SAML_ASSERTION       = 0x00000003
-
 
 class AttributeType(enum.Enum):
     UNIQUE_IDENTIFIER                = 'Unique Identifier'
@@ -131,7 +124,6 @@ class AttributeType(enum.Enum):
     EXTRACTABLE                      = 'Extractable'
     NEVER_EXTRACTABLE                = 'Never Extractable'
 
-
 class AuthenticationSuite(enum.Enum):
     """
     The type of authentication suite used by KMIP clients and servers.
@@ -145,13 +137,11 @@ class AuthenticationSuite(enum.Enum):
     BASIC = 1
     TLS12 = 2
 
-
 class BatchErrorContinuationOption(enum.Enum):
     # KMIP 1.0
     CONTINUE = 0x00000001
     STOP     = 0x00000002
     UNDO     = 0x00000003
-
 
 class BlockCipherMode(enum.Enum):
     # KMIP 1.0
@@ -175,7 +165,6 @@ class BlockCipherMode(enum.Enum):
     # KMIP 1.4
     AEAD                 = 0x00000012
 
-
 class CancellationResult(enum.Enum):
     # KMIP 1.0
     CANCELED         = 0x00000001
@@ -184,7 +173,6 @@ class CancellationResult(enum.Enum):
     FAILED           = 0x00000004
     UNAVAILABLE      = 0x00000005
 
-
 class CertificateRequestType(enum.Enum):
     # KMIP 1.0
     CRMF   = 0x00000001
@@ -192,12 +180,10 @@ class CertificateRequestType(enum.Enum):
     PEM    = 0x00000003
     PGP    = 0x00000004  # Deprecated, designated '(Reserved)' in KMIP 2.0
 
-
 class CertificateType(enum.Enum):
     # KMIP 1.0
     X_509 = 0x00000001
     PGP   = 0x00000002  # Deprecated as of KMIP 1.2, not deprecated in KMIP 2.0
-
 
 class ClientRegistrationMethod(enum.Enum):
     # KMIP 1.3
@@ -206,7 +192,6 @@ class ClientRegistrationMethod(enum.Enum):
     SERVER_ON_DEMAND    = 0x00000003
     CLIENT_GENERATED    = 0x00000004
     CLIENT_REGISTERED   = 0x00000005
-
 
 class ConformanceClause(enum.Enum):
     DISCOVER_VERSIONS                      = 1
@@ -221,7 +206,6 @@ class ConformanceClause(enum.Enum):
     ASYMMETRIC_KEY_FOUNDRY_AND_CERTIFICATE = 10
     STORAGE                                = 11
 
-
 class CredentialType(enum.Enum):
     # KMIP 1.0
     USERNAME_AND_PASSWORD = 0x00000001
@@ -233,7 +217,6 @@ class CredentialType(enum.Enum):
     ONE_TIME_PASSWORD     = 0x00000004
     HASHED_PASSWORD       = 0x00000005
     TICKET                = 0x00000006
-
 
 class CryptographicAlgorithm(enum.Enum):
     # KMIP 1.0
@@ -298,7 +281,6 @@ class CryptographicAlgorithm(enum.Enum):
     ED25519           = 0x00000037
     ED448             = 0x00000038
 
-
 class CryptographicUsageMask(enum.Enum):
     # KMIP 1.0
     SIGN                = 0x00000001
@@ -327,7 +309,6 @@ class CryptographicUsageMask(enum.Enum):
     FPE_ENCRYPT         = 0x00400000
     FPE_DECRYPT         = 0x00800000
 
-
 class Data(enum.Enum):
     # KMIP 2.0
     DECRYPT             = 0x00000001
@@ -337,7 +318,6 @@ class Data(enum.Enum):
     RNG_RETRIEVE        = 0x00000005
     SIGN_SIGNATURE_DATA = 0x00000006
     SIGNATURE_VERIFY    = 0x00000007
-
 
 class DerivationMethod(enum.Enum):
     # KMIP 1.0
@@ -354,7 +334,6 @@ class DerivationMethod(enum.Enum):
     AWS_SIGNATURE_VERSION_4 = 0x00000009
     HKDF                    = 0x0000000A
 
-
 class DestroyAction(enum.Enum):
     # KMIP 1.3
     UNSPECIFIED           = 0x00000001
@@ -364,7 +343,6 @@ class DestroyAction(enum.Enum):
     METADATA_SHREDDED     = 0x00000005
     DELETED               = 0x00000006
     SHREDDED              = 0x00000007
-
 
 class DigitalSignatureAlgorithm(enum.Enum):
     # KMIP 1.1
@@ -389,7 +367,6 @@ class DigitalSignatureAlgorithm(enum.Enum):
     SHA3_384_WITH_RSA_ENCRYPTION = 0x00000012
     SHA3_512_WITH_RSA_ENCRYPTION = 0x00000013
 
-
 class DRBGAlgorithm(enum.Enum):
     # KMIP 1.3
     UNSPECIFIED = 0x00000001
@@ -398,17 +375,14 @@ class DRBGAlgorithm(enum.Enum):
     HMAC        = 0x00000004
     CTR         = 0x00000005
 
-
 class EncodingOption(enum.Enum):
     # KMIP 1.1
     NO_ENCODING   = 0x00000001
     TTLV_ENCODING = 0x00000002
 
-
 class EndpointRole(enum.Enum):
     CLIENT = 0x00000001
     SERVER = 0x00000002
-
 
 class FIPS186Variation(enum.Enum):
     # KMIP 1.3
@@ -419,7 +393,6 @@ class FIPS186Variation(enum.Enum):
     X_CHANGE_NOTICE    = 0x00000005
     K_ORIGINAL         = 0x00000006
     K_CHANGE_NOTICE    = 0x00000007
-
 
 class HashingAlgorithm(enum.Enum):
     # KMIP 1.0
@@ -443,13 +416,11 @@ class HashingAlgorithm(enum.Enum):
     SHA3_384    = 0x00000010
     SHA3_512    = 0x00000011
 
-
 class InteropFunction(enum.Enum):
     # KMIP 2.0
     BEGIN = 0x00000001
     END   = 0x00000002
     RESET = 0x00000003
-
 
 class ItemType(enum.Enum):
     # KMIP 2.0
@@ -465,14 +436,12 @@ class ItemType(enum.Enum):
     INTERVAL           = 0x0000000A
     DATE_TIME_EXTENDED = 0x0000000B
 
-
 class KeyCompressionType(enum.Enum):
     # KMIP 1.0
     EC_PUBLIC_KEY_TYPE_UNCOMPRESSED           = 0x00000001
     EC_PUBLIC_KEY_TYPE_X9_62_COMPRESSED_PRIME = 0x00000002
     EC_PUBLIC_KEY_TYPE_X9_62_COMPRESSED_CHAR2 = 0x00000003
     EC_PUBLIC_KEY_TYPE_X9_62_HYBRID           = 0x00000004
-
 
 class KeyFormatType(enum.Enum):
     # KMIP 1.0
@@ -500,7 +469,6 @@ class KeyFormatType(enum.Enum):
     TRANSPARENT_EC_PUBLIC_KEY     = 0x00000015
     # KMIP 1.4
     PKCS_12                       = 0x00000016
-
 
 class KeyRoleType(enum.Enum):
     # KMIP 1.0
@@ -530,17 +498,14 @@ class KeyRoleType(enum.Enum):
     IV        = 0x00000017
     TRKBK     = 0x00000018
 
-
 class KeyValueLocationType(enum.Enum):
     # KMIP 1.2
     UNINTERPRETED_TEXT_STRING = 0x00000001
     URI                       = 0x00000002
 
-
 class KeyWrapType(enum.Enum):
     NOT_WRAPPED   = 0x00000001
     AS_REGISTERED = 0x00000002
-
 
 class KMIPVersion(OrderedEnum):
     KMIP_1_0 = 1.0
@@ -549,7 +514,6 @@ class KMIPVersion(OrderedEnum):
     KMIP_1_3 = 1.3
     KMIP_1_4 = 1.4
     KMIP_2_0 = 2.0
-
 
 class LinkType(enum.Enum):
     # KMIP 1.0
@@ -571,17 +535,14 @@ class LinkType(enum.Enum):
     # KMIP 2.0
     WRAPPING_KEY_LINK           = 0x0000010E
 
-
 class MaskGenerator(enum.Enum):
     # KMIP 1.4
     MGF1 = 0x00000001
-
 
 class NameType(enum.Enum):
     # KMIP 1.0
     UNINTERPRETED_TEXT_STRING = 0x00000001
     URI                       = 0x00000002
-
 
 class NISTKeyType(enum.Enum):
     # KMIP 2.0
@@ -605,12 +566,10 @@ class NISTKeyType(enum.Enum):
     PRIVATE_AUTHORIZATION_KEY              = 0x00000012
     PUBLIC_AUTHORIZATION_KEY               = 0x00000013
 
-
 class ObjectGroupMember(enum.Enum):
     # KMIP 1.1
     GROUP_MEMBER_FRESH   = 0x00000001
     GROUP_MEMBER_DEFAULT = 0x00000002
-
 
 class ObjectType(enum.Enum):
     # KMIP 1.0
@@ -627,12 +586,10 @@ class ObjectType(enum.Enum):
     # KMIP 2.0
     CERTIFICATE_REQUEST = 0x0000000A
 
-
 class OpaqueDataType(enum.Enum):
     NONE = 0x80000000 # Not defined by the standard, but we need something.
                       # The standard does say that values starting 0x8xxxxxx
                       # are considered extensions
-
 
 class Operation(enum.Enum):
     # KMIP 1.0
@@ -694,7 +651,6 @@ class Operation(enum.Enum):
     INTEROP              = 0x00000034
     REPROVISION          = 0x00000035
 
-
 class PaddingMethod(enum.Enum):
     # KMIP 1.0
     NONE      = 0x00000001
@@ -708,7 +664,6 @@ class PaddingMethod(enum.Enum):
     X931      = 0x00000009
     PSS       = 0x0000000A
 
-
 class PKCS11Function(enum.Enum):
     # KMIP 2.0
     #
@@ -721,7 +676,6 @@ class PKCS11Function(enum.Enum):
     # be filled in in a future update.
     PLACEHOLDER = 'Do not use this.'
 
-
 class PKCS11ReturnCode(enum.Enum):
     # KMIP 2.0
     #
@@ -733,12 +687,10 @@ class PKCS11ReturnCode(enum.Enum):
     # be filled in in a future update.
     PLACEHOLDER = 'Do not use this.'
 
-
 class Policy(enum.Enum):
     ALLOW_ALL    = "Allow All"
     ALLOW_OWNER  = "Allow Owner"
     DISALLOW_ALL = "Disallow All"
-
 
 class ProfileName(enum.Enum):
     # KMIP 1.3
@@ -942,12 +894,10 @@ class ProfileName(enum.Enum):
     BASELINE_SERVER                                         = 0x0000012B
     COMPLETE_SERVER                                         = 0x0000012C
 
-
 class ProtectionLevel(enum.Enum):
     # KMIP 2.0
     HIGH = 0x00000001
     LOW  = 0x00000002
-
 
 class ProtectionStorageMask(enum.Enum):
     # KMIP 2.0
@@ -966,12 +916,10 @@ class ProtectionStorageMask(enum.Enum):
     VALIDATED         = 0x00001000
     SAME_JURISDICTION = 0x00002000
 
-
 class PutFunction(enum.Enum):
     # KMIP 1.0
     NEW     = 0x00000001
     REPLACE = 0x00000002
-
 
 class QueryFunction(enum.Enum):
     # KMIP 1.0
@@ -993,7 +941,6 @@ class QueryFunction(enum.Enum):
     # KMIP 2.0
     QUERY_DEFAULTS_INFORMATION        = 0x0000000D
     QUERY_STORAGE_PROTECTION_MASKS    = 0x0000000E
-
 
 class RecommendedCurve(enum.Enum):
     # KMIP 1.0
@@ -1069,7 +1016,6 @@ class RecommendedCurve(enum.Enum):
     # KMIP 2.0
     CURVE25519       = 0x00000045
     CURVE448         = 0x00000046
-
 
 class ResultReason(enum.Enum):
     # KMIP 1.0
@@ -1147,14 +1093,12 @@ class ResultReason(enum.Enum):
     PKCS11_INVALID_FUNCTION                = 0x00000046
     PKCS11_INVALID_INTERFACE               = 0x00000047
 
-
 class ResultStatus(enum.Enum):
     # KMIP 1.0
     SUCCESS           = 0x00000000
     OPERATION_FAILED  = 0x00000001
     OPERATION_PENDING = 0x00000002
     OPERATION_UNDONE  = 0x00000003
-
 
 class RevocationReasonCode(enum.Enum):
     # KMIP 1.0
@@ -1166,7 +1110,6 @@ class RevocationReasonCode(enum.Enum):
     CESSATION_OF_OPERATION = 0x00000006
     PRIVILEGE_WITHDRAWN    = 0x00000007
 
-
 class RNGAlgorithm(enum.Enum):
     # KMIP 1.3
     UNSPECIFIED = 0x00000001
@@ -1176,26 +1119,22 @@ class RNGAlgorithm(enum.Enum):
     ANSI_X931   = 0x00000005
     ANSI_X962   = 0x00000006
 
-
 class RNGMode(enum.Enum):
     # KMIP 1.3
     UNSPECIFIED              = 0x00000001
     SHARED_INSTANTIATION     = 0x00000002
     NON_SHARED_INSTANTIATION = 0x00000003
 
-
 class SecretDataType(enum.Enum):
     # KMIP 1.0
     PASSWORD = 0x00000001
     SEED     = 0x00000002
-
 
 class ShreddingAlgorithm(enum.Enum):
     # KMIP 1.3
     UNSPECIFIED   = 0x00000001
     CRYPTOGRAPHIC = 0x00000002
     UNSUPPORTED   = 0x00000003
-
 
 class SplitKeyMethod(enum.Enum):
     # KMIP 1.0
@@ -1204,7 +1143,6 @@ class SplitKeyMethod(enum.Enum):
     POLYNOMIAL_SHARING_PRIME_FIELD = 0x00000003
     # KMIP 1.2
     POLYNOMIAL_SHARING_GF_2_8      = 0x00000004
-
 
 class State(enum.Enum):
     # KMIP 1.0
@@ -1215,14 +1153,12 @@ class State(enum.Enum):
     DESTROYED             = 0x00000005
     DESTROYED_COMPROMISED = 0x00000006
 
-
 class StorageStatusMask(enum.Enum):
     # KMIP 1.0
     ONLINE_STORAGE    = 0x00000001
     ARCHIVAL_STORAGE  = 0x00000002
     # KMIP 2.0
     DESTROYED_STORAGE = 0x00000004
-
 
 class Tags(enum.Enum):
     DEFAULT                                  = 0x420000  # Custom PyKMIP tag used as the global default
@@ -1592,11 +1528,9 @@ class Tags(enum.Enum):
     PRIVATE_PROTECTION_STORAGE_MASKS         = 0x420164
     PUBLIC_PROTECTION_STORAGE_MASKS          = 0x420165
 
-
 class TicketType(enum.Enum):
     # KMIP 2.0
     LOGIN = 0x00000001
-
 
 class Types(enum.Enum):
     DEFAULT      = 0x00
@@ -1610,7 +1544,6 @@ class Types(enum.Enum):
     BYTE_STRING  = 0x08
     DATE_TIME    = 0x09
     INTERVAL     = 0x0A
-
 
 class UniqueIdentifier(enum.Enum):
     # KMIP 2.0
@@ -1632,26 +1565,22 @@ class UniqueIdentifier(enum.Enum):
     REKEY_KEY_PAIR_PRIVATE_KEY  = 0x00000010
     REKEY_KEY_PAIR_PUBLIC_KEY   = 0x00000011
 
-
 class UnwrapMode(enum.Enum):
     # KMIP 1.3
     UNSPECIFIED   = 0x00000001
     PROCESSED     = 0x00000002
     NOT_PROCESSED = 0x00000003
 
-
 class UsageLimitsUnit(enum.Enum):
     # KMIP 1.0
     BYTE   = 0x00000001
     OBJECT = 0x00000002
-
 
 class ValidationAuthorityType(enum.Enum):
     # KMIP 1.3
     UNSPECIFIED     = 0x00000001
     NIST_CMVP       = 0x00000002
     COMMON_CRITERIA = 0x00000003
-
 
 class ValidationType(enum.Enum):
     # KMIP 1.3
@@ -1661,13 +1590,11 @@ class ValidationType(enum.Enum):
     FIRMWARE    = 0x00000004
     HYBRID      = 0x00000005
 
-
 class ValidityIndicator(enum.Enum):
     # KMIP 1.0
     VALID   = 0x00000001
     INVALID = 0x00000002
     UNKNOWN = 0x00000003
-
 
 class WrappingMethod(enum.Enum):
     # KMIP 1.0
@@ -1676,7 +1603,6 @@ class WrappingMethod(enum.Enum):
     ENCRYPT_THEN_MAC_SIGN = 0x00000003
     MAC_SIGN_THEN_ENCRYPT = 0x00000004
     TR_31                 = 0x00000005
-
 
 attribute_name_tag_table = [
     ("Activation Date",                   Tags.ACTIVATION_DATE),
@@ -1765,7 +1691,6 @@ attribute_name_tag_table = [
     ("X.509 Certificate Subject",         Tags.X_509_CERTIFICATE_SUBJECT)
 ]
 
-
 def convert_attribute_name_to_tag(value):
     """
     A utility function that converts an attribute name string into the
@@ -1784,7 +1709,7 @@ def convert_attribute_name_to_tag(value):
         ValueError: if the attribute name string is not a string or if it is
             an unrecognized attribute name
     """
-    if not isinstance(value, six.string_types):
+    if not isinstance(value, str):
         raise ValueError("The attribute name must be a string.")
 
     for entry in attribute_name_tag_table:
@@ -1792,7 +1717,6 @@ def convert_attribute_name_to_tag(value):
             return entry[1]
 
     raise ValueError("Unrecognized attribute name: '{}'".format(value))
-
 
 def convert_attribute_tag_to_name(value):
     """
@@ -1821,7 +1745,6 @@ def convert_attribute_tag_to_name(value):
 
     raise ValueError("Unrecognized attribute tag: {}".format(value))
 
-
 def get_bit_mask_from_enumerations(enumerations):
     """
     A utility function that computes a bit mask from a collection of
@@ -1838,7 +1761,6 @@ def get_bit_mask_from_enumerations(enumerations):
         lambda x, y: x | y, [z.value for z in enumerations]
     )
 
-
 def get_enumerations_from_bit_mask(enumeration, mask):
     """
     A utility function that creates a list of enumeration values from a bit
@@ -1853,7 +1775,6 @@ def get_enumerations_from_bit_mask(enumeration, mask):
         list: A list of enumeration values corresponding to the bit mask.
     """
     return [x for x in enumeration if (x.value & mask) == x.value]
-
 
 def is_bit_mask(enumeration, potential_mask):
     """
@@ -1873,7 +1794,7 @@ def is_bit_mask(enumeration, potential_mask):
         True: if the potential mask is a valid bit mask of the mask enumeration
         False: otherwise
     """
-    if not isinstance(potential_mask, six.integer_types):
+    if not isinstance(potential_mask, int):
         return False
 
     mask_enumerations = (
@@ -1893,7 +1814,6 @@ def is_bit_mask(enumeration, potential_mask):
         return False
 
     return True
-
 
 def is_enum_value(enumeration, potential_value):
     """
@@ -1915,7 +1835,6 @@ def is_enum_value(enumeration, potential_value):
         return False
 
     return True
-
 
 def is_attribute(tag, kmip_version=None):
     """

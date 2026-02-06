@@ -22,7 +22,6 @@ from kmip.pie.objects import ManagedObject, SymmetricKey
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-
 class TestSymmetricKey(testtools.TestCase):
     """
     Test suite for SymmetricKey.

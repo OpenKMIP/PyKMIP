@@ -19,7 +19,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestRekeyRequestPayload(testtools.TestCase):
     """
     Test suite for the Rekey request payload.
@@ -696,7 +695,6 @@ class TestRekeyRequestPayload(testtools.TestCase):
         observed = str(payload)
 
         self.assertEqual(expected, observed)
-
 
 class TestRekeyResponsePayload(testtools.TestCase):
     """

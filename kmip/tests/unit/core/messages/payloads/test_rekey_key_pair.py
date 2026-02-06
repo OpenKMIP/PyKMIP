@@ -22,7 +22,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestRekeyKeyPairRequestPayload(TestCase):
 
     def setUp(self):
@@ -185,7 +184,6 @@ class TestRekeyKeyPairRequestPayload(TestCase):
             self.public_key_template_attribute)
 
         self._test_write(stream, payload, self.encoding_full)
-
 
 # TODO (ph) Replicate CreateKeyPairResponsePayload test suite here
 class TestRekeyKeyPairResponsePayload(TestCase):

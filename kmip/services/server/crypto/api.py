@@ -16,11 +16,7 @@
 from abc import ABCMeta
 from abc import abstractmethod
 
-import six
-
-
-@six.add_metaclass(ABCMeta)
-class CryptographicEngine(object):
+class CryptographicEngine(metaclass=ABCMeta):
     """
     The abstract base class of the cryptographic engine hierarchy.
 

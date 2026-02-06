@@ -26,7 +26,6 @@ import logging
 import sys
 import re
 
-
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 

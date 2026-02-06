@@ -14,12 +14,10 @@
 # under the License.
 
 import abc
-import six
+
 import ssl
 
-
-@six.add_metaclass(abc.ABCMeta)
-class AuthenticationSuite(object):
+class AuthenticationSuite(metaclass=abc.ABCMeta):
     """
     An authentication suite used to establish secure network connections.
 
@@ -150,7 +148,6 @@ class AuthenticationSuite(object):
         """
         return self._cipher_suites
 
-
 class BasicAuthenticationSuite(AuthenticationSuite):
     """
     An authentication suite used to establish secure network connections.
@@ -185,7 +182,6 @@ class BasicAuthenticationSuite(AuthenticationSuite):
         """
         super(BasicAuthenticationSuite, self).__init__(cipher_suites)
         self._protocol = ssl.PROTOCOL_TLSv1
-
 
 class TLS12AuthenticationSuite(AuthenticationSuite):
     """

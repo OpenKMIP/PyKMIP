@@ -57,7 +57,6 @@ from kmip.core.secrets import SecretData
 from kmip.core.secrets import OpaqueObject
 from kmip.core.secrets import SplitKey
 
-
 @pytest.mark.usefixtures("client")
 class TestIntegration(testtools.TestCase):
 

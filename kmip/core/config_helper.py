@@ -15,9 +15,7 @@
 
 import logging
 import os
-
-from six.moves.configparser import ConfigParser
-
+from configparser import ConfigParser
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # TODO (peter-hamilton): Remove support for kmipconfig.ini on future release.
@@ -26,7 +24,6 @@ CONFIG_FILE = [
     os.path.join(os.sep, 'etc', 'pykmip', 'pykmip.conf'),
     os.path.normpath(os.path.join(FILE_PATH, '../pykmip.conf')),
     os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))]
-
 
 class ConfigHelper(object):
     NONE_VALUE = 'None'

@@ -16,7 +16,6 @@
 import testtools
 from testtools import TestCase
 import binascii
-import six
 
 from kmip.core.factories.secrets import SecretFactory
 from kmip.core.factories.attributes import AttributeFactory
@@ -48,7 +47,6 @@ from kmip.core.secrets import Template
 
 from kmip.core import utils
 from kmip.core.utils import BytearrayStream
-
 
 class TestRequestBatchItem(testtools.TestCase):
 
@@ -146,7 +144,6 @@ class TestRequestBatchItem(testtools.TestCase):
 
         self.assertEqual(len(self.encoding_kmip_2_0), len(buffer))
         self.assertEqual(str(self.encoding_kmip_2_0), str(buffer))
-
 
 class TestResponseHeader(testtools.TestCase):
 
@@ -265,7 +262,6 @@ class TestResponseHeader(testtools.TestCase):
 
         self.assertEqual(len(self.encoding_kmip_2_0), len(buffer))
         self.assertEqual(str(self.encoding_kmip_2_0), str(buffer))
-
 
 class TestRequestMessage(TestCase):
 
@@ -1365,7 +1361,6 @@ class TestRequestMessage(TestCase):
         msg = "Bad request message write: encoding mismatch"
         self.assertEqual(self.mac, result, msg)
 
-
 class TestResponseMessage(TestCase):
 
     def setUp(self):
@@ -1588,9 +1583,9 @@ class TestResponseMessage(TestCase):
 
             unique_identifier = response_payload.unique_identifier
             value = 'fb4b5b9c-6188-4c63-8142-fe9c328129fc'
-            self.assertIsInstance(unique_identifier, six.string_types,
+            self.assertIsInstance(unique_identifier, str,
                                   self.msg.format('unique identifier', 'type',
-                                                  six.string_types,
+                                                  str,
                                                   type(unique_identifier)))
             self.assertEqual(value, unique_identifier,
                              self.msg.format('unique identifier', 'value',
@@ -2104,8 +2099,8 @@ class TestResponseMessage(TestCase):
 
             unique_identifier = response_payload.unique_identifier
             msg = "Bad unique identifier type: expected {0}, received {1}"
-            self.assertIsInstance(unique_identifier, six.string_types,
-                                  msg.format(six.string_types,
+            self.assertIsInstance(unique_identifier, str,
+                                  msg.format(str,
                                              type(unique_identifier)))
             msg = "Bad unique identifier value: expected {0}, received {1}"
             exp_value = '5c9b81ef-4ee5-42cd-ba2d-c002fdd0c7b3'

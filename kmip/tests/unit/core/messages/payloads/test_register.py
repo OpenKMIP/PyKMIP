@@ -24,7 +24,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestRegisterRequestPayload(testtools.TestCase):
 
     def setUp(self):
@@ -1206,6 +1205,102 @@ class TestRegisterRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
+    def test_init(self):
+        """
+        Test that a Register request payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.RegisterRequestPayload()
+        self.assertIsNone(payload.object_type)
+        self.assertIsNone(payload.template_attribute)
+        self.assertIsNone(payload.managed_object)
+        self.assertIsNone(payload.protection_storage_masks)
+
+    def test_init_with_args(self):
+        """
+        Test that a Register request payload can be constructed with valid
+        values.
+        """
+        payload = payloads.RegisterRequestPayload(
+            object_type=enums.ObjectType.CERTIFICATE,
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "Cryptographic Usage Mask"
+                        ),
+                        attribute_value=primitives.Integer(
+                            enums.CryptographicUsageMask.SIGN.value |
+                            enums.CryptographicUsageMask.VERIFY.value,
+                            tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
+                        )
+                    )
+                ]
+            ),
+            managed_object=secrets.Certificate(
+                certificate_type=enums.CertificateType.X_509,
+                certificate_value=self.certificate_value
+            )
+        )
+
+        self.assertEqual(enums.ObjectType.CERTIFICATE, payload.object_type)
+        self.assertIsInstance(
+            payload.template_attribute,
+            objects.TemplateAttribute
+        )
+        self.assertIsInstance(payload.managed_object, secrets.Certificate)
+
+    def test_read_valid(self):
+        """
+        Test that a Register request payload can be read from a valid byte
+        stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_missing_object_type()
+
+    def test_write_valid(self):
+        """
+        Test that a Register request payload can be written to a byte stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a Register request payload can be read and written without
+        changing the encoded bytes.
+        """
+        payload = payloads.RegisterRequestPayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_object_type()
+
+    def test_eq(self):
+        """
+        Test that two Register request payloads with the same data are equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two Register request payloads with different data are not
+        equal.
+        """
+        self.test_not_equal_on_not_equal_object_type()
 
 class TestRegisterResponsePayload(testtools.TestCase):
 
@@ -1789,3 +1884,96 @@ class TestRegisterResponsePayload(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_init(self):
+        """
+        Test that a Register response payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.RegisterResponsePayload()
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload.template_attribute)
+
+    def test_init_with_args(self):
+        """
+        Test that a Register response payload can be constructed with valid
+        values.
+        """
+        payload = payloads.RegisterResponsePayload(
+            unique_identifier="7091d0bf-548a-4d4a-93a6-6dd71cf75221",
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "State"
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.State,
+                            value=enums.State.PRE_ACTIVE,
+                            tag=enums.Tags.STATE
+                        )
+                    )
+                ]
+            )
+        )
+
+        self.assertEqual(
+            "7091d0bf-548a-4d4a-93a6-6dd71cf75221",
+            payload.unique_identifier
+        )
+        self.assertIsInstance(
+            payload.template_attribute,
+            objects.TemplateAttribute
+        )
+
+    def test_read_valid(self):
+        """
+        Test that a Register response payload can be read from a valid byte
+        stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_missing_unique_identifier()
+
+    def test_write_valid(self):
+        """
+        Test that a Register response payload can be written to a byte stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a Register response payload can be read and written without
+        changing the encoded bytes.
+        """
+        payload = payloads.RegisterResponsePayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_unique_identifier()
+
+    def test_eq(self):
+        """
+        Test that two Register response payloads with the same data are equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two Register response payloads with different data are not
+        equal.
+        """
+        self.test_not_equal_on_not_equal_unique_identifier()

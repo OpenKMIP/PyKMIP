@@ -15,7 +15,7 @@
 
 import os
 import pytest
-import six
+
 import testtools
 import time
 
@@ -23,7 +23,6 @@ from kmip.core import enums
 from kmip.pie import client
 from kmip.pie import exceptions
 from kmip.pie import objects
-
 
 @pytest.mark.usefixtures("config_file")
 class TestSLUGSAuthenticationAndAccessControl(testtools.TestCase):
@@ -66,7 +65,7 @@ class TestSLUGSAuthenticationAndAccessControl(testtools.TestCase):
                 256,
                 operation_policy_name="policy_1"
             )
-            self.assertIsInstance(uid, six.string_types)
+            self.assertIsInstance(uid, str)
 
             key = c.get(uid)
             self.assertIsInstance(key, objects.SymmetricKey)
@@ -116,7 +115,7 @@ class TestSLUGSAuthenticationAndAccessControl(testtools.TestCase):
                 256,
                 operation_policy_name="policy_1"
             )
-            self.assertIsInstance(uid, six.string_types)
+            self.assertIsInstance(uid, str)
 
             key = c.get(uid)
             self.assertIsInstance(key, objects.SymmetricKey)
@@ -192,7 +191,7 @@ class TestSLUGSAuthenticationAndAccessControl(testtools.TestCase):
                 256,
                 operation_policy_name="policy_1"
             )
-            self.assertIsInstance(uid, six.string_types)
+            self.assertIsInstance(uid, str)
 
             key = c.get(uid)
             self.assertIsInstance(key, objects.SymmetricKey)

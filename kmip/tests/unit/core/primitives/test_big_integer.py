@@ -19,7 +19,6 @@ from kmip.core import exceptions
 from kmip.core import primitives
 from kmip.core import utils
 
-
 class TestBigInteger(testtools.TestCase):
 
     def setUp(self):

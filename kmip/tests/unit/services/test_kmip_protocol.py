@@ -22,7 +22,6 @@ from kmip.services.kmip_protocol import KMIPProtocol
 from kmip.services.kmip_protocol import RequestLengthMismatch
 from kmip.services.kmip_protocol import KMIPProtocolFactory
 
-
 class TestKMIPProtocol(TestCase):
 
     request = binascii.unhexlify(

@@ -15,7 +15,6 @@ import testtools
 from kmip.core import attributes
 from kmip.core import objects
 
-
 class TestAttribute(testtools.TestCase):
     """
     Test suite for the Attribute object.

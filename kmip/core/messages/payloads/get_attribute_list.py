@@ -13,15 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
 from kmip.core.messages.payloads import base
-
 
 class GetAttributeListRequestPayload(base.RequestPayload):
     """
@@ -62,7 +59,7 @@ class GetAttributeListRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -152,7 +149,6 @@ class GetAttributeListRequestPayload(base.RequestPayload):
         else:
             return NotImplemented
 
-
 class GetAttributeListResponsePayload(base.ResponsePayload):
     """
     A response payload for the GetAttributeList operation.
@@ -201,7 +197,7 @@ class GetAttributeListResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -227,7 +223,7 @@ class GetAttributeListResponsePayload(base.ResponsePayload):
             names = list()
             for i in range(len(value)):
                 name = value[i]
-                if not isinstance(name, six.string_types):
+                if not isinstance(name, str):
                     raise TypeError(
                         "Attribute names must be a list of strings; "
                         "item {0} has type {1}".format(i + 1, type(name))

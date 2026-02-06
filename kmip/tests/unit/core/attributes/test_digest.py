@@ -25,7 +25,6 @@ from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.objects import KeyFormatType
 from kmip.core.utils import BytearrayStream
 
-
 class TestDigest(TestCase):
     """
     A test suite for the Digest class.

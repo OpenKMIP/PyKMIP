@@ -23,7 +23,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestCreateRequestPayload(testtools.TestCase):
 
     def setUp(self):
@@ -137,6 +136,60 @@ class TestCreateRequestPayload(testtools.TestCase):
 
     def tearDown(self):
         super(TestCreateRequestPayload, self).tearDown()
+
+    def test_init(self):
+        """
+        Test that a Create request payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.CreateRequestPayload()
+        self.assertIsNone(payload.object_type)
+        self.assertIsNone(payload.template_attribute)
+        self.assertIsNone(payload.protection_storage_masks)
+
+    def test_init_with_args(self):
+        """
+        Test that a Create request payload can be constructed with valid
+        values.
+        """
+        payload = payloads.CreateRequestPayload(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Algorithm'
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    )
+                ]
+            ),
+            protection_storage_masks=objects.ProtectionStorageMasks(
+                protection_storage_masks=[
+                    (
+                        enums.ProtectionStorageMask.SOFTWARE.value |
+                        enums.ProtectionStorageMask.HARDWARE.value
+                    )
+                ]
+            )
+        )
+
+        self.assertEqual(
+            enums.ObjectType.SYMMETRIC_KEY,
+            payload.object_type
+        )
+        self.assertIsInstance(
+            payload.template_attribute,
+            objects.TemplateAttribute
+        )
+        self.assertIsInstance(
+            payload.protection_storage_masks,
+            objects.ProtectionStorageMasks
+        )
 
     def test_invalid_object_type(self):
         """
@@ -906,6 +959,58 @@ class TestCreateRequestPayload(testtools.TestCase):
         self.assertFalse(a == b)
         self.assertFalse(b == a)
 
+    def test_read_valid(self):
+        """
+        Test that a Create request payload can be read from a valid byte
+        stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_missing_object_type()
+
+    def test_write_valid(self):
+        """
+        Test that a Create request payload can be written to a byte stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a Create request payload can be read and written without
+        changing the encoded bytes.
+        """
+        payload = payloads.CreateRequestPayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(self.full_encoding, stream)
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_object_type()
+
+    def test_eq(self):
+        """
+        Test that two Create request payloads with the same data are equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two Create request payloads with different data are not
+        equal.
+        """
+        self.test_not_equal_on_not_equal_object_type()
+
     def test_not_equal_on_equal(self):
         """
         Test that the inequality operator returns False when comparing two
@@ -1108,7 +1213,6 @@ class TestCreateRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
-
 class TestCreateResponsePayload(testtools.TestCase):
 
     def setUp(self):
@@ -1203,6 +1307,53 @@ class TestCreateResponsePayload(testtools.TestCase):
 
     def tearDown(self):
         super(TestCreateResponsePayload, self).tearDown()
+
+    def test_init(self):
+        """
+        Test that a Create response payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.CreateResponsePayload()
+        self.assertIsNone(payload.object_type)
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload.template_attribute)
+
+    def test_init_with_args(self):
+        """
+        Test that a Create response payload can be constructed with valid
+        values.
+        """
+        payload = payloads.CreateResponsePayload(
+            object_type=enums.ObjectType.SYMMETRIC_KEY,
+            unique_identifier='00000000-1111-2222-3333-444444444444',
+            template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Algorithm'
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.AES,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    )
+                ]
+            )
+        )
+
+        self.assertEqual(
+            enums.ObjectType.SYMMETRIC_KEY,
+            payload.object_type
+        )
+        self.assertEqual(
+            '00000000-1111-2222-3333-444444444444',
+            payload.unique_identifier
+        )
+        self.assertIsInstance(
+            payload.template_attribute,
+            objects.TemplateAttribute
+        )
 
     def test_invalid_object_type(self):
         """
@@ -1862,3 +2013,55 @@ class TestCreateResponsePayload(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_read_valid(self):
+        """
+        Test that a Create response payload can be read from a valid byte
+        stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_missing_object_type()
+
+    def test_write_valid(self):
+        """
+        Test that a Create response payload can be written to a byte stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a Create response payload can be read and written without
+        changing the encoded bytes.
+        """
+        payload = payloads.CreateResponsePayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(self.full_encoding, stream)
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_object_type()
+
+    def test_eq(self):
+        """
+        Test that two Create response payloads with the same data are equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two Create response payloads with different data are not
+        equal.
+        """
+        self.test_not_equal_on_not_equal_object_type()

@@ -21,7 +21,6 @@ from kmip.core import primitives
 
 from kmip.core.factories import attribute_values
 
-
 class TestAttributeValueFactory(testtools.TestCase):
 
     def setUp(self):

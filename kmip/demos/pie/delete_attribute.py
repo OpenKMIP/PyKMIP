@@ -21,7 +21,6 @@ from kmip.demos import utils
 
 from kmip.pie import client
 
-
 # NOTE: This demo script shows how to delete the first Name attribute from
 # the user-specified object. The object *must* have at least one Name
 # attribute for attribute deletion to work. Otherwise, the client

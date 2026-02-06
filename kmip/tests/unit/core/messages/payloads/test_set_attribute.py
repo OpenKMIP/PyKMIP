@@ -23,7 +23,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestSetAttributeRequestPayload(testtools.TestCase):
     """
     A unit test suite for the SetAttribute request payload.
@@ -410,6 +409,91 @@ class TestSetAttributeRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
+    def test_init(self):
+        """
+        Test that a SetAttribute request payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.SetAttributeRequestPayload()
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload.new_attribute)
+
+    def test_init_with_args(self):
+        """
+        Test that a SetAttribute request payload can be constructed with
+        valid values.
+        """
+        payload = payloads.SetAttributeRequestPayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
+            new_attribute=objects.NewAttribute(
+                attribute=primitives.Enumeration(
+                    enums.CryptographicAlgorithm,
+                    enums.CryptographicAlgorithm.AES,
+                    enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                )
+            )
+        )
+
+        self.assertEqual(
+            "b4faee10-aa2a-4446-8ad4-0881f3422959",
+            payload.unique_identifier
+        )
+        self.assertIsInstance(payload.new_attribute, objects.NewAttribute)
+
+    def test_read_valid(self):
+        """
+        Test that a SetAttribute request payload can be read from a valid byte
+        stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_no_unique_identifier()
+
+    def test_write_valid(self):
+        """
+        Test that a SetAttribute request payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a SetAttribute request payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.SetAttributeRequestPayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_unique_identifier()
+
+    def test_eq(self):
+        """
+        Test that a SetAttribute request payload compares equal to itself.
+        """
+        payload = payloads.SetAttributeRequestPayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        """
+        Test that two different SetAttribute request payloads are not equal.
+        """
+        a = payloads.SetAttributeRequestPayload(unique_identifier="1")
+        b = payloads.SetAttributeRequestPayload(unique_identifier="2")
+        self.assertTrue(a != b)
 
 class TestSetAttributeResponsePayload(testtools.TestCase):
     """
@@ -643,3 +727,79 @@ class TestSetAttributeResponsePayload(testtools.TestCase):
         self.assertFalse(b == a)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_init(self):
+        """
+        Test that a SetAttribute response payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.SetAttributeResponsePayload()
+        self.assertIsNone(payload.unique_identifier)
+
+    def test_init_with_args(self):
+        """
+        Test that a SetAttribute response payload can be constructed with
+        valid values.
+        """
+        payload = payloads.SetAttributeResponsePayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959"
+        )
+        self.assertEqual(
+            "b4faee10-aa2a-4446-8ad4-0881f3422959",
+            payload.unique_identifier
+        )
+
+    def test_read_valid(self):
+        """
+        Test that a SetAttribute response payload can be read from a valid
+        byte stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_no_unique_identifier()
+
+    def test_write_valid(self):
+        """
+        Test that a SetAttribute response payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a SetAttribute response payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.SetAttributeResponsePayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_unique_identifier()
+
+    def test_eq(self):
+        """
+        Test that a SetAttribute response payload compares equal to itself.
+        """
+        payload = payloads.SetAttributeResponsePayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        """
+        Test that two different SetAttribute response payloads are not equal.
+        """
+        a = payloads.SetAttributeResponsePayload(unique_identifier="1")
+        b = payloads.SetAttributeResponsePayload(unique_identifier="2")
+        self.assertTrue(a != b)

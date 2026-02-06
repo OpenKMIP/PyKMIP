@@ -15,7 +15,9 @@
 
 import copy
 import logging
-import six
+import os
+import tempfile
+
 import sqlalchemy
 
 from sqlalchemy.orm import exc
@@ -29,7 +31,7 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import exceptions
 
-from kmip.core.objects import MACData, KeyWrappingData
+from kmip.core.objects import KeyMaterial, KeyWrappingData, MACData
 
 from kmip.core.factories import attributes as attribute_factory
 from kmip.core.factories import secrets
@@ -45,7 +47,6 @@ from kmip.pie import sqltypes
 
 from kmip.services.server import policy
 from kmip.services.server.crypto import engine
-
 
 class KmipEngine(object):
     """
@@ -88,9 +89,27 @@ class KmipEngine(object):
 
         self._cryptography_engine = engine.CryptographyEngine()
 
-        self.database_path = 'sqlite:///{}'.format(database_path)
-        if not database_path:
-            self.database_path = 'sqlite:////tmp/pykmip.database'
+        if database_path:
+            if database_path.startswith('sqlite:'):
+                self.database_path = database_path
+            elif database_path == ':memory:':
+                self.database_path = 'sqlite:///:memory:'
+            else:
+                db_path = os.path.abspath(database_path)
+                db_dir = os.path.dirname(db_path)
+                if db_dir:
+                    os.makedirs(db_dir, exist_ok=True)
+                self.database_path = 'sqlite:///{}'.format(
+                    db_path.replace('\\', '/')
+                )
+        else:
+            db_path = os.path.join(tempfile.gettempdir(), 'pykmip.database')
+            db_dir = os.path.dirname(db_path)
+            if db_dir:
+                os.makedirs(db_dir, exist_ok=True)
+            self.database_path = 'sqlite:///{}'.format(
+                db_path.replace('\\', '/')
+            )
 
         self._data_store = sqlalchemy.create_engine(
             self.database_path,
@@ -847,7 +866,7 @@ class KmipEngine(object):
         Given a kmip.pie object and a dictionary of attributes, attempt to set
         the attribute values on the object.
         """
-        for attribute_name, attribute_value in six.iteritems(attributes):
+        for attribute_name, attribute_value in attributes.items():
             object_type = managed_object._object_type
             if self._attribute_policy.is_attribute_applicable_to_object_type(
                     attribute_name,
@@ -1446,7 +1465,7 @@ class KmipEngine(object):
 
         # Propagate common attributes if not overridden by the public/private
         # attribute sets
-        for key, value in six.iteritems(common_attributes):
+        for key, value in common_attributes.items():
             if key not in public_key_attributes.keys():
                 public_key_attributes.update([(key, value)])
             if key not in private_key_attributes.keys():
@@ -2436,11 +2455,20 @@ class KmipEngine(object):
 
             managed_objects = managed_objects_filtered
 
-        # Sort the matching results by their creation date.
+        # Sort by creation date (newest first) with a deterministic tie-breaker
+        # for equal timestamps.
+        def _locate_sort_key(obj):
+            initial_date = obj.initial_date or 0
+            uid = obj.unique_identifier
+            try:
+                uid_key = (0, int(uid))
+            except (TypeError, ValueError):
+                uid_key = (1, str(uid))
+            return (-initial_date, uid_key)
+
         managed_objects = sorted(
             managed_objects,
-            key=lambda x: x.initial_date,
-            reverse=True
+            key=_locate_sort_key
         )
 
         # Skip the requested offset items and keep the requested maximum items
@@ -2592,15 +2620,21 @@ class KmipEngine(object):
                     encryption_key=key.value
                 )
 
-                wrapped_object = copy.deepcopy(managed_object)
-                wrapped_object.value = result
-
-                core_secret = self._build_core_object(wrapped_object)
+                core_secret = self._build_core_object(managed_object)
                 key_wrapping_data = KeyWrappingData(
                     wrapping_method=wrapping_method,
                     encryption_key_information=key_info,
                     encoding_option=encoding_option
                 )
+                if not hasattr(core_secret, 'key_block') or \
+                        core_secret.key_block is None or \
+                        core_secret.key_block.key_value is None:
+                    raise exceptions.InvalidField(
+                        "The requested object type does not support key "
+                        "wrapping."
+                    )
+                core_secret.key_block.key_value.key_material = \
+                    KeyMaterial(result)
                 core_secret.key_block.key_wrapping_data = key_wrapping_data
 
             elif key_wrapping_spec.mac_signature_key_information:

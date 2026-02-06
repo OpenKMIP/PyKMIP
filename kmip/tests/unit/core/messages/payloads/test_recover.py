@@ -18,7 +18,6 @@ import testtools
 from kmip.core import utils
 from kmip.core.messages import payloads
 
-
 class TestRecoverRequestPayload(testtools.TestCase):
     """
     Test suite for the Recover request payload.
@@ -269,7 +268,6 @@ class TestRecoverRequestPayload(testtools.TestCase):
         observed = str(payload)
 
         self.assertEqual(expected, observed)
-
 
 class TestRecoverResponsePayload(testtools.TestCase):
     """

@@ -23,7 +23,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestDeleteAttributeRequestPayload(testtools.TestCase):
     """
     A unit test suite for the DeleteAttribute request payload.
@@ -740,6 +739,95 @@ class TestDeleteAttributeRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
+    def test_init(self):
+        """
+        Test that a DeleteAttribute request payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.DeleteAttributeRequestPayload()
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload.attribute_name)
+        self.assertIsNone(payload.attribute_index)
+        self.assertIsNone(payload.current_attribute)
+        self.assertIsNone(payload.attribute_reference)
+
+    def test_init_with_args(self):
+        """
+        Test that a DeleteAttribute request payload can be constructed with
+        valid values.
+        """
+        payload = payloads.DeleteAttributeRequestPayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
+            attribute_name="x-attribute1",
+            attribute_index=1
+        )
+
+        self.assertEqual(
+            "b4faee10-aa2a-4446-8ad4-0881f3422959",
+            payload.unique_identifier
+        )
+        self.assertEqual("x-attribute1", payload.attribute_name)
+        self.assertEqual(1, payload.attribute_index)
+
+    def test_read_valid(self):
+        """
+        Test that a DeleteAttribute request payload can be read from a valid
+        byte stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_no_attribute_name()
+
+    def test_write_valid(self):
+        """
+        Test that a DeleteAttribute request payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a DeleteAttribute request payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.DeleteAttributeRequestPayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_unique_identifier()
+
+    def test_eq(self):
+        """
+        Test that a DeleteAttribute request payload compares equal to itself.
+        """
+        payload = payloads.DeleteAttributeRequestPayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        """
+        Test that two different DeleteAttribute request payloads are not
+        equal.
+        """
+        a = payloads.DeleteAttributeRequestPayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959"
+        )
+        b = payloads.DeleteAttributeRequestPayload(
+            unique_identifier="11111111-2222-3333-4444-555555555555"
+        )
+        self.assertTrue(a != b)
 
 class TestDeleteAttributeResponsePayload(testtools.TestCase):
     """
@@ -1164,3 +1252,94 @@ class TestDeleteAttributeResponsePayload(testtools.TestCase):
         self.assertFalse(b == a)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_init(self):
+        """
+        Test that a DeleteAttribute response payload can be constructed with
+        no arguments.
+        """
+        payload = payloads.DeleteAttributeResponsePayload()
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload.attribute)
+
+    def test_init_with_args(self):
+        """
+        Test that a DeleteAttribute response payload can be constructed with
+        valid values.
+        """
+        payload = payloads.DeleteAttributeResponsePayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
+            attribute=objects.Attribute(
+                attribute_name=objects.Attribute.AttributeName("x-attribute1"),
+                attribute_value=primitives.TextString(
+                    "ModifiedValue1",
+                    tag=enums.Tags.ATTRIBUTE_VALUE
+                )
+            )
+        )
+
+        self.assertEqual(
+            "b4faee10-aa2a-4446-8ad4-0881f3422959",
+            payload.unique_identifier
+        )
+        self.assertIsInstance(payload.attribute, objects.Attribute)
+
+    def test_read_valid(self):
+        """
+        Test that a DeleteAttribute response payload can be read from a valid
+        byte stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_no_unique_identifier()
+
+    def test_write_valid(self):
+        """
+        Test that a DeleteAttribute response payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a DeleteAttribute response payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.DeleteAttributeResponsePayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_unique_identifier()
+
+    def test_eq(self):
+        """
+        Test that a DeleteAttribute response payload compares equal to itself.
+        """
+        payload = payloads.DeleteAttributeResponsePayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        """
+        Test that two different DeleteAttribute response payloads are not
+        equal.
+        """
+        a = payloads.DeleteAttributeResponsePayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959"
+        )
+        b = payloads.DeleteAttributeResponsePayload(
+            unique_identifier="11111111-2222-3333-4444-555555555555"
+        )
+        self.assertTrue(a != b)

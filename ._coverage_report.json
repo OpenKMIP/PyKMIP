@@ -1,0 +1,1297 @@
+[
+  {
+    "source": "kmip/version.py",
+    "module": "kmip.version",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/test_version.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/__init__.py",
+    "module": "kmip.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/attributes.py",
+    "module": "kmip.core.attributes",
+    "tests": [
+      "kmip/tests/unit/core/test_enums.py",
+      "kmip/tests/unit/core/test_policy.py",
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_attribute.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_activate.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/pie/objects/test_application_specific_information.py",
+      "kmip/tests/unit/pie/objects/test_certificate.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_monitor.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/test_attributes.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/config_helper.py",
+    "module": "kmip.core.config_helper",
+    "tests": [
+      "kmip/tests/unit/core/test_config_helper.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/test_config_helper.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/enums.py",
+    "module": "kmip.core.enums",
+    "tests": [
+      "kmip/tests/unit/core/test_enums.py",
+      "kmip/tests/unit/core/test_policy.py",
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_exceptions.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/factories/test_attribute.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_misc.py",
+      "kmip/tests/unit/core/objects/test_credentials.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/primitives/test_enumeration.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/factories/payloads/test_payload.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/contents/test_authentication.py",
+      "kmip/tests/unit/core/messages/contents/test_protocol_version.py",
+      "kmip/tests/unit/core/messages/payloads/test_activate.py",
+      "kmip/tests/unit/core/messages/payloads/test_cancel.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/pie/objects/test_certificate.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_sqltypes.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_monitor.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/test_enums.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/exceptions.py",
+    "module": "kmip.core.exceptions",
+    "tests": [
+      "kmip/tests/unit/core/test_utils.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/primitives/test_base.py",
+      "kmip/tests/unit/core/primitives/test_big_integer.py",
+      "kmip/tests/unit/core/primitives/test_byte_string.py",
+      "kmip/tests/unit/core/primitives/test_enumeration.py",
+      "kmip/tests/unit/core/primitives/test_integer.py",
+      "kmip/tests/unit/core/primitives/test_interval.py",
+      "kmip/tests/unit/core/primitives/test_long_integer.py",
+      "kmip/tests/unit/core/primitives/test_text_string.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/services/server/test_config.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_server.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_slugs.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/test_exceptions.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/misc.py",
+    "module": "kmip.core.misc",
+    "tests": [
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_misc.py",
+      "kmip/tests/unit/core/misc/test_server_information.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/test_misc.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/objects.py",
+    "module": "kmip.core.objects",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/factories/test_attribute.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_attribute.py",
+      "kmip/tests/unit/core/objects/test_credentials.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_extension_information.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/contents/test_authentication.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/test_objects.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/policy.py",
+    "module": "kmip.core.policy",
+    "tests": [
+      "kmip/tests/unit/core/test_policy.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/test_policy.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/primitives.py",
+    "module": "kmip.core.primitives",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_misc.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/primitives/test_base.py",
+      "kmip/tests/unit/core/primitives/test_big_integer.py",
+      "kmip/tests/unit/core/primitives/test_boolean.py",
+      "kmip/tests/unit/core/primitives/test_byte_string.py",
+      "kmip/tests/unit/core/primitives/test_date_time.py",
+      "kmip/tests/unit/core/primitives/test_enumeration.py",
+      "kmip/tests/unit/core/primitives/test_integer.py",
+      "kmip/tests/unit/core/primitives/test_interval.py",
+      "kmip/tests/unit/core/primitives/test_long_integer.py",
+      "kmip/tests/unit/core/primitives/test_text_string.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/pie/objects/test_application_specific_information.py",
+      "kmip/tests/unit/pie/objects/test_object_group.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/test_primitives.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/secrets.py",
+    "module": "kmip.core.secrets",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/pie/objects/test_certificate.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/test_secrets.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/utils.py",
+    "module": "kmip.core.utils",
+    "tests": [
+      "kmip/tests/unit/core/test_utils.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_server_information.py",
+      "kmip/tests/unit/core/objects/test_credentials.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_extension_information.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/primitives/test_base.py",
+      "kmip/tests/unit/core/primitives/test_big_integer.py",
+      "kmip/tests/unit/core/primitives/test_boolean.py",
+      "kmip/tests/unit/core/primitives/test_byte_string.py",
+      "kmip/tests/unit/core/primitives/test_date_time.py",
+      "kmip/tests/unit/core/primitives/test_enumeration.py",
+      "kmip/tests/unit/core/primitives/test_integer.py",
+      "kmip/tests/unit/core/primitives/test_interval.py",
+      "kmip/tests/unit/core/primitives/test_long_integer.py",
+      "kmip/tests/unit/core/primitives/test_text_string.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/contents/test_authentication.py",
+      "kmip/tests/unit/core/messages/contents/test_protocol_version.py",
+      "kmip/tests/unit/core/messages/payloads/test_activate.py",
+      "kmip/tests/unit/core/messages/payloads/test_archive.py",
+      "kmip/tests/unit/core/messages/payloads/test_cancel.py",
+      "kmip/tests/unit/core/messages/payloads/test_check.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_discover_versions.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_usage_allocation.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_obtain_lease.py",
+      "kmip/tests/unit/core/messages/payloads/test_poll.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_recover.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/test_utils.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/__init__.py",
+    "module": "kmip.core.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/core/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/pie/client.py",
+    "module": "kmip.pie.client",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/pie/test_client.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/pie/exceptions.py",
+    "module": "kmip.pie.exceptions",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_exceptions.py",
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/pie/test_exceptions.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/pie/factory.py",
+    "module": "kmip.pie.factory",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/pie/test_factory.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/pie/objects.py",
+    "module": "kmip.pie.objects",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/pie/objects/test_application_specific_information.py",
+      "kmip/tests/unit/pie/objects/test_certificate.py",
+      "kmip/tests/unit/pie/objects/test_cryptographic_object.py",
+      "kmip/tests/unit/pie/objects/test_key.py",
+      "kmip/tests/unit/pie/objects/test_managed_object.py",
+      "kmip/tests/unit/pie/objects/test_object_group.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/pie/test_objects.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/pie/sqltypes.py",
+    "module": "kmip.pie.sqltypes",
+    "tests": [
+      "kmip/tests/unit/pie/objects/test_application_specific_information.py",
+      "kmip/tests/unit/pie/objects/test_object_group.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_sqltypes.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/pie/test_sqltypes.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/pie/__init__.py",
+    "module": "kmip.pie.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/pie/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/services/auth.py",
+    "module": "kmip.services.auth",
+    "tests": [
+      "kmip/tests/unit/services/test_auth.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/services/server/test_server.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/services/test_auth.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/kmip_client.py",
+    "module": "kmip.services.kmip_client",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/services/test_kmip_client.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/kmip_protocol.py",
+    "module": "kmip.services.kmip_protocol",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_protocol.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/services/test_kmip_protocol.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/results.py",
+    "module": "kmip.services.results",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/services/test_results.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/services/__init__.py",
+    "module": "kmip.services.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/services/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/factories/attributes.py",
+    "module": "kmip.core.factories.attributes",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/test_attribute.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/factories/test_attributes.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/factories/attribute_values.py",
+    "module": "kmip.core.factories.attribute_values",
+    "tests": [
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/objects/test_objects.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/factories/test_attribute_values.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/factories/credentials.py",
+    "module": "kmip.core.factories.credentials",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/factories/test_credentials.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/factories/secrets.py",
+    "module": "kmip.core.factories.secrets",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/factories/test_secrets.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/factories/__init__.py",
+    "module": "kmip.core.factories.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/core/factories/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/messages/contents.py",
+    "module": "kmip.core.messages.contents",
+    "tests": [
+      "kmip/tests/unit/core/test_policy.py",
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_exceptions.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/factories/payloads/test_payload.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/contents/test_authentication.py",
+      "kmip/tests/unit/core/messages/contents/test_protocol_version.py",
+      "kmip/tests/unit/core/messages/payloads/test_discover_versions.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_monitor.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_server.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/messages/test_contents.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/messages/messages.py",
+    "module": "kmip.core.messages.messages",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/messages/test_messages.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/__init__.py",
+    "module": "kmip.core.messages.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/core/messages/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/factories/payloads/request.py",
+    "module": "kmip.core.factories.payloads.request",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_request.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/factories/payloads/test_request.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/factories/payloads/response.py",
+    "module": "kmip.core.factories.payloads.response",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_response.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/factories/payloads/test_response.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/factories/payloads/__init__.py",
+    "module": "kmip.core.factories.payloads.__init__",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_payload.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/factories/payloads/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/messages/payloads/activate.py",
+    "module": "kmip.core.messages.payloads.activate",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_activate.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_activate.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/archive.py",
+    "module": "kmip.core.messages.payloads.archive",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_archive.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_archive.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/base.py",
+    "module": "kmip.core.messages.payloads.base",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_base.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/core/messages/payloads/cancel.py",
+    "module": "kmip.core.messages.payloads.cancel",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_cancel.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_cancel.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/check.py",
+    "module": "kmip.core.messages.payloads.check",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_check.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_check.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/create.py",
+    "module": "kmip.core.messages.payloads.create",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_create.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/create_key_pair.py",
+    "module": "kmip.core.messages.payloads.create_key_pair",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/decrypt.py",
+    "module": "kmip.core.messages.payloads.decrypt",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/delete_attribute.py",
+    "module": "kmip.core.messages.payloads.delete_attribute",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/derive_key.py",
+    "module": "kmip.core.messages.payloads.derive_key",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/destroy.py",
+    "module": "kmip.core.messages.payloads.destroy",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_destroy.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/discover_versions.py",
+    "module": "kmip.core.messages.payloads.discover_versions",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_discover_versions.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_discover_versions.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/encrypt.py",
+    "module": "kmip.core.messages.payloads.encrypt",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/get.py",
+    "module": "kmip.core.messages.payloads.get",
+    "tests": [
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_get.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/get_attributes.py",
+    "module": "kmip.core.messages.payloads.get_attributes",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/get_attribute_list.py",
+    "module": "kmip.core.messages.payloads.get_attribute_list",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/get_usage_allocation.py",
+    "module": "kmip.core.messages.payloads.get_usage_allocation",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_get_usage_allocation.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_get_usage_allocation.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/locate.py",
+    "module": "kmip.core.messages.payloads.locate",
+    "tests": [
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_locate.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/mac.py",
+    "module": "kmip.core.messages.payloads.mac",
+    "tests": [
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_mac.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/modify_attribute.py",
+    "module": "kmip.core.messages.payloads.modify_attribute",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/obtain_lease.py",
+    "module": "kmip.core.messages.payloads.obtain_lease",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_obtain_lease.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_obtain_lease.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/poll.py",
+    "module": "kmip.core.messages.payloads.poll",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_poll.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_poll.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/query.py",
+    "module": "kmip.core.messages.payloads.query",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_query.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/recover.py",
+    "module": "kmip.core.messages.payloads.recover",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_recover.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_recover.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/register.py",
+    "module": "kmip.core.messages.payloads.register",
+    "tests": [
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_register.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/rekey.py",
+    "module": "kmip.core.messages.payloads.rekey",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/rekey_key_pair.py",
+    "module": "kmip.core.messages.payloads.rekey_key_pair",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/revoke.py",
+    "module": "kmip.core.messages.payloads.revoke",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/set_attribute.py",
+    "module": "kmip.core.messages.payloads.set_attribute",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/sign.py",
+    "module": "kmip.core.messages.payloads.sign",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_sign.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/signature_verify.py",
+    "module": "kmip.core.messages.payloads.signature_verify",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/core/messages/payloads/__init__.py",
+    "module": "kmip.core.messages.payloads.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/core/messages/payloads/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/services/server/config.py",
+    "module": "kmip.services.server.config",
+    "tests": [
+      "kmip/tests/unit/services/server/test_config.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/services/server/test_config.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/server/engine.py",
+    "module": "kmip.services.server.engine",
+    "tests": [
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_server.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/services/server/test_engine.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/server/monitor.py",
+    "module": "kmip.services.server.monitor",
+    "tests": [
+      "kmip/tests/unit/services/server/test_monitor.py",
+      "kmip/tests/unit/services/server/test_server.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/services/server/test_monitor.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/server/policy.py",
+    "module": "kmip.services.server.policy",
+    "tests": [
+      "kmip/tests/unit/services/server/test_policy.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/services/server/test_policy.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/server/server.py",
+    "module": "kmip.services.server.server",
+    "tests": [
+      "kmip/tests/unit/services/server/test_server.py"
+    ],
+    "status": "PARTIAL",
+    "expected_test": "kmip/tests/unit/services/server/test_server.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/server/session.py",
+    "module": "kmip.services.server.session",
+    "tests": [
+      "kmip/tests/unit/services/server/test_server.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/services/server/test_session.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/server/__init__.py",
+    "module": "kmip.services.server.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/services/server/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/services/server/auth/api.py",
+    "module": "kmip.services.server.auth.api",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/services/server/auth/test_api.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/services/server/auth/slugs.py",
+    "module": "kmip.services.server.auth.slugs",
+    "tests": [
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_slugs.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/services/server/auth/test_slugs.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/server/auth/utils.py",
+    "module": "kmip.services.server.auth.utils",
+    "tests": [
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_slugs.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/services/server/auth/test_utils.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/server/auth/__init__.py",
+    "module": "kmip.services.server.auth.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/services/server/auth/test___init__.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/services/server/crypto/api.py",
+    "module": "kmip.services.server.crypto.api",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/services/server/crypto/test_api.py",
+    "expected_exists": false
+  },
+  {
+    "source": "kmip/services/server/crypto/engine.py",
+    "module": "kmip.services.server.crypto.engine",
+    "tests": [
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "status": "EXISTS",
+    "expected_test": "kmip/tests/unit/services/server/crypto/test_engine.py",
+    "expected_exists": true
+  },
+  {
+    "source": "kmip/services/server/crypto/__init__.py",
+    "module": "kmip.services.server.crypto.__init__",
+    "tests": [],
+    "status": "MISSING",
+    "expected_test": "kmip/tests/unit/services/server/crypto/test___init__.py",
+    "expected_exists": false
+  }
+]

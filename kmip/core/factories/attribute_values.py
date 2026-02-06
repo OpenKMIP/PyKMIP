@@ -18,7 +18,6 @@ from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import utils
 
-
 class AttributeValueFactory(object):
 
     def create_attribute_value(self, name, value):

@@ -24,7 +24,6 @@ from kmip.core import objects as cobjects
 from kmip.pie import factory
 from kmip.pie import objects as pobjects
 
-
 class TestObjectFactory(testtools.TestCase):
     """
     Test suite for the ObjectFactory.

@@ -21,14 +21,12 @@ import time
 
 from kmip.core import policy as operation_policy
 
-
 def get_json_files(p):
     """
     Scan the provided policy directory for all JSON policy files.
     """
     f = [os.path.join(p, x) for x in os.listdir(p) if x.endswith(".json")]
     return sorted(f)
-
 
 class PolicyDirectoryMonitor(multiprocessing.Process):
     """

@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core.attributes import CertificateType
 
 from kmip.core import enums
@@ -34,7 +32,6 @@ from kmip.core.primitives import ByteString
 
 from kmip.core import utils
 from kmip.core.utils import BytearrayStream
-
 
 # 2.2
 # 2.2.1
@@ -142,7 +139,6 @@ class Certificate(Struct):
     def __str__(self):
         return "{0}".format(str(self.certificate_value))
 
-
 # 2.2.2
 class KeyBlockKey(Struct):
 
@@ -178,7 +174,6 @@ class KeyBlockKey(Struct):
         # TODO (peter-hamilton) Finish implementation.
         pass
 
-
 class SymmetricKey(KeyBlockKey):
 
     def __init__(self, key_block=None):
@@ -191,7 +186,6 @@ class SymmetricKey(KeyBlockKey):
     def __validate(self):
         # TODO (peter-hamilton) Finish implementation.
         pass
-
 
 # 2.2.3
 class PublicKey(KeyBlockKey):
@@ -207,7 +201,6 @@ class PublicKey(KeyBlockKey):
         # TODO (peter-hamilton) Finish implementation.
         pass
 
-
 # 2.2.4
 class PrivateKey(KeyBlockKey):
 
@@ -221,7 +214,6 @@ class PrivateKey(KeyBlockKey):
     def __validate(self):
         # TODO (peter-hamilton) Finish implementation.
         pass
-
 
 class SplitKey(primitives.Struct):
     """
@@ -301,7 +293,7 @@ class SplitKey(primitives.Struct):
     def split_key_parts(self, value):
         if value is None:
             self._split_key_parts = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._split_key_parts = primitives.Integer(
                 value=value,
                 tag=enums.Tags.SPLIT_KEY_PARTS
@@ -319,7 +311,7 @@ class SplitKey(primitives.Struct):
     def key_part_identifier(self, value):
         if value is None:
             self._key_part_identifier = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._key_part_identifier = primitives.Integer(
                 value=value,
                 tag=enums.Tags.KEY_PART_IDENTIFIER
@@ -337,7 +329,7 @@ class SplitKey(primitives.Struct):
     def split_key_threshold(self, value):
         if value is None:
             self._split_key_threshold = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._split_key_threshold = primitives.Integer(
                 value=value,
                 tag=enums.Tags.SPLIT_KEY_THRESHOLD
@@ -376,7 +368,7 @@ class SplitKey(primitives.Struct):
     def prime_field_size(self, value):
         if value is None:
             self._prime_field_size = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._prime_field_size = primitives.BigInteger(
                 value=value,
                 tag=enums.Tags.PRIME_FIELD_SIZE
@@ -619,7 +611,6 @@ class SplitKey(primitives.Struct):
         else:
             return NotImplemented
 
-
 # 2.2.6
 class Template(Struct):
 
@@ -663,7 +654,6 @@ class Template(Struct):
     def __validate(self):
         # TODO (peter-hamilton) Finish implementation.
         pass
-
 
 # 2.2.7
 class SecretData(Struct):
@@ -712,7 +702,6 @@ class SecretData(Struct):
     def __validate(self):
         # TODO (peter-hamilton) Finish implementation.
         pass
-
 
 # 2.2.8
 class OpaqueObject(Struct):

@@ -14,12 +14,12 @@
 # under the License.
 
 import shutil
+import re
 import tempfile
 import testtools
 
 from kmip.core import enums
 from kmip.core import policy
-
 
 class TestPolicy(testtools.TestCase):
 
@@ -256,12 +256,13 @@ class TestPolicy(testtools.TestCase):
             dir=self.temp_dir,
             delete=False
         )
+        policy_file.close()
         with open(policy_file.name, 'w') as f:
             f.write('')
 
         args = (policy_file.name, )
         regex = "Loading the policy file '{}' generated a JSON error:".format(
-            policy_file.name
+            re.escape(policy_file.name)
         )
         self.assertRaisesRegex(
             ValueError,
@@ -278,6 +279,7 @@ class TestPolicy(testtools.TestCase):
             dir=self.temp_dir,
             delete=False
         )
+        policy_file.close()
         with open(policy_file.name, 'w') as f:
             f.write(
                 '{"test": {}}'

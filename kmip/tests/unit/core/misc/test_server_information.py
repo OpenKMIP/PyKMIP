@@ -13,12 +13,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from six import string_types
 from testtools import TestCase
 
 from kmip.core.misc import ServerInformation
 from kmip.core.utils import BytearrayStream
-
 
 class TestServerInformation(TestCase):
     """
@@ -229,9 +227,9 @@ class TestServerInformation(TestCase):
         msg = "expected {0}, observed {1}".format(expected, observed)
         self.assertEqual(expected, observed, msg)
 
-        # TODO (peter-hamilton) This should be binary_type. Fix involves
+        # TODO (peter-hamilton) This should be bytes. Fix involves
         # TODO (peter-hamilton) refining BytearrayStream implementation.
-        expected = string_types
+        expected = str
         observed = str_repr
 
         msg = "expected {0}, observed {1}".format(expected, observed)

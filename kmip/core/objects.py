@@ -14,8 +14,7 @@
 # under the License.
 
 import abc
-import six
-from six.moves import xrange
+
 import struct
 
 from kmip.core import attributes
@@ -40,7 +39,6 @@ from kmip.core.primitives import Enumeration
 
 from kmip.core import utils
 from kmip.core.utils import BytearrayStream
-
 
 # 2.1
 # 2.1.1
@@ -173,7 +171,6 @@ class Attribute(Struct):
             return not self.__eq__(other)
         else:
             return NotImplemented
-
 
 class CurrentAttribute(primitives.Struct):
     """
@@ -355,7 +352,6 @@ class CurrentAttribute(primitives.Struct):
         else:
             return NotImplemented
 
-
 class NewAttribute(primitives.Struct):
     """
     A structure containing a single attribute.
@@ -536,7 +532,6 @@ class NewAttribute(primitives.Struct):
         else:
             return NotImplemented
 
-
 class AttributeReference(primitives.Struct):
     """
     A structure containing reference information for an attribute.
@@ -581,7 +576,7 @@ class AttributeReference(primitives.Struct):
     def vendor_identification(self, value):
         if value is None:
             self._vendor_identification = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._vendor_identification = primitives.TextString(
                 value,
                 tag=enums.Tags.VENDOR_IDENTIFICATION
@@ -600,7 +595,7 @@ class AttributeReference(primitives.Struct):
     def attribute_name(self, value):
         if value is None:
             self._attribute_name = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._attribute_name = primitives.TextString(
                 value,
                 tag=enums.Tags.ATTRIBUTE_NAME
@@ -765,7 +760,6 @@ class AttributeReference(primitives.Struct):
             return not (self == other)
         else:
             return NotImplemented
-
 
 class Attributes(primitives.Struct):
     """
@@ -946,7 +940,7 @@ class Attributes(primitives.Struct):
 
         # TODO (ph) Allow order independence?
 
-        for i in six.moves.range(len(self.attributes)):
+        for i in range(len(self.attributes)):
             a = self.attributes[i]
             b = other.attributes[i]
 
@@ -960,7 +954,6 @@ class Attributes(primitives.Struct):
             return not (self == other)
         else:
             return NotImplemented
-
 
 class Nonce(primitives.Struct):
     """
@@ -1002,7 +995,7 @@ class Nonce(primitives.Struct):
     def nonce_id(self, value):
         if value is None:
             self._nonce_id = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._nonce_id = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.NONCE_ID
@@ -1021,7 +1014,7 @@ class Nonce(primitives.Struct):
     def nonce_value(self, value):
         if value is None:
             self._nonce_value = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._nonce_value = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.NONCE_VALUE
@@ -1133,14 +1126,11 @@ class Nonce(primitives.Struct):
         ])
         return "{" + body + "}"
 
-
-@six.add_metaclass(abc.ABCMeta)
-class CredentialValue(primitives.Struct):
+class CredentialValue(primitives.Struct, metaclass=abc.ABCMeta):
     """
     An empty, abstract base class to be used by Credential objects to easily
     group and type-check credential values.
     """
-
 
 class UsernamePasswordCredential(CredentialValue):
     """
@@ -1182,7 +1172,7 @@ class UsernamePasswordCredential(CredentialValue):
     def username(self, value):
         if value is None:
             self._username = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._username = primitives.TextString(
                 value=value,
                 tag=enums.Tags.USERNAME
@@ -1201,7 +1191,7 @@ class UsernamePasswordCredential(CredentialValue):
     def password(self, value):
         if value is None:
             self._password = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._password = primitives.TextString(
                 value=value,
                 tag=enums.Tags.PASSWORD
@@ -1314,7 +1304,6 @@ class UsernamePasswordCredential(CredentialValue):
             "password": self.password
         })
 
-
 class DeviceCredential(CredentialValue):
     """
     A struct representing a DeviceCredential object.
@@ -1379,7 +1368,7 @@ class DeviceCredential(CredentialValue):
     def device_serial_number(self, value):
         if value is None:
             self._device_serial_number = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._device_serial_number = primitives.TextString(
                 value=value,
                 tag=enums.Tags.DEVICE_SERIAL_NUMBER
@@ -1398,7 +1387,7 @@ class DeviceCredential(CredentialValue):
     def password(self, value):
         if value is None:
             self._password = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._password = primitives.TextString(
                 value=value,
                 tag=enums.Tags.PASSWORD
@@ -1417,7 +1406,7 @@ class DeviceCredential(CredentialValue):
     def device_identifier(self, value):
         if value is None:
             self._device_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._device_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.DEVICE_IDENTIFIER
@@ -1436,7 +1425,7 @@ class DeviceCredential(CredentialValue):
     def network_identifier(self, value):
         if value is None:
             self._network_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._network_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.NETWORK_IDENTIFIER
@@ -1455,7 +1444,7 @@ class DeviceCredential(CredentialValue):
     def machine_identifier(self, value):
         if value is None:
             self._machine_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._machine_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.MACHINE_IDENTIFIER
@@ -1474,7 +1463,7 @@ class DeviceCredential(CredentialValue):
     def media_identifier(self, value):
         if value is None:
             self._media_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._media_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.MEDIA_IDENTIFIER
@@ -1651,7 +1640,6 @@ class DeviceCredential(CredentialValue):
             "media_identifier": self.media_identifier
         })
 
-
 class AttestationCredential(CredentialValue):
     """
     A struct representing an AttestationCredential object.
@@ -1743,7 +1731,7 @@ class AttestationCredential(CredentialValue):
     def attestation_measurement(self, value):
         if value is None:
             self._attestation_measurement = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._attestation_measurement = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.ATTESTATION_MEASUREMENT
@@ -1762,7 +1750,7 @@ class AttestationCredential(CredentialValue):
     def attestation_assertion(self, value):
         if value is None:
             self._attestation_assertion = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._attestation_assertion = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.ATTESTATION_ASSERTION
@@ -1948,7 +1936,6 @@ class AttestationCredential(CredentialValue):
                str(self.attestation_measurement) + ", " \
                "'attestation_assertion': " + \
                str(self.attestation_assertion) + "}"
-
 
 class Credential(primitives.Struct):
     """
@@ -2146,7 +2133,6 @@ class Credential(primitives.Struct):
             "credential_value": str(self.credential_value)
         })
 
-
 class KeyBlock(Struct):
 
     class KeyCompressionType(Enumeration):
@@ -2254,13 +2240,11 @@ class KeyBlock(Struct):
                 )
                 raise TypeError(msg)
 
-
 # 2.1.4
 class KeyMaterial(ByteString):
 
     def __init__(self, value=None):
         super(KeyMaterial, self).__init__(value, Tags.KEY_MATERIAL)
-
 
 # TODO (peter-hamilton) Get rid of this and replace with a KeyMaterial factory.
 class KeyMaterialStruct(Struct):
@@ -2298,7 +2282,6 @@ class KeyMaterialStruct(Struct):
     def __validate(self):
         # NOTE (peter-hamilton): Intentional pass, no way to validate data.
         pass
-
 
 class KeyValue(Struct):
 
@@ -2363,7 +2346,7 @@ class KeyValue(Struct):
             raise TypeError(msg)
 
         if isinstance(self.attributes, list):
-            for i in xrange(len(self.attributes)):
+            for i in range(len(self.attributes)):
                 attribute = self.attributes[i]
                 if not isinstance(attribute, Attribute):
                     msg = "invalid attribute ({0} in list)".format(i)
@@ -2375,7 +2358,6 @@ class KeyValue(Struct):
             msg += "; expected {0}, received {1}".format(
                 list, self.attributes)
             raise TypeError(msg)
-
 
 class EncryptionKeyInformation(Struct):
     """
@@ -2419,7 +2401,7 @@ class EncryptionKeyInformation(Struct):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -2558,7 +2540,6 @@ class EncryptionKeyInformation(Struct):
             'cryptographic_parameters': self.cryptographic_parameters
         })
 
-
 class MACSignatureKeyInformation(primitives.Struct):
     """
     A set of values detailing how an MAC/signed value was MAC/signed.
@@ -2601,7 +2582,7 @@ class MACSignatureKeyInformation(primitives.Struct):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -2740,7 +2721,6 @@ class MACSignatureKeyInformation(primitives.Struct):
             'cryptographic_parameters': self.cryptographic_parameters
         })
 
-
 class KeyWrappingData(Struct):
     """
     A set of key block values needed for key wrapping functionality
@@ -2864,7 +2844,7 @@ class KeyWrappingData(Struct):
     def mac_signature(self, value):
         if value is None:
             self._mac_signature = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._mac_signature = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.MAC_SIGNATURE
@@ -2883,7 +2863,7 @@ class KeyWrappingData(Struct):
     def iv_counter_nonce(self, value):
         if value is None:
             self._iv_counter_nonce = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._iv_counter_nonce = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.IV_COUNTER_NONCE
@@ -3103,7 +3083,6 @@ class KeyWrappingData(Struct):
             'encoding_option': self.encoding_option
         })
 
-
 class KeyWrappingSpecification(primitives.Struct):
     """
     A set of values needed for key wrapping functionality.
@@ -3224,7 +3203,7 @@ class KeyWrappingSpecification(primitives.Struct):
         elif isinstance(value, list):
             attribute_names = []
             for i in value:
-                if isinstance(i, six.string_types):
+                if isinstance(i, str):
                     attribute_names.append(
                         primitives.TextString(
                             value=i,
@@ -3435,7 +3414,6 @@ class KeyWrappingSpecification(primitives.Struct):
             'encoding_option': self.encoding_option
         })
 
-
 class TemplateAttribute(Struct):
 
     def __init__(self,
@@ -3514,14 +3492,14 @@ class TemplateAttribute(Struct):
 
             # TODO (peter-hamilton) Allow order independence?
 
-            for i in xrange(len(self.names)):
+            for i in range(len(self.names)):
                 a = self.names[i]
                 b = other.names[i]
 
                 if a != b:
                     return False
 
-            for i in xrange(len(self.attributes)):
+            for i in range(len(self.attributes)):
                 a = self.attributes[i]
                 b = other.attributes[i]
 
@@ -3538,7 +3516,6 @@ class TemplateAttribute(Struct):
         else:
             return NotImplemented
 
-
 class CommonTemplateAttribute(TemplateAttribute):
 
     def __init__(self,
@@ -3546,7 +3523,6 @@ class CommonTemplateAttribute(TemplateAttribute):
                  attributes=None):
         super(CommonTemplateAttribute, self).__init__(
             names, attributes, Tags.COMMON_TEMPLATE_ATTRIBUTE)
-
 
 class PrivateKeyTemplateAttribute(TemplateAttribute):
 
@@ -3556,7 +3532,6 @@ class PrivateKeyTemplateAttribute(TemplateAttribute):
         super(PrivateKeyTemplateAttribute, self).__init__(
             names, attributes, Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE)
 
-
 class PublicKeyTemplateAttribute(TemplateAttribute):
 
     def __init__(self,
@@ -3564,7 +3539,6 @@ class PublicKeyTemplateAttribute(TemplateAttribute):
                  attributes=None):
         super(PublicKeyTemplateAttribute, self).__init__(
             names, attributes, Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE)
-
 
 def convert_template_attribute_to_attributes(value):
     if not isinstance(value, TemplateAttribute):
@@ -3588,7 +3562,6 @@ def convert_template_attribute_to_attributes(value):
         attribute_values.append(attribute_value)
 
     return Attributes(attributes=attribute_values, tag=tag)
-
 
 def convert_attributes_to_template_attribute(value):
     if not isinstance(value, Attributes):
@@ -3619,7 +3592,6 @@ def convert_attributes_to_template_attribute(value):
         tag=template_tag
     )
 
-
 # 2.1.9
 class ExtensionName(TextString):
     """
@@ -3642,7 +3614,6 @@ class ExtensionName(TextString):
         """
         super(ExtensionName, self).__init__(value, Tags.EXTENSION_NAME)
 
-
 class ExtensionTag(Integer):
     """
     The tag of an extended Object.
@@ -3662,7 +3633,6 @@ class ExtensionTag(Integer):
                 displayed in hex format. Optional, defaults to 0.
         """
         super(ExtensionTag, self).__init__(value, Tags.EXTENSION_TAG)
-
 
 class ExtensionType(Integer):
     """
@@ -3685,7 +3655,6 @@ class ExtensionType(Integer):
                 to None.
         """
         super(ExtensionType, self).__init__(value, Tags.EXTENSION_TYPE)
-
 
 class ExtensionInformation(Struct):
     """
@@ -3872,20 +3841,17 @@ class ExtensionInformation(Struct):
             extension_tag=extension_tag,
             extension_type=extension_type)
 
-
 # 2.1.10
 class Data(ByteString):
 
     def __init__(self, value=None):
         super(Data, self).__init__(value, Tags.DATA)
 
-
 # 2.1.13
 class MACData(ByteString):
 
     def __init__(self, value=None):
         super(MACData, self).__init__(value, Tags.MAC_DATA)
-
 
 # 3.31, 9.1.3.2.19
 class RevocationReasonCode(Enumeration):
@@ -3894,7 +3860,6 @@ class RevocationReasonCode(Enumeration):
         super(RevocationReasonCode, self).__init__(
             enums.RevocationReasonCode, value=value,
             tag=Tags.REVOCATION_REASON_CODE)
-
 
 # 3.31
 class RevocationReason(Struct):
@@ -3990,7 +3955,6 @@ class RevocationReason(Struct):
             if not isinstance(self.revocation_message, TextString):
                 msg = "TextString expect"
                 raise TypeError(msg)
-
 
 class ObjectDefaults(primitives.Struct):
     """
@@ -4202,7 +4166,6 @@ class ObjectDefaults(primitives.Struct):
         else:
             return NotImplemented
 
-
 class DefaultsInformation(primitives.Struct):
     """
     """
@@ -4364,7 +4327,6 @@ class DefaultsInformation(primitives.Struct):
         else:
             return NotImplemented
 
-
 class RNGParameters(primitives.Struct):
     """
     A structure containing parameters for a random number generator.
@@ -4500,7 +4462,7 @@ class RNGParameters(primitives.Struct):
     def cryptographic_length(self, value):
         if value is None:
             self._cryptographic_length = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._cryptographic_length = primitives.Integer(
                 value=value,
                 tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
@@ -4862,7 +4824,6 @@ class RNGParameters(primitives.Struct):
         else:
             return NotImplemented
 
-
 class ProfileInformation(primitives.Struct):
     """
     A structure containing details of supported KMIP profiles.
@@ -4936,7 +4897,7 @@ class ProfileInformation(primitives.Struct):
     def server_uri(self, value):
         if value is None:
             self._server_uri = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._server_uri = primitives.TextString(
                 value=value,
                 tag=enums.Tags.SERVER_URI
@@ -4954,7 +4915,7 @@ class ProfileInformation(primitives.Struct):
     def server_port(self, value):
         if value is None:
             self._server_port = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._server_port = primitives.Integer(
                 value=value,
                 tag=enums.Tags.SERVER_PORT
@@ -5103,7 +5064,6 @@ class ProfileInformation(primitives.Struct):
         else:
             return NotImplemented
 
-
 class ValidationInformation(primitives.Struct):
     """
     A structure containing details of a formal validation.
@@ -5251,7 +5211,7 @@ class ValidationInformation(primitives.Struct):
     def validation_authority_country(self, value):
         if value is None:
             self._validation_authority_country = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_authority_country = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_AUTHORITY_COUNTRY
@@ -5271,7 +5231,7 @@ class ValidationInformation(primitives.Struct):
     def validation_authority_uri(self, value):
         if value is None:
             self._validation_authority_uri = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_authority_uri = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_AUTHORITY_URI
@@ -5289,7 +5249,7 @@ class ValidationInformation(primitives.Struct):
     def validation_version_major(self, value):
         if value is None:
             self._validation_version_major = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._validation_version_major = primitives.Integer(
                 value=value,
                 tag=enums.Tags.VALIDATION_VERSION_MAJOR
@@ -5307,7 +5267,7 @@ class ValidationInformation(primitives.Struct):
     def validation_version_minor(self, value):
         if value is None:
             self._validation_version_minor = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._validation_version_minor = primitives.Integer(
                 value=value,
                 tag=enums.Tags.VALIDATION_VERSION_MINOR
@@ -5346,7 +5306,7 @@ class ValidationInformation(primitives.Struct):
     def validation_level(self, value):
         if value is None:
             self._validation_level = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._validation_level = primitives.Integer(
                 value=value,
                 tag=enums.Tags.VALIDATION_LEVEL
@@ -5364,7 +5324,7 @@ class ValidationInformation(primitives.Struct):
     def validation_certificate_identifier(self, value):
         if value is None:
             self._validation_certificate_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_certificate_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER
@@ -5384,7 +5344,7 @@ class ValidationInformation(primitives.Struct):
     def validation_certificate_uri(self, value):
         if value is None:
             self._validation_certificate_uri = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_certificate_uri = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_CERTIFICATE_URI
@@ -5402,7 +5362,7 @@ class ValidationInformation(primitives.Struct):
     def validation_vendor_uri(self, value):
         if value is None:
             self._validation_vendor_uri = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_vendor_uri = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_VENDOR_URI
@@ -5423,7 +5383,7 @@ class ValidationInformation(primitives.Struct):
         elif isinstance(value, list):
             validation_profiles = []
             for v in value:
-                if isinstance(v, six.string_types):
+                if isinstance(v, str):
                     validation_profiles.append(
                         primitives.TextString(
                             value=v,
@@ -5860,7 +5820,6 @@ class ValidationInformation(primitives.Struct):
             return not (self == other)
         else:
             return NotImplemented
-
 
 class CapabilityInformation(primitives.Struct):
     """
@@ -6408,7 +6367,6 @@ class CapabilityInformation(primitives.Struct):
         else:
             return NotImplemented
 
-
 class ProtectionStorageMasks(primitives.Struct):
     """
     A structure containing a list of protection storage masks.
@@ -6455,7 +6413,7 @@ class ProtectionStorageMasks(primitives.Struct):
         elif isinstance(value, list):
             protection_storage_masks = []
             for x in value:
-                if isinstance(x, six.integer_types):
+                if isinstance(x, int):
                     if enums.is_bit_mask(enums.ProtectionStorageMask, x):
                         protection_storage_masks.append(
                             primitives.Integer(

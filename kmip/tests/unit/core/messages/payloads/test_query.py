@@ -24,7 +24,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestQueryRequestPayload(testtools.TestCase):
     """
     Test suite for the QueryRequestPayload class.
@@ -329,6 +328,84 @@ class TestQueryRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
+    def test_init(self):
+        """
+        Test that a Query request payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.QueryRequestPayload()
+        self.assertIsNone(payload.query_functions)
+
+    def test_init_with_args(self):
+        """
+        Test that a Query request payload can be constructed with valid
+        values.
+        """
+        payload = payloads.QueryRequestPayload(
+            query_functions=[
+                enums.QueryFunction.QUERY_OPERATIONS,
+                enums.QueryFunction.QUERY_OBJECTS
+            ]
+        )
+        self.assertEqual(
+            [
+                enums.QueryFunction.QUERY_OPERATIONS,
+                enums.QueryFunction.QUERY_OBJECTS
+            ],
+            payload.query_functions
+        )
+
+    def test_read_valid(self):
+        """
+        Test that a Query request payload can be read from a valid byte
+        stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_missing_query_functions()
+
+    def test_write_valid(self):
+        """
+        Test that a Query request payload can be written to a byte stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a Query request payload can be read and written without
+        changing the encoded bytes.
+        """
+        payload = payloads.QueryRequestPayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_query_functions()
+
+    def test_eq(self):
+        """
+        Test that two Query request payloads with the same data are equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two Query request payloads with different data are not
+        equal.
+        """
+        self.test_not_equal_on_not_equal_query_functions()
 
 class TestQueryResponsePayload(testtools.TestCase):
     """
@@ -4986,3 +5063,84 @@ class TestQueryResponsePayload(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_init(self):
+        """
+        Test that a Query response payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.QueryResponsePayload()
+        self.assertIsNone(payload.operations)
+        self.assertIsNone(payload.object_types)
+        self.assertIsNone(payload.vendor_identification)
+
+    def test_init_with_args(self):
+        """
+        Test that a Query response payload can be constructed with valid
+        values.
+        """
+        payload = payloads.QueryResponsePayload(
+            operations=[enums.Operation.CREATE],
+            object_types=[enums.ObjectType.SYMMETRIC_KEY],
+            vendor_identification="ExampleVendor"
+        )
+
+        self.assertEqual([enums.Operation.CREATE], payload.operations)
+        self.assertEqual(
+            [enums.ObjectType.SYMMETRIC_KEY],
+            payload.object_types
+        )
+        self.assertEqual("ExampleVendor", payload.vendor_identification)
+
+    def test_read_valid(self):
+        """
+        Test that a Query response payload can be read from a valid byte
+        stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        payload = payloads.QueryResponsePayload()
+        self.assertRaises(Exception, payload.read, utils.BytearrayStream(b""))
+
+    def test_write_valid(self):
+        """
+        Test that a Query response payload can be written to a byte stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a Query response payload can be read and written without
+        changing the encoded bytes.
+        """
+        payload = payloads.QueryResponsePayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_operations()
+
+    def test_eq(self):
+        """
+        Test that two Query response payloads with the same data are equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two Query response payloads with different data are not
+        equal.
+        """
+        self.test_not_equal_on_not_equal_operations()

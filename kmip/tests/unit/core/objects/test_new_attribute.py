@@ -21,7 +21,6 @@ from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
 
-
 class TestNewAttribute(testtools.TestCase):
     """
     A unit test suite for the NewAttribute structure.

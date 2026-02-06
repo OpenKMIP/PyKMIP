@@ -13,13 +13,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
 from kmip.core.messages.payloads import base
-
 
 class ObtainLeaseRequestPayload(base.RequestPayload):
     """
@@ -54,7 +51,7 @@ class ObtainLeaseRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -150,7 +147,6 @@ class ObtainLeaseRequestPayload(base.RequestPayload):
             'unique_identifier': self.unique_identifier
         })
 
-
 class ObtainLeaseResponsePayload(base.ResponsePayload):
     """
     A response payload for the ObtainLease operation.
@@ -202,7 +198,7 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -221,7 +217,7 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
     def lease_time(self, value):
         if value is None:
             self._lease_time = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._lease_time = primitives.Interval(
                 value=value,
                 tag=enums.Tags.LEASE_TIME
@@ -240,7 +236,7 @@ class ObtainLeaseResponsePayload(base.ResponsePayload):
     def last_change_date(self, value):
         if value is None:
             self._last_change_date = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._last_change_date = primitives.DateTime(
                 value=value,
                 tag=enums.Tags.LAST_CHANGE_DATE

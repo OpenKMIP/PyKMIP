@@ -13,15 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
 from kmip.core.messages.payloads import base
-
 
 class CreateKeyPairRequestPayload(base.RequestPayload):
     """
@@ -516,7 +513,6 @@ class CreateKeyPairRequestPayload(base.RequestPayload):
         )
         return '{' + value + '}'
 
-
 class CreateKeyPairResponsePayload(base.ResponsePayload):
     """
     A response payload for the CreateKeyPair operation.
@@ -578,7 +574,7 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
     def private_key_unique_identifier(self, value):
         if value is None:
             self._private_key_unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._private_key_unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER
@@ -597,7 +593,7 @@ class CreateKeyPairResponsePayload(base.ResponsePayload):
     def public_key_unique_identifier(self, value):
         if value is None:
             self._public_key_unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._public_key_unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER

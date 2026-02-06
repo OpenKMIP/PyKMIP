@@ -1,249 +1,46 @@
 sudo: true
 language: python
-matrix:
-    include:
-        - python: 2.7
-          os: linux
-          dist: precise
-          env: TOXENV=py27 RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: trusty
-          env: TOXENV=py27 RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: xenial
-          env: TOXENV=py27 RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: precise
-          env: TOXENV=py27 RUN_INTEGRATION_TESTS=1
-        - python: 2.7
-          os: linux
-          dist: trusty
-          env: TOXENV=py27 RUN_INTEGRATION_TESTS=1
-        - python: 2.7
-          os: linux
-          dist: xenial
-          env: TOXENV=py27 RUN_INTEGRATION_TESTS=1
-        - python: 2.7
-          os: linux
-          dist: precise
-          env: TOXENV=py27 RUN_INTEGRATION_TESTS=2
-        - python: 2.7
-          os: linux
-          dist: trusty
-          env: TOXENV=py27 RUN_INTEGRATION_TESTS=2
-        - python: 2.7
-          os: linux
-          dist: xenial
-          env: TOXENV=py27 RUN_INTEGRATION_TESTS=2
-        - python: 3.4
-          os: linux
-          dist: precise
-          env: TOXENV=py34 RUN_INTEGRATION_TESTS=0
-        - python: 3.4
-          os: linux
-          dist: trusty
-          env: TOXENV=py34 RUN_INTEGRATION_TESTS=0
-        - python: 3.4
-          os: linux
-          dist: xenial
-          env: TOXENV=py34 RUN_INTEGRATION_TESTS=0
-        - python: 3.4
-          os: linux
-          dist: precise
-          env: TOXENV=py34 RUN_INTEGRATION_TESTS=1
-        - python: 3.4
-          os: linux
-          dist: trusty
-          env: TOXENV=py34 RUN_INTEGRATION_TESTS=1
-        - python: 3.4
-          os: linux
-          dist: xenial
-          env: TOXENV=py34 RUN_INTEGRATION_TESTS=1
-        - python: 3.4
-          os: linux
-          dist: precise
-          env: TOXENV=py34 RUN_INTEGRATION_TESTS=2
-        - python: 3.4
-          os: linux
-          dist: trusty
-          env: TOXENV=py34 RUN_INTEGRATION_TESTS=2
-        - python: 3.4
-          os: linux
-          dist: xenial
-          env: TOXENV=py34 RUN_INTEGRATION_TESTS=2
-        - python: 3.5
-          os: linux
-          dist: precise
-          env: TOXENV=py35 RUN_INTEGRATION_TESTS=0
-        - python: 3.5
-          os: linux
-          dist: trusty
-          env: TOXENV=py35 RUN_INTEGRATION_TESTS=0
-        - python: 3.5
-          os: linux
-          dist: xenial
-          env: TOXENV=py35 RUN_INTEGRATION_TESTS=0
-        - python: 3.5
-          os: linux
-          dist: precise
-          env: TOXENV=py35 RUN_INTEGRATION_TESTS=1
-        - python: 3.5
-          os: linux
-          dist: trusty
-          env: TOXENV=py35 RUN_INTEGRATION_TESTS=1
-        - python: 3.5
-          os: linux
-          dist: xenial
-          env: TOXENV=py35 RUN_INTEGRATION_TESTS=1
-        - python: 3.5
-          os: linux
-          dist: precise
-          env: TOXENV=py35 RUN_INTEGRATION_TESTS=2
-        - python: 3.5
-          os: linux
-          dist: trusty
-          env: TOXENV=py35 RUN_INTEGRATION_TESTS=2
-        - python: 3.5
-          os: linux
-          dist: xenial
-          env: TOXENV=py35 RUN_INTEGRATION_TESTS=2
-        - python: 3.6
-          os: linux
-          dist: precise
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=0
-        - python: 3.6
-          os: linux
-          dist: trusty
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=0
-        - python: 3.6
-          os: linux
-          dist: xenial
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=0
-        - python: 3.6
-          os: linux
-          dist: precise
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=1
-        - python: 3.6
-          os: linux
-          dist: trusty
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=1
-        - python: 3.6
-          os: linux
-          dist: xenial
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=1
-        - python: 3.6
-          os: linux
-          dist: precise
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=2
-        - python: 3.6
-          os: linux
-          dist: trusty
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=2
-        - python: 3.6
-          os: linux
-          dist: xenial
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=2
-#        - python: 3.7
-#          os: linux
-#          dist: precise
-#          env: TOXENV=py37 RUN_INTEGRATION_TESTS=0
-#        - python: 3.7
-#          os: linux
-#          dist: trusty
-#          env: TOXENV=py37 RUN_INTEGRATION_TESTS=0
-        - python: 3.7
-          os: linux
-          dist: xenial
-          env: TOXENV=py37 RUN_INTEGRATION_TESTS=0
-#        - python: 3.7
-#          os: linux
-#          dist: precise
-#          env: TOXENV=py37 RUN_INTEGRATION_TESTS=1
-#        - python: 3.7
-#          os: linux
-#          dist: trusty
-#          env: TOXENV=py37 RUN_INTEGRATION_TESTS=1
-        - python: 3.7
-          os: linux
-          dist: xenial
-          env: TOXENV=py36 RUN_INTEGRATION_TESTS=1
-#        - python: 3.7
-#          os: linux
-#          dist: precise
-#          env: TOXENV=py37 RUN_INTEGRATION_TESTS=2
-#        - python: 3.7
-#          os: linux
-#          dist: trusty
-#          env: TOXENV=py37 RUN_INTEGRATION_TESTS=2
-        - python: 3.7
-          os: linux
-          dist: xenial
-          env: TOXENV=py37 RUN_INTEGRATION_TESTS=2
-        - python: 2.7
-          os: linux
-          dist: precise
-          env: TOXENV=pep8 RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: trusty
-          env: TOXENV=pep8 RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: xenial
-          env: TOXENV=pep8 RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: precise
-          env: TOXENV=bandit RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: trusty
-          env: TOXENV=bandit RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: xenial
-          env: TOXENV=bandit RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: precise
-          env: TOXENV=docs RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: trusty
-          env: TOXENV=docs RUN_INTEGRATION_TESTS=0
-        - python: 2.7
-          os: linux
-          dist: xenial
-          env: TOXENV=docs RUN_INTEGRATION_TESTS=0
+
+jobs:
+  include:
+    - python: "3.12"
+      env: TOXENV=py312 RUN_INTEGRATION_TESTS=0
+    - python: "3.12"
+      env: TOXENV=py312 RUN_INTEGRATION_TESTS=1
+    - python: "3.12"
+      env: TOXENV=py312 RUN_INTEGRATION_TESTS=2
+    - python: "3.13"
+      env: TOXENV=py313 RUN_INTEGRATION_TESTS=0
+    - python: "3.13"
+      env: TOXENV=py313 RUN_INTEGRATION_TESTS=1
+    - python: "3.13"
+      env: TOXENV=py313 RUN_INTEGRATION_TESTS=2
+    - python: "3.14"
+      env: TOXENV=py314 RUN_INTEGRATION_TESTS=0
+    - python: "3.14"
+      env: TOXENV=py314 RUN_INTEGRATION_TESTS=1
+    - python: "3.14"
+      env: TOXENV=py314 RUN_INTEGRATION_TESTS=2
+    - python: "3.12"
+      env: TOXENV=pep8 RUN_INTEGRATION_TESTS=0
+    - python: "3.12"
+      env: TOXENV=bandit RUN_INTEGRATION_TESTS=0
+    - python: "3.12"
+      env: TOXENV=docs RUN_INTEGRATION_TESTS=0
+
 install:
-  # Pin six to >= 1.11.0 to avoid setuptools/pip race condition
-  # For more info, see: https://github.com/OpenKMIP/PyKMIP/issues/435
-  - pip uninstall -y six
-  - pip install six>=1.11.0
-  # Pin more_itertools to <= 7.2.0. Version 8.0.0+ drops support for
-  # Python 3.4. Once PyKMIP drops support for Python 3.4, remove this.
-  - pip install "more_itertools<=7.2.0"
-  # Pin tox to <= 3.14.1. Version 3.14.2+ moves to newer versions of
-  # the importlib_metadata package which breaks on Python 3.4. Future
-  # versions of tox will also drop support for Python 2.7 and 3.4.
-  # Once PyKMIP also drops support for Python 2.7 and 3.4, remove this. 
-  - pip install "tox<=3.14.1"
-  # Pin PyYAML to <= 5.2. Version 5.3+ removes support for Python 3.4.
-  # PyYAML is installed as a bandit dependency, so while it doesn't
-  # break PyKMIP proper, it does break any of our test runs using
-  # Python 3.4. Once PyKMIP drops support for Python 3.4, remove this.
-  - pip install "PyYAML<=5.2"
+  - pip install tox
   - pip install bandit
   - pip install codecov
   - pip install slugs
   - python setup.py install
+
 script:
   - ./.travis/run.sh
+
 after_success:
   - codecov
+
 after_failure:
   - if [ -f "/tmp/pykmip/server.log" ]; then cat /tmp/pykmip/server.log; fi
   - if [ -f "/tmp/slugs/access.log"  ]; then cat /tmp/slugs/access.log;  fi

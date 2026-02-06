@@ -21,7 +21,6 @@ from kmip.core import enums
 from kmip.demos import utils
 from kmip.pie import client
 
-
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 

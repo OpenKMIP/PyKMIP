@@ -13,15 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core import objects
 from kmip.core import primitives
 from kmip.core import utils
 from kmip.core.messages.payloads import base
-
 
 class DeleteAttributeRequestPayload(base.RequestPayload):
     """
@@ -90,7 +87,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -108,7 +105,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
     def attribute_name(self, value):
         if value is None:
             self._attribute_name = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._attribute_name = primitives.TextString(
                 value=value,
                 tag=enums.Tags.ATTRIBUTE_NAME
@@ -126,7 +123,7 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
     def attribute_index(self, value):
         if value is None:
             self._attribute_index = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._attribute_index = primitives.Integer(
                 value=value,
                 tag=enums.Tags.ATTRIBUTE_INDEX
@@ -372,7 +369,6 @@ class DeleteAttributeRequestPayload(base.RequestPayload):
         else:
             return NotImplemented
 
-
 class DeleteAttributeResponsePayload(base.ResponsePayload):
     """
     A response payload for the DeleteAttribute operation.
@@ -414,7 +410,7 @@ class DeleteAttributeResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER

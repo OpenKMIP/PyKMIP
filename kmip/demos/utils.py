@@ -43,7 +43,6 @@ from kmip.core.secrets import PublicKey
 from kmip.core.secrets import SymmetricKey
 from kmip.core.secrets import SecretData
 
-
 def build_console_logger(level):
     logger = logging.getLogger('demo')
     logger.setLevel(level)
@@ -54,7 +53,6 @@ def build_console_logger(level):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger
-
 
 def build_cli_parser(operation):
     # Build the argument parser and setup expected options
@@ -458,7 +456,6 @@ def build_cli_parser(operation):
         )
     return parser
 
-
 def build_cryptographic_usage_mask(logger, object_type):
     if object_type == ObjectType.CERTIFICATE:
         flags = [CryptographicUsageMask.ENCRYPT,
@@ -482,7 +479,6 @@ def build_cryptographic_usage_mask(logger, object_type):
 
     return usage_mask
 
-
 def build_object(logger, object_type, key_format_type):
 
     if object_type == ObjectType.CERTIFICATE:
@@ -492,7 +488,6 @@ def build_object(logger, object_type, key_format_type):
             certificate_value=value)
     else:
         return build_key(logger, object_type, key_format_type)
-
 
 def build_key(logger, object_type, key_format_type):
 
@@ -521,7 +516,6 @@ def build_key(logger, object_type, key_format_type):
         logger.error("Unrecognized object type, could not build key")
         sys.exit()
 
-
 def build_cryptographic_length(logger, object_type):
     if (object_type == ObjectType.SYMMETRIC_KEY or
        object_type == ObjectType.SECRET_DATA):
@@ -535,7 +529,6 @@ def build_cryptographic_length(logger, object_type):
                      "length")
         sys.exit()
 
-
 def build_cryptographic_algorithm(logger, object_type):
     if (object_type == ObjectType.SYMMETRIC_KEY or
        object_type == ObjectType.SECRET_DATA):
@@ -548,7 +541,6 @@ def build_cryptographic_algorithm(logger, object_type):
         logger.error("Unrecognized object type, could not build cryptographic "
                      "algorithm")
         sys.exit()
-
 
 def build_secret_value(logger, object_type):
     if object_type == ObjectType.CERTIFICATE:
@@ -675,7 +667,6 @@ def build_secret_value(logger, object_type):
         logger.error("Unrecognized object type, could not build secret value")
         sys.exit()
 
-
 def build_key_block(key_format_type, key_value, cryptographic_algorithm,
                     cryptographic_length):
     key_material = KeyMaterial(key_value)
@@ -689,7 +680,6 @@ def build_key_block(key_format_type, key_value, cryptographic_algorithm,
         cryptographic_length=cryptographic_length,
         key_wrapping_data=None)
 
-
 def log_template_attribute(logger, template_attribute):
     names = template_attribute.names
     attributes = template_attribute.attributes
@@ -700,7 +690,6 @@ def log_template_attribute(logger, template_attribute):
         logger.info('name {0}: {1}'.format(i, name))
 
     log_attribute_list(logger, attributes)
-
 
 def log_attribute_list(logger, attributes):
     logger.info('number of attributes: {0}'.format(len(attributes)))
@@ -716,7 +705,6 @@ def log_attribute_list(logger, attributes):
         logger.info('   attribute_value: {0}'.format(
             repr(attribute_value)))
 
-
 def log_secret(logger, secret_type, secret_value):
     if secret_type is ObjectType.CERTIFICATE:
         log_certificate(logger, secret_value)
@@ -731,7 +719,6 @@ def log_secret(logger, secret_type, secret_value):
     else:
         logger.info('generic secret: {0}'.format(secret_value))
 
-
 def log_certificate(logger, certificate):
     logger.info('certificate:')
     logger.info('* certificate type: {0}'.format(
@@ -739,24 +726,20 @@ def log_certificate(logger, certificate):
     logger.info('* certificate value: {0}'.format(
         binascii.hexlify(certificate.certificate_value.value)))
 
-
 def log_public_key(logger, public_key):
     key_block = public_key.key_block
 
     log_key_block(logger, key_block)
-
 
 def log_private_key(logger, private_key):
     key_block = private_key.key_block
 
     log_key_block(logger, key_block)
 
-
 def log_symmetric_key(logger, skey):
     key_block = skey.key_block
 
     log_key_block(logger, key_block)
-
 
 def log_split_key(logger, split_key):
     logger.info("Split Key:")
@@ -770,7 +753,6 @@ def log_split_key(logger, split_key):
     logger.info("* Split Key Method: {}".format(split_key.split_key_method))
     logger.info("* Prime Field Size: {}".format(split_key.prime_field_size))
     log_key_block(logger, split_key.key_block)
-
 
 def log_key_block(logger, key_block):
     if key_block is not None:
@@ -795,7 +777,6 @@ def log_key_block(logger, key_block):
         log_key_value(logger, key_value)
     else:
         logger.info("* Key Block: {}".format(key_block))
-
 
 def log_key_value(logger, key_value):
     if key_value is not None:

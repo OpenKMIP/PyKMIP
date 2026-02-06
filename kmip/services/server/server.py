@@ -20,7 +20,7 @@ import multiprocessing
 import optparse
 import os
 import signal
-import six
+
 import socket
 import ssl
 import sys
@@ -34,6 +34,45 @@ from kmip.services.server import engine
 from kmip.services.server import monitor
 from kmip.services.server import session
 
+# Python 3.12 removed ssl.wrap_socket; provide a compatibility shim so the
+# server and tests can still rely on the legacy API.
+if not hasattr(ssl, 'wrap_socket'):
+    def _wrap_socket(sock,
+                     keyfile=None,
+                     certfile=None,
+                     server_side=False,
+                     cert_reqs=ssl.CERT_NONE,
+                     ssl_version=None,
+                     ca_certs=None,
+                     do_handshake_on_connect=True,
+                     suppress_ragged_eofs=True,
+                     ciphers=None):
+        if ssl_version is None:
+            if server_side:
+                protocol = ssl.PROTOCOL_TLS_SERVER
+            else:
+                protocol = ssl.PROTOCOL_TLS_CLIENT
+        else:
+            protocol = ssl_version
+
+        context = ssl.SSLContext(protocol)
+        context.verify_mode = cert_reqs
+
+        if ca_certs:
+            context.load_verify_locations(ca_certs)
+        if certfile or keyfile:
+            context.load_cert_chain(certfile=certfile, keyfile=keyfile)
+        if ciphers:
+            context.set_ciphers(ciphers)
+
+        return context.wrap_socket(
+            sock,
+            server_side=server_side,
+            do_handshake_on_connect=do_handshake_on_connect,
+            suppress_ragged_eofs=suppress_ragged_eofs
+        )
+
+    ssl.wrap_socket = _wrap_socket
 
 class KmipServer(object):
     """
@@ -243,7 +282,7 @@ class KmipServer(object):
         self.manager = multiprocessing.Manager()
         self.policies = self.manager.dict()
         policies = copy.deepcopy(operation_policy.policies)
-        for policy_name, policy_set in six.iteritems(policies):
+        for policy_name, policy_set in policies.items():
             self.policies[policy_name] = policy_set
 
         self.policy_monitor = monitor.PolicyDirectoryMonitor(
@@ -479,7 +518,6 @@ class KmipServer(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.stop()
 
-
 def build_argument_parser():
     parser = optparse.OptionParser(
         usage="%prog [options]",
@@ -634,7 +672,6 @@ def build_argument_parser():
 
     return parser
 
-
 def main(args=None):
     # Build argument parser and parser command-line arguments.
     parser = build_argument_parser()
@@ -672,7 +709,6 @@ def main(args=None):
     s = KmipServer(**kwargs)
     with s:
         s.serve()
-
 
 if __name__ == '__main__':
     main()

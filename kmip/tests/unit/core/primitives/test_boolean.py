@@ -18,7 +18,6 @@ from testtools import TestCase
 from kmip.core import primitives
 from kmip.core import utils
 
-
 class TestBoolean(TestCase):
 
     def setUp(self):

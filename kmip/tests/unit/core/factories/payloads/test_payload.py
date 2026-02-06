@@ -18,7 +18,6 @@ import testtools
 from kmip.core import enums
 from kmip.core.factories.payloads import PayloadFactory
 
-
 class TestPayloadFactory(testtools.TestCase):
 
     def setUp(self):

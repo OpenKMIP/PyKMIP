@@ -106,7 +106,7 @@ Running Tests
 -------------
 PyKMIP uses ``tox`` to manage testing across multiple Python versions. ``tox``
 in turn uses ``pytest`` to run individual tests. Test infrastructure currently
-supports Python 2.7, 3.4, 3.5, 3.6, and 3.7. Additional test environments are
+supports Python 3.12, 3.13, and 3.14. Additional test environments are
 provided for security, style, and documentation checks.
 
 .. note::
@@ -149,19 +149,19 @@ base, verifying that each component works correctly in isolation. Ideal code
 coverage would include the entire code base. To facilitate improving coverage,
 test coverage results are included with each Python unit test environment.
 
-To test against a specific Python version (e.g., Python 2.7), run:
+To test against a specific Python version (e.g., Python 3.12), run:
 
 .. code-block:: console
 
-    $ tox -e py27
+    $ tox -e py312
 
 To run an individual test suite method or class, use the ``pytest`` ``-k``
 flag to specify the name of the method or class to execute. For example, to
-run the ``TestProxyKmipClient`` test suite class under Python 2.7, run:
+run the ``TestProxyKmipClient`` test suite class under Python 3.12, run:
 
 .. code-block:: console
 
-    $ tox -e py27 -- -k TestProxyKmipClient
+    $ tox -e py312 -- -k TestProxyKmipClient
 
 For more information on the ``-k`` flag, see the `pytest`_ documentation.
 

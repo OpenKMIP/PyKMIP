@@ -13,13 +13,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
 class ClientConnectionFailure(Exception):
     """
     An exception raised for errors with the client socket connection.
     """
     pass
-
 
 class ClientConnectionNotOpen(Exception):
     """
@@ -31,7 +29,6 @@ class ClientConnectionNotOpen(Exception):
         """
         super(ClientConnectionNotOpen, self).__init__(
             "client connection not open")
-
 
 class KmipOperationFailure(Exception):
     """

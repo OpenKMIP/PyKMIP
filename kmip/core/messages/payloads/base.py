@@ -16,14 +16,12 @@
 from kmip.core import enums
 from kmip.core import primitives
 
-
 class RequestPayload(primitives.Struct):
     """
     An abstract base class for KMIP request payloads.
     """
     def __init__(self):
         super(RequestPayload, self).__init__(enums.Tags.REQUEST_PAYLOAD)
-
 
 class ResponsePayload(primitives.Struct):
     """

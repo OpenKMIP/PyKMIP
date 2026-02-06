@@ -22,7 +22,6 @@ from kmip.pie import sqltypes
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-
 class TestSecretData(testtools.TestCase):
     """
     Test suite for SecretData.

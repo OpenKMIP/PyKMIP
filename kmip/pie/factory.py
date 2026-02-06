@@ -21,7 +21,6 @@ from kmip.core import secrets
 
 from kmip.pie import objects as pobjects
 
-
 class ObjectFactory:
     """
     A factory to convert between the Pie and core object hierarchies.

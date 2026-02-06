@@ -22,7 +22,6 @@ from kmip.core import exceptions
 
 from kmip.core.messages import payloads
 
-
 class TestMACRequestPayload(TestCase):
 
     def setUp(self):
@@ -70,6 +69,12 @@ class TestMACRequestPayload(TestCase):
         self.assertEqual(payload.cryptographic_parameters,
                          self.cryptographic_parameters)
         self.assertEqual(payload.data, self.data)
+
+    def test_init(self):
+        payloads.MACRequestPayload()
+
+    def test_init_with_args(self):
+        self.test_init_valid()
 
     def test_init_with_invalid_unique_identifier(self):
         kwargs = {'unique_identifier': 'invalid',
@@ -150,6 +155,39 @@ class TestMACRequestPayload(TestCase):
             *args
         )
 
+    def test_read_missing_required_field(self):
+        self.test_read_no_data()
+
+    def test_read_write_roundtrip(self):
+        payload = payloads.MACRequestPayload()
+        payload.read(utils.BytearrayStream(self.encoding_full.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(self.encoding_full, stream)
+
+    def test_validate_invalid(self):
+        self.test_init_with_invalid_unique_identifier()
+
+    def test_eq(self):
+        payload = payloads.MACRequestPayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        a = payloads.MACRequestPayload(self.unique_identifier)
+        b = payloads.MACRequestPayload(
+            attributes.UniqueIdentifier(value='2')
+        )
+        self.assertTrue(a != b)
+
+    def test_repr(self):
+        payload = payloads.MACRequestPayload()
+        self.assertIsInstance(repr(payload), str)
+
+    def test_str(self):
+        payload = payloads.MACRequestPayload()
+        self.assertIsInstance(str(payload), str)
 
 class TestMACResponsePayload(TestCase):
 
@@ -201,6 +239,12 @@ class TestMACResponsePayload(TestCase):
             self.mac_data)
         self.assertEqual(payload.unique_identifier, self.unique_identifier)
         self.assertEqual(payload.mac_data, self.mac_data)
+
+    def test_init(self):
+        payloads.MACResponsePayload()
+
+    def test_init_with_args(self):
+        self.test_init_valid()
 
     def test_init_with_invalid_unique_identifier(self):
         kwargs = {'unique_identifier': 'invalid',
@@ -296,3 +340,38 @@ class TestMACResponsePayload(TestCase):
             payload.write,
             *args
         )
+
+    def test_read_missing_required_field(self):
+        self.test_read_no_unique_identifier()
+
+    def test_read_write_roundtrip(self):
+        payload = payloads.MACResponsePayload()
+        payload.read(utils.BytearrayStream(self.encoding_full.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(self.encoding_full, stream)
+
+    def test_validate_invalid(self):
+        self.test_init_with_invalid_unique_identifier()
+
+    def test_eq(self):
+        payload = payloads.MACResponsePayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        a = payloads.MACResponsePayload(self.unique_identifier, self.mac_data)
+        b = payloads.MACResponsePayload(
+            attributes.UniqueIdentifier(value='2'),
+            self.mac_data
+        )
+        self.assertTrue(a != b)
+
+    def test_repr(self):
+        payload = payloads.MACResponsePayload()
+        self.assertIsInstance(repr(payload), str)
+
+    def test_str(self):
+        payload = payloads.MACResponsePayload()
+        self.assertIsInstance(str(payload), str)

@@ -13,15 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from six.moves import xrange
-
 from testtools import TestCase
 
 from kmip.core import utils
 
 from kmip.core.messages.contents import ProtocolVersion
 from kmip.core.messages import payloads
-
 
 class TestDiscoverVersionsRequestPayload(TestCase):
 
@@ -60,6 +57,9 @@ class TestDiscoverVersionsRequestPayload(TestCase):
         payloads.DiscoverVersionsRequestPayload(
             self.protocol_versions_empty)
 
+    def test_init(self):
+        payloads.DiscoverVersionsRequestPayload()
+
     def test_validate_with_invalid_protocol_versions(self):
         kwargs = {'protocol_versions': 'invalid'}
         self.assertRaisesRegex(
@@ -82,7 +82,7 @@ class TestDiscoverVersionsRequestPayload(TestCase):
             expected, observed)
         self.assertEqual(expected, observed, msg)
 
-        for i in xrange(len(protocol_versions)):
+        for i in range(len(protocol_versions)):
             expected = protocol_versions[i]
             observed = payload.protocol_versions[i]
 
@@ -149,6 +149,51 @@ class TestDiscoverVersionsRequestPayload(TestCase):
 
         self._test_write(payload, expected)
 
+    def test_read_valid(self):
+        payload = payloads.DiscoverVersionsRequestPayload()
+        self._test_read(self.encoding_one, payload, self.protocol_versions_one)
+
+    def test_read_missing_required_field(self):
+        payload = payloads.DiscoverVersionsRequestPayload()
+        self.assertRaises(
+            Exception,
+            payload.read,
+            utils.BytearrayStream(b'')
+        )
+
+    def test_write_valid(self):
+        payload = payloads.DiscoverVersionsRequestPayload(
+            self.protocol_versions_one)
+        self._test_write(payload, self.encoding_one)
+
+    def test_read_write_roundtrip(self):
+        payload = payloads.DiscoverVersionsRequestPayload()
+        payload.read(utils.BytearrayStream(self.encoding_one.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(self.encoding_one, stream)
+
+    def test_validate_invalid(self):
+        self.test_validate_with_invalid_protocol_versions()
+
+    def test_eq(self):
+        payload = payloads.DiscoverVersionsRequestPayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        a = payloads.DiscoverVersionsRequestPayload(self.protocol_versions_one)
+        b = payloads.DiscoverVersionsRequestPayload(self.protocol_versions_two)
+        self.assertTrue(a != b)
+
+    def test_repr(self):
+        payload = payloads.DiscoverVersionsRequestPayload()
+        self.assertIsInstance(repr(payload), str)
+
+    def test_str(self):
+        payload = payloads.DiscoverVersionsRequestPayload()
+        self.assertIsInstance(str(payload), str)
 
 class TestDiscoverVersionsResponsePayload(TestCase):
 
@@ -187,6 +232,9 @@ class TestDiscoverVersionsResponsePayload(TestCase):
         payloads.DiscoverVersionsResponsePayload(
             self.protocol_versions_empty)
 
+    def test_init(self):
+        payloads.DiscoverVersionsResponsePayload()
+
     def test_validate_with_invalid_protocol_versions(self):
         kwargs = {'protocol_versions': 'invalid'}
         self.assertRaisesRegex(
@@ -209,7 +257,7 @@ class TestDiscoverVersionsResponsePayload(TestCase):
             expected, observed)
         self.assertEqual(expected, observed, msg)
 
-        for i in xrange(len(protocol_versions)):
+        for i in range(len(protocol_versions)):
             expected = protocol_versions[i]
             observed = payload.protocol_versions[i]
 
@@ -275,3 +323,49 @@ class TestDiscoverVersionsResponsePayload(TestCase):
         expected = self.encoding_two
 
         self._test_write(payload, expected)
+
+    def test_read_valid(self):
+        payload = payloads.DiscoverVersionsResponsePayload()
+        self._test_read(self.encoding_one, payload, self.protocol_versions_one)
+
+    def test_read_missing_required_field(self):
+        payload = payloads.DiscoverVersionsResponsePayload()
+        self.assertRaises(
+            Exception,
+            payload.read,
+            utils.BytearrayStream(b'')
+        )
+
+    def test_write_valid(self):
+        payload = payloads.DiscoverVersionsResponsePayload(
+            self.protocol_versions_one)
+        self._test_write(payload, self.encoding_one)
+
+    def test_read_write_roundtrip(self):
+        payload = payloads.DiscoverVersionsResponsePayload()
+        payload.read(utils.BytearrayStream(self.encoding_one.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(self.encoding_one, stream)
+
+    def test_validate_invalid(self):
+        self.test_validate_with_invalid_protocol_versions()
+
+    def test_eq(self):
+        payload = payloads.DiscoverVersionsResponsePayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        a = payloads.DiscoverVersionsResponsePayload(self.protocol_versions_one)
+        b = payloads.DiscoverVersionsResponsePayload(self.protocol_versions_two)
+        self.assertTrue(a != b)
+
+    def test_repr(self):
+        payload = payloads.DiscoverVersionsResponsePayload()
+        self.assertIsInstance(repr(payload), str)
+
+    def test_str(self):
+        payload = payloads.DiscoverVersionsResponsePayload()
+        self.assertIsInstance(str(payload), str)

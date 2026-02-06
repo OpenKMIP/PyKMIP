@@ -17,7 +17,6 @@ import testtools
 
 from kmip.core import enums
 
-
 class TestOrderedEnum(testtools.TestCase):
 
     def setUp(self):
@@ -77,7 +76,6 @@ class TestOrderedEnum(testtools.TestCase):
             NotImplemented,
             enums.KMIPVersion.KMIP_2_0.__lt__(enums.WrappingMethod.ENCRYPT)
         )
-
 
 class TestEnumUtilityFunctions(testtools.TestCase):
 
@@ -175,6 +173,23 @@ class TestEnumUtilityFunctions(testtools.TestCase):
         self.assertRaisesRegex(
             ValueError,
             "Unrecognized attribute name: 'invalid'",
+            enums.convert_attribute_name_to_tag,
+            *args
+        )
+
+    def test_convert_attribute_name_to_tag_case_and_whitespace(self):
+        args = ("object type", )
+        self.assertRaisesRegex(
+            ValueError,
+            "Unrecognized attribute name: 'object type'",
+            enums.convert_attribute_name_to_tag,
+            *args
+        )
+
+        args = (" Object Type ", )
+        self.assertRaisesRegex(
+            ValueError,
+            "Unrecognized attribute name: ' Object Type '",
             enums.convert_attribute_name_to_tag,
             *args
         )

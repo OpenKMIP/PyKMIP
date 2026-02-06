@@ -20,9 +20,7 @@ from sqlalchemy.orm import relationship
 
 import sqlalchemy.types as types
 
-
 Base = declarative_base()
-
 
 def attribute_append_factory(index_attribute):
     def attribute_append(list_container, list_attribute, initiator):
@@ -31,7 +29,6 @@ def attribute_append_factory(index_attribute):
         setattr(list_container, index_attribute, index + 1)
         return list_attribute
     return attribute_append
-
 
 class UsageMaskType(types.TypeDecorator):
     """
@@ -74,7 +71,6 @@ class UsageMaskType(types.TypeDecorator):
                 if e.value & value:
                     masks.append(e)
         return masks
-
 
 class EnumType(types.TypeDecorator):
     """
@@ -126,7 +122,6 @@ class EnumType(types.TypeDecorator):
         if value == -1:
             return None
         return self._cls(value)
-
 
 class ManagedObjectName(Base):
 

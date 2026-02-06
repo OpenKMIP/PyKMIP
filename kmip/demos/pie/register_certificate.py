@@ -22,7 +22,6 @@ from kmip.demos import utils
 from kmip.pie import client
 from kmip.pie import objects
 
-
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 

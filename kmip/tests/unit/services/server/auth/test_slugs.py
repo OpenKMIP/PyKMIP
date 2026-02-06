@@ -20,7 +20,6 @@ import testtools
 from kmip.core import exceptions
 from kmip.services.server import auth
 
-
 class TestSLUGSConnector(testtools.TestCase):
     """
     Test suite for the SLUGSConnector.

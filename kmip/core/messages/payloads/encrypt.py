@@ -13,14 +13,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import utils
 from kmip.core.messages.payloads import base
-
 
 class EncryptRequestPayload(base.RequestPayload):
     """
@@ -89,7 +86,7 @@ class EncryptRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -124,7 +121,7 @@ class EncryptRequestPayload(base.RequestPayload):
     def data(self, value):
         if value is None:
             self._data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.DATA
@@ -143,7 +140,7 @@ class EncryptRequestPayload(base.RequestPayload):
     def iv_counter_nonce(self, value):
         if value is None:
             self._iv_counter_nonce = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._iv_counter_nonce = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.IV_COUNTER_NONCE
@@ -162,7 +159,7 @@ class EncryptRequestPayload(base.RequestPayload):
     def auth_additional_data(self, value):
         if value is None:
             self._auth_additional_data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._auth_additional_data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA
@@ -228,18 +225,17 @@ class EncryptRequestPayload(base.RequestPayload):
                 kmip_version=kmip_version
             )
 
-        if kmip_version >= enums.KMIPVersion.KMIP_1_4:
-            if self.is_tag_next(
-                    enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA,
-                    local_stream
-            ):
-                self._auth_additional_data = primitives.ByteString(
-                    tag=enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA
-                )
-                self._auth_additional_data.read(
-                    local_stream,
-                    kmip_version=kmip_version
-                )
+        if self.is_tag_next(
+                enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA,
+                local_stream
+        ):
+            self._auth_additional_data = primitives.ByteString(
+                tag=enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA
+            )
+            self._auth_additional_data.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
@@ -282,12 +278,11 @@ class EncryptRequestPayload(base.RequestPayload):
                 kmip_version=kmip_version
             )
 
-        if kmip_version >= enums.KMIPVersion.KMIP_1_4:
-            if self._auth_additional_data:
-                self._auth_additional_data.write(
-                    local_stream,
-                    kmip_version=kmip_version
-                )
+        if self._auth_additional_data:
+            self._auth_additional_data.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
         super(EncryptRequestPayload, self).write(
@@ -340,7 +335,6 @@ class EncryptRequestPayload(base.RequestPayload):
             'iv_counter_nonce': self.iv_counter_nonce,
             'auth_additional_data': self.auth_additional_data
         })
-
 
 class EncryptResponsePayload(base.ResponsePayload):
     """
@@ -406,7 +400,7 @@ class EncryptResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -425,7 +419,7 @@ class EncryptResponsePayload(base.ResponsePayload):
     def data(self, value):
         if value is None:
             self._data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.DATA
@@ -444,7 +438,7 @@ class EncryptResponsePayload(base.ResponsePayload):
     def iv_counter_nonce(self, value):
         if value is None:
             self._iv_counter_nonce = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._iv_counter_nonce = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.IV_COUNTER_NONCE
@@ -463,7 +457,7 @@ class EncryptResponsePayload(base.ResponsePayload):
     def auth_tag(self, value):
         if value is None:
             self._auth_tag = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._auth_tag = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.AUTHENTICATED_ENCRYPTION_TAG
@@ -525,17 +519,16 @@ class EncryptResponsePayload(base.ResponsePayload):
                 kmip_version=kmip_version
             )
 
-        if kmip_version >= enums.KMIPVersion.KMIP_1_4:
-            if self.is_tag_next(
-                    enums.Tags.AUTHENTICATED_ENCRYPTION_TAG, local_stream
-            ):
-                self._auth_tag = primitives.ByteString(
-                    tag=enums.Tags.AUTHENTICATED_ENCRYPTION_TAG
-                )
-                self._auth_tag.read(
-                    local_stream,
-                    kmip_version=kmip_version
-                )
+        if self.is_tag_next(
+                enums.Tags.AUTHENTICATED_ENCRYPTION_TAG, local_stream
+        ):
+            self._auth_tag = primitives.ByteString(
+                tag=enums.Tags.AUTHENTICATED_ENCRYPTION_TAG
+            )
+            self._auth_tag.read(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.is_oversized(local_stream)
 
@@ -578,12 +571,11 @@ class EncryptResponsePayload(base.ResponsePayload):
                 kmip_version=kmip_version
             )
 
-        if kmip_version >= enums.KMIPVersion.KMIP_1_4:
-            if self._auth_tag:
-                self._auth_tag.write(
-                    local_stream,
-                    kmip_version=kmip_version
-                )
+        if self._auth_tag:
+            self._auth_tag.write(
+                local_stream,
+                kmip_version=kmip_version
+            )
 
         self.length = local_stream.length()
         super(EncryptResponsePayload, self).write(

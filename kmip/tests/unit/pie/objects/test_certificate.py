@@ -18,7 +18,6 @@ import testtools
 from kmip.core import enums
 from kmip.pie import objects
 
-
 class DummyCertificate(objects.Certificate):
     """
     A dummy Certificate subclass for testing purposes.
@@ -46,7 +45,6 @@ class DummyCertificate(objects.Certificate):
 
     def __ne__(self, other):
         return False
-
 
 class TestCertificate(testtools.TestCase):
     """

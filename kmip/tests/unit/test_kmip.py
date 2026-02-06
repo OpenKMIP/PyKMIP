@@ -15,7 +15,6 @@
 
 from testtools import TestCase
 
-
 class TestKMIP(TestCase):
     """
     A test suite for the overall `kmip` module.

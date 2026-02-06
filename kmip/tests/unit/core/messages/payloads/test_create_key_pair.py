@@ -24,7 +24,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestCreateKeyPairRequestPayload(testtools.TestCase):
 
     def setUp(self):
@@ -2504,6 +2503,147 @@ class TestCreateKeyPairRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
+    def test_init(self):
+        """
+        Test that a CreateKeyPair request payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.CreateKeyPairRequestPayload()
+        self.assertIsNone(payload.common_template_attribute)
+        self.assertIsNone(payload.private_key_template_attribute)
+        self.assertIsNone(payload.public_key_template_attribute)
+
+    def test_init_with_args(self):
+        """
+        Test that a CreateKeyPair request payload can be constructed with
+        valid values.
+        """
+        payload = payloads.CreateKeyPairRequestPayload(
+            common_template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Algorithm'
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.CryptographicAlgorithm,
+                            value=enums.CryptographicAlgorithm.RSA,
+                            tag=enums.Tags.CRYPTOGRAPHIC_ALGORITHM
+                        )
+                    ),
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            'Cryptographic Length'
+                        ),
+                        attribute_value=primitives.Integer(
+                            value=1024,
+                            tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
+                        )
+                    )
+                ],
+                tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+            ),
+            private_key_template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName("Name"),
+                        attribute_value=attributes.Name(
+                            name_value=attributes.Name.NameValue(
+                                "PrivateKey1"
+                            ),
+                            name_type=attributes.Name.NameType(
+                                enums.NameType.UNINTERPRETED_TEXT_STRING
+                            )
+                        )
+                    )
+                ],
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            public_key_template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName("Name"),
+                        attribute_value=attributes.Name(
+                            name_value=attributes.Name.NameValue(
+                                "PublicKey1"
+                            ),
+                            name_type=attributes.Name.NameType(
+                                enums.NameType.UNINTERPRETED_TEXT_STRING
+                            )
+                        )
+                    )
+                ],
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            )
+        )
+
+        self.assertIsInstance(
+            payload.common_template_attribute,
+            objects.TemplateAttribute
+        )
+        self.assertIsInstance(
+            payload.private_key_template_attribute,
+            objects.TemplateAttribute
+        )
+        self.assertIsInstance(
+            payload.public_key_template_attribute,
+            objects.TemplateAttribute
+        )
+
+    def test_read_valid(self):
+        """
+        Test that a CreateKeyPair request payload can be read from a valid
+        byte stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        payload = payloads.CreateKeyPairRequestPayload()
+        self.assertRaises(Exception, payload.read, utils.BytearrayStream(b''))
+
+    def test_write_valid(self):
+        """
+        Test that a CreateKeyPair request payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a CreateKeyPair request payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.CreateKeyPairRequestPayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_common_template_attribute()
+
+    def test_eq(self):
+        """
+        Test that two CreateKeyPair request payloads with the same data are
+        equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two CreateKeyPair request payloads with different data are
+        not equal.
+        """
+        self.test_not_equal_on_not_equal_common_template_attribute()
 
 class TestCreateKeyPairResponsePayload(testtools.TestCase):
 
@@ -3804,3 +3944,129 @@ class TestCreateKeyPairResponsePayload(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_init(self):
+        """
+        Test that a CreateKeyPair response payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.CreateKeyPairResponsePayload()
+        self.assertIsNone(payload.private_key_unique_identifier)
+        self.assertIsNone(payload.public_key_unique_identifier)
+        self.assertIsNone(payload.private_key_template_attribute)
+        self.assertIsNone(payload.public_key_template_attribute)
+
+    def test_init_with_args(self):
+        """
+        Test that a CreateKeyPair response payload can be constructed with
+        valid values.
+        """
+        payload = payloads.CreateKeyPairResponsePayload(
+            private_key_unique_identifier=(
+                "7f7ee394-40f9-444c-818c-fb1ae57bdf15"
+            ),
+            public_key_unique_identifier=(
+                "79c0eb55-d020-43de-b72f-5e18c862647c"
+            ),
+            private_key_template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "State"
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.State,
+                            value=enums.State.PRE_ACTIVE,
+                            tag=enums.Tags.STATE
+                        )
+                    )
+                ],
+                tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+            ),
+            public_key_template_attribute=objects.TemplateAttribute(
+                attributes=[
+                    objects.Attribute(
+                        attribute_name=objects.Attribute.AttributeName(
+                            "State"
+                        ),
+                        attribute_value=primitives.Enumeration(
+                            enums.State,
+                            value=enums.State.PRE_ACTIVE,
+                            tag=enums.Tags.STATE
+                        )
+                    )
+                ],
+                tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+            )
+        )
+
+        self.assertEqual(
+            "7f7ee394-40f9-444c-818c-fb1ae57bdf15",
+            payload.private_key_unique_identifier
+        )
+        self.assertEqual(
+            "79c0eb55-d020-43de-b72f-5e18c862647c",
+            payload.public_key_unique_identifier
+        )
+        self.assertIsInstance(
+            payload.private_key_template_attribute,
+            objects.TemplateAttribute
+        )
+        self.assertIsInstance(
+            payload.public_key_template_attribute,
+            objects.TemplateAttribute
+        )
+
+    def test_read_valid(self):
+        """
+        Test that a CreateKeyPair response payload can be read from a valid
+        byte stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_missing_private_key_unique_identifier()
+
+    def test_write_valid(self):
+        """
+        Test that a CreateKeyPair response payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a CreateKeyPair response payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.CreateKeyPairResponsePayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_private_key_unique_identifier()
+
+    def test_eq(self):
+        """
+        Test that two CreateKeyPair response payloads with the same data are
+        equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two CreateKeyPair response payloads with different data are
+        not equal.
+        """
+        self.test_not_equal_on_not_equal_private_key_unique_identifiers()

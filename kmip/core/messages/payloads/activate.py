@@ -18,7 +18,6 @@ from kmip.core import enums
 from kmip.core.utils import BytearrayStream
 from kmip.core.messages.payloads import base
 
-
 class ActivateRequestPayload(base.RequestPayload):
     """
     A request payload for the Activate operation.
@@ -98,7 +97,6 @@ class ActivateRequestPayload(base.RequestPayload):
                               attributes.UniqueIdentifier):
                 msg = "invalid unique identifier"
                 raise TypeError(msg)
-
 
 class ActivateResponsePayload(base.ResponsePayload):
     """

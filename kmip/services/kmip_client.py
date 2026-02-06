@@ -64,14 +64,13 @@ from kmip.core.utils import BytearrayStream
 import logging
 import logging.config
 import os
-import six
+
 import socket
 import ssl
 import sys
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.normpath(os.path.join(FILE_PATH, '../kmipconfig.ini'))
-
 
 class KMIPProxy(object):
 
@@ -98,11 +97,17 @@ class KMIPProxy(object):
             self.kmip_version = enums.KMIPVersion.KMIP_1_2
 
         if config_file:
-            if not isinstance(config_file, six.string_types):
+            if not isinstance(config_file, str):
                 raise ValueError(
                     "The client configuration file argument must be a string."
                 )
-            if not os.path.exists(config_file):
+            normalized_path = os.path.normcase(os.path.normpath(config_file))
+            devnull_paths = {
+                os.path.normcase(os.path.normpath(os.devnull)),
+                os.path.normcase(os.path.normpath('/dev/null'))
+            }
+            if normalized_path not in devnull_paths and not os.path.exists(
+                    config_file):
                 raise ValueError(
                     "The client configuration file '{}' does not "
                     "exist.".format(config_file)
@@ -282,18 +287,39 @@ class KMIPProxy(object):
 
         self.socket = None
         if last_error:
-            six.reraise(*last_error)
+            exc = last_error[1]
+            tb = last_error[2]
+            if exc is None:
+                raise last_error[0]
+            raise exc.with_traceback(tb)
 
     def _create_socket(self, sock):
-        self.socket = ssl.wrap_socket(
-            sock,
-            keyfile=self.keyfile,
-            certfile=self.certfile,
-            cert_reqs=self.cert_reqs,
-            ssl_version=self.ssl_version,
-            ca_certs=self.ca_certs,
-            do_handshake_on_connect=self.do_handshake_on_connect,
-            suppress_ragged_eofs=self.suppress_ragged_eofs)
+        if hasattr(ssl, "wrap_socket"):
+            self.socket = ssl.wrap_socket(
+                sock,
+                keyfile=self.keyfile,
+                certfile=self.certfile,
+                cert_reqs=self.cert_reqs,
+                ssl_version=self.ssl_version,
+                ca_certs=self.ca_certs,
+                do_handshake_on_connect=self.do_handshake_on_connect,
+                suppress_ragged_eofs=self.suppress_ragged_eofs)
+        else:
+            context = ssl.SSLContext(self.ssl_version)
+            context.check_hostname = False
+            context.verify_mode = self.cert_reqs
+            if self.ca_certs:
+                context.load_verify_locations(self.ca_certs)
+            if self.certfile or self.keyfile:
+                context.load_cert_chain(
+                    certfile=self.certfile,
+                    keyfile=self.keyfile
+                )
+            self.socket = context.wrap_socket(
+                sock,
+                do_handshake_on_connect=self.do_handshake_on_connect,
+                suppress_ragged_eofs=self.suppress_ragged_eofs
+            )
         self.socket.settimeout(self.timeout)
 
     def __del__(self):

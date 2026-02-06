@@ -20,7 +20,6 @@ import logging
 
 from kmip.core.utils import BytearrayStream
 
-
 class KMIPProtocol(object):
     HEADER_SIZE = 8
 
@@ -71,12 +70,10 @@ class KMIPProtocol(object):
 
         return total_msg
 
-
 class KMIPProtocolFactory(object):
 
     def getProtocol(self, socket):
         return KMIPProtocol(socket)
-
 
 class RequestLengthMismatch(Exception):
     """

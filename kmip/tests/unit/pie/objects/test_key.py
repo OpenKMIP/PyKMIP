@@ -13,11 +13,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
 from testtools import TestCase
 
 from kmip.pie.objects import Key
-
 
 class DummyKey(Key):
     """
@@ -44,7 +42,6 @@ class DummyKey(Key):
 
     def __ne__(self, other):
         return False
-
 
 class TestKey(TestCase):
     """

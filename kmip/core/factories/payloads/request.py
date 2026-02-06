@@ -16,7 +16,6 @@
 from kmip.core.factories.payloads import PayloadFactory
 from kmip.core.messages import payloads
 
-
 class RequestPayloadFactory(PayloadFactory):
 
     # TODO (peterhamilton) Alphabetize these

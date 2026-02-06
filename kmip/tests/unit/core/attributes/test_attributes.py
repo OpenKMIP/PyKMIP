@@ -29,7 +29,6 @@ from kmip.core.enums import NameType
 
 from kmip.core.utils import BytearrayStream
 
-
 class TestNameValue(TestCase):
 
     def setUp(self):
@@ -75,7 +74,6 @@ class TestNameValue(TestCase):
 
         self.assertEqual(self.stringName1, str(name_val))
         self.assertEqual(repr_name, repr(name_val))
-
 
 class TestNameType(TestCase):
 
@@ -127,7 +125,6 @@ class TestNameType(TestCase):
 
         self.assertEqual(str_uri, str(type_uri))
         self.assertEqual(repr_uri, repr(type_uri))
-
 
 class TestName(TestCase):
 
@@ -220,7 +217,6 @@ class TestName(TestCase):
         self.assertEqual(self.stringName1, str(name_obj))
         self.assertEqual(repr_name, repr(name_obj))
 
-
 class TestOperationPolicyName(TestCase):
 
     def setUp(self):
@@ -243,7 +239,6 @@ class TestOperationPolicyName(TestCase):
 
     def test_operation_policy_name_on_none(self):
         self._test_operation_policy_name(None)
-
 
 class TestHashingAlgorithm(TestCase):
     """
@@ -290,7 +285,6 @@ class TestHashingAlgorithm(TestCase):
         """
         self._test_init("invalid")
 
-
 # TODO (peter-hamilton) Replace with generic Enumeration subclass test suite.
 class TestCertificateType(TestCase):
     """
@@ -334,7 +328,6 @@ class TestCertificateType(TestCase):
         """
         self._test_init(enums.CertificateType.PGP)
 
-
 class TestDigestValue(TestCase):
     """
     A test suite for the DigestValue class.
@@ -374,7 +367,6 @@ class TestDigestValue(TestCase):
         Test that a DigestValue object can be constructed with valid byte data.
         """
         self._test_init(b'\x00\x01\x02\x03')
-
 
 class TestCryptographicParameters(TestCase):
     """
@@ -617,6 +609,40 @@ class TestCryptographicParameters(TestCase):
         """
         cryptographic_parameters = CryptographicParameters()
         args = (cryptographic_parameters, 'cryptographic_algorithm', 'invalid')
+        self.assertRaisesRegex(
+            TypeError,
+            "cryptographic algorithm must be a CryptographicAlgorithm "
+            "enumeration",
+            setattr,
+            *args
+        )
+
+    def test_invalid_cryptographic_algorithm_enum_type(self):
+        """
+        Test that a TypeError is raised when an enum of the wrong type is
+        used for the cryptographic algorithm.
+        """
+        cryptographic_parameters = CryptographicParameters()
+        args = (
+            cryptographic_parameters,
+            'cryptographic_algorithm',
+            enums.ObjectType.SYMMETRIC_KEY
+        )
+        self.assertRaisesRegex(
+            TypeError,
+            "cryptographic algorithm must be a CryptographicAlgorithm "
+            "enumeration",
+            setattr,
+            *args
+        )
+
+    def test_invalid_cryptographic_algorithm_int(self):
+        """
+        Test that a TypeError is raised when an integer is used for the
+        cryptographic algorithm.
+        """
+        cryptographic_parameters = CryptographicParameters()
+        args = (cryptographic_parameters, 'cryptographic_algorithm', 1)
         self.assertRaisesRegex(
             TypeError,
             "cryptographic algorithm must be a CryptographicAlgorithm "
@@ -1496,7 +1522,6 @@ class TestCryptographicParameters(TestCase):
         observed = str(cryptographic_parameters)
 
         self.assertEqual(expected, observed)
-
 
 class TestDerivationParameters(TestCase):
     """

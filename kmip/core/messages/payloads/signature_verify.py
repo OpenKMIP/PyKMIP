@@ -13,14 +13,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import utils
 from kmip.core.messages.payloads import base
-
 
 class SignatureVerifyRequestPayload(base.RequestPayload):
     """
@@ -109,7 +106,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -144,7 +141,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
     def data(self, value):
         if value is None:
             self._data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.DATA
@@ -163,7 +160,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
     def digested_data(self, value):
         if value is None:
             self._digested_data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._digested_data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.DIGESTED_DATA
@@ -182,7 +179,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
     def signature_data(self, value):
         if value is None:
             self._signature_data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._signature_data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.SIGNATURE_DATA
@@ -201,7 +198,7 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
     def correlation_value(self, value):
         if value is None:
             self._correlation_value = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._correlation_value = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.CORRELATION_VALUE
@@ -436,7 +433,6 @@ class SignatureVerifyRequestPayload(base.RequestPayload):
             'final_indicator': self.final_indicator
         })
 
-
 class SignatureVerifyResponsePayload(base.ResponsePayload):
     """
     A response payload for the SignatureVerify operation.
@@ -494,7 +490,7 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -535,7 +531,7 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
     def data(self, value):
         if value is None:
             self._data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.DATA
@@ -554,7 +550,7 @@ class SignatureVerifyResponsePayload(base.ResponsePayload):
     def correlation_value(self, value):
         if value is None:
             self._correlation_value = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._correlation_value = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.CORRELATION_VALUE

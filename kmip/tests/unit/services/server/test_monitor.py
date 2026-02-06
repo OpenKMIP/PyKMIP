@@ -25,7 +25,6 @@ import testtools
 from kmip.core import enums
 from kmip.services.server import monitor
 
-
 class TestMonitorUtilities(testtools.TestCase):
 
     def setUp(self):
@@ -51,7 +50,6 @@ class TestMonitorUtilities(testtools.TestCase):
         self.assertEqual(2, len(result))
         self.assertIn(os.path.join(self.tmp_dir, "policy_1.json"), result)
         self.assertIn(os.path.join(self.tmp_dir, "policy_2.json"), result)
-
 
 POLICY_1 = """
 {
@@ -188,11 +186,9 @@ POLICY_7 = """
 }
 """
 
-
 def write_file(path, file_name, content):
     with open(os.path.join(path, file_name), "w") as f:
         f.write("{}\n".format(content))
-
 
 def side_effects(effects):
     for effect in effects:
@@ -202,18 +198,15 @@ def side_effects(effects):
             effect()
             yield False
 
-
 def build_write_effect(path, file_name, content):
     def side_effect():
         write_file(path, file_name, content)
     return side_effect
 
-
 def build_delete_effect(path, file_name):
     def side_effect():
         os.remove(os.path.join(path, file_name))
     return side_effect
-
 
 class TestPolicyDirectoryMonitor(testtools.TestCase):
 

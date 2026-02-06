@@ -29,7 +29,6 @@ from kmip.core import enums
 from kmip.core import exceptions
 from kmip.services.server import crypto
 
-
 class TestCryptographyEngine(testtools.TestCase):
     """
     Test suite for the CryptographyEngine.
@@ -1257,7 +1256,6 @@ class TestCryptographyEngine(testtools.TestCase):
             **kwargs
         )
 
-
 # TODO(peter-hamilton): Replace this with actual fixture files from NIST CAPV.
 # Most of these test vectors were obtained from the pyca/cryptography test
 # suite.
@@ -1507,7 +1505,6 @@ class TestCryptographyEngine(testtools.TestCase):
 def symmetric_parameters(request):
     return request.param
 
-
 def test_encrypt_symmetric(symmetric_parameters):
     """
     Test that various encryption algorithms and block cipher modes can be
@@ -1542,7 +1539,6 @@ def test_encrypt_symmetric(symmetric_parameters):
     assert symmetric_parameters.get('cipher_text') == result.get('cipher_text')
     assert symmetric_parameters.get('auth_tag') == result.get('auth_tag')
 
-
 def test_decrypt_symmetric(symmetric_parameters):
     """
     Test that various decryption algorithms and block cipher modes can be
@@ -1575,7 +1571,6 @@ def test_decrypt_symmetric(symmetric_parameters):
         )
 
     assert symmetric_parameters.get('plain_text') == result
-
 
 # Most of these test vectors were obtained from the pyca/cryptography test
 # suite:
@@ -1710,7 +1705,6 @@ def test_decrypt_symmetric(symmetric_parameters):
 def asymmetric_parameters(request):
     return request.param
 
-
 def test_encrypt_decrypt_asymmetric(asymmetric_parameters):
     """
     Test that various encryption/decryption algorithms can be used to
@@ -1766,7 +1760,6 @@ def test_encrypt_decrypt_asymmetric(asymmetric_parameters):
 
     assert asymmetric_parameters.get('plain_text') == result
 
-
 @pytest.fixture(
     scope='function',
     params=[
@@ -1786,7 +1779,6 @@ def test_encrypt_decrypt_asymmetric(asymmetric_parameters):
 def symmetric_padding_parameters(request):
     return request.param
 
-
 def test_handle_symmetric_padding(symmetric_padding_parameters):
     """
     Test that data of various lengths can be padded correctly using different
@@ -1801,7 +1793,6 @@ def test_handle_symmetric_padding(symmetric_padding_parameters):
     )
 
     assert result == symmetric_padding_parameters.get('padded_text')
-
 
 def test_handle_symmetric_padding_undo(symmetric_padding_parameters):
     """
@@ -1818,7 +1809,6 @@ def test_handle_symmetric_padding_undo(symmetric_padding_parameters):
     )
 
     assert result == symmetric_padding_parameters.get('plain_text')
-
 
 # PBKDF2 test vectors were obtained from IETF RFC 6070:
 #
@@ -2424,7 +2414,6 @@ def test_handle_symmetric_padding_undo(symmetric_padding_parameters):
 def derivation_parameters(request):
     return request.param
 
-
 def test_derive_key(derivation_parameters):
     """
     Test that various derivation methods and settings can be used to correctly
@@ -2447,7 +2436,6 @@ def test_derive_key(derivation_parameters):
     )
 
     assert derivation_parameters.get('derived_data') == result
-
 
 # AES Key Wrap test vectors were obtained from IETF RFC 3394:
 #
@@ -2566,7 +2554,6 @@ def test_derive_key(derivation_parameters):
 def wrapping_parameters(request):
     return request.param
 
-
 def test_wrap_key(wrapping_parameters):
     """
     Test that various wrapping methods and settings can be used to correctly
@@ -2583,10 +2570,8 @@ def test_wrap_key(wrapping_parameters):
 
     assert wrapping_parameters.get('wrapped_data') == result
 
-
 # Test vectors obtained from pyca/cryptography
 # https://cryptography.io/en/latest/
-
 
 DER_RSA_KEY = (
     b'\x30\x82\x02\x5e\x02\x01\x00\x02\x81\x81\x00\xae\xba\xc1\xb9\xa1\x74\x31'
@@ -2679,10 +2664,8 @@ PEM_RSA_KEY = (
     b'\x52\x49\x56\x41\x54\x45\x20\x4b\x45\x59\x2d\x2d\x2d\x2d\x2d\x0a'
 )
 
-
 SIGN_TEST_DATA = (b'\x01\x02\x03\x04\x05\x06\x07\x08'
                   b'\x09\x10\x11\x12\x13\x14\x15\x16')
-
 
 @pytest.fixture(
     scope='function',
@@ -2745,7 +2728,6 @@ SIGN_TEST_DATA = (b'\x01\x02\x03\x04\x05\x06\x07\x08'
 def signing_parameters(request):
     return request.param
 
-
 def load_private_key(key):
     try:
         return serialization.load_der_private_key(
@@ -2759,7 +2741,6 @@ def load_private_key(key):
             password=None,
             backend=default_backend()
         )
-
 
 def test_sign(signing_parameters):
     engine = crypto.CryptographyEngine()
@@ -2781,7 +2762,6 @@ def test_sign(signing_parameters):
         signing_parameters.get('verify_args')[0],
         signing_parameters.get('verify_args')[1]
     )
-
 
 # RSA signing test vectors were obtained from pyca/cryptography:
 #
@@ -2915,7 +2895,6 @@ def test_sign(signing_parameters):
 )
 def signature_parameters(request):
     return request.param
-
 
 def test_verify_signature(signature_parameters):
     """

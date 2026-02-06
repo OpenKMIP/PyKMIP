@@ -24,7 +24,6 @@ from mock import Mock
 
 from kmip.core.config_helper import ConfigHelper
 
-
 class TestConfigHelper(TestCase):
 
     def setUp(self):

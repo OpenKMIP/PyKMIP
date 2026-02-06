@@ -15,12 +15,9 @@
 
 import logging
 import os
-import six
 
-from six.moves import configparser
-
+import configparser
 from kmip.core import exceptions
-
 
 class KmipServerConfig(object):
     """
@@ -186,7 +183,7 @@ class KmipServerConfig(object):
             self._set_database_path(parser.get('server', 'database_path'))
 
     def _set_hostname(self, value):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             self.settings['hostname'] = value
         else:
             raise exceptions.ConfigurationError(
@@ -194,7 +191,7 @@ class KmipServerConfig(object):
             )
 
     def _set_port(self, value):
-        if isinstance(value, six.integer_types):
+        if isinstance(value, int):
             if 0 < value < 65535:
                 self.settings['port'] = value
             else:
@@ -209,7 +206,7 @@ class KmipServerConfig(object):
     def _set_certificate_path(self, value):
         if value is None:
             self.settings['certificate_path'] = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             if os.path.exists(value):
                 self.settings['certificate_path'] = value
             else:
@@ -226,7 +223,7 @@ class KmipServerConfig(object):
     def _set_key_path(self, value):
         if value is None:
             self.settings['key_path'] = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             if os.path.exists(value):
                 self.settings['key_path'] = value
             else:
@@ -243,7 +240,7 @@ class KmipServerConfig(object):
     def _set_ca_path(self, value):
         if value is None:
             self.settings['ca_path'] = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             if os.path.exists(value):
                 self.settings['ca_path'] = value
             else:
@@ -271,7 +268,7 @@ class KmipServerConfig(object):
     def _set_policy_path(self, value):
         if not value:
             self.settings['policy_path'] = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self.settings['policy_path'] = value
         else:
             raise exceptions.ConfigurationError(
@@ -294,12 +291,12 @@ class KmipServerConfig(object):
         if not value:
             self.settings['tls_cipher_suites'] = []
             return
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = value.split()
 
         if isinstance(value, list):
             for entry in value:
-                if not isinstance(entry, six.string_types):
+                if not isinstance(entry, str):
                     raise exceptions.ConfigurationError(
                         "The TLS cipher suites must be a set of strings "
                         "representing cipher suite names."
@@ -325,7 +322,7 @@ class KmipServerConfig(object):
         }
         if value in logging_levels.values():
             self.settings['logging_level'] = value
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             level = logging_levels.get(value.upper())
             if level:
                 self.settings['logging_level'] = level
@@ -343,7 +340,7 @@ class KmipServerConfig(object):
     def _set_database_path(self, value):
         if not value:
             self.settings['database_path'] = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self.settings['database_path'] = value
         else:
             raise exceptions.ConfigurationError(

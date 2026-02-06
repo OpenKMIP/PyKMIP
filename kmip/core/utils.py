@@ -18,12 +18,10 @@ import io
 
 from kmip.core import exceptions
 
-
 def bit_length(num):
     s = bin(num)
     s = s.lstrip('0b')
     return len(s)
-
 
 def count_bytes(num):
     bits = bit_length(num)
@@ -32,23 +30,19 @@ def count_bytes(num):
         num_bytes += 1
     return num_bytes
 
-
 def print_bytearray(array):
     sbuffer = hexlify_bytearray(array)
     print('buffer: {0}'.format(sbuffer))
 
-
 def hexlify_bytearray(array):
     sbuffer = bytes(array[0:])
     return hexlify(sbuffer)
-
 
 def is_stream_empty(stream):
     if len(stream.peek(1)) > 0:
         return False
     else:
         return True
-
 
 def build_er_error(class_object, descriptor, expected, received,
                    attribute=None):
@@ -60,7 +54,6 @@ def build_er_error(class_object, descriptor, expected, received,
         class_string = '{0}.{1}'.format(class_object.__name__, attribute)
 
     return msg.format(class_string, descriptor, expected, received)
-
 
 class BytearrayStream(io.RawIOBase):
     def __init__(self, data=None):

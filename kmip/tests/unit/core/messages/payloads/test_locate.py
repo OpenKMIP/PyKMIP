@@ -22,7 +22,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestLocateRequestPayload(testtools.TestCase):
 
     def setUp(self):
@@ -908,7 +907,7 @@ class TestLocateRequestPayload(testtools.TestCase):
 
         self.assertTrue(repr(payload).startswith(s))
 
-    def str(self):
+    def test_str(self):
         """
         Test that str can be applied to a Locate request payload structure.
         """
@@ -1233,6 +1232,109 @@ class TestLocateRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
+    def test_init(self):
+        """
+        Test that a Locate request payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.LocateRequestPayload()
+        self.assertIsNone(payload.maximum_items)
+        self.assertIsNone(payload.offset_items)
+        self.assertIsNone(payload.storage_status_mask)
+        self.assertIsNone(payload.object_group_member)
+        self.assertEqual([], payload.attributes)
+
+    def test_init_with_args(self):
+        """
+        Test that a Locate request payload can be constructed with valid
+        values.
+        """
+        payload = payloads.LocateRequestPayload(
+            maximum_items=1,
+            offset_items=1,
+            storage_status_mask=3,
+            object_group_member=enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
+            attributes=[
+                objects.Attribute(
+                    attribute_name=objects.Attribute.AttributeName(
+                        "Object Group"
+                    ),
+                    attribute_value=primitives.TextString(
+                        value="RoundRobinTestGroup",
+                        tag=enums.Tags.OBJECT_GROUP
+                    )
+                )
+            ]
+        )
+
+        self.assertEqual(1, payload.maximum_items)
+        self.assertEqual(1, payload.offset_items)
+        self.assertEqual(3, payload.storage_status_mask)
+        self.assertEqual(
+            enums.ObjectGroupMember.GROUP_MEMBER_DEFAULT,
+            payload.object_group_member
+        )
+        self.assertEqual(1, len(payload.attributes))
+
+    def test_read_valid(self):
+        """
+        Test that a Locate request payload can be read from a valid byte
+        stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        payload = payloads.LocateRequestPayload()
+        self.assertRaises(Exception, payload.read, utils.BytearrayStream(b""))
+
+    def test_write_valid(self):
+        """
+        Test that a Locate request payload can be written to a byte stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a Locate request payload can be read and written without
+        changing the encoded bytes.
+        """
+        payload = payloads.LocateRequestPayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_maximum_items()
+
+    def test_eq(self):
+        """
+        Test that two Locate request payloads with the same data are equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two Locate request payloads with different data are not
+        equal.
+        """
+        self.test_not_equal_on_not_equal_maximum_items()
+
+    def test_str(self):
+        """
+        Test the str output for a Locate request payload.
+        """
+        payload = payloads.LocateRequestPayload()
+        self.assertIsInstance(str(payload), str)
 
 class TestLocateResponsePayload(testtools.TestCase):
 
@@ -1644,3 +1746,90 @@ class TestLocateResponsePayload(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_init(self):
+        """
+        Test that a Locate response payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.LocateResponsePayload()
+        self.assertIsNone(payload.located_items)
+        self.assertEqual([], payload.unique_identifiers)
+
+    def test_init_with_args(self):
+        """
+        Test that a Locate response payload can be constructed with valid
+        values.
+        """
+        payload = payloads.LocateResponsePayload(
+            located_items=1,
+            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+        )
+
+        self.assertEqual(1, payload.located_items)
+        self.assertEqual(
+            ["8d945322-fd70-495d-bf7f-71481d1401f6"],
+            payload.unique_identifiers
+        )
+
+    def test_read_valid(self):
+        """
+        Test that a Locate response payload can be read from a valid byte
+        stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_missing_located_items()
+
+    def test_write_valid(self):
+        """
+        Test that a Locate response payload can be written to a byte stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a Locate response payload can be read and written without
+        changing the encoded bytes.
+        """
+        payload = payloads.LocateResponsePayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(str(self.full_encoding), str(stream))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_located_items()
+
+    def test_eq(self):
+        """
+        Test that two Locate response payloads with the same data are equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two Locate response payloads with different data are not
+        equal.
+        """
+        self.test_not_equal_on_not_equal_located_items()
+
+    def test_str(self):
+        """
+        Test the str output for a Locate response payload.
+        """
+        payload = payloads.LocateResponsePayload(
+            located_items=1,
+            unique_identifiers=["8d945322-fd70-495d-bf7f-71481d1401f6"]
+        )
+        self.assertIsInstance(str(payload), str)

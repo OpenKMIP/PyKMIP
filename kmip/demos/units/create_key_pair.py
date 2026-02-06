@@ -38,7 +38,6 @@ from kmip.services.kmip_client import KMIPProxy
 import logging
 import sys
 
-
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 

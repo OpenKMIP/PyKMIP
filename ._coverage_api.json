@@ -1,0 +1,3177 @@
+[
+  {
+    "source": "kmip/version.py",
+    "module": "kmip.version",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/__init__.py",
+    "module": "kmip.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/attributes.py",
+    "module": "kmip.core.attributes",
+    "tests": [
+      "kmip/tests/unit/core/test_enums.py",
+      "kmip/tests/unit/core/test_policy.py",
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_attribute.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_activate.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/pie/objects/test_application_specific_information.py",
+      "kmip/tests/unit/pie/objects/test_certificate.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_monitor.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "public_classes": {
+      "UniqueIdentifier": [],
+      "PrivateKeyUniqueIdentifier": [],
+      "PublicKeyUniqueIdentifier": [],
+      "Name": [
+        "read",
+        "write",
+        "validate",
+        "create"
+      ],
+      "ObjectType": [],
+      "CryptographicAlgorithm": [],
+      "CryptographicLength": [],
+      "HashingAlgorithm": [],
+      "CryptographicParameters": [
+        "block_cipher_mode",
+        "block_cipher_mode",
+        "padding_method",
+        "padding_method",
+        "hashing_algorithm",
+        "hashing_algorithm",
+        "key_role_type",
+        "key_role_type",
+        "digital_signature_algorithm",
+        "digital_signature_algorithm",
+        "cryptographic_algorithm",
+        "cryptographic_algorithm",
+        "random_iv",
+        "random_iv",
+        "iv_length",
+        "iv_length",
+        "tag_length",
+        "tag_length",
+        "fixed_field_length",
+        "fixed_field_length",
+        "invocation_field_length",
+        "invocation_field_length",
+        "counter_length",
+        "counter_length",
+        "initial_counter_value",
+        "initial_counter_value",
+        "read",
+        "write"
+      ],
+      "CertificateType": [],
+      "DigestValue": [],
+      "Digest": [
+        "read",
+        "write",
+        "validate",
+        "create"
+      ],
+      "OperationPolicyName": [],
+      "CryptographicUsageMask": [],
+      "State": [],
+      "ApplicationSpecificInformation": [
+        "application_namespace",
+        "application_namespace",
+        "application_data",
+        "application_data",
+        "read",
+        "write"
+      ],
+      "ContactInformation": [],
+      "CustomAttribute": [],
+      "DerivationParameters": [
+        "cryptographic_parameters",
+        "cryptographic_parameters",
+        "initialization_vector",
+        "initialization_vector",
+        "derivation_data",
+        "derivation_data",
+        "salt",
+        "salt",
+        "iteration_count",
+        "iteration_count",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/config_helper.py",
+    "module": "kmip.core.config_helper",
+    "tests": [
+      "kmip/tests/unit/core/test_config_helper.py"
+    ],
+    "public_classes": {
+      "ConfigHelper": [
+        "get_valid_value"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/enums.py",
+    "module": "kmip.core.enums",
+    "tests": [
+      "kmip/tests/unit/core/test_enums.py",
+      "kmip/tests/unit/core/test_policy.py",
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_exceptions.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/factories/test_attribute.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_misc.py",
+      "kmip/tests/unit/core/objects/test_credentials.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/primitives/test_enumeration.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/factories/payloads/test_payload.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/contents/test_authentication.py",
+      "kmip/tests/unit/core/messages/contents/test_protocol_version.py",
+      "kmip/tests/unit/core/messages/payloads/test_activate.py",
+      "kmip/tests/unit/core/messages/payloads/test_cancel.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/pie/objects/test_certificate.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_sqltypes.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_monitor.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "public_classes": {
+      "OrderedEnum": [],
+      "AdjustmentType": [],
+      "AlternativeNameType": [],
+      "AsynchronousIndicator": [],
+      "AttestationType": [],
+      "AttributeType": [],
+      "AuthenticationSuite": [],
+      "BatchErrorContinuationOption": [],
+      "BlockCipherMode": [],
+      "CancellationResult": [],
+      "CertificateRequestType": [],
+      "CertificateType": [],
+      "ClientRegistrationMethod": [],
+      "ConformanceClause": [],
+      "CredentialType": [],
+      "CryptographicAlgorithm": [],
+      "CryptographicUsageMask": [],
+      "Data": [],
+      "DerivationMethod": [],
+      "DestroyAction": [],
+      "DigitalSignatureAlgorithm": [],
+      "DRBGAlgorithm": [],
+      "EncodingOption": [],
+      "EndpointRole": [],
+      "FIPS186Variation": [],
+      "HashingAlgorithm": [],
+      "InteropFunction": [],
+      "ItemType": [],
+      "KeyCompressionType": [],
+      "KeyFormatType": [],
+      "KeyRoleType": [],
+      "KeyValueLocationType": [],
+      "KeyWrapType": [],
+      "KMIPVersion": [],
+      "LinkType": [],
+      "MaskGenerator": [],
+      "NameType": [],
+      "NISTKeyType": [],
+      "ObjectGroupMember": [],
+      "ObjectType": [],
+      "OpaqueDataType": [],
+      "Operation": [],
+      "PaddingMethod": [],
+      "PKCS11Function": [],
+      "PKCS11ReturnCode": [],
+      "Policy": [],
+      "ProfileName": [],
+      "ProtectionLevel": [],
+      "ProtectionStorageMask": [],
+      "PutFunction": [],
+      "QueryFunction": [],
+      "RecommendedCurve": [],
+      "ResultReason": [],
+      "ResultStatus": [],
+      "RevocationReasonCode": [],
+      "RNGAlgorithm": [],
+      "RNGMode": [],
+      "SecretDataType": [],
+      "ShreddingAlgorithm": [],
+      "SplitKeyMethod": [],
+      "State": [],
+      "StorageStatusMask": [],
+      "Tags": [],
+      "TicketType": [],
+      "Types": [],
+      "UniqueIdentifier": [],
+      "UnwrapMode": [],
+      "UsageLimitsUnit": [],
+      "ValidationAuthorityType": [],
+      "ValidationType": [],
+      "ValidityIndicator": [],
+      "WrappingMethod": []
+    },
+    "public_functions": [
+      "convert_attribute_name_to_tag",
+      "convert_attribute_tag_to_name",
+      "get_bit_mask_from_enumerations",
+      "get_enumerations_from_bit_mask",
+      "is_bit_mask",
+      "is_enum_value",
+      "is_attribute"
+    ],
+    "missing_classes": [
+      "OrderedEnum",
+      "AdjustmentType",
+      "AlternativeNameType",
+      "CertificateRequestType",
+      "EndpointRole",
+      "InteropFunction",
+      "ItemType",
+      "KeyValueLocationType",
+      "KeyWrapType",
+      "LinkType",
+      "MaskGenerator",
+      "NISTKeyType",
+      "PKCS11Function",
+      "PKCS11ReturnCode",
+      "ProtectionLevel",
+      "PutFunction",
+      "TicketType",
+      "UsageLimitsUnit"
+    ],
+    "missing_methods": {
+      "OrderedEnum": [],
+      "AdjustmentType": [],
+      "AlternativeNameType": [],
+      "CertificateRequestType": [],
+      "EndpointRole": [],
+      "InteropFunction": [],
+      "ItemType": [],
+      "KeyValueLocationType": [],
+      "KeyWrapType": [],
+      "LinkType": [],
+      "MaskGenerator": [],
+      "NISTKeyType": [],
+      "PKCS11Function": [],
+      "PKCS11ReturnCode": [],
+      "ProtectionLevel": [],
+      "PutFunction": [],
+      "TicketType": [],
+      "UsageLimitsUnit": []
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/exceptions.py",
+    "module": "kmip.core.exceptions",
+    "tests": [
+      "kmip/tests/unit/core/test_utils.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/primitives/test_base.py",
+      "kmip/tests/unit/core/primitives/test_big_integer.py",
+      "kmip/tests/unit/core/primitives/test_byte_string.py",
+      "kmip/tests/unit/core/primitives/test_enumeration.py",
+      "kmip/tests/unit/core/primitives/test_integer.py",
+      "kmip/tests/unit/core/primitives/test_interval.py",
+      "kmip/tests/unit/core/primitives/test_long_integer.py",
+      "kmip/tests/unit/core/primitives/test_text_string.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/services/server/test_config.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_server.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_slugs.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "public_classes": {
+      "KmipError": [],
+      "CryptographicFailure": [],
+      "EncodingOptionError": [],
+      "IllegalOperation": [],
+      "IndexOutOfBounds": [],
+      "InvalidField": [],
+      "InvalidMessage": [],
+      "ItemNotFound": [],
+      "KeyCompressionTypeNotSupported": [],
+      "KeyFormatTypeNotSupported": [],
+      "OperationFailure": [],
+      "OperationNotSupported": [],
+      "PermissionDenied": [],
+      "AttributeNotSupported": [],
+      "ConfigurationError": [],
+      "ConnectionClosed": [],
+      "NetworkingError": [],
+      "InvalidKmipEncoding": [],
+      "InvalidPaddingBytes": [],
+      "InvalidPrimitiveLength": [],
+      "ShutdownError": [],
+      "VersionNotSupported": [],
+      "StreamNotEmptyError": [],
+      "ReadValueError": [],
+      "WriteOverflowError": [],
+      "KMIPServerZombieError": [],
+      "KMIPServerSuicideError": [],
+      "ErrorStrings": []
+    },
+    "public_functions": [],
+    "missing_classes": [
+      "WriteOverflowError",
+      "KMIPServerZombieError",
+      "KMIPServerSuicideError"
+    ],
+    "missing_methods": {
+      "WriteOverflowError": [],
+      "KMIPServerZombieError": [],
+      "KMIPServerSuicideError": []
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/misc.py",
+    "module": "kmip.core.misc",
+    "tests": [
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_misc.py",
+      "kmip/tests/unit/core/misc/test_server_information.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "public_classes": {
+      "CertificateValue": [],
+      "Offset": [],
+      "QueryFunction": [],
+      "VendorIdentification": [],
+      "ServerInformation": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "KeyFormatType": []
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "ServerInformation": [
+        "validate"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/objects.py",
+    "module": "kmip.core.objects",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/factories/test_attribute.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_attribute.py",
+      "kmip/tests/unit/core/objects/test_credentials.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_extension_information.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/contents/test_authentication.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "public_classes": {
+      "Attribute": [
+        "read",
+        "write"
+      ],
+      "CurrentAttribute": [
+        "attribute",
+        "attribute",
+        "read",
+        "write"
+      ],
+      "NewAttribute": [
+        "attribute",
+        "attribute",
+        "read",
+        "write"
+      ],
+      "AttributeReference": [
+        "vendor_identification",
+        "vendor_identification",
+        "attribute_name",
+        "attribute_name",
+        "read",
+        "write"
+      ],
+      "Attributes": [
+        "attributes",
+        "attributes",
+        "read",
+        "write"
+      ],
+      "Nonce": [
+        "nonce_id",
+        "nonce_id",
+        "nonce_value",
+        "nonce_value",
+        "read",
+        "write"
+      ],
+      "CredentialValue": [],
+      "UsernamePasswordCredential": [
+        "username",
+        "username",
+        "password",
+        "password",
+        "read",
+        "write"
+      ],
+      "DeviceCredential": [
+        "device_serial_number",
+        "device_serial_number",
+        "password",
+        "password",
+        "device_identifier",
+        "device_identifier",
+        "network_identifier",
+        "network_identifier",
+        "machine_identifier",
+        "machine_identifier",
+        "media_identifier",
+        "media_identifier",
+        "read",
+        "write"
+      ],
+      "AttestationCredential": [
+        "nonce",
+        "nonce",
+        "attestation_type",
+        "attestation_type",
+        "attestation_measurement",
+        "attestation_measurement",
+        "attestation_assertion",
+        "attestation_assertion",
+        "read",
+        "write"
+      ],
+      "Credential": [
+        "credential_type",
+        "credential_type",
+        "credential_value",
+        "credential_value",
+        "read",
+        "write"
+      ],
+      "KeyBlock": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "KeyMaterial": [],
+      "KeyMaterialStruct": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "KeyValue": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "EncryptionKeyInformation": [
+        "unique_identifier",
+        "unique_identifier",
+        "cryptographic_parameters",
+        "cryptographic_parameters",
+        "read",
+        "write"
+      ],
+      "MACSignatureKeyInformation": [
+        "unique_identifier",
+        "unique_identifier",
+        "cryptographic_parameters",
+        "cryptographic_parameters",
+        "read",
+        "write"
+      ],
+      "KeyWrappingData": [
+        "wrapping_method",
+        "wrapping_method",
+        "encryption_key_information",
+        "encryption_key_information",
+        "mac_signature_key_information",
+        "mac_signature_key_information",
+        "mac_signature",
+        "mac_signature",
+        "iv_counter_nonce",
+        "iv_counter_nonce",
+        "encoding_option",
+        "encoding_option",
+        "read",
+        "write"
+      ],
+      "KeyWrappingSpecification": [
+        "wrapping_method",
+        "wrapping_method",
+        "encryption_key_information",
+        "encryption_key_information",
+        "mac_signature_key_information",
+        "mac_signature_key_information",
+        "attribute_names",
+        "attribute_names",
+        "encoding_option",
+        "encoding_option",
+        "read",
+        "write"
+      ],
+      "TemplateAttribute": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "CommonTemplateAttribute": [],
+      "PrivateKeyTemplateAttribute": [],
+      "PublicKeyTemplateAttribute": [],
+      "ExtensionName": [],
+      "ExtensionTag": [],
+      "ExtensionType": [],
+      "ExtensionInformation": [
+        "read",
+        "write",
+        "validate",
+        "create"
+      ],
+      "Data": [],
+      "MACData": [],
+      "RevocationReasonCode": [],
+      "RevocationReason": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "ObjectDefaults": [
+        "object_type",
+        "object_type",
+        "attributes",
+        "attributes",
+        "read",
+        "write"
+      ],
+      "DefaultsInformation": [
+        "object_defaults",
+        "object_defaults",
+        "read",
+        "write"
+      ],
+      "RNGParameters": [
+        "rng_algorithm",
+        "rng_algorithm",
+        "cryptographic_algorithm",
+        "cryptographic_algorithm",
+        "cryptographic_length",
+        "cryptographic_length",
+        "hashing_algorithm",
+        "hashing_algorithm",
+        "drbg_algorithm",
+        "drbg_algorithm",
+        "recommended_curve",
+        "recommended_curve",
+        "fips186_variation",
+        "fips186_variation",
+        "prediction_resistance",
+        "prediction_resistance",
+        "read",
+        "write"
+      ],
+      "ProfileInformation": [
+        "profile_name",
+        "profile_name",
+        "server_uri",
+        "server_uri",
+        "server_port",
+        "server_port",
+        "read",
+        "write"
+      ],
+      "ValidationInformation": [
+        "validation_authority_type",
+        "validation_authority_type",
+        "validation_authority_country",
+        "validation_authority_country",
+        "validation_authority_uri",
+        "validation_authority_uri",
+        "validation_version_major",
+        "validation_version_major",
+        "validation_version_minor",
+        "validation_version_minor",
+        "validation_type",
+        "validation_type",
+        "validation_level",
+        "validation_level",
+        "validation_certificate_identifier",
+        "validation_certificate_identifier",
+        "validation_certificate_uri",
+        "validation_certificate_uri",
+        "validation_vendor_uri",
+        "validation_vendor_uri",
+        "validation_profiles",
+        "validation_profiles",
+        "read",
+        "write"
+      ],
+      "CapabilityInformation": [
+        "streaming_capability",
+        "streaming_capability",
+        "asynchronous_capability",
+        "asynchronous_capability",
+        "attestation_capability",
+        "attestation_capability",
+        "batch_undo_capability",
+        "batch_undo_capability",
+        "batch_continue_capability",
+        "batch_continue_capability",
+        "unwrap_mode",
+        "unwrap_mode",
+        "destroy_action",
+        "destroy_action",
+        "shredding_algorithm",
+        "shredding_algorithm",
+        "rng_mode",
+        "rng_mode",
+        "read",
+        "write"
+      ],
+      "ProtectionStorageMasks": [
+        "protection_storage_masks",
+        "protection_storage_masks",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [
+      "convert_template_attribute_to_attributes",
+      "convert_attributes_to_template_attribute"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/policy.py",
+    "module": "kmip.core.policy",
+    "tests": [
+      "kmip/tests/unit/core/test_policy.py"
+    ],
+    "public_classes": {},
+    "public_functions": [
+      "parse_policy",
+      "read_policy_from_file"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/primitives.py",
+    "module": "kmip.core.primitives",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_misc.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/primitives/test_base.py",
+      "kmip/tests/unit/core/primitives/test_big_integer.py",
+      "kmip/tests/unit/core/primitives/test_boolean.py",
+      "kmip/tests/unit/core/primitives/test_byte_string.py",
+      "kmip/tests/unit/core/primitives/test_date_time.py",
+      "kmip/tests/unit/core/primitives/test_enumeration.py",
+      "kmip/tests/unit/core/primitives/test_integer.py",
+      "kmip/tests/unit/core/primitives/test_interval.py",
+      "kmip/tests/unit/core/primitives/test_long_integer.py",
+      "kmip/tests/unit/core/primitives/test_text_string.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/pie/objects/test_application_specific_information.py",
+      "kmip/tests/unit/pie/objects/test_object_group.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "Base": [
+        "is_oversized",
+        "read_tag",
+        "read_type",
+        "read_length",
+        "read_value",
+        "read",
+        "write_tag",
+        "write_type",
+        "write_length",
+        "write_value",
+        "write",
+        "validate",
+        "is_tag_next",
+        "is_type_next"
+      ],
+      "Struct": [],
+      "Integer": [
+        "read_value",
+        "read",
+        "write_value",
+        "write",
+        "validate"
+      ],
+      "LongInteger": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "BigInteger": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "Enumeration": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "Boolean": [
+        "read_value",
+        "read",
+        "write_value",
+        "write",
+        "validate"
+      ],
+      "TextString": [
+        "read_value",
+        "read",
+        "write_value",
+        "write",
+        "validate"
+      ],
+      "ByteString": [
+        "read_value",
+        "read",
+        "write_value",
+        "write",
+        "validate"
+      ],
+      "DateTime": [],
+      "Interval": [
+        "read",
+        "write",
+        "validate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "Base": [
+        "is_type_next"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/secrets.py",
+    "module": "kmip.core.secrets",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/pie/objects/test_certificate.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py"
+    ],
+    "public_classes": {
+      "Certificate": [
+        "read",
+        "write"
+      ],
+      "KeyBlockKey": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "SymmetricKey": [
+        "validate"
+      ],
+      "PublicKey": [
+        "validate"
+      ],
+      "PrivateKey": [
+        "validate"
+      ],
+      "SplitKey": [
+        "split_key_parts",
+        "split_key_parts",
+        "key_part_identifier",
+        "key_part_identifier",
+        "split_key_threshold",
+        "split_key_threshold",
+        "split_key_method",
+        "split_key_method",
+        "prime_field_size",
+        "prime_field_size",
+        "key_block",
+        "key_block",
+        "read",
+        "write"
+      ],
+      "Template": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "SecretData": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "OpaqueObject": [
+        "read",
+        "write",
+        "validate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [
+      "KeyBlockKey"
+    ],
+    "missing_methods": {
+      "KeyBlockKey": [
+        "read",
+        "write",
+        "validate"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/utils.py",
+    "module": "kmip.core.utils",
+    "tests": [
+      "kmip/tests/unit/core/test_utils.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_server_information.py",
+      "kmip/tests/unit/core/objects/test_credentials.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_extension_information.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/primitives/test_base.py",
+      "kmip/tests/unit/core/primitives/test_big_integer.py",
+      "kmip/tests/unit/core/primitives/test_boolean.py",
+      "kmip/tests/unit/core/primitives/test_byte_string.py",
+      "kmip/tests/unit/core/primitives/test_date_time.py",
+      "kmip/tests/unit/core/primitives/test_enumeration.py",
+      "kmip/tests/unit/core/primitives/test_integer.py",
+      "kmip/tests/unit/core/primitives/test_interval.py",
+      "kmip/tests/unit/core/primitives/test_long_integer.py",
+      "kmip/tests/unit/core/primitives/test_text_string.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/contents/test_authentication.py",
+      "kmip/tests/unit/core/messages/contents/test_protocol_version.py",
+      "kmip/tests/unit/core/messages/payloads/test_activate.py",
+      "kmip/tests/unit/core/messages/payloads/test_archive.py",
+      "kmip/tests/unit/core/messages/payloads/test_cancel.py",
+      "kmip/tests/unit/core/messages/payloads/test_check.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_discover_versions.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_usage_allocation.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_obtain_lease.py",
+      "kmip/tests/unit/core/messages/payloads/test_poll.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_recover.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "public_classes": {
+      "BytearrayStream": [
+        "read",
+        "readall",
+        "readinto",
+        "peek",
+        "write",
+        "length"
+      ]
+    },
+    "public_functions": [
+      "bit_length",
+      "count_bytes",
+      "print_bytearray",
+      "hexlify_bytearray",
+      "is_stream_empty",
+      "build_er_error"
+    ],
+    "missing_classes": [],
+    "missing_methods": {
+      "BytearrayStream": [
+        "readall",
+        "readinto",
+        "peek"
+      ]
+    },
+    "missing_functions": [
+      "bit_length",
+      "print_bytearray",
+      "is_stream_empty",
+      "build_er_error"
+    ]
+  },
+  {
+    "source": "kmip/core/__init__.py",
+    "module": "kmip.core.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/pie/client.py",
+    "module": "kmip.pie.client",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py"
+    ],
+    "public_classes": {
+      "ProxyKmipClient": [
+        "kmip_version",
+        "kmip_version",
+        "open",
+        "close",
+        "create",
+        "create_key_pair",
+        "delete_attribute",
+        "set_attribute",
+        "modify_attribute",
+        "register",
+        "rekey",
+        "derive_key",
+        "locate",
+        "check",
+        "get",
+        "get_attributes",
+        "get_attribute_list",
+        "activate",
+        "revoke",
+        "destroy",
+        "encrypt",
+        "decrypt",
+        "signature_verify",
+        "sign",
+        "mac"
+      ]
+    },
+    "public_functions": [
+      "is_connected"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": [
+      "is_connected"
+    ]
+  },
+  {
+    "source": "kmip/pie/exceptions.py",
+    "module": "kmip.pie.exceptions",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_exceptions.py",
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "public_classes": {
+      "ClientConnectionFailure": [],
+      "ClientConnectionNotOpen": [],
+      "KmipOperationFailure": []
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/pie/factory.py",
+    "module": "kmip.pie.factory",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py"
+    ],
+    "public_classes": {
+      "ObjectFactory": [
+        "convert"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/pie/objects.py",
+    "module": "kmip.pie.objects",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_factory.py",
+      "kmip/tests/unit/core/attributes/test_application_specific_information.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py",
+      "kmip/tests/unit/core/secrets/test_split_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/pie/objects/test_application_specific_information.py",
+      "kmip/tests/unit/pie/objects/test_certificate.py",
+      "kmip/tests/unit/pie/objects/test_cryptographic_object.py",
+      "kmip/tests/unit/pie/objects/test_key.py",
+      "kmip/tests/unit/pie/objects/test_managed_object.py",
+      "kmip/tests/unit/pie/objects/test_object_group.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py",
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "public_classes": {
+      "ManagedObject": [
+        "object_type",
+        "object_type",
+        "validate"
+      ],
+      "CryptographicObject": [],
+      "Key": [
+        "key_wrapping_data",
+        "key_wrapping_data"
+      ],
+      "SymmetricKey": [
+        "validate"
+      ],
+      "PublicKey": [
+        "validate"
+      ],
+      "PrivateKey": [
+        "validate"
+      ],
+      "SplitKey": [
+        "split_key_parts",
+        "split_key_parts",
+        "key_part_identifier",
+        "key_part_identifier",
+        "split_key_threshold",
+        "split_key_threshold",
+        "split_key_method",
+        "split_key_method",
+        "prime_field_size",
+        "prime_field_size"
+      ],
+      "Certificate": [
+        "validate"
+      ],
+      "X509Certificate": [],
+      "SecretData": [
+        "validate"
+      ],
+      "OpaqueObject": [
+        "validate"
+      ],
+      "ApplicationSpecificInformation": [
+        "application_namespace",
+        "application_namespace",
+        "application_data",
+        "application_data"
+      ],
+      "ObjectGroup": [
+        "object_group",
+        "object_group"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/pie/sqltypes.py",
+    "module": "kmip.pie.sqltypes",
+    "tests": [
+      "kmip/tests/unit/pie/objects/test_application_specific_information.py",
+      "kmip/tests/unit/pie/objects/test_object_group.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_split_key.py",
+      "kmip/tests/unit/pie/objects/test_sqltypes.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "UsageMaskType": [
+        "process_bind_param",
+        "process_result_value"
+      ],
+      "EnumType": [
+        "process_bind_param",
+        "process_result_value"
+      ],
+      "ManagedObjectName": []
+    },
+    "public_functions": [
+      "attribute_append_factory"
+    ],
+    "missing_classes": [
+      "UsageMaskType",
+      "EnumType"
+    ],
+    "missing_methods": {
+      "UsageMaskType": [
+        "process_bind_param",
+        "process_result_value"
+      ],
+      "EnumType": [
+        "process_bind_param",
+        "process_result_value"
+      ]
+    },
+    "missing_functions": [
+      "attribute_append_factory"
+    ]
+  },
+  {
+    "source": "kmip/pie/__init__.py",
+    "module": "kmip.pie.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/auth.py",
+    "module": "kmip.services.auth",
+    "tests": [
+      "kmip/tests/unit/services/test_auth.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/services/server/test_server.py"
+    ],
+    "public_classes": {
+      "AuthenticationSuite": [
+        "protocol",
+        "ciphers"
+      ],
+      "BasicAuthenticationSuite": [],
+      "TLS12AuthenticationSuite": []
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/kmip_client.py",
+    "module": "kmip.services.kmip_client",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "public_classes": {
+      "KMIPProxy": [
+        "kmip_version",
+        "kmip_version",
+        "get_supported_conformance_clauses",
+        "get_supported_authentication_suites",
+        "is_conformance_clause_supported",
+        "is_authentication_suite_supported",
+        "is_profile_supported",
+        "open",
+        "close",
+        "send_request_payload",
+        "create",
+        "create_key_pair",
+        "activate",
+        "rekey",
+        "derive_key",
+        "check",
+        "get",
+        "get_attributes",
+        "get_attribute_list",
+        "revoke",
+        "destroy",
+        "register",
+        "rekey_key_pair",
+        "locate",
+        "query",
+        "discover_versions",
+        "encrypt",
+        "decrypt",
+        "signature_verify",
+        "sign",
+        "mac"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "KMIPProxy": [
+        "rekey_key_pair",
+        "query",
+        "discover_versions"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/kmip_protocol.py",
+    "module": "kmip.services.kmip_protocol",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_protocol.py"
+    ],
+    "public_classes": {
+      "KMIPProtocol": [
+        "write",
+        "read"
+      ],
+      "KMIPProtocolFactory": [
+        "getProtocol"
+      ],
+      "RequestLengthMismatch": []
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/results.py",
+    "module": "kmip.services.results",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "public_classes": {
+      "OperationResult": [],
+      "CreateResult": [],
+      "CreateKeyPairResult": [],
+      "ActivateResult": [],
+      "RegisterResult": [],
+      "RekeyKeyPairResult": [],
+      "GetResult": [],
+      "GetAttributesResult": [],
+      "GetAttributeListResult": [],
+      "DestroyResult": [],
+      "LocateResult": [],
+      "QueryResult": [],
+      "DiscoverVersionsResult": [],
+      "RevokeResult": [],
+      "MACResult": []
+    },
+    "public_functions": [],
+    "missing_classes": [
+      "ActivateResult",
+      "DestroyResult",
+      "RevokeResult"
+    ],
+    "missing_methods": {
+      "ActivateResult": [],
+      "DestroyResult": [],
+      "RevokeResult": []
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/__init__.py",
+    "module": "kmip.services.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/factories/attributes.py",
+    "module": "kmip.core.factories.attributes",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/test_attribute.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "AttributeFactory": [
+        "create_attribute"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/factories/attribute_values.py",
+    "module": "kmip.core.factories.attribute_values",
+    "tests": [
+      "kmip/tests/unit/core/factories/test_attribute_values.py",
+      "kmip/tests/unit/core/objects/test_objects.py"
+    ],
+    "public_classes": {
+      "AttributeValueFactory": [
+        "create_attribute_value",
+        "create_attribute_value_by_enum"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/factories/credentials.py",
+    "module": "kmip.core.factories.credentials",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "public_classes": {
+      "CredentialFactory": [
+        "create_credential",
+        "create_username_password_credential",
+        "create_device_credential"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "CredentialFactory": [
+        "create_credential",
+        "create_username_password_credential",
+        "create_device_credential"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/factories/secrets.py",
+    "module": "kmip.core.factories.secrets",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py"
+    ],
+    "public_classes": {
+      "SecretFactory": [
+        "create"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/factories/__init__.py",
+    "module": "kmip.core.factories.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/contents.py",
+    "module": "kmip.core.messages.contents",
+    "tests": [
+      "kmip/tests/unit/core/test_policy.py",
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/pie/test_exceptions.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_current_attribute.py",
+      "kmip/tests/unit/core/objects/test_new_attribute.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/factories/payloads/test_payload.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/contents/test_authentication.py",
+      "kmip/tests/unit/core/messages/contents/test_protocol_version.py",
+      "kmip/tests/unit/core/messages/payloads/test_discover_versions.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_monitor.py",
+      "kmip/tests/unit/services/server/test_policy.py",
+      "kmip/tests/unit/services/server/test_server.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "public_classes": {
+      "ProtocolVersion": [
+        "major",
+        "major",
+        "minor",
+        "minor",
+        "read",
+        "write"
+      ],
+      "Operation": [],
+      "MaximumResponseSize": [],
+      "UniqueBatchItemID": [],
+      "TimeStamp": [],
+      "Authentication": [
+        "credentials",
+        "credentials",
+        "read",
+        "write"
+      ],
+      "AsynchronousIndicator": [],
+      "AsynchronousCorrelationValue": [],
+      "ResultStatus": [],
+      "ResultReason": [],
+      "ResultMessage": [],
+      "BatchOrderOption": [],
+      "BatchErrorContinuationOption": [],
+      "BatchCount": [],
+      "MessageExtension": [],
+      "ServerCorrelationValue": [],
+      "KeyCompressionType": []
+    },
+    "public_functions": [
+      "protocol_version_to_kmip_version"
+    ],
+    "missing_classes": [
+      "AsynchronousCorrelationValue",
+      "MessageExtension",
+      "ServerCorrelationValue"
+    ],
+    "missing_methods": {
+      "AsynchronousCorrelationValue": [],
+      "MessageExtension": [],
+      "ServerCorrelationValue": []
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/messages.py",
+    "module": "kmip.core.messages.messages",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "public_classes": {
+      "RequestHeader": [
+        "read",
+        "write"
+      ],
+      "ResponseHeader": [
+        "server_hashed_password",
+        "server_hashed_password",
+        "read",
+        "write",
+        "validate"
+      ],
+      "RequestBatchItem": [
+        "ephemeral",
+        "ephemeral",
+        "read",
+        "write"
+      ],
+      "ResponseBatchItem": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "RequestMessage": [
+        "read",
+        "write"
+      ],
+      "ResponseMessage": [
+        "read",
+        "write",
+        "validate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "ResponseHeader": [
+        "validate"
+      ],
+      "ResponseBatchItem": [
+        "validate"
+      ],
+      "ResponseMessage": [
+        "validate"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/__init__.py",
+    "module": "kmip.core.messages.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/factories/payloads/request.py",
+    "module": "kmip.core.factories.payloads.request",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_request.py"
+    ],
+    "public_classes": {
+      "RequestPayloadFactory": []
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/factories/payloads/response.py",
+    "module": "kmip.core.factories.payloads.response",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_response.py"
+    ],
+    "public_classes": {
+      "ResponsePayloadFactory": []
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/factories/payloads/__init__.py",
+    "module": "kmip.core.factories.payloads.__init__",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_payload.py"
+    ],
+    "public_classes": {
+      "PayloadFactory": [
+        "create"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/activate.py",
+    "module": "kmip.core.messages.payloads.activate",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_activate.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "ActivateRequestPayload": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "ActivateResponsePayload": [
+        "read",
+        "write",
+        "validate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "ActivateRequestPayload": [
+        "validate"
+      ],
+      "ActivateResponsePayload": [
+        "validate"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/archive.py",
+    "module": "kmip.core.messages.payloads.archive",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_archive.py"
+    ],
+    "public_classes": {
+      "ArchiveRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "read",
+        "write"
+      ],
+      "ArchiveResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/base.py",
+    "module": "kmip.core.messages.payloads.base",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "public_classes": {
+      "RequestPayload": [],
+      "ResponsePayload": []
+    },
+    "public_functions": [],
+    "missing_classes": [
+      "ResponsePayload"
+    ],
+    "missing_methods": {
+      "ResponsePayload": []
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/cancel.py",
+    "module": "kmip.core.messages.payloads.cancel",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_cancel.py"
+    ],
+    "public_classes": {
+      "CancelRequestPayload": [
+        "asynchronous_correlation_value",
+        "asynchronous_correlation_value",
+        "read",
+        "write"
+      ],
+      "CancelResponsePayload": [
+        "asynchronous_correlation_value",
+        "asynchronous_correlation_value",
+        "cancellation_result",
+        "cancellation_result",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/check.py",
+    "module": "kmip.core.messages.payloads.check",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_check.py"
+    ],
+    "public_classes": {
+      "CheckRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "usage_limits_count",
+        "usage_limits_count",
+        "cryptographic_usage_mask",
+        "cryptographic_usage_mask",
+        "lease_time",
+        "lease_time",
+        "read",
+        "write"
+      ],
+      "CheckResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "usage_limits_count",
+        "usage_limits_count",
+        "cryptographic_usage_mask",
+        "cryptographic_usage_mask",
+        "lease_time",
+        "lease_time",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/create.py",
+    "module": "kmip.core.messages.payloads.create",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_create.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "CreateRequestPayload": [
+        "object_type",
+        "object_type",
+        "template_attribute",
+        "template_attribute",
+        "protection_storage_masks",
+        "protection_storage_masks",
+        "read",
+        "write"
+      ],
+      "CreateResponsePayload": [
+        "object_type",
+        "object_type",
+        "unique_identifier",
+        "unique_identifier",
+        "template_attribute",
+        "template_attribute",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/create_key_pair.py",
+    "module": "kmip.core.messages.payloads.create_key_pair",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_create_key_pair.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "CreateKeyPairRequestPayload": [
+        "common_template_attribute",
+        "common_template_attribute",
+        "private_key_template_attribute",
+        "private_key_template_attribute",
+        "public_key_template_attribute",
+        "public_key_template_attribute",
+        "common_protection_storage_masks",
+        "common_protection_storage_masks",
+        "private_protection_storage_masks",
+        "private_protection_storage_masks",
+        "public_protection_storage_masks",
+        "public_protection_storage_masks",
+        "read",
+        "write"
+      ],
+      "CreateKeyPairResponsePayload": [
+        "private_key_unique_identifier",
+        "private_key_unique_identifier",
+        "public_key_unique_identifier",
+        "public_key_unique_identifier",
+        "private_key_template_attribute",
+        "private_key_template_attribute",
+        "public_key_template_attribute",
+        "public_key_template_attribute",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/decrypt.py",
+    "module": "kmip.core.messages.payloads.decrypt",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_decrypt.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "DecryptRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "cryptographic_parameters",
+        "cryptographic_parameters",
+        "data",
+        "data",
+        "iv_counter_nonce",
+        "iv_counter_nonce",
+        "auth_additional_data",
+        "auth_additional_data",
+        "auth_tag",
+        "auth_tag",
+        "read",
+        "write"
+      ],
+      "DecryptResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "data",
+        "data",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/delete_attribute.py",
+    "module": "kmip.core.messages.payloads.delete_attribute",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_delete_attribute.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "DeleteAttributeRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "attribute_name",
+        "attribute_name",
+        "attribute_index",
+        "attribute_index",
+        "current_attribute",
+        "current_attribute",
+        "attribute_reference",
+        "attribute_reference",
+        "read",
+        "write"
+      ],
+      "DeleteAttributeResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "attribute",
+        "attribute",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/derive_key.py",
+    "module": "kmip.core.messages.payloads.derive_key",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_derive_key.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "DeriveKeyRequestPayload": [
+        "object_type",
+        "object_type",
+        "unique_identifiers",
+        "unique_identifiers",
+        "derivation_method",
+        "derivation_method",
+        "derivation_parameters",
+        "derivation_parameters",
+        "template_attribute",
+        "template_attribute",
+        "read",
+        "write"
+      ],
+      "DeriveKeyResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "template_attribute",
+        "template_attribute",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/destroy.py",
+    "module": "kmip.core.messages.payloads.destroy",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "DestroyRequestPayload": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "DestroyResponsePayload": [
+        "read",
+        "write",
+        "validate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "DestroyRequestPayload": [
+        "validate"
+      ],
+      "DestroyResponsePayload": [
+        "validate"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/discover_versions.py",
+    "module": "kmip.core.messages.payloads.discover_versions",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_discover_versions.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "DiscoverVersionsRequestPayload": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "DiscoverVersionsResponsePayload": [
+        "read",
+        "write",
+        "validate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "DiscoverVersionsRequestPayload": [
+        "validate"
+      ],
+      "DiscoverVersionsResponsePayload": [
+        "validate"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/encrypt.py",
+    "module": "kmip.core.messages.payloads.encrypt",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_encrypt.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "EncryptRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "cryptographic_parameters",
+        "cryptographic_parameters",
+        "data",
+        "data",
+        "iv_counter_nonce",
+        "iv_counter_nonce",
+        "auth_additional_data",
+        "auth_additional_data",
+        "read",
+        "write"
+      ],
+      "EncryptResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "data",
+        "data",
+        "iv_counter_nonce",
+        "iv_counter_nonce",
+        "auth_tag",
+        "auth_tag",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/get.py",
+    "module": "kmip.core.messages.payloads.get",
+    "tests": [
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_get.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "GetRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "key_format_type",
+        "key_format_type",
+        "key_compression_type",
+        "key_compression_type",
+        "key_wrapping_specification",
+        "key_wrapping_specification",
+        "read",
+        "write"
+      ],
+      "GetResponsePayload": [
+        "object_type",
+        "object_type",
+        "unique_identifier",
+        "unique_identifier",
+        "secret",
+        "secret",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/get_attributes.py",
+    "module": "kmip.core.messages.payloads.get_attributes",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attributes.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "GetAttributesRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "attribute_names",
+        "attribute_names",
+        "read",
+        "write"
+      ],
+      "GetAttributesResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "attributes",
+        "attributes",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/get_attribute_list.py",
+    "module": "kmip.core.messages.payloads.get_attribute_list",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_get_attribute_list.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "GetAttributeListRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "read",
+        "write"
+      ],
+      "GetAttributeListResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "attribute_names",
+        "attribute_names",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/get_usage_allocation.py",
+    "module": "kmip.core.messages.payloads.get_usage_allocation",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_get_usage_allocation.py"
+    ],
+    "public_classes": {
+      "GetUsageAllocationRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "usage_limits_count",
+        "usage_limits_count",
+        "read",
+        "write"
+      ],
+      "GetUsageAllocationResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/locate.py",
+    "module": "kmip.core.messages.payloads.locate",
+    "tests": [
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_locate.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "LocateRequestPayload": [
+        "maximum_items",
+        "maximum_items",
+        "offset_items",
+        "offset_items",
+        "storage_status_mask",
+        "storage_status_mask",
+        "object_group_member",
+        "object_group_member",
+        "attributes",
+        "attributes",
+        "read",
+        "write"
+      ],
+      "LocateResponsePayload": [
+        "located_items",
+        "located_items",
+        "unique_identifiers",
+        "unique_identifiers",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/mac.py",
+    "module": "kmip.core.messages.payloads.mac",
+    "tests": [
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_mac.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "MACRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "cryptographic_parameters",
+        "cryptographic_parameters",
+        "data",
+        "data",
+        "read",
+        "write"
+      ],
+      "MACResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "mac_data",
+        "mac_data",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/modify_attribute.py",
+    "module": "kmip.core.messages.payloads.modify_attribute",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_modify_attribute.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "ModifyAttributeRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "attribute",
+        "attribute",
+        "current_attribute",
+        "current_attribute",
+        "new_attribute",
+        "new_attribute",
+        "read",
+        "write"
+      ],
+      "ModifyAttributeResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "attribute",
+        "attribute",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/obtain_lease.py",
+    "module": "kmip.core.messages.payloads.obtain_lease",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_obtain_lease.py"
+    ],
+    "public_classes": {
+      "ObtainLeaseRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "read",
+        "write"
+      ],
+      "ObtainLeaseResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "lease_time",
+        "lease_time",
+        "last_change_date",
+        "last_change_date",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/poll.py",
+    "module": "kmip.core.messages.payloads.poll",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_poll.py"
+    ],
+    "public_classes": {
+      "PollRequestPayload": [
+        "asynchronous_correlation_value",
+        "asynchronous_correlation_value",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/query.py",
+    "module": "kmip.core.messages.payloads.query",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_query.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "QueryRequestPayload": [
+        "query_functions",
+        "query_functions",
+        "read",
+        "write"
+      ],
+      "QueryResponsePayload": [
+        "operations",
+        "operations",
+        "object_types",
+        "object_types",
+        "vendor_identification",
+        "vendor_identification",
+        "server_information",
+        "server_information",
+        "application_namespaces",
+        "application_namespaces",
+        "extension_information",
+        "extension_information",
+        "attestation_types",
+        "attestation_types",
+        "rng_parameters",
+        "rng_parameters",
+        "profile_information",
+        "profile_information",
+        "validation_information",
+        "validation_information",
+        "capability_information",
+        "capability_information",
+        "client_registration_methods",
+        "client_registration_methods",
+        "defaults_information",
+        "defaults_information",
+        "protection_storage_masks",
+        "protection_storage_masks",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/recover.py",
+    "module": "kmip.core.messages.payloads.recover",
+    "tests": [
+      "kmip/tests/unit/core/messages/payloads/test_recover.py"
+    ],
+    "public_classes": {
+      "RecoverRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "read",
+        "write"
+      ],
+      "RecoverResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/register.py",
+    "module": "kmip.core.messages.payloads.register",
+    "tests": [
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_register.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "RegisterRequestPayload": [
+        "object_type",
+        "object_type",
+        "template_attribute",
+        "template_attribute",
+        "managed_object",
+        "managed_object",
+        "protection_storage_masks",
+        "protection_storage_masks",
+        "read",
+        "write"
+      ],
+      "RegisterResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "template_attribute",
+        "template_attribute",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/rekey.py",
+    "module": "kmip.core.messages.payloads.rekey",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey.py"
+    ],
+    "public_classes": {
+      "RekeyRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "offset",
+        "offset",
+        "template_attribute",
+        "template_attribute",
+        "read",
+        "write"
+      ],
+      "RekeyResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "template_attribute",
+        "template_attribute",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/rekey_key_pair.py",
+    "module": "kmip.core.messages.payloads.rekey_key_pair",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_rekey_key_pair.py"
+    ],
+    "public_classes": {
+      "RekeyKeyPairRequestPayload": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "RekeyKeyPairResponsePayload": []
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "RekeyKeyPairRequestPayload": [
+        "validate"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/revoke.py",
+    "module": "kmip.core.messages.payloads.revoke",
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_revoke.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "RevokeRequestPayload": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "RevokeResponsePayload": [
+        "read",
+        "write",
+        "validate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {
+      "RevokeRequestPayload": [
+        "validate"
+      ],
+      "RevokeResponsePayload": [
+        "validate"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/set_attribute.py",
+    "module": "kmip.core.messages.payloads.set_attribute",
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_set_attribute.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "SetAttributeRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "new_attribute",
+        "new_attribute",
+        "read",
+        "write"
+      ],
+      "SetAttributeResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/sign.py",
+    "module": "kmip.core.messages.payloads.sign",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_sign.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "SignRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "cryptographic_parameters",
+        "cryptographic_parameters",
+        "data",
+        "data",
+        "read",
+        "write"
+      ],
+      "SignResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "signature_data",
+        "signature_data",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/signature_verify.py",
+    "module": "kmip.core.messages.payloads.signature_verify",
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/factories/payloads/test_request.py",
+      "kmip/tests/unit/core/factories/payloads/test_response.py",
+      "kmip/tests/unit/core/messages/payloads/test_signature_verify.py",
+      "kmip/tests/unit/services/server/test_engine.py"
+    ],
+    "public_classes": {
+      "SignatureVerifyRequestPayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "cryptographic_parameters",
+        "cryptographic_parameters",
+        "data",
+        "data",
+        "digested_data",
+        "digested_data",
+        "signature_data",
+        "signature_data",
+        "correlation_value",
+        "correlation_value",
+        "init_indicator",
+        "init_indicator",
+        "final_indicator",
+        "final_indicator",
+        "read",
+        "write"
+      ],
+      "SignatureVerifyResponsePayload": [
+        "unique_identifier",
+        "unique_identifier",
+        "validity_indicator",
+        "validity_indicator",
+        "data",
+        "data",
+        "correlation_value",
+        "correlation_value",
+        "read",
+        "write"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/core/messages/payloads/__init__.py",
+    "module": "kmip.core.messages.payloads.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/config.py",
+    "module": "kmip.services.server.config",
+    "tests": [
+      "kmip/tests/unit/services/server/test_config.py"
+    ],
+    "public_classes": {
+      "KmipServerConfig": [
+        "set_setting",
+        "load_settings",
+        "parse_auth_settings"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/engine.py",
+    "module": "kmip.services.server.engine",
+    "tests": [
+      "kmip/tests/unit/services/server/test_engine.py",
+      "kmip/tests/unit/services/server/test_server.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "public_classes": {
+      "KmipEngine": [
+        "process_request",
+        "build_error_response",
+        "get_relevant_policy_section",
+        "is_allowed"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/monitor.py",
+    "module": "kmip.services.server.monitor",
+    "tests": [
+      "kmip/tests/unit/services/server/test_monitor.py",
+      "kmip/tests/unit/services/server/test_server.py"
+    ],
+    "public_classes": {
+      "PolicyDirectoryMonitor": [
+        "stop",
+        "scan_policies",
+        "run",
+        "initialize_tracking_structures",
+        "disassociate_policy_and_file",
+        "restore_or_delete_policy"
+      ]
+    },
+    "public_functions": [
+      "get_json_files"
+    ],
+    "missing_classes": [],
+    "missing_methods": {
+      "PolicyDirectoryMonitor": [
+        "scan_policies"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/policy.py",
+    "module": "kmip.services.server.policy",
+    "tests": [
+      "kmip/tests/unit/services/server/test_policy.py"
+    ],
+    "public_classes": {
+      "AttributeRuleSet": [],
+      "AttributePolicy": [
+        "is_attribute_supported",
+        "is_attribute_deprecated",
+        "is_attribute_deletable_by_client",
+        "is_attribute_modifiable_by_client",
+        "is_attribute_applicable_to_object_type",
+        "is_attribute_multivalued",
+        "get_all_attribute_names"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [
+      "AttributeRuleSet"
+    ],
+    "missing_methods": {
+      "AttributeRuleSet": []
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/server.py",
+    "module": "kmip.services.server.server",
+    "tests": [
+      "kmip/tests/unit/services/server/test_server.py"
+    ],
+    "public_classes": {
+      "KmipServer": [
+        "start",
+        "stop",
+        "serve"
+      ]
+    },
+    "public_functions": [
+      "build_argument_parser",
+      "main"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": [
+      "build_argument_parser",
+      "main"
+    ]
+  },
+  {
+    "source": "kmip/services/server/session.py",
+    "module": "kmip.services.server.session",
+    "tests": [
+      "kmip/tests/unit/services/server/test_server.py",
+      "kmip/tests/unit/services/server/test_session.py"
+    ],
+    "public_classes": {
+      "KmipSession": [
+        "run",
+        "authenticate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/__init__.py",
+    "module": "kmip.services.server.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/auth/api.py",
+    "module": "kmip.services.server.auth.api",
+    "tests": [],
+    "public_classes": {
+      "AuthAPI": [
+        "authenticate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [
+      "AuthAPI"
+    ],
+    "missing_methods": {
+      "AuthAPI": [
+        "authenticate"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/auth/slugs.py",
+    "module": "kmip.services.server.auth.slugs",
+    "tests": [
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_slugs.py"
+    ],
+    "public_classes": {
+      "SLUGSConnector": [
+        "url",
+        "url",
+        "authenticate"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/auth/utils.py",
+    "module": "kmip.services.server.auth.utils",
+    "tests": [
+      "kmip/tests/unit/services/server/test_session.py",
+      "kmip/tests/unit/services/server/auth/test_slugs.py",
+      "kmip/tests/unit/services/server/auth/test_utils.py"
+    ],
+    "public_classes": {},
+    "public_functions": [
+      "get_certificate_from_connection",
+      "get_extended_key_usage_from_certificate",
+      "get_common_names_from_certificate",
+      "get_client_identity_from_certificate"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/auth/__init__.py",
+    "module": "kmip.services.server.auth.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/crypto/api.py",
+    "module": "kmip.services.server.crypto.api",
+    "tests": [],
+    "public_classes": {
+      "CryptographicEngine": [
+        "create_symmetric_key",
+        "create_asymmetric_key_pair",
+        "mac",
+        "encrypt",
+        "decrypt",
+        "sign"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [
+      "CryptographicEngine"
+    ],
+    "missing_methods": {
+      "CryptographicEngine": [
+        "create_symmetric_key",
+        "create_asymmetric_key_pair",
+        "mac",
+        "encrypt",
+        "decrypt",
+        "sign"
+      ]
+    },
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/crypto/engine.py",
+    "module": "kmip.services.server.crypto.engine",
+    "tests": [
+      "kmip/tests/unit/services/server/crypto/test_engine.py"
+    ],
+    "public_classes": {
+      "CryptographyEngine": [
+        "create_symmetric_key",
+        "create_asymmetric_key_pair",
+        "mac",
+        "encrypt",
+        "decrypt",
+        "derive_key",
+        "wrap_key",
+        "sign",
+        "verify_signature"
+      ]
+    },
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  {
+    "source": "kmip/services/server/crypto/__init__.py",
+    "module": "kmip.services.server.crypto.__init__",
+    "tests": [],
+    "public_classes": {},
+    "public_functions": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  }
+]

@@ -23,7 +23,6 @@ from kmip.core import primitives
 from kmip.core import secrets
 from kmip.core import utils
 
-
 class TestSplitKey(testtools.TestCase):
     """
     Test suite for the SplitKey secret object.

@@ -22,7 +22,6 @@ from kmip.demos import utils
 
 from kmip.pie import client
 
-
 # NOTE: This demo script shows how to modify the first Name attribute on
 # the user-specified object. The object *must* have at least one Name
 # attribute for attribute modification to work. Otherwise, the client

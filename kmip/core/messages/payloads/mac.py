@@ -20,7 +20,6 @@ from kmip.core.messages.payloads import base
 from kmip.core.objects import Data, MACData
 from kmip.core.utils import BytearrayStream
 
-
 # 4.33
 class MACRequestPayload(base.RequestPayload):
 
@@ -131,7 +130,6 @@ class MACRequestPayload(base.RequestPayload):
             kmip_version=kmip_version
         )
         ostream.write(tstream.buffer)
-
 
 class MACResponsePayload(base.ResponsePayload):
 

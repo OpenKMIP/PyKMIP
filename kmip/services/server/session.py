@@ -31,7 +31,6 @@ from kmip.core import utils
 
 from kmip.services.server import auth
 
-
 class KmipSession(threading.Thread):
     """
     A session thread representing a single KMIP client/server interaction.

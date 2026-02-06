@@ -13,9 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from six import binary_type
-from six import string_types
-
 from testtools import TestCase
 
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
@@ -25,7 +22,6 @@ from kmip.core.misc import CertificateValue
 from kmip.core.misc import KeyFormatType
 from kmip.core.misc import QueryFunction
 from kmip.core.misc import VendorIdentification
-
 
 # TODO (peter-hamilton) Replace with generic ByteString subclass test suite.
 class TestCertificateValue(TestCase):
@@ -43,7 +39,7 @@ class TestCertificateValue(TestCase):
         super(TestCertificateValue, self).tearDown()
 
     def _test_init(self, value):
-        if (isinstance(value, binary_type)) or (value is None):
+        if (isinstance(value, bytes)) or (value is None):
             certificate_value = CertificateValue(value)
 
             if value is None:
@@ -68,7 +64,6 @@ class TestCertificateValue(TestCase):
         byte-string value.
         """
         self._test_init(b'\x00\x01\x02')
-
 
 class TestQueryFunction(TestCase):
     """
@@ -115,7 +110,6 @@ class TestQueryFunction(TestCase):
         """
         self._test_init("invalid")
 
-
 class TestVendorIdentification(TestCase):
     """
     A test suite for the VendorIdentification class.
@@ -131,7 +125,7 @@ class TestVendorIdentification(TestCase):
         super(TestVendorIdentification, self).tearDown()
 
     def _test_init(self, value):
-        if (isinstance(value, string_types)) or (value is None):
+        if (isinstance(value, str)) or (value is None):
             vendor_identification = VendorIdentification(value)
 
             if value is None:
@@ -163,7 +157,6 @@ class TestVendorIdentification(TestCase):
         used to construct a VendorIdentification object.
         """
         self._test_init(0)
-
 
 class TestKeyFormatType(TestCase):
     """

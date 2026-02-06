@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core.enums import HashingAlgorithm as HashingAlgorithmEnum
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
@@ -37,13 +35,11 @@ from kmip.core.utils import BytearrayStream
 
 from enum import Enum
 
-
 # 3.1
 class UniqueIdentifier(TextString):
 
     def __init__(self, value=None, tag=Tags.UNIQUE_IDENTIFIER):
         super(UniqueIdentifier, self).__init__(value, tag)
-
 
 class PrivateKeyUniqueIdentifier(UniqueIdentifier):
 
@@ -51,13 +47,11 @@ class PrivateKeyUniqueIdentifier(UniqueIdentifier):
         super(PrivateKeyUniqueIdentifier, self).__init__(
             value, Tags.PRIVATE_KEY_UNIQUE_IDENTIFIER)
 
-
 class PublicKeyUniqueIdentifier(UniqueIdentifier):
 
     def __init__(self, value=None):
         super(PublicKeyUniqueIdentifier, self).__init__(
             value, Tags.PUBLIC_KEY_UNIQUE_IDENTIFIER)
-
 
 # 3.2
 class Name(Struct):
@@ -210,14 +204,12 @@ class Name(Struct):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-
 # 3.3
 class ObjectType(Enumeration):
 
     def __init__(self, value=None):
         super(ObjectType, self).__init__(
             enums.ObjectType, value, Tags.OBJECT_TYPE)
-
 
 # 3.4
 class CryptographicAlgorithm(Enumeration):
@@ -226,14 +218,12 @@ class CryptographicAlgorithm(Enumeration):
         super(CryptographicAlgorithm, self).__init__(
             enums.CryptographicAlgorithm, value, Tags.CRYPTOGRAPHIC_ALGORITHM)
 
-
 # 3.5
 class CryptographicLength(Integer):
 
     def __init__(self, value=None):
         super(CryptographicLength, self).__init__(
             value, Tags.CRYPTOGRAPHIC_LENGTH)
-
 
 # 3.6
 class HashingAlgorithm(Enumeration):
@@ -256,7 +246,6 @@ class HashingAlgorithm(Enumeration):
         """
         super(HashingAlgorithm, self).__init__(
             enums.HashingAlgorithm, value, Tags.HASHING_ALGORITHM)
-
 
 class CryptographicParameters(Struct):
     """
@@ -476,7 +465,7 @@ class CryptographicParameters(Struct):
     def iv_length(self, value):
         if value is None:
             self._iv_length = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._iv_length = Integer(
                 value=value,
                 tag=Tags.IV_LENGTH
@@ -495,7 +484,7 @@ class CryptographicParameters(Struct):
     def tag_length(self, value):
         if value is None:
             self._tag_length = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._tag_length = Integer(
                 value=value,
                 tag=Tags.TAG_LENGTH
@@ -514,7 +503,7 @@ class CryptographicParameters(Struct):
     def fixed_field_length(self, value):
         if value is None:
             self._fixed_field_length = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._fixed_field_length = Integer(
                 value=value,
                 tag=Tags.FIXED_FIELD_LENGTH
@@ -533,7 +522,7 @@ class CryptographicParameters(Struct):
     def invocation_field_length(self, value):
         if value is None:
             self._invocation_field_length = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._invocation_field_length = Integer(
                 value=value,
                 tag=Tags.INVOCATION_FIELD_LENGTH
@@ -552,7 +541,7 @@ class CryptographicParameters(Struct):
     def counter_length(self, value):
         if value is None:
             self._counter_length = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._counter_length = Integer(
                 value=value,
                 tag=Tags.COUNTER_LENGTH
@@ -571,7 +560,7 @@ class CryptographicParameters(Struct):
     def initial_counter_value(self, value):
         if value is None:
             self._initial_counter_value = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._initial_counter_value = Integer(
                 value=value,
                 tag=Tags.INITIAL_COUNTER_VALUE
@@ -802,7 +791,6 @@ class CryptographicParameters(Struct):
             'initial_counter_value': self.initial_counter_value
         })
 
-
 class CertificateType(Enumeration):
     """
     An encodeable wrapper for the CertificateType enumeration.
@@ -823,7 +811,6 @@ class CertificateType(Enumeration):
         """
         super(CertificateType, self).__init__(
             enums.CertificateType, value, Tags.CERTIFICATE_TYPE)
-
 
 class DigestValue(ByteString):
     """
@@ -847,7 +834,6 @@ class DigestValue(ByteString):
                 the empty byte string.
         """
         super(DigestValue, self).__init__(value, Tags.DIGEST_VALUE)
-
 
 class Digest(Struct):
     """
@@ -1041,14 +1027,12 @@ class Digest(Struct):
                       digest_value=value,
                       key_format_type=format_type)
 
-
 # 3.18
 class OperationPolicyName(TextString):
 
     def __init__(self, value=None):
         super(OperationPolicyName, self).__init__(
             value, Tags.OPERATION_POLICY_NAME)
-
 
 # 3.19
 class CryptographicUsageMask(Integer):
@@ -1059,12 +1043,10 @@ class CryptographicUsageMask(Integer):
         super(CryptographicUsageMask, self).__init__(
             value, Tags.CRYPTOGRAPHIC_USAGE_MASK)
 
-
 class State(Enumeration):
 
     def __init__(self, value=None):
         super(State, self).__init__(enums.State, value, Tags.STATE)
-
 
 class ApplicationSpecificInformation(primitives.Struct):
     """
@@ -1112,7 +1094,7 @@ class ApplicationSpecificInformation(primitives.Struct):
     def application_namespace(self, value):
         if value is None:
             self._application_namespace = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._application_namespace = primitives.TextString(
                 value=value,
                 tag=enums.Tags.APPLICATION_NAMESPACE
@@ -1130,7 +1112,7 @@ class ApplicationSpecificInformation(primitives.Struct):
     def application_data(self, value):
         if value is None:
             self._application_data = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._application_data = primitives.TextString(
                 value=value,
                 tag=enums.Tags.APPLICATION_DATA
@@ -1265,14 +1247,12 @@ class ApplicationSpecificInformation(primitives.Struct):
         else:
             return NotImplemented
 
-
 # 3.37
 class ContactInformation(TextString):
 
     def __init__(self, value=None):
         super(ContactInformation, self).__init__(
             value, Tags.CONTACT_INFORMATION)
-
 
 # 3.39
 # TODO (peter-hamilton) A CustomAttribute TextString is not sufficient to
@@ -1282,7 +1262,6 @@ class CustomAttribute(TextString):
 
     def __init__(self, value=None):
         super(CustomAttribute, self).__init__(value, Tags.ATTRIBUTE_VALUE)
-
 
 class DerivationParameters(Struct):
     """
@@ -1361,7 +1340,7 @@ class DerivationParameters(Struct):
     def initialization_vector(self, value):
         if value is None:
             self._initialization_vector = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._initialization_vector = ByteString(
                 value=value,
                 tag=enums.Tags.INITIALIZATION_VECTOR
@@ -1380,7 +1359,7 @@ class DerivationParameters(Struct):
     def derivation_data(self, value):
         if value is None:
             self._derivation_data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._derivation_data = ByteString(
                 value=value,
                 tag=enums.Tags.DERIVATION_DATA
@@ -1399,7 +1378,7 @@ class DerivationParameters(Struct):
     def salt(self, value):
         if value is None:
             self._salt = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._salt = ByteString(
                 value=value,
                 tag=enums.Tags.SALT
@@ -1418,7 +1397,7 @@ class DerivationParameters(Struct):
     def iteration_count(self, value):
         if value is None:
             self._iteration_count = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._iteration_count = Integer(
                 value=value,
                 tag=Tags.ITERATION_COUNT

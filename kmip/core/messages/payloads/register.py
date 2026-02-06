@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core import objects
@@ -23,7 +21,6 @@ from kmip.core import secrets
 from kmip.core import utils
 from kmip.core.factories import secrets as secret_factory
 from kmip.core.messages.payloads import base
-
 
 class RegisterRequestPayload(base.RequestPayload):
     """
@@ -385,7 +382,6 @@ class RegisterRequestPayload(base.RequestPayload):
         )
         return '{' + value + '}'
 
-
 class RegisterResponsePayload(base.ResponsePayload):
     """
     A response payload for the Register operation.
@@ -428,7 +424,7 @@ class RegisterResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER

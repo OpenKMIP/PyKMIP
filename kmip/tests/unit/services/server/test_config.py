@@ -16,14 +16,11 @@
 import logging
 import mock
 
-import six
-from six.moves import configparser
-
+import configparser
 import testtools
 
 from kmip.core import exceptions
 from kmip.services.server import config
-
 
 class TestKmipServerConfig(testtools.TestCase):
     """
@@ -135,7 +132,7 @@ class TestKmipServerConfig(testtools.TestCase):
         with mock.patch('os.path.exists') as os_mock:
             os_mock.return_value = True
             with mock.patch(
-                'six.moves.configparser.ConfigParser.read'
+                'configparser.ConfigParser.read'
             ) as parser_mock:
                 c.load_settings("/test/path/server.conf")
                 c._logger.info.assert_any_call(
@@ -189,14 +186,14 @@ class TestKmipServerConfig(testtools.TestCase):
             self.assertIsInstance(c[1], dict)
 
             if c[0] == 'auth:slugs':
-                self.assertIn('enabled', six.iterkeys(c[1]))
+                self.assertIn('enabled', c[1].keys())
                 self.assertEqual('True', c[1]['enabled'])
-                self.assertIn('url', six.iterkeys(c[1]))
+                self.assertIn('url', c[1].keys())
                 self.assertEqual('http://127.0.0.1:8080/slugs/', c[1]['url'])
             elif c[0] == 'auth:ldap':
-                self.assertIn('enabled', six.iterkeys(c[1]))
+                self.assertIn('enabled', c[1].keys())
                 self.assertEqual('False', c[1]['enabled'])
-                self.assertIn('url', six.iterkeys(c[1]))
+                self.assertIn('url', c[1].keys())
                 self.assertEqual('http://127.0.0.1:8080/ldap/', c[1]['url'])
 
     def test_parse_auth_settings_no_config(self):
@@ -387,6 +384,26 @@ class TestKmipServerConfig(testtools.TestCase):
             *args
         )
         self.assertNotEqual('invalid', c.settings.get('port'))
+
+        args = (0, )
+        regex = "The port value must be an integer in the range 0 - 65535."
+        self.assertRaisesRegex(
+            exceptions.ConfigurationError,
+            regex,
+            c._set_port,
+            *args
+        )
+        self.assertNotEqual(0, c.settings.get('port'))
+
+        args = (65535, )
+        regex = "The port value must be an integer in the range 0 - 65535."
+        self.assertRaisesRegex(
+            exceptions.ConfigurationError,
+            regex,
+            c._set_port,
+            *args
+        )
+        self.assertNotEqual(65535, c.settings.get('port'))
 
         args = (65536, )
         regex = "The port value must be an integer in the range 0 - 65535."

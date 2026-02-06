@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core.enums import Tags
 
@@ -29,7 +27,6 @@ from kmip.core import primitives
 from kmip.core.primitives import Struct
 
 from kmip.core.utils import BytearrayStream
-
 
 class RequestHeader(Struct):
 
@@ -143,7 +140,6 @@ class RequestHeader(Struct):
         )
         ostream.write(tstream.buffer)
 
-
 class ResponseHeader(Struct):
 
     def __init__(self,
@@ -171,7 +167,7 @@ class ResponseHeader(Struct):
     def server_hashed_password(self, value):
         if value is None:
             self._server_hashed_password = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._server_hashed_password = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.SERVER_HASHED_PASSWORD
@@ -247,7 +243,6 @@ class ResponseHeader(Struct):
         if self.batch_count is not None:
             # TODO (peter-hamilton) conduct type check
             self.batch_count.validate()
-
 
 class RequestBatchItem(Struct):
 
@@ -346,7 +341,6 @@ class RequestBatchItem(Struct):
             kmip_version=kmip_version
         )
         ostream.write(tstream.buffer)
-
 
 class ResponseBatchItem(Struct):
 
@@ -464,7 +458,6 @@ class ResponseBatchItem(Struct):
     def validate(self):
         pass
 
-
 class RequestMessage(Struct):
 
     def __init__(self, request_header=None, batch_items=None,):
@@ -506,7 +499,6 @@ class RequestMessage(Struct):
             kmip_version=kmip_version
         )
         ostream.write(tstream.buffer)
-
 
 class ResponseMessage(Struct):
 

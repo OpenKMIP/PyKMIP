@@ -13,13 +13,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
 from kmip.core.messages.payloads import base
-
 
 class ArchiveRequestPayload(base.RequestPayload):
     """
@@ -53,7 +50,7 @@ class ArchiveRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -149,7 +146,6 @@ class ArchiveRequestPayload(base.RequestPayload):
             'unique_identifier': self.unique_identifier
         })
 
-
 class ArchiveResponsePayload(base.ResponsePayload):
     """
     A response payload for the Archive operation.
@@ -182,7 +178,7 @@ class ArchiveResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER

@@ -15,7 +15,7 @@
 
 import enum as enumeration
 import logging
-import six
+
 import struct
 import sys
 import time
@@ -25,7 +25,6 @@ from struct import pack, unpack
 from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core import utils
-
 
 class Base(object):
     TAG_SIZE = 3
@@ -169,7 +168,6 @@ class Base(object):
         else:
             return False
 
-
 class Struct(Base):
 
     def __init__(self, tag=enums.Tags.DEFAULT):
@@ -178,7 +176,6 @@ class Struct(Base):
     # NOTE (peter-hamilton) If seen, should indicate repr needs to be defined
     def __repr__(self):
         return "Struct()"
-
 
 class Integer(Base):
     LENGTH = 4
@@ -246,9 +243,9 @@ class Integer(Base):
                 integer
         """
         if self.value is not None:
-            if type(self.value) not in six.integer_types:
+            if type(self.value) is not int:
                 raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                    int, type(self.value)))
             else:
                 if self.value > Integer.MAX:
                     raise ValueError('integer value greater than accepted max')
@@ -296,7 +293,6 @@ class Integer(Base):
             return self.__eq__(other) or self.__gt__(other)
         else:
             return NotImplemented
-
 
 class LongInteger(Base):
     """
@@ -378,9 +374,9 @@ class LongInteger(Base):
                 integer
         """
         if self.value is not None:
-            if not isinstance(self.value, six.integer_types):
+            if not isinstance(self.value, int):
                 raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                    int, type(self.value)))
             else:
                 if self.value > LongInteger.MAX:
                     raise ValueError(
@@ -409,7 +405,6 @@ class LongInteger(Base):
             return not self.__eq__(other)
         else:
             return NotImplemented
-
 
 class BigInteger(Base):
     """
@@ -520,9 +515,9 @@ class BigInteger(Base):
             TypeError: if the value is not of type int or long
         """
         if self.value is not None:
-            if not isinstance(self.value, six.integer_types):
+            if not isinstance(self.value, int):
                 raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                    int, type(self.value)))
 
     def __repr__(self):
         return "BigInteger(value={0}, tag={1})".format(self.value, self.tag)
@@ -545,7 +540,6 @@ class BigInteger(Base):
         else:
             return NotImplemented
 
-
 class Enumeration(Base):
     """
     An encodeable object representing an enumeration.
@@ -558,7 +552,7 @@ class Enumeration(Base):
 
     # Bounds for unsigned 32-bit integers
     MIN = 0
-    MAX = 4294967296
+    MAX = 4294967295
 
     def __init__(self, enum, value=None, tag=enums.Tags.DEFAULT):
         """
@@ -648,7 +642,7 @@ class Enumeration(Base):
                 raise TypeError(
                     'enumeration {0} must be of type {1}'.format(
                         self.value, self.enum))
-            if type(self.value.value) not in six.integer_types:
+            if type(self.value.value) is not int:
                 raise TypeError('enumeration value must be an int')
             else:
                 if self.value.value > Enumeration.MAX:
@@ -678,7 +672,6 @@ class Enumeration(Base):
             return not self.__eq__(other)
         else:
             return NotImplemented
-
 
 class Boolean(Base):
     """
@@ -813,7 +806,6 @@ class Boolean(Base):
         else:
             return NotImplemented
 
-
 class TextString(Base):
     PADDING_SIZE = 8
     BYTE_FORMAT = '!c'
@@ -850,6 +842,8 @@ class TextString(Base):
         # Read padding and check content
         self.padding_length = self.PADDING_SIZE - (self.length %
                                                    self.PADDING_SIZE)
+        if self.padding_length == self.PADDING_SIZE:
+            self.padding_length = 0
         if self.padding_length < self.PADDING_SIZE:
             for _ in range(self.padding_length):
                 pad = unpack('!B', istream.read(1))[0]
@@ -884,7 +878,7 @@ class TextString(Base):
 
     def __validate(self):
         if self.value is not None:
-            if not isinstance(self.value, six.string_types):
+            if not isinstance(self.value, str):
                 msg = exceptions.ErrorStrings.BAD_EXP_RECV
                 raise TypeError(msg.format('TextString', 'value', str,
                                            type(self.value)))
@@ -906,7 +900,6 @@ class TextString(Base):
             return not (self == other)
         else:
             return NotImplemented
-
 
 class ByteString(Base):
     PADDING_SIZE = 8
@@ -1004,7 +997,6 @@ class ByteString(Base):
         else:
             return NotImplemented
 
-
 class DateTime(LongInteger):
     """
     An encodeable object representing a date/time value.
@@ -1037,7 +1029,6 @@ class DateTime(LongInteger):
     def __str__(self):
         return time.asctime(time.gmtime(self.value))
 
-
 class Interval(Base):
     """
     An encodeable object representing an interval of time.
@@ -1051,7 +1042,7 @@ class Interval(Base):
 
     # Bounds for unsigned 32-bit integers
     MIN = 0
-    MAX = 4294967296
+    MAX = 4294967295
 
     def __init__(self, value=0, tag=enums.Tags.DEFAULT):
         super(Interval, self).__init__(tag, type=enums.Types.INTERVAL)
@@ -1121,9 +1112,9 @@ class Interval(Base):
                 32-bit integer
         """
         if self.value is not None:
-            if type(self.value) not in six.integer_types:
+            if type(self.value) is not int:
                 raise TypeError('expected (one of): {0}, observed: {1}'.format(
-                    six.integer_types, type(self.value)))
+                    int, type(self.value)))
             else:
                 if self.value > Interval.MAX:
                     raise ValueError(

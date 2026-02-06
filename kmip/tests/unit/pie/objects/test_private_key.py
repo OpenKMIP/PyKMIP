@@ -36,7 +36,6 @@ from kmip.pie.objects import ManagedObject, PrivateKey
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-
 class TestPrivateKey(testtools.TestCase):
     """
     Test suite for PrivateKey.

@@ -24,7 +24,6 @@ from kmip.core.factories.credentials import CredentialFactory
 from kmip.demos import utils
 from kmip.services import kmip_client
 
-
 if __name__ == '__main__':
     logger = utils.build_console_logger(logging.INFO)
 

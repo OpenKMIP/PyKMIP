@@ -17,7 +17,6 @@ from testtools import TestCase
 
 from kmip.pie.objects import ManagedObject
 
-
 class DummyManagedObject(ManagedObject):
     """
     A dummy ManagedObject subclass for testing purposes.
@@ -54,7 +53,6 @@ class DummyManagedObject(ManagedObject):
     def __ne__(self, other):
         super(DummyManagedObject, self).__ne__(other)
         return False
-
 
 class TestManagedObject(TestCase):
     """

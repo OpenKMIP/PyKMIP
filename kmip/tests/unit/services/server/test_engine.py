@@ -13,8 +13,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
 import mock
+import os
 import shutil
 import sqlalchemy
 
@@ -45,7 +45,6 @@ from kmip.pie import sqltypes
 
 from kmip.services.server import engine
 
-
 class MockRegexString(str):
     """
     A comparator string for doing simple containment regex comparisons
@@ -53,7 +52,6 @@ class MockRegexString(str):
     """
     def __eq__(self, other):
         return self in other
-
 
 class TestKmipEngine(testtools.TestCase):
     """
@@ -141,7 +139,9 @@ class TestKmipEngine(testtools.TestCase):
         backend.
         """
         engine.KmipEngine()
-        args = ("sqlite:////tmp/pykmip.database",)
+        db_path = os.path.join(tempfile.gettempdir(), 'pykmip.database')
+        db_uri = 'sqlite:///{}'.format(db_path.replace('\\', '/'))
+        args = (db_uri,)
         fargs = {
             'echo': False,
             'connect_args': {'check_same_thread': False}
@@ -172,9 +172,7 @@ class TestKmipEngine(testtools.TestCase):
         regex = "DiscoverVersions is not supported by KMIP {0}".format(
             e._protocol_version
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.OperationNotSupported,
+        self.assertRaisesRegex(exceptions.OperationNotSupported,
             regex,
             e._process_discover_versions,
             *args
@@ -261,6 +259,42 @@ class TestKmipEngine(testtools.TestCase):
         )
         self.assertIsNone(batch_item.message_extension)
 
+    def test_process_request_without_max_response_size(self):
+        """
+        Test that max_response_size is None when not provided.
+        """
+        e = engine.KmipEngine(database_path=':memory:')
+        e._logger = mock.MagicMock()
+
+        protocol = contents.ProtocolVersion(1, 1)
+        header = messages.RequestHeader(
+            protocol_version=protocol,
+            authentication=contents.Authentication(),
+            batch_error_cont_option=contents.BatchErrorContinuationOption(
+                enums.BatchErrorContinuationOption.STOP
+            ),
+            batch_order_option=contents.BatchOrderOption(True),
+            time_stamp=contents.TimeStamp(int(time.time())),
+            batch_count=contents.BatchCount(1)
+        )
+        payload = payloads.DiscoverVersionsRequestPayload()
+        batch = list([
+            messages.RequestBatchItem(
+                operation=contents.Operation(
+                    enums.Operation.DISCOVER_VERSIONS
+                ),
+                request_payload=payload
+            )
+        ])
+        request = messages.RequestMessage(
+            request_header=header,
+            batch_items=batch
+        )
+
+        _, max_size, _ = e.process_request(request)
+
+        self.assertIsNone(max_size)
+
     def test_process_request_unsupported_version(self):
         """
         Test that an InvalidMessage exception is raised when processing a
@@ -281,8 +315,29 @@ class TestKmipEngine(testtools.TestCase):
         regex = "KMIP {0} is not supported by the server.".format(
             protocol
         )
-        six.assertRaisesRegex(
-            self,
+        self.assertRaisesRegex(exceptions.InvalidMessage,
+            regex,
+            e.process_request,
+            *args
+        )
+
+    def test_process_request_protocol_version_none(self):
+        """
+        Test that an InvalidMessage exception is raised when protocol version
+        is None.
+        """
+        e = engine.KmipEngine(database_path=':memory:')
+        e._logger = mock.MagicMock()
+
+        header = messages.RequestHeader(protocol_version=None)
+        request = messages.RequestMessage(
+            request_header=header,
+            batch_items=[]
+        )
+
+        args = (request, )
+        regex = "KMIP None is not supported by the server."
+        self.assertRaisesRegex(
             exceptions.InvalidMessage,
             regex,
             e.process_request,
@@ -308,9 +363,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (request, )
         regex = "Stale request rejected by server."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidMessage,
+        self.assertRaisesRegex(exceptions.InvalidMessage,
             regex,
             e.process_request,
             *args
@@ -341,9 +394,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (request, )
         regex = "Future request rejected by server."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidMessage,
+        self.assertRaisesRegex(exceptions.InvalidMessage,
             regex,
             e.process_request,
             *args
@@ -374,9 +425,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (request, )
         regex = "Asynchronous operations are not supported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidMessage,
+        self.assertRaisesRegex(exceptions.InvalidMessage,
             regex,
             e.process_request,
             *args
@@ -404,9 +453,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (request, )
         regex = "Undo option for batch handling is not supported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidMessage,
+        self.assertRaisesRegex(exceptions.InvalidMessage,
             regex,
             e.process_request,
             *args
@@ -446,6 +493,41 @@ class TestKmipEngine(testtools.TestCase):
         )
 
         e.process_request(request)
+
+    def test_process_request_empty_credentials_list(self):
+        """
+        Test that an empty authentication credential list is handled without
+        error.
+        """
+        e = engine.KmipEngine(database_path=':memory:')
+        e._logger = mock.MagicMock()
+        e._verify_credential = mock.MagicMock()
+
+        auth = contents.Authentication()
+        auth.credentials = []
+
+        header = messages.RequestHeader(
+            protocol_version=contents.ProtocolVersion(1, 1),
+            authentication=auth,
+            time_stamp=contents.TimeStamp(int(time.time())),
+            batch_count=contents.BatchCount(1)
+        )
+        payload = payloads.DiscoverVersionsRequestPayload()
+        batch = list([
+            messages.RequestBatchItem(
+                operation=contents.Operation(
+                    enums.Operation.DISCOVER_VERSIONS
+                ),
+                request_payload=payload
+            )
+        ])
+        request = messages.RequestMessage(
+            request_header=header,
+            batch_items=batch
+        )
+
+        e.process_request(request)
+        e._verify_credential.assert_called_once_with(None, None)
 
     def test_build_error_response(self):
         """
@@ -501,7 +583,7 @@ class TestKmipEngine(testtools.TestCase):
         """
         Test that a batch is processed correctly.
         """
-        e = engine.KmipEngine()
+        e = engine.KmipEngine(database_path=':memory:')
         e._logger = mock.MagicMock()
 
         payload = payloads.DiscoverVersionsRequestPayload()
@@ -522,6 +604,22 @@ class TestKmipEngine(testtools.TestCase):
 
         self.assertIsNotNone(results)
         self.assertEqual(1, len(results))
+
+    def test_process_empty_batch(self):
+        """
+        Test that an empty batch is processed correctly.
+        """
+        e = engine.KmipEngine(database_path=':memory:')
+        e._logger = mock.MagicMock()
+
+        results = e._process_batch(
+            [],
+            enums.BatchErrorContinuationOption.STOP,
+            True
+        )
+
+        self.assertIsNotNone(results)
+        self.assertEqual(0, len(results))
 
     def test_process_multibatch(self):
         """
@@ -572,9 +670,7 @@ class TestKmipEngine(testtools.TestCase):
         ])
 
         args = (batch, None, None)
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidMessage,
+        self.assertRaisesRegex(exceptions.InvalidMessage,
             "Batch item ID is undefined.",
             e._process_batch,
             *args
@@ -694,6 +790,44 @@ class TestKmipEngine(testtools.TestCase):
         self.assertIsNone(result.response_payload)
         self.assertIsNone(result.message_extension)
 
+    def test_process_batch_stop_on_first_error(self):
+        """
+        Test that batch processing stops after the first error when STOP is
+        configured.
+        """
+        e = engine.KmipEngine(database_path=':memory:')
+        e._logger = mock.MagicMock()
+        e._process_operation = mock.MagicMock(
+            side_effect=[
+                exceptions.OperationNotSupported("boom"),
+                None
+            ]
+        )
+
+        batch = [
+            messages.RequestBatchItem(
+                operation=contents.Operation(
+                    enums.Operation.DISCOVER_VERSIONS
+                ),
+                unique_batch_item_id=contents.UniqueBatchItemID(b'1')
+            ),
+            messages.RequestBatchItem(
+                operation=contents.Operation(
+                    enums.Operation.DISCOVER_VERSIONS
+                ),
+                unique_batch_item_id=contents.UniqueBatchItemID(b'2')
+            )
+        ]
+
+        results = e._process_batch(
+            batch,
+            enums.BatchErrorContinuationOption.STOP,
+            True
+        )
+
+        self.assertEqual(1, len(results))
+        self.assertEqual(1, e._process_operation.call_count)
+
     def test_process_operation(self):
         """
         Test that the right subroutine is called when invoking operations
@@ -780,9 +914,7 @@ class TestKmipEngine(testtools.TestCase):
         regex = "{0} operation is not supported by the server.".format(
             args[0].name.title()
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.OperationNotSupported,
+        self.assertRaisesRegex(exceptions.OperationNotSupported,
             regex,
             e._process_operation,
             *args
@@ -827,9 +959,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = ('1', )
         regex = "Could not locate object: 1"
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._get_object_type,
             *args
@@ -895,9 +1025,7 @@ class TestKmipEngine(testtools.TestCase):
             )
         )
 
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._get_object_type,
             *args
@@ -1041,9 +1169,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (None, )
         regex = "Cannot build an unsupported object type."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._build_core_object,
             *args
@@ -1055,9 +1181,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (DummyObject(), )
         regex = "The Template object type is not supported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._build_core_object,
             *args
@@ -1149,9 +1273,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (template_attribute, )
         regex = "Attribute templates are not supported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._process_template_attribute,
             *args
@@ -1170,9 +1292,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (template_attribute, )
         regex = "The invalid attribute is unsupported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_template_attribute,
             *args
@@ -1200,9 +1320,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (template_attribute, )
         regex = "Attribute index missing from multivalued attribute."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_template_attribute,
             *args
@@ -1218,9 +1336,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (template_attribute, )
         regex = "Non-zero attribute index found for single-valued attribute."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_template_attribute,
             *args
@@ -1246,9 +1362,7 @@ class TestKmipEngine(testtools.TestCase):
             "Cannot set multiple instances of the Cryptographic Algorithm "
             "attribute."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.IndexOutOfBounds,
+        self.assertRaisesRegex(exceptions.IndexOutOfBounds,
             regex,
             e._process_template_attribute,
             *args
@@ -1538,7 +1652,7 @@ class TestKmipEngine(testtools.TestCase):
             'Initial Date'
         )
         self.assertIsNotNone(result)
-        self.assertIsInstance(result, six.integer_types)
+        self.assertIsInstance(result, int)
 
         result = e._get_attribute_from_managed_object(
             symmetric_key,
@@ -2060,9 +2174,7 @@ class TestKmipEngine(testtools.TestCase):
             "Cannot set Cryptographic Usage Mask attribute on OpaqueData "
             "object."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._set_attributes_on_managed_object,
             *args
@@ -2207,9 +2319,7 @@ class TestKmipEngine(testtools.TestCase):
             ('Name', [name_a.attribute_value, name_b.attribute_value])
         )
         regex = "Cannot set duplicate name values."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._set_attribute_on_managed_object,
             *args
@@ -2237,9 +2347,7 @@ class TestKmipEngine(testtools.TestCase):
             ('Digest', [name_a.attribute_value, name_b.attribute_value])
         )
         regex = "The Digest attribute is unsupported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._set_attribute_on_managed_object,
             *args
@@ -2256,9 +2364,7 @@ class TestKmipEngine(testtools.TestCase):
             ('Cryptographic Length', length.attribute_value)
         )
         regex = "Cannot overwrite the Cryptographic Length attribute."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._set_attribute_on_managed_object,
             *args
@@ -2275,9 +2381,7 @@ class TestKmipEngine(testtools.TestCase):
             ("Custom Attribute", custom_attribute.attribute_value)
         )
         regex = "The Custom Attribute attribute is unsupported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._set_attribute_on_managed_object,
             *args
@@ -3227,9 +3331,7 @@ class TestKmipEngine(testtools.TestCase):
         # Test by specifying the ID of the object to retrieve and the
         # operation context.
         args = [id_a, enums.Operation.GET]
-        six.assertRaisesRegex(
-            self,
-            exceptions.PermissionDenied,
+        self.assertRaisesRegex(exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._get_object_with_access_controls,
             *args
@@ -3369,9 +3471,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Cannot create a PublicKey object with the Create operation."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create,
             *args
@@ -3427,9 +3527,7 @@ class TestKmipEngine(testtools.TestCase):
         regex = (
             "The cryptographic algorithm must be specified as an attribute."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create,
             *args
@@ -3473,9 +3571,7 @@ class TestKmipEngine(testtools.TestCase):
         regex = (
             "The cryptographic length must be specified as an attribute."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create,
             *args
@@ -3516,9 +3612,7 @@ class TestKmipEngine(testtools.TestCase):
         regex = (
             "The cryptographic usage mask must be specified as an attribute."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create,
             *args
@@ -3729,9 +3823,7 @@ class TestKmipEngine(testtools.TestCase):
             "The cryptographic algorithm must be specified as an attribute "
             "for the public key."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create_key_pair,
             *args
@@ -3799,9 +3891,7 @@ class TestKmipEngine(testtools.TestCase):
             "The cryptographic algorithm must be specified as an attribute "
             "for the private key."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create_key_pair,
             *args
@@ -3869,9 +3959,7 @@ class TestKmipEngine(testtools.TestCase):
             "The cryptographic length must be specified as an attribute for "
             "the public key."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create_key_pair,
             *args
@@ -3939,9 +4027,7 @@ class TestKmipEngine(testtools.TestCase):
             "The cryptographic length must be specified as an attribute for "
             "the private key."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create_key_pair,
             *args
@@ -4007,9 +4093,7 @@ class TestKmipEngine(testtools.TestCase):
             "The cryptographic usage mask must be specified as an attribute "
             "for the public key."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create_key_pair,
             *args
@@ -4075,9 +4159,7 @@ class TestKmipEngine(testtools.TestCase):
             "The cryptographic usage mask must be specified as an attribute "
             "for the private key."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create_key_pair,
             *args
@@ -4161,9 +4243,7 @@ class TestKmipEngine(testtools.TestCase):
         regex = (
             "The public and private key algorithms must be the same."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create_key_pair,
             *args
@@ -4234,9 +4314,7 @@ class TestKmipEngine(testtools.TestCase):
         regex = (
             "The public and private key lengths must be the same."
         )
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_create_key_pair,
             *args
@@ -5575,9 +5653,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "The Template object type is not supported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_register,
             *args
@@ -5599,9 +5675,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Cannot register a secret in absentia."
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             regex,
             e._process_register,
             *args
@@ -6467,9 +6541,7 @@ class TestKmipEngine(testtools.TestCase):
 
         # Verify that the third date given triggers an exception.
         args = (enums.AttributeType.INITIAL_DATE, date_values, 1563564520)
-        six.assertRaisesRegex(
-            self,
-            exceptions.InvalidField,
+        self.assertRaisesRegex(exceptions.InvalidField,
             "Too many Initial Date attributes provided. "
             "Include one for an exact match. "
             "Include two for a ranged match.",
@@ -6760,17 +6832,11 @@ class TestKmipEngine(testtools.TestCase):
             name='name1'
         )
         obj_a.initial_date = int(time.time())
-        obj_a_time_str = time.strftime(
-            "%a %b %-2d %H:%M:%S %Y",
-            time.gmtime(obj_a.initial_date)
-        )
+        obj_a_time_str = time.asctime(time.gmtime(obj_a.initial_date))
 
         time.sleep(2)
         mid_time = int(time.time())
-        mid_time_str = time.strftime(
-            "%a %b %-2d %H:%M:%S %Y",
-            time.gmtime(mid_time)
-        )
+        mid_time_str = time.asctime(time.gmtime(mid_time))
         time.sleep(2)
 
         obj_b = pie_objects.SymmetricKey(
@@ -6780,10 +6846,7 @@ class TestKmipEngine(testtools.TestCase):
             name='name2'
         )
         obj_b.initial_date = int(time.time())
-        obj_b_time_str = time.strftime(
-            "%a %b %-2d %H:%M:%S %Y",
-            time.gmtime(obj_b.initial_date)
-        )
+        obj_b_time_str = time.asctime(time.gmtime(obj_b.initial_date))
 
         time.sleep(2)
         end_time = int(time.time())
@@ -7995,9 +8058,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Key compression is not supported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.KeyCompressionTypeNotSupported,
+        self.assertRaisesRegex(exceptions.KeyCompressionTypeNotSupported,
             regex,
             e._process_get,
             *args
@@ -8072,9 +8133,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Key format conversion from RAW to OPAQUE is unsupported."
-        six.assertRaisesRegex(
-            self,
-            exceptions.KeyFormatTypeNotSupported,
+        self.assertRaisesRegex(exceptions.KeyFormatTypeNotSupported,
             regex,
             e._process_get,
             *args
@@ -8103,9 +8162,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Key format is not applicable to the specified object."
-        six.assertRaisesRegex(
-            self,
-            exceptions.KeyFormatTypeNotSupported,
+        self.assertRaisesRegex(exceptions.KeyFormatTypeNotSupported,
             regex,
             e._process_get,
             *args
@@ -8138,9 +8195,7 @@ class TestKmipEngine(testtools.TestCase):
 
         # Test by specifying the ID of the object to get.
         args = [payload]
-        six.assertRaisesRegex(
-            self,
-            exceptions.PermissionDenied,
+        self.assertRaisesRegex(exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._process_get,
             *args
@@ -9729,9 +9784,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Could not locate object: {0}".format(id_a)
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._process_destroy,
             *args
@@ -9756,9 +9809,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Could not locate object: {0}".format(id_b)
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._process_destroy,
             *args
@@ -9783,9 +9834,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Could not locate object: {0}".format(id_c)
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._process_destroy,
             *args
@@ -9819,9 +9868,7 @@ class TestKmipEngine(testtools.TestCase):
 
         # Test by specifying the ID of the object to destroy.
         args = [payload]
-        six.assertRaisesRegex(
-            self,
-            exceptions.PermissionDenied,
+        self.assertRaisesRegex(exceptions.PermissionDenied,
             "Could not locate object: {0}".format(id_a),
             e._process_destroy,
             *args
@@ -9858,9 +9905,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Object is active and cannot be destroyed."
-        six.assertRaisesRegex(
-            self,
-            exceptions.PermissionDenied,
+        self.assertRaisesRegex(exceptions.PermissionDenied,
             regex,
             e._process_destroy,
             *args
@@ -11579,9 +11624,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Could not locate object: {0}".format(uid)
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._process_destroy,
             *args
@@ -11758,9 +11801,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Could not locate object: {0}".format(public_id)
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._process_destroy,
             *args
@@ -11793,9 +11834,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Could not locate object: {0}".format(private_id)
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._process_destroy,
             *args
@@ -11934,9 +11973,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Could not locate object: {0}".format(uid)
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._process_destroy,
             *args
@@ -12145,9 +12182,7 @@ class TestKmipEngine(testtools.TestCase):
 
         args = (payload, )
         regex = "Could not locate object: {0}".format(uuid)
-        six.assertRaisesRegex(
-            self,
-            exceptions.ItemNotFound,
+        self.assertRaisesRegex(exceptions.ItemNotFound,
             regex,
             e._process_destroy,
             *args

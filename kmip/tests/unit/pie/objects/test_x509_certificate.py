@@ -22,7 +22,6 @@ from kmip.pie.objects import ManagedObject, X509Certificate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-
 class TestX509Certificate(testtools.TestCase):
     """
     Test suite for X509Certificate.

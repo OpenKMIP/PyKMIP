@@ -23,7 +23,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestRevokeRequestPayload(TestCase):
     """
     Test suite for the RevokeRequestPayload class.
@@ -63,6 +62,13 @@ class TestRevokeRequestPayload(TestCase):
         values.
         """
         payloads.RevokeRequestPayload(unique_identifier=self.uuid)
+
+    def test_init(self):
+        """
+        Test that a RevokeRequestPayload object can be constructed with no
+        arguments.
+        """
+        self.test_init_with_none()
 
     def test_validate_with_bad_uuid_type(self):
         """
@@ -138,6 +144,83 @@ class TestRevokeRequestPayload(TestCase):
 
         self.assertEqual(self.encoding_a, stream, msg)
 
+    def test_read_valid(self):
+        """
+        Test that a RevokeRequestPayload object can be read from a valid byte
+        stream.
+        """
+        self.test_read_with_known_uuid()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a request payload
+        missing the unique identifier.
+        """
+        payload = payloads.RevokeRequestPayload()
+        empty_encoding = utils.BytearrayStream(
+            b'\x42\x00\x79\x01\x00\x00\x00\x00'
+        )
+        self.assertRaises(Exception, payload.read, empty_encoding)
+
+    def test_write_valid(self):
+        """
+        Test that a RevokeRequestPayload object can be written to a byte
+        stream.
+        """
+        self.test_write_with_known_uuid()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a RevokeRequestPayload object can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.RevokeRequestPayload()
+        payload.read(utils.BytearrayStream(self.encoding_a.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(self.encoding_a, stream)
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when the unique identifier type is
+        invalid.
+        """
+        self.test_validate_with_bad_uuid_type()
+
+    def test_eq(self):
+        """
+        Test that a RevokeRequestPayload object compares equal to itself.
+        """
+        payload = payloads.RevokeRequestPayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        """
+        Test that two different RevokeRequestPayload objects are not equal.
+        """
+        a = payloads.RevokeRequestPayload(self.uuid)
+        b = payloads.RevokeRequestPayload(
+            attributes.UniqueIdentifier(
+                '11111111-2222-3333-4444-555555555555'
+            )
+        )
+        self.assertTrue(a != b)
+
+    def test_repr(self):
+        """
+        Test the repr output for a RevokeRequestPayload object.
+        """
+        payload = payloads.RevokeRequestPayload()
+        self.assertIsInstance(repr(payload), str)
+
+    def test_str(self):
+        """
+        Test the str output for a RevokeRequestPayload object.
+        """
+        payload = payloads.RevokeRequestPayload()
+        self.assertIsInstance(str(payload), str)
 
 class TestRevokeResponsePayload(TestCase):
     """
@@ -173,6 +256,13 @@ class TestRevokeResponsePayload(TestCase):
         valid values.
         """
         payloads.RevokeResponsePayload(unique_identifier=self.uuid)
+
+    def test_init(self):
+        """
+        Test that a RevokeResponsePayload object can be constructed with no
+        arguments.
+        """
+        self.test_init_with_none()
 
     def test_validate_with_invalid_uuid(self):
         """
@@ -220,3 +310,81 @@ class TestRevokeResponsePayload(TestCase):
                                                           stream)
 
         self.assertEqual(self.encoding_a, stream, msg)
+
+    def test_read_valid(self):
+        """
+        Test that a RevokeResponsePayload object can be read from a valid byte
+        stream.
+        """
+        self.test_read_with_known_uuid()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a response payload
+        missing the unique identifier.
+        """
+        payload = payloads.RevokeResponsePayload()
+        empty_encoding = utils.BytearrayStream(
+            b'\x42\x00\x7C\x01\x00\x00\x00\x00'
+        )
+        self.assertRaises(Exception, payload.read, empty_encoding)
+
+    def test_write_valid(self):
+        """
+        Test that a RevokeResponsePayload object can be written to a byte
+        stream.
+        """
+        self.test_write_with_known_uuid()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a RevokeResponsePayload object can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.RevokeResponsePayload()
+        payload.read(utils.BytearrayStream(self.encoding_a.buffer))
+
+        stream = utils.BytearrayStream()
+        payload.write(stream)
+
+        self.assertEqual(self.encoding_a, stream)
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when the unique identifier type is
+        invalid.
+        """
+        self.test_validate_with_invalid_uuid()
+
+    def test_eq(self):
+        """
+        Test that a RevokeResponsePayload object compares equal to itself.
+        """
+        payload = payloads.RevokeResponsePayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        """
+        Test that two different RevokeResponsePayload objects are not equal.
+        """
+        a = payloads.RevokeResponsePayload(self.uuid)
+        b = payloads.RevokeResponsePayload(
+            attributes.UniqueIdentifier(
+                '11111111-2222-3333-4444-555555555555'
+            )
+        )
+        self.assertTrue(a != b)
+
+    def test_repr(self):
+        """
+        Test the repr output for a RevokeResponsePayload object.
+        """
+        payload = payloads.RevokeResponsePayload()
+        self.assertIsInstance(repr(payload), str)
+
+    def test_str(self):
+        """
+        Test the str output for a RevokeResponsePayload object.
+        """
+        payload = payloads.RevokeResponsePayload()
+        self.assertIsInstance(str(payload), str)

@@ -21,7 +21,6 @@ from kmip.core.objects import Attribute
 
 from kmip.core import utils
 
-
 class AttributeFactory(object):
 
     def __init__(self):

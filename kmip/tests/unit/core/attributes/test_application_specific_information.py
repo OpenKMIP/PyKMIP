@@ -19,7 +19,6 @@ from kmip.core import attributes
 from kmip.core import exceptions
 from kmip.core import utils
 
-
 class TestApplicationSpecificInformation(testtools.TestCase):
     """
     A test suite for the ApplicationSpecificInformation class.

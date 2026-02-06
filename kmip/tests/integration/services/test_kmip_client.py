@@ -56,7 +56,6 @@ from kmip.services.kmip_client import KMIPProxy
 
 import kmip.core.utils as utils
 
-
 @pytest.mark.ignore
 class TestKMIPClientIntegration(TestCase):
     STARTUP_TIME = 1.0

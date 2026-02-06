@@ -20,7 +20,6 @@ from kmip.core import objects
 from kmip.core import utils
 from kmip.core.messages import contents
 
-
 class TestAuthentication(testtools.TestCase):
     """
     Test suite for the Authentication struct.

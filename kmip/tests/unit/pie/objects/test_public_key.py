@@ -22,7 +22,6 @@ from kmip.pie.objects import ManagedObject, PublicKey
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-
 class TestPublicKey(testtools.TestCase):
     """
     Test suite for PublicKey.

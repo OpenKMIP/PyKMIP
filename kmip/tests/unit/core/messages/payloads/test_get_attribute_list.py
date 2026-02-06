@@ -22,7 +22,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestGetAttributeListRequestPayload(testtools.TestCase):
     """
     Test suite for the GetAttributeList request payload.
@@ -315,6 +314,60 @@ class TestGetAttributeListRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
+    def test_read_valid(self):
+        """
+        Test that a GetAttributeList request payload can be read from a valid
+        byte stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        payload = payloads.GetAttributeListRequestPayload()
+        self.assertRaises(Exception, payload.read, utils.BytearrayStream(b""))
+
+    def test_write_valid(self):
+        """
+        Test that a GetAttributeList request payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a GetAttributeList request payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.GetAttributeListRequestPayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_unique_identifier_with_invalid_value()
+
+    def test_eq(self):
+        """
+        Test that two GetAttributeList request payloads with the same data are
+        equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two GetAttributeList request payloads with different data are
+        not equal.
+        """
+        self.test_not_equal_on_not_equal_unique_identifier()
 
 class TestGetAttributeListResponsePayload(testtools.TestCase):
     """
@@ -1218,3 +1271,58 @@ class TestGetAttributeListResponsePayload(testtools.TestCase):
 
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_read_valid(self):
+        """
+        Test that a GetAttributeList response payload can be read from a valid
+        byte stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        payload = payloads.GetAttributeListResponsePayload()
+        self.assertRaises(Exception, payload.read, utils.BytearrayStream(b""))
+
+    def test_write_valid(self):
+        """
+        Test that a GetAttributeList response payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a GetAttributeList response payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.GetAttributeListResponsePayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_unique_identifier_with_invalid_value()
+
+    def test_eq(self):
+        """
+        Test that two GetAttributeList response payloads with the same data are
+        equal.
+        """
+        self.test_equal_on_equal()
+
+    def test_ne(self):
+        """
+        Test that two GetAttributeList response payloads with different data are
+        not equal.
+        """
+        self.test_not_equal_on_not_equal_unique_identifier()

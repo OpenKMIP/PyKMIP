@@ -13,11 +13,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
 from testtools import TestCase
 
 from kmip.pie.objects import CryptographicObject
-
 
 class DummyCryptographicObject(CryptographicObject):
     """
@@ -44,7 +42,6 @@ class DummyCryptographicObject(CryptographicObject):
 
     def __ne__(self, other):
         return False
-
 
 class TestCryptographicObject(TestCase):
     """

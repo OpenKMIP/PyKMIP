@@ -14,18 +14,16 @@
 # under the License.
 
 import json
-import six
 
 from kmip.core import enums
-
 
 def parse_policy(policy):
     result = {}
 
-    for object_type, operation_policies in six.iteritems(policy):
+    for object_type, operation_policies in policy.items():
         processed_operation_policies = {}
 
-        for operation, permission in six.iteritems(operation_policies):
+        for operation, permission in operation_policies.items():
             try:
                 enum_operation = enums.Operation[operation]
             except Exception:
@@ -58,7 +56,6 @@ def parse_policy(policy):
 
     return result
 
-
 def read_policy_from_file(path):
     policy_blob = {}
 
@@ -80,7 +77,7 @@ def read_policy_from_file(path):
             continue
 
         # Use subset checking to determine what type of policy we have
-        sections = set([s for s in six.iterkeys(object_policy)])
+        sections = set([s for s in object_policy.keys()])
         if sections <= policy_sections:
             parsed_policies = dict()
 
@@ -91,7 +88,7 @@ def read_policy_from_file(path):
             group_policies = object_policy.get('groups')
             if group_policies:
                 parsed_group_policies = dict()
-                for group_name, group_policy in six.iteritems(group_policies):
+                for group_name, group_policy in group_policies.items():
                     parsed_group_policies[group_name] = parse_policy(
                         group_policy
                     )
@@ -109,7 +106,6 @@ def read_policy_from_file(path):
             )
 
     return result
-
 
 policies = {
     'default': {

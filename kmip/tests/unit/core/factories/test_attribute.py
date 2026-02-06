@@ -19,7 +19,6 @@ from kmip.core import enums
 
 from kmip.core.factories import attributes
 
-
 class TestAttributeFactory(testtools.TestCase):
     """
     Test suite for Attribute Factory

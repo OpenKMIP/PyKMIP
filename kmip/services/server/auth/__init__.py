@@ -23,7 +23,6 @@ from kmip.services.server.auth.utils import get_common_names_from_certificate
 from kmip.services.server.auth.utils import \
     get_extended_key_usage_from_certificate
 
-
 __all__ = [
     'AuthAPI',
     'SLUGSConnector',

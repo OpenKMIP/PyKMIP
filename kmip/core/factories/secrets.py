@@ -38,7 +38,6 @@ from kmip.core.secrets import Template
 from kmip.core import utils
 from kmip.core import exceptions
 
-
 class SecretFactory(object):
 
     def __init__(self):

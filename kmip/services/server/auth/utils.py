@@ -18,7 +18,6 @@ from cryptography.hazmat import backends
 
 from kmip.core import exceptions
 
-
 def get_certificate_from_connection(connection):
     """
     Extract an X.509 certificate from a socket connection.
@@ -30,7 +29,6 @@ def get_certificate_from_connection(connection):
             backends.default_backend()
         )
     return None
-
 
 def get_extended_key_usage_from_certificate(certificate):
     """
@@ -44,7 +42,6 @@ def get_extended_key_usage_from_certificate(certificate):
     except x509.ExtensionNotFound:
         return None
 
-
 def get_common_names_from_certificate(certificate):
     """
     Given an X.509 certificate, extract and return all common names.
@@ -54,7 +51,6 @@ def get_common_names_from_certificate(certificate):
         x509.oid.NameOID.COMMON_NAME
     )
     return [common_name.value for common_name in common_names]
-
 
 def get_client_identity_from_certificate(certificate):
     """

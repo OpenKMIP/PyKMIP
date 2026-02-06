@@ -140,7 +140,6 @@ from kmip.core.messages.payloads.signature_verify import (
     SignatureVerifyResponsePayload
 )
 
-
 __all__ = [
     "ActivateRequestPayload",
     "ActivateResponsePayload",

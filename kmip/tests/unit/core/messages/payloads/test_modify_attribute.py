@@ -23,7 +23,6 @@ from kmip.core import utils
 
 from kmip.core.messages import payloads
 
-
 class TestModifyAttributeRequestPayload(testtools.TestCase):
     """
     A unit test suite for the ModifyAttribute request payload.
@@ -594,6 +593,97 @@ class TestModifyAttributeRequestPayload(testtools.TestCase):
         self.assertTrue(a != b)
         self.assertTrue(b != a)
 
+    def test_init(self):
+        """
+        Test that a ModifyAttribute request payload can be constructed with no
+        arguments.
+        """
+        payload = payloads.ModifyAttributeRequestPayload()
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload.attribute)
+        self.assertIsNone(payload.current_attribute)
+        self.assertIsNone(payload.new_attribute)
+
+    def test_init_with_args(self):
+        """
+        Test that a ModifyAttribute request payload can be constructed with
+        valid values.
+        """
+        payload = payloads.ModifyAttributeRequestPayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
+            attribute=objects.Attribute(
+                attribute_name=objects.Attribute.AttributeName("x-attribute1"),
+                attribute_value=primitives.TextString(
+                    value="ModifiedValue1",
+                    tag=enums.Tags.ATTRIBUTE_VALUE
+                )
+            )
+        )
+
+        self.assertEqual(
+            "b4faee10-aa2a-4446-8ad4-0881f3422959",
+            payload.unique_identifier
+        )
+        self.assertIsInstance(payload.attribute, objects.Attribute)
+
+    def test_read_valid(self):
+        """
+        Test that a ModifyAttribute request payload can be read from a valid
+        byte stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_no_attribute()
+
+    def test_write_valid(self):
+        """
+        Test that a ModifyAttribute request payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a ModifyAttribute request payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.ModifyAttributeRequestPayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_unique_identifier()
+
+    def test_eq(self):
+        """
+        Test that a ModifyAttribute request payload compares equal to itself.
+        """
+        payload = payloads.ModifyAttributeRequestPayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        """
+        Test that two different ModifyAttribute request payloads are not equal.
+        """
+        a = payloads.ModifyAttributeRequestPayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959"
+        )
+        b = payloads.ModifyAttributeRequestPayload(
+            unique_identifier="11111111-2222-3333-4444-555555555555"
+        )
+        self.assertTrue(a != b)
 
 class TestModifyAttributeResponsePayload(testtools.TestCase):
     """
@@ -973,3 +1063,94 @@ class TestModifyAttributeResponsePayload(testtools.TestCase):
         self.assertFalse(b == a)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+    def test_init(self):
+        """
+        Test that a ModifyAttribute response payload can be constructed with
+        no arguments.
+        """
+        payload = payloads.ModifyAttributeResponsePayload()
+        self.assertIsNone(payload.unique_identifier)
+        self.assertIsNone(payload.attribute)
+
+    def test_init_with_args(self):
+        """
+        Test that a ModifyAttribute response payload can be constructed with
+        valid values.
+        """
+        payload = payloads.ModifyAttributeResponsePayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959",
+            attribute=objects.Attribute(
+                attribute_name=objects.Attribute.AttributeName("x-attribute1"),
+                attribute_value=primitives.TextString(
+                    value="ModifiedValue1",
+                    tag=enums.Tags.ATTRIBUTE_VALUE
+                )
+            )
+        )
+
+        self.assertEqual(
+            "b4faee10-aa2a-4446-8ad4-0881f3422959",
+            payload.unique_identifier
+        )
+        self.assertIsInstance(payload.attribute, objects.Attribute)
+
+    def test_read_valid(self):
+        """
+        Test that a ModifyAttribute response payload can be read from a valid
+        byte stream.
+        """
+        self.test_read()
+
+    def test_read_missing_required_field(self):
+        """
+        Test that an exception is raised when reading a payload missing a
+        required field.
+        """
+        self.test_read_no_unique_identifier()
+
+    def test_write_valid(self):
+        """
+        Test that a ModifyAttribute response payload can be written to a byte
+        stream.
+        """
+        self.test_write()
+
+    def test_read_write_roundtrip(self):
+        """
+        Test that a ModifyAttribute response payload can be read and written
+        without changing the encoded bytes.
+        """
+        payload = payloads.ModifyAttributeResponsePayload()
+        payload.read(utils.BytearrayStream(self.full_encoding.buffer))
+
+        buffer = utils.BytearrayStream()
+        payload.write(buffer)
+
+        self.assertEqual(str(self.full_encoding), str(buffer))
+
+    def test_validate_invalid(self):
+        """
+        Test that an exception is raised when a field has an invalid type.
+        """
+        self.test_invalid_unique_identifier()
+
+    def test_eq(self):
+        """
+        Test that a ModifyAttribute response payload compares equal to itself.
+        """
+        payload = payloads.ModifyAttributeResponsePayload()
+        self.assertTrue(payload == payload)
+
+    def test_ne(self):
+        """
+        Test that two different ModifyAttribute response payloads are not
+        equal.
+        """
+        a = payloads.ModifyAttributeResponsePayload(
+            unique_identifier="b4faee10-aa2a-4446-8ad4-0881f3422959"
+        )
+        b = payloads.ModifyAttributeResponsePayload(
+            unique_identifier="11111111-2222-3333-4444-555555555555"
+        )
+        self.assertTrue(a != b)

@@ -34,7 +34,6 @@ with open(version_path, 'r') as f:
     )
     __version__ = m.group(1)
 
-
 __all__ = [
     'client',
     'core',

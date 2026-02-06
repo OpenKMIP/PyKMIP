@@ -18,6 +18,7 @@ from testtools import TestCase
 from kmip.core.attributes import CryptographicParameters
 from kmip.core.attributes import DerivationParameters
 from kmip.core.attributes import PrivateKeyUniqueIdentifier
+from kmip.core.attributes import UniqueIdentifier
 
 from kmip.core import enums
 from kmip.core.enums import AuthenticationSuite
@@ -70,7 +71,6 @@ import mock
 import os
 import socket
 import ssl
-
 
 class TestKMIPClient(TestCase):
 
@@ -962,7 +962,7 @@ class TestKMIPClient(TestCase):
         is returned from the server.
         """
         response_payload = payloads.DestroyResponsePayload(
-            unique_identifier="1"
+            unique_identifier=UniqueIdentifier("1")
         )
 
         batch_item = ResponseBatchItem(
@@ -1648,7 +1648,6 @@ class TestKMIPClient(TestCase):
         result = self.client.mac(data, uuid, cryptographic_parameters)
         self.assertEqual(result.uuid, None)
         self.assertEqual(result.mac_data, None)
-
 
 class TestClientProfileInformation(TestCase):
     """

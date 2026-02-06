@@ -21,7 +21,6 @@ from kmip.core.misc import CertificateValue
 from kmip.core.secrets import Certificate
 from kmip.core.utils import BytearrayStream
 
-
 class TestCertificate(TestCase):
     """
     A test suite for the Certificate class.

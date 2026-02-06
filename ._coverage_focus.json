@@ -1,0 +1,429 @@
+{
+  "kmip/core/primitives.py": {
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py"
+    ],
+    "missing_classes": [
+      "Base",
+      "Struct",
+      "Integer",
+      "LongInteger",
+      "BigInteger",
+      "ByteString",
+      "Interval"
+    ],
+    "missing_methods": {
+      "Base": [
+        "is_oversized",
+        "read_tag",
+        "read_type",
+        "read_length",
+        "read_value",
+        "read",
+        "write_tag",
+        "write_type",
+        "write_length",
+        "write_value",
+        "write",
+        "validate",
+        "is_tag_next",
+        "is_type_next"
+      ],
+      "Struct": [],
+      "Integer": [
+        "read_value",
+        "read",
+        "write_value",
+        "write",
+        "validate"
+      ],
+      "LongInteger": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "BigInteger": [
+        "read",
+        "write",
+        "validate"
+      ],
+      "Enumeration": [
+        "validate"
+      ],
+      "Boolean": [
+        "read_value",
+        "write_value",
+        "validate"
+      ],
+      "TextString": [
+        "read_value",
+        "write_value",
+        "validate"
+      ],
+      "ByteString": [
+        "read_value",
+        "read",
+        "write_value",
+        "write",
+        "validate"
+      ],
+      "Interval": [
+        "read",
+        "write",
+        "validate"
+      ]
+    },
+    "missing_functions": []
+  },
+  "kmip/core/policy.py": {
+    "tests": [],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": [
+      "parse_policy",
+      "read_policy_from_file"
+    ]
+  },
+  "kmip/core/factories/attribute_values.py": {
+    "tests": [],
+    "missing_classes": [
+      "AttributeValueFactory"
+    ],
+    "missing_methods": {
+      "AttributeValueFactory": [
+        "create_attribute_value",
+        "create_attribute_value_by_enum"
+      ]
+    },
+    "missing_functions": []
+  },
+  "kmip/core/factories/attributes.py": {
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/objects/test_objects.py"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  "kmip/core/factories/credentials.py": {
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "missing_classes": [],
+    "missing_methods": {
+      "CredentialFactory": [
+        "create_credential",
+        "create_username_password_credential",
+        "create_device_credential"
+      ]
+    },
+    "missing_functions": []
+  },
+  "kmip/core/factories/payloads/__init__.py": {
+    "tests": [],
+    "missing_classes": [
+      "PayloadFactory"
+    ],
+    "missing_methods": {
+      "PayloadFactory": [
+        "create"
+      ]
+    },
+    "missing_functions": []
+  },
+  "kmip/core/factories/payloads/request.py": {
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_request.py"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  "kmip/core/factories/payloads/response.py": {
+    "tests": [
+      "kmip/tests/unit/core/factories/payloads/test_response.py"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  "kmip/core/factories/secrets.py": {
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/messages/test_messages.py"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  "kmip/services/server/engine.py": {
+    "tests": [],
+    "missing_classes": [
+      "KmipEngine"
+    ],
+    "missing_methods": {
+      "KmipEngine": [
+        "process_request",
+        "build_error_response",
+        "get_relevant_policy_section",
+        "is_allowed"
+      ]
+    },
+    "missing_functions": []
+  },
+  "kmip/services/server/server.py": {
+    "tests": [],
+    "missing_classes": [
+      "KmipServer"
+    ],
+    "missing_methods": {
+      "KmipServer": [
+        "start",
+        "stop",
+        "serve"
+      ]
+    },
+    "missing_functions": [
+      "build_argument_parser",
+      "main"
+    ]
+  },
+  "kmip/services/server/monitor.py": {
+    "tests": [],
+    "missing_classes": [
+      "PolicyDirectoryMonitor"
+    ],
+    "missing_methods": {
+      "PolicyDirectoryMonitor": [
+        "stop",
+        "scan_policies",
+        "run",
+        "initialize_tracking_structures",
+        "disassociate_policy_and_file",
+        "restore_or_delete_policy"
+      ]
+    },
+    "missing_functions": [
+      "get_json_files"
+    ]
+  },
+  "kmip/services/kmip_client.py": {
+    "tests": [
+      "kmip/tests/unit/pie/test_client.py",
+      "kmip/tests/unit/services/test_kmip_client.py"
+    ],
+    "missing_classes": [],
+    "missing_methods": {
+      "KMIPProxy": [
+        "rekey_key_pair",
+        "query",
+        "discover_versions"
+      ]
+    },
+    "missing_functions": []
+  },
+  "kmip/services/server/crypto/engine.py": {
+    "tests": [],
+    "missing_classes": [
+      "CryptographyEngine"
+    ],
+    "missing_methods": {
+      "CryptographyEngine": [
+        "create_symmetric_key",
+        "create_asymmetric_key_pair",
+        "mac",
+        "encrypt",
+        "decrypt",
+        "derive_key",
+        "wrap_key",
+        "sign",
+        "verify_signature"
+      ]
+    },
+    "missing_functions": []
+  },
+  "kmip/services/auth.py": {
+    "tests": [],
+    "missing_classes": [
+      "AuthenticationSuite",
+      "BasicAuthenticationSuite",
+      "TLS12AuthenticationSuite"
+    ],
+    "missing_methods": {
+      "AuthenticationSuite": [
+        "protocol",
+        "ciphers"
+      ],
+      "BasicAuthenticationSuite": [],
+      "TLS12AuthenticationSuite": []
+    },
+    "missing_functions": []
+  },
+  "kmip/core/config_helper.py": {
+    "tests": [
+      "kmip/tests/unit/core/test_config_helper.py"
+    ],
+    "missing_classes": [],
+    "missing_methods": {},
+    "missing_functions": []
+  },
+  "kmip/core/exceptions.py": {
+    "tests": [],
+    "missing_classes": [
+      "KmipError",
+      "CryptographicFailure",
+      "EncodingOptionError",
+      "IllegalOperation",
+      "IndexOutOfBounds",
+      "InvalidField",
+      "InvalidMessage",
+      "ItemNotFound",
+      "KeyCompressionTypeNotSupported",
+      "KeyFormatTypeNotSupported",
+      "OperationFailure",
+      "OperationNotSupported",
+      "PermissionDenied",
+      "AttributeNotSupported",
+      "ConfigurationError",
+      "ConnectionClosed",
+      "NetworkingError",
+      "InvalidKmipEncoding",
+      "InvalidPaddingBytes",
+      "InvalidPrimitiveLength",
+      "ShutdownError",
+      "VersionNotSupported",
+      "StreamNotEmptyError",
+      "ReadValueError",
+      "WriteOverflowError",
+      "KMIPServerZombieError",
+      "KMIPServerSuicideError",
+      "ErrorStrings"
+    ],
+    "missing_methods": {
+      "KmipError": [],
+      "CryptographicFailure": [],
+      "EncodingOptionError": [],
+      "IllegalOperation": [],
+      "IndexOutOfBounds": [],
+      "InvalidField": [],
+      "InvalidMessage": [],
+      "ItemNotFound": [],
+      "KeyCompressionTypeNotSupported": [],
+      "KeyFormatTypeNotSupported": [],
+      "OperationFailure": [],
+      "OperationNotSupported": [],
+      "PermissionDenied": [],
+      "AttributeNotSupported": [],
+      "ConfigurationError": [],
+      "ConnectionClosed": [],
+      "NetworkingError": [],
+      "InvalidKmipEncoding": [],
+      "InvalidPaddingBytes": [],
+      "InvalidPrimitiveLength": [],
+      "ShutdownError": [],
+      "VersionNotSupported": [],
+      "StreamNotEmptyError": [],
+      "ReadValueError": [],
+      "WriteOverflowError": [],
+      "KMIPServerZombieError": [],
+      "KMIPServerSuicideError": [],
+      "ErrorStrings": []
+    },
+    "missing_functions": []
+  },
+  "kmip/core/utils.py": {
+    "tests": [
+      "kmip/tests/unit/services/test_kmip_client.py",
+      "kmip/tests/unit/core/attributes/test_attributes.py",
+      "kmip/tests/unit/core/attributes/test_digest.py",
+      "kmip/tests/unit/core/messages/test_messages.py",
+      "kmip/tests/unit/core/misc/test_server_information.py",
+      "kmip/tests/unit/core/objects/test_extension_information.py",
+      "kmip/tests/unit/core/objects/test_objects.py",
+      "kmip/tests/unit/core/secrets/test_certificate.py"
+    ],
+    "missing_classes": [],
+    "missing_methods": {
+      "BytearrayStream": [
+        "readall",
+        "readinto",
+        "peek"
+      ]
+    },
+    "missing_functions": [
+      "bit_length",
+      "count_bytes",
+      "print_bytearray",
+      "is_stream_empty",
+      "build_er_error"
+    ]
+  },
+  "kmip/pie/objects.py": {
+    "tests": [
+      "kmip/tests/unit/pie/objects/test_cryptographic_object.py",
+      "kmip/tests/unit/pie/objects/test_key.py",
+      "kmip/tests/unit/pie/objects/test_managed_object.py",
+      "kmip/tests/unit/pie/objects/test_opaque_object.py",
+      "kmip/tests/unit/pie/objects/test_private_key.py",
+      "kmip/tests/unit/pie/objects/test_public_key.py",
+      "kmip/tests/unit/pie/objects/test_secret_data.py",
+      "kmip/tests/unit/pie/objects/test_symmetric_key.py",
+      "kmip/tests/unit/pie/objects/test_x509_certificate.py"
+    ],
+    "missing_classes": [
+      "SplitKey",
+      "ApplicationSpecificInformation",
+      "ObjectGroup"
+    ],
+    "missing_methods": {
+      "SplitKey": [
+        "split_key_parts",
+        "split_key_parts",
+        "key_part_identifier",
+        "key_part_identifier",
+        "split_key_threshold",
+        "split_key_threshold",
+        "split_key_method",
+        "split_key_method",
+        "prime_field_size",
+        "prime_field_size"
+      ],
+      "ApplicationSpecificInformation": [
+        "application_namespace",
+        "application_namespace",
+        "application_data",
+        "application_data"
+      ],
+      "ObjectGroup": [
+        "object_group",
+        "object_group"
+      ]
+    },
+    "missing_functions": []
+  },
+  "kmip/pie/sqltypes.py": {
+    "tests": [
+      "kmip/tests/unit/pie/objects/test_sqltypes.py"
+    ],
+    "missing_classes": [
+      "UsageMaskType",
+      "EnumType"
+    ],
+    "missing_methods": {
+      "UsageMaskType": [
+        "process_bind_param",
+        "process_result_value"
+      ],
+      "EnumType": [
+        "process_bind_param",
+        "process_result_value"
+      ]
+    },
+    "missing_functions": [
+      "attribute_append_factory"
+    ]
+  }
+}
