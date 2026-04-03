@@ -730,6 +730,26 @@ class KmipEngine(object):
         elif attr_name == 'Fresh':
             return None
         elif attr_name == 'Link':
+            from kmip.pie import objects as obj_module
+            obj_type = type(managed_object)
+            if obj_type == obj_module.PublicKey:
+               linked_type = obj_module.PrivateKey
+               link_type = enums.LinkType.PRIVATE_KEY_LINK
+            elif obj_type == obj_module.PrivateKey:
+               linked_type = obj_module.PublicKey
+               link_type = enums.LinkType.PUBLIC_KEY_LINK
+            else:
+                return None
+            try:
+                linked = self._data_session.query(linked_type).filter_by(
+                    initial_date=managed_object.initial_date,
+                    _owner=managed_object._owner
+                ).first()
+                if linked:
+                    return [{'link_type': link_type,
+                          'linked_object_identifier': str(linked.unique_identifier)}]
+            except Exception:
+                pass
             return None
         elif attr_name == "Application Specific Information":
             values = []
@@ -2856,7 +2876,13 @@ class KmipEngine(object):
                 ])
 
         if enums.QueryFunction.QUERY_OBJECTS in queries:
-            objects = list()
+            objects = list([
+                enums.ObjectType.CERTIFICATE,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY,
+                enums.ObjectType.SECRET_DATA
+            ])
         if enums.QueryFunction.QUERY_SERVER_INFORMATION in queries:
             vendor_identification = "PyKMIP {0} Software Server".format(
                 kmip.__version__
