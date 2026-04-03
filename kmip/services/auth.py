@@ -219,6 +219,8 @@ class TLS12AuthenticationSuite(AuthenticationSuite):
         'ECDHE-ECDSA-AES256-GCM-SHA384',
         'ECDHE-ECDSA-AES128-SHA256',
         'ECDHE-ECDSA-AES256-SHA384'
+        'ECDHE-RSA-AES256-GCM-SHA384',
+        'ECDHE-RSA-AES128-GCM-SHA256'
     ]
 
     def __init__(self, cipher_suites=None):
