@@ -1263,6 +1263,104 @@ class ApplicationSpecificInformation(primitives.Struct):
         else:
             return NotImplemented
 
+class Link(primitives.Struct):
+    """
+    A structure used to store a link between a Managed Object and a related
+    Managed Object.
+    Attributes:
+        link_type: The type of link (e.g. PrivateKeyLink, PublicKeyLink).
+        linked_object_identifier: The unique identifier of the linked object.
+    See Section 3.32 of the KMIP v1.2 specification for more information.
+    """
+    def __init__(self, link_type=None, linked_object_identifier=None):
+        super(Link, self).__init__(enums.Tags.LINK)
+        self._link_type = None
+        self._linked_object_identifier = None
+        self.link_type = link_type
+        self.linked_object_identifier = linked_object_identifier
+
+    @property
+    def link_type(self):
+        if self._link_type:
+            return self._link_type.value
+        return None
+
+    @link_type.setter
+    def link_type(self, value):
+        if value is None:
+            self._link_type = None
+        elif isinstance(value, enums.LinkType):
+            self._link_type = primitives.Enumeration(
+                enums.LinkType,
+                value=value,
+                tag=enums.Tags.LINK_TYPE
+            )
+        else:
+            raise TypeError("The link type must be a LinkType enumeration.")
+
+    @property
+    def linked_object_identifier(self):
+        if self._linked_object_identifier:
+            return self._linked_object_identifier.value
+        return None
+
+    @linked_object_identifier.setter
+    def linked_object_identifier(self, value):
+        if value is None:
+            self._linked_object_identifier = None
+        elif isinstance(value, six.string_types):
+            self._linked_object_identifier = primitives.TextString(
+                value=value,
+                tag=enums.Tags.LINKED_OBJECT_IDENTIFIER
+            )
+        else:
+            raise TypeError("The linked object identifier must be a string.")
+
+    def read(self, input_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        super(Link, self).read(input_buffer, kmip_version=kmip_version)
+        local_buffer = utils.BytearrayStream(input_buffer.read(self.length))
+        if self.is_tag_next(enums.Tags.LINK_TYPE, local_buffer):
+            self._link_type = primitives.Enumeration(
+                enums.LinkType,
+                tag=enums.Tags.LINK_TYPE
+            )
+            self._link_type.read(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The Link encoding is missing the LinkType field."
+            )
+        if self.is_tag_next(enums.Tags.LINKED_OBJECT_IDENTIFIER, local_buffer):
+            self._linked_object_identifier = primitives.TextString(
+                tag=enums.Tags.LINKED_OBJECT_IDENTIFIER
+            )
+            self._linked_object_identifier.read(
+                local_buffer, kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidKmipEncoding(
+                "The Link encoding is missing the LinkedObjectIdentifier field."
+            )
+        self.is_oversized(local_buffer)
+
+    def write(self, output_buffer, kmip_version=enums.KMIPVersion.KMIP_1_0):
+        local_buffer = utils.BytearrayStream()
+        if self._link_type:
+            self._link_type.write(local_buffer, kmip_version=kmip_version)
+        else:
+            raise exceptions.InvalidField(
+                "The Link object is missing the LinkType field."
+            )
+        if self._linked_object_identifier:
+            self._linked_object_identifier.write(
+                local_buffer, kmip_version=kmip_version
+            )
+        else:
+            raise exceptions.InvalidField(
+                "The Link object is missing the LinkedObjectIdentifier field."
+            )
+        self.length = local_buffer.length()
+        super(Link, self).write(output_buffer, kmip_version=kmip_version)
+        output_buffer.write(local_buffer.buffer)
 
 # 3.37
 class ContactInformation(TextString):
