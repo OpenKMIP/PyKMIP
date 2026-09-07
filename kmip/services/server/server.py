@@ -61,7 +61,8 @@ class KmipServer(object):
             tls_cipher_suites=None,
             logging_level=None,
             live_policies=False,
-            database_path=None
+            database_path=None,
+            database_password='pykmip'
     ):
         """
         Create a KmipServer.
@@ -127,6 +128,8 @@ class KmipServer(object):
                 to False.
             database_path (string): The path to the server's SQLite database
                 file. Optional, defaults to None.
+            database_password (string): Password to encrypt the SQLite database
+                file. Optional, defaults to "pykmip".
         """
         self._logger = logging.getLogger('kmip.server')
         self._setup_logging(log_path)
@@ -144,7 +147,8 @@ class KmipServer(object):
             enable_tls_client_auth,
             tls_cipher_suites,
             logging_level,
-            database_path
+            database_path,
+            database_password
         )
         self.live_policies = live_policies
         self.policies = {}
@@ -194,7 +198,8 @@ class KmipServer(object):
             enable_tls_client_auth=None,
             tls_cipher_suites=None,
             logging_level=None,
-            database_path=None
+            database_path=None,
+            database_password="pykmip"
     ):
         if path:
             self.config.load_settings(path)
@@ -261,7 +266,8 @@ class KmipServer(object):
 
         self._engine = engine.KmipEngine(
             policies=self.policies,
-            database_path=self.config.settings.get('database_path')
+            database_path=self.config.settings.get('database_path'),
+            database_password=self.config.settings.get('database_password')
         )
 
         self._logger.info("Starting server socket handler.")
