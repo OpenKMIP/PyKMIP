@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from six.moves import xrange
-
 from kmip.core import enums
 from kmip.core.messages.contents import ProtocolVersion
 from kmip.core.messages.payloads import base
@@ -66,7 +64,7 @@ class DiscoverVersionsRequestPayload(base.RequestPayload):
 
     def __validate(self):
         if isinstance(self.protocol_versions, list):
-            for i in xrange(len(self.protocol_versions)):
+            for i in range(len(self.protocol_versions)):
                 protocol_version = self.protocol_versions[i]
                 if not isinstance(protocol_version, ProtocolVersion):
                     msg = "invalid protocol version ({0} in list)".format(i)
@@ -125,7 +123,7 @@ class DiscoverVersionsResponsePayload(base.ResponsePayload):
 
     def __validate(self):
         if isinstance(self.protocol_versions, list):
-            for i in xrange(len(self.protocol_versions)):
+            for i in range(len(self.protocol_versions)):
                 protocol_version = self.protocol_versions[i]
                 if not isinstance(protocol_version, ProtocolVersion):
                     msg = "invalid protocol version ({0} in list)".format(i)

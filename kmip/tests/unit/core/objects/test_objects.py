@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from six import string_types
 import testtools
 from testtools import TestCase
 
@@ -1511,7 +1510,7 @@ class TestExtensionName(TestCase):
         super(TestExtensionName, self).tearDown()
 
     def _test_init(self, value):
-        if (isinstance(value, string_types)) or (value is None):
+        if (isinstance(value, str)) or (value is None):
             extension_name = ExtensionName(value)
 
             if value is None:

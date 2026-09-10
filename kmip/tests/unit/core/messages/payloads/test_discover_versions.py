@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from six.moves import xrange
-
 from testtools import TestCase
 
 from kmip.core import utils
@@ -82,7 +80,7 @@ class TestDiscoverVersionsRequestPayload(TestCase):
             expected, observed)
         self.assertEqual(expected, observed, msg)
 
-        for i in xrange(len(protocol_versions)):
+        for i in range(len(protocol_versions)):
             expected = protocol_versions[i]
             observed = payload.protocol_versions[i]
 
@@ -209,7 +207,7 @@ class TestDiscoverVersionsResponsePayload(TestCase):
             expected, observed)
         self.assertEqual(expected, observed, msg)
 
-        for i in xrange(len(protocol_versions)):
+        for i in range(len(protocol_versions)):
             expected = protocol_versions[i]
             observed = payload.protocol_versions[i]
 

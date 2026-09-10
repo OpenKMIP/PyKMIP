@@ -14,12 +14,10 @@
 # under the License.
 
 import abc
-import six
 import ssl
 
 
-@six.add_metaclass(abc.ABCMeta)
-class AuthenticationSuite(object):
+class AuthenticationSuite(metaclass=abc.ABCMeta):
     """
     An authentication suite used to establish secure network connections.
 

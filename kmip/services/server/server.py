@@ -20,7 +20,6 @@ import multiprocessing
 import optparse
 import os
 import signal
-import six
 import socket
 import ssl
 import sys
@@ -243,7 +242,7 @@ class KmipServer(object):
         self.manager = multiprocessing.Manager()
         self.policies = self.manager.dict()
         policies = copy.deepcopy(operation_policy.policies)
-        for policy_name, policy_set in six.iteritems(policies):
+        for policy_name, policy_set in policies.items():
             self.policies[policy_name] = policy_set
 
         self.policy_monitor = monitor.PolicyDirectoryMonitor(

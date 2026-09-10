@@ -15,7 +15,6 @@
 
 import abc
 import six
-from six.moves import xrange
 import struct
 
 from kmip.core import attributes
@@ -946,7 +945,7 @@ class Attributes(primitives.Struct):
 
         # TODO (ph) Allow order independence?
 
-        for i in six.moves.range(len(self.attributes)):
+        for i in range(len(self.attributes)):
             a = self.attributes[i]
             b = other.attributes[i]
 
@@ -2363,7 +2362,7 @@ class KeyValue(Struct):
             raise TypeError(msg)
 
         if isinstance(self.attributes, list):
-            for i in xrange(len(self.attributes)):
+            for i in range(len(self.attributes)):
                 attribute = self.attributes[i]
                 if not isinstance(attribute, Attribute):
                     msg = "invalid attribute ({0} in list)".format(i)
@@ -3514,14 +3513,14 @@ class TemplateAttribute(Struct):
 
             # TODO (peter-hamilton) Allow order independence?
 
-            for i in xrange(len(self.names)):
+            for i in range(len(self.names)):
                 a = self.names[i]
                 b = other.names[i]
 
                 if a != b:
                     return False
 
-            for i in xrange(len(self.attributes)):
+            for i in range(len(self.attributes)):
                 a = self.attributes[i]
                 b = other.attributes[i]
 

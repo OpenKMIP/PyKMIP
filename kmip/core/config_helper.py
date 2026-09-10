@@ -15,8 +15,7 @@
 
 import logging
 import os
-
-from six.moves.configparser import ConfigParser
+from configparser import ConfigParser
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 

@@ -13,10 +13,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import configparser
 import logging
 import os
-
-from six.moves import configparser
 
 from kmip.core import exceptions
 

@@ -15,7 +15,6 @@
 
 import copy
 import logging
-import six
 import sqlalchemy
 
 from sqlalchemy.orm import exc
@@ -847,7 +846,7 @@ class KmipEngine(object):
         Given a kmip.pie object and a dictionary of attributes, attempt to set
         the attribute values on the object.
         """
-        for attribute_name, attribute_value in six.iteritems(attributes):
+        for attribute_name, attribute_value in attributes.items():
             object_type = managed_object._object_type
             if self._attribute_policy.is_attribute_applicable_to_object_type(
                     attribute_name,
@@ -1446,7 +1445,7 @@ class KmipEngine(object):
 
         # Propagate common attributes if not overridden by the public/private
         # attribute sets
-        for key, value in six.iteritems(common_attributes):
+        for key, value in common_attributes.items():
             if key not in public_key_attributes.keys():
                 public_key_attributes.update([(key, value)])
             if key not in private_key_attributes.keys():

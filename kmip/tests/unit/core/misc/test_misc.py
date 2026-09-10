@@ -13,9 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from six import binary_type
-from six import string_types
-
 from testtools import TestCase
 
 from kmip.core.enums import KeyFormatType as KeyFormatTypeEnum
@@ -43,7 +40,7 @@ class TestCertificateValue(TestCase):
         super(TestCertificateValue, self).tearDown()
 
     def _test_init(self, value):
-        if (isinstance(value, binary_type)) or (value is None):
+        if (isinstance(value, bytes)) or (value is None):
             certificate_value = CertificateValue(value)
 
             if value is None:
@@ -131,7 +128,7 @@ class TestVendorIdentification(TestCase):
         super(TestVendorIdentification, self).tearDown()
 
     def _test_init(self, value):
-        if (isinstance(value, string_types)) or (value is None):
+        if (isinstance(value, str)) or (value is None):
             vendor_identification = VendorIdentification(value)
 
             if value is None:

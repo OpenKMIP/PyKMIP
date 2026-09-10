@@ -13,11 +13,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import configparser
 import logging
 import mock
-
-import six
-from six.moves import configparser
 
 import testtools
 
@@ -135,7 +133,7 @@ class TestKmipServerConfig(testtools.TestCase):
         with mock.patch('os.path.exists') as os_mock:
             os_mock.return_value = True
             with mock.patch(
-                'six.moves.configparser.ConfigParser.read'
+                'configparser.ConfigParser.read'
             ) as parser_mock:
                 c.load_settings("/test/path/server.conf")
                 c._logger.info.assert_any_call(
@@ -189,14 +187,14 @@ class TestKmipServerConfig(testtools.TestCase):
             self.assertIsInstance(c[1], dict)
 
             if c[0] == 'auth:slugs':
-                self.assertIn('enabled', six.iterkeys(c[1]))
+                self.assertIn('enabled', c[1].keys())
                 self.assertEqual('True', c[1]['enabled'])
-                self.assertIn('url', six.iterkeys(c[1]))
+                self.assertIn('url', c[1].keys())
                 self.assertEqual('http://127.0.0.1:8080/slugs/', c[1]['url'])
             elif c[0] == 'auth:ldap':
-                self.assertIn('enabled', six.iterkeys(c[1]))
+                self.assertIn('enabled', c[1].keys())
                 self.assertEqual('False', c[1]['enabled'])
-                self.assertIn('url', six.iterkeys(c[1]))
+                self.assertIn('url', c[1].keys())
                 self.assertEqual('http://127.0.0.1:8080/ldap/', c[1]['url'])
 
     def test_parse_auth_settings_no_config(self):

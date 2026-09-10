@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from six import string_types
 from testtools import TestCase
 
 from kmip.core.misc import ServerInformation
@@ -231,7 +230,7 @@ class TestServerInformation(TestCase):
 
         # TODO (peter-hamilton) This should be binary_type. Fix involves
         # TODO (peter-hamilton) refining BytearrayStream implementation.
-        expected = string_types
+        expected = str
         observed = str_repr
 
         msg = "expected {0}, observed {1}".format(expected, observed)

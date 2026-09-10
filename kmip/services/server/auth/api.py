@@ -14,11 +14,9 @@
 # under the License.
 
 import abc
-import six
 
 
-@six.add_metaclass(abc.ABCMeta)
-class AuthAPI:
+class AuthAPI(metaclass=abc.ABCMeta):
     """
     The base class for an authentication API connector.
     """
