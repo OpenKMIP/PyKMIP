@@ -17,7 +17,7 @@ from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import primitives
 from kmip.core import utils
-
+from kmip.core import misc
 
 class AttributeValueFactory(object):
 
@@ -208,6 +208,16 @@ class AttributeValueFactory(object):
             return primitives.Boolean(value, enums.Tags.SENSITIVE)
         elif enum is enums.Tags.CUSTOM_ATTRIBUTE:
             return attributes.CustomAttribute(value)
+        elif enum is enums.Tags.EXTRACTABLE:
+            return primitives.Boolean(value, enums.Tags.EXTRACTABLE)
+        elif enum is enums.Tags.KEY_FORMAT_TYPE:
+            return self._create_key_format_type(value)
+        elif enum is enums.Tags.ORIGINAL_CREATION_DATE:
+            return primitives.DateTime(value, enums.Tags.ORIGINAL_CREATION_DATE)
+        elif enum is enums.Tags.NEVER_EXTRACTABLE:
+            return primitives.Boolean(value, enums.Tags.NEVER_EXTRACTABLE)
+        elif enum is enums.Tags.ALWAYS_SENSITIVE:
+            return primitives.Boolean(value, enums.Tags.ALWAYS_SENSITIVE)
         else:
             raise ValueError("Unrecognized attribute type: {}".format(enum))
 
@@ -300,3 +310,9 @@ class AttributeValueFactory(object):
                 raise TypeError(msg)
 
             return attributes.ContactInformation(info)
+
+    def _create_key_format_type(self, value):
+        if value is None:
+            return misc.KeyFormatType()
+        else:
+            return misc.KeyFormatType(value)
