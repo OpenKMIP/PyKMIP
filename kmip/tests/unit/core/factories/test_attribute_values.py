@@ -423,10 +423,33 @@ class TestAttributeValueFactory(testtools.TestCase):
         """
         Test that a Link attribute can be created.
         """
-        kwargs = {'name': enums.AttributeType.LINK,
-                  'value': None}
-        self.assertRaises(
-            NotImplementedError, self.factory.create_attribute_value, **kwargs)
+        attribute = self.factory.create_attribute_value(
+            enums.AttributeType.LINK,
+            {
+                'link_type': enums.LinkType.PRIVATE_KEY_LINK,
+                'linked_object_identifier': '42'
+            }
+        )
+        self.assertIsInstance(attribute, attributes.Link)
+        self.assertEqual(
+            enums.LinkType.PRIVATE_KEY_LINK,
+            attribute.link_type
+        )
+        self.assertEqual('42', attribute.linked_object_identifier)
+
+    def test_create_link_without_a_value(self):
+        """
+        Test that an empty Link attribute can be created.
+
+        The factory raised NotImplementedError here until Link was
+        implemented; an empty Link is what the decoder needs when it is about
+        to read one off the wire.
+        """
+        attribute = self.factory.create_attribute_value(
+            enums.AttributeType.LINK,
+            None
+        )
+        self.assertIsInstance(attribute, attributes.Link)
 
     def test_create_application_specific_information(self):
         """
