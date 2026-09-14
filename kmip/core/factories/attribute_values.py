@@ -97,7 +97,7 @@ class AttributeValueFactory(object):
         elif name is enums.AttributeType.FRESH:
             return primitives.Boolean(value, enums.Tags.FRESH)
         elif name is enums.AttributeType.LINK:
-            raise NotImplementedError()
+            return self._create_link(value)
         elif name is enums.AttributeType.APPLICATION_SPECIFIC_INFORMATION:
             return self._create_application_specific_information(value)
         elif name is enums.AttributeType.CONTACT_INFORMATION:
@@ -197,7 +197,7 @@ class AttributeValueFactory(object):
         elif enum is enums.Tags.FRESH:
             return primitives.Boolean(value, enums.Tags.FRESH)
         elif enum is enums.Tags.LINK:
-            raise NotImplementedError()
+            return self._create_link(value)
         elif enum is enums.Tags.APPLICATION_SPECIFIC_INFORMATION:
             return self._create_application_specific_information(value)
         elif enum is enums.Tags.CONTACT_INFORMATION:
@@ -279,6 +279,15 @@ class AttributeValueFactory(object):
                 mask |= flag.value
 
         return attributes.CryptographicUsageMask(mask)
+
+    def _create_link(self, value):
+        if value:
+            return attributes.Link(
+                link_type=value.get('link_type'),
+                linked_object_identifier=value.get('linked_object_identifier')
+            )
+        else:
+            return attributes.Link()
 
     def _create_application_specific_information(self, info):
         if info:

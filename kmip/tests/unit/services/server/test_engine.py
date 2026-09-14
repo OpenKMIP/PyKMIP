@@ -3529,6 +3529,107 @@ class TestKmipEngine(testtools.TestCase):
         )
         e._logger.reset_mock()
 
+    def test_create_key_pair_links_each_pair_to_its_own_keys(self):
+        """
+        Two key pairs created by the same owner within one second must each
+        link to their own counterpart.
+
+        The pairing used to be recovered by matching on (owner, initial_date),
+        and initial_date has whole-second granularity, so this case resolved to
+        an arbitrary key. A client that encrypts under public key A and later
+        asks for A's linked private key would be handed B's — undecryptable
+        data, discovered at restore time. The clock is frozen here to make the
+        collision deterministic rather than a race.
+        """
+        e = engine.KmipEngine()
+        e._data_store = self.engine
+        e._data_store_session_factory = self.session_factory
+        e._data_session = e._data_store_session_factory()
+        e._logger = mock.MagicMock()
+        e._client_identity = ['tenant-a', None]
+
+        attribute_factory = factory.AttributeFactory()
+        common_template = objects.TemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_ALGORITHM,
+                    enums.CryptographicAlgorithm.RSA
+                ),
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_LENGTH,
+                    2048
+                )
+            ],
+            tag=enums.Tags.COMMON_TEMPLATE_ATTRIBUTE
+        )
+        public_template = objects.TemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [enums.CryptographicUsageMask.ENCRYPT]
+                )
+            ],
+            tag=enums.Tags.PUBLIC_KEY_TEMPLATE_ATTRIBUTE
+        )
+        private_template = objects.TemplateAttribute(
+            attributes=[
+                attribute_factory.create_attribute(
+                    enums.AttributeType.CRYPTOGRAPHIC_USAGE_MASK,
+                    [enums.CryptographicUsageMask.DECRYPT]
+                )
+            ],
+            tag=enums.Tags.PRIVATE_KEY_TEMPLATE_ATTRIBUTE
+        )
+        payload = payloads.CreateKeyPairRequestPayload(
+            common_template,
+            private_template,
+            public_template
+        )
+
+        with mock.patch('time.time', return_value=1700000000):
+            first = e._process_create_key_pair(payload)
+            second = e._process_create_key_pair(payload)
+        e._data_session.commit()
+        e._data_session = e._data_store_session_factory()
+
+        pairs = [
+            (first.public_key_unique_identifier,
+             first.private_key_unique_identifier),
+            (second.public_key_unique_identifier,
+             second.private_key_unique_identifier),
+        ]
+
+        # Both pairs really did land in the same second, or this test proves
+        # nothing about the collision it exists to cover.
+        initial_dates = set()
+        for public_id, _ in pairs:
+            public_key = e._data_session.query(pie_objects.PublicKey).filter(
+                pie_objects.ManagedObject.unique_identifier == public_id
+            ).one()
+            initial_dates.add(public_key.initial_date)
+        self.assertEqual(1, len(initial_dates))
+
+        for public_id, private_id in pairs:
+            public_key = e._data_session.query(pie_objects.PublicKey).filter(
+                pie_objects.ManagedObject.unique_identifier == public_id
+            ).one()
+            private_key = e._data_session.query(
+                pie_objects.PrivateKey
+            ).filter(
+                pie_objects.ManagedObject.unique_identifier == private_id
+            ).one()
+
+            link = e._get_attribute_from_managed_object(public_key, 'Link')
+            self.assertEqual(
+                str(private_id),
+                link[0]['linked_object_identifier']
+            )
+            back = e._get_attribute_from_managed_object(private_key, 'Link')
+            self.assertEqual(
+                str(public_id),
+                back[0]['linked_object_identifier']
+            )
+
     def test_create_key_pair(self):
         """
         Test that a CreateKeyPair request can be processed correctly.
@@ -9940,7 +10041,19 @@ class TestKmipEngine(testtools.TestCase):
             enums.Operation.QUERY,
             result.operations[11]
         )
-        self.assertIsNone(result.object_types)
+        # The server reports the object types it can actually manage. This
+        # used to be an empty list, which a client reads as "this server
+        # supports nothing" — Veeam refuses to register against such a server.
+        self.assertEqual(
+            [
+                enums.ObjectType.CERTIFICATE,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY,
+                enums.ObjectType.SECRET_DATA
+            ],
+            result.object_types
+        )
         self.assertIsNotNone(result.vendor_identification)
         self.assertEqual(
             "PyKMIP {0} Software Server".format(kmip.__version__),
@@ -10028,7 +10141,19 @@ class TestKmipEngine(testtools.TestCase):
             enums.Operation.DISCOVER_VERSIONS,
             result.operations[12]
         )
-        self.assertIsNone(result.object_types)
+        # The server reports the object types it can actually manage. This
+        # used to be an empty list, which a client reads as "this server
+        # supports nothing" — Veeam refuses to register against such a server.
+        self.assertEqual(
+            [
+                enums.ObjectType.CERTIFICATE,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY,
+                enums.ObjectType.SECRET_DATA
+            ],
+            result.object_types
+        )
         self.assertIsNotNone(result.vendor_identification)
         self.assertEqual(
             "PyKMIP {0} Software Server".format(kmip.__version__),
@@ -10136,7 +10261,19 @@ class TestKmipEngine(testtools.TestCase):
             enums.Operation.MAC,
             result.operations[17]
         )
-        self.assertIsNone(result.object_types)
+        # The server reports the object types it can actually manage. This
+        # used to be an empty list, which a client reads as "this server
+        # supports nothing" — Veeam refuses to register against such a server.
+        self.assertEqual(
+            [
+                enums.ObjectType.CERTIFICATE,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY,
+                enums.ObjectType.SECRET_DATA
+            ],
+            result.object_types
+        )
         self.assertIsNotNone(result.vendor_identification)
         self.assertEqual(
             "PyKMIP {0} Software Server".format(kmip.__version__),

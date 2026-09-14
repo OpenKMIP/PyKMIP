@@ -170,11 +170,32 @@ class TestTLS12AuthenticationSuite(testtools.TestCase):
             'ECDHE-RSA-AES256-SHA384',
             'ECDHE-ECDSA-AES128-GCM-SHA256',
             'ECDHE-ECDSA-AES256-GCM-SHA384',
-            'ECDHE-ECDSA-AES128-SHA256',
-            'ECDHE-ECDSA-AES256-SHA384',
+            'ECDHE-RSA-AES256-GCM-SHA384',
+            'ECDHE-RSA-AES128-GCM-SHA256',
         ))
 
         self.assertEqual(cipher_string, ciphers)
+
+    def test_rsa_gcm_suites_are_negotiable(self):
+        """
+        The ECDHE-RSA GCM suites must survive OpenSSL's own parsing.
+
+        Asserting the cipher *string* does not prove this: a malformed entry is
+        still a string, and OpenSSL silently drops tokens it does not
+        recognise rather than raising. A missing comma in this list once
+        concatenated two entries into one unknown token, which removed
+        ECDHE-RSA-AES256-GCM-SHA384 from the negotiable set while every
+        string-equality test kept passing. A peer restricted to forward-secret
+        GCM suites then negotiated AES-128 instead of AES-256, or failed the
+        handshake outright, with nothing logged either way.
+        """
+        suite = auth.TLS12AuthenticationSuite()
+        context = ssl.SSLContext(suite.protocol)
+        context.set_ciphers(suite.ciphers)
+
+        negotiable = {cipher['name'] for cipher in context.get_ciphers()}
+        self.assertIn('ECDHE-RSA-AES256-GCM-SHA384', negotiable)
+        self.assertIn('ECDHE-RSA-AES128-GCM-SHA256', negotiable)
 
     def test_custom_ciphers(self):
         """
