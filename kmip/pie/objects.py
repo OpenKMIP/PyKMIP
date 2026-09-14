@@ -108,6 +108,16 @@ class ManagedObject(sql.Base):
     sensitive = Column("sensitive", Boolean, default=False)
     initial_date = Column(Integer, default=0)
     _owner = Column('owner', String(50), default=None)
+    # The unique_identifier of the object this one was created paired with —
+    # the other half of a CreateKeyPair. Stored rather than inferred: the
+    # previous implementation recovered the pairing by matching on
+    # (_owner, initial_date), and initial_date has whole-second granularity,
+    # so two key pairs created for the same owner within one second were
+    # indistinguishable and the lookup returned an arbitrary one. For a KMIP
+    # client that encrypts under the public key and later asks for the linked
+    # private key, that silently yields the wrong key and surfaces only as a
+    # failed decryption long afterwards.
+    _link_id = Column('link_id', Integer, default=None)
 
     app_specific_info = sqlalchemy.orm.relationship(
         "ApplicationSpecificInformation",
@@ -147,6 +157,7 @@ class ManagedObject(sql.Base):
         self.sensitive = False
         self._object_type = None
         self._owner = None
+        self._link_id = None
 
         # All remaining attributes are not considered part of the public API
         # and are subject to change.

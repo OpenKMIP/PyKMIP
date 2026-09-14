@@ -740,16 +740,32 @@ class KmipEngine(object):
                link_type = enums.LinkType.PUBLIC_KEY_LINK
             else:
                 return None
-            try:
-                linked = self._data_session.query(linked_type).filter_by(
-                    initial_date=managed_object.initial_date,
-                    _owner=managed_object._owner
-                ).first()
-                if linked:
-                    return [{'link_type': link_type,
-                          'linked_object_identifier': str(linked.unique_identifier)}]
-            except Exception:
-                pass
+            link_id = getattr(managed_object, '_link_id', None)
+            if link_id is not None:
+                return [{'link_type': link_type,
+                         'linked_object_identifier': str(link_id)}]
+            # Fallback for objects created before the pairing was stored. This
+            # is ambiguous by construction — two key pairs created by one owner
+            # in the same second match equally — so it is a best effort for old
+            # rows only, and never the path a newly created pair takes.
+            linked = self._data_session.query(linked_type).filter_by(
+                initial_date=managed_object.initial_date,
+                _owner=managed_object._owner
+            ).order_by(linked_type.unique_identifier).all()
+            if len(linked) == 1:
+                return [{'link_type': link_type,
+                         'linked_object_identifier':
+                             str(linked[0].unique_identifier)}]
+            if len(linked) > 1:
+                # Refuse to guess: returning an arbitrary key here is what
+                # produces undecryptable data.
+                self._logger.warning(
+                    "Cannot resolve the Link attribute for object {0}: {1} "
+                    "candidates share its owner and initial date. The pairing "
+                    "predates link storage and is ambiguous.".format(
+                        managed_object.unique_identifier, len(linked)
+                    )
+                )
             return None
         elif attr_name == "Application Specific Information":
             values = []
@@ -1591,6 +1607,14 @@ class KmipEngine(object):
 
         # NOTE (peterhamilton) SQLAlchemy will *not* assign an ID until
         # commit is called. This makes future support for UNDO problematic.
+        self._data_session.commit()
+
+        # Record the pairing now that both identifiers exist. This is the only
+        # point at which the relationship is known for certain; recovering it
+        # later by matching on (owner, initial_date) cannot distinguish two key
+        # pairs created for the same owner in the same second.
+        public_key._link_id = private_key.unique_identifier
+        private_key._link_id = public_key.unique_identifier
         self._data_session.commit()
 
         self._logger.info(
