@@ -1308,7 +1308,7 @@ class Link(primitives.Struct):
     def linked_object_identifier(self, value):
         if value is None:
             self._linked_object_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._linked_object_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.LINKED_OBJECT_IDENTIFIER

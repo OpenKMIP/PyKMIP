@@ -217,8 +217,11 @@ class TLS12AuthenticationSuite(AuthenticationSuite):
         'ECDHE-RSA-AES256-SHA384',
         'ECDHE-ECDSA-AES128-GCM-SHA256',
         'ECDHE-ECDSA-AES256-GCM-SHA384',
-        'ECDHE-ECDSA-AES128-SHA256',
-        'ECDHE-ECDSA-AES256-SHA384'
+        # The ECDHE-ECDSA GCM suites above can only be negotiated with an ECDSA
+        # server certificate. A peer enforcing OpenSSL SECLEVEL=2 offers only
+        # forward-secret GCM suites, so against the RSA certificate this server
+        # is usually deployed with there is no overlap and the handshake fails
+        # at the SSL layer, before any application logging happens.
         'ECDHE-RSA-AES256-GCM-SHA384',
         'ECDHE-RSA-AES128-GCM-SHA256'
     ]

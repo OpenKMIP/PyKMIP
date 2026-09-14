@@ -10041,7 +10041,19 @@ class TestKmipEngine(testtools.TestCase):
             enums.Operation.QUERY,
             result.operations[11]
         )
-        self.assertIsNone(result.object_types)
+        # The server reports the object types it can actually manage. This
+        # used to be an empty list, which a client reads as "this server
+        # supports nothing" — Veeam refuses to register against such a server.
+        self.assertEqual(
+            [
+                enums.ObjectType.CERTIFICATE,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY,
+                enums.ObjectType.SECRET_DATA
+            ],
+            result.object_types
+        )
         self.assertIsNotNone(result.vendor_identification)
         self.assertEqual(
             "PyKMIP {0} Software Server".format(kmip.__version__),
@@ -10129,7 +10141,19 @@ class TestKmipEngine(testtools.TestCase):
             enums.Operation.DISCOVER_VERSIONS,
             result.operations[12]
         )
-        self.assertIsNone(result.object_types)
+        # The server reports the object types it can actually manage. This
+        # used to be an empty list, which a client reads as "this server
+        # supports nothing" — Veeam refuses to register against such a server.
+        self.assertEqual(
+            [
+                enums.ObjectType.CERTIFICATE,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY,
+                enums.ObjectType.SECRET_DATA
+            ],
+            result.object_types
+        )
         self.assertIsNotNone(result.vendor_identification)
         self.assertEqual(
             "PyKMIP {0} Software Server".format(kmip.__version__),
@@ -10237,7 +10261,19 @@ class TestKmipEngine(testtools.TestCase):
             enums.Operation.MAC,
             result.operations[17]
         )
-        self.assertIsNone(result.object_types)
+        # The server reports the object types it can actually manage. This
+        # used to be an empty list, which a client reads as "this server
+        # supports nothing" — Veeam refuses to register against such a server.
+        self.assertEqual(
+            [
+                enums.ObjectType.CERTIFICATE,
+                enums.ObjectType.SYMMETRIC_KEY,
+                enums.ObjectType.PUBLIC_KEY,
+                enums.ObjectType.PRIVATE_KEY,
+                enums.ObjectType.SECRET_DATA
+            ],
+            result.object_types
+        )
         self.assertIsNotNone(result.vendor_identification)
         self.assertEqual(
             "PyKMIP {0} Software Server".format(kmip.__version__),
