@@ -38,6 +38,7 @@ as found in the configuration file, is shown below:
         TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
     logging_level=DEBUG
     database_path=/tmp/pykmip.db
+    database_password=pykmip
 
 The server can also be configured manually via Python. The following example
 shows how to create the ``KmipServer`` in Python code, directly specifying the
@@ -64,6 +65,7 @@ different configuration values:
     ...     ],
     ...     logging_level='DEBUG',
     ...     database_path='/tmp/pykmip.db'
+    ...     database_password='pykmip'
     ... )
 
 The different configuration options are defined below:
@@ -125,6 +127,9 @@ The different configuration options are defined below:
 * ``database_path``
     A string representing a path to a SQLite database file. The server will
     store all managed objects (e.g., keys, certificates) in this file.
+* ``database_password``
+    A string representing the password to encryot the SQLite database file. 
+    Defaults to ``pykmip``.
 
 .. note::
    When installing PyKMIP and deploying the server, you must manually set up

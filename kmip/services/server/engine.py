@@ -17,6 +17,7 @@ import copy
 import logging
 import six
 import sqlalchemy
+import sqlcipher3
 
 from sqlalchemy.orm import exc
 
@@ -72,7 +73,7 @@ class KmipEngine(object):
         * Cryptographic usage mask enforcement per object type
     """
 
-    def __init__(self, policies=None, database_path=None):
+    def __init__(self, policies=None, database_path=None, database_password=None):
         """
         Create a KmipEngine.
 
@@ -83,14 +84,15 @@ class KmipEngine(object):
             database_path (string): The path to the SQLite database file
                 used to store all server data. Optional, defaults to None.
                 If none, database path defaults to '/tmp/pykmip.database'.
+            database_password (string): The password to the SQLite database file.
         """
         self._logger = logging.getLogger('kmip.server.engine')
 
         self._cryptography_engine = engine.CryptographyEngine()
 
-        self.database_path = 'sqlite:///{}'.format(database_path)
+        self.database_path = 'sqlite+pysqlcipher://:{database_password}@/{database_path}'.format(database_password = database_password, database_path = database_path)
         if not database_path:
-            self.database_path = 'sqlite:////tmp/pykmip.database'
+            self.database_path = 'sqlite+pysqlcipher://:{database_password}@//tmp/pykmip.database'.format(database_password = database_password)
 
         self._data_store = sqlalchemy.create_engine(
             self.database_path,
