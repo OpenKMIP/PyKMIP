@@ -20,7 +20,7 @@ import multiprocessing
 import optparse
 import os
 import signal
-import six
+		  
 import socket
 import ssl
 import sys
@@ -243,7 +243,7 @@ class KmipServer(object):
         self.manager = multiprocessing.Manager()
         self.policies = self.manager.dict()
         policies = copy.deepcopy(operation_policy.policies)
-        for policy_name, policy_set in six.iteritems(policies):
+        for policy_name, policy_set in policies.items():
             self.policies[policy_name] = policy_set
 
         self.policy_monitor = monitor.PolicyDirectoryMonitor(
@@ -287,6 +287,29 @@ class KmipServer(object):
         for cipher in auth_suite_ciphers:
             self._logger.debug(cipher)
 
+        # ssl.wrap_socket() was removed in Python 3.12+; build an SSLContext
+        # and use its wrap_socket() method instead, which is the supported
+        # replacement and preserves the same TLS configuration.
+        ssl_context = ssl.SSLContext(self.auth_suite.protocol)
+        ssl_context.verify_mode = ssl.CERT_REQUIRED
+        ssl_context.load_cert_chain(
+            certfile=self.config.settings.get('certificate_path'),
+            keyfile=self.config.settings.get('key_path')
+        )
+        ssl_context.load_verify_locations(
+            cafile=self.config.settings.get('ca_path')
+        )
+        ssl_context.set_ciphers(self.auth_suite.ciphers)
+
+        self._socket = ssl_context.wrap_socket(
+            self._socket,
+            server_side=True,
+										
+												 
+														 
+            do_handshake_on_connect=False,
+            suppress_ragged_eofs=True
+										   
         cafile = self.config.settings.get('ca_path')
         context = ssl.SSLContext(self.auth_suite.protocol)
         context.verify_mode = ssl.CERT_REQUIRED
