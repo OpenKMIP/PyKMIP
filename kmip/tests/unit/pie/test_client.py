@@ -240,7 +240,7 @@ class TestProxyKmipClient(testtools.TestCase):
             uid = client.create(algorithm, length)
             client.proxy.create.assert_called_with(
                 enums.ObjectType.SYMMETRIC_KEY, template)
-            self.assertIsInstance(uid, six.string_types)
+            self.assertIsInstance(uid, str)
             self.assertEqual(uid, key_id)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
@@ -511,8 +511,8 @@ class TestProxyKmipClient(testtools.TestCase):
                 "public_key_template_attribute": None
             }
             client.proxy.create_key_pair.assert_called_with(**kwargs)
-            self.assertIsInstance(public_uid, six.string_types)
-            self.assertIsInstance(private_uid, six.string_types)
+            self.assertIsInstance(public_uid, str)
+            self.assertIsInstance(private_uid, str)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))
@@ -1278,7 +1278,7 @@ class TestProxyKmipClient(testtools.TestCase):
                 'aaaaaaaa-1111-2222-3333-ffffffffffff',
                 ['Name', 'Object Type']
             )
-            self.assertIsInstance(result[0], six.string_types)
+            self.assertIsInstance(result[0], str)
             self.assertIsInstance(result[1], list)
             for r in result[1]:
                 self.assertIsInstance(r, obj.Attribute)
@@ -1739,7 +1739,7 @@ class TestProxyKmipClient(testtools.TestCase):
             client.proxy.register.return_value = result
             uid = client.register(key)
             self.assertTrue(client.proxy.register.called)
-            self.assertIsInstance(uid, six.string_types)
+            self.assertIsInstance(uid, str)
 
     @mock.patch('kmip.pie.client.KMIPProxy',
                 mock.MagicMock(spec_set=KMIPProxy))

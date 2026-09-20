@@ -210,9 +210,10 @@ class TestKmipServer(testtools.TestCase):
         # Test that in ideal cases no errors are generated and the right
         # log messages are.
         with mock.patch('socket.socket') as socket_mock:
-            with mock.patch('ssl.wrap_socket') as ssl_mock:
+            with mock.patch('ssl.SSLContext') as ssl_mock:
                 socket_mock.return_value = a_mock
-                ssl_mock.return_value = b_mock
+                ssl_mock.return_value.wrap_socket.return_value = b_mock
+                ssl_mock.return_value.load_cert_chain.return_value = None
 
                 manager_mock.assert_not_called()
                 monitor_mock.assert_not_called()
@@ -271,9 +272,10 @@ class TestKmipServer(testtools.TestCase):
 
         # Test that a NetworkingError is generated if the socket bind fails.
         with mock.patch('socket.socket') as socket_mock:
-            with mock.patch('ssl.wrap_socket') as ssl_mock:
+            with mock.patch('ssl.SSLContext') as ssl_mock:
                 socket_mock.return_value = a_mock
-                ssl_mock.return_value = b_mock
+                ssl_mock.return_value.wrap_socket.return_value = b_mock
+                ssl_mock.return_value.load_cert_chain.return_value = None
 
                 test_exception = Exception()
                 b_mock.bind.side_effect = test_exception

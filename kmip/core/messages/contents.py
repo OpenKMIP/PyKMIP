@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core import objects
 from kmip.core import utils
@@ -67,7 +65,7 @@ class ProtocolVersion(primitives.Struct):
     def major(self, value):
         if value is None:
             self._major = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._major = primitives.Integer(
                 value=value,
                 tag=enums.Tags.PROTOCOL_VERSION_MAJOR
@@ -88,7 +86,7 @@ class ProtocolVersion(primitives.Struct):
     def minor(self, value):
         if value is None:
             self._minor = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._minor = primitives.Integer(
                 value=value,
                 tag=enums.Tags.PROTOCOL_VERSION_MINOR

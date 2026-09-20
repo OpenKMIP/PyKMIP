@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core import exceptions
 from kmip.core import misc
@@ -396,7 +394,7 @@ class QueryResponsePayload(base.ResponsePayload):
     def vendor_identification(self, value):
         if value is None:
             self._vendor_identification = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._vendor_identification = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VENDOR_IDENTIFICATION
@@ -432,7 +430,7 @@ class QueryResponsePayload(base.ResponsePayload):
         elif isinstance(value, list):
             application_namespaces = []
             for i in value:
-                if isinstance(i, six.string_types):
+                if isinstance(i, str):
                     application_namespaces.append(
                         primitives.TextString(
                             value=i,
@@ -671,7 +669,7 @@ class QueryResponsePayload(base.ResponsePayload):
         elif isinstance(value, list):
             protection_storage_masks = []
             for i in value:
-                if isinstance(i, six.integer_types):
+                if isinstance(i, int):
                     protection_storage_masks.append(
                         primitives.Integer(
                             value=i,

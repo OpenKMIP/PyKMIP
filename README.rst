@@ -41,7 +41,7 @@ The PyKMIP community has various forums and resources you can use:
 
 * `Source code`_
 * `Issue tracker`_
-* IRC: ``#pykmip`` on ``irc.freenode.net``
+* Matrix: `#pykmip:matrix.org`_
 * Twitter: ``@pykmip``
 
 
@@ -53,6 +53,7 @@ The PyKMIP community has various forums and resources you can use:
 .. _`Installation`: https://pykmip.readthedocs.io/en/latest/installation.html
 .. _`Source code`: https://github.com/openkmip/pykmip
 .. _`Issue tracker`: https://github.com/openkmip/pykmip/issues
+.. _`#pykmip:matrix.org`: https://matrix.to/#/#pykmip:matrix.org
 
 .. |pypi-version| image:: https://img.shields.io/pypi/v/pykmip.svg
   :target: https://pypi.python.org/pypi/pykmip

@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import attributes
 from kmip.core import enums
 from kmip.core import primitives
@@ -102,7 +100,7 @@ class DecryptRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -137,7 +135,7 @@ class DecryptRequestPayload(base.RequestPayload):
     def data(self, value):
         if value is None:
             self._data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.DATA
@@ -156,7 +154,7 @@ class DecryptRequestPayload(base.RequestPayload):
     def iv_counter_nonce(self, value):
         if value is None:
             self._iv_counter_nonce = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._iv_counter_nonce = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.IV_COUNTER_NONCE
@@ -175,7 +173,7 @@ class DecryptRequestPayload(base.RequestPayload):
     def auth_additional_data(self, value):
         if value is None:
             self._auth_additional_data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._auth_additional_data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.AUTHENTICATED_ENCRYPTION_ADDITIONAL_DATA
@@ -194,7 +192,7 @@ class DecryptRequestPayload(base.RequestPayload):
     def auth_tag(self, value):
         if value is None:
             self._auth_tag = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._auth_tag = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.AUTHENTICATED_ENCRYPTION_TAG
@@ -435,7 +433,7 @@ class DecryptResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -454,7 +452,7 @@ class DecryptResponsePayload(base.ResponsePayload):
     def data(self, value):
         if value is None:
             self._data = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._data = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.DATA

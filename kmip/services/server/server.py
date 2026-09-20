@@ -310,6 +310,22 @@ class KmipServer(object):
             do_handshake_on_connect=False,
             suppress_ragged_eofs=True
 										   
+        cafile = self.config.settings.get('ca_path')
+        context = ssl.SSLContext(self.auth_suite.protocol)
+        context.verify_mode = ssl.CERT_REQUIRED
+        if self.auth_suite.ciphers:
+            context.set_ciphers(self.auth_suite.ciphers)
+        if cafile:
+            context.load_verify_locations(cafile)
+        certfile = self.config.settings.get('certificate_path')
+        keyfile = self.config.settings.get('key_path')
+        context.load_cert_chain(certfile, keyfile=keyfile)
+
+        self._socket = context.wrap_socket(
+            self._socket,
+            server_side=True,
+            do_handshake_on_connect=False,
+            suppress_ragged_eofs=True
         )
 
         try:

@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import print_function
-
 from kmip.services.results import ActivateResult
 from kmip.services.results import CreateResult
 from kmip.services.results import CreateKeyPairResult
@@ -98,7 +96,7 @@ class KMIPProxy(object):
             self.kmip_version = enums.KMIPVersion.KMIP_1_2
 
         if config_file:
-            if not isinstance(config_file, six.string_types):
+            if not isinstance(config_file, str):
                 raise ValueError(
                     "The client configuration file argument must be a string."
                 )
@@ -285,13 +283,17 @@ class KMIPProxy(object):
             six.reraise(*last_error)
 
     def _create_socket(self, sock):
-        self.socket = ssl.wrap_socket(
+        context = ssl.SSLContext(self.ssl_version)
+        context.verify_mode = self.cert_reqs
+        if self.ca_certs:
+            context.load_verify_locations(self.ca_certs)
+        if self.keyfile and not self.certfile:
+            raise ValueError("certfile must be specified")
+        if self.certfile:
+            context.load_cert_chain(self.certfile, self.keyfile)
+        self.socket = context.wrap_socket(
             sock,
-            keyfile=self.keyfile,
-            certfile=self.certfile,
-            cert_reqs=self.cert_reqs,
-            ssl_version=self.ssl_version,
-            ca_certs=self.ca_certs,
+            server_side=False,
             do_handshake_on_connect=self.do_handshake_on_connect,
             suppress_ragged_eofs=self.suppress_ragged_eofs)
         self.socket.settimeout(self.timeout)

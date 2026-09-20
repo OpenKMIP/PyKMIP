@@ -581,7 +581,7 @@ class AttributeReference(primitives.Struct):
     def vendor_identification(self, value):
         if value is None:
             self._vendor_identification = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._vendor_identification = primitives.TextString(
                 value,
                 tag=enums.Tags.VENDOR_IDENTIFICATION
@@ -600,7 +600,7 @@ class AttributeReference(primitives.Struct):
     def attribute_name(self, value):
         if value is None:
             self._attribute_name = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._attribute_name = primitives.TextString(
                 value,
                 tag=enums.Tags.ATTRIBUTE_NAME
@@ -1002,7 +1002,7 @@ class Nonce(primitives.Struct):
     def nonce_id(self, value):
         if value is None:
             self._nonce_id = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._nonce_id = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.NONCE_ID
@@ -1021,7 +1021,7 @@ class Nonce(primitives.Struct):
     def nonce_value(self, value):
         if value is None:
             self._nonce_value = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._nonce_value = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.NONCE_VALUE
@@ -1182,7 +1182,7 @@ class UsernamePasswordCredential(CredentialValue):
     def username(self, value):
         if value is None:
             self._username = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._username = primitives.TextString(
                 value=value,
                 tag=enums.Tags.USERNAME
@@ -1201,7 +1201,7 @@ class UsernamePasswordCredential(CredentialValue):
     def password(self, value):
         if value is None:
             self._password = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._password = primitives.TextString(
                 value=value,
                 tag=enums.Tags.PASSWORD
@@ -1379,7 +1379,7 @@ class DeviceCredential(CredentialValue):
     def device_serial_number(self, value):
         if value is None:
             self._device_serial_number = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._device_serial_number = primitives.TextString(
                 value=value,
                 tag=enums.Tags.DEVICE_SERIAL_NUMBER
@@ -1398,7 +1398,7 @@ class DeviceCredential(CredentialValue):
     def password(self, value):
         if value is None:
             self._password = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._password = primitives.TextString(
                 value=value,
                 tag=enums.Tags.PASSWORD
@@ -1417,7 +1417,7 @@ class DeviceCredential(CredentialValue):
     def device_identifier(self, value):
         if value is None:
             self._device_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._device_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.DEVICE_IDENTIFIER
@@ -1436,7 +1436,7 @@ class DeviceCredential(CredentialValue):
     def network_identifier(self, value):
         if value is None:
             self._network_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._network_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.NETWORK_IDENTIFIER
@@ -1455,7 +1455,7 @@ class DeviceCredential(CredentialValue):
     def machine_identifier(self, value):
         if value is None:
             self._machine_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._machine_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.MACHINE_IDENTIFIER
@@ -1474,7 +1474,7 @@ class DeviceCredential(CredentialValue):
     def media_identifier(self, value):
         if value is None:
             self._media_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._media_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.MEDIA_IDENTIFIER
@@ -1743,7 +1743,7 @@ class AttestationCredential(CredentialValue):
     def attestation_measurement(self, value):
         if value is None:
             self._attestation_measurement = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._attestation_measurement = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.ATTESTATION_MEASUREMENT
@@ -1762,7 +1762,7 @@ class AttestationCredential(CredentialValue):
     def attestation_assertion(self, value):
         if value is None:
             self._attestation_assertion = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._attestation_assertion = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.ATTESTATION_ASSERTION
@@ -2419,7 +2419,7 @@ class EncryptionKeyInformation(Struct):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -2601,7 +2601,7 @@ class MACSignatureKeyInformation(primitives.Struct):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -2864,7 +2864,7 @@ class KeyWrappingData(Struct):
     def mac_signature(self, value):
         if value is None:
             self._mac_signature = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._mac_signature = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.MAC_SIGNATURE
@@ -2883,7 +2883,7 @@ class KeyWrappingData(Struct):
     def iv_counter_nonce(self, value):
         if value is None:
             self._iv_counter_nonce = None
-        elif isinstance(value, six.binary_type):
+        elif isinstance(value, bytes):
             self._iv_counter_nonce = primitives.ByteString(
                 value=value,
                 tag=enums.Tags.IV_COUNTER_NONCE
@@ -3224,7 +3224,7 @@ class KeyWrappingSpecification(primitives.Struct):
         elif isinstance(value, list):
             attribute_names = []
             for i in value:
-                if isinstance(i, six.string_types):
+                if isinstance(i, str):
                     attribute_names.append(
                         primitives.TextString(
                             value=i,
@@ -4500,7 +4500,7 @@ class RNGParameters(primitives.Struct):
     def cryptographic_length(self, value):
         if value is None:
             self._cryptographic_length = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._cryptographic_length = primitives.Integer(
                 value=value,
                 tag=enums.Tags.CRYPTOGRAPHIC_LENGTH
@@ -4936,7 +4936,7 @@ class ProfileInformation(primitives.Struct):
     def server_uri(self, value):
         if value is None:
             self._server_uri = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._server_uri = primitives.TextString(
                 value=value,
                 tag=enums.Tags.SERVER_URI
@@ -4954,7 +4954,7 @@ class ProfileInformation(primitives.Struct):
     def server_port(self, value):
         if value is None:
             self._server_port = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._server_port = primitives.Integer(
                 value=value,
                 tag=enums.Tags.SERVER_PORT
@@ -5251,7 +5251,7 @@ class ValidationInformation(primitives.Struct):
     def validation_authority_country(self, value):
         if value is None:
             self._validation_authority_country = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_authority_country = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_AUTHORITY_COUNTRY
@@ -5271,7 +5271,7 @@ class ValidationInformation(primitives.Struct):
     def validation_authority_uri(self, value):
         if value is None:
             self._validation_authority_uri = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_authority_uri = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_AUTHORITY_URI
@@ -5289,7 +5289,7 @@ class ValidationInformation(primitives.Struct):
     def validation_version_major(self, value):
         if value is None:
             self._validation_version_major = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._validation_version_major = primitives.Integer(
                 value=value,
                 tag=enums.Tags.VALIDATION_VERSION_MAJOR
@@ -5307,7 +5307,7 @@ class ValidationInformation(primitives.Struct):
     def validation_version_minor(self, value):
         if value is None:
             self._validation_version_minor = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._validation_version_minor = primitives.Integer(
                 value=value,
                 tag=enums.Tags.VALIDATION_VERSION_MINOR
@@ -5346,7 +5346,7 @@ class ValidationInformation(primitives.Struct):
     def validation_level(self, value):
         if value is None:
             self._validation_level = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._validation_level = primitives.Integer(
                 value=value,
                 tag=enums.Tags.VALIDATION_LEVEL
@@ -5364,7 +5364,7 @@ class ValidationInformation(primitives.Struct):
     def validation_certificate_identifier(self, value):
         if value is None:
             self._validation_certificate_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_certificate_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_CERTIFICATE_IDENTIFIER
@@ -5384,7 +5384,7 @@ class ValidationInformation(primitives.Struct):
     def validation_certificate_uri(self, value):
         if value is None:
             self._validation_certificate_uri = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_certificate_uri = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_CERTIFICATE_URI
@@ -5402,7 +5402,7 @@ class ValidationInformation(primitives.Struct):
     def validation_vendor_uri(self, value):
         if value is None:
             self._validation_vendor_uri = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._validation_vendor_uri = primitives.TextString(
                 value=value,
                 tag=enums.Tags.VALIDATION_VENDOR_URI
@@ -5423,7 +5423,7 @@ class ValidationInformation(primitives.Struct):
         elif isinstance(value, list):
             validation_profiles = []
             for v in value:
-                if isinstance(v, six.string_types):
+                if isinstance(v, str):
                     validation_profiles.append(
                         primitives.TextString(
                             value=v,
@@ -6455,7 +6455,7 @@ class ProtectionStorageMasks(primitives.Struct):
         elif isinstance(value, list):
             protection_storage_masks = []
             for x in value:
-                if isinstance(x, six.integer_types):
+                if isinstance(x, int):
                     if enums.is_bit_mask(enums.ProtectionStorageMask, x):
                         protection_storage_masks.append(
                             primitives.Integer(

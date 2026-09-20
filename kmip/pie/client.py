@@ -14,7 +14,6 @@
 # under the License.
 
 import logging
-import six
 
 from kmip.core import enums
 from kmip.core import primitives
@@ -222,7 +221,7 @@ class ProxyKmipClient(object):
         if not isinstance(algorithm, enums.CryptographicAlgorithm):
             raise TypeError(
                 "algorithm must be a CryptographicAlgorithm enumeration")
-        elif not isinstance(length, six.integer_types) or length <= 0:
+        elif not isinstance(length, int) or length <= 0:
             raise TypeError("length must be a positive integer")
         if cryptographic_usage_mask is not None:
             if not isinstance(cryptographic_usage_mask, list) or \
@@ -305,7 +304,7 @@ class ProxyKmipClient(object):
         if not isinstance(algorithm, enums.CryptographicAlgorithm):
             raise TypeError(
                 "algorithm must be a CryptographicAlgorithm enumeration")
-        elif not isinstance(length, six.integer_types) or length <= 0:
+        elif not isinstance(length, int) or length <= 0:
             raise TypeError("length must be a positive integer")
 
         # Create the common attributes that are shared
@@ -611,10 +610,10 @@ class ProxyKmipClient(object):
             TypeError: if the input arguments are invalid
         """
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("The unique identifier must be a string.")
         if offset is not None:
-            if not isinstance(offset, six.integer_types):
+            if not isinstance(offset, int):
                 raise TypeError("The offset must be an integer.")
 
         # TODO (peter-hamilton) Unify attribute handling across operations
@@ -735,7 +734,7 @@ class ProxyKmipClient(object):
             raise TypeError("Unique identifiers must be a list of strings.")
         else:
             for unique_identifier in unique_identifiers:
-                if not isinstance(unique_identifier, six.string_types):
+                if not isinstance(unique_identifier, str):
                     raise TypeError(
                         "Unique identifiers must be a list of strings."
                     )
@@ -833,13 +832,13 @@ class ProxyKmipClient(object):
         """
         # Check inputs
         if maximum_items is not None:
-            if not isinstance(maximum_items, six.integer_types):
+            if not isinstance(maximum_items, int):
                 raise TypeError("maximum_items must be an integer")
         if offset_items is not None:
-            if not isinstance(offset_items, six.integer_types):
+            if not isinstance(offset_items, int):
                 raise TypeError("offset items must be an integer")
         if storage_status_mask is not None:
-            if not isinstance(storage_status_mask, six.integer_types):
+            if not isinstance(storage_status_mask, int):
                 raise TypeError("storage_status_mask must be an integer")
         if object_group_member is not None:
             if not isinstance(object_group_member, enums.ObjectGroupMember):
@@ -891,10 +890,10 @@ class ProxyKmipClient(object):
                 specified managed object. Optional, defaults to None.
         """
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("The unique identifier must be a string.")
         if usage_limits_count is not None:
-            if not isinstance(usage_limits_count, six.integer_types):
+            if not isinstance(usage_limits_count, int):
                 raise TypeError("The usage limits count must be an integer.")
         if cryptographic_usage_mask is not None:
             if not isinstance(cryptographic_usage_mask, list) or \
@@ -907,7 +906,7 @@ class ProxyKmipClient(object):
                     "CryptographicUsageMask enumerations."
                 )
         if lease_time is not None:
-            if not isinstance(lease_time, six.integer_types):
+            if not isinstance(lease_time, int):
                 raise TypeError("The lease time must be an integer.")
 
         result = self.proxy.check(
@@ -973,7 +972,7 @@ class ProxyKmipClient(object):
         """
         # Check input
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("uid must be a string")
         if key_wrapping_specification is not None:
             if not isinstance(key_wrapping_specification, dict):
@@ -1018,14 +1017,14 @@ class ProxyKmipClient(object):
         """
         # Check input
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("uid must be a string")
         if attribute_names is not None:
             if not isinstance(attribute_names, list):
                 raise TypeError("attribute_names must be a list of strings")
             else:
                 for attribute_name in attribute_names:
-                    if not isinstance(attribute_name, six.string_types):
+                    if not isinstance(attribute_name, str):
                         raise TypeError(
                             "attribute_names must be a list of strings"
                         )
@@ -1056,7 +1055,7 @@ class ProxyKmipClient(object):
         """
         # Check input
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("uid must be a string")
 
         # Get the list of attribute names for a managed object.
@@ -1090,7 +1089,7 @@ class ProxyKmipClient(object):
         """
         # Check input
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("uid must be a string")
 
         # Activate the managed object and handle the results
@@ -1135,13 +1134,13 @@ class ProxyKmipClient(object):
             raise TypeError(
                 "revocation_reason must be a RevocationReasonCode enumeration")
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("uid must be a string")
         if revocation_message is not None:
-            if not isinstance(revocation_message, six.string_types):
+            if not isinstance(revocation_message, str):
                 raise TypeError("revocation_message must be a string")
         if compromise_occurrence_date is not None:
-            if not isinstance(compromise_occurrence_date, six.integer_types):
+            if not isinstance(compromise_occurrence_date, int):
                 raise TypeError(
                     "compromise_occurrence_date must be an integer")
             compromise_occurrence_date = primitives.DateTime(
@@ -1178,7 +1177,7 @@ class ProxyKmipClient(object):
         """
         # Check input
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("uid must be a string")
 
         # Destroy the managed object and handle the results
@@ -1265,16 +1264,16 @@ class ProxyKmipClient(object):
                                           | mode (typically 1).
         """
         # Check input
-        if not isinstance(data, six.binary_type):
+        if not isinstance(data, bytes):
             raise TypeError("data must be bytes")
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("uid must be a string")
         if cryptographic_parameters is not None:
             if not isinstance(cryptographic_parameters, dict):
                 raise TypeError("cryptographic_parameters must be a dict")
         if iv_counter_nonce is not None:
-            if not isinstance(iv_counter_nonce, six.binary_type):
+            if not isinstance(iv_counter_nonce, bytes):
                 raise TypeError("iv_counter_nonce must be bytes")
 
         cryptographic_parameters = self._build_cryptographic_parameters(
@@ -1370,16 +1369,16 @@ class ProxyKmipClient(object):
                                           | mode (typically 1).
         """
         # Check input
-        if not isinstance(data, six.binary_type):
+        if not isinstance(data, bytes):
             raise TypeError("data must be bytes")
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("uid must be a string")
         if cryptographic_parameters is not None:
             if not isinstance(cryptographic_parameters, dict):
                 raise TypeError("cryptographic_parameters must be a dict")
         if iv_counter_nonce is not None:
-            if not isinstance(iv_counter_nonce, six.binary_type):
+            if not isinstance(iv_counter_nonce, bytes):
                 raise TypeError("iv_counter_nonce must be bytes")
 
         cryptographic_parameters = self._build_cryptographic_parameters(
@@ -1435,12 +1434,12 @@ class ProxyKmipClient(object):
             see the documentation for encrypt/decrypt.
         """
         # Check input
-        if not isinstance(message, six.binary_type):
+        if not isinstance(message, bytes):
             raise TypeError("Message must be bytes.")
-        if not isinstance(signature, six.binary_type):
+        if not isinstance(signature, bytes):
             raise TypeError("Signature must be bytes.")
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("Unique identifier must be a string.")
         if cryptographic_parameters is not None:
             if not isinstance(cryptographic_parameters, dict):
@@ -1493,10 +1492,10 @@ class ProxyKmipClient(object):
             TypeError: if the input arguments are invalid
         """
         # Check input
-        if not isinstance(data, six.binary_type):
+        if not isinstance(data, bytes):
             raise TypeError("Data to be signed must be bytes.")
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("Unique identifier must be a string.")
         if cryptographic_parameters is not None:
             if not isinstance(cryptographic_parameters, dict):
@@ -1548,10 +1547,10 @@ class ProxyKmipClient(object):
             TypeError: if the input arguments are invalid
         """
         # Check inputs
-        if not isinstance(data, six.binary_type):
+        if not isinstance(data, bytes):
             raise TypeError("data must be bytes")
         if uid is not None:
-            if not isinstance(uid, six.string_types):
+            if not isinstance(uid, str):
                 raise TypeError("uid must be a string")
         if algorithm is not None:
             if not isinstance(algorithm, enums.CryptographicAlgorithm):

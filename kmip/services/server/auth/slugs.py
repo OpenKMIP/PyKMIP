@@ -14,7 +14,6 @@
 # under the License.
 
 import requests
-import six
 
 from kmip.core import exceptions
 from kmip.services.server.auth import api
@@ -50,7 +49,7 @@ class SLUGSConnector(api.AuthAPI):
             self._url = None
             self.users_url = None
             self.groups_url = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._url = value
             if not self._url.endswith("/"):
                 self._url += "/"

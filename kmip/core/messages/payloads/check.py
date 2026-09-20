@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip import enums
 from kmip.core import primitives
 from kmip.core import utils
@@ -79,7 +77,7 @@ class CheckRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -98,7 +96,7 @@ class CheckRequestPayload(base.RequestPayload):
     def usage_limits_count(self, value):
         if value is None:
             self._usage_limits_count = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._usage_limits_count = primitives.LongInteger(
                 value=value,
                 tag=enums.Tags.USAGE_LIMITS_COUNT
@@ -117,7 +115,7 @@ class CheckRequestPayload(base.RequestPayload):
     def cryptographic_usage_mask(self, value):
         if value is None:
             self._cryptographic_usage_mask = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._cryptographic_usage_mask = primitives.Integer(
                 value=value,
                 tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
@@ -136,7 +134,7 @@ class CheckRequestPayload(base.RequestPayload):
     def lease_time(self, value):
         if value is None:
             self._lease_time = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._lease_time = primitives.Interval(
                 value=value,
                 tag=enums.Tags.LEASE_TIME
@@ -344,7 +342,7 @@ class CheckResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -363,7 +361,7 @@ class CheckResponsePayload(base.ResponsePayload):
     def usage_limits_count(self, value):
         if value is None:
             self._usage_limits_count = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._usage_limits_count = primitives.LongInteger(
                 value=value,
                 tag=enums.Tags.USAGE_LIMITS_COUNT
@@ -382,7 +380,7 @@ class CheckResponsePayload(base.ResponsePayload):
     def cryptographic_usage_mask(self, value):
         if value is None:
             self._cryptographic_usage_mask = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._cryptographic_usage_mask = primitives.Integer(
                 value=value,
                 tag=enums.Tags.CRYPTOGRAPHIC_USAGE_MASK
@@ -401,7 +399,7 @@ class CheckResponsePayload(base.ResponsePayload):
     def lease_time(self, value):
         if value is None:
             self._lease_time = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._lease_time = primitives.Interval(
                 value=value,
                 tag=enums.Tags.LEASE_TIME

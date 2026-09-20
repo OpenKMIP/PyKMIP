@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core.attributes import CertificateType
 
 from kmip.core import enums
@@ -301,7 +299,7 @@ class SplitKey(primitives.Struct):
     def split_key_parts(self, value):
         if value is None:
             self._split_key_parts = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._split_key_parts = primitives.Integer(
                 value=value,
                 tag=enums.Tags.SPLIT_KEY_PARTS
@@ -319,7 +317,7 @@ class SplitKey(primitives.Struct):
     def key_part_identifier(self, value):
         if value is None:
             self._key_part_identifier = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._key_part_identifier = primitives.Integer(
                 value=value,
                 tag=enums.Tags.KEY_PART_IDENTIFIER
@@ -337,7 +335,7 @@ class SplitKey(primitives.Struct):
     def split_key_threshold(self, value):
         if value is None:
             self._split_key_threshold = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._split_key_threshold = primitives.Integer(
                 value=value,
                 tag=enums.Tags.SPLIT_KEY_THRESHOLD
@@ -376,7 +374,7 @@ class SplitKey(primitives.Struct):
     def prime_field_size(self, value):
         if value is None:
             self._prime_field_size = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._prime_field_size = primitives.BigInteger(
                 value=value,
                 tag=enums.Tags.PRIME_FIELD_SIZE

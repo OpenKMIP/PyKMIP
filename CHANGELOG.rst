@@ -4,6 +4,46 @@ Changelog
 
 .. _v0.10:
 
+0.11 - September 9, 2026
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+New Features
+
+* Python 3.12 and 3.13 support — PyKMIP is now tested and supported on
+  Python 3.12 and 3.13.
+* Application Specific Information — The client and server now support the
+  app_specific_info attribute (a list of dictionaries), allowing callers to
+  associate application-specific metadata with managed objects, including
+  SymmetricKey and SecretData objects.
+* Custom Attributes — Added support for custom attributes on SymmetricKey and
+  SecretData objects, both through the proxy client and integration tests.
+* CA path support — The client now accepts a capath parameter for specifying a
+  directory of CA certificates, in addition to loading system default
+  certificates automatically.
+
+Bug Fixes
+
+* cryptography >= 42.0.0 compatibility — Fixed a breaking change where
+  load_der_public_key and load_pem_private_key were removed from the Backend
+  class in cryptography 42.0.0. Methods now use the top-level serialization
+  API. (#713)
+* cryptography >= 39.0.0 compatibility — Updated private key loading to use
+  the serialization API, accommodating the new required parameter introduced
+  in cryptography 39.0.0.
+* Database connection leak — Fixed a bug where database connections were not
+  properly released, leading to connection exhaustion under load.
+* server_correlation_value client error — Fixed a PyKMIP client crash triggered
+  by an unexpected server_correlation_value in server responses.
+* shared_ciphers() crash — Added a None guard before logging cipher suite
+  information, preventing an error on connections where shared_ciphers()
+  returns None.
+* ENOTCONN during shutdown — The server now silently ignores ENOTCONN errors
+  when shutting down socket connections, avoiding spurious error output.
+* Primitives validation syntax — Corrected a syntax error in the primitives
+  validation path.
+* Certificate handling — Fixed several edge cases in TLS certificate loading
+  and validation in the client.
+
 0.10 - February 25, 2020
 ~~~~~~~~~~~~~~~~~~~~~~~~
 * Add server debug logging for message encodings

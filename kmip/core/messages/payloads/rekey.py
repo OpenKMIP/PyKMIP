@@ -10,8 +10,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 from kmip.core import enums
 from kmip.core import objects
 from kmip.core import primitives
@@ -69,7 +67,7 @@ class RekeyRequestPayload(base.RequestPayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
@@ -88,7 +86,7 @@ class RekeyRequestPayload(base.RequestPayload):
     def offset(self, value):
         if value is None:
             self._offset = None
-        elif isinstance(value, six.integer_types):
+        elif isinstance(value, int):
             self._offset = primitives.Interval(
                 value=value,
                 tag=enums.Tags.OFFSET
@@ -268,7 +266,7 @@ class RekeyResponsePayload(base.ResponsePayload):
     def unique_identifier(self, value):
         if value is None:
             self._unique_identifier = None
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             self._unique_identifier = primitives.TextString(
                 value=value,
                 tag=enums.Tags.UNIQUE_IDENTIFIER
