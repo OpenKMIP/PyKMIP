@@ -14,7 +14,7 @@
 # under the License.
 
 import six
-import mock
+from unittest import mock
 import shutil
 import sqlalchemy
 

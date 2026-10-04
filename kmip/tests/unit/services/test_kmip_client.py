@@ -66,7 +66,7 @@ from kmip.services.results import OperationResult
 from kmip.services.results import QueryResult
 from kmip.services.results import RekeyKeyPairResult
 
-import mock
+from unittest import mock
 import os
 import socket
 import ssl

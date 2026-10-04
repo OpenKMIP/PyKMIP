@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 
 
 import datetime
-import mock
+from unittest import mock
 import socket
 import testtools
 import time

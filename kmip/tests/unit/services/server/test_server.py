@@ -14,15 +14,10 @@
 # under the License.
 
 import logging
-
-try:
-    import unittest.mock as mock
-except Exception:
-    import mock
-
 import signal
 import socket
 import testtools
+import unittest.mock as mock
 
 from kmip.core import exceptions
 from kmip.services import auth

@@ -19,8 +19,7 @@ except ImportError:
     import ConfigParser as configparser
 
 from testtools import TestCase
-from mock import MagicMock
-from mock import Mock
+from unittest.mock import MagicMock, Mock
 
 from kmip.core.config_helper import ConfigHelper
 
