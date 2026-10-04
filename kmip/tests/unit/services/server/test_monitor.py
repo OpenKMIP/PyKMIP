@@ -14,7 +14,7 @@
 # under the License.
 
 import logging
-import mock
+from unittest import mock
 import multiprocessing
 import os
 import shutil

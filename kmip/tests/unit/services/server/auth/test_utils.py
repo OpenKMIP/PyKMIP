@@ -19,7 +19,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 import datetime
-import mock
+from unittest import mock
 import ssl
 import testtools
 

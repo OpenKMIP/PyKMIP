@@ -14,7 +14,7 @@
 # under the License.
 
 import logging
-import mock
+from unittest import mock
 
 import six
 from six.moves import configparser

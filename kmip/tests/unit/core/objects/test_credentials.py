@@ -14,7 +14,7 @@
 # under the License.
 
 import enum
-import mock
+from unittest import mock
 import testtools
 
 from kmip import enums
